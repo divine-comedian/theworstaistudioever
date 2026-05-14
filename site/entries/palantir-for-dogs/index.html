@@ -1,0 +1,731 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Houndsight · theworstaistudioever</title>
+<meta name="description" content="Operational intelligence for the modern multi-dog household. Behavioral pattern fusion, adversarial squirrel modeling, pack sentiment forecasting." />
+<meta property="og:title" content="Houndsight · operational intelligence for the modern multi-dog household" />
+<meta property="og:description" content="Behavioral pattern fusion. Adversarial squirrel modeling. Pack sentiment forecasting. Used by 600+ private households and one zoo." />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#0c0e10" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0c0e10;
+    --bg-2: #131619;
+    --bg-3: #1a1e23;
+    --fg: #e8e6e1;
+    --muted: #6b6e72;
+    --line: #22272c;
+    --line-2: #2e353c;
+    --primary: #d4a85a;
+    --primary-dim: #8a6f3a;
+    --accent: #ff5a3c;
+    --ok: #5fa86b;
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg); }
+  body {
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 64px 64px, 64px 64px;
+    background-position: -1px -1px;
+    background-attachment: fixed;
+    background-color: var(--bg);
+    background-blend-mode: normal;
+  }
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at top, rgba(212,168,90,0.06), transparent 60%),
+                radial-gradient(ellipse at bottom right, rgba(255,90,60,0.04), transparent 50%);
+    z-index: 0;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  ::selection { background: var(--primary); color: var(--bg); }
+
+  .classified-strip {
+    position: relative; z-index: 5;
+    border-bottom: 1px solid var(--primary-dim);
+    background: var(--bg);
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--primary);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.45rem 1.5rem;
+    gap: 1rem;
+  }
+  .classified-strip .stamp { display: flex; align-items: center; gap: 0.6rem; }
+  .pulse-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 0 rgba(255,90,60,0.7);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(255,90,60,0.6); }
+    70%  { box-shadow: 0 0 0 7px rgba(255,90,60,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,90,60,0); }
+  }
+  @media (prefers-reduced-motion: reduce) { .pulse-dot { animation: none; } }
+  .classified-strip .right { color: var(--muted); }
+
+  .topnav {
+    position: sticky; top: 0; z-index: 4;
+    background: rgba(12,14,16,0.88);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.9rem 1.5rem;
+  }
+  .brand {
+    font-family: var(--mono); font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    font-size: 0.9rem;
+    display: flex; align-items: baseline; gap: 0.45rem;
+  }
+  .brand .mark {
+    display: inline-block; width: 10px; height: 10px;
+    background: var(--primary);
+    transform: translateY(1px);
+  }
+  .topnav nav {
+    display: flex; gap: 1.6rem; align-items: center;
+    font-family: var(--mono);
+    font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted);
+  }
+  .topnav nav a { transition: color 0.15s; }
+  .topnav nav a:hover { color: var(--fg); }
+  .cta-pill {
+    display: inline-block; padding: 0.55rem 1.05rem;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    font-family: var(--mono); font-size: 0.75rem;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    transition: background 0.15s, color 0.15s;
+  }
+  .cta-pill:hover { background: var(--primary); color: var(--bg); }
+  .cta-pill.solid { background: var(--primary); color: var(--bg); }
+  .cta-pill.solid:hover { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+
+  .wrap {
+    position: relative; z-index: 1;
+    max-width: 1280px; margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .doc-header {
+    margin-top: 3rem;
+    border-top: 1px solid var(--line-2);
+    border-bottom: 1px solid var(--line-2);
+    padding: 0.6rem 0;
+    display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem;
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.16em;
+    color: var(--muted); text-transform: uppercase;
+  }
+  .doc-header .center { text-align: center; color: var(--primary); }
+  .doc-header .right { text-align: right; }
+
+  .hero {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 3rem;
+    padding: 4rem 0 5rem;
+    align-items: start;
+  }
+  .hero-meta {
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--primary);
+    margin-bottom: 1.2rem;
+    display: flex; gap: 1.2rem; align-items: center;
+  }
+  .hero-meta .sep { color: var(--line-2); }
+  .hero h1 {
+    font-family: var(--mono);
+    font-size: clamp(2.4rem, 5.6vw, 4.6rem);
+    font-weight: 700;
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    margin: 0 0 1.6rem;
+    color: var(--fg);
+  }
+  .hero h1 .accent { color: var(--primary); }
+  .hero .lede {
+    max-width: 52ch;
+    color: #cbc9c4;
+    font-size: 1.04rem; line-height: 1.6;
+    margin: 0 0 2rem;
+  }
+  .hero-ctas { display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center; }
+  .hero-ctas .meta {
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--muted);
+  }
+
+  .console {
+    border: 1px solid var(--line-2);
+    background: var(--bg-2);
+    font-family: var(--mono); font-size: 0.78rem;
+    color: var(--fg);
+    position: relative;
+    box-shadow: inset 0 0 0 1px rgba(212,168,90,0.04);
+  }
+  .console-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.55rem 0.9rem;
+    border-bottom: 1px solid var(--line-2);
+    color: var(--muted); text-transform: uppercase; letter-spacing: 0.16em;
+    font-size: 0.65rem;
+    background: var(--bg-3);
+  }
+  .console-head .left { display: flex; gap: 0.55rem; align-items: center; }
+  .console-head .left .pulse-dot { background: var(--ok); }
+  @keyframes pulse-ok {
+    0%   { box-shadow: 0 0 0 0 rgba(95,168,107,0.6); }
+    70%  { box-shadow: 0 0 0 6px rgba(95,168,107,0); }
+    100% { box-shadow: 0 0 0 0 rgba(95,168,107,0); }
+  }
+  .console-head .left .pulse-dot { animation: pulse-ok 2s infinite; }
+  .console-feed {
+    padding: 0.9rem 1rem;
+    min-height: 16rem;
+    display: flex; flex-direction: column; gap: 0.5rem;
+    line-height: 1.45;
+  }
+  .console-feed .line { display: flex; gap: 0.7rem; }
+  .console-feed .ts { color: var(--muted); flex-shrink: 0; }
+  .console-feed .body { color: var(--fg); }
+  .console-feed .tag { color: var(--primary); }
+  .console-feed .alert { color: var(--accent); }
+  .console-foot {
+    border-top: 1px solid var(--line-2);
+    padding: 0.55rem 0.9rem;
+    display: flex; gap: 1.4rem;
+    font-size: 0.68rem; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.14em;
+  }
+  .console-foot b { color: var(--fg); font-weight: 600; letter-spacing: 0.14em; }
+
+  .stat-strip {
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    padding: 1.6rem 0;
+  }
+  .stat-strip .cell {
+    padding: 0 1.2rem;
+    border-left: 1px solid var(--line);
+  }
+  .stat-strip .cell:first-child { border-left: none; }
+  .stat-strip .num {
+    font-family: var(--mono); font-weight: 700;
+    font-size: clamp(1.4rem, 2.6vw, 2.1rem);
+    color: var(--fg); letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-strip .label {
+    font-family: var(--mono); font-size: 0.65rem;
+    color: var(--muted); letter-spacing: 0.16em; text-transform: uppercase;
+    margin-top: 0.35rem;
+  }
+
+  .section { padding: 5rem 0; border-bottom: 1px solid var(--line); }
+  .section-head {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;
+    margin-bottom: 2.6rem; align-items: end;
+  }
+  .section-head .eyebrow {
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.18em;
+    color: var(--primary); text-transform: uppercase;
+    margin-bottom: 0.6rem;
+    display: flex; gap: 0.8rem; align-items: center;
+  }
+  .section-head .eyebrow .index {
+    border: 1px solid var(--primary-dim);
+    color: var(--primary);
+    padding: 0.18rem 0.5rem;
+    font-size: 0.62rem;
+  }
+  .section-head h2 {
+    font-family: var(--mono); font-weight: 700;
+    font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+    letter-spacing: -0.01em;
+    line-height: 1.05; margin: 0;
+  }
+  .section-head .note {
+    color: var(--muted); max-width: 42ch; font-size: 0.95rem; line-height: 1.55;
+    justify-self: end; text-align: left;
+  }
+
+  .capabilities { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 1px solid var(--line-2); }
+  .cap {
+    padding: 2rem 1.6rem 2.2rem;
+    border-right: 1px solid var(--line-2);
+    border-bottom: 1px solid var(--line-2);
+    position: relative;
+    transition: background 0.2s;
+  }
+  .cap:nth-child(3n) { border-right: none; }
+  .cap:hover { background: var(--bg-2); }
+  .cap::before {
+    content: ""; position: absolute; top: 0; left: 0;
+    width: 0; height: 2px; background: var(--primary);
+    transition: width 0.3s ease-out;
+  }
+  .cap:hover::before { width: 100%; }
+  .cap .idx {
+    font-family: var(--mono); font-size: 0.7rem;
+    color: var(--primary); letter-spacing: 0.16em;
+    margin-bottom: 1rem;
+  }
+  .cap h3 {
+    font-family: var(--mono); font-size: 1.1rem; font-weight: 600;
+    margin: 0 0 0.9rem; letter-spacing: -0.005em;
+    line-height: 1.25;
+  }
+  .cap p {
+    margin: 0; color: #b8b6b1; font-size: 0.95rem; line-height: 1.55;
+  }
+  .cap .footer-row {
+    margin-top: 1.6rem;
+    font-family: var(--mono); font-size: 0.66rem;
+    color: var(--muted); letter-spacing: 0.16em; text-transform: uppercase;
+    display: flex; justify-content: space-between;
+  }
+
+  .demo-cta {
+    margin-top: 3rem;
+    border: 1px solid var(--line-2);
+    background: var(--bg-2);
+    padding: 2rem;
+    display: grid; grid-template-columns: 1fr auto; gap: 1.4rem;
+    align-items: center;
+  }
+  .demo-cta h3 {
+    font-family: var(--mono); font-weight: 600; margin: 0 0 0.4rem;
+    font-size: 1.15rem;
+  }
+  .demo-cta p {
+    margin: 0; color: var(--muted); font-size: 0.95rem; max-width: 62ch;
+  }
+  .demo-cta .cta-pill { padding: 0.85rem 1.4rem; font-size: 0.78rem; }
+
+  .testimonials {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
+    border-top: 1px solid var(--line-2);
+  }
+  .quote {
+    padding: 2rem 1.6rem;
+    border-right: 1px solid var(--line-2);
+    border-bottom: 1px solid var(--line-2);
+  }
+  .quote:nth-child(3n) { border-right: none; }
+  .quote .cursor {
+    font-family: var(--mono); color: var(--primary);
+    margin-right: 0.4rem; font-weight: 700;
+  }
+  .quote .text {
+    font-family: var(--mono); font-size: 1.02rem; line-height: 1.45;
+    margin: 0 0 1.4rem; color: var(--fg);
+  }
+  .quote .who {
+    font-family: var(--mono); font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--muted);
+  }
+  .quote .who .name { color: var(--fg); display: block; margin-bottom: 0.2rem; }
+
+  .pricing {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
+    border-top: 1px solid var(--line-2);
+  }
+  .tier {
+    padding: 2.2rem 1.6rem 2.4rem;
+    border-right: 1px solid var(--line-2);
+    border-bottom: 1px solid var(--line-2);
+    display: flex; flex-direction: column;
+  }
+  .tier:nth-child(3n) { border-right: none; }
+  .tier .meta {
+    font-family: var(--mono); font-size: 0.66rem;
+    color: var(--muted); letter-spacing: 0.18em; text-transform: uppercase;
+    margin-bottom: 1.4rem;
+    display: flex; justify-content: space-between;
+  }
+  .tier h3 {
+    font-family: var(--mono); font-size: 1.4rem; font-weight: 700;
+    margin: 0 0 0.6rem; letter-spacing: -0.005em;
+  }
+  .tier .tag {
+    color: #b8b6b1; font-size: 0.95rem; line-height: 1.5;
+    margin: 0 0 1.8rem;
+  }
+  .tier .price {
+    font-family: var(--mono); font-size: 2.1rem; font-weight: 700;
+    color: var(--fg); margin-bottom: 1.8rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .tier ul {
+    list-style: none; padding: 0; margin: 0 0 2rem;
+    flex: 1; display: flex; flex-direction: column; gap: 0.65rem;
+  }
+  .tier ul li {
+    position: relative; padding-left: 1.4rem;
+    color: #cbc9c4; font-size: 0.93rem;
+  }
+  .tier ul li::before {
+    content: "+"; position: absolute; left: 0; top: 0;
+    color: var(--primary); font-family: var(--mono); font-weight: 700;
+  }
+  .tier .tier-cta {
+    align-self: flex-start;
+    padding: 0.7rem 1.1rem;
+    border: 1px solid var(--fg);
+    color: var(--fg);
+    font-family: var(--mono); font-size: 0.72rem;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    cursor: pointer; background: transparent;
+  }
+  .tier .tier-cta:hover { background: var(--fg); color: var(--bg); }
+  .tier.featured { background: var(--bg-2); }
+  .tier.featured .price { color: var(--primary); }
+  .tier.featured .tier-cta { border-color: var(--primary); color: var(--primary); }
+  .tier.featured .tier-cta:hover { background: var(--primary); color: var(--bg); }
+
+  .compliance-row {
+    margin-top: 3rem;
+    padding: 1.4rem 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    display: flex; flex-wrap: wrap; gap: 1.8rem;
+    font-family: var(--mono); font-size: 0.7rem;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted);
+    align-items: center;
+  }
+  .compliance-row .label { color: var(--primary); }
+
+  footer.site {
+    padding: 3rem 0 2rem;
+    border-top: 1px solid var(--line);
+    display: grid; grid-template-columns: 1fr auto; gap: 1.5rem; align-items: start;
+  }
+  footer.site .col-left { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); letter-spacing: 0.12em; line-height: 1.7; }
+  footer.site .col-left .home {
+    color: var(--primary); text-transform: uppercase; letter-spacing: 0.18em;
+    display: inline-block; margin-bottom: 0.6rem; border-bottom: 1px solid transparent;
+    transition: border-color 0.15s;
+  }
+  footer.site .col-left .home:hover { border-bottom-color: var(--primary); }
+  footer.site .col-right {
+    font-family: var(--mono); font-size: 0.7rem; color: var(--muted);
+    letter-spacing: 0.16em; text-transform: uppercase; text-align: right;
+  }
+  footer.site .col-right b { color: var(--fg); font-weight: 500; }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; gap: 2rem; }
+    .stat-strip { grid-template-columns: repeat(2, 1fr); }
+    .stat-strip .cell { border-left: none; border-top: 1px solid var(--line); padding: 1rem 1.2rem; }
+    .stat-strip .cell:nth-child(-n+2) { border-top: none; }
+    .capabilities, .testimonials, .pricing { grid-template-columns: 1fr; }
+    .cap, .quote, .tier { border-right: none; }
+    .section-head { grid-template-columns: 1fr; }
+    .section-head .note { justify-self: start; }
+    .demo-cta { grid-template-columns: 1fr; }
+    footer.site { grid-template-columns: 1fr; }
+    footer.site .col-right { text-align: left; }
+  }
+  @media (max-width: 600px) {
+    .classified-strip { font-size: 0.6rem; padding: 0.4rem 1rem; }
+    .topnav nav { display: none; }
+    .doc-header { grid-template-columns: 1fr; gap: 0.3rem; }
+    .doc-header .right, .doc-header .center { text-align: left; }
+  }
+</style>
+</head>
+<body>
+
+<div class="classified-strip">
+  <div class="stamp">
+    <span class="pulse-dot" aria-hidden="true"></span>
+    <span>Operational // K9 Intelligence // Classified for partner use</span>
+  </div>
+  <div class="right">Doc K9-0001 · Rev 2026.05</div>
+</div>
+
+<header class="topnav">
+  <div class="brand"><span class="mark" aria-hidden="true"></span> Houndsight</div>
+  <nav aria-label="Primary">
+    <a href="#capabilities">Capabilities</a>
+    <a href="#operators">Operators</a>
+    <a href="#engagement">Engagement</a>
+    <a href="./demo.html" class="cta-pill">Open the console →</a>
+  </nav>
+</header>
+
+<div class="wrap">
+
+  <div class="doc-header">
+    <div class="left">Subject Domain · Canis lupus familiaris</div>
+    <div class="center">Houndsight Platform Brief · v6.2</div>
+    <div class="right">For distribution to households of record</div>
+  </div>
+
+  <section class="hero" id="top">
+    <div class="hero-left">
+      <div class="hero-meta">
+        <span>Tier 1 Vendor</span>
+        <span class="sep">/</span>
+        <span>Onboarding window: 11 days</span>
+        <span class="sep">/</span>
+        <span>USDA-Vetted</span>
+      </div>
+      <h1>Decision dominance <span class="accent">over your dogs.</span></h1>
+      <p class="lede">Houndsight ingests every behavior in your kennel, fuses it into a single ground-truth model, and delivers it back to you as auditable, defensible action. Used by 600+ private households and one zoo. Reporting cadence configurable down to four seconds.</p>
+      <div class="hero-ctas">
+        <a href="#engagement" class="cta-pill solid">Request a briefing</a>
+        <a href="./demo.html" class="cta-pill">View the operations console →</a>
+        <span class="meta">No card. No demo gating.</span>
+      </div>
+    </div>
+
+    <aside class="console" aria-label="Live event feed (illustrative)">
+      <div class="console-head">
+        <div class="left"><span class="pulse-dot" aria-hidden="true"></span><span>Feed · Subject K-04412</span></div>
+        <div>UTC 02:14</div>
+      </div>
+      <div class="console-feed" id="feed">
+        <div class="line"><span class="ts">02:14:08</span><span class="body">Subject K-04412 approached door <span class="tag">[intent conf 73%]</span></span></div>
+        <div class="line"><span class="ts">02:14:02</span><span class="body">Subject K-04412 vocalized <span class="tag">[classified non-threat]</span></span></div>
+        <div class="line"><span class="ts">02:13:51</span><span class="body">Squirrel S-117 detected at 24m <span class="alert">[esc. likely 41%]</span></span></div>
+        <div class="line"><span class="ts">02:13:30</span><span class="body">Affection event logged <span class="tag">[+1 verbal · attributed K-04412]</span></span></div>
+        <div class="line"><span class="ts">02:13:12</span><span class="body">Kibble bowl IMU: net delta -47g</span></div>
+        <div class="line"><span class="ts">02:12:58</span><span class="body">Weight pad calibrated. Drift 0.3%.</span></div>
+        <div class="line"><span class="ts">02:12:40</span><span class="body">Subject K-04412 entered Zone B (kitchen)</span></div>
+      </div>
+      <div class="console-foot">
+        <span>Sensors <b>14/14</b></span>
+        <span>Latency <b>92ms</b></span>
+        <span>Events/min <b>11.4</b></span>
+      </div>
+    </aside>
+  </section>
+
+  <div class="stat-strip" aria-label="Platform statistics">
+    <div class="cell"><div class="num">41,302</div><div class="label">Alerts dispatched · 30d</div></div>
+    <div class="cell"><div class="num">600+</div><div class="label">Households of record</div></div>
+    <div class="cell"><div class="num">14</div><div class="label">Sensor vendors federated</div></div>
+    <div class="cell"><div class="num">99.4%</div><div class="label">Squirrel detection recall</div></div>
+  </div>
+
+  <section class="section" id="capabilities">
+    <div class="section-head">
+      <div>
+        <div class="eyebrow"><span class="index">01</span><span>Capabilities</span></div>
+        <h2>Three competencies. One ground truth.</h2>
+      </div>
+      <p class="note">Houndsight does not produce dashboards. Houndsight produces decisions. Each capability ships with a model card, an audit trail, and a designated point of contact at our office in Tysons Corner.</p>
+    </div>
+    <div class="capabilities">
+      <article class="cap">
+        <div class="idx">01.01</div>
+        <h3>Behavioral Pattern Fusion</h3>
+        <p>Cross-references fourteen sensor vendors (GPS, weight pads, microphone arrays, kibble-bowl IMUs) to determine whether your dog is operating within its established personality envelope. Excursions trigger a priority-three alert.</p>
+        <div class="footer-row"><span>Latency · 92ms</span><span>Model · BPF-7</span></div>
+      </article>
+      <article class="cap">
+        <div class="idx">01.02</div>
+        <h3>Adversarial Squirrel Modeling</h3>
+        <p>A continuously-updated graph database of every squirrel observed within 500m of the household, weighted by historical engagement frequency. Every walk ships with an Escalation Likelihood score and three pre-cleared response options.</p>
+        <div class="footer-row"><span>Coverage · 500m</span><span>Model · ASM-3</span></div>
+      </article>
+      <article class="cap">
+        <div class="idx">01.03</div>
+        <h3>Pack Sentiment Forecasting</h3>
+        <p>Natural-language ingestion of every &ldquo;good boy&rdquo; uttered in the home, attributed to the correct subject via on-device speaker diarization. Output is a weekly Affection Allocation Report, stratified by dog, with statistically significant deviations flagged.</p>
+        <div class="footer-row"><span>Cadence · Weekly</span><span>Model · PSF-2.1</span></div>
+      </article>
+    </div>
+
+    <div class="demo-cta">
+      <div>
+        <h3>The Operations Console is open for inspection.</h3>
+        <p>Walk the floor of a representative deployment. Subject K-04412, a four-year-old Bernedoodle. Live event feed, threat map, command queue, the works.</p>
+      </div>
+      <a class="cta-pill solid" href="./demo.html">Open the demo →</a>
+    </div>
+  </section>
+
+  <section class="section" id="operators">
+    <div class="section-head">
+      <div>
+        <div class="eyebrow"><span class="index">02</span><span>Operators</span></div>
+        <h2>From operators of record.</h2>
+      </div>
+      <p class="note">Selected with permission from households running Houndsight at production scale. Names retained. Titles unedited.</p>
+    </div>
+    <div class="testimonials">
+      <figure class="quote">
+        <p class="text"><span class="cursor">&gt;</span>We were operating in a fog. After Houndsight, I know within four seconds of waking which dog has urinated and where.</p>
+        <figcaption class="who"><span class="name">Margaret Allers-Vance</span>Chief of Staff to a Bernedoodle named Pip</figcaption>
+      </figure>
+      <figure class="quote">
+        <p class="text"><span class="cursor">&gt;</span>I no longer make decisions about kibble without a quorum.</p>
+        <figcaption class="who"><span class="name">Theodore Ngu</span>Director of Procurement, Three-Dog Estate (NY · LA · Aspen)</figcaption>
+      </figure>
+      <figure class="quote">
+        <p class="text"><span class="cursor">&gt;</span>Our morning standup now includes the dogs. Attendance is optional but tracked.</p>
+        <figcaption class="who"><span class="name">Dr. Inez Cabrera-Holm, DVM</span>Head of Canine Affairs, Cabrera-Holm Family Office</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section" id="engagement">
+    <div class="section-head">
+      <div>
+        <div class="eyebrow"><span class="index">03</span><span>Engagement Tiers</span></div>
+        <h2>Choose your reporting cadence.</h2>
+      </div>
+      <p class="note">All tiers include the full sensor-fusion stack. Tiers differ by subject count, cadence, and the form your veterinary lead takes. Annual contracts. Net 45.</p>
+    </div>
+    <div class="pricing">
+      <article class="tier">
+        <div class="meta"><span>Tier 01</span><span>Standard</span></div>
+        <h3>Single Subject</h3>
+        <p class="tag">One dog. Weekly reporting cadence.</p>
+        <div class="price">$1,400<span style="color: var(--muted); font-size: 0.9rem; font-weight: 400;">/mo</span></div>
+        <ul>
+          <li>1 canine subject</li>
+          <li>Weekly Pack Sentiment Report</li>
+          <li>Standard 14-vendor sensor fusion</li>
+          <li>Email support, business hours</li>
+        </ul>
+        <button class="tier-cta">Begin onboarding</button>
+      </article>
+      <article class="tier featured">
+        <div class="meta"><span>Tier 02</span><span style="color: var(--primary);">Recommended</span></div>
+        <h3>Multi-Subject</h3>
+        <p class="tag">Up to four dogs. Nightly reporting cadence.</p>
+        <div class="price">$3,900<span style="color: var(--muted); font-size: 0.9rem; font-weight: 400;">/mo</span></div>
+        <ul>
+          <li>Up to 4 canine subjects</li>
+          <li>Nightly reporting plus on-demand pulls</li>
+          <li>One (1) federated cat module</li>
+          <li>Quarterly behavioral audit</li>
+          <li>Priority support, 24/5</li>
+        </ul>
+        <button class="tier-cta">Schedule a briefing</button>
+      </article>
+      <article class="tier">
+        <div class="meta"><span>Tier 03</span><span>Custom</span></div>
+        <h3>Sovereign Pack</h3>
+        <p class="tag">Unlimited subjects. On-prem. SOC 2 Type II.</p>
+        <div class="price">Contact</div>
+        <ul>
+          <li>Unlimited subjects, unlimited species</li>
+          <li>On-prem or air-gapped deployment</li>
+          <li>Dedicated Canine Intelligence Officer</li>
+          <li>Reporting cadence set with your veterinary lead</li>
+          <li>SOC 2 Type II, ISO 27001, FedRAMP Moderate</li>
+        </ul>
+        <button class="tier-cta">Engage sales</button>
+      </article>
+    </div>
+  </section>
+
+  <div class="compliance-row" aria-label="Compliance posture">
+    <span class="label">Compliance posture ·</span>
+    <span>SOC 2 Type II</span>
+    <span>ISO 27001</span>
+    <span>FedRAMP Moderate (in progress)</span>
+    <span>USDA-vetted</span>
+    <span>GDPR · Article 30 records on file</span>
+  </div>
+
+  <footer class="site">
+    <div class="col-left">
+      <a href="/" class="home">← theworstaistudioever</a><br />
+      Houndsight is a fictional product of theworstaistudioever, a daily generator of startups that should not exist.<br />
+      No dogs were surveilled in the production of this page. No squirrels were modeled.
+    </div>
+    <div class="col-right">
+      <b>2026 · Houndsight</b><br />
+      All subjects fictional. All capabilities aspirational. <br />
+      Tysons Corner · Palo Alto · Bozeman
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  // Append a single new event line every ~4s to keep the feed feeling alive.
+  (function () {
+    var feed = document.getElementById("feed");
+    if (!feed) return;
+    var reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (reduced.matches) return;
+
+    var samples = [
+      ["Subject K-04412 yawned ", "[non-event, logged]", "tag"],
+      ["Squirrel S-203 entered 500m perimeter ", "[esc. likely 18%]", "alert"],
+      ["Affection event logged ", "[+1 verbal · attributed K-04412]", "tag"],
+      ["Kibble bowl IMU stable ", "[no delta]", "tag"],
+      ["Subject K-04412 sat near food bowl ", "[intent conf 64%]", "tag"],
+      ["Mic array isolated 'good boy' ", "[speaker diarized · operator A]", "tag"],
+      ["Walk Protocol completed ", "[duration 18m, escalations 0]", "tag"],
+      ["Squirrel S-117 reacquired at 22m ", "[esc. likely 47%]", "alert"]
+    ];
+
+    var i = 0;
+    function pad(n) { return n < 10 ? "0" + n : "" + n; }
+    function nowTs() {
+      var d = new Date();
+      return pad(d.getUTCHours()) + ":" + pad(d.getUTCMinutes()) + ":" + pad(d.getUTCSeconds());
+    }
+
+    function tick() {
+      var s = samples[i % samples.length];
+      i++;
+      var line = document.createElement("div");
+      line.className = "line";
+      var ts = document.createElement("span");
+      ts.className = "ts";
+      ts.textContent = nowTs();
+      var body = document.createElement("span");
+      body.className = "body";
+      body.textContent = s[0];
+      var tag = document.createElement("span");
+      tag.className = s[2];
+      tag.textContent = s[1];
+      body.appendChild(tag);
+      line.appendChild(ts);
+      line.appendChild(body);
+      feed.insertBefore(line, feed.firstChild);
+      while (feed.children.length > 7) feed.removeChild(feed.lastChild);
+    }
+
+    setInterval(tick, 4000);
+  })();
+</script>
+
+</body>
+</html>

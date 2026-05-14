@@ -1,24 +1,82 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>theworstaistudioever</title>
-  <meta name="description" content="A new mock startup, every day. Mostly bad. Occasionally redeeming.">
-  <meta property="og:title" content="theworstaistudioever">
-  <meta property="og:description" content="A new mock startup, every day. Mostly bad. Occasionally redeeming.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://theworstaistudioever.com">
-  <link rel="stylesheet" href="/styles.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>theworstaistudioever</title>
+<meta name="description" content="a new fake startup, generated daily. the worst ai studio ever." />
+<meta property="og:title" content="theworstaistudioever" />
+<meta property="og:description" content="a new fake startup, generated daily. the worst ai studio ever." />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#0a0a0a" />
+<link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-  <header class="site-header">
-    <div class="brand">theworstaistudioever</div>
-    <div class="count">0 startups · since 2026</div>
-  </header>
-  <main class="empty">
-    <h1>Nothing here yet.</h1>
-    <p>A new mock startup ships every day at 14:00 UTC. Come back tomorrow.</p>
-  </main>
+<header class="site-header">
+  <span class="brand">theworstaistudioever</span>
+  <span class="count">1 startup &middot; since 2026</span>
+</header>
+<div class="carousel" role="region" aria-roledescription="carousel" aria-label="Daily startups">
+  <div class="carousel-track" id="track">
+<section class="slide" style="background: radial-gradient(ellipse at 30% 20%, #d4a85a26, transparent 55%), radial-gradient(ellipse at 80% 90%, #d4a85a1a, transparent 60%), #0c0e10;color: #e8e6e1;" aria-roledescription="slide" aria-label="Palantir for dogs">
+  <p class="slide-tagline">Palantir for dogs</p>
+  <p class="slide-blurb">Houndsight ingests every behavior in your kennel, fuses it into a single ground-truth model, and delivers it back to you as auditable, defensible action. Used by 600+ private households and one zoo.</p>
+  <a class="slide-cta" href="/entries/palantir-for-dogs/"><span>visit &rarr;</span></a>
+  <div class="slide-date">May 14, 2026</div>
+</section>
+  </div>
+</div>
+<nav class="nav" aria-label="Carousel navigation">
+  <button id="prev" aria-label="Previous slide">&larr;</button>
+  <div class="dots" id="dots"><button class="dot active" data-i="0" aria-label="Go to slide 1"></button></div>
+  <button id="next" aria-label="Next slide">&rarr;</button>
+</nav>
+
+<script>
+(function () {
+  var track = document.getElementById('track');
+  var dots = Array.prototype.slice.call(document.querySelectorAll('#dots .dot'));
+  var prev = document.getElementById('prev');
+  var next = document.getElementById('next');
+  var total = dots.length;
+  var current = 0;
+
+  function go(i) {
+    current = (i + total) % total;
+    track.style.transform = 'translateX(' + (-100 * current) + '%)';
+    dots.forEach(function (d, j) { d.classList.toggle('active', j === current); });
+  }
+  prev.addEventListener('click', function () { go(current - 1); });
+  next.addEventListener('click', function () { go(current + 1); });
+  dots.forEach(function (d) {
+    d.addEventListener('click', function () { go(parseInt(d.getAttribute('data-i'), 10)); });
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft') go(current - 1);
+    if (e.key === 'ArrowRight') go(current + 1);
+  });
+  // touch swipe
+  var startX = 0, dx = 0, swiping = false;
+  var area = document.querySelector('.carousel');
+  if (area) {
+    area.addEventListener('touchstart', function (e) {
+      if (!e.touches || !e.touches[0]) return;
+      startX = e.touches[0].clientX; dx = 0; swiping = true;
+    }, { passive: true });
+    area.addEventListener('touchmove', function (e) {
+      if (!swiping || !e.touches || !e.touches[0]) return;
+      dx = e.touches[0].clientX - startX;
+    }, { passive: true });
+    area.addEventListener('touchend', function () {
+      if (!swiping) return;
+      swiping = false;
+      if (Math.abs(dx) > 50) {
+        if (dx < 0) go(current + 1); else go(current - 1);
+      }
+    });
+  }
+})();
+</script>
+
 </body>
 </html>

@@ -1,0 +1,897 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Operations Console · Houndsight</title>
+<meta name="description" content="The Houndsight Operations Console. Live event feed, threat map, sentiment graph, and command queue for subject K-04412." />
+<meta property="og:title" content="Houndsight · Operations Console" />
+<meta property="og:description" content="Operations Console for subject K-04412 (Pip, Bernedoodle, 4y). Illustrative deployment." />
+<meta name="theme-color" content="#0c0e10" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0c0e10;
+    --bg-2: #131619;
+    --bg-3: #1a1e23;
+    --bg-4: #20262c;
+    --fg: #e8e6e1;
+    --muted: #6b6e72;
+    --muted-2: #93969a;
+    --line: #22272c;
+    --line-2: #2e353c;
+    --primary: #d4a85a;
+    --primary-dim: #8a6f3a;
+    --accent: #ff5a3c;
+    --ok: #5fa86b;
+    --warn: #d4a85a;
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 14px; }
+  body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; overflow: hidden; }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; }
+
+  /* ========= TOP BAR ========= */
+  .topbar {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    border-bottom: 1px solid var(--line-2);
+    padding: 0.55rem 1rem;
+    background: var(--bg);
+    height: 44px;
+    flex-shrink: 0;
+  }
+  .topbar .left { display: flex; align-items: center; gap: 1.3rem; }
+  .topbar .back {
+    font-family: var(--mono); font-size: 0.72rem;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); border-bottom: 1px solid transparent; transition: color 0.15s, border-color 0.15s;
+    padding-bottom: 1px;
+  }
+  .topbar .back:hover { color: var(--primary); border-bottom-color: var(--primary); }
+  .topbar .brand {
+    font-family: var(--mono); font-weight: 700; font-size: 0.78rem;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .topbar .brand .mark { width: 9px; height: 9px; background: var(--primary); display: inline-block; }
+  .topbar .center {
+    font-family: var(--mono); font-size: 0.72rem;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--primary);
+    text-align: center;
+  }
+  .topbar .right {
+    display: flex; gap: 1.2rem; align-items: center; justify-content: flex-end;
+    font-family: var(--mono); font-size: 0.72rem;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+  }
+  .topbar .right .clock { color: var(--fg); }
+  .topbar .right .live { display: flex; align-items: center; gap: 0.4rem; color: var(--ok); }
+  .pulse-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--ok);
+    box-shadow: 0 0 0 0 rgba(95,168,107,0.7);
+    animation: pulse 2s infinite;
+  }
+  .pulse-dot.warn { background: var(--accent); box-shadow: 0 0 0 0 rgba(255,90,60,0.7); animation-name: pulse-warn; }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(95,168,107,0.6); } 70% { box-shadow: 0 0 0 6px rgba(95,168,107,0); } 100% { box-shadow: 0 0 0 0 rgba(95,168,107,0); } }
+  @keyframes pulse-warn { 0% { box-shadow: 0 0 0 0 rgba(255,90,60,0.6); } 70% { box-shadow: 0 0 0 6px rgba(255,90,60,0); } 100% { box-shadow: 0 0 0 0 rgba(255,90,60,0); } }
+  @media (prefers-reduced-motion: reduce) { .pulse-dot { animation: none; } }
+
+  /* ========= LAYOUT ========= */
+  .app {
+    display: grid;
+    grid-template-rows: 44px 1fr 76px;
+    height: 100vh; height: 100dvh;
+    background:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px),
+      var(--bg);
+    background-size: 80px 80px, 80px 80px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 320px 1fr 360px;
+    grid-template-rows: 1fr;
+    border-top: 1px solid var(--line-2);
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  .panel {
+    background: var(--bg);
+    border-right: 1px solid var(--line-2);
+    display: flex; flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .panel:last-child { border-right: none; }
+  .panel-head {
+    height: 36px; flex-shrink: 0;
+    border-bottom: 1px solid var(--line-2);
+    background: var(--bg-2);
+    padding: 0 0.85rem;
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: var(--mono); font-size: 0.66rem;
+    color: var(--muted); letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  .panel-head .right { display: flex; gap: 0.8rem; }
+  .panel-body { padding: 1rem 0.95rem; overflow-y: auto; flex: 1; min-height: 0; }
+  .panel-body.flush { padding: 0; }
+
+  /* ========= SUBJECT PANEL (LEFT) ========= */
+  .subject-card { border: 1px solid var(--line-2); padding: 1.05rem; margin-bottom: 1rem; background: var(--bg-2); }
+  .subject-id {
+    font-family: var(--mono); font-size: 0.68rem;
+    color: var(--primary); letter-spacing: 0.16em; text-transform: uppercase;
+    margin-bottom: 0.55rem;
+  }
+  .subject-name {
+    font-family: var(--mono); font-size: 1.55rem; font-weight: 700;
+    letter-spacing: -0.01em; line-height: 1.05;
+    margin-bottom: 0.4rem;
+  }
+  .subject-meta {
+    font-size: 0.84rem; color: var(--muted-2);
+    line-height: 1.5; margin-bottom: 0.9rem;
+  }
+  .subject-status {
+    font-family: var(--mono); font-size: 0.7rem;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    border: 1px solid var(--ok);
+    color: var(--ok);
+    padding: 0.32rem 0.55rem;
+  }
+
+  .stat-block { border: 1px solid var(--line-2); padding: 1rem; margin-bottom: 0.7rem; }
+  .stat-block .lab {
+    font-family: var(--mono); font-size: 0.62rem;
+    color: var(--muted); letter-spacing: 0.18em; text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .stat-block .big {
+    font-family: var(--mono); font-weight: 700; font-size: 2.2rem;
+    color: var(--fg); line-height: 1; letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-block .big .unit { color: var(--muted); font-size: 0.95rem; font-weight: 400; margin-left: 0.4rem; letter-spacing: 0.02em; }
+  .stat-block .sub { font-size: 0.78rem; color: var(--muted); margin-top: 0.4rem; }
+
+  .meter { height: 6px; background: var(--bg-3); border: 1px solid var(--line-2); margin-top: 0.85rem; position: relative; overflow: hidden; }
+  .meter .bar { height: 100%; background: var(--ok); transition: width 0.6s ease-out, background 0.3s; }
+  .meter .bar.warn { background: var(--warn); }
+  .meter .bar.crit { background: var(--accent); }
+
+  .key-vals {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+    border: 1px solid var(--line-2);
+  }
+  .key-vals .kv { padding: 0.7rem 0.85rem; border-right: 1px solid var(--line-2); border-bottom: 1px solid var(--line-2); }
+  .key-vals .kv:nth-child(2n) { border-right: none; }
+  .key-vals .kv:nth-last-child(-n+2) { border-bottom: none; }
+  .key-vals .kv .lab { font-family: var(--mono); font-size: 0.6rem; color: var(--muted); letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 0.3rem; }
+  .key-vals .kv .val { font-family: var(--mono); font-size: 0.92rem; color: var(--fg); font-variant-numeric: tabular-nums; }
+
+  /* ========= FEED PANEL (CENTER) ========= */
+  .tabs { display: flex; gap: 0; }
+  .tab {
+    font-family: var(--mono); font-size: 0.66rem;
+    color: var(--muted); letter-spacing: 0.16em; text-transform: uppercase;
+    background: transparent; border: none; cursor: pointer;
+    padding: 0.4rem 0.7rem;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .tab:hover { color: var(--fg); }
+  .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+  .feed { display: flex; flex-direction: column; }
+  .feed-line {
+    display: grid;
+    grid-template-columns: 90px 90px 1fr auto;
+    gap: 0.85rem;
+    padding: 0.65rem 1rem;
+    border-bottom: 1px solid var(--line);
+    font-family: var(--mono); font-size: 0.84rem;
+    align-items: baseline;
+  }
+  .feed-line:hover { background: var(--bg-2); }
+  .feed-line .ts { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .feed-line .cat {
+    color: var(--primary); font-size: 0.66rem; letter-spacing: 0.16em; text-transform: uppercase;
+  }
+  .feed-line .body { color: var(--fg); line-height: 1.4; }
+  .feed-line .badge {
+    font-family: var(--mono); font-size: 0.62rem;
+    padding: 0.18rem 0.45rem;
+    border: 1px solid var(--muted);
+    color: var(--muted);
+    letter-spacing: 0.14em; text-transform: uppercase;
+    justify-self: end;
+  }
+  .feed-line .badge.alert { border-color: var(--accent); color: var(--accent); }
+  .feed-line .badge.ok { border-color: var(--ok); color: var(--ok); }
+  .feed-line .badge.warn { border-color: var(--warn); color: var(--warn); }
+  .feed-line .badge.command { border-color: var(--primary); color: var(--primary); }
+  .feed-line.is-command { background: rgba(212,168,90,0.06); }
+  .feed-line.is-command .body { color: var(--primary); }
+
+  .feed-empty {
+    padding: 3rem 1rem; text-align: center;
+    color: var(--muted); font-family: var(--mono); font-size: 0.78rem;
+    letter-spacing: 0.14em; text-transform: uppercase;
+  }
+
+  /* ========= THREAT MAP + SENTIMENT (RIGHT) ========= */
+  .right-stack { display: grid; grid-template-rows: 1fr 1fr; height: 100%; min-height: 0; }
+  .right-cell { border-bottom: 1px solid var(--line-2); display: flex; flex-direction: column; min-height: 0; }
+  .right-cell:last-child { border-bottom: none; }
+
+  .map-wrap { flex: 1; position: relative; overflow: hidden; background: var(--bg-2); min-height: 0; }
+  .map-wrap svg { display: block; width: 100%; height: 100%; }
+  .rings circle { fill: none; stroke: var(--line-2); stroke-dasharray: 2 4; }
+  .home-mark { fill: var(--primary); stroke: none; }
+  .home-label { font-family: var(--mono); fill: var(--primary); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; }
+  .squirrel-pin { cursor: pointer; }
+  .squirrel-pin circle.outer { fill: rgba(255,90,60,0.12); stroke: var(--accent); stroke-width: 1; transition: fill 0.15s; }
+  .squirrel-pin:hover circle.outer { fill: rgba(255,90,60,0.3); }
+  .squirrel-pin circle.inner { fill: var(--accent); }
+  .squirrel-pin text { font-family: var(--mono); font-size: 8px; fill: var(--fg); letter-spacing: 0.12em; }
+
+  .legend {
+    height: 30px; flex-shrink: 0;
+    border-top: 1px solid var(--line-2);
+    display: flex; align-items: center; gap: 1.1rem;
+    padding: 0 0.9rem;
+    font-family: var(--mono); font-size: 0.62rem;
+    color: var(--muted); letter-spacing: 0.16em; text-transform: uppercase;
+  }
+  .legend .swatch { width: 8px; height: 8px; display: inline-block; margin-right: 0.35rem; vertical-align: middle; }
+  .legend .swatch.home { background: var(--primary); }
+  .legend .swatch.squirrel { background: var(--accent); }
+
+  .sentiment-body { padding: 0.9rem; flex: 1; display: flex; flex-direction: column; gap: 0.7rem; min-height: 0; }
+  .sentiment-head { display: flex; justify-content: space-between; align-items: baseline; }
+  .sentiment-head .num {
+    font-family: var(--mono); font-weight: 700; font-size: 1.7rem;
+    color: var(--fg); font-variant-numeric: tabular-nums;
+  }
+  .sentiment-head .num .delta { color: var(--accent); font-size: 0.85rem; margin-left: 0.5rem; font-weight: 500; }
+  .sentiment-head .num .delta.up { color: var(--ok); }
+  .sentiment-head .lab {
+    font-family: var(--mono); font-size: 0.62rem;
+    color: var(--muted); letter-spacing: 0.16em; text-transform: uppercase;
+  }
+
+  .bars { flex: 1; display: flex; align-items: flex-end; gap: 6px; min-height: 70px; }
+  .bars .col {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+    cursor: default;
+  }
+  .bars .col .bar {
+    width: 100%;
+    background: var(--bg-3);
+    border-top: 2px solid var(--primary);
+    transition: background 0.15s;
+  }
+  .bars .col:hover .bar { background: var(--bg-4); }
+  .bars .col.flag .bar { border-top-color: var(--accent); }
+  .bars .col .day {
+    font-family: var(--mono); font-size: 0.58rem;
+    color: var(--muted); letter-spacing: 0.16em; text-transform: uppercase;
+  }
+  .bars .col .v {
+    font-family: var(--mono); font-size: 0.62rem;
+    color: var(--fg); font-variant-numeric: tabular-nums;
+    visibility: hidden;
+  }
+  .bars .col:hover .v { visibility: visible; }
+
+  .sentiment-foot {
+    font-family: var(--mono); font-size: 0.6rem;
+    color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase;
+    padding-top: 0.45rem; border-top: 1px solid var(--line);
+  }
+  .sentiment-foot .flag { color: var(--accent); }
+
+  /* ========= COMMAND QUEUE (BOTTOM) ========= */
+  .commandbar {
+    border-top: 1px solid var(--line-2);
+    background: var(--bg-2);
+    display: grid;
+    grid-template-columns: 200px 1fr 200px;
+    align-items: stretch;
+    height: 76px;
+  }
+  .commandbar .label {
+    padding: 0 1rem;
+    display: flex; flex-direction: column; justify-content: center;
+    border-right: 1px solid var(--line-2);
+    font-family: var(--mono);
+  }
+  .commandbar .label .top { font-size: 0.62rem; color: var(--muted); letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 0.3rem; }
+  .commandbar .label .bot { font-size: 0.84rem; color: var(--primary); letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; }
+
+  .commands { display: grid; grid-template-columns: repeat(4, 1fr); }
+  .command-btn {
+    background: transparent; border: none; border-right: 1px solid var(--line-2);
+    color: var(--fg); cursor: pointer; padding: 0 1rem;
+    display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 0.25rem;
+    transition: background 0.15s, color 0.15s;
+    font-family: var(--mono);
+  }
+  .command-btn:last-child { border-right: none; }
+  .command-btn:hover { background: var(--bg-3); color: var(--primary); }
+  .command-btn .key { font-size: 0.58rem; color: var(--muted); letter-spacing: 0.18em; text-transform: uppercase; }
+  .command-btn .name { font-size: 0.9rem; letter-spacing: 0.04em; font-weight: 600; }
+  .command-btn .meta { font-size: 0.62rem; color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; }
+  .command-btn.dispatched { background: rgba(212,168,90,0.08); }
+  .command-btn.dispatched .name { color: var(--primary); }
+
+  .queue-meta {
+    padding: 0 1rem;
+    display: flex; flex-direction: column; justify-content: center; align-items: flex-end;
+    border-left: 1px solid var(--line-2);
+    font-family: var(--mono); font-size: 0.66rem;
+    color: var(--muted); letter-spacing: 0.16em; text-transform: uppercase; gap: 0.25rem;
+  }
+  .queue-meta .count { color: var(--fg); font-size: 1rem; font-weight: 700; }
+
+  /* ========= MODAL ========= */
+  .modal-veil {
+    position: fixed; inset: 0; z-index: 50;
+    background: rgba(8,10,12,0.78);
+    backdrop-filter: blur(3px);
+    display: none; align-items: center; justify-content: center;
+    padding: 2rem;
+  }
+  .modal-veil.open { display: flex; }
+  .modal {
+    background: var(--bg);
+    border: 1px solid var(--primary-dim);
+    max-width: 480px; width: 100%;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+    animation: modalIn 0.18s ease-out;
+  }
+  @keyframes modalIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .modal .head {
+    border-bottom: 1px solid var(--line-2);
+    padding: 0.7rem 1rem;
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--bg-2);
+  }
+  .modal .head .left {
+    display: flex; gap: 0.6rem; align-items: center;
+    font-family: var(--mono); font-size: 0.66rem;
+    color: var(--primary); letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  .modal .close {
+    background: none; border: 1px solid var(--line-2); color: var(--muted);
+    width: 26px; height: 26px; cursor: pointer; font-family: var(--mono);
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .modal .close:hover { color: var(--accent); border-color: var(--accent); }
+  .modal .body { padding: 1.4rem 1.2rem 1.2rem; }
+  .modal h3 {
+    font-family: var(--mono); font-weight: 700; font-size: 1.4rem;
+    margin: 0 0 0.3rem;
+  }
+  .modal .breed { color: var(--muted); font-size: 0.84rem; margin-bottom: 1.3rem; font-family: var(--mono); letter-spacing: 0.04em; }
+  .modal dl {
+    margin: 0; display: grid; grid-template-columns: 110px 1fr; gap: 0.55rem 1rem;
+    font-family: var(--mono); font-size: 0.82rem;
+  }
+  .modal dt { color: var(--muted); font-size: 0.66rem; letter-spacing: 0.16em; text-transform: uppercase; padding-top: 0.1rem; }
+  .modal dd { margin: 0; color: var(--fg); font-variant-numeric: tabular-nums; }
+  .modal dd.risk-high { color: var(--accent); }
+  .modal dd.risk-mod { color: var(--warn); }
+  .modal dd.risk-low { color: var(--ok); }
+  .modal .foot {
+    border-top: 1px solid var(--line-2);
+    padding: 0.85rem 1rem;
+    font-family: var(--mono); font-size: 0.66rem;
+    color: var(--muted); letter-spacing: 0.16em; text-transform: uppercase;
+    display: flex; justify-content: space-between;
+  }
+
+  /* ========= SCROLLBARS ========= */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg-2); }
+  ::-webkit-scrollbar-thumb { background: var(--line-2); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--primary-dim); }
+
+  /* ========= RESPONSIVE ========= */
+  @media (max-width: 1100px) {
+    .grid { grid-template-columns: 280px 1fr 320px; }
+  }
+  @media (max-width: 900px) {
+    .app { grid-template-rows: 44px 1fr 76px; overflow: auto; height: auto; }
+    body { overflow: auto; }
+    .grid { grid-template-columns: 1fr; grid-template-rows: auto auto auto; }
+    .panel { border-right: none; border-bottom: 1px solid var(--line-2); height: auto; }
+    .right-stack { grid-template-rows: auto auto; }
+    .map-wrap { height: 280px; }
+    .commands { grid-template-columns: repeat(2, 1fr); }
+    .command-btn { border-bottom: 1px solid var(--line-2); }
+    .topbar { grid-template-columns: 1fr 1fr; }
+    .topbar .center { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="left">
+      <a class="back" href="./index.html">← back to the pitch</a>
+      <span class="brand"><span class="mark" aria-hidden="true"></span> Houndsight</span>
+    </div>
+    <div class="center">Operations Console · Subject K-04412 · Illustrative Deployment</div>
+    <div class="right">
+      <span class="live"><span class="pulse-dot" aria-hidden="true"></span><span>Live</span></span>
+      <span>Sensors 14/14</span>
+      <span class="clock" id="clock">--:--:--</span>
+    </div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="grid">
+
+    <!-- LEFT: SUBJECT -->
+    <section class="panel" aria-label="Subject summary">
+      <div class="panel-head">
+        <span>Subject Card</span>
+        <span class="right"><span>K-04412</span></span>
+      </div>
+      <div class="panel-body">
+        <div class="subject-card">
+          <div class="subject-id">Subject ID · K-04412 · Tier 02</div>
+          <div class="subject-name">Pip</div>
+          <div class="subject-meta">Bernedoodle · 4y 2m · 24.6 kg<br />Onboarded 2023-08-11 · Operator: Allers-Vance, M.</div>
+          <span class="subject-status" id="subject-status">
+            <span class="pulse-dot" aria-hidden="true"></span>
+            <span id="subject-status-label">Within Envelope</span>
+          </span>
+        </div>
+
+        <div class="stat-block">
+          <div class="lab">Behavioral Compliance Index</div>
+          <div class="big"><span id="bci-num">87</span><span class="unit">/ 100</span></div>
+          <div class="sub" id="bci-sub">Baseline: 89.4 · 7d trend: stable</div>
+          <div class="meter"><div class="bar" id="bci-bar" style="width: 87%"></div></div>
+        </div>
+
+        <div class="key-vals">
+          <div class="kv"><div class="lab">Last Walk</div><div class="val">07:14</div></div>
+          <div class="kv"><div class="lab">Net Kibble 24h</div><div class="val">-312g</div></div>
+          <div class="kv"><div class="lab">Vocalizations 24h</div><div class="val">41</div></div>
+          <div class="kv"><div class="lab">Affection 24h</div><div class="val">17</div></div>
+          <div class="kv"><div class="lab">Zones Entered</div><div class="val">A, B, D</div></div>
+          <div class="kv"><div class="lab">Refusal Events</div><div class="val">0</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CENTER: EVENT FEED -->
+    <section class="panel" aria-label="Event feed">
+      <div class="panel-head">
+        <div class="tabs" role="tablist">
+          <button class="tab active" data-filter="all" role="tab">All Events</button>
+          <button class="tab" data-filter="alert" role="tab">Alerts</button>
+          <button class="tab" data-filter="affection" role="tab">Affection</button>
+          <button class="tab" data-filter="walks" role="tab">Walks</button>
+          <button class="tab" data-filter="command" role="tab">Commands</button>
+        </div>
+        <span class="right">
+          <span id="event-count">11 events</span>
+        </span>
+      </div>
+      <div class="panel-body flush">
+        <div class="feed" id="feed" role="feed" aria-label="Event log">
+          <!-- seeded events injected by script -->
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT: THREAT MAP + SENTIMENT -->
+    <section class="panel" aria-label="Threat map and sentiment">
+      <div class="right-stack">
+        <div class="right-cell">
+          <div class="panel-head">
+            <span>Threat Map · 500m</span>
+            <span class="right"><span id="squirrel-count">4 squirrels</span></span>
+          </div>
+          <div class="map-wrap" aria-label="Threat map">
+            <svg viewBox="0 0 360 280" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <g class="rings" transform="translate(180,140)">
+                <circle r="35" />
+                <circle r="70" />
+                <circle r="105" />
+                <circle r="135" />
+              </g>
+              <!-- home -->
+              <g transform="translate(180,140)">
+                <rect x="-8" y="-8" width="16" height="16" class="home-mark" />
+                <text x="14" y="-2" class="home-label">Household</text>
+              </g>
+              <!-- squirrel pins (positions and ids match data) -->
+              <g id="pins"></g>
+            </svg>
+          </div>
+          <div class="legend">
+            <span><span class="swatch home"></span>Household</span>
+            <span><span class="swatch squirrel"></span>Squirrel (tap to inspect)</span>
+          </div>
+        </div>
+
+        <div class="right-cell">
+          <div class="panel-head">
+            <span>Pack Sentiment · 7d</span>
+            <span class="right"><span>Verbal Affection</span></span>
+          </div>
+          <div class="sentiment-body">
+            <div class="sentiment-head">
+              <div class="num">112<span class="delta">-8.1% vs baseline</span></div>
+              <div class="lab">events</div>
+            </div>
+            <div class="bars" id="bars">
+              <!-- bars injected -->
+            </div>
+            <div class="sentiment-foot">
+              <span class="flag">⚑ Flag</span> · Wed deviation -34% (baseline 22 · observed 14)
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- COMMAND BAR -->
+  <div class="commandbar" aria-label="Command queue">
+    <div class="label">
+      <div class="top">Command Queue · Operator A</div>
+      <div class="bot">Authorized · Tier 02</div>
+    </div>
+    <div class="commands">
+      <button class="command-btn" data-cmd="reinforce">
+        <span class="key">⌘ R</span>
+        <span class="name">Reinforce</span>
+        <span class="meta">Positive · verbal</span>
+      </button>
+      <button class="command-btn" data-cmd="deescalate">
+        <span class="key">⌘ D</span>
+        <span class="name">De-escalate</span>
+        <span class="meta">Low-stim · 90s</span>
+      </button>
+      <button class="command-btn" data-cmd="walk">
+        <span class="key">⌘ W</span>
+        <span class="name">Initiate Walk Protocol</span>
+        <span class="meta">Route 02 · 18min</span>
+      </button>
+      <button class="command-btn" data-cmd="treat">
+        <span class="key">⌘ T</span>
+        <span class="name">Authorize Treat</span>
+        <span class="meta">Dispense bay 3</span>
+      </button>
+    </div>
+    <div class="queue-meta">
+      <span><span class="count" id="cmd-count">0</span> dispatched · session</span>
+      <span>Audit on</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-veil" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal">
+    <div class="head">
+      <div class="left"><span class="pulse-dot warn" aria-hidden="true"></span><span>Subject Dossier · Adversarial Wildlife</span></div>
+      <button class="close" id="modal-close" aria-label="Close dossier">×</button>
+    </div>
+    <div class="body">
+      <h3 id="modal-title">S-117</h3>
+      <div class="breed" id="modal-species">Sciurus carolinensis · Eastern Grey</div>
+      <dl id="modal-fields"></dl>
+    </div>
+    <div class="foot">
+      <span>Dossier auto-generated</span>
+      <span id="modal-updated">Updated 02:13:51 UTC</span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ============ DATA ============
+  var squirrels = [
+    { id: "S-117", x: 130, y:  74, dist: "24m", esc: 47, lastSeen: "02:13:51", encounters: 142, status: "Reacquired", origin: "Oak, 14 Linden Ave", classification: "Persistent", notes: "Returns daily. Has not yielded ground since 2024-09." },
+    { id: "S-203", x: 270, y: 110, dist: "61m", esc: 18, lastSeen: "02:09:22", encounters: 12,  status: "Tracking",   origin: "Maple, 22 Linden Ave", classification: "Drifter",   notes: "New to the perimeter. Low engagement history." },
+    { id: "S-058", x: 220, y: 215, dist: "82m", esc: 31, lastSeen: "01:58:04", encounters: 84,  status: "Idle",       origin: "Power line, Linden / 4th", classification: "Familiar",  notes: "Active mornings. Avoids dusk." },
+    { id: "S-241", x:  78, y: 190, dist: "94m", esc:  9, lastSeen: "01:42:11", encounters: 4,   status: "Idle",       origin: "Birch, 11 Cedar Pl", classification: "Outlier",   notes: "Possibly transient. Insufficient sample." }
+  ];
+
+  var sentimentDays = [
+    { day: "Thu", v: 19 },
+    { day: "Fri", v: 24 },
+    { day: "Sat", v: 21 },
+    { day: "Sun", v: 18 },
+    { day: "Mon", v: 17 },
+    { day: "Tue", v: 14, flag: true },
+    { day: "Wed", v: 22 }
+  ];
+
+  var seededEvents = [
+    { t: "02:14:08", cat: "subject",   body: "Subject K-04412 approached door [intent conf 73%]", badge: "ok",      tag: "ok" },
+    { t: "02:14:02", cat: "vocal",     body: "Subject K-04412 vocalized [classified non-threat]", badge: "+0.2",    tag: "ok" },
+    { t: "02:13:51", cat: "wildlife",  body: "Squirrel S-117 detected at 24m [esc. likely 41%]",  badge: "alert",   tag: "alert" },
+    { t: "02:13:30", cat: "affection", body: "Affection event logged [+1 verbal · attributed K-04412]", badge: "+1", tag: "ok" },
+    { t: "02:13:12", cat: "kibble",    body: "Kibble bowl IMU: net delta -47g",                    badge: "log",     tag: "" },
+    { t: "02:12:58", cat: "system",    body: "Weight pad calibrated. Drift 0.3%.",                 badge: "sys",     tag: "" },
+    { t: "02:12:40", cat: "movement",  body: "Subject K-04412 entered Zone B (kitchen)",           badge: "log",     tag: "" },
+    { t: "02:11:55", cat: "walks",     body: "Walk Protocol completed [duration 18m · escalations 0]", badge: "ok",  tag: "ok" },
+    { t: "02:09:22", cat: "wildlife",  body: "Squirrel S-203 entered 500m perimeter [esc. likely 18%]", badge: "warn", tag: "warn" },
+    { t: "02:06:14", cat: "affection", body: "Affection event logged [+1 verbal · attributed K-04412]", badge: "+1", tag: "ok" },
+    { t: "02:03:47", cat: "subject",   body: "Subject K-04412 sat near food bowl [intent conf 64%]", badge: "log",   tag: "" }
+  ];
+
+  var ROLLING_SAMPLES = [
+    { cat: "subject",   body: "Subject K-04412 yawned [non-event, logged]",                             tag: "" },
+    { cat: "wildlife",  body: "Squirrel S-203 reacquired at 58m [esc. likely 22%]",                    tag: "warn" },
+    { cat: "affection", body: "Affection event logged [+1 verbal · attributed K-04412]",               tag: "ok" },
+    { cat: "kibble",    body: "Kibble bowl IMU stable [no delta]",                                     tag: "" },
+    { cat: "movement",  body: "Subject K-04412 exited Zone B → Zone A",                                tag: "" },
+    { cat: "vocal",     body: "Mic array isolated 'good boy' [speaker: operator A]",                   tag: "ok" },
+    { cat: "system",    body: "Sensor 09 (kibble IMU) heartbeat OK",                                   tag: "" },
+    { cat: "wildlife",  body: "Squirrel S-117 reacquired at 22m [esc. likely 47%]",                    tag: "alert" }
+  ];
+
+  // ============ STATE ============
+  var state = {
+    bci: 87,
+    filter: "all",
+    events: seededEvents.slice(),
+    commands: 0
+  };
+
+  // ============ HELPERS ============
+  function $(sel, root) { return (root || document).querySelector(sel); }
+  function $$(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+  function pad(n) { return n < 10 ? "0" + n : "" + n; }
+  function nowTs() {
+    var d = new Date();
+    return pad(d.getUTCHours()) + ":" + pad(d.getUTCMinutes()) + ":" + pad(d.getUTCSeconds());
+  }
+
+  // ============ CLOCK ============
+  function tickClock() { $("#clock").textContent = nowTs() + " UTC"; }
+  tickClock();
+  setInterval(tickClock, 1000);
+
+  // ============ FEED ============
+  function categoryMatches(cat, filter) {
+    if (filter === "all") return true;
+    if (filter === "alert") return /wildlife|alert/.test(cat) || /alert|warn/.test(cat);
+    if (filter === "affection") return cat === "affection";
+    if (filter === "walks") return cat === "walks";
+    if (filter === "command") return cat === "command";
+    return true;
+  }
+
+  function badgeFor(ev) {
+    if (ev.cat === "command") return { cls: "command", text: "CMD" };
+    if (ev.tag === "alert") return { cls: "alert", text: "ALERT" };
+    if (ev.tag === "warn") return { cls: "warn", text: "WARN" };
+    if (ev.tag === "ok") return { cls: "ok", text: "OK" };
+    return { cls: "", text: "LOG" };
+  }
+
+  function renderFeed() {
+    var feed = $("#feed");
+    var rows = state.events.filter(function (e) { return categoryMatches(e.cat, state.filter); });
+    if (rows.length === 0) {
+      feed.innerHTML = '<div class="feed-empty">No events for this filter.</div>';
+      $("#event-count").textContent = "0 events";
+      return;
+    }
+    var html = "";
+    for (var i = 0; i < rows.length; i++) {
+      var ev = rows[i];
+      var b = badgeFor(ev);
+      var isCmd = ev.cat === "command" ? " is-command" : "";
+      html += '<div class="feed-line' + isCmd + '">' +
+              '<span class="ts">' + ev.t + '</span>' +
+              '<span class="cat">' + ev.cat + '</span>' +
+              '<span class="body">' + ev.body + '</span>' +
+              '<span class="badge ' + b.cls + '">' + b.text + '</span>' +
+              '</div>';
+    }
+    feed.innerHTML = html;
+    $("#event-count").textContent = state.events.length + " events";
+  }
+
+  // ============ TABS ============
+  $$(".tab").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      $$(".tab").forEach(function (b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      state.filter = btn.getAttribute("data-filter");
+      renderFeed();
+    });
+  });
+
+  // ============ THREAT MAP ============
+  function renderPins() {
+    var g = $("#pins");
+    var html = "";
+    for (var i = 0; i < squirrels.length; i++) {
+      var s = squirrels[i];
+      html += '<g class="squirrel-pin" data-id="' + s.id + '" tabindex="0" role="button" aria-label="Squirrel ' + s.id + ' dossier">' +
+              '<circle class="outer" cx="' + s.x + '" cy="' + s.y + '" r="14" />' +
+              '<circle class="inner" cx="' + s.x + '" cy="' + s.y + '" r="3" />' +
+              '<text x="' + (s.x + 10) + '" y="' + (s.y - 8) + '">' + s.id + '</text>' +
+              '</g>';
+    }
+    g.innerHTML = html;
+    $$(".squirrel-pin").forEach(function (el) {
+      el.addEventListener("click", function () { openDossier(el.getAttribute("data-id")); });
+      el.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openDossier(el.getAttribute("data-id")); }
+      });
+    });
+    $("#squirrel-count").textContent = squirrels.length + " squirrels";
+  }
+
+  // ============ DOSSIER MODAL ============
+  function riskClass(esc) {
+    if (esc >= 40) return "risk-high";
+    if (esc >= 20) return "risk-mod";
+    return "risk-low";
+  }
+  function riskLabel(esc) {
+    if (esc >= 40) return "ELEVATED";
+    if (esc >= 20) return "MODERATE";
+    return "LOW";
+  }
+
+  function openDossier(id) {
+    var s = null;
+    for (var i = 0; i < squirrels.length; i++) if (squirrels[i].id === id) s = squirrels[i];
+    if (!s) return;
+    $("#modal-title").textContent = s.id;
+    $("#modal-species").textContent = "Sciurus carolinensis · Eastern Grey";
+    var fields = $("#modal-fields");
+    fields.innerHTML = "" +
+      '<dt>Distance</dt><dd>' + s.dist + '</dd>' +
+      '<dt>Escalation</dt><dd class="' + riskClass(s.esc) + '">' + s.esc + '% · ' + riskLabel(s.esc) + '</dd>' +
+      '<dt>Status</dt><dd>' + s.status + '</dd>' +
+      '<dt>Encounters</dt><dd>' + s.encounters + '</dd>' +
+      '<dt>Classification</dt><dd>' + s.classification + '</dd>' +
+      '<dt>Origin</dt><dd>' + s.origin + '</dd>' +
+      '<dt>Notes</dt><dd>' + s.notes + '</dd>';
+    $("#modal-updated").textContent = "Updated " + s.lastSeen + " UTC";
+    $("#modal").classList.add("open");
+  }
+  function closeDossier() { $("#modal").classList.remove("open"); }
+  $("#modal-close").addEventListener("click", closeDossier);
+  $("#modal").addEventListener("click", function (e) { if (e.target.id === "modal") closeDossier(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeDossier(); });
+
+  // ============ SENTIMENT BARS ============
+  function renderBars() {
+    var max = 0;
+    for (var i = 0; i < sentimentDays.length; i++) max = Math.max(max, sentimentDays[i].v);
+    var html = "";
+    for (var i = 0; i < sentimentDays.length; i++) {
+      var d = sentimentDays[i];
+      var h = Math.round((d.v / max) * 100);
+      html += '<div class="col' + (d.flag ? ' flag' : '') + '" title="' + d.day + ' · ' + d.v + ' affection events">' +
+              '<div class="v">' + d.v + '</div>' +
+              '<div class="bar" style="height: ' + h + '%"></div>' +
+              '<div class="day">' + d.day + '</div>' +
+              '</div>';
+    }
+    $("#bars").innerHTML = html;
+  }
+
+  // ============ COMMAND QUEUE ============
+  var COMMAND_LABELS = {
+    reinforce:  { name: "Reinforce",            event: "Reinforcement issued [positive verbal · channel A]" },
+    deescalate: { name: "De-escalate",          event: "De-escalation protocol initiated [low-stim · 90s]" },
+    walk:       { name: "Initiate Walk Protocol", event: "Walk Protocol queued [route 02 · est. 18min · escalations 0]" },
+    treat:      { name: "Authorize Treat",      event: "Treat authorization granted [dispense bay 3 · audit logged]" }
+  };
+
+  $$(".command-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var c = btn.getAttribute("data-cmd");
+      var meta = COMMAND_LABELS[c];
+      if (!meta) return;
+      btn.classList.add("dispatched");
+      setTimeout(function () { btn.classList.remove("dispatched"); }, 900);
+      state.commands++;
+      $("#cmd-count").textContent = state.commands;
+      state.events.unshift({ t: nowTs(), cat: "command", body: meta.event, badge: "command", tag: "" });
+      while (state.events.length > 40) state.events.pop();
+      renderFeed();
+      // Small BCI bump
+      var delta = (c === "reinforce" || c === "treat") ? 0.6 : (c === "deescalate" ? 0.9 : 0.3);
+      state.bci = Math.min(100, state.bci + delta);
+      renderBci();
+    });
+  });
+
+  // ============ BCI ============
+  function renderBci() {
+    var v = Math.round(state.bci * 10) / 10;
+    $("#bci-num").textContent = Math.round(v);
+    $("#bci-bar").style.width = v + "%";
+    var bar = $("#bci-bar");
+    bar.classList.remove("warn", "crit");
+    if (v < 60) bar.classList.add("crit");
+    else if (v < 78) bar.classList.add("warn");
+    var statusLab = $("#subject-status-label");
+    var statusEl = $("#subject-status");
+    if (v >= 78) {
+      statusLab.textContent = "Within Envelope";
+      statusEl.style.borderColor = "var(--ok)";
+      statusEl.style.color = "var(--ok)";
+    } else if (v >= 60) {
+      statusLab.textContent = "Near Envelope Edge";
+      statusEl.style.borderColor = "var(--warn)";
+      statusEl.style.color = "var(--warn)";
+    } else {
+      statusLab.textContent = "Envelope Excursion";
+      statusEl.style.borderColor = "var(--accent)";
+      statusEl.style.color = "var(--accent)";
+    }
+  }
+
+  // ============ ROLLING TICK ============
+  function tick() {
+    var sample = ROLLING_SAMPLES[Math.floor(Math.random() * ROLLING_SAMPLES.length)];
+    state.events.unshift({ t: nowTs(), cat: sample.cat, body: sample.body, tag: sample.tag });
+    while (state.events.length > 40) state.events.pop();
+    var drift = (Math.random() - 0.5) * 1.6;
+    state.bci = Math.max(40, Math.min(100, state.bci + drift));
+    renderFeed();
+    renderBci();
+  }
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+  if (!reduced.matches) setInterval(tick, 4000);
+
+  // ============ KEYBOARD SHORTCUTS ============
+  document.addEventListener("keydown", function (e) {
+    if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+    if ((e.metaKey || e.ctrlKey) === false) return;
+    var map = { r: "reinforce", d: "deescalate", w: "walk", t: "treat" };
+    var c = map[e.key.toLowerCase()];
+    if (c) {
+      e.preventDefault();
+      var btn = document.querySelector('.command-btn[data-cmd="' + c + '"]');
+      if (btn) btn.click();
+    }
+  });
+
+  // ============ INIT ============
+  renderFeed();
+  renderPins();
+  renderBars();
+  renderBci();
+})();
+</script>
+
+</body>
+</html>
