@@ -1,0 +1,1166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Strix · theworstaistudioever</title>
+  <meta name="description" content="Workforce identity and access governance for nocturnal raptor populations." />
+  <meta property="og:title" content="Strix — Workforce identity for the working barn." />
+  <meta property="og:description" content="Workforce identity and access governance for nocturnal raptor populations. SOC 2 Type II. Deployed at 14 working barns, two raptor sanctuaries, and one decommissioned belfry." />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="theworstaistudioever" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f3efe6;
+      --paper: #f8f4ea;
+      --bg-sunk: #ebe4d3;
+      --rule: #d3ccba;
+      --rule-strong: #b7ae98;
+      --ink: #1c1f1c;
+      --ink-soft: #2a2e2a;
+      --muted: #807c70;
+      --primary: #2f4a3a;
+      --primary-2: #233529;
+      --accent: #c45a3b;
+      --accent-soft: #e08266;
+      --status: #5d8a6c;
+      --shadow: 0 1px 0 var(--rule);
+      --serif: "Fraunces", "Tiempos Headline", Georgia, "Times New Roman", serif;
+      --sans: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-feature-settings: "ss01", "cv11";
+      text-rendering: optimizeLegibility;
+    }
+    ::selection { background: var(--accent); color: var(--paper); }
+    a { color: inherit; text-decoration: none; }
+    img, svg { display: block; max-width: 100%; }
+
+    /* Paper grain */
+    body::before {
+      content: "";
+      position: fixed; inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle at 15% 12%, rgba(0,0,0,0.018), transparent 40%),
+        radial-gradient(circle at 85% 90%, rgba(0,0,0,0.022), transparent 45%);
+      mix-blend-mode: multiply;
+      z-index: 0;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 32px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ---------- Top utility bar ---------- */
+    .utility {
+      border-bottom: 1px solid var(--rule);
+      background: var(--bg);
+      position: sticky; top: 0; z-index: 50;
+      backdrop-filter: blur(6px);
+    }
+    .utility-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 0;
+      gap: 24px;
+      font-family: var(--sans);
+    }
+    .classified {
+      display: inline-flex; align-items: center;
+      gap: 14px;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .classified .dot {
+      width: 7px; height: 7px; border-radius: 999px;
+      background: var(--status);
+      box-shadow: 0 0 0 3px rgba(93,138,108,0.18);
+      animation: pulse 3.4s ease-in-out infinite;
+    }
+    @media (prefers-reduced-motion: reduce) { .classified .dot { animation: none; } }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 3px rgba(93,138,108,0.18); }
+      50% { box-shadow: 0 0 0 6px rgba(93,138,108,0.05); }
+    }
+    .classified .slash { color: var(--rule-strong); }
+    .utility-nav {
+      display: flex; align-items: center; gap: 28px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink-soft);
+    }
+    .utility-nav a { position: relative; padding: 4px 0; }
+    .utility-nav a::after {
+      content: "";
+      position: absolute; left: 0; right: 100%; bottom: 0;
+      height: 1px; background: var(--ink);
+      transition: right 0.3s ease;
+    }
+    .utility-nav a:hover::after { right: 0; }
+    .signin {
+      display: inline-flex; align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border: 1px solid var(--ink);
+      border-radius: 999px;
+      font-size: 12px; letter-spacing: 0.06em; font-weight: 500;
+      transition: background 0.18s ease, color 0.18s ease;
+    }
+    .signin:hover { background: var(--ink); color: var(--paper); }
+    .signin::after { display: none; }
+
+    /* ---------- Brand mark ---------- */
+    .brand {
+      display: inline-flex; align-items: baseline; gap: 10px;
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: 22px;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+    .brand .glyph {
+      width: 14px; height: 14px;
+      display: inline-block;
+      background: var(--primary);
+      border-radius: 2px;
+      transform: rotate(45deg);
+      position: relative; top: -1px;
+    }
+
+    /* ---------- Hero ---------- */
+    .hero {
+      padding: 80px 0 64px;
+      border-bottom: 1px solid var(--rule);
+      position: relative;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+      gap: 64px;
+      align-items: end;
+    }
+    .hero-eyebrow {
+      font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--muted); font-weight: 500;
+      margin: 0 0 28px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .hero-eyebrow .index { color: var(--accent); font-weight: 600; }
+    .hero-eyebrow .rule {
+      flex: 1; height: 1px; background: var(--rule);
+      max-width: 220px;
+    }
+    h1.headline {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-variation-settings: "opsz" 144, "SOFT" 30;
+      font-size: clamp(56px, 9vw, 132px);
+      line-height: 0.92;
+      letter-spacing: -0.035em;
+      color: var(--ink);
+      margin: 0;
+      text-wrap: balance;
+    }
+    h1.headline em {
+      font-style: italic;
+      font-weight: 400;
+      color: var(--primary);
+      font-variation-settings: "opsz" 144, "SOFT" 80;
+    }
+    h1.headline .stop {
+      color: var(--accent);
+      font-style: normal;
+      display: inline-block;
+      transform: translateY(0.04em);
+    }
+    .hero-sub {
+      margin: 36px 0 0;
+      max-width: 540px;
+      font-size: 17px;
+      line-height: 1.55;
+      color: var(--ink-soft);
+    }
+    .hero-cta-row {
+      margin-top: 40px;
+      display: flex; flex-wrap: wrap; align-items: center; gap: 18px;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 12px;
+      padding: 16px 24px;
+      background: var(--primary);
+      color: var(--paper);
+      border: 1px solid var(--primary);
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      transition: background 0.18s ease, transform 0.18s ease;
+    }
+    .btn-primary:hover { background: var(--primary-2); }
+    .btn-primary .arrow {
+      width: 14px; height: 14px; display: inline-block;
+      transition: transform 0.18s ease;
+    }
+    .btn-primary:hover .arrow { transform: translateX(3px); }
+    .btn-text {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 4px;
+      color: var(--ink);
+      font-size: 14px; font-weight: 500;
+      border-bottom: 1px solid var(--ink);
+    }
+    .btn-text:hover { color: var(--accent); border-color: var(--accent); }
+
+    /* Owl diagram (SVG-driven) */
+    .owl-block {
+      position: relative;
+      align-self: stretch;
+      min-height: 460px;
+    }
+    .owl-svg { width: 100%; height: auto; }
+    .annot {
+      position: absolute;
+      font-family: var(--sans);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 500;
+    }
+    .annot .num {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 13px;
+      letter-spacing: 0;
+      text-transform: none;
+      color: var(--accent);
+    }
+    .annot .label { color: var(--ink-soft); font-weight: 500; }
+    .annot.a1 { top: 4%; right: -6%; }
+    .annot.a2 { top: 44%; right: -8%; }
+    .annot.a3 { bottom: 14%; right: -2%; }
+
+    /* ---------- Trust strip ---------- */
+    .trust {
+      padding: 36px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .trust-inner {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 48px;
+      align-items: center;
+    }
+    .trust-label {
+      font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--muted); font-weight: 500;
+    }
+    .trust-list {
+      display: flex; flex-wrap: wrap;
+      gap: 32px 48px;
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 16px;
+      color: var(--ink-soft);
+    }
+    .trust-list span { display: inline-flex; align-items: center; gap: 14px; }
+    .trust-list span::after {
+      content: "";
+      width: 6px; height: 6px;
+      background: var(--rule-strong);
+      border-radius: 999px;
+      display: inline-block;
+      margin-left: 16px;
+    }
+    .trust-list span:last-child::after { display: none; }
+
+    /* ---------- Capabilities ---------- */
+    .section {
+      padding: 96px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .section-head {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 48px;
+      margin-bottom: 56px;
+      align-items: start;
+    }
+    .section-kicker {
+      font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--muted); font-weight: 500;
+      padding-top: 12px;
+      border-top: 1px solid var(--ink);
+      max-width: 200px;
+    }
+    .section-title {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: clamp(32px, 4vw, 56px);
+      line-height: 1.02;
+      letter-spacing: -0.02em;
+      margin: 0;
+      max-width: 760px;
+      color: var(--ink);
+      text-wrap: balance;
+    }
+    .section-title em { font-style: italic; color: var(--primary); font-weight: 400; }
+
+    .capabilities {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+    .capability {
+      display: grid;
+      grid-template-columns: 80px 1fr 1fr;
+      gap: 48px;
+      padding: 48px 0;
+      border-top: 1px solid var(--rule);
+      align-items: start;
+    }
+    .capability:last-child { border-bottom: 1px solid var(--rule); }
+    .cap-num {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 40px;
+      color: var(--accent);
+      letter-spacing: -0.01em;
+      line-height: 1;
+      padding-top: 4px;
+    }
+    .cap-title {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: clamp(24px, 2.4vw, 34px);
+      line-height: 1.05;
+      letter-spacing: -0.015em;
+      margin: 0 0 16px;
+      color: var(--ink);
+    }
+    .cap-tag {
+      font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--primary); font-weight: 600;
+      margin-bottom: 14px;
+    }
+    .cap-blurb {
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--ink-soft);
+      max-width: 50ch;
+      margin: 0;
+    }
+    .cap-meta {
+      display: flex; flex-direction: column;
+      gap: 10px;
+      font-family: var(--sans);
+      font-size: 13px;
+      color: var(--ink-soft);
+    }
+    .cap-meta-row {
+      display: flex; justify-content: space-between;
+      gap: 16px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .cap-meta-row span:first-child {
+      font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--muted); font-weight: 500;
+    }
+    .cap-meta-row span:last-child {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 14px;
+      color: var(--ink);
+      text-align: right;
+    }
+
+    /* ---------- Field Notes (testimonials) ---------- */
+    .field-notes {
+      background: var(--paper);
+    }
+    .quotes {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border-top: 1px solid var(--rule);
+    }
+    .quote {
+      padding: 48px 40px;
+      border-right: 1px solid var(--rule);
+      position: relative;
+    }
+    .quote:last-child { border-right: none; }
+    .quote-mark {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 96px;
+      line-height: 0.6;
+      color: var(--accent);
+      margin-bottom: 16px;
+      display: block;
+    }
+    .quote-body {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 21px;
+      line-height: 1.35;
+      letter-spacing: -0.005em;
+      color: var(--ink);
+      margin: 0 0 32px;
+      text-wrap: pretty;
+    }
+    .quote-attr {
+      border-top: 1px solid var(--rule);
+      padding-top: 18px;
+    }
+    .quote-name {
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      margin: 0 0 4px;
+      letter-spacing: 0;
+    }
+    .quote-title {
+      font-size: 12px;
+      color: var(--muted);
+      font-style: italic;
+      margin: 0;
+      font-family: var(--serif);
+    }
+
+    /* ---------- Pricing ---------- */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border-top: 1px solid var(--ink);
+    }
+    .tier {
+      padding: 40px 36px 44px;
+      border-right: 1px solid var(--rule);
+      display: flex; flex-direction: column;
+      background: var(--bg);
+    }
+    .tier:last-child { border-right: none; }
+    .tier.featured {
+      background: var(--ink);
+      color: var(--paper);
+    }
+    .tier.featured .tier-name { color: var(--paper); }
+    .tier.featured .tier-tagline,
+    .tier.featured .perk { color: rgba(248,244,234,0.78); }
+    .tier.featured .perk::before { background: var(--accent); }
+    .tier.featured .tier-price { color: var(--paper); }
+    .tier.featured .tier-cta {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--paper);
+    }
+    .tier.featured .tier-cta:hover { background: var(--paper); color: var(--ink); border-color: var(--paper); }
+    .tier.featured .tier-divider { background: rgba(248,244,234,0.18); }
+    .tier-tag {
+      font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 24px;
+      min-height: 14px;
+    }
+    .tier-name {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: 30px;
+      letter-spacing: -0.015em;
+      color: var(--ink);
+      margin: 0 0 14px;
+      line-height: 1;
+    }
+    .tier-tagline {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.4;
+      margin: 0 0 28px;
+      max-width: 32ch;
+    }
+    .tier-price {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 36px;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 28px;
+      line-height: 1;
+    }
+    .tier-divider {
+      height: 1px;
+      background: var(--rule);
+      margin-bottom: 24px;
+    }
+    .perks { list-style: none; margin: 0 0 36px; padding: 0; flex: 1; }
+    .perk {
+      position: relative;
+      padding: 10px 0 10px 24px;
+      font-size: 14px;
+      line-height: 1.45;
+      color: var(--ink-soft);
+      border-bottom: 1px dashed rgba(0,0,0,0.08);
+    }
+    .tier.featured .perk { border-bottom-color: rgba(255,255,255,0.08); }
+    .perk:last-child { border-bottom: none; }
+    .perk::before {
+      content: "";
+      position: absolute;
+      left: 0; top: 18px;
+      width: 12px; height: 1px;
+      background: var(--accent);
+    }
+    .tier-cta {
+      display: inline-flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px;
+      border: 1px solid var(--ink);
+      border-radius: 999px;
+      color: var(--ink);
+      font-size: 13px; font-weight: 500; letter-spacing: 0.02em;
+      transition: background 0.18s ease, color 0.18s ease;
+    }
+    .tier-cta:hover { background: var(--ink); color: var(--paper); }
+    .tier-cta .arrow { width: 14px; height: 14px; transition: transform 0.18s ease; }
+    .tier-cta:hover .arrow { transform: translateX(3px); }
+
+    /* ---------- Console banner ---------- */
+    .console-banner {
+      padding: 96px 0;
+      background: var(--ink);
+      color: var(--paper);
+      border-bottom: 1px solid var(--rule);
+      position: relative;
+      overflow: hidden;
+    }
+    .console-banner::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(248,244,234,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(248,244,234,0.04) 1px, transparent 1px);
+      background-size: 80px 80px;
+      pointer-events: none;
+    }
+    .console-grid {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 48px;
+      align-items: end;
+      position: relative;
+    }
+    .console-title {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: clamp(32px, 5vw, 64px);
+      line-height: 1;
+      letter-spacing: -0.025em;
+      margin: 0;
+      color: var(--paper);
+      max-width: 14ch;
+    }
+    .console-title em { font-style: italic; color: var(--accent-soft); font-weight: 400; }
+    .console-eyebrow {
+      font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: rgba(248,244,234,0.55); font-weight: 500;
+      margin-bottom: 24px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .console-eyebrow::before {
+      content: ""; width: 32px; height: 1px;
+      background: var(--accent);
+    }
+    .console-cta {
+      display: inline-flex; align-items: center; gap: 16px;
+      padding: 22px 28px;
+      background: var(--accent);
+      color: var(--paper);
+      border: 1px solid var(--accent);
+      border-radius: 999px;
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      transition: background 0.2s ease, transform 0.18s ease;
+      white-space: nowrap;
+    }
+    .console-cta:hover { background: var(--paper); color: var(--ink); border-color: var(--paper); }
+    .console-cta .arrow { width: 16px; height: 16px; transition: transform 0.18s ease; }
+    .console-cta:hover .arrow { transform: translateX(4px); }
+
+    /* ---------- Footer ---------- */
+    footer {
+      padding: 56px 0 36px;
+      background: var(--bg);
+      color: var(--ink);
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 32px;
+      padding-bottom: 48px;
+      border-bottom: 1px solid var(--rule);
+      margin-bottom: 28px;
+    }
+    .foot-col h4 {
+      font-family: var(--sans);
+      font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--muted); font-weight: 500;
+      margin: 0 0 18px;
+    }
+    .foot-col ul { list-style: none; margin: 0; padding: 0; }
+    .foot-col li { padding: 6px 0; font-size: 14px; color: var(--ink-soft); }
+    .foot-col a:hover { color: var(--accent); }
+    .foot-mark {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 15px;
+      color: var(--ink-soft);
+      max-width: 36ch;
+    }
+    .foot-mark .brand-line {
+      font-style: normal;
+      font-weight: 500;
+      font-size: 19px;
+      color: var(--ink);
+      margin-bottom: 12px;
+      display: block;
+      letter-spacing: -0.01em;
+    }
+    .foot-bottom {
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .studio-link {
+      font-family: var(--serif);
+      font-style: italic;
+      color: var(--ink-soft);
+      font-size: 14px;
+      transition: color 0.18s ease;
+    }
+    .studio-link:hover { color: var(--accent); }
+
+    /* ---------- Reveal animation ---------- */
+    .reveal {
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+    }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 960px) {
+      .hero { padding: 48px 0 56px; }
+      .hero-grid { grid-template-columns: 1fr; gap: 48px; }
+      .owl-block { min-height: auto; }
+      .annot.a1, .annot.a2, .annot.a3 { position: static; margin-top: 14px; }
+      .annot { display: inline-flex; }
+      .trust-inner { grid-template-columns: 1fr; gap: 16px; }
+      .section { padding: 64px 0; }
+      .section-head { grid-template-columns: 1fr; gap: 16px; margin-bottom: 32px; }
+      .capability { grid-template-columns: 1fr; gap: 16px; padding: 32px 0; }
+      .cap-num { font-size: 32px; }
+      .quotes { grid-template-columns: 1fr; }
+      .quote { border-right: none; border-bottom: 1px solid var(--rule); padding: 32px 24px; }
+      .quote:last-child { border-bottom: none; }
+      .pricing-grid { grid-template-columns: 1fr; }
+      .tier { border-right: none; border-bottom: 1px solid var(--rule); }
+      .tier:last-child { border-bottom: none; }
+      .console-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 560px) {
+      .container { padding: 0 22px; }
+      .utility-nav { gap: 18px; }
+      .utility-nav a:not(.signin) { display: none; }
+      h1.headline { font-size: clamp(44px, 13vw, 80px); }
+      .footer-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="utility">
+    <div class="container utility-inner">
+      <div class="classified">
+        <span class="dot" aria-hidden="true"></span>
+        STRIX <span class="slash">//</span> AVIAN IDENTITY PLATFORM <span class="slash">//</span> SOC 2 TYPE II
+      </div>
+      <nav class="utility-nav" aria-label="Primary">
+        <a href="#capabilities">Capabilities</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#field-notes">Field notes</a>
+        <a href="./demo.html" class="signin">Open the console</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero-grid">
+          <div class="hero-text">
+            <p class="hero-eyebrow reveal in" style="animation-delay:0ms">
+              <span class="index">FY26 / Q2</span>
+              <span class="rule"></span>
+              <span>Identity Brief No. 014</span>
+            </p>
+            <h1 class="headline reveal in" style="transition-delay:80ms">
+              Workforce identity, <em>for the working barn</em><span class="stop">.</span>
+            </h1>
+            <p class="hero-sub reveal in" style="transition-delay:160ms">
+              Strix is the identity and access governance layer for nocturnal raptor populations. Provision, attest, and audit every <em>Tyto alba</em> on your property with the same rigor your security team applies to a quarterly close.
+            </p>
+            <div class="hero-cta-row reveal in" style="transition-delay:240ms">
+              <a href="#pricing" class="btn-primary">
+                Request a barn audit
+                <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                  <path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </a>
+              <a href="./demo.html" class="btn-text">
+                Open the console
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                  <path d="M7 17L17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- OWL DIAGRAM -->
+          <div class="owl-block reveal in" style="transition-delay:320ms" aria-hidden="true">
+            <svg class="owl-svg" viewBox="0 0 360 480" xmlns="http://www.w3.org/2000/svg">
+              <!-- Subtle backdrop circle -->
+              <circle cx="180" cy="220" r="180" fill="#ebe4d3" />
+              <!-- Soft inner ring -->
+              <circle cx="180" cy="220" r="180" fill="none" stroke="#d3ccba" stroke-width="1" />
+              <circle cx="180" cy="220" r="142" fill="none" stroke="#d3ccba" stroke-width="0.5" stroke-dasharray="2 4" />
+
+              <!-- Body (rounded pear) -->
+              <path d="M180 358
+                       C 122 358, 84 312, 84 250
+                       C 84 178, 130 124, 180 124
+                       C 230 124, 276 178, 276 250
+                       C 276 312, 238 358, 180 358 Z"
+                    fill="#f8f4ea" stroke="#1c1f1c" stroke-width="1.4" />
+
+              <!-- Plumage hatching on chest -->
+              <g stroke="#1c1f1c" stroke-width="0.6" fill="none" opacity="0.55">
+                <path d="M150 240 Q160 252 152 268 Q144 282 154 296" />
+                <path d="M170 244 Q180 256 172 272 Q164 286 174 300" />
+                <path d="M190 244 Q200 256 192 272 Q184 286 194 300" />
+                <path d="M210 240 Q220 252 212 268 Q204 282 214 296" />
+                <path d="M132 226 Q142 238 134 254 Q126 268 136 282" />
+                <path d="M228 226 Q238 238 230 254 Q222 268 232 282" />
+              </g>
+
+              <!-- Heart-shaped facial disc -->
+              <path d="M180 102
+                       C 134 102, 108 138, 112 184
+                       C 116 226, 146 252, 180 268
+                       C 214 252, 244 226, 248 184
+                       C 252 138, 226 102, 180 102 Z"
+                    fill="#f3efe6" stroke="#1c1f1c" stroke-width="1.4" />
+
+              <!-- Beak -->
+              <path d="M180 200 L 172 224 L 188 224 Z" fill="#c45a3b" stroke="#1c1f1c" stroke-width="1" stroke-linejoin="round" />
+
+              <!-- Eyes -->
+              <circle cx="148" cy="172" r="18" fill="#1c1f1c" />
+              <circle cx="212" cy="172" r="18" fill="#1c1f1c" />
+              <circle cx="153" cy="167" r="4" fill="#f3efe6" />
+              <circle cx="217" cy="167" r="4" fill="#f3efe6" />
+
+              <!-- Eye-ring detail -->
+              <circle cx="148" cy="172" r="22" fill="none" stroke="#1c1f1c" stroke-width="0.8" />
+              <circle cx="212" cy="172" r="22" fill="none" stroke="#1c1f1c" stroke-width="0.8" />
+
+              <!-- Subtle wing line -->
+              <path d="M118 250 C 132 290, 158 330, 180 340" fill="none" stroke="#1c1f1c" stroke-width="0.8" opacity="0.6" />
+              <path d="M242 250 C 228 290, 202 330, 180 340" fill="none" stroke="#1c1f1c" stroke-width="0.8" opacity="0.6" />
+
+              <!-- Talons -->
+              <g stroke="#1c1f1c" stroke-width="1.2" fill="#f8f4ea" stroke-linejoin="round">
+                <path d="M160 360 L 160 388 L 156 396 M160 388 L 164 396" />
+                <path d="M180 360 L 180 396 L 176 404 M180 396 L 184 404" />
+                <path d="M200 360 L 200 388 L 196 396 M200 388 L 204 396" />
+              </g>
+
+              <!-- Hoot range arcs -->
+              <g fill="none" stroke="#c45a3b" stroke-width="1" opacity="0.7">
+                <path d="M120 70 Q 180 38, 240 70" stroke-dasharray="3 5" />
+                <path d="M100 56 Q 180 18, 260 56" stroke-dasharray="3 5" opacity="0.5" />
+              </g>
+
+              <!-- Annotation guide lines -->
+              <g stroke="#807c70" stroke-width="0.6" fill="none">
+                <line x1="248" y1="58" x2="330" y2="40" />
+                <circle cx="248" cy="58" r="3" fill="#c45a3b" stroke="none" />
+                <line x1="248" y1="234" x2="330" y2="220" />
+                <circle cx="248" cy="234" r="3" fill="#c45a3b" stroke="none" />
+                <line x1="208" y1="396" x2="334" y2="412" />
+                <circle cx="208" cy="396" r="3" fill="#c45a3b" stroke="none" />
+              </g>
+            </svg>
+
+            <div class="annot a1">
+              <span class="num">01</span>
+              <span class="label">Hoot range</span>
+            </div>
+            <div class="annot a2">
+              <span class="num">02</span>
+              <span class="label">Plumage attestation</span>
+            </div>
+            <div class="annot a3">
+              <span class="num">03</span>
+              <span class="label">Talon biometric</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRUST STRIP -->
+    <section class="trust">
+      <div class="container trust-inner">
+        <div class="trust-label">Deployed at</div>
+        <div class="trust-list">
+          <span>14 working barns</span>
+          <span>2 raptor sanctuaries</span>
+          <span>The Pike Family Estate</span>
+          <span>North Channel Trust</span>
+          <span>1 decommissioned belfry</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- CAPABILITIES -->
+    <section class="section" id="capabilities">
+      <div class="container">
+        <div class="section-head">
+          <div class="section-kicker">Capability Set / FY26.2</div>
+          <h2 class="section-title">
+            Three controls. <em>One enrolled bird.</em> Continuous attestation, on-perch and off.
+          </h2>
+        </div>
+
+        <div class="capabilities">
+
+          <article class="capability">
+            <div class="cap-num">01</div>
+            <div>
+              <div class="cap-tag">Multi-factor</div>
+              <h3 class="cap-title">Federated Hoot Authentication</h3>
+              <p class="cap-blurb">
+                A seven-microphone perch array listens continuously to your barn and matches every vocalization against the registered hoot signature for that owl. Three consecutive non-matches silently revoke roost access and page the on-call ornithologist. Recovery requires a daylight visit from a Strix Customer Success representative.
+              </p>
+            </div>
+            <div class="cap-meta">
+              <div class="cap-meta-row"><span>Modality</span><span>Voiceprint + biometric</span></div>
+              <div class="cap-meta-row"><span>Hardware</span><span>7-mic perch array</span></div>
+              <div class="cap-meta-row"><span>Failure mode</span><span>Silent revocation</span></div>
+              <div class="cap-meta-row"><span>Recovery</span><span>Daylight, business hrs</span></div>
+            </div>
+          </article>
+
+          <article class="capability">
+            <div class="cap-num">02</div>
+            <div>
+              <div class="cap-tag">Governance</div>
+              <h3 class="cap-title">Roost-Level Access Governance</h3>
+              <p class="cap-blurb">
+                Define policies down to the rafter. Juveniles are blocked from the upper loft until their fledgling milestone is attested by a licensed handler. Visiting owls receive sundown-to-sunrise credentials that auto-expire at first light. Every gate transition writes an immutable event to the audit ledger.
+              </p>
+            </div>
+            <div class="cap-meta">
+              <div class="cap-meta-row"><span>Granularity</span><span>Rafter, loft, ground</span></div>
+              <div class="cap-meta-row"><span>Credential TTL</span><span>Sundown to dawn</span></div>
+              <div class="cap-meta-row"><span>Audit format</span><span>Immutable ledger</span></div>
+              <div class="cap-meta-row"><span>Attestation</span><span>Licensed handler</span></div>
+            </div>
+          </article>
+
+          <article class="capability">
+            <div class="cap-num">03</div>
+            <div>
+              <div class="cap-tag">Lifecycle</div>
+              <h3 class="cap-title">Automated Avian Lifecycle</h3>
+              <p class="cap-blurb">
+                From first molt to dispersal, Strix manages the full owl employment cycle. New fledglings are auto-provisioned the moment plumage maturity is detected by the camera array. Departing owls (dispersal, predation, retirement) are deprovisioned within four hours of confirmation, with a configurable seven-year retention window on their access logs.
+              </p>
+            </div>
+            <div class="cap-meta">
+              <div class="cap-meta-row"><span>Onboarding trigger</span><span>Plumage maturity</span></div>
+              <div class="cap-meta-row"><span>Offboarding SLA</span><span>≤ 4 hours</span></div>
+              <div class="cap-meta-row"><span>Retention</span><span>7 yr default</span></div>
+              <div class="cap-meta-row"><span>Departure causes</span><span>Dispersal · predation</span></div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- FIELD NOTES -->
+    <section class="section field-notes" id="field-notes">
+      <div class="container">
+        <div class="section-head">
+          <div class="section-kicker">Field Notes / Customers</div>
+          <h2 class="section-title">
+            What our handlers, husbandry leads, and one veterinary auditor have to say.
+          </h2>
+        </div>
+
+        <div class="quotes">
+          <figure class="quote">
+            <span class="quote-mark" aria-hidden="true">&ldquo;</span>
+            <blockquote class="quote-body">
+              We had three barn owls all named Ash. Strix was the first product that could tell them apart.
+            </blockquote>
+            <figcaption class="quote-attr">
+              <p class="quote-name">Wren Halloran-Pike</p>
+              <p class="quote-title">Operations Lead, Pike Family Working Barn</p>
+            </figcaption>
+          </figure>
+
+          <figure class="quote">
+            <span class="quote-mark" aria-hidden="true">&ldquo;</span>
+            <blockquote class="quote-body">
+              Our last audit took eleven hours and a forensic ornithologist. This year it took thirty-eight minutes and a complimentary bottle of port.
+            </blockquote>
+            <figcaption class="quote-attr">
+              <p class="quote-name">Dr. Bram Oosthuizen, PhD</p>
+              <p class="quote-title">Avian Compliance Officer, North Channel Trust</p>
+            </figcaption>
+          </figure>
+
+          <figure class="quote">
+            <span class="quote-mark" aria-hidden="true">&ldquo;</span>
+            <blockquote class="quote-body">
+              We onboarded a juvenile in November. By December we had a defensible access trail. Our insurer noticed.
+            </blockquote>
+            <figcaption class="quote-attr">
+              <p class="quote-name">Lucinda Marsh</p>
+              <p class="quote-title">Director of Husbandry, Marsh & Marsh Estate</p>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section class="section" id="pricing">
+      <div class="container">
+        <div class="section-head">
+          <div class="section-kicker">Pricing / Per Barn</div>
+          <h2 class="section-title">
+            Three tiers. <em>One operating posture:</em> defensible.
+          </h2>
+        </div>
+
+        <div class="pricing-grid">
+          <article class="tier">
+            <div class="tier-tag">Tier I</div>
+            <h3 class="tier-name">Single Roost</h3>
+            <p class="tier-tagline">One barn. Up to six owls. Monthly access review.</p>
+            <div class="tier-price">$890<span style="font-size:14px; color:var(--muted); font-style:italic; font-family:var(--serif);"> / mo</span></div>
+            <div class="tier-divider"></div>
+            <ul class="perks">
+              <li class="perk">1 working barn, up to 6 <em>Tyto alba</em></li>
+              <li class="perk">Hoot enrollment for the colony lead</li>
+              <li class="perk">Monthly Access Review (PDF + signed attestation)</li>
+              <li class="perk">Standard governance: 11 controls mapped to SOC 2</li>
+              <li class="perk">Recovery during business hours, ground-only</li>
+            </ul>
+            <a class="tier-cta" href="#">
+              Begin enrollment
+              <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                <path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </a>
+          </article>
+
+          <article class="tier featured">
+            <div class="tier-tag">Tier II · Most procured</div>
+            <h3 class="tier-name">Federated Eaves</h3>
+            <p class="tier-tagline">Up to twenty-four owls across four sites. Cross-barn SSO.</p>
+            <div class="tier-price">$2,400<span style="font-size:14px; color:rgba(248,244,234,0.55); font-style:italic; font-family:var(--serif);"> / mo</span></div>
+            <div class="tier-divider"></div>
+            <ul class="perks">
+              <li class="perk">Up to 24 <em>Tyto alba</em> across 4 sites</li>
+              <li class="perk">Federated single sign-on across barns</li>
+              <li class="perk">Quarterly Governance Attestation, countersigned by a vet</li>
+              <li class="perk">Bat federation module available (separate SKU)</li>
+              <li class="perk">Priority recovery, 24/5</li>
+            </ul>
+            <a class="tier-cta" href="#">
+              Schedule procurement
+              <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                <path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </a>
+          </article>
+
+          <article class="tier">
+            <div class="tier-tag">Tier III · On request</div>
+            <h3 class="tier-name">Sovereign Aviary</h3>
+            <p class="tier-tagline">Unlimited birds. On-prem. Full residency control.</p>
+            <div class="tier-price">Contact sales</div>
+            <div class="tier-divider"></div>
+            <ul class="perks">
+              <li class="perk">Unlimited owls, unlimited species (raptors and corvids)</li>
+              <li class="perk">On-prem perch agents, fully air-gapped option</li>
+              <li class="perk">Dedicated Avian Identity Architect</li>
+              <li class="perk">Reporting cadence set with your veterinary lead</li>
+              <li class="perk">SOC 2 Type II, ISO 27001, USDA-aligned, FedRAMP Moderate in flight</li>
+            </ul>
+            <a class="tier-cta" href="#">
+              Open dialogue
+              <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                <path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONSOLE BANNER -->
+    <section class="console-banner">
+      <div class="container console-grid">
+        <div>
+          <p class="console-eyebrow">Live console / read-only sandbox</p>
+          <h2 class="console-title">
+            See <em>fourteen Tyto alba</em> governed in real time.
+          </h2>
+        </div>
+        <a href="./demo.html" class="console-cta">
+          Open the console
+          <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="foot-mark">
+          <span class="brand-line">Strix &mdash; Avian Identity</span>
+          A division of Strix Operating, registered in Delaware. Workforce identity for nocturnal raptors. Not for use in the governance of corvids without the Bat module licensed separately.
+        </div>
+        <div class="foot-col">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="#capabilities">Hoot MFA</a></li>
+            <li><a href="#capabilities">Roost RBAC</a></li>
+            <li><a href="#capabilities">Lifecycle</a></li>
+            <li><a href="./demo.html">Admin console</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>Trust</h4>
+          <ul>
+            <li><a href="#">SOC 2 Type II report</a></li>
+            <li><a href="#">ISO 27001 cert</a></li>
+            <li><a href="#">USDA alignment notes</a></li>
+            <li><a href="#">Residency &amp; data flows</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Field bulletin</a></li>
+            <li><a href="#">Customers</a></li>
+            <li><a href="#">Contact sales</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <span>&copy; 2026 Strix Operating, Inc. All rights reserved. <em style="font-family:var(--serif);">Tyto alba</em> is not a registered trademark.</span>
+        <a class="studio-link" href="/">&larr; theworstaistudioever</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Soft reveal-on-scroll for elements that mount with .reveal
+    (function () {
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var els = document.querySelectorAll('.reveal');
+      if (reduce || !('IntersectionObserver' in window)) {
+        els.forEach(function (el) { el.classList.add('in'); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '0px 0px -10% 0px', threshold: 0.06 });
+      els.forEach(function (el) { io.observe(el); });
+
+      // Smooth-scroll anchors
+      document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+        a.addEventListener('click', function (e) {
+          var id = this.getAttribute('href');
+          if (id.length < 2) return;
+          var target = document.querySelector(id);
+          if (!target) return;
+          e.preventDefault();
+          target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

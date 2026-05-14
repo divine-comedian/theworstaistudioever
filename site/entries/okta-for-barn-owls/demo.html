@@ -1,0 +1,1810 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Strix Admin Console · theworstaistudioever</title>
+  <meta name="description" content="Strix admin console — identity, access, and lifecycle management for a working barn." />
+  <meta property="og:title" content="Strix Admin Console" />
+  <meta property="og:description" content="Identity, access, and lifecycle management for a working barn." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f3efe6;
+      --paper: #f8f4ea;
+      --bg-sunk: #ebe4d3;
+      --rule: #d3ccba;
+      --rule-strong: #b7ae98;
+      --ink: #1c1f1c;
+      --ink-soft: #2a2e2a;
+      --ink-mid: #4a4d48;
+      --muted: #807c70;
+      --primary: #2f4a3a;
+      --primary-2: #233529;
+      --primary-soft: #4a6855;
+      --accent: #c45a3b;
+      --accent-soft: #e08266;
+      --status-pass: #5d8a6c;
+      --status-warn: #c89a4a;
+      --status-fail: #b04a2c;
+      --serif: "Fraunces", "Tiempos Headline", Georgia, "Times New Roman", serif;
+      --sans: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      overflow: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; cursor: pointer; }
+    ::selection { background: var(--accent); color: var(--paper); }
+
+    .app {
+      display: grid;
+      grid-template-rows: 56px 36px 1fr;
+      height: 100vh;
+      min-height: 600px;
+    }
+
+    /* ===== TOP CHROME ===== */
+    .topbar {
+      display: grid;
+      grid-template-columns: 320px 1fr 420px;
+      align-items: center;
+      gap: 24px;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--rule);
+      background: var(--bg);
+    }
+    .top-left { display: flex; align-items: center; gap: 16px; }
+    .back-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      color: var(--ink-mid);
+      font-style: italic;
+      font-family: var(--serif);
+      padding: 4px 0;
+      transition: color 0.18s ease;
+    }
+    .back-link:hover { color: var(--accent); }
+    .divider-v {
+      width: 1px; height: 22px;
+      background: var(--rule);
+    }
+    .brand {
+      display: inline-flex; align-items: baseline; gap: 9px;
+      font-family: var(--serif);
+      font-weight: 600;
+      font-size: 18px;
+      letter-spacing: -0.01em;
+    }
+    .brand .mark {
+      width: 12px; height: 12px;
+      background: var(--primary);
+      transform: rotate(45deg);
+      display: inline-block;
+      border-radius: 2px;
+    }
+    .brand .sub {
+      font-family: var(--sans);
+      font-weight: 400;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-left: 8px;
+    }
+
+    .top-search {
+      display: flex;
+      max-width: 540px;
+      width: 100%;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      border-radius: 10px;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+    .top-search:focus-within { border-color: var(--ink); box-shadow: 0 0 0 3px rgba(28,31,28,0.06); }
+    .top-search svg { color: var(--muted); flex-shrink: 0; }
+    .top-search input {
+      flex: 1; min-width: 0;
+      border: none; outline: none;
+      background: transparent;
+      font: inherit;
+      color: var(--ink);
+      font-size: 13px;
+    }
+    .top-search kbd {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 2px 6px;
+      background: var(--bg-sunk);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      color: var(--ink-mid);
+    }
+
+    .top-right {
+      display: flex; align-items: center; justify-content: flex-end; gap: 12px;
+    }
+    .env-select {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 7px 12px;
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      background: var(--paper);
+      font-size: 12px;
+      color: var(--ink-soft);
+      cursor: pointer;
+    }
+    .env-select .env-dot {
+      width: 7px; height: 7px;
+      border-radius: 999px;
+      background: var(--status-pass);
+    }
+    .env-select.test .env-dot { background: var(--status-warn); }
+    .icon-btn {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--rule);
+      background: var(--paper);
+      display: inline-flex; align-items: center; justify-content: center;
+      color: var(--ink-mid);
+    }
+    .icon-btn:hover { border-color: var(--ink); color: var(--ink); }
+    .top-cta {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 14px;
+      background: var(--primary);
+      color: var(--paper);
+      border: 1px solid var(--primary);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .top-cta:hover { background: var(--primary-2); }
+    .avatar-pill {
+      width: 32px; height: 32px;
+      border-radius: 999px;
+      background: var(--bg-sunk);
+      border: 1px solid var(--rule);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-family: var(--serif);
+      font-size: 13px;
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    /* ===== TAB BAR ===== */
+    .tabbar {
+      display: flex; align-items: stretch;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--rule);
+      background: var(--bg);
+      gap: 0;
+      font-size: 12px;
+    }
+    .tab {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 0 16px;
+      color: var(--muted);
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      height: 100%;
+    }
+    .tab.active { color: var(--ink); border-bottom-color: var(--accent); }
+    .tab .count {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 2px 6px;
+      background: var(--bg-sunk);
+      border-radius: 999px;
+      color: var(--ink-mid);
+    }
+    .tab.active .count { background: var(--ink); color: var(--paper); }
+    .tabbar .spacer { flex: 1; }
+    .breadcrumb {
+      align-self: center;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-family: var(--mono);
+    }
+    .breadcrumb b { color: var(--ink-soft); font-weight: 500; }
+
+    /* ===== MAIN GRID ===== */
+    .main {
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr) 340px;
+      min-height: 0;
+    }
+    .col {
+      min-height: 0;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .col.left { border-right: 1px solid var(--rule); background: var(--bg); }
+    .col.right { border-left: 1px solid var(--rule); background: var(--bg); }
+    .col.center { background: var(--paper); }
+    .col-scroll { flex: 1; overflow-y: auto; }
+    .col-scroll::-webkit-scrollbar { width: 8px; }
+    .col-scroll::-webkit-scrollbar-track { background: transparent; }
+    .col-scroll::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 8px; }
+    .col-scroll::-webkit-scrollbar-thumb:hover { background: var(--rule-strong); }
+
+    /* ===== LEFT: Directory ===== */
+    .dir-head {
+      padding: 18px 20px 12px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .dir-title-row {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .dir-title {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: 18px;
+      letter-spacing: -0.01em;
+    }
+    .dir-count {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .filter-pills {
+      display: flex; gap: 6px; flex-wrap: wrap;
+    }
+    .pill {
+      padding: 5px 10px;
+      font-size: 11px;
+      letter-spacing: 0.03em;
+      color: var(--ink-mid);
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      border-radius: 999px;
+      transition: all 0.16s ease;
+    }
+    .pill:hover { border-color: var(--ink-mid); }
+    .pill.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .pill .pc {
+      font-family: var(--mono);
+      font-size: 10px;
+      margin-left: 6px;
+      opacity: 0.7;
+    }
+
+    .owl-list { padding: 8px 0 24px; }
+    .owl-row {
+      display: grid;
+      grid-template-columns: 36px 1fr auto;
+      gap: 12px;
+      padding: 10px 20px;
+      align-items: center;
+      border-left: 2px solid transparent;
+      cursor: pointer;
+      transition: background 0.14s ease;
+    }
+    .owl-row:hover { background: var(--bg-sunk); }
+    .owl-row.selected {
+      background: var(--bg-sunk);
+      border-left-color: var(--accent);
+    }
+    .owl-avatar {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .owl-row.selected .owl-avatar { border-color: var(--ink); }
+    .owl-meta { min-width: 0; }
+    .owl-name {
+      font-family: var(--serif);
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: -0.005em;
+      color: var(--ink);
+      display: flex; align-items: baseline; gap: 8px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .owl-id {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+    .owl-sub {
+      display: flex; gap: 10px;
+      font-size: 11px;
+      color: var(--ink-mid);
+      margin-top: 2px;
+      align-items: center;
+    }
+    .owl-sub .role {
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-size: 10px;
+    }
+    .owl-sub .role.juvenile { color: var(--status-warn); }
+    .owl-sub .role.visitor { color: var(--accent); }
+    .owl-sub .role.adult { color: var(--primary); }
+    .owl-sub .sep { color: var(--rule-strong); }
+    .owl-sub .time { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+    .mfa-chip {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.06em;
+      padding: 3px 7px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+    .mfa-chip.enrolled { background: rgba(93,138,108,0.14); color: var(--status-pass); }
+    .mfa-chip.pending { background: rgba(200,154,74,0.16); color: var(--status-warn); }
+    .mfa-chip.failed { background: rgba(176,74,44,0.14); color: var(--status-fail); }
+
+    /* ===== CENTER: Detail ===== */
+    .detail-pad { padding: 22px 28px 64px; }
+
+    .id-card {
+      display: grid;
+      grid-template-columns: 88px 1fr auto;
+      gap: 22px;
+      padding: 22px 22px;
+      background: var(--bg);
+      border: 1px solid var(--rule);
+      border-radius: 14px;
+      margin-bottom: 24px;
+    }
+    .id-portrait {
+      width: 88px; height: 88px;
+      border-radius: 12px;
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .id-name-row {
+      display: flex; align-items: baseline; gap: 14px;
+      flex-wrap: wrap;
+    }
+    .id-name {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: 32px;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      color: var(--ink);
+    }
+    .id-band {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+    .id-tagline {
+      font-family: var(--serif);
+      font-style: italic;
+      color: var(--ink-mid);
+      font-size: 14px;
+      margin-top: 6px;
+    }
+    .id-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid var(--rule);
+    }
+    .stat-label {
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    .stat-value {
+      font-family: var(--serif);
+      font-size: 17px;
+      color: var(--ink);
+      font-weight: 500;
+      letter-spacing: -0.01em;
+    }
+    .stat-value .unit { font-size: 11px; color: var(--muted); font-style: italic; font-weight: 400; }
+    .id-actions {
+      display: flex; flex-direction: column; align-items: flex-end; gap: 10px;
+    }
+    .risk-score {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(93,138,108,0.14);
+      color: var(--status-pass);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .risk-score.med { background: rgba(200,154,74,0.16); color: var(--status-warn); }
+    .risk-score.high { background: rgba(176,74,44,0.14); color: var(--status-fail); }
+    .enroll-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 14px;
+      background: var(--accent);
+      color: var(--paper);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+    .enroll-btn:hover { background: #a64a32; }
+    .enroll-btn.outline {
+      background: transparent; color: var(--ink); border-color: var(--rule);
+    }
+    .enroll-btn.outline:hover { border-color: var(--ink); background: var(--paper); }
+
+    /* Section block */
+    .block {
+      background: var(--bg);
+      border: 1px solid var(--rule);
+      border-radius: 14px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .block-head {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--rule);
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px;
+    }
+    .block-title {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: 17px;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .block-tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 3px 7px;
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+    }
+    .live-dot {
+      width: 7px; height: 7px;
+      border-radius: 999px;
+      background: var(--accent);
+      animation: ping 1.6s ease-in-out infinite;
+    }
+    @keyframes ping {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.25); }
+    }
+    @media (prefers-reduced-motion: reduce) { .live-dot { animation: none; } }
+    .block-body { padding: 4px 0; }
+
+    /* Events feed */
+    .events { padding: 4px 0; max-height: 360px; overflow-y: auto; }
+    .events::-webkit-scrollbar { width: 6px; }
+    .events::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 8px; }
+    .event {
+      display: grid;
+      grid-template-columns: 100px 24px 1fr auto;
+      gap: 12px;
+      padding: 10px 20px;
+      border-bottom: 1px solid var(--rule);
+      align-items: center;
+      animation: slip 0.4s ease;
+    }
+    @keyframes slip {
+      from { background: rgba(196,90,59,0.06); }
+      to { background: transparent; }
+    }
+    @media (prefers-reduced-motion: reduce) { .event { animation: none; } }
+    .event:last-child { border-bottom: none; }
+    .event-time {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+    .event-glyph {
+      width: 22px; height: 22px;
+      border-radius: 6px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      color: var(--ink-soft);
+    }
+    .event-glyph.success { color: var(--status-pass); background: rgba(93,138,108,0.08); border-color: rgba(93,138,108,0.3); }
+    .event-glyph.warn { color: var(--status-warn); background: rgba(200,154,74,0.08); border-color: rgba(200,154,74,0.3); }
+    .event-glyph.fail { color: var(--status-fail); background: rgba(176,74,44,0.08); border-color: rgba(176,74,44,0.3); }
+    .event-body {
+      font-size: 13px;
+      color: var(--ink-soft);
+      line-height: 1.4;
+    }
+    .event-body code {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--primary);
+      background: rgba(47,74,58,0.08);
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+    .event-zone {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* Zone permission matrix */
+    .matrix {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .matrix th, .matrix td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--rule);
+    }
+    .matrix thead th {
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 500;
+      background: var(--paper);
+    }
+    .matrix tbody tr:last-child td { border-bottom: none; }
+    .matrix .zone-name {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: 14px;
+    }
+    .matrix .zone-name small {
+      display: block;
+      font-family: var(--sans);
+      font-style: normal;
+      font-weight: 400;
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .toggle {
+      width: 36px; height: 20px;
+      border-radius: 999px;
+      background: var(--bg-sunk);
+      border: 1px solid var(--rule);
+      position: relative;
+      cursor: pointer;
+      transition: background 0.18s ease, border-color 0.18s ease;
+    }
+    .toggle::after {
+      content: "";
+      position: absolute;
+      top: 2px; left: 2px;
+      width: 14px; height: 14px;
+      border-radius: 999px;
+      background: var(--paper);
+      transition: transform 0.18s ease, background 0.18s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    .toggle.on { background: var(--primary); border-color: var(--primary); }
+    .toggle.on::after { transform: translateX(16px); background: var(--paper); }
+    .toggle.locked {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    /* ===== RIGHT COLUMN ===== */
+    .right-pad { padding: 22px 22px 48px; }
+    .panel {
+      margin-bottom: 24px;
+    }
+    .panel-head {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .panel-title {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: 14px;
+      letter-spacing: -0.005em;
+    }
+    .panel-tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    .role-card {
+      padding: 12px 14px;
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      border-radius: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: border-color 0.14s ease;
+    }
+    .role-card:hover { border-color: var(--ink-mid); }
+    .role-card.active { border-color: var(--ink); }
+    .role-head {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .role-name {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: 14px;
+      color: var(--ink);
+    }
+    .role-count {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+    }
+    .role-perms {
+      font-size: 11px;
+      color: var(--ink-mid);
+      line-height: 1.45;
+    }
+    .role-perms .perm-on { color: var(--primary); font-weight: 500; }
+
+    /* Governance grid */
+    .gov-grid {
+      display: grid;
+      grid-template-columns: repeat(11, 1fr);
+      gap: 4px;
+      margin-bottom: 12px;
+    }
+    .gov-cell {
+      aspect-ratio: 1;
+      border-radius: 4px;
+      background: rgba(93,138,108,0.6);
+      cursor: help;
+      transition: transform 0.14s ease;
+    }
+    .gov-cell:hover { transform: scale(1.15); z-index: 2; position: relative; }
+    .gov-cell.warn { background: rgba(200,154,74,0.7); }
+    .gov-cell.fail { background: rgba(176,74,44,0.7); }
+    .gov-cell.pending { background: var(--rule-strong); }
+    .gov-legend {
+      display: flex; justify-content: space-between;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+    .gov-legend b {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-style: italic;
+      font-size: 13px;
+      color: var(--ink);
+      letter-spacing: -0.005em;
+    }
+
+    /* Quick stats */
+    .stats-list { display: flex; flex-direction: column; gap: 0; }
+    .stat-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--rule);
+      font-size: 12px;
+    }
+    .stat-row:last-child { border-bottom: none; }
+    .stat-row .label { color: var(--muted); font-size: 11px; letter-spacing: 0.04em; }
+    .stat-row .value {
+      font-family: var(--serif);
+      font-size: 14px;
+      color: var(--ink);
+      font-weight: 500;
+    }
+    .stat-row .value.accent { color: var(--accent); }
+    .stat-row .value.pass { color: var(--status-pass); }
+
+    /* ===== MODAL ===== */
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(28, 31, 28, 0.42);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center; justify-content: center;
+      z-index: 100;
+      padding: 24px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      width: 100%;
+      max-width: 480px;
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+      animation: rise 0.28s ease;
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (prefers-reduced-motion: reduce) { .modal { animation: none; } }
+    .modal-eyebrow {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .modal-title {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: 26px;
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+      color: var(--ink);
+      margin: 0 0 8px;
+    }
+    .modal-sub {
+      font-family: var(--serif);
+      font-style: italic;
+      color: var(--ink-mid);
+      font-size: 14px;
+      margin: 0 0 22px;
+    }
+
+    /* Voice capture visualizer */
+    .voice-stage {
+      padding: 24px 20px;
+      background: var(--bg);
+      border: 1px solid var(--rule);
+      border-radius: 12px;
+      margin: 8px 0 16px;
+      text-align: center;
+    }
+    .waveform {
+      display: flex; align-items: center; justify-content: center;
+      gap: 4px;
+      height: 80px;
+      margin-bottom: 16px;
+    }
+    .bar {
+      width: 5px;
+      background: var(--primary);
+      border-radius: 999px;
+      height: 12px;
+      transition: height 0.18s ease;
+    }
+    .voice-status {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      margin-bottom: 6px;
+      min-height: 14px;
+    }
+    .voice-status .dot {
+      display: inline-block;
+      width: 7px; height: 7px;
+      border-radius: 999px;
+      background: var(--accent);
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    .voice-status .dot.done { background: var(--status-pass); }
+    .voice-hint {
+      font-family: var(--serif);
+      font-style: italic;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .progress-track {
+      height: 3px;
+      background: var(--rule);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 16px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+    .modal-actions {
+      display: flex; justify-content: flex-end; gap: 10px;
+      padding-top: 16px;
+      border-top: 1px solid var(--rule);
+    }
+    .btn-ghost {
+      padding: 10px 16px;
+      background: transparent;
+      color: var(--ink-mid);
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      font-size: 13px;
+    }
+    .btn-ghost:hover { border-color: var(--ink); color: var(--ink); }
+    .btn-primary {
+      padding: 10px 18px;
+      background: var(--primary);
+      color: var(--paper);
+      border: 1px solid var(--primary);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .btn-primary:hover { background: var(--primary-2); }
+    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    /* New-owl form */
+    .field { margin-bottom: 14px; }
+    .field label {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+    .field input, .field select {
+      width: 100%;
+      padding: 10px 12px;
+      background: var(--bg);
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      font: inherit;
+      font-size: 13px;
+      color: var(--ink);
+      outline: none;
+    }
+    .field input:focus, .field select:focus { border-color: var(--ink); box-shadow: 0 0 0 3px rgba(28,31,28,0.06); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 14px 18px;
+      background: var(--ink);
+      color: var(--paper);
+      border-radius: 12px;
+      font-size: 13px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+      transform: translateY(20px);
+      opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      z-index: 200;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast .check {
+      width: 18px; height: 18px;
+      border-radius: 999px;
+      background: var(--status-pass);
+      display: inline-flex; align-items: center; justify-content: center;
+      color: var(--paper);
+    }
+
+    /* Responsive */
+    @media (max-width: 1100px) {
+      .main { grid-template-columns: 280px 1fr 300px; }
+      .topbar { grid-template-columns: 260px 1fr 360px; }
+    }
+    @media (max-width: 900px) {
+      .main { grid-template-columns: 1fr; grid-template-rows: auto auto 1fr; overflow: auto; }
+      .col.left, .col.right { border: none; border-bottom: 1px solid var(--rule); max-height: 280px; }
+      .topbar { grid-template-columns: auto 1fr auto; }
+      .top-search { display: none; }
+      body { overflow: auto; }
+      .app { height: auto; min-height: 100vh; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- ========== TOP CHROME ========== -->
+    <header class="topbar">
+      <div class="top-left">
+        <a class="back-link" href="./index.html">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <path d="M19 12H5M12 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          back to the pitch
+        </a>
+        <span class="divider-v"></span>
+        <span class="brand">
+          <span class="mark"></span>
+          Strix
+          <span class="sub">Admin Console</span>
+        </span>
+      </div>
+
+      <div class="top-search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" stroke-linecap="round"/>
+        </svg>
+        <input id="globalSearch" placeholder="Search owls, zones, policies, events…" autocomplete="off" />
+        <kbd>⌘K</kbd>
+      </div>
+
+      <div class="top-right">
+        <button id="envSelect" class="env-select" title="Switch environment">
+          <span class="env-dot"></span>
+          <span id="envName">Production Barn</span>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button class="icon-btn" title="Notifications" aria-label="Notifications">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <path d="M6 8a6 6 0 1112 0c0 7 3 9 3 9H3s3-2 3-9zM10 21a2 2 0 004 0" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button id="newOwlBtn" class="top-cta">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <path d="M12 5v14M5 12h14" stroke-linecap="round"/>
+          </svg>
+          Enroll owl
+        </button>
+        <span class="avatar-pill" title="Wren Halloran-Pike">W</span>
+      </div>
+    </header>
+
+    <!-- ========== TAB BAR ========== -->
+    <div class="tabbar">
+      <div class="tab active">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <circle cx="12" cy="8" r="4"/><path d="M4 22c0-4 4-6 8-6s8 2 8 6"/>
+        </svg>
+        Directory <span class="count" id="tabCount">14</span>
+      </div>
+      <div class="tab">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+        </svg>
+        Roles & Policies
+      </div>
+      <div class="tab">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+        </svg>
+        Governance
+      </div>
+      <div class="tab">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path d="M12 8v4l3 2M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        Audit ledger
+      </div>
+      <div class="tab">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33h0a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+        </svg>
+        Settings
+      </div>
+      <div class="spacer"></div>
+      <div class="breadcrumb">Marsh &amp; Marsh Estate / <b>Production Barn</b></div>
+    </div>
+
+    <!-- ========== MAIN GRID ========== -->
+    <div class="main">
+
+      <!-- LEFT: DIRECTORY -->
+      <aside class="col left">
+        <div class="dir-head">
+          <div class="dir-title-row">
+            <h2 class="dir-title">Directory</h2>
+            <span class="dir-count" id="dirCount">14 enrolled</span>
+          </div>
+          <div class="filter-pills" id="filters">
+            <button class="pill active" data-filter="all">All<span class="pc" id="cAll">14</span></button>
+            <button class="pill" data-filter="adult">Adult<span class="pc" id="cAdult">7</span></button>
+            <button class="pill" data-filter="juvenile">Juvenile<span class="pc" id="cJuv">4</span></button>
+            <button class="pill" data-filter="visitor">Visitor<span class="pc" id="cVis">3</span></button>
+            <button class="pill" data-filter="failed">MFA failed<span class="pc" id="cFail">1</span></button>
+          </div>
+        </div>
+        <div class="col-scroll">
+          <div class="owl-list" id="owlList"><!-- rendered by JS --></div>
+        </div>
+      </aside>
+
+      <!-- CENTER: DETAIL -->
+      <main class="col center">
+        <div class="col-scroll">
+          <div class="detail-pad" id="detail"><!-- rendered by JS --></div>
+        </div>
+      </main>
+
+      <!-- RIGHT: ROLES / GOVERNANCE -->
+      <aside class="col right">
+        <div class="col-scroll">
+          <div class="right-pad">
+
+            <div class="panel">
+              <div class="panel-head">
+                <span class="panel-title">Roles &amp; Policies</span>
+                <span class="panel-tag">3 active</span>
+              </div>
+              <div class="role-card active">
+                <div class="role-head">
+                  <span class="role-name">Adult</span>
+                  <span class="role-count">7 / 14</span>
+                </div>
+                <div class="role-perms"><span class="perm-on">Loft</span> · <span class="perm-on">Rafters</span> · <span class="perm-on">Ground</span> · <span class="perm-on">Outer Hunt</span></div>
+              </div>
+              <div class="role-card">
+                <div class="role-head">
+                  <span class="role-name">Juvenile</span>
+                  <span class="role-count">4 / 14</span>
+                </div>
+                <div class="role-perms"><span class="perm-on">Ground</span> · Rafters (gated) · Loft (blocked)</div>
+              </div>
+              <div class="role-card">
+                <div class="role-head">
+                  <span class="role-name">Visitor</span>
+                  <span class="role-count">3 / 14</span>
+                </div>
+                <div class="role-perms">Sundown to dawn · <span class="perm-on">Outer Hunt</span></div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <span class="panel-title">Governance posture</span>
+                <span class="panel-tag">SOC 2 / 11</span>
+              </div>
+              <div class="gov-grid" id="govGrid"><!-- rendered --></div>
+              <div class="gov-legend">
+                <span><b>9</b> pass</span>
+                <span><b>1</b> warn</span>
+                <span><b>1</b> pending</span>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <span class="panel-title">This week</span>
+                <span class="panel-tag">May 8 → 14</span>
+              </div>
+              <div class="stats-list">
+                <div class="stat-row"><span class="label">Hoot-ins authenticated</span><span class="value pass">2,418</span></div>
+                <div class="stat-row"><span class="label">Failed authentications</span><span class="value accent">7</span></div>
+                <div class="stat-row"><span class="label">Zone transitions</span><span class="value">1,124</span></div>
+                <div class="stat-row"><span class="label">Policy exceptions</span><span class="value accent">3</span></div>
+                <div class="stat-row"><span class="label">Lifecycle events</span><span class="value">1 onboard, 0 offboard</span></div>
+                <div class="stat-row"><span class="label">Audit ledger entries</span><span class="value">3,549</span></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- ENROLL HOOT MODAL -->
+  <div class="modal-backdrop" id="hootModal" role="dialog" aria-modal="true" aria-labelledby="hootTitle">
+    <div class="modal">
+      <p class="modal-eyebrow">Voiceprint enrollment / Step <span id="stepNum">1</span> of 4</p>
+      <h2 class="modal-title" id="hootTitle">Enroll baseline hoot</h2>
+      <p class="modal-sub" id="modalSub">Capturing a clean reference vocalization for the selected subject. Best results at dusk.</p>
+
+      <div class="voice-stage">
+        <div class="waveform" id="waveform" aria-hidden="true">
+          <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+          <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+          <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+          <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+          <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+          <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+          <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+        </div>
+        <div class="voice-status" id="voiceStatus"><span class="dot"></span>Awaiting subject</div>
+        <div class="voice-hint" id="voiceHint">Press Begin capture to listen on the perch array.</div>
+        <div class="progress-track"><div class="progress-fill" id="voiceProgress"></div></div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-ghost" id="hootCancel">Cancel</button>
+        <button class="btn-primary" id="hootBegin">Begin capture</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ENROLL OWL MODAL -->
+  <div class="modal-backdrop" id="owlModal" role="dialog" aria-modal="true" aria-labelledby="owlTitle">
+    <div class="modal">
+      <p class="modal-eyebrow">Fledgling onboarding</p>
+      <h2 class="modal-title" id="owlTitle">Enroll new owl</h2>
+      <p class="modal-sub">A new <em>Tyto alba</em> identity is provisioned with role <em>Juvenile</em> and minimum permissions until plumage maturity is attested.</p>
+
+      <div class="field">
+        <label for="oName">Display name</label>
+        <input id="oName" placeholder="e.g. Pemberton" autocomplete="off" />
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="oBand">Band number</label>
+          <input id="oBand" placeholder="TA-0xxxx" autocomplete="off" />
+        </div>
+        <div class="field">
+          <label for="oStage">Plumage stage</label>
+          <select id="oStage">
+            <option>First molt</option>
+            <option>Secondary plumage</option>
+            <option>Pre-fledgling</option>
+            <option>Fledgling (attested)</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="oRole">Initial role</label>
+          <select id="oRole">
+            <option>Juvenile (default)</option>
+            <option>Visitor</option>
+            <option>Adult (requires handler attestation)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="oZone">Default zone</label>
+          <select id="oZone">
+            <option>Ground</option>
+            <option>Rafters (gated)</option>
+            <option>Outer Hunt (with credentials)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-ghost" id="owlCancel">Cancel</button>
+        <button class="btn-primary" id="owlSave">Provision identity</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <span class="check">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true">
+        <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </span>
+    <span id="toastBody">Identity provisioned</span>
+  </div>
+
+  <!-- ============== SCRIPT ============== -->
+  <script>
+  (function () {
+    'use strict';
+
+    const ZONES = [
+      { key: 'outer', name: 'Outer Hunt', detail: 'Off-property hunting grounds, sundown to dawn' },
+      { key: 'ground', name: 'Ground',     detail: 'Barn floor, equipment racks, water trough' },
+      { key: 'rafters', name: 'Rafters',   detail: 'Mid-altitude beams, social perches' },
+      { key: 'loft', name: 'Upper Loft',   detail: 'Nesting cavities, restricted access' },
+    ];
+
+    const ROLE_PERMS = {
+      adult:    { outer: true,  ground: true,  rafters: true,  loft: true  },
+      juvenile: { outer: false, ground: true,  rafters: true,  loft: false },
+      visitor:  { outer: true,  ground: false, rafters: false, loft: false },
+    };
+
+    function svgOwl() {
+      return `
+        <svg viewBox="0 0 64 64" width="60" height="60" aria-hidden="true">
+          <circle cx="32" cy="32" r="30" fill="#ebe4d3"/>
+          <path d="M32 54
+                   C 21 54, 14 46, 14 35
+                   C 14 23, 22 14, 32 14
+                   C 42 14, 50 23, 50 35
+                   C 50 46, 43 54, 32 54 Z"
+                fill="#f8f4ea" stroke="#1c1f1c" stroke-width="1.1"/>
+          <path d="M32 12
+                   C 23 12, 18 18, 19 26
+                   C 20 33, 26 38, 32 41
+                   C 38 38, 44 33, 45 26
+                   C 46 18, 41 12, 32 12 Z"
+                fill="#f3efe6" stroke="#1c1f1c" stroke-width="1.1"/>
+          <path d="M32 30 L29 34 L35 34 Z" fill="#c45a3b" stroke="#1c1f1c" stroke-width="0.7"/>
+          <circle cx="26" cy="24" r="3" fill="#1c1f1c"/>
+          <circle cx="38" cy="24" r="3" fill="#1c1f1c"/>
+          <circle cx="27" cy="23" r="0.8" fill="#f3efe6"/>
+          <circle cx="39" cy="23" r="0.8" fill="#f3efe6"/>
+        </svg>`;
+    }
+
+    // Mock owls
+    const owls = [
+      { id: 'TA-04412', name: 'Pemberton',  role: 'adult',    mfa: 'enrolled', last: '14m', risk: 'low',  hatch: 'Apr 2023', plumage: 'Adult, fully fledged', residency: 'Production Barn / Marsh & Marsh', tagline: 'The colony lead. Most-cited subject in our last attestation.' },
+      { id: 'TA-04413', name: 'Ash I',      role: 'adult',    mfa: 'enrolled', last: '6m',  risk: 'low',  hatch: 'Mar 2023', plumage: 'Adult', residency: 'Production Barn', tagline: 'One of the three Ashes. Distinct by hoot pitch (+2 Hz baseline).' },
+      { id: 'TA-04414', name: 'Ash II',     role: 'adult',    mfa: 'enrolled', last: '21m', risk: 'low',  hatch: 'Mar 2023', plumage: 'Adult', residency: 'Production Barn', tagline: 'Second Ash. Cohort-mate of Ash I.' },
+      { id: 'TA-04415', name: 'Ash III',    role: 'adult',    mfa: 'pending',  last: '4h',  risk: 'med',  hatch: 'May 2023', plumage: 'Adult', residency: 'Production Barn', tagline: 'Third Ash. Re-enrollment scheduled after relocation.' },
+      { id: 'TA-04416', name: 'Halloran',   role: 'adult',    mfa: 'enrolled', last: '38m', risk: 'low',  hatch: 'Sep 2022', plumage: 'Adult', residency: 'Production Barn', tagline: 'Senior. Tolerates daylight inspection.' },
+      { id: 'TA-04417', name: 'Marsh',      role: 'adult',    mfa: 'enrolled', last: '2h',  risk: 'low',  hatch: 'Oct 2022', plumage: 'Adult', residency: 'Production Barn', tagline: 'Quiet. Hoot frequency below colony median.' },
+      { id: 'TA-04418', name: 'Witmer',     role: 'adult',    mfa: 'enrolled', last: '12m', risk: 'low',  hatch: 'Jan 2023', plumage: 'Adult', residency: 'Production Barn', tagline: 'Mated pair with Halloran. Co-tenanted nesting cavity 03.' },
+      { id: 'TA-05012', name: 'Bramble',    role: 'juvenile', mfa: 'enrolled', last: '52m', risk: 'low',  hatch: 'Mar 2025', plumage: 'First molt, secondary in progress', residency: 'Production Barn', tagline: 'First-cycle juvenile. Loft access blocked until handler attestation.' },
+      { id: 'TA-05013', name: 'Quill',      role: 'juvenile', mfa: 'pending',  last: '1h',  risk: 'med',  hatch: 'Mar 2025', plumage: 'First molt', residency: 'Production Barn', tagline: 'Awaiting hoot enrollment. Provisional perch credentials only.' },
+      { id: 'TA-05014', name: 'Mote',       role: 'juvenile', mfa: 'failed',   last: '3h',  risk: 'high', hatch: 'Apr 2025', plumage: 'Pre-fledgling', residency: 'Production Barn', tagline: 'Three consecutive non-matching hoots logged. Access revoked.' },
+      { id: 'TA-05015', name: 'Twig',       role: 'juvenile', mfa: 'enrolled', last: '24m', risk: 'low',  hatch: 'Apr 2025', plumage: 'Pre-fledgling', residency: 'Production Barn', tagline: 'Smallest registered subject. Talon biometric below threshold; voice-only auth.' },
+      { id: 'TA-V0007', name: 'Visitor 07', role: 'visitor',  mfa: 'enrolled', last: '0m',  risk: 'low',  hatch: 'unknown', plumage: 'Transient adult, plumage normal', residency: 'Federated / Pike Family Barn', tagline: 'Visiting under sundown-to-dawn credential. Expires at 05:42 local.' },
+      { id: 'TA-V0008', name: 'Visitor 08', role: 'visitor',  mfa: 'pending',  last: '17m', risk: 'med',  hatch: 'unknown', plumage: 'Transient adult', residency: 'Federated / North Channel Trust', tagline: 'Awaiting handler co-sign before zone permissions extend beyond Outer Hunt.' },
+      { id: 'TA-V0009', name: 'Visitor 09', role: 'visitor',  mfa: 'enrolled', last: '2m',  risk: 'low',  hatch: 'unknown', plumage: 'Transient adult', residency: 'Federated / North Channel Trust', tagline: 'Recurring visitor. 14th appearance this quarter.' },
+    ];
+
+    // Per-owl access events (templates; rendered on selection)
+    function baseEvents(o) {
+      const isJuv = o.role === 'juvenile';
+      const isVis = o.role === 'visitor';
+      return [
+        { t: '00:04', g: 'success', body: `<code>${o.id}</code> hoot-in authenticated, perch array <code>P-03</code>.`, zone: 'Rafters' },
+        { t: '00:11', g: 'success', body: `Zone transition: Rafters → Ground. Policy <code>P-014</code> matched.`, zone: 'Ground' },
+        { t: '00:18', g: isJuv ? 'warn' : 'success', body: isJuv ? `Attempted Upper Loft access. Blocked by policy <code>JUV-LOFT-BLOCK</code>.` : `Zone transition: Ground → Outer Hunt. Credential <code>NIGHT-002</code> valid.`, zone: isJuv ? 'Upper Loft' : 'Outer Hunt' },
+        { t: '00:24', g: 'success', body: `Vocalization classified <em>territorial</em>. Recorded to audit ledger.`, zone: 'Outer Hunt' },
+        { t: '00:36', g: o.mfa === 'failed' ? 'fail' : 'success', body: o.mfa === 'failed' ? `Hoot signature mismatch. Counter 3/3. Access revoked.` : `Talon biometric refreshed. Hash <code>0x4a1c…</code>` , zone: 'Rafters' },
+        { t: '00:48', g: 'success', body: `Pack-sentiment ping received from handler station. Subject acknowledged.`, zone: 'Ground' },
+        { t: '01:02', g: isVis ? 'warn' : 'success', body: isVis ? `Visitor credential approaching expiry. Renewal not auto-approved.` : `Plumage scan complete. No anomalies.`, zone: '—' },
+      ];
+    }
+
+    let selectedId = owls[0].id;
+    let activeFilter = 'all';
+    let zoneState = JSON.parse(JSON.stringify(ROLE_PERMS.adult));
+    let liveTick = null;
+
+    // ============== RENDER LEFT DIRECTORY ==============
+    const owlListEl = document.getElementById('owlList');
+    const dirCountEl = document.getElementById('dirCount');
+    const tabCountEl = document.getElementById('tabCount');
+
+    function counts() {
+      return {
+        all: owls.length,
+        adult: owls.filter(o => o.role === 'adult').length,
+        juvenile: owls.filter(o => o.role === 'juvenile').length,
+        visitor: owls.filter(o => o.role === 'visitor').length,
+        failed: owls.filter(o => o.mfa === 'failed').length,
+      };
+    }
+    function refreshCounts() {
+      const c = counts();
+      document.getElementById('cAll').textContent = c.all;
+      document.getElementById('cAdult').textContent = c.adult;
+      document.getElementById('cJuv').textContent = c.juvenile;
+      document.getElementById('cVis').textContent = c.visitor;
+      document.getElementById('cFail').textContent = c.failed;
+      tabCountEl.textContent = c.all;
+    }
+
+    function renderDirectory() {
+      const search = (document.getElementById('globalSearch').value || '').toLowerCase().trim();
+      const list = owls.filter(o => {
+        if (activeFilter === 'all') return true;
+        if (activeFilter === 'failed') return o.mfa === 'failed';
+        return o.role === activeFilter;
+      }).filter(o => {
+        if (!search) return true;
+        return o.name.toLowerCase().includes(search) || o.id.toLowerCase().includes(search) || o.role.includes(search);
+      });
+
+      dirCountEl.textContent = list.length === owls.length ? `${owls.length} enrolled` : `${list.length} / ${owls.length}`;
+
+      owlListEl.innerHTML = list.map(o => `
+        <div class="owl-row ${o.id === selectedId ? 'selected' : ''}" data-id="${o.id}">
+          <div class="owl-avatar">${svgOwl()}</div>
+          <div class="owl-meta">
+            <div class="owl-name">${o.name} <span class="owl-id">${o.id}</span></div>
+            <div class="owl-sub">
+              <span class="role ${o.role}">${o.role}</span>
+              <span class="sep">·</span>
+              <span class="time">${o.last} ago</span>
+            </div>
+          </div>
+          <span class="mfa-chip ${o.mfa}">${o.mfa}</span>
+        </div>
+      `).join('') || `<div style="padding:24px 20px;color:var(--muted);font-style:italic;font-family:var(--serif);">No subjects match.</div>`;
+
+      owlListEl.querySelectorAll('.owl-row').forEach(row => {
+        row.addEventListener('click', () => {
+          selectedId = row.dataset.id;
+          // reset zone state to role default
+          const o = owls.find(x => x.id === selectedId);
+          zoneState = JSON.parse(JSON.stringify(ROLE_PERMS[o.role]));
+          renderDirectory();
+          renderDetail();
+        });
+      });
+    }
+
+    // ============== RENDER CENTER DETAIL ==============
+    const detailEl = document.getElementById('detail');
+
+    function bigOwl() {
+      // Larger SVG for the identity portrait
+      return `
+        <svg viewBox="0 0 88 88" width="76" height="76" aria-hidden="true">
+          <circle cx="44" cy="44" r="42" fill="#ebe4d3"/>
+          <circle cx="44" cy="44" r="42" fill="none" stroke="#d3ccba" stroke-width="0.6"/>
+          <path d="M44 76 C 28 76, 18 64, 18 48 C 18 32, 30 18, 44 18 C 58 18, 70 32, 70 48 C 70 64, 60 76, 44 76 Z" fill="#f8f4ea" stroke="#1c1f1c" stroke-width="1.2"/>
+          <path d="M44 14 C 32 14, 24 22, 25 34 C 26 44, 34 52, 44 56 C 54 52, 62 44, 63 34 C 64 22, 56 14, 44 14 Z" fill="#f3efe6" stroke="#1c1f1c" stroke-width="1.2"/>
+          <path d="M44 38 L40 44 L48 44 Z" fill="#c45a3b" stroke="#1c1f1c" stroke-width="0.8"/>
+          <circle cx="34" cy="30" r="4.5" fill="#1c1f1c"/>
+          <circle cx="54" cy="30" r="4.5" fill="#1c1f1c"/>
+          <circle cx="35" cy="29" r="1.2" fill="#f3efe6"/>
+          <circle cx="55" cy="29" r="1.2" fill="#f3efe6"/>
+          <circle cx="34" cy="30" r="5.4" fill="none" stroke="#1c1f1c" stroke-width="0.5"/>
+          <circle cx="54" cy="30" r="5.4" fill="none" stroke="#1c1f1c" stroke-width="0.5"/>
+        </svg>`;
+    }
+
+    function renderDetail() {
+      const o = owls.find(x => x.id === selectedId);
+      if (!o) return;
+      const riskCls = o.risk === 'high' ? 'high' : o.risk === 'med' ? 'med' : '';
+      const riskLabel = o.risk === 'high' ? 'High risk' : o.risk === 'med' ? 'Moderate risk' : 'Low risk · in policy';
+      const evts = baseEvents(o);
+
+      detailEl.innerHTML = `
+        <!-- ID Card -->
+        <section class="id-card">
+          <div class="id-portrait">${bigOwl()}</div>
+          <div>
+            <div class="id-name-row">
+              <span class="id-name">${o.name}</span>
+              <span class="id-band">${o.id} · ${o.residency}</span>
+            </div>
+            <p class="id-tagline">${o.tagline}</p>
+            <div class="id-stats">
+              <div>
+                <div class="stat-label">Role</div>
+                <div class="stat-value" style="text-transform:capitalize;">${o.role}</div>
+              </div>
+              <div>
+                <div class="stat-label">Hatch (est.)</div>
+                <div class="stat-value">${o.hatch}</div>
+              </div>
+              <div>
+                <div class="stat-label">Plumage</div>
+                <div class="stat-value" style="font-size:13px;">${o.plumage}</div>
+              </div>
+              <div>
+                <div class="stat-label">Last hoot-in</div>
+                <div class="stat-value">${o.last} <span class="unit">ago</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="id-actions">
+            <span class="risk-score ${riskCls}">${riskLabel}</span>
+            <button class="enroll-btn" id="enrollHoot">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3zM19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              ${o.mfa === 'enrolled' ? 'Re-enroll hoot' : 'Enroll hoot'}
+            </button>
+            <button class="enroll-btn outline" id="suspendBtn">Suspend access</button>
+          </div>
+        </section>
+
+        <!-- Access events -->
+        <section class="block">
+          <div class="block-head">
+            <span class="block-title">
+              <span class="live-dot" aria-hidden="true"></span>
+              Access events
+            </span>
+            <span class="block-tag">Live · last 60 min</span>
+          </div>
+          <div class="events" id="eventsList">
+            ${evts.map(e => eventRow(e)).join('')}
+          </div>
+        </section>
+
+        <!-- Zone permission matrix -->
+        <section class="block">
+          <div class="block-head">
+            <span class="block-title">Zone permissions</span>
+            <span class="block-tag">Role: ${o.role}</span>
+          </div>
+          <table class="matrix" aria-label="Zone permission matrix">
+            <thead>
+              <tr>
+                <th>Zone</th>
+                <th style="text-align:center;">Read</th>
+                <th style="text-align:center;">Enter</th>
+                <th style="text-align:center;">Nest</th>
+              </tr>
+            </thead>
+            <tbody id="matrixBody">
+              ${ZONES.map(z => zoneRow(z, o)).join('')}
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Compliance + handler attestation -->
+        <section class="block">
+          <div class="block-head">
+            <span class="block-title">Attestations &amp; controls</span>
+            <span class="block-tag">11 mapped</span>
+          </div>
+          <table class="matrix">
+            <thead>
+              <tr>
+                <th>Control</th>
+                <th>Owner</th>
+                <th>State</th>
+                <th style="text-align:right;">Last verified</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="zone-name">CC-01 Identity provenance<small>Banding chain of custody</small></span></td>
+                <td>Handler</td>
+                <td><span class="mfa-chip enrolled">pass</span></td>
+                <td style="text-align:right;font-family:var(--mono);font-size:11px;color:var(--muted);">Apr 22</td>
+              </tr>
+              <tr>
+                <td><span class="zone-name">CC-04 Voiceprint freshness<small>Re-enrollment cadence ≤ 180d</small></span></td>
+                <td>Strix</td>
+                <td><span class="mfa-chip ${o.mfa === 'pending' ? 'pending' : 'enrolled'}">${o.mfa === 'pending' ? 'warn' : 'pass'}</span></td>
+                <td style="text-align:right;font-family:var(--mono);font-size:11px;color:var(--muted);">${o.mfa === 'pending' ? 'overdue' : 'May 02'}</td>
+              </tr>
+              <tr>
+                <td><span class="zone-name">CC-07 Zone segregation<small>Loft segmentation per role</small></span></td>
+                <td>Policy</td>
+                <td><span class="mfa-chip enrolled">pass</span></td>
+                <td style="text-align:right;font-family:var(--mono);font-size:11px;color:var(--muted);">May 13</td>
+              </tr>
+              <tr>
+                <td><span class="zone-name">CC-11 Lifecycle hygiene<small>Offboarding ≤ 4h SLA</small></span></td>
+                <td>Strix</td>
+                <td><span class="mfa-chip enrolled">pass</span></td>
+                <td style="text-align:right;font-family:var(--mono);font-size:11px;color:var(--muted);">May 11</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      `;
+
+      // Bindings
+      document.getElementById('enrollHoot').addEventListener('click', openHootModal);
+      document.getElementById('suspendBtn').addEventListener('click', () => {
+        toast(`Access suspended for ${o.name}. Audit entry written.`);
+      });
+      document.querySelectorAll('.toggle').forEach(t => {
+        t.addEventListener('click', () => {
+          if (t.classList.contains('locked')) {
+            toast('Policy lock: this zone is governed by role default.');
+            return;
+          }
+          t.classList.toggle('on');
+          const key = t.dataset.zone;
+          const action = t.dataset.action;
+          zoneState[key] = !zoneState[key];
+          appendLiveEvent({
+            g: 'warn',
+            body: `Policy edit: <code>${o.role.toUpperCase()}</code> · ${prettyZone(key)} · ${action} = <code>${zoneState[key] ? 'allow' : 'deny'}</code>.`,
+            zone: prettyZone(key),
+          });
+        });
+      });
+
+      // Restart live ticker
+      if (liveTick) clearInterval(liveTick);
+      liveTick = setInterval(() => {
+        if (Math.random() < 0.55) tickLive(o);
+      }, 4800);
+    }
+
+    function eventRow(e) {
+      return `
+        <div class="event">
+          <span class="event-time">+${e.t}</span>
+          <span class="event-glyph ${e.g}">${eventIcon(e.g)}</span>
+          <span class="event-body">${e.body}</span>
+          <span class="event-zone">${e.zone}</span>
+        </div>`;
+    }
+    function eventIcon(g) {
+      if (g === 'success') return `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+      if (g === 'warn')    return `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M12 9v4M12 17h.01M5.07 19h13.86a2 2 0 001.74-3L13.74 4a2 2 0 00-3.48 0L3.33 16a2 2 0 001.74 3z" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+      if (g === 'fail')    return `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12" stroke-linecap="round"/></svg>`;
+      return '';
+    }
+
+    function zoneRow(z, o) {
+      const def = ROLE_PERMS[o.role][z.key];
+      const onCls = zoneState[z.key] ? 'on' : '';
+      const locked = (o.role === 'juvenile' && z.key === 'loft') || (o.role === 'visitor' && (z.key === 'ground' || z.key === 'rafters' || z.key === 'loft'));
+      return `
+        <tr>
+          <td><span class="zone-name">${z.name}<small>${z.detail}</small></span></td>
+          <td style="text-align:center;"><div class="toggle ${zoneState[z.key] ? 'on' : ''} ${locked ? 'locked' : ''}" data-zone="${z.key}" data-action="read" role="switch" aria-checked="${!!zoneState[z.key]}" tabindex="0"></div></td>
+          <td style="text-align:center;"><div class="toggle ${zoneState[z.key] ? 'on' : ''} ${locked ? 'locked' : ''}" data-zone="${z.key}" data-action="enter" role="switch" aria-checked="${!!zoneState[z.key]}" tabindex="0"></div></td>
+          <td style="text-align:center;"><div class="toggle ${(zoneState[z.key] && z.key === 'loft' && o.role === 'adult') ? 'on' : ''} ${z.key !== 'loft' || o.role !== 'adult' ? 'locked' : ''}" data-zone="${z.key}" data-action="nest" role="switch" aria-checked="${(zoneState[z.key] && z.key === 'loft' && o.role === 'adult')}" tabindex="0"></div></td>
+        </tr>
+      `;
+    }
+
+    function prettyZone(k) { return (ZONES.find(z => z.key === k) || {}).name || k; }
+
+    function appendLiveEvent(e) {
+      const list = document.getElementById('eventsList');
+      if (!list) return;
+      const stamp = nowStamp();
+      const row = document.createElement('div');
+      row.className = 'event';
+      row.innerHTML = `
+        <span class="event-time">${stamp}</span>
+        <span class="event-glyph ${e.g}">${eventIcon(e.g)}</span>
+        <span class="event-body">${e.body}</span>
+        <span class="event-zone">${e.zone}</span>`;
+      list.insertBefore(row, list.firstChild);
+      // Cap at ~12 visible
+      while (list.children.length > 12) list.removeChild(list.lastChild);
+    }
+    function nowStamp() {
+      const d = new Date();
+      return d.toTimeString().slice(0,5);
+    }
+
+    function tickLive(o) {
+      const samples = [
+        { g: 'success', body: `Hoot-in authenticated on perch <code>P-0${(Math.random()*5|0)+1}</code>. Confidence <code>${(0.86+Math.random()*0.13).toFixed(2)}</code>.`, zone: ['Rafters','Ground','Outer Hunt'][Math.random()*3|0] },
+        { g: 'success', body: `Zone transition recorded. Policy <code>P-0${(Math.random()*20|0)+1}</code> matched.`, zone: ['Ground','Rafters'][Math.random()*2|0] },
+        { g: 'warn',    body: `Vocalization classified <em>territorial</em>. Threshold flagged for handler review.`, zone: 'Outer Hunt' },
+        { g: 'success', body: `Pack-sentiment update for <code>${o.id}</code> ingested.`, zone: '—' },
+        { g: 'success', body: `Talon biometric refreshed.`, zone: 'Rafters' },
+        { g: 'warn',    body: `Adjacent squirrel detected within 220m of property. Escalation likelihood low.`, zone: 'Outer Hunt' },
+      ];
+      const e = samples[Math.random() * samples.length | 0];
+      appendLiveEvent(e);
+    }
+
+    // ============== FILTERS ==============
+    document.querySelectorAll('#filters .pill').forEach(p => {
+      p.addEventListener('click', () => {
+        document.querySelectorAll('#filters .pill').forEach(x => x.classList.remove('active'));
+        p.classList.add('active');
+        activeFilter = p.dataset.filter;
+        renderDirectory();
+      });
+    });
+    document.getElementById('globalSearch').addEventListener('input', renderDirectory);
+
+    // ============== GOV GRID ==============
+    function renderGov() {
+      const grid = document.getElementById('govGrid');
+      const cells = [
+        'pass','pass','pass','pass','pass','warn','pass','pass','pending','pass','pass'
+      ];
+      const names = [
+        'CC-01 Identity provenance',
+        'CC-02 Banding chain of custody',
+        'CC-03 Perch array integrity',
+        'CC-04 Voiceprint freshness',
+        'CC-05 Talon biometric hash',
+        'CC-06 Visitor TTL enforcement',
+        'CC-07 Zone segregation',
+        'CC-08 Audit ledger append-only',
+        'CC-09 Handler attestation cadence',
+        'CC-10 Predation incident escalation',
+        'CC-11 Lifecycle hygiene',
+      ];
+      grid.innerHTML = cells.map((c,i) => `<div class="gov-cell ${c !== 'pass' ? c : ''}" title="${names[i]} · ${c}"></div>`).join('');
+    }
+
+    // ============== ENV TOGGLE ==============
+    document.getElementById('envSelect').addEventListener('click', (e) => {
+      const btn = e.currentTarget;
+      const name = document.getElementById('envName');
+      if (btn.classList.contains('test')) {
+        btn.classList.remove('test');
+        name.textContent = 'Production Barn';
+        toast('Switched to Production Barn');
+      } else {
+        btn.classList.add('test');
+        name.textContent = 'Test Belfry';
+        toast('Switched to Test Belfry (read-only)');
+      }
+    });
+
+    // ============== HOOT ENROLL MODAL ==============
+    const hootModal = document.getElementById('hootModal');
+    const hootBegin = document.getElementById('hootBegin');
+    const hootCancel = document.getElementById('hootCancel');
+    const stepNum = document.getElementById('stepNum');
+    const voiceStatus = document.getElementById('voiceStatus');
+    const voiceHint = document.getElementById('voiceHint');
+    const voiceProgress = document.getElementById('voiceProgress');
+    const waveform = document.getElementById('waveform');
+    const modalSub = document.getElementById('modalSub');
+    let waveAnim = null, captureStep = 0;
+
+    function openHootModal() {
+      captureStep = 0;
+      stepNum.textContent = '1';
+      voiceStatus.innerHTML = '<span class="dot"></span>Awaiting subject';
+      voiceHint.textContent = 'Press Begin capture to listen on the perch array.';
+      voiceProgress.style.width = '0%';
+      hootBegin.textContent = 'Begin capture';
+      hootBegin.disabled = false;
+      modalSub.textContent = 'Capturing a clean reference vocalization for the selected subject. Best results at dusk.';
+      stopWave();
+      hootModal.classList.add('open');
+    }
+    function closeHootModal() {
+      stopWave();
+      hootModal.classList.remove('open');
+    }
+    hootCancel.addEventListener('click', closeHootModal);
+    hootModal.addEventListener('click', (e) => { if (e.target === hootModal) closeHootModal(); });
+
+    function startWave() {
+      const bars = waveform.querySelectorAll('.bar');
+      waveAnim = setInterval(() => {
+        bars.forEach((b, i) => {
+          const h = 12 + Math.abs(Math.sin(Date.now() / 220 + i * 0.6)) * 48 + Math.random() * 16;
+          b.style.height = h + 'px';
+        });
+      }, 60);
+    }
+    function stopWave() {
+      if (waveAnim) clearInterval(waveAnim);
+      waveAnim = null;
+      waveform.querySelectorAll('.bar').forEach(b => b.style.height = '12px');
+    }
+
+    const captureSteps = [
+      { status: '<span class="dot"></span>Listening on perch array P-03',         hint: 'Awaiting first vocalization. Stand back from the perch.', progress: 18,  ms: 1400 },
+      { status: '<span class="dot"></span>Capturing baseline hoot signature',     hint: 'Recording reference sample. 2 of 3 samples.',              progress: 48,  ms: 1700 },
+      { status: '<span class="dot"></span>Computing voiceprint embeddings',       hint: 'Generating signature on-device. No audio leaves the barn.', progress: 78, ms: 1400 },
+      { status: '<span class="dot done"></span>Enrollment complete',              hint: 'Voiceprint registered. Subject may now authenticate on any perch.', progress: 100, ms: 800 },
+    ];
+
+    hootBegin.addEventListener('click', () => {
+      if (hootBegin.textContent === 'Close') { closeHootModal(); afterEnroll(); return; }
+      hootBegin.disabled = true;
+      startWave();
+      runStep(0);
+    });
+
+    function runStep(i) {
+      const s = captureSteps[i];
+      stepNum.textContent = String(i + 1);
+      voiceStatus.innerHTML = s.status;
+      voiceHint.textContent = s.hint;
+      voiceProgress.style.width = s.progress + '%';
+      setTimeout(() => {
+        if (i < captureSteps.length - 1) {
+          runStep(i + 1);
+        } else {
+          stopWave();
+          hootBegin.disabled = false;
+          hootBegin.textContent = 'Close';
+        }
+      }, s.ms);
+    }
+
+    function afterEnroll() {
+      const o = owls.find(x => x.id === selectedId);
+      if (o) { o.mfa = 'enrolled'; o.last = '0m'; }
+      refreshCounts();
+      renderDirectory();
+      renderDetail();
+      appendLiveEvent({
+        g: 'success',
+        body: `Voiceprint enrolled for <code>${o.id}</code>. Signature committed to audit ledger.`,
+        zone: '—',
+      });
+      toast(`${o.name} · voiceprint enrolled`);
+    }
+
+    // ============== NEW OWL MODAL ==============
+    const owlModal = document.getElementById('owlModal');
+    document.getElementById('newOwlBtn').addEventListener('click', () => owlModal.classList.add('open'));
+    document.getElementById('owlCancel').addEventListener('click', () => owlModal.classList.remove('open'));
+    owlModal.addEventListener('click', (e) => { if (e.target === owlModal) owlModal.classList.remove('open'); });
+    document.getElementById('owlSave').addEventListener('click', () => {
+      const name = (document.getElementById('oName').value || '').trim() || 'Unnamed Fledgling';
+      const band = (document.getElementById('oBand').value || '').trim() || `TA-0${5020 + Math.floor(Math.random()*80)}`;
+      const stage = document.getElementById('oStage').value;
+      const newOwl = {
+        id: band,
+        name: name,
+        role: 'juvenile',
+        mfa: 'pending',
+        last: '0m',
+        risk: 'med',
+        hatch: 'May 2026 (est.)',
+        plumage: stage,
+        residency: 'Production Barn / Marsh & Marsh',
+        tagline: 'Newly provisioned fledgling. Awaiting hoot enrollment and handler attestation.',
+      };
+      owls.unshift(newOwl);
+      selectedId = newOwl.id;
+      owlModal.classList.remove('open');
+      refreshCounts();
+      renderDirectory();
+      renderDetail();
+      toast(`${name} provisioned. Identity ${band} active.`);
+    });
+
+    // ============== TOAST ==============
+    const toastEl = document.getElementById('toast');
+    const toastBody = document.getElementById('toastBody');
+    let toastTimer = null;
+    function toast(msg) {
+      toastBody.innerHTML = msg;
+      toastEl.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toastEl.classList.remove('show'), 3200);
+    }
+
+    // ============== KEYBOARD ==============
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        document.getElementById('globalSearch').focus();
+      }
+      if (e.key === 'Escape') {
+        if (hootModal.classList.contains('open')) closeHootModal();
+        if (owlModal.classList.contains('open')) owlModal.classList.remove('open');
+      }
+    });
+
+    // ============== BOOT ==============
+    refreshCounts();
+    renderDirectory();
+    renderDetail();
+    renderGov();
+  })();
+  </script>
+
+</body>
+</html>
