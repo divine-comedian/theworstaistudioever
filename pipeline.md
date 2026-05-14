@@ -129,7 +129,7 @@ Earnest startup tone kills the joke. Never write "Welcome to the future of X." N
      - Text color: `palette.ink` (with fallback to `--ink`).
      - Tagline as `.slide-tagline` (italic serif).
      - The entry's `hero.sub` (or `one_liner`) as `.slide-blurb`.
-     - A `.slide-cta` link to `/entries/<slug>/`.
+     - A `.slide-cta` link to `/entries/<slug>/`. **Wrap the link's text in a `<span>`** — e.g. `<a class="slide-cta" href="/entries/<slug>/"><span>visit →</span></a>`. The shipped `styles.css` relies on the inner span for the hover-state color inversion.
      - `.slide-date` showing the formatted date.
    - Includes a small `<nav class="nav">` with `←` `→` buttons and clickable `.dots`.
    - Includes a `<script>` block (inlined, not external) that wires up:
