@@ -62,11 +62,10 @@ if ! claude -p "$(cat pipeline.md)" \
   exit 1
 fi
 
-# Check that the agent printed RUN_COMPLETE
+# RUN_COMPLETE sentinel is informational only — the authoritative signals are
+# "new slug appeared in site/entries/" + "validate-entry.sh passed" (checked below).
 if ! grep -q "^RUN_COMPLETE:" "$LOG"; then
-  log "RUN FAILED: agent did not print RUN_COMPLETE marker"
-  notify_fail "agent did not signal completion"
-  exit 1
+  log "WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks"
 fi
 
 # Figure out which slug got created
