@@ -69,14 +69,15 @@ a { color: inherit; }
   position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
   display: flex; gap: 0.5rem; align-items: center;
   z-index: 10;
+  mix-blend-mode: difference; color: white;
 }
 .nav button {
-  background: transparent; border: 1px solid var(--ink); color: var(--ink);
+  background: transparent; border: 1px solid currentColor; color: currentColor;
   width: 2.5rem; height: 2.5rem; border-radius: 50%; cursor: pointer;
   font-family: var(--mono); font-size: 1rem;
   transition: background 0.2s, color 0.2s;
 }
-.nav button:hover { background: var(--ink); color: var(--bg); }
+.nav button:hover { background: currentColor; color: black; }
 .dots { display: flex; gap: 0.35rem; padding: 0 1rem; }
-.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); cursor: pointer; transition: background 0.2s; }
-.dot.active { background: var(--ink); }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.4; cursor: pointer; transition: opacity 0.2s; border: 0; padding: 0; }
+.dot.active { opacity: 1; }
