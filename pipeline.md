@@ -18,6 +18,8 @@ Earnest startup tone kills the joke. Never write "Welcome to the future of X." N
 
 ## Step 1 — ROLL
 
+> **Subject rule (non-negotiable):** every subject is either a kind of animal or a relatable type of person. Examples: `dogs`, `barn owls`, `wolves`, `foxes`, `introverts`, `grandmas`, `yogis`. The Mad-Libs joke is always "[a serious B2B or tech company] for [a creature or a kind of person]". A subject is NEVER an abstract concept, an emotion, an inanimate object, or an event. If a drawn subject is not an animal or a type of person, discard it, draw again, and remove it from `seeds/subjects.json` so it never recurs.
+
 1. Read `seeds/companies.json`, `seeds/subjects.json`, `state/history.json`.
 2. Build a deterministic PRNG seeded from today's UTC date string (`YYYY-MM-DD`). Use a simple hash like:
    - Sum the char codes of the date string, multiply by a prime, mod 2^31. Use that as the initial seed for a linear-congruential generator. (Or any PRNG that's deterministic from a string seed.)

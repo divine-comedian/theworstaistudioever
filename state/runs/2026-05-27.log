@@ -1,0 +1,189 @@
+[2026-05-27T08:00:01Z] === daily run start ===
+From https://github.com/divine-comedian/theworstaistudioever
+   aa63abe..b46ebd8  main       -> origin/main
+Updating aa63abe..b46ebd8
+Created autostash: 156d887
+Fast-forward
+ .gitignore                |  2 ++
+ site/styles.css           | 11 +++++++----
+ state/runs/2026-05-26.log | 11 +++++++++++
+ 3 files changed, 20 insertions(+), 4 deletions(-)
+Applied autostash.
+[2026-05-27T08:00:01Z] invoking claude -p
+[2026-05-27] === agent run summary ===
+ROLL:
+  company        : Box
+  subject        : minor inconveniences
+  slug           : box-for-minor-inconveniences
+  tagline        : Box for minor inconveniences
+  rerolls        : 0 (first drawn pair was novel; not in history.json)
+  PRNG           : LCG seeded from date "2026-05-27" (charcode sum 498 * prime 16777619 mod 2^31 = seed 1912803318)
+
+CONCEPT:
+  product_name   : Niggle
+  one_liner      : The secure content cloud for minor inconveniences.
+  angle          : Enterprise content management (Box) applied to small annoyances -
+                   versioning, severity classification, retention, legal hold, approval workflows.
+
+DESIGN DIRECTION:
+  style          : bento-grid modern cloud SaaS (clean, boxy, card-driven)
+  palette        : primary #1f47e6 / accent #ffc23d / bg #f5f8ff / fg+ink #0d1a3a / muted #69748f
+  fonts          : display "Space Grotesk", body "Plus Jakarta Sans"
+  archetype      : B2B cloud / content-storage SaaS, bento-tile composition
+
+ANTI-SAMENESS CHECK (vs last 3 entries -- only 3 exist, so all of them):
+  palantir-for-dogs            : tactical-brutalist terminal / dark / JetBrains Mono + IBM Plex Sans   -> no collision
+  okta-for-barn-owls           : editorial warm modernist / cream / Fraunces + Inter                   -> no collision
+  notion-for-mid-afternoon-despair : soft minimalist dusk / lilac-gray / Bricolage + Hanken Grotesk     -> no collision
+  result         : (style, palette, fonts) tuple is unique on all three axes. PASS.
+  near-miss note : bg #f5f8ff is a light cool field, adjacent in family to Notion's #edeef4, but clearly
+                   differentiated by style (bento vs single-column), accent (cobalt+yellow vs indigo+rose),
+                   and fonts. Acceptable.
+
+GALLERY:
+  rebuilt site/index.html from 4 concept.json files, sorted date desc (slug asc tie-break).
+  order: box (05-27), notion (05-26), okta (05-14), palantir (05-14). header count: "4 startups".
+
+VALIDATION:
+  scripts/validate-entry.sh site box-for-minor-inconveniences -> OK (exit 0)
+  history.json appended and re-validated as a 4-element array.
+
+WARNINGS:
+  * The pipeline mandates invoking three skills - anti-ai-slop (steps 2/4/5), ui-ux-pro-max (step 3),
+    and frontend-design (steps 4/5). None of these are installed in this environment (absent from the
+    available-skills list, from ~/.claude/skills, and from any installed plugin). A non-existent skill
+    cannot be invoked. Their documented rules are spelled out inline in the pipeline, so the voice
+    discipline (deadpan faux-corporate, no AI-slop tells) and the design discipline (style/palette/font
+    selection + anti-sameness) were applied manually. Flagging so the skill set can be restored.
+
+STATUS: complete.
+Daily run finished. Today's entry shipped to the working tree (the wrapper handles git).
+
+**`Box for minor inconveniences` → Niggle** — "the secure content cloud for minor inconveniences." Enterprise content management (versioning, severity classification, retention, legal hold, approval workflows) applied with a straight face to small annoyances.
+
+What was produced:
+- `concept.json`, `index.html` (bento-grid landing), `demo.html` (interactive grievance content-manager: search, folder filter, sort, row drawer with version history + activity, "new inconvenience" modal, share modal with copyable link, legal-hold/trash logic, storage-meter bump)
+- Gallery `site/index.html` rebuilt → **4 startups**, newest first, span-wrapped CTAs intact
+- `state/history.json` appended (4-element array), run summary appended to `state/runs/2026-05-27.log`
+- Roll was deterministic from `2026-05-27`, **0 rerolls**, validation **OK**
+
+Design tuple (bento-grid cloud SaaS · cobalt+yellow on cool-white · Space Grotesk + Plus Jakarta Sans) is unique against all 3 prior entries.
+
+⚠️ **One thing to fix in your environment, not in today's output:** the pipeline mandates invoking three skills — `anti-ai-slop`, `ui-ux-pro-max`, and `frontend-design` — but none are installed here (not in the skill list, `~/.claude/skills`, or any plugin). I can't invoke a skill that doesn't exist, so rather than fake those invocations or halt the daily ship, I applied their documented rules by hand (the voice and design/anti-sameness guidance is spelled out inline in `pipeline.md`). If those skills are supposed to be present, the install is broken and worth restoring so future runs use the real guardrails. This is also logged under WARNINGS in today's run log.
+
+```
+RUN_COMPLETE: box-for-minor-inconveniences
+```
+[2026-05-27T08:13:56Z] new entry: box-for-minor-inconveniences
+validate-entry [box-for-minor-inconveniences]: OK
+[2026-05-27T08:13:56Z] committing: Box for minor inconveniences
+[main f458ebd] feat: Box for minor inconveniences
+ 9 files changed, 1467 insertions(+), 17 deletions(-)
+ create mode 100644 site/entries/box-for-minor-inconveniences/concept.json
+ create mode 100644 site/entries/box-for-minor-inconveniences/demo.html
+ create mode 100644 site/entries/box-for-minor-inconveniences/index.html
+ create mode 100644 state/runs/2026-05-27.log
+remote: Permission to divine-comedian/theworstaistudioever.git denied to divine-comedian.
+fatal: unable to access 'https://github.com/divine-comedian/theworstaistudioever.git/': The requested URL returned error: 403
+[2026-05-27T08:13:57Z] push attempt 1 failed; sleeping
+remote: Permission to divine-comedian/theworstaistudioever.git denied to divine-comedian.
+fatal: unable to access 'https://github.com/divine-comedian/theworstaistudioever.git/': The requested URL returned error: 403
+[2026-05-27T08:14:02Z] push attempt 2 failed; sleeping
+remote: Permission to divine-comedian/theworstaistudioever.git denied to divine-comedian.
+fatal: unable to access 'https://github.com/divine-comedian/theworstaistudioever.git/': The requested URL returned error: 403
+[2026-05-27T08:14:12Z] push attempt 3 failed; sleeping
+[2026-05-27T08:14:27Z] RUN FAILED: push failed after 3 attempts
+[manual regen 2026-05-27T16:43:34Z] ===== NEW RUN BELOW =====
+[2026-05-27T16:43:34Z] === daily run start ===
+Already up to date.
+[2026-05-27T16:43:35Z] invoking claude -p
+
+[2026-05-27T17:07:26Z] === agent run summary (manual regen) ===
+CONTEXT:
+  The 08:00 cron run shipped "Box for minor inconveniences", which violated the
+  non-negotiable subject rule (an abstract concept, not an animal or a type of person),
+  and its push failed (403, HTTPS vs SSH). That entry was rolled back before this run:
+  history.json restored to 3 entries, the bad subject removed from seeds/subjects.json,
+  the commit reset, and the entry files deleted. This manual regen produces today's entry
+  correctly from the current seeds.
+
+ROLL:
+  company        : Box
+  subject        : octopuses
+  slug           : box-for-octopuses
+  tagline        : Box for octopuses
+  rerolls        : 0 (first drawn pair was novel and not in history.json)
+  PRNG           : seed from date "2026-05-27" (charcode sum 498 * 16777619 mod 2^31 = 1912803318),
+                   then ANSI-C LCG (a=1103515245, c=12345, m=2^31). company index 29 -> Box;
+                   subject index 3 -> octopuses (the slot the removed bad subject used to occupy
+                   now resolves to a valid animal, so the same date yields a different, clean pair).
+  subject rule   : octopuses is an animal. PASS.
+
+CONCEPT:
+  product_name   : Mantle
+  one_liner      : The Containment Cloud for octopuses. Every enclosure versioned, every arm
+                   permissioned, every escape on the record.
+  angle          : Box-style enterprise content management applied to an escape-artist cephalopod.
+                   Per-arm access governance, enclosure version history, egress threat detection,
+                   tamper-evident audit ledger. Pricing tiers escalate by how sealed the lid is
+                   (Lidded / Double-Lidded / Hermetic).
+
+DESIGN DIRECTION:
+  style          : glassmorphism, light aqueous control room (frosted tank-glass panels)
+  palette        : primary #0e7a86 / accent #ef4e6b / bg #e6f4f5 / fg+ink #0a2e33 / muted #4d6e74
+  fonts          : display "Outfit", body "Work Sans"
+  archetype      : Enterprise Gateway, B2B content-cloud SaaS landing
+
+ANTI-SAMENESS CHECK (vs all existing entries; only 3 exist, so all within the last 7):
+  palantir-for-dogs                : tactical-brutalist terminal / dark amber / JetBrains Mono + IBM Plex Sans -> no collision
+  okta-for-barn-owls               : editorial warm modernist / cream / Fraunces + Inter                      -> no collision
+  notion-for-mid-afternoon-despair : soft minimalist dusk / lilac-gray / Bricolage + Hanken Grotesk           -> no collision
+  result         : (style, palette, fonts) unique on all three axes. PASS. Also distinct from the
+                   rolled-back Box build (bento-grid / cobalt+yellow / Space Grotesk + Plus Jakarta).
+
+SKILLS (all invoked as mandated this run):
+  anti-ai-slop   : steps 2, 4, 5 (voice). ui-ux-pro-max: step 3 (style/palette/fonts).
+  frontend-design: steps 4, 5 (landing + demo). These are installed and available now; the
+  08:00 run had logged them as absent, so this run restores the intended guardrails.
+
+GALLERY:
+  rebuilt site/index.html from 4 concept.json files, sorted date desc (slug asc tie-break).
+  order: box (05-27), notion (05-26), okta (05-14), palantir (05-14). header count: "4 startups".
+  span-wrapped CTAs intact; styles.css left untouched.
+
+VALIDATION:
+  scripts/validate-entry.sh site box-for-octopuses -> OK (exit 0)
+  history.json appended and re-validated as a 4-element array.
+  demo.html JavaScript passed node --check; no em dashes in any entry file.
+
+NEAR-MISSES / NOTES:
+  * Two dark-leaning entries now exist (palantir terminal, this aqueous glass), but the tuples
+    differ on every axis and read very differently (CRT amber vs frosted teal). No collision.
+  * The working tree also carries unrelated pre-existing edits (.env.example, README.md, pipeline.md,
+    scripts/run-daily.sh, seeds/subjects.json) from the earlier rollback/fix work. Left untouched;
+    flagging because the wrapper's commit will sweep them in.
+
+STATUS: complete.
+Daily run finished. Today's entry shipped to the working tree (the wrapper handles git).
+
+**`Box for octopuses` → Mantle** — "the Containment Cloud for octopuses." Box's enterprise content management (versioning, classification, per-arm access governance, retention, tamper-evident audit) applied with a straight face to an animal whose entire purpose is escaping containment.
+
+What this run had to navigate first: the **08:00 cron run shipped `Box for minor inconveniences`**, which broke the non-negotiable subject rule (an abstract concept, not an animal or type of person) and then failed to push (403, the known HTTPS-vs-SSH issue). It was rolled back before I started — `history.json` back to 3 entries, the bad subject pulled from `seeds/subjects.json`, the commit reset, files removed. So today had no shipped entry, and the deterministic roll for `2026-05-27` now lands cleanly: the LCG draws company index 29 → Box and subject index 3, which (with the bad subject gone) resolves to **octopuses**. 0 rerolls, novel pair.
+
+Produced:
+- `concept.json`, `index.html` (glassmorphism aqueous landing), `demo.html` (interactive containment console: live search, classification filter chips, list/grid toggle, version-history drawer with restore, 8-arm permissions toggles, +New artifact/egress modals, copyable share link, and a containment-integrity meter that reacts to every action)
+- Gallery `site/index.html` rebuilt → **4 startups**, newest first, slug-asc tiebreak on the two 05-14 entries, span-wrapped CTAs intact, `styles.css` untouched
+- `state/history.json` appended (validated 4-element array), run summary appended to `state/runs/2026-05-27.log`
+
+Skills invoked as mandated: **anti-ai-slop** (steps 2/4/5), **ui-ux-pro-max** (step 3), **frontend-design** (steps 4/5) — all present this time, unlike the 08:00 run that logged them missing. Validation `OK` (exit 0); demo JS passed `node --check`; zero em dashes in any entry file.
+
+Design tuple (glassmorphism aqueous · teal+coral on seafoam · Outfit + Work Sans) is unique on all three axes against the last 7 (only 3 exist), and also distinct from the rolled-back Box build.
+
+One thing worth your attention, not in today's output: the working tree carries unrelated pre-existing edits (`.env.example`, `README.md`, `pipeline.md`, `scripts/run-daily.sh`, `seeds/subjects.json`) from the earlier rollback/fix work. I left them untouched, but the wrapper's commit will sweep them in alongside the entry.
+
+```
+RUN_COMPLETE: box-for-octopuses
+```
+[2026-05-27T17:08:02Z] new entry: box-for-octopuses
+validate-entry [box-for-octopuses]: OK
+[2026-05-27T17:08:02Z] committing: Box for octopuses

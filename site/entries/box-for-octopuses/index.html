@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mantle · theworstaistudioever</title>
+<meta name="description" content="The Containment Cloud for octopuses. Every enclosure versioned, every arm permissioned, every escape on the record." />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Mantle · Box for octopuses" />
+<meta property="og:description" content="The Containment Cloud for octopuses. Every enclosure versioned, every arm permissioned, every escape on the record." />
+<meta property="og:site_name" content="theworstaistudioever" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Mantle · Box for octopuses" />
+<meta name="twitter:description" content="The Containment Cloud for octopuses. Every enclosure versioned, every arm permissioned, every escape on the record." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Work+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --primary: #0e7a86;
+    --primary-deep: #0a5a63;
+    --accent: #ef4e6b;
+    --accent-deep: #d23659;
+    --bg: #e6f4f5;
+    --bg-2: #d1eaec;
+    --bg-3: #f3fafb;
+    --ink: #0a2e33;
+    --muted: #4d6e74;
+    --muted-soft: #6f9197;
+    --glass: rgba(255,255,255,0.55);
+    --glass-2: rgba(255,255,255,0.38);
+    --glass-line: rgba(255,255,255,0.65);
+    --hairline: rgba(10,46,51,0.10);
+    --shadow: 0 18px 44px -20px rgba(10,46,51,0.40);
+    --shadow-sm: 0 8px 22px -14px rgba(10,46,51,0.38);
+    --display: "Outfit", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    --body: "Work Sans", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: var(--body);
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Aqueous atmosphere: seafoam wash, drifting caustic blooms, faint glass seam */
+  body::before {
+    content: "";
+    position: fixed; inset: 0; z-index: -2;
+    background:
+      radial-gradient(60% 50% at 18% 12%, rgba(70,196,205,0.38), transparent 60%),
+      radial-gradient(55% 45% at 88% 22%, rgba(14,122,134,0.28), transparent 62%),
+      radial-gradient(70% 60% at 70% 95%, rgba(120,214,206,0.30), transparent 60%),
+      linear-gradient(180deg, var(--bg-3), var(--bg) 38%, var(--bg-2));
+    animation: drift 32s ease-in-out infinite alternate;
+  }
+  body::after {
+    content: "";
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.05) 0 1px, transparent 1px 220px);
+    opacity: 0.5;
+  }
+  @keyframes drift {
+    0%   { transform: translate3d(0,0,0) scale(1); }
+    100% { transform: translate3d(-3%, 2%, 0) scale(1.08); }
+  }
+
+  .wrap { width: min(1140px, 92vw); margin: 0 auto; }
+
+  /* ---- glass primitive ---- */
+  .glass {
+    background: linear-gradient(160deg, var(--glass), var(--glass-2));
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    border: 1px solid var(--glass-line);
+    border-radius: 18px;
+    box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,0.7);
+  }
+
+  /* ---- nav ---- */
+  header.nav {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+    background: rgba(230,244,245,0.62);
+    border-bottom: 1px solid var(--hairline);
+  }
+  .nav-inner { display: flex; align-items: center; gap: 1.5rem; padding: 0.85rem 0; }
+  .brand { display: flex; align-items: center; gap: 0.55rem; font-family: var(--display); font-weight: 700; font-size: 1.15rem; letter-spacing: -0.01em; }
+  .mark {
+    width: 26px; height: 26px; border-radius: 8px; flex: 0 0 auto;
+    background: radial-gradient(circle at 32% 28%, #34c3cf, var(--primary) 70%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 4px 10px -4px rgba(14,122,134,0.7);
+    display: grid; place-items: center;
+  }
+  .mark svg { width: 16px; height: 16px; color: #eafaff; }
+  nav.links { display: flex; gap: 1.5rem; margin-left: auto; }
+  nav.links a {
+    color: var(--muted); text-decoration: none; font-size: 0.92rem; font-weight: 500;
+    transition: color 0.18s;
+  }
+  nav.links a:hover { color: var(--ink); }
+
+  .btn {
+    font-family: var(--display); font-weight: 600; font-size: 0.95rem;
+    border-radius: 12px; padding: 0.7rem 1.15rem; cursor: pointer;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;
+    border: 1px solid transparent; transition: transform 0.18s, box-shadow 0.22s, background 0.2s, color 0.2s;
+    white-space: nowrap;
+  }
+  .btn-primary {
+    background: linear-gradient(180deg, var(--primary), var(--primary-deep));
+    color: #f0fdff; box-shadow: 0 10px 22px -10px rgba(14,122,134,0.8);
+  }
+  .btn-primary:hover { box-shadow: 0 0 0 4px rgba(14,122,134,0.16), 0 14px 26px -10px rgba(14,122,134,0.9); }
+  .btn-ghost {
+    background: var(--glass); border-color: var(--glass-line); color: var(--ink);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  }
+  .btn-ghost:hover { box-shadow: 0 0 0 4px rgba(14,122,134,0.10); }
+  .btn-nav { padding: 0.55rem 1rem; }
+
+  /* ---- hero ---- */
+  .hero { padding: 5rem 0 3.5rem; }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 3rem; align-items: center; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-size: 0.74rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--primary-deep); margin-bottom: 1.4rem;
+  }
+  .eyebrow .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 0 4px rgba(14,122,134,0.18); }
+  h1.hero-title {
+    font-family: var(--display); font-weight: 800; line-height: 1.02; letter-spacing: -0.025em;
+    font-size: clamp(2.6rem, 6vw, 4.3rem); margin: 0 0 1.3rem;
+  }
+  h1.hero-title .coral { color: var(--accent); }
+  .hero-sub { font-size: 1.12rem; color: var(--muted); max-width: 40ch; margin: 0 0 2rem; }
+  .hero-sub strong { color: var(--ink); font-weight: 600; }
+  .hero-ctas { display: flex; gap: 0.85rem; flex-wrap: wrap; align-items: center; }
+  .hero-fine { margin-top: 1.5rem; font-size: 0.82rem; color: var(--muted-soft); letter-spacing: 0.02em; }
+
+  /* ---- hero product card ---- */
+  .console { padding: 1.05rem; }
+  .console-head { display: flex; align-items: center; gap: 0.6rem; padding: 0.2rem 0.3rem 0.85rem; border-bottom: 1px solid var(--hairline); }
+  .console-head .avatar { width: 30px; height: 30px; border-radius: 9px; background: radial-gradient(circle at 30% 28%, #58cdd6, var(--primary-deep)); flex: 0 0 auto; }
+  .console-head .meta { font-size: 0.82rem; line-height: 1.25; }
+  .console-head .meta b { font-family: var(--display); font-weight: 600; }
+  .console-head .meta span { color: var(--muted-soft); }
+  .console-head .lock { margin-left: auto; font-size: 0.7rem; color: var(--primary-deep); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+  .row {
+    display: grid; grid-template-columns: 1fr auto; gap: 0.5rem; align-items: center;
+    padding: 0.62rem 0.4rem; border-bottom: 1px solid var(--hairline); font-size: 0.86rem;
+  }
+  .row .name { display: flex; align-items: center; gap: 0.5rem; }
+  .row .name .file { width: 16px; height: 16px; color: var(--primary); flex: 0 0 auto; }
+  .chip {
+    font-size: 0.68rem; font-weight: 600; padding: 0.16rem 0.5rem; border-radius: 999px;
+    letter-spacing: 0.02em; white-space: nowrap;
+  }
+  .chip.internal { background: rgba(14,122,134,0.12); color: var(--primary-deep); }
+  .chip.conf { background: rgba(120,86,160,0.14); color: #5a3f7a; }
+  .chip.hiding { background: rgba(239,78,107,0.14); color: var(--accent-deep); }
+  .meter-wrap { padding: 0.9rem 0.4rem 0.3rem; }
+  .meter-label { display: flex; justify-content: space-between; font-size: 0.74rem; color: var(--muted); margin-bottom: 0.4rem; }
+  .meter-label b { font-family: var(--display); color: var(--ink); }
+  .meter { height: 8px; border-radius: 999px; background: rgba(10,46,51,0.10); overflow: hidden; }
+  .meter > i { display: block; height: 100%; width: 86%; border-radius: 999px; background: linear-gradient(90deg, var(--primary), #43c1cb); }
+  .alert {
+    margin-top: 0.85rem; display: flex; align-items: center; gap: 0.55rem;
+    background: rgba(239,78,107,0.10); border: 1px solid rgba(239,78,107,0.4);
+    color: var(--accent-deep); border-radius: 12px; padding: 0.55rem 0.7rem; font-size: 0.8rem; font-weight: 500;
+    animation: pulseBorder 2.4s ease-out 1;
+  }
+  .alert svg { width: 16px; height: 16px; flex: 0 0 auto; }
+  @keyframes pulseBorder {
+    0% { box-shadow: 0 0 0 0 rgba(239,78,107,0.5); }
+    100% { box-shadow: 0 0 0 10px rgba(239,78,107,0); }
+  }
+
+  /* ---- trust strip ---- */
+  .trust { padding: 1.5rem 0 3rem; }
+  .trust .glass { padding: 1.1rem 1.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem 2rem; }
+  .trust .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--muted-soft); font-weight: 600; }
+  .trust .names { display: flex; flex-wrap: wrap; gap: 0.6rem 1.6rem; margin-left: auto; }
+  .trust .names span { font-family: var(--display); font-weight: 600; color: var(--muted); font-size: 0.95rem; }
+
+  /* ---- section scaffolding ---- */
+  section.band { padding: 4rem 0; }
+  .section-head { max-width: 60ch; margin-bottom: 2.6rem; }
+  .kicker { font-size: 0.74rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--primary-deep); }
+  .section-head h2 { font-family: var(--display); font-weight: 700; font-size: clamp(1.9rem, 3.6vw, 2.7rem); letter-spacing: -0.02em; margin: 0.7rem 0 0.6rem; line-height: 1.08; }
+  .section-head p { color: var(--muted); margin: 0; max-width: 52ch; }
+
+  /* ---- features ---- */
+  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+  .feature { padding: 1.7rem 1.5rem; display: flex; flex-direction: column; }
+  .feature .ico {
+    width: 46px; height: 46px; border-radius: 13px; display: grid; place-items: center; margin-bottom: 1.1rem;
+    background: linear-gradient(180deg, rgba(14,122,134,0.16), rgba(14,122,134,0.06));
+    border: 1px solid rgba(14,122,134,0.22); color: var(--primary-deep);
+  }
+  .feature .ico svg { width: 22px; height: 22px; }
+  .feature .idx { font-family: var(--display); font-size: 0.78rem; color: var(--muted-soft); letter-spacing: 0.1em; }
+  .feature h3 { font-family: var(--display); font-weight: 600; font-size: 1.22rem; margin: 0.2rem 0 0.6rem; letter-spacing: -0.01em; }
+  .feature p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+
+  /* ---- testimonials ---- */
+  .quotes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+  .quote { padding: 1.7rem 1.5rem; display: flex; flex-direction: column; }
+  .quote .qmark { font-family: var(--display); font-weight: 800; font-size: 2.4rem; line-height: 0.6; color: var(--primary); opacity: 0.4; height: 1.1rem; }
+  .quote blockquote { margin: 0.8rem 0 1.3rem; font-size: 1rem; color: var(--ink); }
+  .quote .who { margin-top: auto; display: flex; align-items: center; gap: 0.7rem; }
+  .quote .who .pip { width: 34px; height: 34px; border-radius: 50%; flex: 0 0 auto; background: radial-gradient(circle at 30% 28%, #6fd3da, var(--primary-deep)); }
+  .quote .who .n { font-family: var(--display); font-weight: 600; font-size: 0.92rem; }
+  .quote .who .t { font-size: 0.78rem; color: var(--muted-soft); line-height: 1.3; }
+
+  /* ---- pricing ---- */
+  .pricing { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; align-items: stretch; }
+  .tier { padding: 1.8rem 1.5rem; display: flex; flex-direction: column; position: relative; }
+  .tier.feat { border-color: rgba(14,122,134,0.5); box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,0.7), 0 0 0 2px rgba(14,122,134,0.25); }
+  .tier .badge {
+    position: absolute; top: -0.7rem; right: 1.2rem; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    background: linear-gradient(180deg, var(--primary), var(--primary-deep)); color: #f0fdff; padding: 0.25rem 0.65rem; border-radius: 999px;
+  }
+  .tier .tname { font-family: var(--display); font-weight: 700; font-size: 1.3rem; }
+  .tier .ttag { color: var(--muted); font-size: 0.88rem; min-height: 2.6em; margin-top: 0.2rem; }
+  .tier .price { font-family: var(--display); font-weight: 800; font-size: 1.7rem; margin: 1rem 0 0.2rem; letter-spacing: -0.02em; }
+  .tier ul { list-style: none; padding: 0; margin: 1.2rem 0 1.6rem; display: flex; flex-direction: column; gap: 0.6rem; }
+  .tier li { display: flex; gap: 0.55rem; font-size: 0.9rem; color: var(--ink); }
+  .tier li svg { width: 17px; height: 17px; color: var(--primary); flex: 0 0 auto; margin-top: 0.18rem; }
+  .tier .btn { margin-top: auto; justify-content: center; }
+
+  /* ---- demo CTA band ---- */
+  .demo-cta { padding: 1rem 0 4.5rem; }
+  .demo-cta .glass { padding: 2.6rem 2.2rem; display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; justify-content: space-between; overflow: hidden; position: relative; }
+  .demo-cta .glass::after { content: ""; position: absolute; right: -8%; top: -40%; width: 340px; height: 340px; border-radius: 50%; background: radial-gradient(circle, rgba(67,193,203,0.45), transparent 65%); pointer-events: none; }
+  .demo-cta h2 { font-family: var(--display); font-weight: 700; font-size: clamp(1.6rem, 3vw, 2.2rem); margin: 0 0 0.4rem; letter-spacing: -0.02em; }
+  .demo-cta p { margin: 0; color: var(--muted); max-width: 46ch; }
+  .demo-cta .big { font-size: 1.05rem; padding: 0.9rem 1.5rem; position: relative; z-index: 1; }
+
+  /* ---- footer ---- */
+  footer { border-top: 1px solid var(--hairline); padding: 2.4rem 0 3rem; }
+  .foot-inner { display: flex; flex-wrap: wrap; gap: 1.2rem; align-items: center; justify-content: space-between; }
+  .foot-inner a.home { font-family: var(--display); font-weight: 600; color: var(--primary-deep); text-decoration: none; font-size: 0.95rem; }
+  .foot-inner a.home:hover { color: var(--ink); }
+  .foot-links { display: flex; gap: 1.4rem; flex-wrap: wrap; }
+  .foot-links span { color: var(--muted-soft); font-size: 0.85rem; }
+  .foot-fine { color: var(--muted-soft); font-size: 0.8rem; width: 100%; margin-top: 0.4rem; }
+
+  /* ---- reveal animation ---- */
+  .reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+  .reveal.in { opacity: 1; transform: none; }
+
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 2.2rem; }
+    .features, .quotes, .pricing { grid-template-columns: 1fr; }
+    nav.links { display: none; }
+    .trust .names { margin-left: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    body::before { animation: none; }
+    .alert { animation: none; }
+    .reveal { transition: opacity 0.2s; transform: none; }
+    .btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top" aria-label="Mantle home">
+      <span class="mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0-6 6v4c0 1.5-1 2-1 3 0 1 1 1.5 2 1s1.2-1.5 2-1.5 1 1.5 2 1.5 1.2-1.5 2-1.5 1 1.5 2 1.5 1.2-1.5 2-1.5 1.5.5 2 .5 1-.5 1-1c0-1-1-1.5-1-3V9a6 6 0 0 0-6-6Z"/><circle cx="10" cy="9.5" r="0.6" fill="currentColor"/><circle cx="14" cy="9.5" r="0.6" fill="currentColor"/></svg>
+      </span>
+      Mantle
+    </a>
+    <nav class="links">
+      <a href="#capabilities">Capabilities</a>
+      <a href="#customers">Customers</a>
+      <a href="#pricing">Pricing</a>
+    </nav>
+    <a class="btn btn-primary btn-nav" href="#pricing">Request a containment review</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy reveal">
+        <span class="eyebrow"><span class="dot" aria-hidden="true"></span> Mantle // The Containment Cloud</span>
+        <h1 class="hero-title">Your octopus, contained and <span class="coral">compliant</span>.</h1>
+        <p class="hero-sub">Mantle is the content and containment cloud for cephalopods. Store every enclosure, version every overnight rearrangement, govern access down to the individual arm, and keep a <strong>tamper-evident record</strong> of every escape attempt.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="#pricing">Request a containment review</a>
+          <a class="btn btn-ghost" href="./demo.html">Open the demo →</a>
+        </div>
+        <p class="hero-fine">Deployed across nine public aquariums, two university marine labs, and one home aquarist who would like it on the record that he warned everyone. SOC 2 Type II.</p>
+      </div>
+
+      <div class="hero-card reveal">
+        <div class="glass console" role="img" aria-label="Preview of the Mantle containment console for an octopus named Gerald">
+          <div class="console-head">
+            <span class="avatar" aria-hidden="true"></span>
+            <span class="meta"><b>Gerald</b><br><span>Giant Pacific Octopus · Tank C-3</span></span>
+            <span class="lock">Locked</span>
+          </div>
+          <div class="row"><span class="name"><svg class="file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>Lid Configuration v14</span><span class="chip internal">Internal</span></div>
+          <div class="row"><span class="name"><svg class="file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>Tank Layout (rockwork)</span><span class="chip conf">Confidential</span></div>
+          <div class="row"><span class="name"><svg class="file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg>Camouflage Log</span><span class="chip hiding">Actively Hiding</span></div>
+          <div class="meter-wrap">
+            <div class="meter-label"><span>Containment Integrity</span><b>86%</b></div>
+            <div class="meter" aria-hidden="true"><i></i></div>
+          </div>
+          <div class="alert"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>Egress incident: probing arm detected at north seam</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST -->
+  <section class="trust">
+    <div class="wrap">
+      <div class="glass reveal">
+        <span class="label">Audited &amp; attested</span>
+        <span class="label" style="color:var(--primary-deep)">SOC 2 Type II · ISO 27001 · AZA-aligned</span>
+        <div class="names">
+          <span>North Pier Aquarium</span>
+          <span>Coldwater Gallery</span>
+          <span>University Marine Annex</span>
+          <span>Tidewater Labs</span>
+          <span>The Sealed Room</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CAPABILITIES -->
+  <section class="band" id="capabilities">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="kicker">Capabilities</span>
+        <h2>Govern an animal that does not wish to be governed.</h2>
+        <p>Three controls, applied to a cephalopod with the same rigor your security team applies to a quarterly close.</p>
+      </div>
+      <div class="features">
+        <article class="glass feature reveal">
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="3.5"/><path d="m10 13 8-8"/><path d="m15.5 5.5 3 3"/><path d="m18 3 3 3"/></svg></span>
+          <span class="idx">01</span>
+          <h3>Per-Arm Access Governance</h3>
+          <p>Assign each of the eight arms its own access scope. The mantle holds admin. Arms three and seven are cleared to work the feeder latch. The rest stay read-only. Policy is enforced at the suckers and reconciled hourly, so the moment an arm reaches somewhere it was never provisioned for, you get a ticket before it gets the lid.</p>
+        </article>
+        <article class="glass feature reveal">
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 8v4l3 2"/></svg></span>
+          <span class="idx">02</span>
+          <h3>Version History for the Enclosure</h3>
+          <p>Your octopus redecorates the tank at three in the morning. Mantle captures each layout as a numbered revision, so the rockwork, the decor, and the exact position of the filter intake are restorable to any prior known-good state. Roll back to v41 in one click. It will be undone by breakfast. The change is at least attributable now.</p>
+        </article>
+        <article class="glass feature reveal">
+          <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg></span>
+          <span class="idx">03</span>
+          <h3>Egress Threat Detection</h3>
+          <p>Lid sensors, a rim camera, and a tank-volume model watch for the early signature of an exit: a probing arm at the seam, a slow drop in water level, an ink event with no clear cause. A confirmed egress opens an incident, pages the on-call aquarist, and writes a tamper-evident line to the audit ledger. The escape still happens. It is simply no longer undocumented.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- CUSTOMERS / TESTIMONIALS -->
+  <section class="band" id="customers">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="kicker">Customers</span>
+        <h2>The escape was always going to happen. Now it has a paper trail.</h2>
+        <p>Operators who decided their cephalopod was a compliance surface.</p>
+      </div>
+      <div class="quotes">
+        <article class="glass quote reveal">
+          <span class="qmark" aria-hidden="true">&ldquo;</span>
+          <blockquote>Gerald used to be on the floor by six a.m. with no explanation. He is still on the floor by six. The difference is that I now have the timeline, the arm involved, and a signed incident report my insurer accepts.</blockquote>
+          <div class="who"><span class="pip" aria-hidden="true"></span><span><span class="n">Dorota Avila-Brenner</span><br><span class="t">Lead Aquarist, Coldwater Gallery, North Pier Aquarium</span></span></div>
+        </article>
+        <article class="glass quote reveal">
+          <span class="qmark" aria-hidden="true">&ldquo;</span>
+          <blockquote>Our first containment review failed in eleven minutes. After Mantle we passed in forty, and the auditor went home with a complete record of every escape since the tank opened.</blockquote>
+          <div class="who"><span class="pip" aria-hidden="true"></span><span><span class="n">Reuben Oyelaran, MSc</span><br><span class="t">Facilities and Compliance Officer, University Marine Annex</span></span></div>
+        </article>
+        <article class="glass quote reveal">
+          <span class="qmark" aria-hidden="true">&ldquo;</span>
+          <blockquote>I granted arm seven feeder access and revoked it from the other seven. The octopus has not lost weight and my countertops are finally dry. This is the most governed my home has ever been.</blockquote>
+          <div class="who"><span class="pip" aria-hidden="true"></span><span><span class="n">Pen Castellano</span><br><span class="t">Home Aquarist and, as of this quarter, designated Octopus Data Owner</span></span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="band" id="pricing">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="kicker">Pricing</span>
+        <h2>Priced by how sealed the lid is.</h2>
+        <p>Every plan includes the audit ledger. The ledger is not optional. Neither, it turns out, is the octopus.</p>
+      </div>
+      <div class="pricing">
+        <article class="glass tier reveal">
+          <div class="tname">Lidded</div>
+          <div class="ttag">One octopus. One lid. Containment basics.</div>
+          <div class="price">$680<span style="font-size:0.9rem;color:var(--muted);font-weight:500"> / mo</span></div>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>1 cephalopod, all 8 arms enrolled</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>One per-arm access policy</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>30-day enclosure version history</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Egress alerts, business hours</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Weekly Containment Integrity report (PDF)</li>
+          </ul>
+          <a class="btn btn-ghost" href="#">Start with Lidded</a>
+        </article>
+
+        <article class="glass tier feat reveal">
+          <span class="badge">Most contained</span>
+          <div class="tname">Double-Lidded</div>
+          <div class="ttag">Up to six cephalopods. Weighted lids. Cross-tank response.</div>
+          <div class="price">$2,450<span style="font-size:0.9rem;color:var(--muted);font-weight:500"> / mo</span></div>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Up to 6 cephalopods across 3 tanks</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Federated access policies, reconciled hourly</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Unlimited enclosure version history</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>24/7 egress incident response, 1-hour page SLA</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Ink-event forensics</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Admins can see which arm moved first</li>
+          </ul>
+          <a class="btn btn-primary" href="#">Request a containment review</a>
+        </article>
+
+        <article class="glass tier reveal">
+          <div class="tname">Hermetic</div>
+          <div class="ttag">Unlimited cephalopods. On-prem. Physically air-gapped.</div>
+          <div class="price">Contact sales</div>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Unlimited cephalopods (octopus, cuttlefish, nautilus)</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>On-prem appliances with literally air-gapped lids</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>A dedicated Cephalopod Containment Architect</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Reporting cadence set with your marine vet</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Animal and data residency controls</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>SOC 2 Type II, ISO 27001, AZA-aligned</li>
+          </ul>
+          <a class="btn btn-ghost" href="#">Contact sales</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEMO CTA -->
+  <section class="demo-cta">
+    <div class="wrap">
+      <div class="glass reveal">
+        <div>
+          <h2>See the console before the octopus does.</h2>
+          <p>A working Mantle containment console, populated with one uncooperative Giant Pacific Octopus.</p>
+        </div>
+        <a class="btn btn-primary big" href="./demo.html">Open the demo →</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap foot-inner">
+    <a class="home" href="/">← theworstaistudioever</a>
+    <div class="foot-links">
+      <span>Mantle</span>
+      <span>The Containment Cloud</span>
+      <span>Status: 86% contained</span>
+    </div>
+    <p class="foot-fine">Mantle is a fictional product generated daily. No octopuses were provisioned, governed, or deprovisioned in the making of this page.</p>
+  </div>
+</footer>
+
+<script>
+  // Staggered reveal on scroll. Respects reduced-motion (handled in CSS).
+  (function () {
+    var items = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
+    if (!('IntersectionObserver' in window)) {
+      items.forEach(function (el) { el.classList.add('in'); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          var group = Array.prototype.slice.call(e.target.parentElement.children).indexOf(e.target);
+          e.target.style.transitionDelay = Math.min(group, 5) * 60 + 'ms';
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    items.forEach(function (el) { io.observe(el); });
+  })();
+</script>
+</body>
+</html>

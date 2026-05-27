@@ -13,9 +13,14 @@ A daily-cron-driven generator that builds a new mock startup prototype every day
 ## Daily run — manual
 
 ```bash
-cp .env.example .env  # edit NTFY_TOPIC
 ./scripts/run-daily.sh
 ```
+
+Success/failure is reported to Telegram, reusing the aurevon-outreach bot
+(`TELEGRAM_BOT_TOKEN` + `TELEGRAM_USER_ID` read at runtime from
+`~/github/aurevon-outreach/.env`). On success the message includes the new
+startup name and a link to its live page. No `.env` is required here unless you
+want to override the bot/chat — see `.env.example`.
 
 ## Dry run (no commit, uses 5×5 test seeds)
 

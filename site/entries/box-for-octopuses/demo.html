@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mantle Containment Console · Gerald</title>
+<meta name="description" content="The Mantle containment console for one Giant Pacific Octopus. Version every enclosure, govern every arm, log every escape." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --primary: #0e7a86;
+    --primary-deep: #0a5a63;
+    --accent: #ef4e6b;
+    --accent-deep: #d23659;
+    --bg: #e6f4f5;
+    --bg-2: #d1eaec;
+    --surface: rgba(255,255,255,0.74);
+    --surface-solid: #f6fcfc;
+    --ink: #0a2e33;
+    --muted: #4d6e74;
+    --muted-soft: #6f9197;
+    --line: rgba(10,46,51,0.12);
+    --line-soft: rgba(10,46,51,0.07);
+    --glass-line: rgba(255,255,255,0.7);
+    --shadow: 0 22px 50px -26px rgba(10,46,51,0.45);
+    --display: "Outfit", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    --body: "Work Sans", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; font-family: var(--body); color: var(--ink);
+    background:
+      radial-gradient(55% 45% at 14% 8%, rgba(70,196,205,0.30), transparent 60%),
+      radial-gradient(50% 45% at 92% 18%, rgba(14,122,134,0.20), transparent 62%),
+      linear-gradient(180deg, #f0fafb, var(--bg) 45%, var(--bg-2));
+    -webkit-font-smoothing: antialiased; overflow: hidden;
+  }
+  button { font-family: inherit; cursor: pointer; }
+  a { color: inherit; }
+
+  .app { display: grid; grid-template-rows: auto auto 1fr; height: 100vh; height: 100dvh; }
+
+  /* top bar */
+  .topbar {
+    display: flex; align-items: center; gap: 1rem; padding: 0.7rem 1.1rem;
+    background: rgba(255,255,255,0.55); backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%); border-bottom: 1px solid var(--line);
+  }
+  .back { display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none; color: var(--primary-deep); font-weight: 600; font-size: 0.86rem; white-space: nowrap; }
+  .back:hover { color: var(--ink); }
+  .crumb { font-size: 0.84rem; color: var(--muted-soft); display: flex; gap: 0.4rem; align-items: center; white-space: nowrap; overflow: hidden; }
+  .crumb b { color: var(--ink); font-family: var(--display); font-weight: 600; }
+  .crumb .sep { opacity: 0.5; }
+  .search {
+    margin-left: auto; display: flex; align-items: center; gap: 0.5rem;
+    background: #fff; border: 1px solid var(--line); border-radius: 11px; padding: 0.45rem 0.7rem; min-width: 210px;
+  }
+  .search svg { width: 16px; height: 16px; color: var(--muted-soft); flex: 0 0 auto; }
+  .search input { border: 0; outline: 0; font-family: inherit; font-size: 0.9rem; width: 100%; background: transparent; color: var(--ink); }
+  .toggle { display: flex; background: #fff; border: 1px solid var(--line); border-radius: 11px; overflow: hidden; }
+  .toggle button { border: 0; background: transparent; padding: 0.45rem 0.55rem; color: var(--muted-soft); display: grid; place-items: center; }
+  .toggle button.on { background: var(--primary); color: #fff; }
+  .toggle svg { width: 16px; height: 16px; }
+  .btn {
+    border: 1px solid transparent; border-radius: 11px; padding: 0.5rem 0.9rem; font-weight: 600; font-size: 0.88rem;
+    display: inline-flex; align-items: center; gap: 0.45rem; white-space: nowrap; font-family: var(--display); transition: box-shadow 0.18s, background 0.18s;
+  }
+  .btn svg { width: 16px; height: 16px; }
+  .btn-primary { background: linear-gradient(180deg, var(--primary), var(--primary-deep)); color: #f0fdff; box-shadow: 0 8px 18px -10px rgba(14,122,134,0.9); }
+  .btn-primary:hover { box-shadow: 0 0 0 3px rgba(14,122,134,0.18); }
+  .btn-ghost { background: #fff; border-color: var(--line); color: var(--ink); }
+  .btn-ghost:hover { box-shadow: 0 0 0 3px rgba(14,122,134,0.12); }
+
+  /* egress banner */
+  .egress {
+    display: flex; align-items: center; gap: 0.7rem; padding: 0.6rem 1.1rem;
+    background: linear-gradient(90deg, rgba(239,78,107,0.16), rgba(239,78,107,0.07));
+    border-bottom: 1px solid rgba(239,78,107,0.4); color: var(--accent-deep); font-size: 0.86rem; font-weight: 500;
+  }
+  .egress svg.warn { width: 17px; height: 17px; flex: 0 0 auto; }
+  .egress .grow { flex: 1; }
+  .egress button { border: 1px solid rgba(239,78,107,0.5); background: rgba(255,255,255,0.6); color: var(--accent-deep); border-radius: 9px; padding: 0.3rem 0.7rem; font-weight: 600; font-size: 0.8rem; }
+  .egress button:hover { background: #fff; }
+  .egress .x { border: 0; background: transparent; color: var(--accent-deep); font-size: 1.1rem; line-height: 1; padding: 0 0.3rem; }
+  .egress.hidden { display: none; }
+
+  /* body grid */
+  .grid { display: grid; grid-template-columns: 248px 1fr; min-height: 0; }
+
+  /* sidebar */
+  .sidebar { border-right: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; background: rgba(255,255,255,0.4); }
+  .ws { display: flex; align-items: center; gap: 0.6rem; padding: 1rem 1rem 0.9rem; border-bottom: 1px solid var(--line-soft); }
+  .ws .badge { width: 34px; height: 34px; border-radius: 10px; background: radial-gradient(circle at 30% 28%, #58cdd6, var(--primary-deep)); flex: 0 0 auto; }
+  .ws .t { font-size: 0.8rem; line-height: 1.25; }
+  .ws .t b { font-family: var(--display); font-weight: 600; display: block; font-size: 0.92rem; }
+  .ws .t span { color: var(--muted-soft); }
+  .nav { padding: 0.6rem 0.6rem; overflow-y: auto; flex: 1; min-height: 0; }
+  .nav a {
+    display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.7rem; border-radius: 10px;
+    text-decoration: none; color: var(--muted); font-weight: 500; font-size: 0.9rem; margin-bottom: 0.15rem; cursor: pointer;
+  }
+  .nav a svg { width: 17px; height: 17px; flex: 0 0 auto; }
+  .nav a .ct { margin-left: auto; font-size: 0.72rem; color: var(--muted-soft); background: rgba(10,46,51,0.06); border-radius: 999px; padding: 0.05rem 0.45rem; }
+  .nav a:hover { background: rgba(14,122,134,0.08); color: var(--ink); }
+  .nav a.active { background: rgba(14,122,134,0.14); color: var(--primary-deep); font-weight: 600; }
+  .integrity { padding: 0.9rem 1rem 1.1rem; border-top: 1px solid var(--line-soft); }
+  .integrity .lab { display: flex; justify-content: space-between; font-size: 0.76rem; color: var(--muted); margin-bottom: 0.4rem; }
+  .integrity .lab b { font-family: var(--display); color: var(--ink); }
+  .bar { height: 9px; border-radius: 999px; background: rgba(10,46,51,0.1); overflow: hidden; }
+  .bar > i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--primary), #45c1cb); transition: width 0.5s cubic-bezier(0.7,0,0.2,1); }
+  .integrity .note { margin-top: 0.5rem; font-size: 0.72rem; color: var(--muted-soft); }
+
+  /* main */
+  .main { overflow-y: auto; min-height: 0; padding: 1.3rem 1.5rem 3rem; }
+  .main-head { margin-bottom: 1rem; }
+  .main-head h1 { font-family: var(--display); font-weight: 700; font-size: 1.5rem; letter-spacing: -0.02em; margin: 0 0 0.2rem; }
+  .main-head p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+  .chips { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; }
+  .fchip {
+    border: 1px solid var(--line); background: #fff; color: var(--muted); border-radius: 999px; padding: 0.32rem 0.8rem; font-size: 0.8rem; font-weight: 500;
+  }
+  .fchip.on { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+  /* table */
+  .table { width: 100%; border-collapse: collapse; background: var(--surface); backdrop-filter: blur(8px); border: 1px solid var(--glass-line); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); }
+  .table thead th { text-align: left; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted-soft); font-weight: 600; padding: 0.7rem 1rem; border-bottom: 1px solid var(--line); }
+  .table tbody tr { cursor: pointer; transition: background 0.14s; }
+  .table tbody tr:hover { background: rgba(14,122,134,0.07); }
+  .table td { padding: 0.7rem 1rem; border-bottom: 1px solid var(--line-soft); font-size: 0.9rem; vertical-align: middle; }
+  .table tbody tr:last-child td { border-bottom: 0; }
+  .nm { display: flex; align-items: center; gap: 0.6rem; font-weight: 500; }
+  .nm svg { width: 18px; height: 18px; color: var(--primary); flex: 0 0 auto; }
+  .by { color: var(--muted); }
+  .ver { font-variant-numeric: tabular-nums; color: var(--muted); }
+  .lock svg { width: 15px; height: 15px; color: var(--muted-soft); }
+
+  .chip { font-size: 0.72rem; font-weight: 600; padding: 0.18rem 0.55rem; border-radius: 999px; white-space: nowrap; }
+  .chip.internal { background: rgba(14,122,134,0.13); color: var(--primary-deep); }
+  .chip.conf { background: rgba(120,86,160,0.15); color: #5a3f7a; }
+  .chip.hiding { background: rgba(239,78,107,0.14); color: var(--accent-deep); }
+
+  /* grid view */
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 1rem; }
+  .card { background: var(--surface); backdrop-filter: blur(8px); border: 1px solid var(--glass-line); border-radius: 14px; padding: 1.1rem; cursor: pointer; box-shadow: var(--shadow); transition: transform 0.16s; }
+  .card:hover { transform: translateY(-2px); }
+  .card .fi { width: 34px; height: 34px; border-radius: 9px; background: rgba(14,122,134,0.12); display: grid; place-items: center; color: var(--primary-deep); margin-bottom: 0.7rem; }
+  .card .fi svg { width: 18px; height: 18px; }
+  .card .cn { font-family: var(--display); font-weight: 600; font-size: 0.96rem; margin-bottom: 0.35rem; }
+  .card .cm { font-size: 0.78rem; color: var(--muted-soft); margin-top: 0.5rem; }
+
+  /* feed (egress / ledger) */
+  .feed { background: var(--surface); backdrop-filter: blur(8px); border: 1px solid var(--glass-line); border-radius: 14px; box-shadow: var(--shadow); overflow: hidden; }
+  .feed .frow { display: flex; gap: 0.8rem; padding: 0.85rem 1.1rem; border-bottom: 1px solid var(--line-soft); font-size: 0.88rem; align-items: flex-start; }
+  .feed .frow:last-child { border-bottom: 0; }
+  .feed .ts { font-variant-numeric: tabular-nums; color: var(--muted-soft); font-size: 0.78rem; white-space: nowrap; min-width: 92px; }
+  .feed .hash { font-family: var(--display); color: var(--primary-deep); font-size: 0.74rem; background: rgba(14,122,134,0.1); border-radius: 6px; padding: 0.1rem 0.4rem; white-space: nowrap; }
+  .feed .dot-i { width: 8px; height: 8px; border-radius: 50%; margin-top: 0.45rem; flex: 0 0 auto; }
+  .empty { text-align: center; padding: 3.5rem 1rem; color: var(--muted-soft); }
+  .empty .big { font-family: var(--display); font-size: 1.15rem; color: var(--muted); margin-bottom: 0.4rem; }
+
+  /* drawer */
+  .scrim { position: fixed; inset: 0; background: rgba(8,30,34,0.4); backdrop-filter: blur(2px); opacity: 0; pointer-events: none; transition: opacity 0.25s; z-index: 80; }
+  .scrim.show { opacity: 1; pointer-events: auto; }
+  .drawer {
+    position: fixed; top: 0; right: 0; height: 100%; width: min(440px, 92vw); z-index: 90;
+    background: var(--surface-solid); border-left: 1px solid var(--line); box-shadow: -30px 0 60px -30px rgba(10,46,51,0.5);
+    transform: translateX(102%); transition: transform 0.3s cubic-bezier(0.6,0,0.2,1); display: flex; flex-direction: column;
+  }
+  .drawer.show { transform: none; }
+  .drawer-head { padding: 1.1rem 1.2rem; border-bottom: 1px solid var(--line); display: flex; align-items: flex-start; gap: 0.6rem; }
+  .drawer-head .dt { flex: 1; }
+  .drawer-head h2 { font-family: var(--display); font-weight: 700; font-size: 1.15rem; margin: 0 0 0.3rem; letter-spacing: -0.01em; }
+  .drawer-head .x { border: 0; background: transparent; font-size: 1.4rem; line-height: 1; color: var(--muted-soft); padding: 0.1rem 0.4rem; }
+  .drawer-body { padding: 1.1rem 1.2rem; overflow-y: auto; }
+  .d-sec { margin-bottom: 1.6rem; }
+  .d-sec h3 { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted-soft); margin: 0 0 0.7rem; font-weight: 700; }
+  .vrow { display: flex; align-items: center; gap: 0.7rem; padding: 0.55rem 0; border-bottom: 1px solid var(--line-soft); }
+  .vrow:last-child { border-bottom: 0; }
+  .vrow .vtag { font-family: var(--display); font-weight: 700; color: var(--primary-deep); font-variant-numeric: tabular-nums; font-size: 0.84rem; min-width: 34px; }
+  .vrow .vmeta { flex: 1; font-size: 0.84rem; }
+  .vrow .vmeta span { display: block; color: var(--muted-soft); font-size: 0.74rem; }
+  .vrow .restore { border: 1px solid var(--line); background: #fff; color: var(--primary-deep); border-radius: 8px; padding: 0.25rem 0.6rem; font-size: 0.78rem; font-weight: 600; }
+  .vrow .restore:hover { background: rgba(14,122,134,0.1); }
+  .vrow .current { font-size: 0.72rem; color: var(--muted-soft); }
+
+  .arm { display: flex; align-items: center; gap: 0.6rem; padding: 0.45rem 0; border-bottom: 1px solid var(--line-soft); }
+  .arm:last-child { border-bottom: 0; }
+  .arm .an { font-size: 0.86rem; flex: 1; }
+  .arm .an b { font-family: var(--display); }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+  .seg button { border: 0; background: #fff; color: var(--muted); padding: 0.26rem 0.55rem; font-size: 0.74rem; font-weight: 600; }
+  .seg button.on { background: var(--primary); color: #fff; }
+  .seg button.on.admin { background: var(--accent); }
+  .act { font-size: 0.84rem; color: var(--muted); padding: 0.4rem 0; border-bottom: 1px solid var(--line-soft); display: flex; gap: 0.6rem; }
+  .act:last-child { border-bottom: 0; }
+  .act .at { font-variant-numeric: tabular-nums; color: var(--muted-soft); font-size: 0.74rem; white-space: nowrap; }
+  .drawer-foot { margin-top: auto; padding: 1rem 1.2rem; border-top: 1px solid var(--line); display: flex; gap: 0.6rem; }
+
+  /* modal */
+  .modal { position: fixed; inset: 0; z-index: 100; display: none; align-items: center; justify-content: center; padding: 1rem; }
+  .modal.show { display: flex; }
+  .modal .panel { background: var(--surface-solid); border: 1px solid var(--glass-line); border-radius: 16px; width: min(440px, 94vw); box-shadow: var(--shadow); overflow: hidden; }
+  .modal .ph { padding: 1.1rem 1.2rem; border-bottom: 1px solid var(--line); display: flex; align-items: center; }
+  .modal .ph h2 { font-family: var(--display); font-size: 1.1rem; margin: 0; }
+  .modal .ph .x { margin-left: auto; border: 0; background: transparent; font-size: 1.3rem; color: var(--muted-soft); }
+  .modal .pb { padding: 1.2rem; }
+  .modal label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--muted); margin: 0 0 0.4rem; }
+  .modal input[type=text], .modal select, .modal textarea {
+    width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 0.6rem 0.7rem; font-family: inherit; font-size: 0.9rem; color: var(--ink); background: #fff; margin-bottom: 1rem;
+  }
+  .modal textarea { resize: vertical; min-height: 70px; }
+  .seg-radio { display: flex; gap: 0.5rem; margin-bottom: 1.1rem; }
+  .seg-radio button { flex: 1; border: 1px solid var(--line); background: #fff; border-radius: 10px; padding: 0.6rem; font-weight: 600; font-size: 0.85rem; color: var(--muted); }
+  .seg-radio button.on { background: rgba(14,122,134,0.13); color: var(--primary-deep); border-color: var(--primary); }
+  .linkbox { display: flex; gap: 0.5rem; }
+  .linkbox input { margin-bottom: 0; background: #f0f7f8; }
+  .modal .pf { display: flex; justify-content: flex-end; gap: 0.6rem; padding: 0 1.2rem 1.2rem; }
+  .copied { color: var(--primary-deep); font-size: 0.8rem; font-weight: 600; margin-top: 0.6rem; height: 1rem; }
+
+  @media (max-width: 760px) {
+    .grid { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .search { min-width: 0; }
+    .crumb { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <a class="back" href="./index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg> back to the pitch</a>
+    <div class="crumb"><b>North Pier Aquarium</b><span class="sep">/</span>Tank C-3<span class="sep">/</span><b>Gerald</b></div>
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="searchInput" type="text" placeholder="Search containment..." aria-label="Search containment" />
+    </div>
+    <div class="toggle" role="group" aria-label="View">
+      <button id="btnList" class="on" title="List view" aria-label="List view"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+      <button id="btnGrid" title="Grid view" aria-label="Grid view"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></button>
+    </div>
+    <button id="btnShare" class="btn btn-ghost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>Share</button>
+    <button id="btnNew" class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>New</button>
+  </div>
+
+  <!-- EGRESS BANNER -->
+  <div class="egress" id="egress">
+    <svg class="warn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+    <span class="grow"><b>Egress incident in progress.</b> Probing arm detected at the north seam. Incident GPO-0440-19 is open.</span>
+    <button id="sealLid">Seal the lid</button>
+    <button class="x" id="dismissEgress" aria-label="Dismiss">×</button>
+  </div>
+
+  <!-- BODY -->
+  <div class="grid">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="ws">
+        <span class="badge" aria-hidden="true"></span>
+        <span class="t"><b>Tank C-3</b><span>North Pier Aquarium</span></span>
+      </div>
+      <nav class="nav" id="nav"></nav>
+      <div class="integrity">
+        <div class="lab"><span>Containment Integrity</span><b id="intNum">86%</b></div>
+        <div class="bar"><i id="intFill" style="width:86%"></i></div>
+        <div class="note" id="intNote">Within tolerance. Barely.</div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main" id="main"></main>
+  </div>
+</div>
+
+<!-- DRAWER -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-head">
+    <div class="dt">
+      <h2 id="drawerTitle">Item</h2>
+      <span class="chip internal" id="drawerChip">Internal</span>
+    </div>
+    <button class="x" id="drawerClose" aria-label="Close">×</button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-foot">
+    <button class="btn btn-ghost" id="drawerShare" style="flex:1;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>Share record</button>
+  </div>
+</aside>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="panel">
+    <div class="ph"><h2 id="modalTitle">New</h2><button class="x" id="modalClose" aria-label="Close">×</button></div>
+    <div class="pb" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- in-memory fixtures ----------
+  var armScopes = ['read', 'operate', 'admin'];
+  var state = {
+    view: 'contents',
+    layout: 'list',
+    search: '',
+    classFilter: 'all',
+    integrity: 86,
+    items: [
+      mk('lid', 'Lid Configuration', 'internal', 'You', 14, true, [
+        v(14, 'Weighted the north lid after incident 19', 'You', 'May 19'),
+        v(13, 'Replaced latch clip', 'System', 'May 06'),
+        v(12, 'Initial seal recorded', 'You', 'Apr 28')
+      ]),
+      mk('layout', 'Tank Layout (rockwork + decor)', 'conf', 'Gerald', 41, false, [
+        v(41, 'Gerald moved the coral skull again', 'Gerald', 'May 27'),
+        v(40, 'Gerald relocated the filter intake', 'Gerald', 'May 26'),
+        v(39, 'Gerald stacked all rocks in one corner', 'Gerald', 'May 24'),
+        v(38, 'Approved arrangement restored', 'You', 'May 23')
+      ]),
+      mk('feeder', 'Feeder Latch Policy', 'internal', 'You', 3, true, [
+        v(3, 'Tightened latch tolerance to 4mm', 'You', 'May 15'),
+        v(2, 'Added second clip', 'You', 'May 02'),
+        v(1, 'Policy created', 'You', 'Apr 28')
+      ]),
+      armItem(),
+      mk('camo', 'Camouflage Log', 'hiding', 'Gerald', 203, false, [
+        v(203, 'Matched substrate, then the glass, then nothing', 'Gerald', 'May 27'),
+        v(202, 'Went deep red for no logged reason', 'Gerald', 'May 25')
+      ]),
+      mk('ink', 'Ink Incident 05-19', 'hiding', 'Gerald', 1, false, [
+        v(1, 'Tank obscured for 14 minutes. Cause undetermined', 'Gerald', 'May 19')
+      ]),
+      mk('volume', 'Night Volume Readings', 'internal', 'System', 0, false, [
+        v(0, 'Continuous capture, 30s interval', 'System', 'ongoing')
+      ])
+    ],
+    egress: [
+      ev('May 19 02:14', 'high', 'Probing arm detected at north seam. Incident GPO-0440-19 opened.'),
+      ev('May 12 23:48', 'med', 'Water level dropped 1.2cm with no scheduled change.'),
+      ev('May 04 04:30', 'high', 'Subject located on floor, 1.4m from tank. Returned. Documented.'),
+      ev('Apr 30 21:02', 'low', 'Lid seam tension below threshold. Auto-resolved after re-weighting.')
+    ],
+    ledger: [
+      lg('May 19 02:14', 'a91f', 'Incident GPO-0440-19 opened by Egress Threat Detection'),
+      lg('May 19 02:13', '7c40', 'Lid Configuration updated to v14 by You'),
+      lg('May 15 09:30', 'e2b8', 'Feeder Latch Policy updated to v3 by You'),
+      lg('Apr 28 11:05', '0d1c', 'Tank C-3 enrolled. Containment baseline established')
+    ]
+  };
+  var activeId = null;
+
+  function mk(id, name, cls, by, version, locked, versions) {
+    return { id: id, name: name, classification: cls, by: by, version: version, locked: locked, versions: versions, activity: [
+      a(versions[0].time, versions[0].by + ' set ' + name + ' to v' + version)
+    ] };
+  }
+  function armItem() {
+    var arms = [];
+    for (var i = 1; i <= 8; i++) {
+      arms.push({ n: i, scope: (i === 3 || i === 7) ? 'operate' : 'read' });
+    }
+    var it = mk('arms', 'Per-Arm Access Policy', 'conf', 'You', 7, true, [
+      v(7, 'Granted arm 7 feeder access', 'You', 'May 15'),
+      v(6, 'Revoked admin from all arms', 'You', 'May 09'),
+      v(5, 'Initial least-privilege mapping', 'You', 'Apr 29')
+    ]);
+    it.arms = arms;
+    return it;
+  }
+  function v(num, note, by, time) { return { v: num, note: note, by: by, time: time }; }
+  function ev(time, sev, text) { return { time: time, sev: sev, text: text }; }
+  function lg(time, hash, text) { return { time: time, hash: hash, text: text }; }
+  function a(time, text) { return { time: time, text: text }; }
+
+  var CLS = { internal: 'Internal', conf: 'Confidential', hiding: 'Actively Hiding' };
+  var SEV = { high: '#ef4e6b', med: '#e0a32b', low: '#0e7a86' };
+
+  // ---------- nav ----------
+  var NAV = [
+    { id: 'contents', label: 'Enclosure Contents', icon: 'folder' },
+    { id: 'shared', label: 'Shared with Gerald', icon: 'users' },
+    { id: 'egress', label: 'Egress Events', icon: 'alert' },
+    { id: 'classifications', label: 'Classifications', icon: 'tag' },
+    { id: 'ledger', label: 'Audit Ledger', icon: 'ledger' },
+    { id: 'trash', label: 'Trash', icon: 'trash' }
+  ];
+  var ICONS = {
+    folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+    users: '<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5"/><path d="M17 6a3 3 0 0 1 0 6"/>',
+    alert: '<path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/>',
+    tag: '<path d="M3 7v5l9 9 7-7-9-9H3z"/><circle cx="7.5" cy="7.5" r="1.2"/>',
+    ledger: '<path d="M4 4h12a2 2 0 0 1 2 2v14H6a2 2 0 0 1-2-2z"/><path d="M8 8h6M8 12h6"/>',
+    trash: '<path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M6 7l1 13h10l1-13"/>',
+    file: '<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/>',
+    lock: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'
+  };
+  function svg(path, w) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' + (w || 1.8) + '" stroke-linecap="round" stroke-linejoin="round">' + path + '</svg>'; }
+
+  function renderNav() {
+    var html = '';
+    NAV.forEach(function (n) {
+      var ct = '';
+      if (n.id === 'contents') ct = '<span class="ct">' + state.items.length + '</span>';
+      if (n.id === 'egress') ct = '<span class="ct">' + state.egress.length + '</span>';
+      html += '<a data-view="' + n.id + '" class="' + (state.view === n.id ? 'active' : '') + '">' + svg(ICONS[n.icon]) + n.label + ct + '</a>';
+    });
+    document.getElementById('nav').innerHTML = html;
+  }
+
+  // ---------- main views ----------
+  var main = document.getElementById('main');
+
+  function render() {
+    renderNav();
+    if (state.view === 'contents') return renderContents();
+    if (state.view === 'egress') return renderEgress();
+    if (state.view === 'ledger') return renderLedger();
+    if (state.view === 'classifications') return renderClasses();
+    if (state.view === 'shared') return renderShared();
+    if (state.view === 'trash') return renderTrash();
+  }
+
+  function visibleItems() {
+    var q = state.search.trim().toLowerCase();
+    return state.items.filter(function (it) {
+      if (state.classFilter !== 'all' && it.classification !== state.classFilter) return false;
+      if (q && it.name.toLowerCase().indexOf(q) === -1) return false;
+      return true;
+    });
+  }
+
+  function chip(cls) { return '<span class="chip ' + cls + '">' + CLS[cls] + '</span>'; }
+
+  function renderContents() {
+    var items = visibleItems();
+    var chips = ['all', 'internal', 'conf', 'hiding'].map(function (c) {
+      var lbl = c === 'all' ? 'All' : CLS[c];
+      return '<button class="fchip ' + (state.classFilter === c ? 'on' : '') + '" data-cls="' + c + '">' + lbl + '</button>';
+    }).join('');
+
+    var head = '<div class="main-head"><h1>Enclosure Contents</h1><p>Everything Gerald is allowed to interact with, and a few things he is not.</p></div>'
+      + '<div class="chips">' + chips + '</div>';
+
+    var body;
+    if (items.length === 0) {
+      body = '<div class="empty"><div class="big">No matching artifacts.</div><div>The octopus remains, regardless of your filter.</div></div>';
+    } else if (state.layout === 'grid') {
+      body = '<div class="cards">' + items.map(function (it) {
+        return '<div class="card" data-id="' + it.id + '">'
+          + '<div class="fi">' + svg(ICONS.file) + '</div>'
+          + '<div class="cn">' + it.name + '</div>' + chip(it.classification)
+          + '<div class="cm">' + (it.version ? 'v' + it.version + ' · ' : '') + 'by ' + it.by + '</div></div>';
+      }).join('') + '</div>';
+    } else {
+      var rows = items.map(function (it) {
+        return '<tr data-id="' + it.id + '">'
+          + '<td><span class="nm">' + svg(ICONS.file) + it.name + '</span></td>'
+          + '<td>' + chip(it.classification) + '</td>'
+          + '<td class="by">' + it.by + '</td>'
+          + '<td class="ver">' + (it.version ? 'v' + it.version : 'live') + '</td>'
+          + '<td class="lock">' + (it.locked ? svg(ICONS.lock, 2) : '') + '</td></tr>';
+      }).join('');
+      body = '<table class="table"><thead><tr><th>Name</th><th>Classification</th><th>Last modified by</th><th>Version</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
+    }
+    main.innerHTML = head + body;
+  }
+
+  function renderEgress() {
+    var rows = state.egress.map(function (e) {
+      return '<div class="frow"><span class="dot-i" style="background:' + SEV[e.sev] + '"></span><span class="ts">' + e.time + '</span><span>' + e.text + '</span></div>';
+    }).join('');
+    main.innerHTML = '<div class="main-head"><h1>Egress Events</h1><p>Every documented attempt to no longer be contained.</p></div><div class="feed">' + rows + '</div>';
+  }
+
+  function renderLedger() {
+    var rows = state.ledger.map(function (l) {
+      return '<div class="frow"><span class="ts">' + l.time + '</span><span class="hash">' + l.hash + '</span><span>' + l.text + '</span></div>';
+    }).join('');
+    main.innerHTML = '<div class="main-head"><h1>Audit Ledger</h1><p>Append-only and tamper-evident. Entries are never edited, only added.</p></div><div class="feed">' + rows + '</div>';
+  }
+
+  function renderClasses() {
+    var counts = { internal: 0, conf: 0, hiding: 0 };
+    state.items.forEach(function (it) { counts[it.classification]++; });
+    var cards = Object.keys(counts).map(function (c) {
+      return '<div class="card" data-cls-jump="' + c + '"><div class="fi">' + svg(ICONS.tag) + '</div><div class="cn">' + CLS[c] + '</div><div class="cm">' + counts[c] + ' artifact' + (counts[c] === 1 ? '' : 's') + '</div></div>';
+    }).join('');
+    main.innerHTML = '<div class="main-head"><h1>Classifications</h1><p>Mantle classifies each artifact by sensitivity. The octopus reclassifies itself hourly.</p></div><div class="cards">' + cards + '</div>';
+  }
+
+  function renderShared() {
+    main.innerHTML = '<div class="main-head"><h1>Shared with Gerald</h1></div><div class="empty"><div class="big">Gerald has been granted read access to 0 documents.</div><div>He reads them anyway.</div></div>';
+  }
+  function renderTrash() {
+    main.innerHTML = '<div class="main-head"><h1>Trash</h1></div><div class="empty"><div class="big">Nothing here.</div><div>Things do not stay contained long enough to be deleted.</div></div>';
+  }
+
+  // ---------- integrity ----------
+  function setIntegrity(delta) {
+    state.integrity = Math.max(0, Math.min(100, Math.round(state.integrity + delta)));
+    document.getElementById('intFill').style.width = state.integrity + '%';
+    document.getElementById('intNum').textContent = state.integrity + '%';
+    var note = state.integrity >= 90 ? 'Contained. Suspiciously so.'
+      : state.integrity >= 70 ? 'Within tolerance. Barely.'
+      : state.integrity >= 45 ? 'Degraded. Recommend re-sealing.'
+      : 'Critical. The lid is a formality at this point.';
+    document.getElementById('intNote').textContent = note;
+  }
+
+  // ---------- ledger / time ----------
+  function now() {
+    var d = new Date();
+    var mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()];
+    function p(x){ return (x < 10 ? '0' : '') + x; }
+    return mo + ' ' + d.getDate() + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+  }
+  function randHash() {
+    var s = '0123456789abcdef', o = '';
+    for (var i = 0; i < 4; i++) o += s[Math.floor(Math.random() * 16)];
+    return o;
+  }
+  function ledgerAdd(text) { state.ledger.unshift(lg(now(), randHash(), text)); }
+
+  // ---------- drawer ----------
+  var scrim = document.getElementById('scrim');
+  var drawer = document.getElementById('drawer');
+
+  function openItem(id) {
+    var it = find(id);
+    if (!it) return;
+    activeId = id;
+    document.getElementById('drawerTitle').textContent = it.name;
+    var dc = document.getElementById('drawerChip');
+    dc.className = 'chip ' + it.classification;
+    dc.textContent = CLS[it.classification];
+    document.getElementById('drawerBody').innerHTML = drawerBody(it);
+    drawer.classList.add('show'); drawer.setAttribute('aria-hidden', 'false');
+    scrim.classList.add('show');
+  }
+  function closeDrawer() {
+    drawer.classList.remove('show'); drawer.setAttribute('aria-hidden', 'true');
+    scrim.classList.remove('show'); activeId = null;
+  }
+
+  function drawerBody(it) {
+    var meta = '<div class="d-sec"><h3>Details</h3><div class="act"><span class="at"></span><span>'
+      + 'Current version <b>v' + it.version + '</b>, last modified by ' + it.by + '. '
+      + (it.locked ? 'Lock state: locked.' : 'Lock state: open. Gerald is aware.') + '</span></div></div>';
+
+    var arms = '';
+    if (it.arms) {
+      arms = '<div class="d-sec"><h3>Per-arm permissions</h3>';
+      it.arms.forEach(function (arm) {
+        arms += '<div class="arm"><span class="an"><b>Arm ' + arm.n + '</b></span><span class="seg" data-arm="' + arm.n + '">'
+          + armScopes.map(function (s) {
+            var on = arm.scope === s ? (' on' + (s === 'admin' ? ' admin' : '')) : '';
+            return '<button class="' + on + '" data-scope="' + s + '">' + s + '</button>';
+          }).join('') + '</span></div>';
+      });
+      arms += '</div>';
+    }
+
+    var vers = '<div class="d-sec"><h3>Version history</h3>';
+    it.versions.forEach(function (ver, idx) {
+      vers += '<div class="vrow"><span class="vtag">v' + ver.v + '</span><span class="vmeta">' + ver.note + '<span>' + ver.by + ' · ' + ver.time + '</span></span>'
+        + (idx === 0 ? '<span class="current">current</span>' : '<button class="restore" data-restore="' + ver.v + '">Restore</button>') + '</div>';
+    });
+    vers += '</div>';
+
+    var act = '<div class="d-sec"><h3>Activity</h3>';
+    it.activity.slice(0, 6).forEach(function (x) {
+      act += '<div class="act"><span class="at">' + x.time + '</span><span>' + x.text + '</span></div>';
+    });
+    act += '</div>';
+
+    return meta + arms + vers + act;
+  }
+
+  function find(id) {
+    for (var i = 0; i < state.items.length; i++) if (state.items[i].id === id) return state.items[i];
+    return null;
+  }
+
+  // restore a version
+  function restore(id, vnum) {
+    var it = find(id);
+    if (!it) return;
+    var newV = it.version + 1;
+    it.versions.unshift(v(newV, 'Restored from v' + vnum, 'You', now().split(' ').slice(0,2).join(' ')));
+    it.version = newV;
+    it.by = 'You';
+    it.activity.unshift(a(now(), 'You restored ' + it.name + ' to the v' + vnum + ' state (now v' + newV + ')'));
+    ledgerAdd(it.name + ' restored to v' + vnum + ' state by You (now v' + newV + ')');
+    setIntegrity(+3);
+    openItem(id); // re-render drawer
+    if (state.view === 'contents') renderContents();
+  }
+
+  // change arm permission
+  function setArm(id, armN, scope) {
+    var it = find(id);
+    if (!it || !it.arms) return;
+    var arm = null;
+    for (var i = 0; i < it.arms.length; i++) if (it.arms[i].n === armN) arm = it.arms[i];
+    if (!arm || arm.scope === scope) return;
+    arm.scope = scope;
+    it.activity.unshift(a(now(), 'Arm ' + armN + ' set to ' + scope));
+    ledgerAdd('Per-Arm Access Policy: arm ' + armN + ' set to ' + scope + ' by You');
+    setIntegrity(scope === 'admin' ? -3 : (scope === 'operate' ? -1 : +2));
+    openItem(id);
+  }
+
+  // ---------- modals ----------
+  var modal = document.getElementById('modal');
+  var modalBody = document.getElementById('modalBody');
+  var modalTitle = document.getElementById('modalTitle');
+
+  function openModal(title, html) {
+    modalTitle.textContent = title;
+    modalBody.innerHTML = html;
+    modal.classList.add('show');
+  }
+  function closeModal() { modal.classList.remove('show'); }
+
+  var newMode = 'artifact';
+  function openNew() {
+    newMode = 'artifact';
+    openModal('New', newFormHtml());
+    wireNewForm();
+  }
+  function newFormHtml() {
+    return '<div class="seg-radio"><button data-mode="artifact" class="' + (newMode === 'artifact' ? 'on' : '') + '">Containment artifact</button>'
+      + '<button data-mode="egress" class="' + (newMode === 'egress' ? 'on' : '') + '">Egress event</button></div>'
+      + '<div id="newFields">' + (newMode === 'artifact' ? artifactFields() : egressFields()) + '</div>'
+      + '<div class="pf"><button class="btn btn-ghost" id="newCancel">Cancel</button><button class="btn btn-primary" id="newSubmit">' + (newMode === 'artifact' ? 'Add artifact' : 'Log incident') + '</button></div>';
+  }
+  function artifactFields() {
+    return '<label>Artifact name</label><input type="text" id="f-name" placeholder="e.g. Suction-cup Access Audit" />'
+      + '<label>Classification</label><select id="f-cls"><option value="internal">Internal</option><option value="conf">Confidential</option><option value="hiding">Actively Hiding</option></select>';
+  }
+  function egressFields() {
+    return '<label>What happened</label><textarea id="f-text" placeholder="e.g. Lid lifted 3cm at the southwest corner during feeding."></textarea>'
+      + '<label>Severity</label><select id="f-sev"><option value="low">Low</option><option value="med">Medium</option><option value="high">High</option></select>';
+  }
+  function wireNewForm() {
+    modalBody.querySelectorAll('.seg-radio button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        newMode = b.getAttribute('data-mode');
+        openModal('New', newFormHtml());
+        wireNewForm();
+      });
+    });
+    document.getElementById('newCancel').addEventListener('click', closeModal);
+    document.getElementById('newSubmit').addEventListener('click', submitNew);
+  }
+  function submitNew() {
+    if (newMode === 'artifact') {
+      var name = (document.getElementById('f-name').value || '').trim() || 'Untitled containment artifact';
+      var cls = document.getElementById('f-cls').value;
+      var it = mk('art-' + Date.now(), name, cls, 'You', 1, false, [ v(1, 'Artifact created', 'You', now().split(' ').slice(0,2).join(' ')) ]);
+      state.items.unshift(it);
+      ledgerAdd('Artifact "' + name + '" created by You (' + CLS[cls] + ')');
+      setIntegrity(-1);
+      state.view = 'contents';
+    } else {
+      var text = (document.getElementById('f-text').value || '').trim() || 'Unspecified egress event logged manually.';
+      var sev = document.getElementById('f-sev').value;
+      state.egress.unshift(ev(now(), sev, text));
+      ledgerAdd('Egress event logged by You (' + sev + ' severity)');
+      setIntegrity(sev === 'high' ? -6 : sev === 'med' ? -3 : -1);
+      showEgressBanner();
+      state.view = 'egress';
+    }
+    closeModal();
+    render();
+  }
+
+  function shareLink(label) {
+    var token = 'ro_' + randHash() + randHash();
+    var url = 'https://mantle.cloud/c/gerald/GPO-0440' + '?token=' + token;
+    openModal('Share ' + (label || 'enclosure record'),
+      '<label>Read-only link</label><div class="linkbox"><input type="text" id="shareUrl" value="' + url + '" readonly /><button class="btn btn-primary" id="copyBtn">Copy</button></div>'
+      + '<div class="copied" id="copiedMsg"></div>'
+      + '<p style="color:var(--muted);font-size:0.84rem;margin:0.6rem 0 0">Anyone with this link can view the record. They cannot edit it. Neither, for what it is worth, can Gerald.</p>'
+      + '<div class="pf"><button class="btn btn-ghost" id="shareDone">Done</button></div>');
+    document.getElementById('shareDone').addEventListener('click', closeModal);
+    document.getElementById('copyBtn').addEventListener('click', function () {
+      var inp = document.getElementById('shareUrl');
+      inp.select();
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) {}
+      if (navigator.clipboard) { navigator.clipboard.writeText(url).catch(function () {}); ok = true; }
+      document.getElementById('copiedMsg').textContent = ok ? 'Copied to clipboard.' : 'Select and copy the link above.';
+    });
+  }
+
+  // ---------- egress banner ----------
+  var egress = document.getElementById('egress');
+  function showEgressBanner() { egress.classList.remove('hidden'); }
+  document.getElementById('dismissEgress').addEventListener('click', function () { egress.classList.add('hidden'); });
+  document.getElementById('sealLid').addEventListener('click', function () {
+    egress.classList.add('hidden');
+    ledgerAdd('Lid sealed and re-weighted by You. Incident GPO-0440-19 mitigated');
+    setIntegrity(+8);
+  });
+
+  // ---------- event wiring ----------
+  document.getElementById('nav').addEventListener('click', function (e) {
+    var a = e.target.closest('a[data-view]');
+    if (!a) return;
+    state.view = a.getAttribute('data-view');
+    render();
+  });
+
+  main.addEventListener('click', function (e) {
+    var clsBtn = e.target.closest('[data-cls]');
+    if (clsBtn) { state.classFilter = clsBtn.getAttribute('data-cls'); renderContents(); return; }
+    var jump = e.target.closest('[data-cls-jump]');
+    if (jump) { state.classFilter = jump.getAttribute('data-cls-jump'); state.view = 'contents'; render(); return; }
+    var row = e.target.closest('[data-id]');
+    if (row) { openItem(row.getAttribute('data-id')); }
+  });
+
+  document.getElementById('drawerBody').addEventListener('click', function (e) {
+    var r = e.target.closest('[data-restore]');
+    if (r && activeId) { restore(activeId, parseInt(r.getAttribute('data-restore'), 10)); return; }
+    var scope = e.target.closest('[data-scope]');
+    if (scope && activeId) {
+      var seg = scope.closest('[data-arm]');
+      setArm(activeId, parseInt(seg.getAttribute('data-arm'), 10), scope.getAttribute('data-scope'));
+    }
+  });
+
+  document.getElementById('searchInput').addEventListener('input', function (e) {
+    state.search = e.target.value;
+    if (state.view !== 'contents') { state.view = 'contents'; render(); }
+    else renderContents();
+  });
+  document.getElementById('btnList').addEventListener('click', function () {
+    state.layout = 'list'; this.classList.add('on'); document.getElementById('btnGrid').classList.remove('on');
+    if (state.view === 'contents') renderContents();
+  });
+  document.getElementById('btnGrid').addEventListener('click', function () {
+    state.layout = 'grid'; this.classList.add('on'); document.getElementById('btnList').classList.remove('on');
+    if (state.view === 'contents') renderContents();
+  });
+  document.getElementById('btnNew').addEventListener('click', openNew);
+  document.getElementById('btnShare').addEventListener('click', function () { shareLink('Tank C-3 / Gerald'); });
+  document.getElementById('drawerShare').addEventListener('click', function () {
+    var it = activeId ? find(activeId) : null;
+    shareLink(it ? it.name : 'enclosure record');
+  });
+
+  document.getElementById('drawerClose').addEventListener('click', closeDrawer);
+  scrim.addEventListener('click', closeDrawer);
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { closeDrawer(); closeModal(); }
+  });
+
+  // ---------- boot ----------
+  setIntegrity(0);
+  render();
+})();
+</script>
+</body>
+</html>

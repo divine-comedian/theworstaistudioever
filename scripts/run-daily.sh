@@ -4,7 +4,7 @@
 # - Pulls latest
 # - Runs `claude -p < pipeline.md`
 # - Wrapper does git (agent never has push perms)
-# - Notifies via ntfy.sh on failure
+# - Notifies success/failure to Telegram (reuses aurevon-outreach bot creds)
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -17,6 +17,20 @@ if [[ -f .env ]]; then
   source .env
   set +a
 fi
+
+# Telegram notifications reuse the aurevon-outreach bot token + chat id.
+# Creds are read at runtime from that project's .env (never committed in this
+# public repo); this repo's own .env may override them if set.
+AUREVON_ENV="${AUREVON_ENV:-$HOME/github/aurevon-outreach/.env}"
+_read_env_var() { # _read_env_var KEY FILE -> value with surrounding quotes stripped
+  local key="$1" file="$2" val
+  [[ -f "$file" ]] || return 0
+  val="$(grep -E "^${key}=" "$file" 2>/dev/null | head -1 | cut -d= -f2- || true)"
+  val="${val%\"}"; val="${val#\"}"; val="${val%\'}"; val="${val#\'}"
+  printf '%s' "$val"
+}
+TELEGRAM_BOT_TOKEN="${TELEGRAM_BOT_TOKEN:-$(_read_env_var TELEGRAM_BOT_TOKEN "$AUREVON_ENV")}"
+TELEGRAM_USER_ID="${TELEGRAM_USER_ID:-$(_read_env_var TELEGRAM_USER_ID "$AUREVON_ENV")}"
 
 DATE_UTC="$(date -u +%F)"
 LOG="state/runs/${DATE_UTC}.log"
@@ -31,14 +45,31 @@ fi
 
 log() { echo "[$(date -u +%FT%TZ)] $*" | tee -a "$LOG"; }
 
-notify_fail() {
-  local msg="$1"
-  if [[ -n "${NTFY_TOPIC:-}" ]]; then
-    curl -fsSL -X POST \
-      -H "Title: theworstaistudioever cron failed" \
-      -d "${msg}. See ${LOG}" \
-      "https://ntfy.sh/${NTFY_TOPIC}" >/dev/null 2>&1 || true
+_html_escape() { local s="$1"; s="${s//&/&amp;}"; s="${s//</&lt;}"; s="${s//>/&gt;}"; printf '%s' "$s"; }
+
+tg_send() { # tg_send <html-message>
+  if [[ -z "${TELEGRAM_BOT_TOKEN:-}" || -z "${TELEGRAM_USER_ID:-}" ]]; then
+    log "telegram creds missing — skipping notification"
+    return 0
   fi
+  curl -fsSL -X POST \
+    "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+    -H "Content-Type: application/json" \
+    --data "$(jq -n --arg chat "$TELEGRAM_USER_ID" --arg text "$1" \
+              '{chat_id:$chat, text:$text, parse_mode:"HTML"}')" \
+    >/dev/null 2>&1 || log "telegram send failed"
+}
+
+notify_fail() {
+  tg_send "❌ <b>theworstaistudioever</b> daily run failed
+$(_html_escape "$1")
+See ${LOG}"
+}
+
+notify_success() { # notify_success <tagline> <product_name> <url>
+  tg_send "✅ <b>theworstaistudioever</b> shipped a new startup
+<b>$(_html_escape "$1")</b> — $(_html_escape "$2")
+🔗 <a href=\"$3\">$3</a>"
 }
 
 log "=== daily run start ==="
@@ -116,4 +147,9 @@ for i in 1 2 3; do
   fi
 done
 
-log "=== daily run complete: $TAGLINE ==="
+PRODUCT_NAME=$(jq -r '.product_name // .company // .tagline' "site/entries/$NEW_SLUG/concept.json")
+DOMAIN=$(cat site/CNAME 2>/dev/null || echo "theworstaistudioever.com")
+PAGE_URL="https://${DOMAIN}/entries/${NEW_SLUG}/"
+
+notify_success "$TAGLINE" "$PRODUCT_NAME" "$PAGE_URL"
+log "=== daily run complete: $TAGLINE → $PAGE_URL ==="
