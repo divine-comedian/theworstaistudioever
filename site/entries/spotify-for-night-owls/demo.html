@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tonight · Lull</title>
+  <meta name="description" content="The Lull player at 3:47 a.m. Now playing, daylight lockout, and a room full of strangers who are also up." />
+  <meta name="theme-color" content="#08070D" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..600&family=Instrument+Sans:ital,wght@0,400..700;1,400..600&display=swap');
+
+    :root {
+      --bg: #08070D;
+      --fg: #ECE8F2;
+      --primary: #7C4DFF;
+      --accent: #C6F24E;
+      --muted: #837E96;
+      --panel: #100E18;
+      --panel-2: #15121F;
+      --line: rgba(124, 77, 255, 0.18);
+      --line-soft: rgba(236, 232, 242, 0.08);
+      --display: "Bodoni Moda", "Didot", "Times New Roman", serif;
+      --body: "Instrument Sans", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg); color: var(--fg); font-family: var(--body);
+      font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased;
+      min-height: 100dvh; position: relative; overflow-x: hidden;
+    }
+    body::before {
+      content: ""; position: fixed; inset: -20% -20% auto -20%; height: 70vh; z-index: 0; pointer-events: none;
+      background: radial-gradient(55% 55% at 78% 10%, rgba(124,77,255,.22), transparent 70%);
+    }
+    .app { position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; padding: 0 22px 60px; }
+
+    /* top chrome */
+    .chrome { display:flex; align-items:center; justify-content:space-between; gap:16px; padding: 18px 0; flex-wrap: wrap; }
+    .chrome-l { display:flex; align-items:center; gap: 20px; }
+    .back { color: var(--muted); text-decoration:none; font-size:.86rem; transition:color .2s; white-space:nowrap; }
+    .back:hover { color: var(--accent); }
+    .brand { font-family: var(--display); font-weight:600; font-size:1.3rem; letter-spacing:.02em; }
+    .brand span { color: var(--accent); }
+    .chrome-r { display:flex; align-items:center; gap: 14px; flex-wrap: wrap; }
+    .pill { display:inline-flex; align-items:center; gap:.5rem; font-size:.68rem; letter-spacing:.18em; text-transform:uppercase; color: var(--muted); }
+    .live-dot { width:8px;height:8px;border-radius:50%;background:var(--accent); animation: breathe 2.6s ease-in-out infinite; }
+    @keyframes breathe { 0%,100%{box-shadow:0 0 0 0 rgba(198,242,78,.55);opacity:1} 50%{box-shadow:0 0 0 7px rgba(198,242,78,0);opacity:.7} }
+    .lockchip {
+      font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color: var(--accent);
+      border:1px solid rgba(198,242,78,.28); padding:7px 13px; border-radius:999px; background: rgba(198,242,78,.05);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .h-tonight { font-family: var(--display); font-weight:500; font-size: clamp(2rem,4.5vw,3rem); line-height:1; margin: 8px 0 4px; letter-spacing:-.01em;}
+    .h-sub { color: var(--muted); font-size:.9rem; margin-bottom: 26px; }
+
+    /* layout */
+    .grid { display:grid; grid-template-columns: 1.35fr 0.95fr; gap: 22px; align-items:start; }
+
+    .card { background: var(--panel); border:1px solid var(--line-soft); border-radius: 20px; }
+    .card.hl { border-color: var(--line); }
+
+    /* now playing */
+    .np { padding: 26px; display:flex; gap: 26px; }
+    .np .art {
+      width: 220px; height: 220px; flex:none; border-radius: 18px; position:relative; overflow:hidden;
+      box-shadow: 0 30px 70px -40px rgba(124,77,255,.9);
+    }
+    .np .art .moon { position:absolute; top:16%; left:16%; width:32%;height:32%;border-radius:50%;
+      background: radial-gradient(circle at 38% 36%, #f6f2ff, #cbb6ff 55%, rgba(124,77,255,.2) 80%);
+      box-shadow: 0 0 60px rgba(203,182,255,.5); }
+    .np .art .wave { position:absolute; bottom:0; left:0; right:0; height:40%; display:flex; align-items:flex-end; gap:4px; padding:0 14px 14px; }
+    .np .art .wave span { flex:1; border-radius:3px; height:30%; background: rgba(236,232,242,.5); }
+    .np .art .wave span:nth-child(odd){ background: rgba(198,242,78,.7); }
+    body.playing .np .art .wave span { animation: bar 1.05s ease-in-out infinite; }
+    .np .art .wave span:nth-child(2){animation-delay:.1s}.np .art .wave span:nth-child(3){animation-delay:.2s}
+    .np .art .wave span:nth-child(4){animation-delay:.32s}.np .art .wave span:nth-child(5){animation-delay:.15s}
+    .np .art .wave span:nth-child(6){animation-delay:.42s}.np .art .wave span:nth-child(7){animation-delay:.24s}
+    .np .art .wave span:nth-child(8){animation-delay:.5s}.np .art .wave span:nth-child(9){animation-delay:.3s}
+    @keyframes bar { 0%,100%{height:22%} 50%{height:92%} }
+
+    .np-body { flex:1; display:flex; flex-direction:column; min-width:0; }
+    .np-kicker { font-size:.66rem; letter-spacing:.2em; text-transform:uppercase; color: var(--muted); margin-bottom:8px; }
+    .np-title { font-family: var(--display); font-weight:600; font-size: 1.9rem; line-height:1.05; }
+    .np-artist { color: var(--muted); margin-bottom: auto; padding-bottom: 16px; }
+    .scrub { height:5px; border-radius:5px; background: rgba(236,232,242,.12); position:relative; cursor:pointer; }
+    .scrub i { position:absolute; left:0;top:0;bottom:0; width:0%; background: var(--primary); border-radius:5px; }
+    .scrub i::after{content:"";position:absolute;right:-5px;top:50%;transform:translateY(-50%);width:11px;height:11px;border-radius:50%;background:#fff;box-shadow:0 0 10px rgba(124,77,255,.85);}
+    .times { display:flex; justify-content:space-between; color: var(--muted); font-size:.74rem; margin-top:8px; font-variant-numeric: tabular-nums; }
+
+    .controls { display:flex; align-items:center; gap: 18px; margin-top: 18px; }
+    .ctrl { background:none; border:none; color: var(--fg); cursor:pointer; padding:6px; border-radius:10px; display:grid; place-items:center; transition: color .2s, background .2s; }
+    .ctrl:hover { color: var(--accent); background: rgba(198,242,78,.06); }
+    .ctrl svg { width:20px; height:20px; }
+    .ctrl.on { color: var(--accent); }
+    .ctrl.play { width:54px;height:54px;border-radius:50%;background:var(--accent);color:#0a0a0a; box-shadow:0 0 26px rgba(198,242,78,.4); }
+    .ctrl.play:hover { background:#d4ff63; color:#0a0a0a; }
+    .ctrl.play svg { width:22px;height:22px; }
+    .react { margin-left:auto; display:flex; gap:10px; }
+
+    .ticker { margin: 16px 26px 22px; border-top:1px dashed var(--line); padding-top:14px; font-size:.82rem; color: var(--muted); display:flex; gap:.6rem; align-items:flex-start; min-height: 2.4em; }
+    .ticker b { color: var(--accent); font-weight:600; letter-spacing:.04em; white-space:nowrap; }
+    .ticker .msg { transition: opacity .25s; }
+
+    /* who's up */
+    .panel-head { padding: 20px 22px 12px; display:flex; align-items:center; justify-content:space-between; }
+    .panel-head h2 { font-family: var(--display); font-weight:600; font-size:1.3rem; }
+    .awake-count { font-size:.72rem; color: var(--muted); letter-spacing:.05em; }
+    .chips { display:flex; flex-wrap:wrap; gap:8px; padding: 0 22px 14px; }
+    .chip { font-size:.72rem; letter-spacing:.04em; color: var(--muted); background: transparent; border:1px solid var(--line-soft); padding:6px 12px; border-radius:999px; cursor:pointer; transition: all .2s; }
+    .chip:hover { color: var(--fg); border-color: var(--line); }
+    .chip.active { color:#0a0a0a; background: var(--accent); border-color: var(--accent); }
+    .people { list-style:none; max-height: 360px; overflow:auto; padding: 0 12px 12px; }
+    .person { display:flex; align-items:center; gap:12px; padding:11px 10px; border-radius:12px; transition: background .2s; }
+    .person:hover { background: rgba(124,77,255,.07); }
+    .avatar { width:38px;height:38px;flex:none;border-radius:50%; display:grid; place-items:center; font-size:.8rem; font-weight:600; color:#fff; background: linear-gradient(135deg,#7C4DFF,#3a2470); }
+    .person .pinfo { flex:1; min-width:0; }
+    .person .pname { font-weight:600; font-size:.92rem; }
+    .person .pcity { color: var(--muted); font-size:.78rem; }
+    .person .ptime { color: var(--accent); font-size:.74rem; font-variant-numeric: tabular-nums; white-space:nowrap; }
+    .sit { font-size:.72rem; color: var(--muted); background:transparent; border:1px solid var(--line); padding:6px 11px; border-radius:999px; cursor:pointer; transition: all .2s; white-space:nowrap; }
+    .sit:hover { color: var(--accent); border-color: rgba(198,242,78,.45); }
+
+    /* queue */
+    .queue-wrap { margin-top: 22px; }
+    .qhead { display:flex; align-items:baseline; justify-content:space-between; padding: 0 4px 14px; }
+    .qhead h2 { font-family: var(--display); font-weight:600; font-size:1.5rem; }
+    .qhead .qnote { color: var(--muted); font-size:.8rem; }
+    .queue { list-style:none; display:flex; flex-direction:column; gap:8px; }
+    .qitem { display:flex; align-items:center; gap:14px; padding:13px 16px; background: var(--panel); border:1px solid var(--line-soft); border-radius:14px; transition: border-color .2s; }
+    .qitem:hover { border-color: var(--line); }
+    .qnum { color: var(--muted); font-size:.8rem; width:1.4rem; text-align:right; font-variant-numeric: tabular-nums; }
+    .qmeta { flex:1; min-width:0; }
+    .qtitle { font-weight:600; font-size:.94rem; }
+    .qartist { color: var(--muted); font-size:.78rem; }
+    .qdur { color: var(--muted); font-size:.78rem; font-variant-numeric: tabular-nums; }
+    .qbtns { display:flex; gap:6px; }
+    .qbtn { background:transparent; border:1px solid var(--line-soft); color:var(--muted); width:30px;height:30px;border-radius:9px; cursor:pointer; display:grid; place-items:center; transition: all .2s;}
+    .qbtn:hover { color: var(--accent); border-color: var(--line); }
+    .qbtn svg{width:14px;height:14px;}
+    .qbtn:disabled { opacity:.3; cursor:not-allowed; }
+
+    /* modal */
+    .scrim { position:fixed; inset:0; background: rgba(4,3,9,.7); backdrop-filter: blur(6px); z-index:50; display:none; place-items:center; padding:22px; }
+    .scrim.open { display:grid; }
+    .modal { width:min(460px,100%); background: linear-gradient(180deg,var(--panel-2),var(--panel)); border:1px solid var(--line); border-radius:22px; padding:28px; box-shadow: 0 50px 100px -50px rgba(124,77,255,.8); animation: pop .25s ease-out; }
+    @keyframes pop { from{ opacity:0; transform: scale(.96) translateY(8px);} to{opacity:1;transform:none;} }
+    .modal .m-kicker { font-size:.66rem; letter-spacing:.2em; text-transform:uppercase; color: var(--muted); }
+    .modal h3 { font-family: var(--display); font-weight:600; font-size:1.7rem; margin:6px 0 4px; }
+    .modal .m-status { color: var(--accent); font-size:.8rem; letter-spacing:.04em; margin-bottom: 22px; display:flex; align-items:center; gap:.5rem; }
+    .silence-dot { width:7px;height:7px;border-radius:50%;background:var(--accent); animation: breathe 2.6s ease-in-out infinite; }
+    .avatars { display:flex; flex-wrap:wrap; gap:10px; margin-bottom: 20px; }
+    .avatars .avatar { width:44px;height:44px; }
+    .m-cities { list-style:none; display:flex; flex-direction:column; gap:9px; margin-bottom: 24px; max-height: 180px; overflow:auto; }
+    .m-cities li { display:flex; justify-content:space-between; font-size:.86rem; color: var(--fg); padding:8px 0; border-bottom:1px solid var(--line-soft); }
+    .m-cities li span:last-child { color: var(--accent); font-variant-numeric: tabular-nums; }
+    .m-actions { display:flex; gap:12px; }
+    .btn { font-family:var(--body); font-weight:600; font-size:.9rem; cursor:pointer; padding:12px 20px; border-radius:12px; border:1px solid transparent; text-decoration:none; display:inline-flex; align-items:center; gap:.4rem; transition: all .2s; }
+    .btn-accent { background: var(--accent); color:#0a0a0a; flex:1; justify-content:center; }
+    .btn-accent:hover { background:#d4ff63; }
+    .btn-ghost { background:transparent; color: var(--fg); border-color: var(--line); }
+    .btn-ghost:hover { color: var(--accent); border-color: rgba(198,242,78,.45); }
+
+    @media (max-width: 920px) {
+      .grid { grid-template-columns: 1fr; }
+      .np { flex-direction:column; }
+      .np .art { width:100%; height: 220px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      body::before { animation:none; }
+      .live-dot, .silence-dot, body.playing .np .art .wave span { animation:none; }
+      .modal { animation:none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- top chrome -->
+    <div class="chrome">
+      <div class="chrome-l">
+        <a class="back" href="./index.html">← back to the pitch</a>
+        <span class="brand">Lull<span>.</span></span>
+      </div>
+      <div class="chrome-r">
+        <span class="pill"><span class="live-dot"></span> Nocturnal mode</span>
+        <span class="lockchip" id="lock">DAYLIGHT LOCKOUT IN 02:13:44</span>
+      </div>
+    </div>
+
+    <h1 class="h-tonight">Tonight</h1>
+    <p class="h-sub">It is 3:47 a.m. You are not the only one.</p>
+
+    <div class="grid">
+      <!-- NOW PLAYING -->
+      <div>
+        <div class="card hl">
+          <div class="np">
+            <div class="art" id="art">
+              <div class="moon"></div>
+              <div class="wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+            </div>
+            <div class="np-body">
+              <div class="np-kicker">Now playing · from the 3 A.M. Algorithm</div>
+              <div class="np-title" id="npTitle">Nothing on Until Four</div>
+              <div class="np-artist" id="npArtist">The Overnight Index</div>
+              <div class="scrub" id="scrub"><i id="scrubFill"></i></div>
+              <div class="times"><span id="tCur">0:00</span><span id="tRem">-4:46</span></div>
+              <div class="controls">
+                <button class="ctrl" id="shuffle" aria-label="Shuffle" title="Shuffle">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3l5 5-5 5M3 8h18M8 21l-5-5 5-5M21 16H3"/></svg>
+                </button>
+                <button class="ctrl" id="prev" aria-label="Previous" title="Previous">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5v14M18 5L8 12l10 7z"/></svg>
+                </button>
+                <button class="ctrl play" id="play" aria-label="Play" title="Play / pause">
+                  <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l14 8-14 8z"/></svg>
+                </button>
+                <button class="ctrl" id="next" aria-label="Next" title="Next">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 5v14M6 5l10 7-10 7z"/></svg>
+                </button>
+                <button class="ctrl" id="repeat" aria-label="Repeat" title="Repeat">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 01-4 4H3"/></svg>
+                </button>
+                <span class="react">
+                  <button class="ctrl" id="like" aria-label="Like" title="Like (teaches the algorithm)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 00-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 000-7.8z"/></svg>
+                  </button>
+                  <button class="ctrl" id="skip" aria-label="Skip" title="Skip (also teaches the algorithm)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                  </button>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="ticker"><b>The algorithm is learning:</b><span class="msg" id="ticker">it has noticed you are awake. It is taking notes.</span></div>
+        </div>
+
+        <!-- QUEUE -->
+        <div class="queue-wrap">
+          <div class="qhead">
+            <h2>Tonight's queue</h2>
+            <span class="qnote">Reorder it. The 3 A.M. Algorithm will reorder it back.</span>
+          </div>
+          <ul class="queue" id="queue"></ul>
+        </div>
+      </div>
+
+      <!-- WHO'S UP -->
+      <div class="card">
+        <div class="panel-head">
+          <h2>Who's still up</h2>
+          <span class="awake-count" id="awakeCount">10 awake</span>
+        </div>
+        <div class="chips" id="chips"></div>
+        <ul class="people" id="people"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- CO-INSOMNIA ROOM MODAL -->
+  <div class="scrim" id="scrim">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+      <div class="m-kicker">Co-Insomnia Room</div>
+      <h3 id="mTitle">Lisbon, 3:51 a.m.</h3>
+      <div class="m-status"><span class="silence-dot"></span> <span id="mStatus">12 awake · nobody is speaking</span></div>
+      <div class="avatars" id="mAvatars"></div>
+      <ul class="m-cities" id="mCities"></ul>
+      <div class="m-actions">
+        <button class="btn btn-ghost" id="mWave" type="button">Wave (does nothing)</button>
+        <button class="btn btn-accent" id="mLeave" type="button">Leave quietly</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // ---------- data ----------
+    var arts = [
+      'radial-gradient(120% 120% at 20% 12%, rgba(198,242,78,.35), transparent 45%), radial-gradient(120% 120% at 88% 78%, rgba(124,77,255,.85), transparent 55%), linear-gradient(145deg,#1a1430,#0c0a16)',
+      'radial-gradient(120% 120% at 78% 18%, rgba(124,77,255,.6), transparent 50%), radial-gradient(100% 100% at 14% 86%, rgba(198,242,78,.3), transparent 55%), linear-gradient(160deg,#241a3a,#0a0912)',
+      'radial-gradient(110% 110% at 50% 18%, rgba(203,182,255,.5), transparent 55%), linear-gradient(180deg,#2a1c46,#0c0a16)',
+      'radial-gradient(120% 120% at 22% 80%, rgba(124,77,255,.7), transparent 55%), radial-gradient(80% 80% at 82% 16%, rgba(198,242,78,.25), transparent 60%), linear-gradient(135deg,#171127,#0a0810)',
+      'radial-gradient(120% 120% at 84% 84%, rgba(198,242,78,.4), transparent 50%), radial-gradient(120% 120% at 10% 10%, rgba(124,77,255,.7), transparent 55%), linear-gradient(150deg,#1c1533,#0b0914)'
+    ];
+    var tracks = [
+      { title: 'Nothing on Until Four', artist: 'The Overnight Index', dur: 286 },
+      { title: 'Streetlight, Held', artist: 'Quiet Hours Collective', dur: 243 },
+      { title: 'Third Coffee, Decaf, A Lie', artist: 'Marge Underscore', dur: 312 },
+      { title: 'The Hum of the Fridge', artist: 'Ambient Liability', dur: 198 },
+      { title: 'Not Tired, Just Here', artist: 'Sodium Vapor', dur: 265 },
+      { title: 'One More Then Sleep (Untrue)', artist: 'Last Bus Missed', dur: 221 }
+    ];
+    var people = [
+      { name: 'Aurélie', city: 'Lisbon', region: 'Europe', time: '3:51 AM' },
+      { name: 'Tomás', city: 'Buenos Aires', region: 'Americas', time: '2:38 AM' },
+      { name: 'Wei', city: 'Taipei', region: 'Asia', time: '4:07 AM' },
+      { name: 'Søren', city: 'Reykjavík', region: 'Europe', time: '3:19 AM' },
+      { name: 'Imani', city: 'Detroit', region: 'Americas', time: '3:47 AM' },
+      { name: 'Yuki', city: 'Osaka', region: 'Asia', time: '4:33 AM' },
+      { name: 'Nadia', city: 'Cairo', region: 'Africa', time: '2:55 AM' },
+      { name: 'Cleo', city: 'Perth', region: 'Oceania', time: '4:48 AM' },
+      { name: 'Bram', city: 'Rotterdam', region: 'Europe', time: '3:02 AM' },
+      { name: 'Joon', city: 'Seoul', region: 'Asia', time: '4:21 AM' }
+    ];
+    var regions = ['All', 'Americas', 'Europe', 'Asia', 'Africa', 'Oceania'];
+
+    // ---------- helpers ----------
+    function fmt(s) { s = Math.max(0, Math.floor(s)); var m = Math.floor(s / 60); var r = s % 60; return m + ':' + (r < 10 ? '0' : '') + r; }
+    function initials(n) { return n.replace(/[^A-Za-zÀ-ÿ ]/g, '').trim().charAt(0).toUpperCase(); }
+    function $(id) { return document.getElementById(id); }
+
+    // ---------- player ----------
+    var idx = 0, cur = 0, playing = false, timer = null;
+    function loadTrack(i) {
+      idx = (i + tracks.length) % tracks.length;
+      cur = 0;
+      var t = tracks[idx];
+      $('npTitle').textContent = t.title;
+      $('npArtist').textContent = t.artist;
+      $('art').style.backgroundImage = arts[idx % arts.length];
+      paint();
+    }
+    function paint() {
+      var t = tracks[idx];
+      var pct = Math.min(100, (cur / t.dur) * 100);
+      $('scrubFill').style.width = pct + '%';
+      $('tCur').textContent = fmt(cur);
+      $('tRem').textContent = '-' + fmt(t.dur - cur);
+    }
+    function tick() {
+      cur += 1;
+      if (cur >= tracks[idx].dur) loadTrack(idx + 1);
+      else paint();
+    }
+    function setPlaying(p) {
+      playing = p;
+      document.body.classList.toggle('playing', p);
+      $('play').classList.toggle('on', p);
+      $('playIcon').innerHTML = p
+        ? '<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>'
+        : '<path d="M6 4l14 8-14 8z"></path>';
+      $('play').setAttribute('aria-label', p ? 'Pause' : 'Play');
+      if (timer) { clearInterval(timer); timer = null; }
+      if (p) timer = setInterval(tick, 1000);
+    }
+    $('play').addEventListener('click', function () { setPlaying(!playing); say(playing ? 'playing. The night is officially underway.' : 'paused. The algorithm assumes you are reconsidering your choices.'); });
+    $('next').addEventListener('click', function () { loadTrack(idx + 1); say('advanced to "' + tracks[idx].title + '". Bold, for this hour.'); });
+    $('prev').addEventListener('click', function () { if (cur > 4) { cur = 0; paint(); } else loadTrack(idx - 1); say('went back to "' + tracks[idx].title + '". It understands.'); });
+    $('scrub').addEventListener('click', function (e) { var r = this.getBoundingClientRect(); cur = Math.round(((e.clientX - r.left) / r.width) * tracks[idx].dur); paint(); });
+    $('shuffle').addEventListener('click', function () { this.classList.toggle('on'); say(this.classList.contains('on') ? 'shuffle on. Order was a comfort and you have rejected it.' : 'shuffle off. A small act of control at 3:47 a.m.'); });
+    $('repeat').addEventListener('click', function () { this.classList.toggle('on'); say(this.classList.contains('on') ? 'repeat on. You and this song, until lockout.' : 'repeat off.'); });
+    $('like').addEventListener('click', function () { say('logged that you liked "' + tracks[idx].title + '" at 3:47 a.m. This will haunt your recommendations.'); pulse(this); });
+    $('skip').addEventListener('click', function () { var old = tracks[idx].title; loadTrack(idx + 1); say('skipped "' + old + '". It has noted your restlessness and moved on to "' + tracks[idx].title + '".'); });
+
+    function pulse(el) { el.classList.add('on'); setTimeout(function () { el.classList.remove('on'); }, 500); }
+    var tk = $('ticker');
+    function say(msg) { tk.style.opacity = 0; setTimeout(function () { tk.textContent = msg; tk.style.opacity = 1; }, 200); }
+
+    // ---------- queue ----------
+    var queue = [
+      { title: 'Streetlight, Held', artist: 'Quiet Hours Collective', dur: 243 },
+      { title: 'Third Coffee, Decaf, A Lie', artist: 'Marge Underscore', dur: 312 },
+      { title: 'The Hum of the Fridge', artist: 'Ambient Liability', dur: 198 },
+      { title: 'Not Tired, Just Here', artist: 'Sodium Vapor', dur: 265 },
+      { title: 'One More Then Sleep (Untrue)', artist: 'Last Bus Missed', dur: 221 }
+    ];
+    function renderQueue() {
+      var ul = $('queue'); ul.innerHTML = '';
+      queue.forEach(function (q, i) {
+        var li = document.createElement('li'); li.className = 'qitem';
+        li.innerHTML =
+          '<span class="qnum">' + (i + 1) + '</span>' +
+          '<span class="qmeta"><div class="qtitle"></div><div class="qartist"></div></span>' +
+          '<span class="qdur">' + fmt(q.dur) + '</span>' +
+          '<span class="qbtns">' +
+            '<button class="qbtn up" title="Move up" aria-label="Move up"' + (i === 0 ? ' disabled' : '') + '><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg></button>' +
+            '<button class="qbtn down" title="Move down" aria-label="Move down"' + (i === queue.length - 1 ? ' disabled' : '') + '><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>' +
+            '<button class="qbtn rm" title="Remove" aria-label="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>' +
+          '</span>';
+        li.querySelector('.qtitle').textContent = q.title;
+        li.querySelector('.qartist').textContent = q.artist;
+        li.querySelector('.up').addEventListener('click', function () { move(i, -1); });
+        li.querySelector('.down').addEventListener('click', function () { move(i, 1); });
+        li.querySelector('.rm').addEventListener('click', function () { queue.splice(i, 1); renderQueue(); say('removed "' + q.title + '". It will quietly reappear later. It always does.'); });
+        ul.appendChild(li);
+      });
+    }
+    function move(i, d) { var j = i + d; if (j < 0 || j >= queue.length) return; var tmp = queue[i]; queue[i] = queue[j]; queue[j] = tmp; renderQueue(); }
+
+    // ---------- who's up ----------
+    var activeRegion = 'All';
+    function renderChips() {
+      var c = $('chips'); c.innerHTML = '';
+      regions.forEach(function (r) {
+        var b = document.createElement('button');
+        b.className = 'chip' + (r === activeRegion ? ' active' : '');
+        b.textContent = r;
+        b.addEventListener('click', function () { activeRegion = r; renderChips(); renderPeople(); });
+        c.appendChild(b);
+      });
+    }
+    function filtered() { return activeRegion === 'All' ? people : people.filter(function (p) { return p.region === activeRegion; }); }
+    function renderPeople() {
+      var ul = $('people'); ul.innerHTML = '';
+      var list = filtered();
+      $('awakeCount').textContent = list.length + ' awake';
+      if (!list.length) { ul.innerHTML = '<li class="person"><div class="pinfo"><div class="pcity">Nobody from here is up. Lucky them.</div></div></li>'; return; }
+      list.forEach(function (p) {
+        var li = document.createElement('li'); li.className = 'person';
+        li.innerHTML =
+          '<span class="avatar">' + initials(p.name) + '</span>' +
+          '<span class="pinfo"><div class="pname"></div><div class="pcity"></div></span>' +
+          '<span class="ptime">' + p.time + '</span>' +
+          '<button class="sit">sit with them</button>';
+        li.querySelector('.pname').textContent = p.name;
+        li.querySelector('.pcity').textContent = p.city;
+        li.querySelector('.sit').addEventListener('click', function () { openRoom(p); });
+        ul.appendChild(li);
+      });
+    }
+
+    // ---------- co-insomnia room ----------
+    var scrim = $('scrim');
+    function openRoom(p) {
+      $('mTitle').textContent = p.city + ', ' + p.time.toLowerCase().replace(' am', ' a.m.');
+      var n = 6 + (p.name.length % 9);
+      $('mStatus').textContent = n + ' awake · nobody is speaking';
+      var others = people.filter(function (x) { return x.city !== p.city; }).slice(0, 5);
+      var roster = [p].concat(others);
+      var av = $('mAvatars'); av.innerHTML = '';
+      roster.forEach(function (r) { var s = document.createElement('span'); s.className = 'avatar'; s.textContent = initials(r.name); av.appendChild(s); });
+      var cities = $('mCities'); cities.innerHTML = '';
+      roster.forEach(function (r) {
+        var li = document.createElement('li');
+        li.innerHTML = '<span>' + r.name + ' · ' + r.city + '</span><span>' + r.time + '</span>';
+        cities.appendChild(li);
+      });
+      scrim.classList.add('open');
+    }
+    function closeRoom() { scrim.classList.remove('open'); }
+    $('mLeave').addEventListener('click', function () { closeRoom(); say('you left the room without a word. Correct etiquette.'); });
+    $('mWave').addEventListener('click', function () { $('mStatus').textContent = 'still nobody is speaking'; });
+    scrim.addEventListener('click', function (e) { if (e.target === scrim) closeRoom(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeRoom(); });
+
+    // ---------- daylight lockout countdown ----------
+    (function () {
+      var total = 2 * 3600 + 13 * 60 + 44, el = $('lock');
+      function pad(n) { return (n < 10 ? '0' : '') + n; }
+      setInterval(function () {
+        total = total > 0 ? total - 1 : 0;
+        var h = Math.floor(total / 3600), m = Math.floor((total % 3600) / 60), s = total % 60;
+        el.textContent = 'DAYLIGHT LOCKOUT IN ' + pad(h) + ':' + pad(m) + ':' + pad(s);
+      }, 1000);
+    })();
+
+    // ---------- init ----------
+    loadTrack(0);
+    renderQueue();
+    renderChips();
+    renderPeople();
+  </script>
+</body>
+</html>

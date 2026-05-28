@@ -1,0 +1,99 @@
+{
+  "date": "2026-05-28",
+  "company": "Spotify",
+  "subject": "night owls",
+  "tagline": "Spotify for night owls",
+  "slug": "spotify-for-night-owls",
+  "product_name": "Lull",
+  "one_liner": "The streaming service that refuses to play during the day.",
+  "brand_voice_notes": "A consumer music-streaming company that has made one strange product decision and reorganized the entire company around defending it. Speaks about a 3 a.m. listening session the way Spotify speaks about discovery and personalization: algorithms, queues, listening rooms, weekly trends. The one immovable rule is that the app only works at night and locks you out at sunrise. Deadpan, faux-helpful, mildly proud of features that are clearly the wrong solution. Pricing is confident and escalates by how nocturnal you are willing to admit you are. The bit is that this is a real product real insomniacs pay for, and nobody on the page finds the daylight lockout strange. Never earnest, never winking.",
+  "hero": {
+    "h1": "Music for people who refuse to go to bed.",
+    "sub": "Lull is a streaming service that only works at night. Every other decision in the product was built around that one, and we are not revisiting it. Trusted by 214,000 people who should be asleep, three overnight radio hosts, and one sleep clinic that has asked us to stop.",
+    "primary_cta": "Stay up with us"
+  },
+  "features": [
+    {
+      "title": "Daylight Lockout",
+      "blurb": "Playback stops the moment the sun comes up, confirmed by your phone's light sensor. There is no override. There is no setting buried three menus deep. We decided this was a feature and then we made it impossible to turn off."
+    },
+    {
+      "title": "The 3 A.M. Algorithm",
+      "blurb": "Recommendations built entirely from what other people queued between two and five in the morning. The selections get less defensible as the night goes on. This is the intended behavior and we are quietly proud of it."
+    },
+    {
+      "title": "Co-Insomnia Rooms",
+      "blurb": "Sit in a silent audio room with strangers who are also awake. No chat, no microphones, no names. Just a list of cities and the quiet certainty that someone in Lisbon is having the exact night you are."
+    }
+  ],
+  "pricing_tiers": [
+    {
+      "name": "Light Sleeper",
+      "price": "$0",
+      "tagline": "For people who insist they are 'usually asleep by now.'",
+      "perks": [
+        "Three skips a night, then it is over",
+        "Ads read aloud by an intern who is also up",
+        "Hard lockout at sunrise, no appeals"
+      ]
+    },
+    {
+      "name": "Night Shift",
+      "price": "$13 / mo",
+      "tagline": "For the gainfully nocturnal.",
+      "perks": [
+        "Unlimited skips",
+        "Full access to the 3 A.M. Algorithm",
+        "One Co-Insomnia Room, up to 40 strangers",
+        "Sunrise lockout, but you saw it coming"
+      ]
+    },
+    {
+      "name": "Clinically Nocturnal",
+      "price": "$36 / mo",
+      "tagline": "We are not qualified to diagnose you. The price is acting like we are.",
+      "perks": [
+        "Everything in Night Shift",
+        "Lockout deferred 47 minutes past sunrise",
+        "A monthly phone call from someone who is also awake",
+        "Priority placement in the 3 A.M. Algorithm"
+      ]
+    }
+  ],
+  "testimonials": [
+    {
+      "quote": "I run the overnight shift in a sleep lab. I am aware of the irony. Lull is the only thing that gets me through the four a.m. stretch.",
+      "name": "Dolores Yancy",
+      "title": "Overnight Polysomnographic Technologist, St. Albright Sleep Center"
+    },
+    {
+      "quote": "Daylight Lockout cut off a song mid-chorus and I respected it so much I did not even file a ticket.",
+      "name": "Marcus Ree",
+      "title": "Freelance Subtitle Translator, Central European Hours"
+    },
+    {
+      "quote": "I spent two hours in a Co-Insomnia Room with eleven strangers and none of us said a word. Healthiest relationship I have had in years.",
+      "name": "Priya Wendt-Oduya",
+      "title": "Graveyard-Shift Toll Supervisor, I-78 Eastbound"
+    }
+  ],
+  "demo_screen_concept": "A full-bleed OLED-black player titled 'Tonight' frozen at 3:47 a.m. Center: a now-playing card with generated album art (a pure-CSS gradient, no external image), track title and artist, a violet scrub bar showing elapsed and remaining time, and transport controls (shuffle, previous, play/pause, next, repeat) where like and skip feed 'the 3 A.M. Algorithm'. Top bar: the Lull wordmark, a lime live-dot reading 'NOCTURNAL', and a prominent 'DAYLIGHT LOCKOUT IN 02:13:44' countdown chip that ticks down in real time. Right rail: a 'Who's still up' panel listing strangers by first name, city, and local time (all between 2 and 5 a.m.), filterable by region via chips, each row with a 'sit with them' button that opens a silent Co-Insomnia Room modal showing avatars, a city list, and a 'nobody is speaking' status with a leave button. Bottom: 'Tonight's queue', a reorderable list of upcoming tracks with remove buttons. Interactions, all client-side: play/pause toggles a CSS-animated waveform and starts the scrubber; previous and next swap the now-playing track from an in-memory list; like and skip post into a small 'the algorithm is learning' ticker; the lockout countdown decrements every second; the region chips filter the who's-up list; opening and leaving a Co-Insomnia Room works; queue items reorder via up and down controls and can be removed. No network calls; every record is an in-memory fixture.",
+  "design_direction": {
+    "style": "after-hours editorial nocturne (true-black OLED, high-contrast didone display, single moonlit glow)",
+    "palette": {
+      "primary": "#7C4DFF",
+      "accent": "#C6F24E",
+      "bg": "#08070D",
+      "fg": "#ECE8F2",
+      "muted": "#837E96",
+      "ink": "#ECE8F2"
+    },
+    "fonts": {
+      "display": "\"Bodoni Moda\", \"Didot\", \"Times New Roman\", serif",
+      "body": "\"Instrument Sans\", -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", Arial, sans-serif"
+    },
+    "archetype": "Consumer music-streaming landing (feature-rich showcase) on a dark OLED canvas",
+    "motion_vocab": "Nocturnal and restrained. A single slow violet moonlight bloom drifts across the hero on a 32s loop. The lime live-dot breathes with a soft glow pulse. Section type rises 8px and fades in on first paint, staggered 40ms. Body and UI text are set in Instrument Sans. Hairline rules draw from left to right on reveal. Buttons gain a soft violet glow on hover rather than a transform jump. The scrub bar and waveform animate only while 'playing'. prefers-reduced-motion disables the drift, the pulse, the rise, and the waveform, leaving opacity and color changes only.",
+    "hero_composition_notes": "Centered-left type column on a near-true-black field carrying one soft violet radial bloom and a faint vertical hairline that reads as a horizon line at night. A small tracked uppercase eyebrow in Instrument Sans reads LULL // AFTER-HOURS AUDIO with a lime live-dot. Oversized high-contrast Bodoni Moda H1 set ragged-left in moonlight white, with the word 'bed' carrying the lime accent. One-sentence Instrument Sans subhead at a narrow measure in muted lavender-grey. Two controls side by side: a filled violet 'Stay up with us' and a ghost outline 'Open the demo'. To the right, a floating dark player card mocks the Lull app: a now-playing track with CSS-gradient art, a violet scrubber, transport glyphs, and a lime 'DAYLIGHT LOCKOUT IN 02:13:44' chip, so the visitor sees the product before clicking. A thin trust strip below in muted text: The 3 A.M. Algorithm / Daylight Lockout / Co-Insomnia Rooms. Feature bands sit on raised near-black panels with 1px violet-tinted borders, generous whitespace, 16px rounded corners, and a single soft glow per section rather than stacked shadows."
+  }
+}
