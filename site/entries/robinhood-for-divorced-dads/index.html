@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vested. · theworstaistudioever</title>
+<meta name="description" content="Commission-free fatherhood. Track your Dad Equity, swap weekends like options, and round up every gas-station snack into a college fund.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Vested. &middot; Robinhood for divorced dads">
+<meta property="og:description" content="Commission-free fatherhood. Your custody schedule is now a portfolio.">
+<meta property="og:site_name" content="theworstaistudioever">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Calistoga&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
+
+:root{
+  --primary:#1F4D38;
+  --primary-deep:#163525;
+  --accent:#C76B2E;
+  --bg:#EFEADD;
+  --paper:#F6F2E8;
+  --fg:#20231C;
+  --muted:#757567;
+  --ink:#20231C;
+  --rule:rgba(31,77,56,0.10);
+  --hair:rgba(32,35,28,0.14);
+  --maxw:1140px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+  color:var(--fg);
+  background-color:var(--bg);
+  background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 31px,var(--rule) 31px,var(--rule) 32px);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+.mono{font-family:"Space Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+a{color:inherit}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(239,234,221,0.86);
+  backdrop-filter:saturate(140%) blur(8px);
+  border-bottom:1px solid var(--hair);
+}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.brand{font-family:"Calistoga",Georgia,serif;font-size:26px;letter-spacing:-0.01em;color:var(--primary)}
+.brand .dot{color:var(--accent)}
+.topnav{display:flex;align-items:center;gap:26px;font-size:14px;font-weight:600}
+.topnav a.link{color:var(--muted);text-decoration:none;transition:color .18s}
+.topnav a.link:hover{color:var(--primary)}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  font-weight:700;font-size:14px;text-decoration:none;
+  padding:11px 18px;border-radius:10px;border:1.5px solid var(--primary);
+  background:var(--primary);color:var(--paper);
+  transition:transform .15s ease,box-shadow .15s ease,background .15s;
+  cursor:pointer;
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 10px 22px -12px rgba(22,53,37,0.7)}
+.btn.ghost{background:transparent;color:var(--primary)}
+.btn.ghost:hover{background:rgba(31,77,56,0.06)}
+.btn.amber{background:var(--accent);border-color:var(--accent)}
+.btn.big{padding:15px 26px;font-size:16px;border-radius:12px}
+
+@media (max-width:680px){.topnav .link{display:none}}
+
+/* ---------- ticker ---------- */
+.ticker{
+  border-bottom:1px solid var(--hair);
+  background:var(--primary);color:var(--paper);
+  overflow:hidden;white-space:nowrap;
+}
+.ticker-track{display:inline-block;padding:8px 0;animation:scroll 38s linear infinite}
+.ticker-track span{display:inline-block;padding:0 22px;font-size:12.5px;letter-spacing:.02em}
+.ticker .up{color:#9FD8B4}
+.ticker .down{color:#F0B58A}
+.ticker .sym{font-weight:700;color:var(--paper)}
+@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ---------- hero ---------- */
+.hero{position:relative;padding:84px 0 56px}
+.hero .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;
+  color:var(--accent);margin-bottom:22px;
+}
+.eyebrow::before{content:"";width:22px;height:1.5px;background:var(--accent)}
+h1{
+  font-family:"Calistoga",Georgia,serif;font-weight:400;
+  font-size:clamp(2.7rem,6.2vw,4.6rem);line-height:0.99;letter-spacing:-0.01em;
+  color:var(--primary-deep);max-width:13ch;
+}
+h1 em{font-style:normal;color:var(--accent)}
+.lede{font-size:clamp(1.05rem,1.6vw,1.22rem);color:var(--fg);max-width:46ch;margin:24px 0 30px;opacity:.9}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.assurance{font-size:12.5px;color:var(--muted);margin-top:18px}
+
+/* brokerage stat card */
+.card-stat{
+  background:var(--paper);
+  border:1px solid var(--hair);border-radius:18px;
+  padding:24px 24px 18px;
+  box-shadow:0 30px 60px -40px rgba(22,53,37,.55);
+  position:relative;overflow:hidden;
+}
+.card-stat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent)}
+.cs-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:2px}
+.cs-label{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.cs-grade{font-family:"Space Mono",monospace;font-size:12px;font-weight:700;color:var(--primary);border:1px solid var(--primary);border-radius:6px;padding:2px 7px}
+.cs-value{font-family:"Space Mono",monospace;font-weight:700;font-size:54px;line-height:1.05;color:var(--primary-deep);letter-spacing:-0.02em}
+.cs-delta{font-family:"Space Mono",monospace;font-size:14px;font-weight:700;color:var(--primary)}
+.cs-delta .arr{display:inline-block;transform:translateY(1px)}
+.spark{margin-top:14px;width:100%;height:88px;display:block}
+.spark path.line{fill:none;stroke:var(--primary);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.spark path.fillarea{fill:rgba(31,77,56,0.10);stroke:none}
+.cs-foot{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-top:10px;font-family:"Space Mono",monospace}
+
+/* ---------- section frame ---------- */
+section.block{padding:64px 0}
+.kicker{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+.h2{font-family:"Calistoga",Georgia,serif;font-weight:400;font-size:clamp(1.9rem,3.4vw,2.7rem);color:var(--primary-deep);letter-spacing:-0.01em;line-height:1.05}
+.sec-head{max-width:30ch;margin-bottom:38px}
+.sec-head p{color:var(--muted);margin-top:12px}
+
+/* ---------- bento features ---------- */
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:18px}
+.fcard{
+  background:var(--paper);border:1px solid var(--hair);border-radius:18px;padding:26px;
+  display:flex;flex-direction:column;justify-content:space-between;min-height:230px;
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+.fcard:hover{transform:translateY(-3px);box-shadow:0 24px 44px -34px rgba(22,53,37,.6)}
+.fcard.big{grid-column:span 3}
+.fcard.med{grid-column:span 3}
+.fcard.wide{grid-column:span 6}
+.fnum{font-family:"Space Mono",monospace;font-size:13px;font-weight:700;color:var(--accent)}
+.fcard h3{font-family:"Calistoga",Georgia,serif;font-weight:400;font-size:1.7rem;color:var(--primary-deep);margin:14px 0 10px;line-height:1.05}
+.fcard p{color:var(--fg);opacity:.86;font-size:15px}
+.fcard .chip{align-self:flex-start;margin-top:18px;font-family:"Space Mono",monospace;font-size:11.5px;color:var(--primary);background:rgba(31,77,56,0.08);border-radius:999px;padding:5px 11px}
+.fcard.wide{flex-direction:row;align-items:center;gap:36px;min-height:auto}
+.fcard.wide .txt{flex:1}
+.fcard.wide .roundup{
+  font-family:"Space Mono",monospace;text-align:right;flex-shrink:0;
+}
+.fcard.wide .roundup .big-num{font-size:42px;font-weight:700;color:var(--primary-deep);display:block;letter-spacing:-0.02em}
+.fcard.wide .roundup .cap{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+
+/* ---------- testimonials ---------- */
+.quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.quote{
+  background:transparent;border:1px solid var(--hair);border-radius:16px;padding:26px;
+  display:flex;flex-direction:column;
+}
+.quote .mark{font-family:"Calistoga",Georgia,serif;font-size:42px;color:var(--accent);line-height:.6;height:24px}
+.quote p{font-size:15.5px;margin:8px 0 18px;flex:1}
+.quote .who{border-top:1px solid var(--hair);padding-top:14px}
+.quote .who .nm{font-weight:700;font-size:14px}
+.quote .who .ti{font-size:12.5px;color:var(--muted)}
+
+/* ---------- pricing ---------- */
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:stretch}
+.tier{
+  background:var(--paper);border:1px solid var(--hair);border-radius:18px;padding:28px;
+  display:flex;flex-direction:column;
+}
+.tier.feat{border:1.5px solid var(--primary);box-shadow:0 30px 60px -44px rgba(22,53,37,.6);position:relative}
+.tier.feat::after{content:"most over-leveraged";position:absolute;top:-11px;left:24px;background:var(--accent);color:var(--paper);font-size:11px;font-weight:700;letter-spacing:.04em;padding:4px 10px;border-radius:999px}
+.tier .tname{font-family:"Calistoga",Georgia,serif;font-size:1.5rem;color:var(--primary-deep)}
+.tier .ttag{font-size:13px;color:var(--muted);margin-bottom:16px}
+.tier .price{font-family:"Space Mono",monospace;font-weight:700;font-size:34px;color:var(--primary-deep);letter-spacing:-0.02em;margin-bottom:18px}
+.tier ul{list-style:none;display:flex;flex-direction:column;gap:11px;flex:1;margin-bottom:22px}
+.tier li{font-size:14px;display:flex;gap:10px;align-items:flex-start}
+.tier li svg{flex-shrink:0;margin-top:3px}
+.tier .btn{justify-content:center;width:100%}
+
+/* ---------- demo cta ---------- */
+.demo-cta{margin:24px 0 8px}
+.demo-band{
+  background:var(--primary);color:var(--paper);border-radius:22px;
+  padding:48px 40px;display:flex;align-items:center;justify-content:space-between;gap:30px;flex-wrap:wrap;
+  position:relative;overflow:hidden;
+}
+.demo-band::before{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 31px,rgba(255,255,255,0.05) 31px,rgba(255,255,255,0.05) 32px);pointer-events:none}
+.demo-band h3{font-family:"Calistoga",Georgia,serif;font-weight:400;font-size:clamp(1.6rem,3vw,2.2rem);line-height:1.05;max-width:18ch;position:relative}
+.demo-band p{color:#CFE0D4;margin-top:8px;font-size:15px;max-width:42ch;position:relative}
+.demo-band .btn{background:var(--accent);border-color:var(--accent);color:#1a1206;position:relative}
+.demo-band .btn:hover{background:#d97c3d;border-color:#d97c3d}
+
+/* ---------- footer ---------- */
+footer{border-top:1px solid var(--hair);padding:42px 0 60px;margin-top:40px}
+.foot-top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap}
+.foot-brand{font-family:"Calistoga",Georgia,serif;font-size:22px;color:var(--primary)}
+.foot-brand .dot{color:var(--accent)}
+.backlink{font-size:13px;font-weight:600;text-decoration:none;color:var(--muted);transition:color .18s}
+.backlink:hover{color:var(--primary)}
+.fineprint{font-size:11.5px;color:var(--muted);line-height:1.7;max-width:80ch;margin-top:26px;border-top:1px solid var(--hair);padding-top:18px}
+
+/* ---------- responsive ---------- */
+@media (max-width:880px){
+  .hero .grid{grid-template-columns:1fr;gap:34px}
+  .bento{grid-template-columns:1fr}
+  .fcard.big,.fcard.med,.fcard.wide{grid-column:auto}
+  .fcard.wide{flex-direction:column;align-items:flex-start}
+  .fcard.wide .roundup{text-align:left}
+  .quotes{grid-template-columns:1fr}
+  .tiers{grid-template-columns:1fr}
+}
+
+/* ---------- motion ---------- */
+.reveal{opacity:0;transform:translateY(16px);animation:rise .6s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes rise{to{opacity:1;transform:none}}
+.spark path.line{stroke-dasharray:600;stroke-dashoffset:600;animation:draw 1.5s ease-out .25s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .reveal{opacity:1;transform:none}
+  .spark path.line{stroke-dashoffset:0}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <div class="brand">Vested<span class="dot">.</span></div>
+    <nav class="topnav">
+      <a class="link" href="#how">How it works</a>
+      <a class="link" href="#pricing">Pricing</a>
+      <a class="btn ghost" href="./demo.html">Open the demo</a>
+    </nav>
+  </div>
+</div>
+
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track" id="tick">
+    <span class="sym">WKND</span> <span class="mono up">+2 days &#9650;</span>
+    <span class="sym">PNCK</span> <span class="mono up">+11.4% &#9650;</span>
+    <span class="sym">CUST</span> <span class="mono down">-1 Tue &#9660;</span>
+    <span class="sym">529</span> <span class="mono up">+$3.00 &#9650;</span>
+    <span class="sym">TEXT</span> <span class="mono down">read, not answered</span>
+    <span class="sym">SOCR</span> <span class="mono up">u9 finals Sat &#9650;</span>
+    <span class="sym">GUAC</span> <span class="mono down">extra, again</span>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap grid">
+    <div class="reveal">
+      <span class="eyebrow">Series B &middot; not financial, legal, or emotional advice</span>
+      <h1>Invest in your kids. <em>Every other weekend.</em></h1>
+      <p class="lede">Vested. turns your custody schedule into a portfolio. Track your Dad Equity, swap weekends like options, and round up every gas-station snack into a college fund. Trusted by 38,000 fathers, two family-court mediators who use it ironically, and one man named Dale.</p>
+      <div class="hero-ctas">
+        <a class="btn big" href="#pricing">Open a custody account</a>
+        <a class="btn ghost big" href="./demo.html">See your portfolio &rarr;</a>
+      </div>
+      <p class="assurance">Commission-free fatherhood. No minimums. No closure.</p>
+    </div>
+
+    <aside class="card-stat reveal" style="animation-delay:.12s">
+      <div class="cs-head">
+        <span class="cs-label">Dad Equity</span>
+        <span class="cs-grade">B+ &middot; FAIR</span>
+      </div>
+      <div class="cs-value" id="equity">612</div>
+      <div class="cs-delta"><span class="arr">&#9650;</span> +18 today &middot; +49 this month</div>
+      <svg class="spark" viewBox="0 0 320 88" preserveAspectRatio="none" aria-hidden="true">
+        <path class="fillarea" d="M0,70 L18,66 L40,72 L64,60 L92,64 L120,52 L150,56 L184,42 L214,46 L248,30 L286,26 L320,18 L320,88 L0,88 Z"></path>
+        <path class="line" d="M0,70 L18,66 L40,72 L64,60 L92,64 L120,52 L150,56 L184,42 L214,46 L248,30 L286,26 L320,18"></path>
+      </svg>
+      <div class="cs-foot"><span>410 &middot; Mar</span><span>updated 4:01 PM</span></div>
+    </aside>
+  </div>
+</header>
+
+<section class="block" id="how">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">The instruments</div>
+      <h2 class="h2">Three products. One co-parent who is not on the app.</h2>
+    </div>
+    <div class="bento">
+      <article class="fcard big reveal">
+        <span class="fnum">01 / SCORE</span>
+        <div>
+          <h3>Dad Equity</h3>
+          <p>One number, 300 to 850, scoring how the relationship is performing. We read your co-parenting texts, your attendance at games, and your cleared support payments, then plot it like a stock. Green days feel great. Red days are between you and the app.</p>
+        </div>
+        <span class="chip">live &middot; recalculates hourly</span>
+      </article>
+
+      <article class="fcard med reveal" style="animation-delay:.08s">
+        <span class="fnum">02 / DERIVATIVES</span>
+        <div>
+          <h3>Weekend Options</h3>
+          <p>Roll a Tuesday into a long weekend. Write a covered Saturday against summer break. Hedge against your ex's new boyfriend taking the kids to Universal. Every contract settles in an awkward driveway handoff.</p>
+        </div>
+        <span class="chip">settles T+0, in person</span>
+      </article>
+
+      <article class="fcard wide reveal" style="animation-delay:.16s">
+        <div class="txt">
+          <span class="fnum">03 / SAVINGS</span>
+          <h3>Round-Up 529</h3>
+          <p>Every drive-thru, batting cage, and emergency Target run rounds up to the nearest dollar and lands in a college fund your kids will one day call "not enough." Compounds quietly. Like resentment.</p>
+        </div>
+        <div class="roundup">
+          <span class="big-num mono">$84.00</span>
+          <span class="cap">balance, month 8</span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">Verified holders</div>
+      <h2 class="h2">Men who checked the app instead of texting back.</h2>
+    </div>
+    <div class="quotes">
+      <figure class="quote reveal">
+        <div class="mark">&ldquo;</div>
+        <p>My Dad Equity was 410 in March. I set first-pancake Saturdays to a recurring buy and it's up to 612. The chart does not lie.</p>
+        <figcaption class="who"><div class="nm">Greg Tannehill</div><div class="ti">Two-time divorce, assistant Little League coach (outfield)</div></figcaption>
+      </figure>
+      <figure class="quote reveal" style="animation-delay:.08s">
+        <div class="mark">&ldquo;</div>
+        <p>I wrote a covered Saturday against my ex's beach week and rolled it into back-to-back long weekends. Best trade of my life. The kids don't even know I'm a genius.</p>
+        <figcaption class="who"><div class="nm">Marcus DelVecchio</div><div class="ti">Medical device sales, every-other-weekend dad, recent goatee</div></figcaption>
+      </figure>
+      <figure class="quote reveal" style="animation-delay:.16s">
+        <div class="mark">&ldquo;</div>
+        <p>The Round-Up 529 has $84 in it after eight months. My advisor says I'm "on track for nothing," but the app makes me feel like a man at the batting cages who has a plan.</p>
+        <figcaption class="who"><div class="nm">Stephen Aldary</div><div class="ti">Regional logistics manager, joint custody, owns a boat (in dispute)</div></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="pricing">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">Account tiers</div>
+      <h2 class="h2">Pick a plan sized to your settlement.</h2>
+    </div>
+    <div class="tiers">
+      <div class="tier reveal">
+        <div class="tname">Visitation</div>
+        <div class="ttag">For the newly served.</div>
+        <div class="price mono">$0<span style="font-size:15px;color:var(--muted)">/mo</span></div>
+        <ul>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 5" stroke="#1F4D38" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Dad Equity, delayed 15 minutes</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 5" stroke="#1F4D38" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Two custody days mapped per month</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 5" stroke="#1F4D38" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>One supervised-visit log</li>
+        </ul>
+        <a class="btn ghost" href="./demo.html">Start at zero</a>
+      </div>
+
+      <div class="tier feat reveal" style="animation-delay:.08s">
+        <div class="tname">Vested Gold</div>
+        <div class="ttag">For the engaged co-parent.</div>
+        <div class="price mono">$9<span style="font-size:15px;color:var(--muted)">/mo</span></div>
+        <ul>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 5" stroke="#1F4D38" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Real-time Dad Equity</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 5" stroke="#1F4D38" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Unlimited weekend options trading</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 5" stroke="#1F4D38" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Round-Up 529 with a 0.5% match</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 5" stroke="#1F4D38" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Birthday push alerts you cannot snooze</li>
+        </ul>
+        <a class="btn" href="./demo.html">Go Gold</a>
+      </div>
+
+      <div class="tier reveal" style="animation-delay:.16s">
+        <div class="tname">Full Custody</div>
+        <div class="ttag">For the primary residence.</div>
+        <div class="price mono">$49<span style="font-size:15px;color:var(--muted)">/mo</span></div>
+        <ul>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 5" stroke="#1F4D38" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Margin against future weekends</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 5" stroke="#1F4D38" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Priority handoff scheduling</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 5" stroke="#1F4D38" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>A de-escalation hotline staffed by a calm man named Dale</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.2 3L13 5" stroke="#1F4D38" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>A quarterly review with a fiduciary who is also going through it</li>
+        </ul>
+        <a class="btn ghost" href="./demo.html">Assume control</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block demo-cta">
+  <div class="wrap">
+    <div class="demo-band reveal">
+      <div>
+        <h3>Your portfolio is up. Go look at it before bed.</h3>
+        <p>The full Vested. dashboard, populated with one dad's holdings, two kids, and a Tuesday he is thinking about trading.</p>
+      </div>
+      <a class="btn big" href="./demo.html">Open the demo &rarr;</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div>
+        <div class="foot-brand">Vested<span class="dot">.</span></div>
+        <div style="font-size:13px;color:var(--muted);margin-top:6px">Commission-free fatherhood.</div>
+      </div>
+      <a class="backlink" href="/">&larr; theworstaistudioever</a>
+    </div>
+    <p class="fineprint">Vested. is not a licensed broker-dealer, custodian, family therapist, mediator, or your lawyer. Dad Equity is not a real credit score and may not be used to secure a loan, a lease, or your children's affection. Weekend options carry risk and may expire worthless in a driveway. The Round-Up 529 is a real account holding a genuinely small amount of money. Margin against future weekends is subject to your ex's calendar. Past performance as a father is not indicative of future results. Dale is doing his best.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // double the ticker content so the -50% scroll loops without a gap
+  var tick = document.getElementById('tick');
+  if(tick && !reduce){ tick.innerHTML = tick.innerHTML + tick.innerHTML; }
+
+  // count-up the Dad Equity number
+  var el = document.getElementById('equity');
+  if(el){
+    var target = 612;
+    if(reduce){ el.textContent = target; }
+    else{
+      var start = 410, t0 = null, dur = 1100;
+      function step(ts){
+        if(!t0) t0 = ts;
+        var p = Math.min((ts - t0)/dur, 1);
+        var eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(start + (target - start)*eased);
+        if(p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+  }
+})();
+</script>
+</body>
+</html>

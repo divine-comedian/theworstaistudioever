@@ -1,0 +1,72 @@
+[2026-05-29T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-05-29T08:00:02Z] invoking claude -p
+
+=== agent run summary (2026-05-29) ===
+
+ROLL
+  company: Robinhood
+  subject: divorced dads   (valid: relatable type of person)
+  slug:    robinhood-for-divorced-dads
+  tagline: Robinhood for divorced dads
+  rerolls: 0   (first pair drawn was unused)
+  PRNG:    seed from "2026-05-29" char-sum (500) * 2654435761 mod 2^31 = 72986036, LCG (1103515245, 12345, 2^31)
+           draw 0: company_idx 48 -> Robinhood, subject_idx 38 -> divorced dads. pair not in history.
+
+CONCEPT
+  product:   Vested.
+  one-liner: Commission-free fatherhood.
+  premise:   a Robinhood-style investing app that treats your custody schedule as an asset class.
+  features:  Dad Equity (a 300-850 relationship credit score) / Weekend Options (swap a Tuesday for a
+             Saturday, settles in a driveway) / Round-Up 529 (spare-change college fund, balance $84).
+  pricing:   Visitation $0 / Vested Gold $9mo / Full Custody $49mo
+  anti-ai-slop invoked before all copy. Zero em dashes; deadpan fintech voice held throughout. Never
+  jokes about the divorce itself, treats it as a market condition.
+
+DESIGN DIRECTION (ui-ux-pro-max invoked)
+  style:   warm ledger fintech - bento-grid showcase on oat accounting paper, pine-green + burnt-amber,
+           slab display with ticker-tape monospace numerals (credit-union energy, not consumer neon)
+  palette: primary #1F4D38 (pine) / accent #C76B2E (burnt amber) / bg #EFEADD (oat) / fg+ink #20231C / muted #757567
+  fonts:   display "Calistoga", body "Plus Jakarta Sans", numerals "Space Mono"
+  archetype: consumer fintech / investing-app landing, bento-grid showcase composition
+
+ANTI-SAMENESS CHECK (last 7 entries on disk = 5)
+  spotify-for-night-owls ........... after-hours nocturne OLED, Bodoni Moda/Instrument Sans
+  box-for-octopuses ................ glassmorphism teal, Outfit/Work Sans
+  notion-for-mid-afternoon-despair . soft minimalist indigo, Bricolage/Hanken Grotesk
+  okta-for-barn-owls ............... editorial warm green-on-cream, Fraunces/Inter
+  palantir-for-dogs ................ tactical-brutalist dark terminal, JetBrains Mono/IBM Plex
+  -> chosen (style, palette, fonts) differs from all five on every axis. Calistoga/Plus Jakarta/Space Mono
+     are all unused; bento-grid fintech is a new archetype; light oat bg distinct from okta cream (editorial,
+     not bento) and the two dark themes.
+
+BUILD (frontend-design invoked for both pages)
+  landing: site/entries/robinhood-for-divorced-dads/index.html  (ledger-paper bg w/ ruled lines, scrolling
+           market ticker, hero + live Dad Equity stat card w/ animated count-up + drawn sparkline, bento
+           feature grid, 3 testimonials, 3 pricing tiers, demo CTA band, deadpan legal fineprint, footer
+           back-link to /, inline CSS/JS).
+  demo:    site/entries/robinhood-for-divorced-dads/demo.html  (Robinhood-style portfolio dashboard:
+           Dad Equity chart with 1D/1W/1M/1Y/ALL range toggles that redraw the line + hover cursor dot,
+           Holdings list of 2 kids + a contested dog with tap-to-open detail sheets, Watchlist, a full
+           Trade-weekend builder with live awkwardness-cost summary + execute-to-activity, filterable
+           Activity feed, sidebar + mobile bottom nav, toast confirmation). All client-side, no network.
+
+GALLERY
+  site/index.html regenerated from all 6 concept.json files, sorted by date desc (slug-asc tiebreak).
+  order: Robinhood (05-29) > Spotify (05-28) > Box (05-27) > Notion (05-26) > Okta (05-14) > Palantir (05-14).
+  header count updated to "6 startups". styles.css untouched. CTA text span-wrapped per shell contract.
+
+VALIDATE
+  scripts/validate-entry.sh site robinhood-for-divorced-dads -> OK (exit 0).
+  history.json appended and re-validated (jq): 6 entries, valid JSON.
+  CAVEAT: headless run, no live browser smoke test performed; verification was structural + static only.
+
+WARNINGS / NEAR-MISSES
+  - none blocking. Light warm bg is adjacent to okta's cream, but archetype (bento fintech vs editorial
+    enterprise), palette (pine+amber vs forest+rust on different hues), and fonts are all distinct.
+
+RESULT: validation passed. RUN_COMPLETE emitted for robinhood-for-divorced-dads.
+[2026-05-29T08:16:24Z] WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks
+[2026-05-29T08:16:24Z] new entry: robinhood-for-divorced-dads
+validate-entry [robinhood-for-divorced-dads]: OK
+[2026-05-29T08:16:24Z] committing: Robinhood for divorced dads
