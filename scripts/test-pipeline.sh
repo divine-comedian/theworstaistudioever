@@ -15,6 +15,8 @@ echo '[]' > "$SANDBOX/state/history.json"
 cp site/styles.css "$SANDBOX/site/styles.css"
 cp site/404.html "$SANDBOX/site/404.html"
 cp site/CNAME "$SANDBOX/site/CNAME"
+cp site/favicon.png "$SANDBOX/site/favicon.png"
+cp site/logo.png "$SANDBOX/site/logo.png"
 # Pipeline Step 7.1 invokes `scripts/validate-entry.sh`; the agent runs with cwd=$SANDBOX,
 # so the script must be reachable at that relative path.
 cp -r scripts "$SANDBOX/scripts"

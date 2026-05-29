@@ -3,17 +3,22 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>theworstaistudioever</title>
-<meta name="description" content="a new fake startup, generated daily. the worst ai studio ever." />
-<meta property="og:title" content="theworstaistudioever" />
-<meta property="og:description" content="a new fake startup, generated daily. the worst ai studio ever." />
+<title>The Worst AI Studio Ever · Serious AI for Questionable Markets</title>
+<meta name="description" content="An applied AI studio shipping venture-grade products for underserved, over-instrumented markets. New portfolio company daily." />
+<meta property="og:title" content="The Worst AI Studio Ever · Serious AI for Questionable Markets" />
+<meta property="og:description" content="An applied AI studio shipping venture-grade products for underserved, over-instrumented markets. New portfolio company daily." />
 <meta property="og:type" content="website" />
+<meta property="og:site_name" content="theworstaistudioever" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="The Worst AI Studio Ever · Serious AI for Questionable Markets" />
+<meta name="twitter:description" content="An applied AI studio shipping venture-grade products for underserved, over-instrumented markets. New portfolio company daily." />
 <meta name="theme-color" content="#0a0a0a" />
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png" />
 <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
 <header class="site-header">
-  <span class="brand">theworstaistudioever</span>
+  <span class="brand-lockup"><img class="brand-logo" src="/logo.png" alt="" width="50" height="50" /><span class="brand">theworstaistudioever</span></span>
   <span class="count">6 startups &middot; since 2026</span>
 </header>
 <div class="carousel" role="region" aria-roledescription="carousel" aria-label="Daily startups">
@@ -75,6 +80,9 @@
     current = (i + total) % total;
     track.style.transform = 'translateX(' + (-100 * current) + '%)';
     dots.forEach(function (d, j) { d.classList.toggle('active', j === current); });
+    if (dots[current] && dots[current].scrollIntoView) {
+      dots[current].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
   }
   prev.addEventListener('click', function () { go(current - 1); });
   next.addEventListener('click', function () { go(current + 1); });

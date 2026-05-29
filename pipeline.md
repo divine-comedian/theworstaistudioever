@@ -125,7 +125,14 @@ Earnest startup tone kills the joke. Never write "Welcome to the future of X." N
 2. Sort by `date` descending (newest first).
 3. Regenerate `site/index.html` from scratch. Replace the entire file. The new file:
    - Uses the existing `<link rel="stylesheet" href="/styles.css">` — do NOT inline gallery styles.
-   - Includes the standard `<head>` (title, meta, og tags) and `<header class="site-header">`.
+   - Includes the standard `<head>` and `<header class="site-header">`.
+   - Root metadata must pose as a legitimate AI studio while staying satirical and deadpan:
+     - `<title>The Worst AI Studio Ever · Serious AI for Questionable Markets</title>`
+     - `<meta name="description" content="An applied AI studio shipping venture-grade products for underserved, over-instrumented markets. New portfolio company daily.">`
+     - Open Graph and Twitter title/description tags must reuse that exact title and description.
+     - Include `og:type` as `website`, `og:site_name` as `theworstaistudioever`, `twitter:card` as `summary`, and the existing theme color.
+     - Include `<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">` before the stylesheet.
+     - Header brand markup must include the 50x50 logo vertically centered next to the company name: `<span class="brand-lockup"><img class="brand-logo" src="/logo.png" alt="" width="50" height="50"><span class="brand">theworstaistudioever</span></span>`.
    - Renders one `<section class="slide">` per entry inside a `<div class="carousel-track">`. Each slide:
      - Background: a subtle radial gradient or solid color derived from the entry's `palette.bg`.
      - Text color: `palette.ink` (with fallback to `--ink`).
@@ -139,6 +146,7 @@ Earnest startup tone kills the joke. Never write "Welcome to the future of X." N
      - Click `←` retreats.
      - `ArrowLeft` / `ArrowRight` keyboard nav.
      - Click a dot jumps to that slide.
+     - Keep the active dot visible inside the scrollable dot rail with `scrollIntoView({ block: "nearest", inline: "center" })`.
      - Touch swipe nav (basic, vanilla — track `touchstart` / `touchend`, threshold ~50px).
    - Updates the header count: `N startups · since 2026`.
 

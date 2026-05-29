@@ -1,6 +1,6 @@
 # theworstaistudioever
 
-A daily-cron-driven generator that builds a new mock startup prototype every day from a Mad-Libs tagline (`{Company} for {subject}`) and publishes it to [theworstaistudioever.com](https://theworstaistudioever.com).
+An applied AI studio shipping venture-grade products for underserved, over-instrumented markets. Operationally, it is a daily-cron-driven generator that builds a new startup prototype every day from a Mad-Libs tagline (`{Company} for {subject}`) and publishes it to [theworstaistudioever.com](https://theworstaistudioever.com).
 
 ## How it works
 
