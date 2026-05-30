@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Canopy workspace · theworstaistudioever</title>
+  <meta name="description" content="A single red panda's workspace: a drag-and-drop Bamboo Backlog and a Nap Log database. Nobody else is invited." />
+  <meta name="theme-color" content="#C2542F" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary: #C2542F;
+      --primary-deep: #9E3F20;
+      --accent: #4F62C9;
+      --accent-deep: #3A4BA8;
+      --bg: #F3E7D6;
+      --surface: #F8F0E3;
+      --fg: #33231B;
+      --muted: #9A8A75;
+      --hi: #FFFDF8;
+      --shadow-dark: rgba(120, 80, 48, 0.30);
+      --clay: 7px 7px 16px var(--shadow-dark), -6px -6px 14px var(--hi);
+      --clay-sm: 4px 4px 10px var(--shadow-dark), -3px -3px 8px var(--hi);
+      --clay-inset: inset 5px 5px 11px var(--shadow-dark), inset -5px -5px 11px var(--hi);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Nunito", -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+      background: var(--bg);
+      background-image: radial-gradient(800px 480px at 84% -10%, rgba(79,98,201,0.08), transparent 60%);
+      color: var(--fg);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+    h1, h2, h3, .brand-word, .tab, .col-h { font-family: "Baloo 2", ui-rounded, system-ui, sans-serif; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ---- chrome ---- */
+    .chrome {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 22px;
+    }
+    .back {
+      font-family: "Baloo 2"; font-weight: 700; font-size: 0.9rem; color: var(--muted);
+      background: var(--surface); padding: 10px 18px; border-radius: 999px; box-shadow: var(--clay-sm);
+      transition: transform 0.14s ease, color 0.14s ease;
+    }
+    .back:hover { transform: translateX(-2px); color: var(--primary); }
+    .brand-word { font-weight: 800; font-size: 1.15rem; color: var(--primary); display: inline-flex; align-items: center; gap: 9px; }
+    .leaf { width: 24px; height: 24px; border-radius: 50% 50% 50% 7px; background: var(--primary); box-shadow: var(--clay-sm); transform: rotate(-12deg); }
+
+    /* ---- shell ---- */
+    .shell { display: grid; grid-template-columns: 240px 1fr; gap: 20px; padding: 6px 22px 40px; max-width: 1180px; margin: 0 auto; }
+
+    /* ---- sidebar ---- */
+    .rail { background: var(--surface); border-radius: 24px; box-shadow: var(--clay); padding: 22px 16px; height: fit-content; position: sticky; top: 16px; }
+    .rail-acct { display: flex; align-items: center; gap: 11px; padding: 6px 8px 18px; border-bottom: 1px solid rgba(154,138,117,0.25); margin-bottom: 14px; }
+    .rail-avatar { width: 38px; height: 38px; border-radius: 50% 50% 50% 9px; background: var(--primary); box-shadow: var(--clay-sm); transform: rotate(-8deg); flex: none; }
+    .rail-acct .who { font-family: "Baloo 2"; font-weight: 700; font-size: 0.95rem; }
+    .rail-acct .plan { font-size: 0.74rem; color: var(--muted); font-weight: 700; }
+    .rail-title { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 4px 10px 10px; }
+    .page {
+      display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
+      font-family: "Nunito"; font-weight: 700; font-size: 0.95rem; color: var(--fg);
+      background: transparent; border: none; cursor: pointer;
+      padding: 11px 12px; border-radius: 14px; margin-bottom: 6px; transition: box-shadow 0.14s ease, color 0.14s ease;
+    }
+    .page:hover { box-shadow: var(--clay-inset); }
+    .page.active { background: var(--bg); box-shadow: var(--clay-inset); color: var(--primary); }
+    .page .g { font-size: 1.02rem; width: 20px; text-align: center; }
+    .rail-foot { margin-top: 18px; padding: 14px 12px; border-radius: 14px; box-shadow: var(--clay-inset); font-size: 0.78rem; color: var(--muted); font-weight: 600; line-height: 1.4; }
+
+    /* ---- main ---- */
+    .main { min-width: 0; }
+    .page-head { margin-bottom: 6px; }
+    .page-head .crumb { font-size: 0.8rem; color: var(--muted); font-weight: 700; margin-bottom: 8px; }
+    .page-head h1 { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; display: flex; align-items: center; gap: 12px; }
+    .page-head p { color: #5d4a3c; margin-top: 8px; max-width: 60ch; font-size: 0.96rem; }
+
+    .toolbar { display: flex; align-items: center; gap: 10px; margin: 22px 0 18px; flex-wrap: wrap; }
+    .tabs { display: flex; gap: 8px; padding: 6px; background: var(--surface); border-radius: 999px; box-shadow: var(--clay-inset); }
+    .tab {
+      font-weight: 700; font-size: 0.86rem; border: none; cursor: pointer; color: var(--muted);
+      background: transparent; padding: 9px 18px; border-radius: 999px; transition: all 0.14s ease;
+    }
+    .tab.active { background: var(--surface); box-shadow: var(--clay-sm); color: var(--primary); }
+    .spacer { flex: 1; }
+    .pill-btn {
+      font-family: "Baloo 2"; font-weight: 700; font-size: 0.85rem; border: none; cursor: pointer; color: #fff;
+      background: var(--accent); padding: 11px 20px; border-radius: 999px;
+      box-shadow: 5px 5px 12px rgba(58,75,168,0.38), -4px -4px 10px var(--hi); transition: transform 0.14s ease;
+    }
+    .pill-btn:hover { transform: translateY(-2px); }
+    .pill-btn:active { transform: scale(0.97); box-shadow: inset 4px 4px 9px var(--accent-deep); }
+    .ghost-btn {
+      font-family: "Baloo 2"; font-weight: 700; font-size: 0.85rem; border: none; cursor: pointer; color: var(--fg);
+      background: var(--surface); padding: 11px 18px; border-radius: 999px; box-shadow: var(--clay-sm); transition: transform 0.14s ease;
+    }
+    .ghost-btn:hover { transform: translateY(-2px); }
+    .ghost-btn:active { transform: scale(0.97); box-shadow: var(--clay-inset); }
+
+    /* ---- kanban ---- */
+    .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .column { background: var(--surface); border-radius: 22px; box-shadow: var(--clay-inset); padding: 16px 14px; min-height: 240px; }
+    .column.drag-over { box-shadow: var(--clay-inset), inset 0 0 0 2.5px var(--accent); }
+    .col-h { display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 14px; padding: 0 4px; }
+    .count { background: var(--bg); box-shadow: var(--clay-inset); border-radius: 999px; padding: 2px 10px; font-family: "Nunito"; font-weight: 700; font-size: 0.78rem; color: var(--fg); }
+    .shoot {
+      background: var(--surface); border-radius: 16px; box-shadow: var(--clay-sm); padding: 14px 14px 13px;
+      margin-bottom: 11px; cursor: grab; transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+    .shoot:active { cursor: grabbing; }
+    .shoot.dragging { opacity: 0.5; transform: scale(0.97); }
+    .shoot .name { font-weight: 700; font-size: 0.96rem; margin-bottom: 9px; }
+    .shoot .meta { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
+    .ripe { font-size: 0.72rem; font-weight: 700; color: var(--accent-deep); background: var(--bg); box-shadow: var(--clay-inset); border-radius: 999px; padding: 3px 9px; }
+    .bar { height: 9px; border-radius: 999px; background: var(--bg); box-shadow: var(--clay-inset); overflow: hidden; }
+    .bar > i { display: block; height: 100%; border-radius: 999px; background: var(--primary); transition: width 0.3s ease; }
+    .chew-label { font-size: 0.72rem; color: var(--muted); font-weight: 700; margin-top: 6px; }
+
+    /* ---- table ---- */
+    .table-wrap { background: var(--surface); border-radius: 22px; box-shadow: var(--clay); padding: 10px; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 560px; }
+    th, td { text-align: left; padding: 14px 16px; font-size: 0.92rem; }
+    th { font-family: "Baloo 2"; font-weight: 700; font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); cursor: pointer; user-select: none; }
+    th:hover { color: var(--primary); }
+    th .arrow { font-size: 0.7rem; opacity: 0.6; }
+    tbody tr { transition: box-shadow 0.14s ease; }
+    tbody tr:hover { box-shadow: var(--clay-inset); }
+    td { font-weight: 600; border-radius: 12px; }
+    .dur { font-variant-numeric: tabular-nums; font-weight: 700; }
+    .chk {
+      width: 24px; height: 24px; border-radius: 8px; border: none; cursor: pointer;
+      background: var(--bg); box-shadow: var(--clay-inset); display: grid; place-items: center; padding: 0;
+    }
+    .chk[aria-pressed="true"] { background: var(--primary); box-shadow: var(--clay-sm); }
+    .chk svg { width: 13px; height: 13px; opacity: 0; }
+    .chk[aria-pressed="true"] svg { opacity: 1; }
+
+    .hidden { display: none !important; }
+    .empty { text-align: center; color: var(--muted); font-weight: 700; padding: 40px 0; }
+
+    .toast {
+      position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(20px);
+      background: var(--fg); color: var(--bg); font-weight: 700; font-size: 0.88rem;
+      padding: 13px 22px; border-radius: 999px; box-shadow: 0 10px 28px rgba(51,35,27,0.4);
+      opacity: 0; pointer-events: none; transition: opacity 0.25s ease, transform 0.25s ease; z-index: 50;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 880px) {
+      .shell { grid-template-columns: 1fr; }
+      .rail { position: static; }
+      .board { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="chrome">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <span class="brand-word"><span class="leaf"></span>Canopy</span>
+  </div>
+
+  <div class="shell">
+    <!-- sidebar -->
+    <aside class="rail">
+      <div class="rail-acct">
+        <span class="rail-avatar"></span>
+        <span>
+          <div class="who">Mochi's Den</div>
+          <div class="plan">Territory · 1 of 1 seat</div>
+        </span>
+      </div>
+      <div class="rail-title">Pages</div>
+      <button class="page active" data-view="board"><span class="g">🎋</span>Bamboo Backlog</button>
+      <button class="page" data-view="naps"><span class="g">😴</span>Nap Log</button>
+      <button class="page" data-view="wiki"><span class="g">📓</span>Den Wiki</button>
+      <button class="page" data-view="disputes"><span class="g">🚧</span>Territory Disputes</button>
+      <div class="rail-foot">Shared with: nobody. You scent-marked this workspace 4 hours ago.</div>
+    </aside>
+
+    <!-- main -->
+    <main class="main">
+      <!-- BOARD + NAPS share a header that swaps -->
+      <div class="page-head">
+        <div class="crumb" id="crumb">My Den / Bamboo Backlog</div>
+        <h1 id="pageTitle"><span id="pageGlyph">🎋</span><span id="pageName">Bamboo Backlog</span></h1>
+        <p id="pageBlurb">Every shoot you plan to eat today, tracked from forage to digestion. Drag a card between columns. The burndown chart updates. You will not look at it.</p>
+      </div>
+
+      <!-- view: board + naps toolbar -->
+      <div class="toolbar" id="dataToolbar">
+        <div class="tabs">
+          <button class="tab active" data-view="board">Backlog</button>
+          <button class="tab" data-view="naps">Nap Log</button>
+        </div>
+        <div class="spacer"></div>
+        <button class="ghost-btn" id="filterBtn">Hide digested</button>
+        <button class="pill-btn" id="addBtn">+ Add shoot</button>
+      </div>
+
+      <!-- BOARD -->
+      <section id="view-board" class="board"></section>
+
+      <!-- NAPS -->
+      <section id="view-naps" class="table-wrap hidden">
+        <table>
+          <thead>
+            <tr>
+              <th data-sort="branch">Branch <span class="arrow"></span></th>
+              <th data-sort="start">Started <span class="arrow"></span></th>
+              <th data-sort="minutes">Duration <span class="arrow">▼</span></th>
+              <th data-sort="disturbed">Disturbed by zookeeper?</th>
+            </tr>
+          </thead>
+          <tbody id="napBody"></tbody>
+        </table>
+      </section>
+
+      <!-- WIKI -->
+      <section id="view-wiki" class="table-wrap hidden" style="padding: 34px 36px;">
+        <h2 style="font-weight:800;font-size:1.5rem;margin-bottom:14px;">Den Wiki</h2>
+        <p style="color:#5d4a3c;max-width:60ch;margin-bottom:16px;">The single source of truth for this den. Last edited by you. Reviewed by you. Approved by you.</p>
+        <p style="color:#5d4a3c;max-width:60ch;font-weight:700;">Page 1: Where the bamboo is.</p>
+        <p style="color:var(--muted);max-width:60ch;margin-top:8px;">Page 2 has never been opened.</p>
+      </section>
+
+      <!-- DISPUTES -->
+      <section id="view-disputes" class="table-wrap hidden" style="padding: 34px 36px;">
+        <h2 style="font-weight:800;font-size:1.5rem;margin-bottom:14px;">Territory Disputes</h2>
+        <p class="empty" style="padding:30px 0;">No open disputes. Everyone got the message.</p>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---------- data ----------
+    const COLUMNS = [
+      { id: "forage", label: "To Forage" },
+      { id: "chewing", label: "Currently Chewing" },
+      { id: "digested", label: "Digested" },
+    ];
+    let shoots = [
+      { id: 1, name: "Tender top shoot", ripe: 9, chew: 0, col: "forage" },
+      { id: 2, name: "Lower cane segment", ripe: 6, chew: 0, col: "forage" },
+      { id: 3, name: "Dawn shoot, west branch", ripe: 8, chew: 0, col: "forage" },
+      { id: 4, name: "Mid stalk, the good one", ripe: 8, chew: 54, col: "chewing" },
+      { id: 5, name: "Knobby joint piece", ripe: 5, chew: 22, col: "chewing" },
+      { id: 6, name: "Yesterday's evening shoot", ripe: 7, chew: 100, col: "digested" },
+      { id: 7, name: "That leaf from Tuesday", ripe: 4, chew: 100, col: "digested" },
+    ];
+    let nextId = 8;
+    let hideDigested = false;
+
+    const POOL = ["Curled fresh sprout", "Thick bottom cane", "Shady-side shoot", "Slightly damp stalk", "Premium canopy tip", "Crunchy node"];
+    let poolIx = 0;
+
+    const naps = [
+      { branch: "West fork, high", start: "05:40", minutes: 95, disturbed: false },
+      { branch: "Hollow by the trunk", start: "11:20", minutes: 220, disturbed: true },
+      { branch: "Sunny ledge", start: "14:05", minutes: 140, disturbed: false },
+      { branch: "East fork, low", start: "16:50", minutes: 70, disturbed: true },
+      { branch: "The usual branch", start: "19:30", minutes: 305, disturbed: false },
+    ];
+    let napSort = { key: "minutes", dir: -1 };
+
+    // ---------- elements ----------
+    const board = document.getElementById("view-board");
+    const napBody = document.getElementById("napBody");
+    const toastEl = document.getElementById("toast");
+    const dataToolbar = document.getElementById("dataToolbar");
+
+    const VIEWMETA = {
+      board: { glyph: "🎋", name: "Bamboo Backlog", crumb: "My Den / Bamboo Backlog", blurb: "Every shoot you plan to eat today, tracked from forage to digestion. Drag a card between columns. The burndown chart updates. You will not look at it." },
+      naps:  { glyph: "😴", name: "Nap Log", crumb: "My Den / Nap Log", blurb: "A complete record of your rest. Sort it any way you like. There are no action items and there never will be." },
+      wiki:  { glyph: "📓", name: "Den Wiki", crumb: "My Den / Den Wiki", blurb: "" },
+      disputes: { glyph: "🚧", name: "Territory Disputes", crumb: "My Den / Territory Disputes", blurb: "" },
+    };
+
+    // ---------- toast ----------
+    let toastT;
+    function toast(msg) {
+      toastEl.textContent = msg;
+      toastEl.classList.add("show");
+      clearTimeout(toastT);
+      toastT = setTimeout(() => toastEl.classList.remove("show"), 2600);
+    }
+
+    // ---------- board render ----------
+    function renderBoard() {
+      board.innerHTML = "";
+      COLUMNS.forEach((c) => {
+        const list = shoots.filter((s) => s.col === c.id && !(hideDigested && c.id === "digested"));
+        const col = document.createElement("div");
+        col.className = "column";
+        col.dataset.col = c.id;
+        const visibleCount = shoots.filter((s) => s.col === c.id).length;
+        col.innerHTML = '<div class="col-h">' + c.label + '<span class="count">' + visibleCount + '</span></div>';
+
+        if (hideDigested && c.id === "digested") {
+          const e = document.createElement("div");
+          e.className = "chew-label";
+          e.style.textAlign = "center";
+          e.style.padding = "20px 0";
+          e.textContent = "Hidden. Out of sight, out of stomach.";
+          col.appendChild(e);
+        } else {
+          list.forEach((s) => col.appendChild(cardEl(s)));
+        }
+
+        col.addEventListener("dragover", (e) => { e.preventDefault(); col.classList.add("drag-over"); });
+        col.addEventListener("dragleave", () => col.classList.remove("drag-over"));
+        col.addEventListener("drop", (e) => {
+          e.preventDefault();
+          col.classList.remove("drag-over");
+          const id = Number(e.dataTransfer.getData("text/plain"));
+          const s = shoots.find((x) => x.id === id);
+          if (!s || s.col === c.id) return;
+          s.col = c.id;
+          if (c.id === "digested") s.chew = 100;
+          else if (c.id === "chewing" && s.chew === 0) s.chew = 15;
+          else if (c.id === "forage") s.chew = 0;
+          renderBoard();
+          toast(s.name + " → " + c.label);
+        });
+        board.appendChild(col);
+      });
+    }
+
+    function cardEl(s) {
+      const el = document.createElement("div");
+      el.className = "shoot";
+      el.draggable = true;
+      el.innerHTML =
+        '<div class="name">' + s.name + '</div>' +
+        '<div class="meta"><span class="ripe">ripeness ' + s.ripe + '/10</span></div>' +
+        '<div class="bar"><i style="width:' + s.chew + '%"></i></div>' +
+        '<div class="chew-label">' + s.chew + '% chewed through</div>';
+      el.addEventListener("dragstart", (e) => { e.dataTransfer.setData("text/plain", s.id); e.dataTransfer.effectAllowed = "move"; el.classList.add("dragging"); });
+      el.addEventListener("dragend", () => el.classList.remove("dragging"));
+      return el;
+    }
+
+    // ---------- naps render ----------
+    function renderNaps() {
+      const sorted = [...naps].sort((a, b) => {
+        let av = a[napSort.key], bv = b[napSort.key];
+        if (typeof av === "string") { av = av.toLowerCase(); bv = bv.toLowerCase(); }
+        if (av < bv) return -1 * napSort.dir;
+        if (av > bv) return 1 * napSort.dir;
+        return 0;
+      });
+      napBody.innerHTML = "";
+      sorted.forEach((n) => {
+        const tr = document.createElement("tr");
+        const h = Math.floor(n.minutes / 60), m = n.minutes % 60;
+        const dur = (h ? h + "h " : "") + m + "m";
+        tr.innerHTML =
+          '<td>' + n.branch + '</td>' +
+          '<td>' + n.start + '</td>' +
+          '<td class="dur">' + dur + '</td>' +
+          '<td></td>';
+        const cell = tr.lastElementChild;
+        const btn = document.createElement("button");
+        btn.className = "chk";
+        btn.setAttribute("aria-pressed", String(n.disturbed));
+        btn.setAttribute("aria-label", "Disturbed by zookeeper");
+        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="#FFFDF8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+        btn.addEventListener("click", () => {
+          n.disturbed = !n.disturbed;
+          btn.setAttribute("aria-pressed", String(n.disturbed));
+          toast(n.disturbed ? "Logged. The zookeeper again." : "Cleared. A rare peaceful nap.");
+        });
+        cell.appendChild(btn);
+        napBody.appendChild(tr);
+      });
+      document.querySelectorAll("th[data-sort] .arrow").forEach((a) => (a.textContent = ""));
+      const active = document.querySelector('th[data-sort="' + napSort.key + '"] .arrow');
+      if (active) active.textContent = napSort.dir === 1 ? "▲" : "▼";
+    }
+
+    document.querySelectorAll("th[data-sort]").forEach((th) => {
+      th.addEventListener("click", () => {
+        const k = th.dataset.sort;
+        if (napSort.key === k) napSort.dir *= -1;
+        else { napSort.key = k; napSort.dir = 1; }
+        renderNaps();
+      });
+    });
+
+    // ---------- view switching ----------
+    const views = ["board", "naps", "wiki", "disputes"];
+    function setView(v) {
+      views.forEach((name) => {
+        document.getElementById("view-" + name).classList.toggle("hidden", name !== v);
+      });
+      document.querySelectorAll(".page").forEach((p) => p.classList.toggle("active", p.dataset.view === v));
+      document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("active", t.dataset.view === v));
+      const meta = VIEWMETA[v];
+      document.getElementById("pageGlyph").textContent = meta.glyph;
+      document.getElementById("pageName").textContent = meta.name;
+      document.getElementById("crumb").textContent = meta.crumb;
+      const blurb = document.getElementById("pageBlurb");
+      blurb.textContent = meta.blurb;
+      blurb.style.display = meta.blurb ? "" : "none";
+      // toolbar only for data views
+      dataToolbar.classList.toggle("hidden", !(v === "board" || v === "naps"));
+      document.getElementById("addBtn").classList.toggle("hidden", v !== "board");
+      document.getElementById("filterBtn").classList.toggle("hidden", v !== "board");
+    }
+
+    document.querySelectorAll(".page, .tab").forEach((el) => {
+      el.addEventListener("click", () => setView(el.dataset.view));
+    });
+
+    // ---------- add + filter ----------
+    document.getElementById("addBtn").addEventListener("click", () => {
+      const name = POOL[poolIx % POOL.length];
+      poolIx++;
+      shoots.push({ id: nextId++, name, ripe: 4 + ((poolIx * 3) % 7), chew: 0, col: "forage" });
+      renderBoard();
+      toast("Added “" + name + "” to To Forage");
+    });
+
+    document.getElementById("filterBtn").addEventListener("click", () => {
+      hideDigested = !hideDigested;
+      document.getElementById("filterBtn").textContent = hideDigested ? "Show digested" : "Hide digested";
+      renderBoard();
+    });
+
+    // ---------- init ----------
+    renderBoard();
+    renderNaps();
+    setView("board");
+  </script>
+</body>
+</html>

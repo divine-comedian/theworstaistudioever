@@ -19,10 +19,16 @@
 <body>
 <header class="site-header">
   <span class="brand-lockup"><img class="brand-logo" src="/logo.png" alt="" width="50" height="50" /><span class="brand">theworstaistudioever</span></span>
-  <span class="count">6 startups &middot; since 2026</span>
+  <span class="count">7 startups &middot; since 2026</span>
 </header>
 <div class="carousel" role="region" aria-roledescription="carousel" aria-label="Daily startups">
   <div class="carousel-track" id="track">
+<section class="slide" style="background: radial-gradient(ellipse at 30% 20%, #C2542F26, transparent 55%), radial-gradient(ellipse at 80% 90%, #4F62C91a, transparent 60%), #F3E7D6;color: #33231B;" aria-roledescription="slide" aria-label="Notion for red pandas">
+  <p class="slide-tagline">Notion for red pandas</p>
+  <p class="slide-blurb">Canopy is the connected workspace for wikis, bamboo logistics, and sleep. Built for a solitary, territorial, mostly-nocturnal mammal who did not request project management and will not be using the comment feature.</p>
+  <a class="slide-cta" href="/entries/notion-for-red-pandas/"><span>visit &rarr;</span></a>
+  <div class="slide-date">May 30, 2026</div>
+</section>
 <section class="slide" style="background: radial-gradient(ellipse at 30% 20%, #1F4D3826, transparent 55%), radial-gradient(ellipse at 80% 90%, #C76B2E1a, transparent 60%), #EFEADD;color: #20231C;" aria-roledescription="slide" aria-label="Robinhood for divorced dads">
   <p class="slide-tagline">Robinhood for divorced dads</p>
   <p class="slide-blurb">Vested. turns your custody schedule into a portfolio. Track your Dad Equity, swap weekends like options, and round up every gas-station snack into a college fund. Trusted by 38,000 fathers, two family-court mediators who use it ironically, and one man named Dale who answers the de-escalation hotline.</p>
@@ -63,7 +69,7 @@
 </div>
 <nav class="nav" aria-label="Carousel navigation">
   <button id="prev" aria-label="Previous slide">&larr;</button>
-  <div class="dots" id="dots"><button class="dot active" data-i="0" aria-label="Go to slide 1"></button><button class="dot" data-i="1" aria-label="Go to slide 2"></button><button class="dot" data-i="2" aria-label="Go to slide 3"></button><button class="dot" data-i="3" aria-label="Go to slide 4"></button><button class="dot" data-i="4" aria-label="Go to slide 5"></button><button class="dot" data-i="5" aria-label="Go to slide 6"></button></div>
+  <div class="dots" id="dots"><button class="dot active" data-i="0" aria-label="Go to slide 1"></button><button class="dot" data-i="1" aria-label="Go to slide 2"></button><button class="dot" data-i="2" aria-label="Go to slide 3"></button><button class="dot" data-i="3" aria-label="Go to slide 4"></button><button class="dot" data-i="4" aria-label="Go to slide 5"></button><button class="dot" data-i="5" aria-label="Go to slide 6"></button><button class="dot" data-i="6" aria-label="Go to slide 7"></button></div>
   <button id="next" aria-label="Next slide">&rarr;</button>
 </nav>
 
@@ -93,7 +99,6 @@
     if (e.key === 'ArrowLeft') go(current - 1);
     if (e.key === 'ArrowRight') go(current + 1);
   });
-  // touch swipe
   var startX = 0, dx = 0, swiping = false;
   var area = document.querySelector('.carousel');
   if (area) {

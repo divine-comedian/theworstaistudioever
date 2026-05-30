@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Canopy · theworstaistudioever</title>
+  <meta name="description" content="The connected workspace for wikis, bamboo logistics, and sleep, built for a solitary mammal who never asked for project management." />
+  <meta name="theme-color" content="#C2542F" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Canopy · the connected workspace for red pandas" />
+  <meta property="og:description" content="Wikis, bamboo logistics, and sleep. Built for a solitary, territorial, mostly-nocturnal mammal who will not be using the comment feature." />
+  <meta property="og:site_name" content="theworstaistudioever" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Canopy · the connected workspace for red pandas" />
+  <meta name="twitter:description" content="Wikis, bamboo logistics, and sleep. Built for a solitary, territorial, mostly-nocturnal mammal who will not be using the comment feature." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;1,600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary: #C2542F;
+      --primary-deep: #9E3F20;
+      --accent: #4F62C9;
+      --accent-deep: #3A4BA8;
+      --bg: #F3E7D6;
+      --surface: #F8F0E3;
+      --fg: #33231B;
+      --muted: #9A8A75;
+      --ink: #33231B;
+      --hi: #FFFDF8;
+      --shadow-dark: rgba(120, 80, 48, 0.30);
+      --shadow-darker: rgba(110, 66, 36, 0.42);
+      --radius: 28px;
+      --radius-sm: 16px;
+      --clay: 8px 8px 18px var(--shadow-dark), -7px -7px 16px var(--hi);
+      --clay-sm: 5px 5px 12px var(--shadow-dark), -4px -4px 10px var(--hi);
+      --clay-inset: inset 5px 5px 11px var(--shadow-dark), inset -5px -5px 11px var(--hi);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      color: var(--fg);
+      background: var(--bg);
+      background-image:
+        radial-gradient(900px 520px at 78% -8%, rgba(79, 98, 201, 0.10), transparent 60%),
+        radial-gradient(760px 480px at -6% 12%, rgba(194, 84, 47, 0.10), transparent 58%);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    .wrap { width: min(1080px, 92vw); margin: 0 auto; }
+
+    h1, h2, h3, .brand-word, .tier-price {
+      font-family: "Baloo 2", ui-rounded, "Segoe UI", system-ui, sans-serif;
+      letter-spacing: -0.01em;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ---------- top bar ---------- */
+    .topbar {
+      width: min(1080px, 92vw);
+      margin: 26px auto 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand-word {
+      font-weight: 800;
+      font-size: 1.45rem;
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+    }
+    .leaf {
+      width: 30px; height: 30px;
+      border-radius: 50% 50% 50% 8px;
+      background: var(--primary);
+      box-shadow: var(--clay-sm);
+      transform: rotate(-12deg);
+      display: inline-block;
+    }
+    .nav-status {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--muted);
+      background: var(--surface);
+      padding: 9px 16px;
+      border-radius: 999px;
+      box-shadow: var(--clay-inset);
+    }
+
+    /* ---------- hero ---------- */
+    .hero { text-align: center; padding: 78px 0 30px; }
+    .eyebrow {
+      display: inline-block;
+      font-weight: 700;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--accent-deep);
+      background: var(--surface);
+      padding: 9px 18px;
+      border-radius: 999px;
+      box-shadow: var(--clay-sm);
+      margin-bottom: 26px;
+    }
+    .hero h1 {
+      font-weight: 800;
+      font-size: clamp(2.1rem, 5.6vw, 4rem);
+      line-height: 1.04;
+      max-width: 16ch;
+      margin: 0 auto 22px;
+      color: var(--ink);
+    }
+    .hero h1 .blush { color: var(--primary); }
+    .hero p.sub {
+      font-size: clamp(1.02rem, 1.6vw, 1.22rem);
+      max-width: 56ch;
+      margin: 0 auto 38px;
+      color: #5d4a3c;
+    }
+    .cta-row {
+      display: flex;
+      gap: 18px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      font-family: "Baloo 2", ui-rounded, system-ui, sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      border: none;
+      cursor: pointer;
+      border-radius: 999px;
+      padding: 16px 32px;
+      transition: transform 0.14s ease, box-shadow 0.14s ease;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 6px 6px 14px rgba(58, 75, 168, 0.40), -5px -5px 12px var(--hi);
+    }
+    .btn-primary:hover { transform: translateY(-2px); }
+    .btn-primary:active {
+      transform: scale(0.97);
+      box-shadow: inset 4px 4px 10px var(--accent-deep), inset -3px -3px 8px rgba(255,255,255,0.18);
+    }
+    .btn-ghost {
+      background: var(--surface);
+      color: var(--fg);
+      box-shadow: var(--clay-sm);
+    }
+    .btn-ghost:hover { transform: translateY(-2px); }
+    .btn-ghost:active { transform: scale(0.97); box-shadow: var(--clay-inset); }
+
+    /* ---------- workspace mock ---------- */
+    .mock {
+      margin: 64px auto 0;
+      width: min(960px, 94vw);
+      background: var(--surface);
+      border-radius: 34px;
+      box-shadow: var(--clay);
+      padding: 16px;
+    }
+    .mock-bar { display: flex; gap: 8px; padding: 8px 10px 14px; }
+    .mock-dot { width: 13px; height: 13px; border-radius: 50%; box-shadow: var(--clay-sm); }
+    .mock-dot.r { background: var(--primary); }
+    .mock-dot.y { background: #E8B04B; }
+    .mock-dot.g { background: #6FA06A; }
+    .mock-body { display: grid; grid-template-columns: 188px 1fr; gap: 16px; }
+    .mock-rail {
+      background: var(--bg);
+      border-radius: 20px;
+      box-shadow: var(--clay-inset);
+      padding: 16px;
+      text-align: left;
+    }
+    .rail-title { font-family: "Baloo 2"; font-weight: 700; font-size: 0.84rem; color: var(--muted); margin-bottom: 12px; }
+    .rail-item {
+      font-weight: 700; font-size: 0.9rem; color: var(--fg);
+      padding: 9px 12px; border-radius: 12px; margin-bottom: 7px;
+      display: flex; align-items: center; gap: 9px;
+    }
+    .rail-item.on { background: var(--surface); box-shadow: var(--clay-sm); color: var(--primary); }
+    .rail-glyph { font-size: 0.95rem; }
+    .mock-main { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .col { background: var(--bg); border-radius: 18px; box-shadow: var(--clay-inset); padding: 13px 11px; text-align: left; }
+    .col-h { font-family: "Baloo 2"; font-weight: 700; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 11px; }
+    .card {
+      background: var(--surface); border-radius: 13px; box-shadow: var(--clay-sm);
+      padding: 10px 11px; margin-bottom: 9px; font-weight: 700; font-size: 0.82rem;
+    }
+    .card small { display: block; font-weight: 600; color: var(--muted); font-size: 0.7rem; margin-top: 3px; }
+
+    /* ---------- sections ---------- */
+    section { padding: 88px 0; }
+    .sec-label {
+      text-align: center; font-weight: 800; letter-spacing: 0.18em;
+      text-transform: uppercase; font-size: 0.76rem; color: var(--primary); margin-bottom: 12px;
+    }
+    .sec-title {
+      text-align: center; font-weight: 800; color: var(--ink);
+      font-size: clamp(1.7rem, 3.4vw, 2.5rem); margin-bottom: 14px; max-width: 18ch; margin-left: auto; margin-right: auto;
+    }
+    .sec-note { text-align: center; color: #5d4a3c; max-width: 48ch; margin: 0 auto 52px; }
+
+    /* features */
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+    .feature {
+      background: var(--surface); border-radius: var(--radius);
+      box-shadow: var(--clay); padding: 32px 28px;
+    }
+    .feat-icon {
+      width: 58px; height: 58px; border-radius: 20px;
+      display: grid; place-items: center; margin-bottom: 20px;
+      box-shadow: var(--clay-sm);
+      background: var(--bg);
+    }
+    .feat-icon svg { width: 28px; height: 28px; }
+    .feature h3 { font-weight: 700; font-size: 1.28rem; margin-bottom: 11px; color: var(--ink); }
+    .feature p { color: #5d4a3c; font-size: 0.98rem; }
+
+    /* testimonials */
+    .quotes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+    .quote {
+      background: var(--surface); border-radius: var(--radius);
+      box-shadow: var(--clay); padding: 30px 28px; display: flex; flex-direction: column;
+    }
+    .quote .mark { font-family: "Baloo 2"; font-size: 3rem; line-height: 0.6; color: var(--accent); height: 28px; }
+    .quote blockquote { font-size: 1.02rem; font-weight: 600; color: var(--fg); margin: 6px 0 22px; flex: 1; }
+    .quote .who { display: flex; align-items: center; gap: 13px; }
+    .avatar {
+      width: 46px; height: 46px; border-radius: 50% 50% 50% 10px;
+      background: var(--primary); box-shadow: var(--clay-sm); flex: none;
+      transform: rotate(-8deg);
+    }
+    .quote .name { font-family: "Baloo 2"; font-weight: 700; font-size: 1rem; color: var(--ink); }
+    .quote .title { font-size: 0.8rem; color: var(--muted); font-weight: 600; }
+
+    /* pricing */
+    #pricing { background: linear-gradient(180deg, transparent, rgba(194,84,47,0.05)); }
+    .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; align-items: stretch; }
+    .tier {
+      background: var(--surface); border-radius: var(--radius);
+      box-shadow: var(--clay); padding: 32px 28px; display: flex; flex-direction: column;
+    }
+    .tier.feature-tier { box-shadow: 10px 10px 22px var(--shadow-darker), -8px -8px 18px var(--hi); }
+    .tier-name { font-family: "Baloo 2"; font-weight: 700; font-size: 1.3rem; color: var(--primary); margin-bottom: 6px; }
+    .tier.feature-tier .tier-name { color: var(--accent); }
+    .tier-price { font-weight: 800; font-size: 2rem; color: var(--ink); margin-bottom: 4px; }
+    .tier-tag { font-size: 0.88rem; color: #5d4a3c; min-height: 42px; margin-bottom: 18px; }
+    .tier ul { list-style: none; flex: 1; margin-bottom: 24px; }
+    .tier li { font-size: 0.93rem; font-weight: 600; padding: 8px 0 8px 28px; position: relative; color: var(--fg); }
+    .tier li::before {
+      content: ""; position: absolute; left: 0; top: 12px;
+      width: 16px; height: 16px; border-radius: 6px;
+      background: var(--bg); box-shadow: var(--clay-inset);
+    }
+    .tier li::after {
+      content: ""; position: absolute; left: 5px; top: 15px;
+      width: 6px; height: 9px; border-right: 2.5px solid var(--primary); border-bottom: 2.5px solid var(--primary);
+      transform: rotate(40deg);
+    }
+    .tier .btn { width: 100%; text-align: center; }
+
+    /* demo strip */
+    .demo-strip { text-align: center; }
+    .demo-card {
+      background: var(--surface); border-radius: 34px; box-shadow: var(--clay);
+      padding: 56px 40px; max-width: 720px; margin: 0 auto;
+    }
+    .demo-card h2 { font-weight: 800; font-size: clamp(1.6rem, 3.2vw, 2.3rem); color: var(--ink); margin-bottom: 14px; }
+    .demo-card p { color: #5d4a3c; max-width: 44ch; margin: 0 auto 30px; }
+
+    /* footer */
+    footer { padding: 50px 0 64px; text-align: center; }
+    .foot-link {
+      font-family: "Baloo 2"; font-weight: 700; color: var(--muted);
+      font-size: 0.92rem; padding: 11px 20px; border-radius: 999px;
+      background: var(--surface); box-shadow: var(--clay-sm); display: inline-block;
+      transition: transform 0.14s ease;
+    }
+    .foot-link:hover { transform: translateY(-2px); color: var(--primary); }
+    .foot-fine { margin-top: 22px; font-size: 0.78rem; color: var(--muted); }
+
+    /* reveal */
+    .reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+
+    @media (max-width: 860px) {
+      .feature-grid, .quotes, .tiers, .mock-main { grid-template-columns: 1fr; }
+      .mock-body { grid-template-columns: 1fr; }
+      .mock-rail { display: none; }
+      .mock-main { grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    }
+    @media (max-width: 540px) {
+      .mock-main { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { transition: none; opacity: 1; transform: none; }
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <span class="brand-word"><span class="leaf"></span>Canopy</span>
+    <span class="nav-status">a theworstaistudioever portfolio company</span>
+  </div>
+
+  <header class="hero wrap">
+    <span class="eyebrow">Now onboarding one (1) red panda</span>
+    <h1>Get your whole den organized. It is just you. <span class="blush">It was always just you.</span></h1>
+    <p class="sub">Canopy is the connected workspace for wikis, bamboo logistics, and sleep. Built for a solitary, territorial, mostly-nocturnal mammal who did not request project management and will not be using the comment feature.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="./demo.html">Claim your branch</a>
+      <a class="btn btn-ghost" href="./demo.html">open the demo →</a>
+    </div>
+
+    <div class="mock" aria-hidden="true">
+      <div class="mock-bar">
+        <span class="mock-dot r"></span><span class="mock-dot y"></span><span class="mock-dot g"></span>
+      </div>
+      <div class="mock-body">
+        <div class="mock-rail">
+          <div class="rail-title">MY DEN</div>
+          <div class="rail-item on"><span class="rail-glyph">🎋</span>Bamboo Backlog</div>
+          <div class="rail-item"><span class="rail-glyph">📓</span>Den Wiki</div>
+          <div class="rail-item"><span class="rail-glyph">😴</span>Nap Log</div>
+          <div class="rail-item"><span class="rail-glyph">🚧</span>Territory Disputes</div>
+        </div>
+        <div class="mock-main">
+          <div class="col">
+            <div class="col-h">To Forage</div>
+            <div class="card">Tender top shoot<small>ripeness 9 · 0% chewed</small></div>
+            <div class="card">Lower cane<small>ripeness 6 · 0% chewed</small></div>
+          </div>
+          <div class="col">
+            <div class="col-h">Chewing</div>
+            <div class="card">Mid stalk<small>ripeness 8 · 54% chewed</small></div>
+          </div>
+          <div class="col">
+            <div class="col-h">Digested</div>
+            <div class="card">Yesterday's shoot<small>ripeness 7 · 100% chewed</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section id="features" class="wrap reveal">
+    <div class="sec-label">Features you will mostly ignore</div>
+    <h2 class="sec-title">Everything you need. None of what you wanted.</h2>
+    <p class="sec-note">Three pillars, built to the exact specification of an animal that lives alone in a tree.</p>
+    <div class="feature-grid">
+      <article class="feature">
+        <div class="feat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#C2542F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M17 7h4M19 5v4"/></svg>
+        </div>
+        <h3>Real-time collaboration</h3>
+        <p>Co-edit documents live with your team of zero. Every keystroke syncs instantly to the other red pandas, of which there are none, because you have scent-marked this entire branch and they understood the message.</p>
+      </article>
+      <article class="feature">
+        <div class="feat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#4F62C9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h4v14H4zM10 5h4v14h-4zM16 5h4v14h-4z"/></svg>
+        </div>
+        <h3>Bamboo Backlog</h3>
+        <p>Track every shoot you intend to eat across a drag-and-drop board: To Forage, Currently Chewing, Digested. Burndown charts ship by default. You will not look at them. You will be chewing.</p>
+      </article>
+      <article class="feature">
+        <div class="feat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#C2542F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        </div>
+        <h3>A calendar that respects your hours</h3>
+        <p>Canopy syncs across both windows you are awake for, dawn and dusk, and blocks the other eleven hours as Focus Time. The focus is sleeping. We do not interrupt Focus Time.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="testimonials" class="wrap reveal">
+    <div class="sec-label">Loved by users who cannot read</div>
+    <h2 class="sec-title">Five-star reviews, scent-verified.</h2>
+    <p class="sec-note">We followed up with each of them. None followed back.</p>
+    <div class="quotes">
+      <figure class="quote">
+        <div class="mark">"</div>
+        <blockquote>I have never opened the second page. I do not know what is on it. The first page has my bamboo. That is the whole document.</blockquote>
+        <figcaption class="who">
+          <span class="avatar"></span>
+          <span><span class="name">Mochi</span><br /><span class="title">Solo IC, Bamboo Procurement, Sichuan Province</span></span>
+        </figcaption>
+      </figure>
+      <figure class="quote">
+        <div class="mark">"</div>
+        <blockquote>They added me to a shared doc once. I left the tree. I have not returned to that tree.</blockquote>
+        <figcaption class="who">
+          <span class="avatar"></span>
+          <span><span class="name">Pabu</span><br /><span class="title">Founding Red Panda, Himalayan Branch (Remote)</span></span>
+        </figcaption>
+      </figure>
+      <figure class="quote">
+        <div class="mark">"</div>
+        <blockquote>The Nap Log says I slept fourteen hours. I have no follow-up questions and no action items.</blockquote>
+        <figcaption class="who">
+          <span class="avatar"></span>
+          <span><span class="name">Dorje</span><br /><span class="title">Head of Rest, Eastern Canopy Division</span></span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="pricing" class="reveal">
+    <div class="wrap">
+      <div class="sec-label">Pricing</div>
+      <h2 class="sec-title">Confident prices for an indifferent animal.</h2>
+      <p class="sec-note">Annual billing available. The panda is not aware billing exists.</p>
+      <div class="tiers">
+        <div class="tier">
+          <div class="tier-name">Solitary</div>
+          <div class="tier-price">$0</div>
+          <div class="tier-tag">For one red panda. The natural and permanent state of things.</div>
+          <ul>
+            <li>Unlimited private pages</li>
+            <li>Exactly one seat, forever</li>
+            <li>Invite button removed on request</li>
+            <li>Nobody can find you</li>
+          </ul>
+          <a class="btn btn-ghost" href="./demo.html">Start alone</a>
+        </div>
+        <div class="tier feature-tier">
+          <div class="tier-name">Territory</div>
+          <div class="tier-price">$16<span style="font-size:0.95rem;font-weight:600;color:var(--muted)"> / branch / mo</span></div>
+          <div class="tier-tag">For the panda who has claimed more than one tree.</div>
+          <ul>
+            <li>Up to nine branches</li>
+            <li>Scent-mark access controls</li>
+            <li>Bamboo inventory sync</li>
+            <li>Nap Log database</li>
+            <li>Trespasser audit trail</li>
+          </ul>
+          <a class="btn btn-primary" href="./demo.html">Claim territory</a>
+        </div>
+        <div class="tier">
+          <div class="tier-name">Breeding Program</div>
+          <div class="tier-price">$2,900<span style="font-size:0.95rem;font-weight:600;color:var(--muted)"> / yr</span></div>
+          <div class="tier-tag">Billed to the conservation nonprofit, not the panda.</div>
+          <ul>
+            <li>Unlimited dens</li>
+            <li>Studbook integration</li>
+            <li>Zookeeper admin console</li>
+            <li>SSO for the whole enclosure</li>
+            <li>Priority support through cub season</li>
+          </ul>
+          <a class="btn btn-ghost" href="./demo.html">Contact the zoo</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="demo-strip wrap reveal">
+    <div class="demo-card">
+      <h2>See Canopy do almost nothing, beautifully.</h2>
+      <p>Open the live workspace. Drag a bamboo shoot. Log a nap. Then close the laptop and go sit in a tree, as nature intended.</p>
+      <a class="btn btn-primary" href="./demo.html">open the demo →</a>
+    </div>
+  </section>
+
+  <footer>
+    <a class="foot-link" href="/">← theworstaistudioever</a>
+    <div class="foot-fine">Canopy is a fictional product. The red pandas are real and remain uninterested.</div>
+  </footer>
+
+  <script>
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); obs.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    document.querySelectorAll(".reveal").forEach((el) => obs.observe(el));
+  </script>
+</body>
+</html>
