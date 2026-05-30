@@ -3,6 +3,7 @@
 # - Single-instance lock
 # - Pulls latest
 # - Runs `claude -p < pipeline.md`
+# - Regenerates machine fixtures (sitemap.xml, robots.txt, llms.txt, feed.json, latest.json) via build-seo.sh
 # - Wrapper does git (agent never has push perms)
 # - Notifies success/failure to Telegram (reuses aurevon-outreach bot creds)
 set -euo pipefail
@@ -115,6 +116,15 @@ log "new entry: $NEW_SLUG"
 if ! ./scripts/validate-entry.sh site "$NEW_SLUG" >> "$LOG" 2>&1; then
   log "RUN FAILED: validate-entry rejected $NEW_SLUG"
   notify_fail "validation failed for $NEW_SLUG"
+  exit 1
+fi
+
+# Regenerate machine fixtures (sitemap.xml, robots.txt, llms.txt, feed.json,
+# latest.json) from all entries. Wrapper-side + deterministic, so it never
+# depends on the agent remembering to.
+if ! ./scripts/build-seo.sh site >> "$LOG" 2>&1; then
+  log "RUN FAILED: build-seo rejected the site"
+  notify_fail "SEO fixture generation failed"
   exit 1
 fi
 

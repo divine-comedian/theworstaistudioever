@@ -150,6 +150,8 @@ Earnest startup tone kills the joke. Never write "Welcome to the future of X." N
      - Touch swipe nav (basic, vanilla — track `touchstart` / `touchend`, threshold ~50px).
    - Updates the header count: `N startups · since 2026`.
 
+> **Machine fixtures (`sitemap.xml`, `robots.txt`, `llms.txt`, `feed.json`, `latest.json`) are NOT your job.** The wrapper regenerates them from every `concept.json` via `scripts/build-seo.sh` after you exit. Do not create or edit them.
+
 ---
 
 ## Step 7 — VALIDATE & RECORD
