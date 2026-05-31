@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Slush · theworstaistudioever</title>
+<meta name="description" content="The regulated exchange for manuscripts that will never be read.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Slush · theworstaistudioever">
+<meta property="og:description" content="The regulated exchange for manuscripts that will never be read.">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Slush · theworstaistudioever">
+<meta name="twitter:description" content="The regulated exchange for manuscripts that will never be read.">
+<meta name="theme-color" content="#F7F6F2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Space+Mono:wght@400;700&display=swap');
+
+:root{
+  --primary:#141414;
+  --accent:#9B1B30;
+  --bg:#F7F6F2;
+  --fg:#1A1A1A;
+  --muted:#75706A;
+  --ink:#1A1A1A;
+  --line:#1A1A1A;
+  --hair:rgba(26,26,26,.16);
+  --up:#1f6b3b;
+  --down:#9B1B30;
+  --display:"Archivo","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --body:"Newsreader",Georgia,"Times New Roman",serif;
+  --mono:"Space Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --gutter:clamp(16px,4vw,40px);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg);
+  color:var(--fg);
+  font-family:var(--body);
+  font-size:18px;
+  line-height:1.55;
+  font-synthesis:none;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--accent);color:var(--bg)}
+
+.wrap{max-width:1240px;margin:0 auto;padding:0 var(--gutter)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.disp{font-family:var(--display)}
+
+.kicker{
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+
+/* ── ticker tape ── */
+.tape{
+  border-bottom:1px solid var(--line);
+  background:var(--primary);
+  color:var(--bg);
+  overflow:hidden;
+  white-space:nowrap;
+  position:relative;
+}
+.tape-track{
+  display:inline-block;
+  padding:8px 0;
+  animation:tape 42s linear infinite;
+  will-change:transform;
+}
+.tape-track span{
+  font-family:var(--mono);
+  font-size:12px;
+  letter-spacing:.04em;
+  padding:0 1.4rem;
+  border-right:1px solid rgba(247,246,242,.2);
+}
+.tape .up{color:#7ad79b}
+.tape .dn{color:#f0879a}
+@keyframes tape{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ── header ── */
+header.site{
+  position:sticky;top:0;z-index:40;
+  background:var(--bg);
+  border-bottom:1px solid var(--line);
+}
+.nav{
+  display:flex;align-items:center;justify-content:space-between;
+  height:64px;
+}
+.brand{display:flex;align-items:baseline;gap:.5rem;font-family:var(--display);font-weight:900;font-size:24px;letter-spacing:-.03em}
+.brand .reg{font-family:var(--mono);font-size:11px;font-weight:400;color:var(--muted);letter-spacing:.1em;transform:translateY(-6px)}
+.nav-links{display:flex;gap:2rem;align-items:center}
+.nav-links a{font-family:var(--display);font-weight:500;font-size:14px;letter-spacing:.01em}
+.nav-links a:not(.btn){position:relative}
+.nav-links a:not(.btn)::after{content:"";position:absolute;left:0;bottom:-4px;width:0;height:1.5px;background:var(--accent);transition:width .2s ease-out}
+.nav-links a:not(.btn):hover::after{width:100%}
+.btn{
+  font-family:var(--display);font-weight:600;font-size:14px;
+  background:var(--accent);color:var(--bg);
+  padding:.62rem 1.1rem;border:1px solid var(--accent);
+  transition:background .18s ease-out,color .18s ease-out;
+}
+.btn:hover{background:transparent;color:var(--accent)}
+.btn-ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+.btn-ghost:hover{background:var(--primary);color:var(--bg)}
+@media(max-width:720px){.nav-links a.lnk{display:none}}
+
+/* ── hero ── */
+.hero{
+  border-bottom:1px solid var(--line);
+  padding:clamp(40px,7vw,84px) 0 clamp(36px,6vw,68px);
+  position:relative;
+}
+.hero-grid{
+  display:grid;
+  grid-template-columns:minmax(0,7fr) minmax(0,4fr);
+  gap:clamp(24px,5vw,64px);
+  align-items:end;
+}
+.hero h1{
+  font-family:var(--display);
+  font-weight:900;
+  font-size:clamp(40px,8.2vw,104px);
+  line-height:.92;
+  letter-spacing:-.035em;
+  text-wrap:balance;
+}
+.hero h1 em{font-family:var(--body);font-style:italic;font-weight:400;color:var(--accent)}
+.hero .sub{
+  margin-top:1.6rem;
+  font-size:clamp(18px,2.1vw,22px);
+  max-width:38ch;
+  color:var(--fg);
+}
+.hero .cta-row{margin-top:2rem;display:flex;gap:.8rem;flex-wrap:wrap;align-items:center}
+.hero .fine{margin-top:1.2rem;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.02em;max-width:46ch;line-height:1.5}
+
+/* index quote card */
+.quote-card{
+  border:1px solid var(--line);
+  background:var(--bg);
+  padding:0;
+}
+.quote-card .qc-head{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:.7rem 1rem;border-bottom:1px solid var(--line);
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+}
+.qc-live{display:flex;align-items:center;gap:.4rem}
+.qc-dot{width:7px;height:7px;background:var(--up);border-radius:50%;animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.28}}
+.qc-body{padding:1.1rem 1rem 1.2rem}
+.qc-name{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:-.01em}
+.qc-price{font-family:var(--mono);font-weight:700;font-size:clamp(34px,5vw,46px);letter-spacing:-.03em;line-height:1;margin-top:.5rem}
+.qc-chg{font-family:var(--mono);font-size:13px;margin-top:.45rem;color:var(--up)}
+.qc-spark{margin-top:1rem;width:100%;height:54px;display:block}
+.qc-foot{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line)}
+.qc-foot div{padding:.6rem 1rem;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.qc-foot div+div{border-left:1px solid var(--line)}
+.qc-foot b{display:block;color:var(--fg);font-size:14px;margin-top:2px}
+@media(max-width:860px){.hero-grid{grid-template-columns:1fr}.quote-card{max-width:420px}}
+
+/* ── section frame ── */
+section.band{border-bottom:1px solid var(--line);padding:clamp(44px,6vw,80px) 0}
+.band-head{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;margin-bottom:2.4rem;flex-wrap:wrap}
+.band-head h2{font-family:var(--display);font-weight:800;font-size:clamp(24px,3.6vw,40px);letter-spacing:-.025em;line-height:1}
+.band-head .idx{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.16em}
+
+/* features */
+.feat{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line)}
+.feat .f{padding:2rem 1.6rem 2.2rem;border-right:1px solid var(--line);position:relative;background:var(--bg);transition:background .2s ease-out}
+.feat .f:last-child{border-right:none}
+.feat .f:hover{background:#efeee8}
+.feat .f .n{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:.1em}
+.feat .f h3{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:-.02em;margin:1rem 0 .7rem}
+.feat .f p{font-size:17px;color:var(--fg);max-width:34ch}
+@media(max-width:780px){.feat{grid-template-columns:1fr}.feat .f{border-right:none;border-bottom:1px solid var(--line)}.feat .f:last-child{border-bottom:none}}
+
+/* testimonials */
+.quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--line)}
+.quotes blockquote{padding:2rem 1.6rem;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:1.4rem}
+.quotes blockquote:last-child{border-right:none}
+.quotes q{font-family:var(--body);font-size:21px;line-height:1.4;quotes:"\201C""\201D";font-style:italic}
+.quotes .who{font-family:var(--display);margin-top:auto}
+.quotes .who b{display:block;font-weight:700;font-size:15px;letter-spacing:-.01em}
+.quotes .who span{font-size:12.5px;color:var(--muted);font-family:var(--mono);line-height:1.45;display:block;margin-top:.35rem}
+@media(max-width:780px){.quotes{grid-template-columns:1fr}.quotes blockquote{border-right:none;border-bottom:1px solid var(--line)}.quotes blockquote:last-child{border-bottom:none}}
+
+/* pricing */
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line)}
+.tier{border-right:1px solid var(--line);padding:1.8rem 1.6rem 2rem;display:flex;flex-direction:column;background:var(--bg)}
+.tier:last-child{border-right:none}
+.tier.feature{background:var(--primary);color:var(--bg)}
+.tier.feature .tier-name{color:var(--bg)}
+.tier.feature .perks li{border-color:rgba(247,246,242,.18)}
+.tier.feature .perks li::before{color:#f0879a}
+.tier-name{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+.tier-price{font-family:var(--display);font-weight:800;font-size:clamp(30px,4vw,40px);letter-spacing:-.03em;margin:1rem 0 .4rem}
+.tier-tag{font-size:16px;font-style:italic;color:inherit;opacity:.82;min-height:3.4em}
+.perks{list-style:none;margin:1.4rem 0 1.8rem;display:flex;flex-direction:column;gap:.7rem;flex:1}
+.perks li{font-family:var(--display);font-weight:500;font-size:14px;padding-left:1.4rem;position:relative;line-height:1.4}
+.perks li::before{content:"+";position:absolute;left:0;top:-1px;color:var(--accent);font-weight:700}
+.tier .btn{text-align:center}
+@media(max-width:780px){.tiers{grid-template-columns:1fr}.tier{border-right:none;border-bottom:1px solid var(--line)}.tier:last-child{border-bottom:none}}
+
+/* demo strip */
+.demo-strip{background:var(--accent);color:var(--bg);border-bottom:1px solid var(--line)}
+.demo-strip .wrap{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;padding-top:clamp(36px,5vw,56px);padding-bottom:clamp(36px,5vw,56px);flex-wrap:wrap}
+.demo-strip h2{font-family:var(--display);font-weight:800;font-size:clamp(26px,4vw,44px);letter-spacing:-.025em;line-height:1;max-width:18ch}
+.demo-strip p{font-family:var(--mono);font-size:12px;letter-spacing:.04em;opacity:.85;margin-top:.7rem;max-width:42ch}
+.demo-cta{font-family:var(--display);font-weight:700;font-size:16px;background:var(--bg);color:var(--accent);padding:.95rem 1.5rem;border:1px solid var(--bg);white-space:nowrap;transition:transform .18s ease-out,background .18s ease-out,color .18s ease-out}
+.demo-cta:hover{background:transparent;color:var(--bg);transform:translateX(4px)}
+
+/* footer */
+footer.site{padding:clamp(36px,5vw,60px) 0;background:var(--bg)}
+.foot-grid{display:flex;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;align-items:flex-start}
+.foot-brand{font-family:var(--display);font-weight:900;font-size:20px;letter-spacing:-.03em}
+.foot-disc{font-family:var(--mono);font-size:10.5px;color:var(--muted);max-width:62ch;line-height:1.6;margin-top:1rem}
+.back{font-family:var(--display);font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:.4rem}
+.back:hover{color:var(--accent)}
+.foot-rule{border:0;border-top:1px solid var(--line);margin:2rem 0 1.4rem}
+.foot-meta{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--muted);flex-wrap:wrap;gap:.6rem}
+
+@media(prefers-reduced-motion:reduce){
+  .tape-track{animation:none}
+  .qc-dot{animation:none}
+  *{scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+
+<div class="tape" aria-hidden="true">
+  <div class="tape-track" id="tape">
+    <span>SLUSH COMPOSITE <b class="up">▲ 4,128.66 +0.84%</b></span>
+    <span>$WIP <span class="dn">11.20 −6.10%</span></span>
+    <span>$DRAFT4 <span class="up">3.05 +18.40%</span></span>
+    <span>$MEMOIR <span class="dn">0.74 −2.13%</span></span>
+    <span>$NANO <span class="up">52,140 +0.02%</span></span>
+    <span>$TRILOGY <span class="dn">409.00 −31.50%</span></span>
+    <span>$QUERY <span class="up">0.0008 +212.00%</span></span>
+    <span>REJECTION YIELD <span class="up">7.40% APY</span></span>
+  </div>
+</div>
+
+<header class="site">
+  <div class="wrap nav">
+    <div class="brand">Slush<span class="reg">SE</span></div>
+    <nav class="nav-links">
+      <a class="lnk" href="#instruments">Instruments</a>
+      <a class="lnk" href="#filings">Filings</a>
+      <a class="lnk" href="#tiers">Membership</a>
+      <a class="btn" href="./demo.html">Open the desk →</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="kicker">Slush Securities Exchange · Member, Nobody</p>
+      <h1>Your unfinished novel is an <em>asset class.</em></h1>
+      <p class="sub">Slush is the regulated exchange for manuscripts that will never be read. List your draft. Short your writing group. Earn yield on the rejection letters you were keeping anyway.</p>
+      <div class="cta-row">
+        <a class="btn" href="#tiers">Open an account</a>
+        <a class="btn btn-ghost" href="./demo.html">View the trading desk</a>
+      </div>
+      <p class="fine">Capital at risk. Your novel was already at risk. Slush is not a broker, a publisher, or a substitute for finishing the book. Past rejection is the strongest available indicator of future rejection.</p>
+    </div>
+
+    <aside class="quote-card" aria-label="SLUSH Composite Index quote">
+      <div class="qc-head">
+        <span>SLUSH Composite</span>
+        <span class="qc-live"><span class="qc-dot"></span>Live</span>
+      </div>
+      <div class="qc-body">
+        <div class="qc-name">Manuscripts, all categories</div>
+        <div class="qc-price">4,128.66</div>
+        <div class="qc-chg">▲ +34.41 (+0.84%) today</div>
+        <svg class="qc-spark" viewBox="0 0 280 54" preserveAspectRatio="none" aria-hidden="true">
+          <polyline fill="none" stroke="#1f6b3b" stroke-width="2" points="0,40 24,38 48,42 72,30 96,34 120,22 144,28 168,16 192,24 216,12 240,18 264,8 280,11"/>
+        </svg>
+      </div>
+      <div class="qc-foot">
+        <div>Listed works<b>1,204,887</b></div>
+        <div>Never read<b>1,204,887</b></div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="band" id="instruments">
+  <div class="wrap">
+    <div class="band-head">
+      <h2>Three instruments. One regrettable habit.</h2>
+      <span class="idx">FIG. 01 — PRODUCTS</span>
+    </div>
+    <div class="feat">
+      <article class="f">
+        <div class="n">01 / FUTURES</div>
+        <h3>Manuscript futures</h3>
+        <p>List a work-in-progress as a tradeable contract and let the order book price it. The market sets a number on your fourth draft so you no longer have to.</p>
+      </article>
+      <article class="f">
+        <div class="n">02 / DERIVATIVES</div>
+        <h3>Short your cohort</h3>
+        <p>Open a position against any debut listed on the platform. When their agent stops returning emails, your contract settles in the green.</p>
+      </article>
+      <article class="f">
+        <div class="n">03 / YIELD</div>
+        <h3>Rejection staking</h3>
+        <p>Lock your form rejections in custody and collect yield. Eighty rejections clears the high-APY tier. You were filing them in a shoebox regardless.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="filings">
+  <div class="wrap">
+    <div class="band-head">
+      <h2>Disclosures from verified account holders.</h2>
+      <span class="idx">FIG. 02 — TESTIMONY</span>
+    </div>
+    <div class="quotes">
+      <blockquote>
+        <q>I have been on submission since 2021. Slush is the only platform that let me realize the loss.</q>
+        <div class="who"><b>Gerald Pflum</b><span>Author of three unpublished manuscripts and one published acknowledgments page</span></div>
+      </blockquote>
+      <blockquote>
+        <q>Shorted my entire workshop. Closed up forty percent the week the favorite signed with a small press nobody had heard of.</q>
+        <div class="who"><b>Diane Oresky</b><span>MFA fiction, 2019 cohort, did not place</span></div>
+      </blockquote>
+      <blockquote>
+        <q>My rejection yield now exceeds my royalty income. My royalty income is zero.</q>
+        <div class="who"><b>Marcus Heel</b><span>Self-described novelist, employed full time in regional logistics</span></div>
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="tiers">
+  <div class="wrap">
+    <div class="band-head">
+      <h2>Membership tiers.</h2>
+      <span class="idx">FIG. 03 — ACCESS</span>
+    </div>
+    <div class="tiers">
+      <div class="tier">
+        <div class="tier-name">Querying</div>
+        <div class="tier-price">$0<span style="font-size:.42em;font-family:var(--mono);color:var(--muted)">/mo</span></div>
+        <div class="tier-tag">For the writer between drafts and between agents.</div>
+        <ul class="perks">
+          <li>Spot trading on your own manuscript</li>
+          <li>One (1) watchlist</li>
+          <li>Rejection staking up to 25 letters</li>
+        </ul>
+        <a class="btn btn-ghost" href="./demo.html">Start querying</a>
+      </div>
+      <div class="tier feature">
+        <div class="tier-name">On Submission</div>
+        <div class="tier-price">$48<span style="font-size:.42em;font-family:var(--mono);opacity:.6">/mo</span></div>
+        <div class="tier-tag">For the writer whose book has been with editors for fourteen months.</div>
+        <ul class="perks">
+          <li>Margin against unfinished work</li>
+          <li>Short other writers' debuts</li>
+          <li>Priority settlement the day they get dropped</li>
+        </ul>
+        <a class="btn" href="./demo.html">Go on submission</a>
+      </div>
+      <div class="tier">
+        <div class="tier-name">Posthumous</div>
+        <div class="tier-price">$2,400<span style="font-size:.42em;font-family:var(--mono);color:var(--muted)">/mo</span></div>
+        <div class="tier-tag">Estate-grade liquidity. Billed annually, in advance, to whoever is left.</div>
+        <ul class="perks">
+          <li>Trade the back catalog you never wrote</li>
+          <li>Cold storage for drafts in perpetuity</li>
+          <li>A dedicated account manager who has read none of it</li>
+        </ul>
+        <a class="btn btn-ghost" href="./demo.html">Settle the estate</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="demo-strip">
+  <div class="wrap">
+    <div>
+      <h2>The desk is open. Bring a draft.</h2>
+      <p>Live order book, fictional fills, a rejection-staking slider. No manuscripts are read at any point.</p>
+    </div>
+    <a class="demo-cta" href="./demo.html">open the demo →</a>
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand">Slush<span style="color:var(--accent)">.</span></div>
+        <p class="foot-disc">Slush Securities Exchange is a portfolio company of theworstaistudioever. All tickers, quotes, fills, indices, and account holders are fabricated. Manuscripts deposited with Slush are neither read, edited, nor returned. Yield is paid in further rejection. This is not investment advice and was never going to be.</p>
+      </div>
+      <a class="back" href="/">← theworstaistudioever</a>
+    </div>
+    <hr class="foot-rule">
+    <div class="foot-meta">
+      <span>SLUSH SE · EST. 2026 · CLEARING UNFINISHED FICTION</span>
+      <span class="mono">Settlement T+∞</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Duplicate the ticker tape content so the marquee loops seamlessly.
+(function(){
+  var t = document.getElementById('tape');
+  if(t){ t.innerHTML += t.innerHTML; }
+})();
+
+// Smooth-scroll for in-page anchors (respects reduced-motion via CSS).
+document.querySelectorAll('a[href^="#"]').forEach(function(a){
+  a.addEventListener('click', function(e){
+    var id = a.getAttribute('href');
+    if(id.length > 1){
+      var el = document.querySelector(id);
+      if(el){ e.preventDefault(); el.scrollIntoView({behavior:'smooth', block:'start'}); }
+    }
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Slush Trading Desk · theworstaistudioever</title>
+<meta name="description" content="The Slush manuscript trading desk. Place orders on drafts you will never finish.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Slush Trading Desk · theworstaistudioever">
+<meta property="og:description" content="The Slush manuscript trading desk. Place orders on drafts you will never finish.">
+<meta name="theme-color" content="#F7F6F2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Space+Mono:wght@400;700&display=swap');
+
+:root{
+  --primary:#141414;
+  --accent:#9B1B30;
+  --bg:#F7F6F2;
+  --panel:#FFFFFF;
+  --fg:#1A1A1A;
+  --muted:#75706A;
+  --line:#1A1A1A;
+  --hair:rgba(26,26,26,.14);
+  --up:#1f6b3b;
+  --down:#9B1B30;
+  --display:"Archivo","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --body:"Newsreader",Georgia,"Times New Roman",serif;
+  --mono:"Space Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--mono);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}
+::selection{background:var(--accent);color:var(--bg)}
+.mono{font-variant-numeric:tabular-nums}
+.up{color:var(--up)}
+.dn{color:var(--down)}
+
+/* chrome */
+.chrome{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);background:var(--bg);padding:10px clamp(12px,2.4vw,22px);position:sticky;top:0;z-index:30;flex-wrap:wrap;gap:8px}
+.back{font-family:var(--display);font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:.4rem}
+.back:hover{color:var(--accent)}
+a{color:inherit;text-decoration:none}
+.chrome .desk{font-family:var(--display);font-weight:900;font-size:16px;letter-spacing:-.02em;display:flex;align-items:baseline;gap:.4rem}
+.chrome .desk .reg{font-size:10px;font-weight:400;color:var(--muted);letter-spacing:.12em}
+.chrome .clock{font-size:11px;color:var(--muted);letter-spacing:.04em}
+.chrome .live{display:inline-flex;align-items:center;gap:.4rem}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--up);animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* layout */
+.desk-grid{display:grid;grid-template-columns:260px minmax(0,1fr) 300px;gap:0;min-height:calc(100dvh - 47px)}
+.col{border-right:1px solid var(--line);display:flex;flex-direction:column;min-width:0}
+.col:last-child{border-right:none}
+.panel-h{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);padding:11px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;background:var(--bg)}
+
+/* watchlist */
+.wl-tools{padding:10px 12px;border-bottom:1px solid var(--hair);display:flex;flex-direction:column;gap:8px}
+.search{width:100%;border:1px solid var(--line);background:var(--panel);padding:8px 10px;font-family:var(--mono);font-size:12px;color:var(--fg)}
+.search:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.tabs{display:flex;gap:0;border:1px solid var(--line)}
+.tabs button{flex:1;background:var(--bg);border:none;padding:7px 4px;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-right:1px solid var(--line)}
+.tabs button:last-child{border-right:none}
+.tabs button.on{background:var(--primary);color:var(--bg)}
+.wl{flex:1;overflow-y:auto}
+.row{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--hair);cursor:pointer;transition:background .12s}
+.row:hover{background:#efeee8}
+.row.sel{background:var(--primary);color:var(--bg)}
+.row.sel .tk-sub,.row.sel .px{color:#cfcdc7}
+.tk{font-family:var(--display);font-weight:700;font-size:14px;letter-spacing:-.01em}
+.tk-sub{font-size:10.5px;color:var(--muted);margin-top:2px;line-height:1.3;max-width:150px}
+.r-right{text-align:right}
+.px{font-size:13px;font-weight:700}
+.chg{font-size:11px;margin-top:2px}
+.spark{display:block;margin-top:3px;width:62px;height:18px;margin-left:auto}
+
+/* center */
+.center{overflow-y:auto}
+.tk-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.tk-head .big{font-family:var(--display);font-weight:900;font-size:clamp(22px,3vw,30px);letter-spacing:-.03em;display:flex;align-items:baseline;gap:.5rem}
+.tk-head .name{font-family:var(--body);font-style:italic;font-size:14px;color:var(--muted);font-weight:400}
+.tk-head .lastpx{font-family:var(--mono);font-weight:700;font-size:clamp(26px,3.4vw,34px);letter-spacing:-.02em;text-align:right}
+.tk-head .lastchg{font-size:13px;text-align:right;margin-top:2px}
+.chart-wrap{padding:14px 18px;border-bottom:1px solid var(--line)}
+.bars{display:flex;align-items:flex-end;gap:4px;height:120px}
+.bars .b{flex:1;background:var(--accent);opacity:.82;transition:height .4s ease-out,opacity .2s}
+.bars .b.gain{background:var(--up)}
+.bars .b:hover{opacity:1}
+.axis{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:8px;letter-spacing:.04em}
+
+/* order book + ticket */
+.ob-grid{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--line)}
+.ob{border-right:1px solid var(--line)}
+.ob .panel-h{border-bottom:1px solid var(--hair)}
+.ob ul{list-style:none}
+.ob li{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px 14px;font-size:12px;position:relative}
+.ob li .depth{position:absolute;top:0;right:0;height:100%;opacity:.12}
+.ob.bids li .depth{background:var(--up)}
+.ob.asks li .depth{background:var(--down)}
+.ob .qcell{text-align:right;color:var(--muted);position:relative;z-index:1}
+.ob .pcell{position:relative;z-index:1;font-weight:700}
+.ob.bids .pcell{color:var(--up)}
+.ob.asks .pcell{color:var(--down)}
+
+/* ticket */
+.ticket{padding:16px 18px}
+.bs{display:flex;border:1px solid var(--line);margin-bottom:12px}
+.bs button{flex:1;background:var(--bg);border:none;padding:10px;font-family:var(--display);font-weight:700;font-size:14px;letter-spacing:.02em;border-right:1px solid var(--line)}
+.bs button:last-child{border-right:none}
+.bs button.buy.on{background:var(--up);color:#fff}
+.bs button.sell.on{background:var(--down);color:#fff}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.field input,.field select{width:100%;border:1px solid var(--line);background:var(--panel);padding:9px 10px;font-family:var(--mono);font-size:13px;color:var(--fg)}
+.field input:focus,.field select:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.ticket-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.est{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);padding:8px 0 14px;border-top:1px solid var(--hair);margin-top:4px}
+.est b{color:var(--fg)}
+.place{width:100%;border:1px solid var(--line);padding:13px;font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.02em;color:var(--bg);background:var(--up);transition:transform .12s ease-out,filter .15s}
+.place.sell{background:var(--down)}
+.place:hover{filter:brightness(1.08)}
+.place:active{transform:scale(.99)}
+
+/* blotter */
+.blotter{border-top:1px solid var(--line)}
+.blotter table{width:100%;border-collapse:collapse;font-size:11.5px}
+.blotter th{text-align:left;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:8px 18px;border-bottom:1px solid var(--hair);font-weight:400}
+.blotter td{padding:8px 18px;border-bottom:1px solid var(--hair)}
+.blotter .empty{padding:18px;color:var(--muted);font-style:italic;font-family:var(--body)}
+.pill{font-size:10px;font-weight:700;padding:2px 7px;letter-spacing:.06em}
+.pill.b{background:rgba(31,107,59,.15);color:var(--up)}
+.pill.s{background:rgba(155,27,48,.15);color:var(--down)}
+
+/* right rail */
+.port{border-bottom:1px solid var(--line)}
+.pos{display:grid;grid-template-columns:1fr auto;gap:4px;padding:11px 14px;border-bottom:1px solid var(--hair)}
+.pos .pl{text-align:right;font-weight:700;font-size:13px}
+.pos .lab{font-family:var(--display);font-weight:700;font-size:13px}
+.pos .qty{font-size:10.5px;color:var(--muted);margin-top:2px}
+.summary{display:flex;justify-content:space-between;padding:12px 14px;background:var(--primary);color:var(--bg);font-size:12px}
+.summary b{font-size:15px;font-weight:700;display:block;margin-top:2px}
+
+.stake{padding:16px 14px}
+.stake .big-apy{font-family:var(--display);font-weight:900;font-size:40px;letter-spacing:-.03em;color:var(--accent);line-height:1}
+.stake .apy-lab{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.stake input[type=range]{width:100%;margin:16px 0 6px;accent-color:var(--accent)}
+.stake .slabels{display:flex;justify-content:space-between;font-size:11px}
+.stake .slabels b{color:var(--fg)}
+.stake .yield-line{margin-top:14px;padding-top:12px;border-top:1px solid var(--hair);display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.stake .yield-line b{color:var(--fg);font-size:14px}
+.stake .tier-badge{margin-top:12px;font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-align:center;padding:8px;border:1px solid var(--line);background:var(--bg)}
+.stake .tier-badge.hi{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--primary);color:var(--bg);font-family:var(--mono);font-size:12.5px;padding:12px 20px;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:60;border-left:3px solid var(--up);max-width:90vw}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.sell{border-left-color:var(--down)}
+
+@media(max-width:1080px){.desk-grid{grid-template-columns:230px minmax(0,1fr)}.col.rail{grid-column:1 / -1;border-right:none;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr}.col.rail .port{border-right:1px solid var(--line);border-bottom:none}}
+@media(max-width:760px){.desk-grid{grid-template-columns:1fr}.col{border-right:none;border-bottom:1px solid var(--line)}.col.wlcol{max-height:300px}.col.rail{grid-template-columns:1fr}.col.rail .port{border-right:none;border-bottom:1px solid var(--line)}}
+@media(prefers-reduced-motion:reduce){.dot{animation:none}*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <div class="desk">Slush Trading Desk <span class="reg">SE</span></div>
+  <div class="live"><span class="clock" id="clock">SESSION OPEN</span><span class="dot"></span></div>
+</div>
+
+<div class="desk-grid">
+
+  <!-- WATCHLIST -->
+  <div class="col wlcol">
+    <div class="panel-h"><span>Instruments</span><span id="wlcount">6</span></div>
+    <div class="wl-tools">
+      <input class="search" id="search" type="text" placeholder="filter tickers…" aria-label="Filter tickers">
+      <div class="tabs" id="tabs">
+        <button class="on" data-f="all">All</button>
+        <button data-f="open">Open</button>
+        <button data-f="held">Held</button>
+      </div>
+    </div>
+    <div class="wl" id="wl"></div>
+  </div>
+
+  <!-- CENTER -->
+  <div class="col center">
+    <div class="tk-head">
+      <div>
+        <div class="big"><span id="cTk">$WIP</span><span class="name" id="cName">the one in the drawer</span></div>
+      </div>
+      <div>
+        <div class="lastpx mono" id="cPx">11.20</div>
+        <div class="lastchg mono" id="cChg">−6.10%</div>
+      </div>
+    </div>
+
+    <div class="chart-wrap">
+      <div class="bars" id="bars"></div>
+      <div class="axis"><span>30 sessions ago</span><span>last close</span></div>
+    </div>
+
+    <div class="ob-grid">
+      <div class="ob bids">
+        <div class="panel-h"><span>Bids</span><span>size</span></div>
+        <ul id="bids"></ul>
+      </div>
+      <div class="ob asks">
+        <div class="panel-h"><span>Asks</span><span>size</span></div>
+        <ul id="asks"></ul>
+      </div>
+    </div>
+
+    <div class="ticket">
+      <div class="bs" id="bs">
+        <button class="buy on" data-side="buy">Buy</button>
+        <button class="sell" data-side="sell">Sell</button>
+      </div>
+      <div class="ticket-row">
+        <div class="field">
+          <label for="otype">Order type</label>
+          <select id="otype">
+            <option value="market">Market</option>
+            <option value="limit">Limit</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="qty">Quantity (drafts)</label>
+          <input id="qty" type="number" min="1" value="10" inputmode="numeric">
+        </div>
+      </div>
+      <div class="field" id="limitField" style="display:none">
+        <label for="lpx">Limit price</label>
+        <input id="lpx" type="number" min="0" step="0.01" value="11.00" inputmode="decimal">
+      </div>
+      <div class="est">
+        <span>Est. notional</span><b class="mono" id="notional">$112.00</b>
+      </div>
+      <button class="place" id="place">Place buy order — $WIP</button>
+    </div>
+
+    <div class="blotter">
+      <div class="panel-h"><span>Order blotter</span><span id="blcount">0 fills</span></div>
+      <table>
+        <thead><tr><th>Time</th><th>Side</th><th>Ticker</th><th>Qty</th><th>Fill</th></tr></thead>
+        <tbody id="blotter"><tr><td class="empty" colspan="5">No orders yet. The market is patient. It has waited longer than you have.</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- RIGHT RAIL -->
+  <div class="col rail">
+    <div class="port">
+      <div class="panel-h"><span>Portfolio</span><span>unrealized</span></div>
+      <div id="positions"></div>
+      <div class="summary"><span>Book value<b class="mono" id="bookVal">$1,940.00</b></span><span style="text-align:right">Open P/L<b class="mono dn" id="bookPl">−$612.40</b></span></div>
+    </div>
+    <div class="stake">
+      <div class="panel-h" style="border:none;padding:0 0 12px;margin:0">Rejection staking</div>
+      <div class="apy-lab">Current yield</div>
+      <div class="big-apy mono"><span id="apy">7.4</span>%</div>
+      <input type="range" id="stakeRange" min="0" max="120" value="46" aria-label="Rejection letters staked">
+      <div class="slabels"><span>Letters staked: <b id="stakeNum">46</b></span><span id="stakeMax">/ 120</span></div>
+      <div class="yield-line"><span>Projected monthly yield</span><b class="mono" id="yieldOut">$0.00</b></div>
+      <div class="tier-badge" id="tierBadge">Standard custody</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Fake market data. None of this is real. That is the entire premise. ──
+const INSTRUMENTS = [
+  { tk:"$WIP",     name:"the one in the drawer",            px:11.20,  chg:-6.10,  held:true,  qty:120, avg:18.40 },
+  { tk:"$DRAFT4",  name:"the rewrite, again",               px:3.05,   chg:18.40,  held:true,  qty:300, avg:2.10  },
+  { tk:"$MEMOIR",  name:"nobody asked for this",            px:0.74,   chg:-2.13,  held:false, qty:0,   avg:0     },
+  { tk:"$NANO",    name:"50k words, 0 of them good",        px:52140,  chg:0.02,   held:true,  qty:1,   avg:61000 },
+  { tk:"$TRILOGY", name:"book one of a planned seven",      px:409.00, chg:-31.50, held:false, qty:0,   avg:0     },
+  { tk:"$QUERY",   name:"dear agent, i am writing to you",  px:0.0008, chg:212.00, held:false, qty:0,   avg:0     }
+];
+
+let active = INSTRUMENTS[0];
+let side = "buy";
+let filter = "all";
+let fills = [];
+
+const $ = s => document.querySelector(s);
+const fmt = n => n >= 1000 ? n.toLocaleString('en-US',{maximumFractionDigits:0})
+                : n >= 1   ? n.toFixed(2)
+                : n.toFixed(4);
+const money = n => "$" + Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+// deterministic pseudo-series per ticker (no Math.random needed)
+function series(seed, n){
+  let v = (seed*9301 + 49297) % 233280, out=[];
+  for(let i=0;i<n;i++){ v = (v*9301 + 49297) % 233280; out.push(0.35 + (v/233280)*0.65); }
+  return out;
+}
+function seedOf(tk){ let s=0; for(const c of tk) s += c.charCodeAt(0); return s; }
+
+function sparkSVG(seed){
+  const pts = series(seed,12);
+  const d = pts.map((p,i)=>`${(i/(pts.length-1))*60},${18-(p*16)}`).join(' ');
+  const up = pts[pts.length-1] >= pts[0];
+  return `<svg class="spark" viewBox="0 0 60 18" preserveAspectRatio="none"><polyline fill="none" stroke="${up?'#1f6b3b':'#9B1B30'}" stroke-width="1.5" points="${d}"/></svg>`;
+}
+
+// ── watchlist ──
+function renderWL(){
+  const q = $("#search").value.trim().toLowerCase();
+  const list = INSTRUMENTS.filter(it=>{
+    if(filter==="held" && !it.held) return false;
+    if(filter==="open" && it.held)  return false;
+    if(q && !(it.tk.toLowerCase().includes(q) || it.name.toLowerCase().includes(q))) return false;
+    return true;
+  });
+  $("#wlcount").textContent = list.length;
+  $("#wl").innerHTML = list.map(it=>`
+    <div class="row ${it.tk===active.tk?'sel':''}" data-tk="${it.tk}">
+      <div>
+        <div class="tk">${it.tk}</div>
+        <div class="tk-sub">${it.name}</div>
+      </div>
+      <div class="r-right">
+        <div class="px mono">${fmt(it.px)}</div>
+        <div class="chg mono ${it.chg>=0?'up':'dn'}">${it.chg>=0?'▲':'▼'} ${Math.abs(it.chg).toFixed(2)}%</div>
+        ${sparkSVG(seedOf(it.tk))}
+      </div>
+    </div>`).join('') || `<div style="padding:18px;color:var(--muted);font-family:var(--body);font-style:italic">No instruments match. Try writing something else.</div>`;
+  $("#wl").querySelectorAll('.row').forEach(r=>{
+    r.addEventListener('click',()=>{ select(r.dataset.tk); });
+  });
+}
+
+// ── center / chart / book ──
+function renderCenter(){
+  $("#cTk").textContent = active.tk;
+  $("#cName").textContent = active.name;
+  $("#cPx").textContent = fmt(active.px);
+  const chg = $("#cChg");
+  chg.textContent = (active.chg>=0?'▲ +':'▼ −') + Math.abs(active.chg).toFixed(2) + '%';
+  chg.className = 'lastchg mono ' + (active.chg>=0?'up':'dn');
+
+  const pts = series(seedOf(active.tk),30);
+  $("#bars").innerHTML = pts.map((p,i)=>{
+    const gain = i>0 && p>=pts[i-1];
+    return `<div class="b ${gain?'gain':''}" style="height:${(p*100).toFixed(1)}%" title="session ${i+1}"></div>`;
+  }).join('');
+
+  // order book around current price
+  const step = Math.max(active.px*0.004, active.px<1?0.0001:0.01);
+  let bids='', asks='';
+  for(let i=1;i<=6;i++){
+    const bp = active.px - step*i, ap = active.px + step*i;
+    const sz = (7-i)*13 + (seedOf(active.tk)%9)*i;
+    const w = (7-i)/6*100;
+    bids += `<li><span class="depth" style="width:${w}%"></span><span class="pcell mono">${fmt(bp>0?bp:0)}</span><span class="qcell mono">${sz}</span></li>`;
+    asks += `<li><span class="depth" style="width:${w}%"></span><span class="pcell mono">${fmt(ap)}</span><span class="qcell mono">${sz}</span></li>`;
+  }
+  $("#bids").innerHTML = bids;
+  $("#asks").innerHTML = asks;
+
+  if($("#otype").value==="limit") $("#lpx").value = active.px.toFixed(active.px<1?4:2);
+  updateTicket();
+}
+
+// ── ticket ──
+function updateTicket(){
+  const qty = Math.max(0, parseFloat($("#qty").value)||0);
+  const isLimit = $("#otype").value==="limit";
+  const px = isLimit ? (parseFloat($("#lpx").value)||0) : active.px;
+  $("#notional").textContent = money(qty*px);
+  const btn = $("#place");
+  btn.textContent = `Place ${side} order — ${active.tk}`;
+  btn.className = 'place' + (side==='sell'?' sell':'');
+}
+
+function place(){
+  const qty = Math.max(0, parseFloat($("#qty").value)||0);
+  if(qty<=0){ toast("Enter a quantity. Commit to something for once.", true); return; }
+  const isLimit = $("#otype").value==="limit";
+  // market fills at price + tiny slippage; limit "fills" at the limit
+  const base = isLimit ? (parseFloat($("#lpx").value)||active.px) : active.px;
+  const slip = isLimit ? 0 : base*0.0015*(side==='buy'?1:-1);
+  const fill = Math.max(0, base+slip);
+  const now = clockStr();
+  fills.unshift({ t:now, side, tk:active.tk, qty, fill });
+  renderBlotter();
+
+  // update position
+  let pos = INSTRUMENTS.find(i=>i.tk===active.tk);
+  if(side==='buy'){
+    const newQty = pos.qty + qty;
+    pos.avg = newQty ? ((pos.avg*pos.qty)+(fill*qty))/newQty : fill;
+    pos.qty = newQty; pos.held = true;
+  }else{
+    pos.qty = Math.max(0, pos.qty - qty);
+    if(pos.qty===0){ pos.held = false; pos.avg = 0; }
+  }
+  renderWL(); renderPortfolio();
+  toast(`${side==='buy'?'Bought':'Sold'} ${qty} ${active.tk} @ ${fmt(fill)}. Settlement T+∞.`, side==='sell');
+}
+
+function renderBlotter(){
+  $("#blcount").textContent = fills.length + (fills.length===1?' fill':' fills');
+  if(!fills.length){ $("#blotter").innerHTML = '<tr><td class="empty" colspan="5">No orders yet. The market is patient. It has waited longer than you have.</td></tr>'; return; }
+  $("#blotter").innerHTML = fills.slice(0,40).map(f=>`
+    <tr>
+      <td class="mono">${f.t}</td>
+      <td><span class="pill ${f.side==='buy'?'b':'s'}">${f.side.toUpperCase()}</span></td>
+      <td class="mono">${f.tk}</td>
+      <td class="mono">${f.qty}</td>
+      <td class="mono">${fmt(f.fill)}</td>
+    </tr>`).join('');
+}
+
+// ── portfolio ──
+function renderPortfolio(){
+  const held = INSTRUMENTS.filter(i=>i.held && i.qty>0);
+  $("#positions").innerHTML = held.length ? held.map(p=>{
+    const pl = (p.px - p.avg)*p.qty;
+    return `<div class="pos">
+      <div><div class="lab">${p.tk}</div><div class="qty">${p.qty} @ ${fmt(p.avg)} avg</div></div>
+      <div class="pl mono ${pl>=0?'up':'dn'}">${pl>=0?'+':'−'}${money(pl)}</div>
+    </div>`;
+  }).join('') : `<div style="padding:16px 14px;color:var(--muted);font-family:var(--body);font-style:italic">Flat. No positions. A clean slate, which is its own kind of unfinished.</div>`;
+  const book = held.reduce((s,p)=>s+p.px*p.qty,0);
+  const pl = held.reduce((s,p)=>s+(p.px-p.avg)*p.qty,0);
+  $("#bookVal").textContent = money(book);
+  const ple = $("#bookPl");
+  ple.textContent = (pl>=0?'+':'−')+money(pl);
+  ple.className = 'mono ' + (pl>=0?'up':'dn');
+}
+
+// ── staking ──
+function renderStake(){
+  const n = parseInt($("#stakeRange").value,10);
+  $("#stakeNum").textContent = n;
+  // yield curve: more rejection, more yield. confidently absurd.
+  const apy = (2 + n*0.13).toFixed(1);
+  $("#apy").textContent = apy;
+  const monthly = (n*0.42 + (n>=80?n*0.35:0));
+  $("#yieldOut").textContent = money(monthly);
+  const badge = $("#tierBadge");
+  if(n>=80){ badge.textContent = "High-APY tier · unlocked"; badge.className = "tier-badge hi"; }
+  else { badge.textContent = `Standard custody · ${80-n} letters to high-APY`; badge.className = "tier-badge"; }
+}
+
+// ── helpers ──
+let toastTimer;
+function toast(msg, sell){
+  const t = $("#toast");
+  t.textContent = msg;
+  t.className = 'toast show' + (sell?' sell':'');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ t.className = 'toast' + (sell?' sell':''); }, 3200);
+}
+function clockStr(){
+  const d = new Date();
+  return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0');
+}
+function select(tk){
+  const it = INSTRUMENTS.find(i=>i.tk===tk);
+  if(it){ active = it; renderWL(); renderCenter(); }
+}
+
+// ── wire up ──
+$("#search").addEventListener('input', renderWL);
+$("#tabs").querySelectorAll('button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    $("#tabs").querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); filter = b.dataset.f; renderWL();
+  });
+});
+$("#bs").querySelectorAll('button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    $("#bs").querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); side = b.dataset.side; updateTicket();
+  });
+});
+$("#otype").addEventListener('change',()=>{
+  const lim = $("#otype").value==="limit";
+  $("#limitField").style.display = lim ? 'block' : 'none';
+  if(lim) $("#lpx").value = active.px.toFixed(active.px<1?4:2);
+  updateTicket();
+});
+$("#qty").addEventListener('input', updateTicket);
+$("#lpx").addEventListener('input', updateTicket);
+$("#place").addEventListener('click', place);
+$("#stakeRange").addEventListener('input', renderStake);
+
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT') return;
+  const idx = INSTRUMENTS.indexOf(active);
+  if(e.key==='ArrowDown'){ e.preventDefault(); select(INSTRUMENTS[(idx+1)%INSTRUMENTS.length].tk); }
+  if(e.key==='ArrowUp'){ e.preventDefault(); select(INSTRUMENTS[(idx-1+INSTRUMENTS.length)%INSTRUMENTS.length].tk); }
+});
+
+// clock
+function tick(){ $("#clock").textContent = 'SESSION OPEN · ' + clockStr(); }
+tick(); setInterval(tick, 1000);
+
+// boot
+renderWL(); renderCenter(); renderPortfolio(); renderStake();
+</script>
+</body>
+</html>
