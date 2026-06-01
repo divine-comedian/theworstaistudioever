@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prowl · theworstaistudioever</title>
+<meta name="description" content="A six-figure autonomous electric vehicle for an animal that has never once asked to go anywhere.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Prowl · the luxury EV for feral cats">
+<meta property="og:description" content="A six-figure autonomous electric vehicle for an animal that has never once asked to go anywhere.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Prowl · the luxury EV for feral cats">
+<meta name="twitter:description" content="A six-figure autonomous electric vehicle for an animal that has never once asked to go anywhere.">
+<meta name="theme-color" content="#0C1018">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
+:root{
+  --primary:#D98E3A;
+  --accent:#4DA3FF;
+  --bg:#0C1018;
+  --fg:#EDEBE4;
+  --muted:#8A8E99;
+  --ink:#EDEBE4;
+  --panel:#141A24;
+  --panel-2:#10151D;
+  --line:rgba(237,235,228,.12);
+  --chrome:linear-gradient(180deg,#2b3340 0%,#171d27 48%,#0e131b 52%,#1c232e 100%);
+  --display:"Syncopate","Arial Narrow",sans-serif;
+  --body:"Space Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--fg);
+  font-family:var(--body);
+  font-size:15px;
+  line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(120% 80% at 50% 110%, rgba(77,163,255,.18), transparent 60%),
+    radial-gradient(80% 50% at 80% -10%, rgba(217,142,58,.10), transparent 70%);
+}
+/* scanline / instrument texture */
+body::after{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:repeating-linear-gradient(0deg, rgba(255,255,255,.018) 0 1px, transparent 1px 3px);
+  mix-blend-mode:overlay;
+}
+main,header,footer{position:relative;z-index:1}
+
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px}
+
+/* ---- top bar ---- */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;border-bottom:1px solid var(--line)}
+.mark{font-family:var(--display);font-weight:700;letter-spacing:.34em;font-size:13px;text-transform:uppercase}
+.mark b{color:var(--primary)}
+.topbar .meta{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+
+/* ---- hero ---- */
+.hero{padding:84px 0 60px;text-align:center}
+.kicker{font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--accent);margin-bottom:30px}
+.kicker .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:10px;vertical-align:middle;box-shadow:0 0 12px var(--accent)}
+h1{
+  font-family:var(--display);font-weight:700;text-transform:uppercase;
+  font-size:clamp(28px,5.4vw,62px);line-height:1.02;letter-spacing:.02em;
+  max-width:16ch;margin:0 auto 26px;
+}
+h1 .em{color:var(--primary)}
+.sub{max-width:62ch;margin:0 auto 40px;color:#cfcdc4;font-size:clamp(14px,1.6vw,16px)}
+.cta-row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.btn{
+  font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.18em;
+  font-size:12px;padding:17px 30px;border:1px solid transparent;cursor:pointer;
+  text-decoration:none;display:inline-flex;align-items:center;gap:10px;
+  transition:transform .2s ease, box-shadow .2s ease, background .2s ease, color .2s ease;
+}
+.btn-primary{background:var(--primary);color:#15110a;box-shadow:0 0 0 rgba(217,142,58,0)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 34px -12px rgba(217,142,58,.8)}
+.btn-ghost{border-color:var(--line);color:var(--fg)}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ---- spec ribbon ---- */
+.ribbon{
+  margin-top:64px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  display:grid;grid-template-columns:repeat(4,1fr);
+}
+.ribbon .cell{padding:26px 18px;text-align:center;border-left:1px solid var(--line)}
+.ribbon .cell:first-child{border-left:none}
+.ribbon .num{font-family:var(--display);font-weight:700;font-size:clamp(20px,3.2vw,34px);color:var(--fg);line-height:1}
+.ribbon .num.amber{color:var(--primary)}
+.ribbon .lbl{font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--muted);margin-top:12px}
+
+/* ---- section frame ---- */
+section{padding:84px 0}
+.eyebrow{font-size:11px;letter-spacing:.36em;text-transform:uppercase;color:var(--accent);margin-bottom:18px}
+.sec-title{font-family:var(--display);font-weight:700;text-transform:uppercase;font-size:clamp(20px,3vw,30px);letter-spacing:.03em;margin-bottom:14px}
+.sec-note{color:var(--muted);max-width:60ch;margin-bottom:48px;font-size:13px}
+
+/* ---- features ---- */
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+.feature{background:var(--panel);padding:36px 30px;position:relative;transition:background .3s ease}
+.feature:hover{background:var(--panel-2)}
+.feature .idx{font-family:var(--display);font-weight:700;font-size:12px;color:var(--primary);letter-spacing:.2em}
+.feature .gauge{height:2px;background:var(--line);margin:20px 0 22px;position:relative;overflow:hidden}
+.feature .gauge i{position:absolute;left:0;top:0;height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--accent));transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+.feature.lit .gauge i{width:var(--w,70%)}
+.feature h3{font-family:var(--display);font-weight:700;text-transform:uppercase;font-size:14px;letter-spacing:.04em;margin-bottom:14px;line-height:1.3}
+.feature p{font-size:13px;color:#c3c1ba;line-height:1.75}
+
+/* ---- testimonials ---- */
+.quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.quote{border:1px solid var(--line);padding:30px;background:linear-gradient(180deg,rgba(255,255,255,.02),transparent)}
+.quote .glyph{font-family:var(--display);color:var(--primary);font-size:20px;line-height:1;margin-bottom:14px}
+.quote p{font-style:italic;font-size:13.5px;color:#dad8d0;margin-bottom:22px}
+.quote .who{border-top:1px solid var(--line);padding-top:16px}
+.quote .nm{font-family:var(--display);font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:.12em}
+.quote .ttl{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5}
+
+/* ---- pricing ---- */
+.trims{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;align-items:stretch}
+.trim{border:1px solid var(--line);padding:34px 28px;display:flex;flex-direction:column;background:var(--panel-2);position:relative}
+.trim.flag{border-color:var(--primary);box-shadow:0 0 50px -28px var(--primary)}
+.trim .tag{position:absolute;top:-1px;right:-1px;background:var(--primary);color:#15110a;font-family:var(--display);font-weight:700;font-size:9px;letter-spacing:.2em;padding:7px 12px;text-transform:uppercase}
+.trim .nm{font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.16em;font-size:15px;margin-bottom:6px}
+.trim .tg{font-size:12px;color:var(--muted);min-height:34px;margin-bottom:18px}
+.trim .price{font-family:var(--display);font-weight:700;font-size:clamp(24px,3vw,32px);color:var(--fg);margin-bottom:22px}
+.trim ul{list-style:none;display:flex;flex-direction:column;gap:13px;margin-bottom:26px;flex:1}
+.trim li{font-size:12.5px;color:#c3c1ba;padding-left:24px;position:relative;line-height:1.5}
+.trim li::before{content:"";position:absolute;left:0;top:7px;width:11px;height:2px;background:var(--primary)}
+.trim .btn{width:100%;justify-content:center}
+
+/* ---- demo strip ---- */
+.demo-strip{text-align:center;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:72px 0;background:radial-gradient(80% 120% at 50% 0%,rgba(77,163,255,.10),transparent 70%)}
+.demo-strip h2{font-family:var(--display);font-weight:700;text-transform:uppercase;font-size:clamp(18px,2.6vw,26px);letter-spacing:.04em;margin-bottom:16px}
+.demo-strip p{color:var(--muted);font-size:13px;max-width:52ch;margin:0 auto 32px}
+
+/* ---- footer ---- */
+footer{padding:48px 0;border-top:1px solid var(--line)}
+.foot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px}
+.back{color:var(--muted);text-decoration:none;font-size:12px;letter-spacing:.14em;text-transform:uppercase;transition:color .2s}
+.back:hover{color:var(--accent)}
+.fineprint{font-size:10.5px;color:#5a5e68;max-width:48ch;line-height:1.6;text-align:right}
+
+@media(max-width:880px){
+  .features,.quotes,.trims{grid-template-columns:1fr}
+  .ribbon{grid-template-columns:repeat(2,1fr)}
+  .ribbon .cell:nth-child(3){border-left:none}
+  .fineprint{text-align:left}
+  .foot{flex-direction:column;align-items:flex-start}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *{animation:none!important;transition:none!important}
+  .feature .gauge i{width:var(--w,70%)!important}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="mark">PROWL<b>.</b></div>
+  <div class="meta">An autonomous EV · stock: idling</div>
+</div>
+
+<main>
+  <header class="hero wrap">
+    <div class="kicker"><span class="dot"></span>Lucid for feral cats</div>
+    <h1>The first luxury EV engineered around the <span class="em">feral cat</span>.</h1>
+    <p class="sub">1,034 horsepower. 412 miles of range. A heated cabin your cat will never enter. Prowl is the autonomous electric vehicle built, against all available evidence, for feral cats.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="./demo.html">Build your cat's Prowl <span aria-hidden="true">→</span></a>
+      <a class="btn btn-ghost" href="#trims">View the trims</a>
+    </div>
+
+    <div class="ribbon" id="ribbon">
+      <div class="cell"><div class="num amber" data-to="1034">0</div><div class="lbl">Horsepower</div></div>
+      <div class="cell"><div class="num" data-to="412" data-suffix=" mi">0</div><div class="lbl">EPA range</div></div>
+      <div class="cell"><div class="num" data-to="2.4" data-dec="1" data-suffix="s">0</div><div class="lbl">0&ndash;60 mph</div></div>
+      <div class="cell"><div class="num" data-to="0">0</div><div class="lbl">Occupants, typical</div></div>
+    </div>
+  </header>
+
+  <section class="wrap" id="features">
+    <div class="eyebrow">Engineering</div>
+    <h2 class="sec-title">Solutions to problems the cat does not have</h2>
+    <p class="sec-note">Every system was validated on a closed course, with a cat that watched from a fence and did not participate.</p>
+    <div class="features">
+      <article class="feature" style="--w:88%"><div class="idx">01</div><div class="gauge"><i></i></div><h3>Subdermal key fob</h3><p>Feral cats cannot be trusted with a key, so we put the key inside the cat. A grain-sized transponder, implanted between the shoulder blades, unlocks all four doors the instant your cat sprints past the vehicle and continues into the storm drain.</p></article>
+      <article class="feature" style="--w:64%"><div class="idx">02</div><div class="gauge"><i></i></div><h3>Destination-free autonomy</h3><p>Level 4 self-driving, tuned for an occupant with no address, no schedule, and no intention of getting in. Prowl maps every dumpster, crawlspace, and warm hood in a two-mile radius, idles at the curb, recalculates, and idles again.</p></article>
+      <article class="feature" style="--w:100%"><div class="idx">03</div><div class="gauge"><i></i></div><h3>Whisker-calibrated suspension</h3><p>The adaptive air suspension reads ride height off your cat's whiskers, which are not in the vehicle. When the whiskers twitch somewhere across the parking lot, all four corners adjust in eight milliseconds. Nobody is in the car.</p></article>
+    </div>
+  </section>
+
+  <section class="wrap" id="owners">
+    <div class="eyebrow">Owner reports</div>
+    <h2 class="sec-title">From the colonies</h2>
+    <p class="sec-note">Reservations are open in eleven municipalities. The cats have been notified by no one.</p>
+    <div class="quotes">
+      <figure class="quote"><div class="glyph">&ldquo;</div><p>We reserved four. The cats have not approached any of them. The cars idle at the curb every morning at six, exactly as promised. It is the most reliable thing in my life.</p><figcaption class="who"><div class="nm">Dolores Penhallow</div><div class="ttl">Trap-Neuter-Return Coordinator, Greater Tacoma Feline Liaison Office</div></figcaption></figure>
+      <figure class="quote"><div class="glyph">&ldquo;</div><p>I doubted the autonomy could handle an occupant who refuses to occupy. It handles it flawlessly. The car has now driven eleven hundred miles with the cat watching from the fence.</p><figcaption class="who"><div class="nm">Garrett Ngo</div><div class="ttl">Volunteer Colony Caretaker and Retired Marine Surveyor</div></figcaption></figure>
+      <figure class="quote"><div class="glyph">&ldquo;</div><p>The subdermal fob worked on the first attempt. The cat unlocked the vehicle, made eye contact with me, and left. We are calling it a successful onboarding.</p><figcaption class="who"><div class="nm">Marisol Treadwell</div><div class="ttl">Assistant Director of Outdoor Cat Affairs, Cuyahoga County</div></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="wrap" id="trims">
+    <div class="eyebrow">Order</div>
+    <h2 class="sec-title">Choose a trim the cat will reject</h2>
+    <p class="sec-note">Pricing is final. Financing is available to the human. The cat assumes no liability.</p>
+    <div class="trims">
+      <div class="trim"><div class="nm">Stray</div><div class="tg">For the cat who tolerates one human, barely.</div><div class="price">$1,090<span style="font-size:14px;color:var(--muted)">/mo</span></div><ul><li>One Prowl, in any color the cat ignores</li><li>412 miles of range, used annually</li><li>24/7 concierge the cat will never call</li></ul><a class="btn btn-ghost" href="./demo.html">Reserve Stray</a></div>
+      <div class="trim flag"><div class="tag">Most idled</div><div class="nm">Colony</div><div class="tg">For the lot behind the laundromat.</div><div class="price">$8,400<span style="font-size:14px;color:var(--muted)">/mo</span></div><ul><li>Up to nine coordinated Prowls</li><li>Fleet-wide synchronized idling</li><li>Shared subdermal fob registry</li><li>One human liaison, optional</li></ul><a class="btn btn-primary" href="./demo.html">Reserve Colony</a></div>
+      <div class="trim"><div class="nm">Apex Feral</div><div class="tg">Purchased outright, the way the cat would want.</div><div class="price">$214,000</div><ul><li>The full vehicle, deeded to the cat</li><li>Lifetime replacement for tires it claws</li><li>Founder's plaque engraved with a name the cat does not have</li><li>Track package the cat will not track on</li></ul><a class="btn btn-ghost" href="./demo.html">Reserve Apex</a></div>
+    </div>
+  </section>
+
+  <section class="demo-strip">
+    <div class="wrap">
+      <h2>See the fleet that no cat is driving</h2>
+      <p>Colony Operations is the console caretakers use to watch nine luxury vehicles idle in real time.</p>
+      <a class="btn btn-primary" href="./demo.html">Open the demo <span aria-hidden="true">→</span></a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <a class="back" href="/">&larr; theworstaistudioever</a>
+    <p class="fineprint">Prowl is a portfolio prototype of the worst AI studio ever. 1,034 horsepower verified on a course no cat attended. Occupancy figures reflect observed reality.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // spec ribbon count-up
+  function countUp(el){
+    var to = parseFloat(el.getAttribute('data-to'));
+    var dec = parseInt(el.getAttribute('data-dec')||'0',10);
+    var suffix = el.getAttribute('data-suffix')||'';
+    if(reduce || to===0){ el.textContent = to.toFixed(dec)+suffix; return; }
+    var start=null, dur=1200;
+    function step(ts){
+      if(!start) start=ts;
+      var p=Math.min((ts-start)/dur,1);
+      var eased=1-Math.pow(1-p,3);
+      el.textContent=(to*eased).toFixed(dec)+suffix;
+      if(p<1) requestAnimationFrame(step); else el.textContent=to.toFixed(dec)+suffix;
+    }
+    requestAnimationFrame(step);
+  }
+
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(!e.isIntersecting) return;
+      if(e.target.id==='ribbon'){
+        e.target.querySelectorAll('.num').forEach(countUp);
+      } else if(e.target.classList.contains('feature')){
+        e.target.classList.add('lit');
+      }
+      io.unobserve(e.target);
+    });
+  },{threshold:.4});
+
+  var ribbon=document.getElementById('ribbon');
+  if(ribbon) io.observe(ribbon);
+  document.querySelectorAll('.feature').forEach(function(f){io.observe(f)});
+})();
+</script>
+</body>
+</html>

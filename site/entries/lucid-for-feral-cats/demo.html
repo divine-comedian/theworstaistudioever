@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Colony Operations · Prowl</title>
+<meta name="description" content="The fleet console caretakers use to watch luxury vehicles idle while no cat drives them.">
+<meta name="theme-color" content="#0C1018">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
+:root{
+  --primary:#D98E3A;--accent:#4DA3FF;--bg:#0C1018;--fg:#EDEBE4;--muted:#8A8E99;
+  --panel:#141A24;--panel-2:#10151D;--line:rgba(237,235,228,.12);
+  --ok:#5BD68A;--warn:#D98E3A;--idle:#6f7480;
+  --display:"Syncopate","Arial Narrow",sans-serif;
+  --body:"Space Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:14px;-webkit-font-smoothing:antialiased;min-height:100vh}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(110% 70% at 50% 120%,rgba(77,163,255,.12),transparent 60%)}
+.app{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 24px 80px}
+
+/* chrome bar */
+.chrome{display:flex;align-items:center;justify-content:space-between;padding:18px 0;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:14px}
+.back{color:var(--muted);text-decoration:none;font-size:11px;letter-spacing:.16em;text-transform:uppercase;transition:color .2s}
+.back:hover{color:var(--accent)}
+.console-name{font-family:var(--display);font-weight:700;letter-spacing:.24em;text-transform:uppercase;font-size:12px}
+.console-name b{color:var(--primary)}
+.live{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px}
+.live .pulse{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 10px var(--ok);animation:pulse 1.6s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* stat strip */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin:24px 0}
+.stat{background:var(--panel);padding:18px 20px}
+.stat .v{font-family:var(--display);font-weight:700;font-size:22px}
+.stat .v.amber{color:var(--primary)}
+.stat .v.blue{color:var(--accent)}
+.stat .k{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:8px}
+
+/* controls */
+.controls{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{font-family:var(--display);font-weight:700;font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:9px 15px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s}
+.tab:hover{color:var(--fg);border-color:var(--accent)}
+.tab.active{background:var(--fg);color:#15110a;border-color:var(--fg)}
+.search{display:flex;align-items:center;gap:8px;border:1px solid var(--line);padding:9px 14px;min-width:220px}
+.search input{background:transparent;border:none;color:var(--fg);font-family:var(--body);font-size:13px;outline:none;width:100%}
+.search input::placeholder{color:var(--muted)}
+.search svg{flex:0 0 auto}
+
+/* table */
+.board{border:1px solid var(--line)}
+.thead,.row{display:grid;grid-template-columns:2.2fr 1.4fr 1fr 1.4fr 1fr;align-items:center;gap:12px}
+.thead{background:var(--panel-2);border-bottom:1px solid var(--line);padding:14px 20px}
+.th{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);cursor:pointer;user-select:none;display:flex;align-items:center;gap:6px}
+.th:hover{color:var(--fg)}
+.th .arr{opacity:.4;font-size:9px}
+.th.sorted .arr{opacity:1;color:var(--primary)}
+.row{padding:16px 20px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .18s}
+.row:last-child{border-bottom:none}
+.row:hover{background:var(--panel)}
+.cat{display:flex;align-items:center;gap:13px}
+.sigil{width:34px;height:34px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:12px;color:#15110a;background:var(--primary)}
+.cat .nm{font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.cat .vin{font-size:11px;color:var(--muted)}
+.vehicle{font-size:12px;color:#c3c1ba}
+.vehicle small{display:block;color:var(--muted);font-size:10px}
+.batt{display:flex;align-items:center;gap:9px}
+.batt .bar{width:54px;height:7px;background:var(--line);position:relative;overflow:hidden}
+.batt .bar i{position:absolute;left:0;top:0;height:100%;background:var(--ok)}
+.batt .bar i.low{background:var(--warn)}
+.batt .pct{font-size:11px;color:var(--muted);min-width:34px}
+.status{font-size:11px;display:flex;align-items:center;gap:8px}
+.status .d{width:7px;height:7px;border-radius:50%;flex:0 0 auto}
+.status.idle .d{background:var(--idle)}
+.status.charging .d{background:var(--accent);box-shadow:0 0 8px var(--accent)}
+.status.enroute .d{background:var(--primary);box-shadow:0 0 8px var(--primary)}
+.summon{font-family:var(--display);font-weight:700;font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:9px 12px;border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer;transition:all .2s;white-space:nowrap}
+.summon:hover{border-color:var(--primary);color:var(--primary)}
+.summon:disabled{opacity:.45;cursor:wait}
+
+.empty{padding:50px;text-align:center;color:var(--muted);font-size:13px}
+
+/* toast */
+.toasts{position:fixed;right:24px;bottom:24px;z-index:50;display:flex;flex-direction:column;gap:10px;max-width:340px}
+.toast{border:1px solid var(--primary);background:#15110a;padding:14px 16px;box-shadow:0 18px 40px -18px rgba(0,0,0,.9);animation:slidein .3s ease}
+.toast .tt{font-family:var(--display);font-weight:700;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--primary);margin-bottom:6px}
+.toast .tb{font-size:12px;color:#dad8d0;line-height:1.5}
+@keyframes slidein{from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* modal */
+.scrim{position:fixed;inset:0;background:rgba(6,8,12,.66);backdrop-filter:blur(3px);z-index:60;display:none;align-items:center;justify-content:center;padding:24px}
+.scrim.open{display:flex}
+.modal{background:var(--panel);border:1px solid var(--line);max-width:560px;width:100%;animation:pop .26s cubic-bezier(.2,.8,.2,1)}
+@keyframes pop{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
+.modal .mh{display:flex;align-items:center;justify-content:space-between;padding:22px 26px;border-bottom:1px solid var(--line)}
+.modal .mh .nm{font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.1em;font-size:15px}
+.modal .mh .vin{font-size:11px;color:var(--muted);margin-top:5px}
+.x{background:transparent;border:1px solid var(--line);color:var(--fg);width:34px;height:34px;cursor:pointer;font-size:16px;line-height:1;transition:all .2s}
+.x:hover{border-color:var(--primary);color:var(--primary)}
+.mb{padding:22px 26px}
+.tele{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:22px}
+.tele .c{background:var(--panel-2);padding:16px 18px}
+.tele .c .v{font-family:var(--display);font-weight:700;font-size:18px}
+.tele .c .v.zero{color:var(--primary)}
+.tele .c .k{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:7px}
+.logline{font-size:12px;color:#c3c1ba;display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.logline:last-child{border-bottom:none}
+.logline time{color:var(--muted);flex:0 0 auto;font-size:11px}
+.modal .note{font-size:11px;color:var(--muted);margin-top:18px;line-height:1.6;border-top:1px solid var(--line);padding-top:16px}
+
+@media(max-width:820px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .thead{display:none}
+  .row{grid-template-columns:1fr 1fr;row-gap:14px;padding:18px}
+  .row .vehicle{order:3}.row .batt{order:4}.row .status{order:5}.row .summon{order:6;justify-self:start}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="chrome">
+    <a class="back" href="./index.html">&larr; back to the pitch</a>
+    <div class="console-name">COLONY OPERATIONS<b>.</b></div>
+    <div class="live"><span class="pulse"></span>Fleet live · idling</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="v">9</div><div class="k">Vehicles deployed</div></div>
+    <div class="stat"><div class="v amber">8,410</div><div class="k">Autonomous miles</div></div>
+    <div class="stat"><div class="v blue">0</div><div class="k">Miles with cat aboard</div></div>
+    <div class="stat"><div class="v">0%</div><div class="k">Boarding rate</div></div>
+  </div>
+
+  <div class="controls">
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-colony="all">All colonies</button>
+      <button class="tab" data-colony="Laundromat">Laundromat lot</button>
+      <button class="tab" data-colony="Marina">Marina docks</button>
+      <button class="tab" data-colony="Overpass">7th St overpass</button>
+    </div>
+    <label class="search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8A8E99" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="text" placeholder="Search cats or VINs" aria-label="Search cats">
+    </label>
+  </div>
+
+  <div class="board">
+    <div class="thead">
+      <div class="th sorted" data-sort="name">Occupant <span class="arr">▼</span></div>
+      <div class="th" data-sort="vehicle">Assigned Prowl <span class="arr">▼</span></div>
+      <div class="th" data-sort="battery">Charge <span class="arr">▼</span></div>
+      <div class="th" data-sort="status">Status <span class="arr">▼</span></div>
+      <div class="th">Dispatch</div>
+    </div>
+    <div id="rows"></div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<div class="scrim" id="scrim">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mtitle">
+    <div class="mh">
+      <div><div class="nm" id="mtitle"></div><div class="vin" id="mvin"></div></div>
+      <button class="x" id="closeModal" aria-label="Close">&times;</button>
+    </div>
+    <div class="mb">
+      <div class="tele">
+        <div class="c"><div class="v" id="t-auto"></div><div class="k">Autonomous miles driven</div></div>
+        <div class="c"><div class="v zero">0</div><div class="k">Miles with cat aboard</div></div>
+        <div class="c"><div class="v" id="t-summon"></div><div class="k">Summons declined</div></div>
+        <div class="c"><div class="v" id="t-sight"></div><div class="k">Last sighting</div></div>
+      </div>
+      <div id="logs"></div>
+      <p class="note">Telemetry is collected from the vehicle. The cat does not consent to telemetry and is not aware telemetry exists.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var FLEET=[
+    {name:"Biscuit",vin:"PRWL-0414",vehicle:"Prowl GT",trim:"Apex Feral",battery:97,status:"idle",colony:"Laundromat",auto:1422,summons:38,sighting:"04:51 · dumpster",logs:[["06:00","Vehicle woke. Doors unlocked via subdermal fob."],["06:01","Occupant detected at 14m. Approaching... receding."],["09:32","Idled curbside for 3h 31m. No boarding event."]]},
+    {name:"The General",vin:"PRWL-0822",vehicle:"Prowl Touring",trim:"Colony",battery:64,status:"idle",colony:"Laundromat",auto:980,summons:51,sighting:"05:14 · fence post",logs:[["05:14","Occupant observed surveilling vehicle from fence."],["07:40","Summon issued. Occupant held eye contact, declined."],["11:02","Re-parked 1.2m to the left per occupant gaze."]]},
+    {name:"Mittens (no relation)",vin:"PRWL-0307",vehicle:"Prowl GT",trim:"Colony",battery:18,status:"charging",colony:"Marina",auto:1610,summons:44,sighting:"03:22 · under deck",logs:[["03:22","Heat signature under marina decking. Logged."],["08:15","Returned to charger autonomously. 18% remaining."],["08:16","Occupant did not supervise charging."]]},
+    {name:"Sir Reginald",vin:"PRWL-0991",vehicle:"Prowl Touring",trim:"Apex Feral",battery:88,status:"enroute",colony:"Marina",auto:732,summons:22,sighting:"06:02 · piling 4",logs:[["06:02","En route to last-known piling. ETA 4 min."],["06:06","Arrived. Occupant relocated to piling 7."],["06:11","Recalculating. En route to piling 7."]]},
+    {name:"Two-Tone",vin:"PRWL-0145",vehicle:"Prowl GT",trim:"Stray",battery:73,status:"idle",colony:"Overpass",auto:540,summons:29,sighting:"yesterday · 23:40",logs:[["23:40","Final sighting near overpass abutment."],["00:00","Vehicle entered overnight idle protocol."],["06:00","Resumed curbside idle. Occupant absent."]]},
+    {name:"Dr. Hiss",vin:"PRWL-0668",vehicle:"Prowl Touring",trim:"Colony",battery:41,status:"idle",colony:"Overpass",auto:1204,summons:60,sighting:"04:09 · drainage pipe",logs:[["04:09","Occupant entered drainage pipe. Untrackable."],["10:15","60th summon declined. New colony record."],["10:16","Vehicle remained available, as designed."]]},
+    {name:"Pancake",vin:"PRWL-0530",vehicle:"Prowl GT",trim:"Stray",battery:90,status:"idle",colony:"Laundromat",auto:288,summons:14,sighting:"05:55 · warm hood",logs:[["05:55","Occupant located on hood of a different car."],["05:56","Prowl offered its own warm hood. Ignored."],["08:00","Standing by."]]},
+    {name:"Clementine",vin:"PRWL-0777",vehicle:"Prowl Touring",trim:"Colony",battery:12,status:"charging",colony:"Marina",auto:1054,summons:33,sighting:"02:30 · tarp",logs:[["02:30","Occupant nested under boat tarp."],["07:45","Critical charge. Returned to depot."],["07:46","Charging. Occupant uninvolved."]]},
+    {name:"Beans",vin:"PRWL-0259",vehicle:"Prowl GT",trim:"Stray",battery:55,status:"idle",colony:"Overpass",auto:620,summons:19,sighting:"06:20 · gravel",logs:[["06:20","Occupant sat in gravel, regarding vehicle."],["06:35","No boarding intent detected."],["09:10","Idle continues."]]}
+  ];
+
+  var state={colony:"all",q:"",sort:"name",dir:1};
+  var rowsEl=document.getElementById('rows');
+
+  function initials(n){return n.replace(/[^A-Za-z ]/g,'').split(' ').filter(Boolean).slice(0,2).map(function(w){return w[0]}).join('').toUpperCase()}
+  function statusLabel(s){return s==='idle'?'Idling · unreachable':s==='charging'?'Charging · solo':'En route · chasing'}
+
+  function visible(){
+    var list=FLEET.filter(function(c){
+      if(state.colony!=='all' && c.colony!==state.colony) return false;
+      if(state.q){var t=(c.name+' '+c.vin).toLowerCase();if(t.indexOf(state.q.toLowerCase())<0) return false;}
+      return true;
+    });
+    list.sort(function(a,b){
+      var av,bv;
+      if(state.sort==='battery'){av=a.battery;bv=b.battery;}
+      else if(state.sort==='status'){av=a.status;bv=b.status;}
+      else if(state.sort==='vehicle'){av=a.vehicle;bv=b.vehicle;}
+      else {av=a.name.toLowerCase();bv=b.name.toLowerCase();}
+      if(av<bv) return -1*state.dir; if(av>bv) return 1*state.dir; return 0;
+    });
+    return list;
+  }
+
+  function render(){
+    var list=visible();
+    if(!list.length){rowsEl.innerHTML='<div class="empty">No vehicles match. The cats remain at large regardless.</div>';return;}
+    rowsEl.innerHTML=list.map(function(c){
+      var low=c.battery<25?' low':'';
+      return '<div class="row" data-vin="'+c.vin+'">'+
+        '<div class="cat"><div class="sigil">'+initials(c.name)+'</div><div><div class="nm">'+c.name+'</div><div class="vin">'+c.vin+'</div></div></div>'+
+        '<div class="vehicle">'+c.vehicle+'<small>'+c.trim+' trim</small></div>'+
+        '<div class="batt"><div class="bar"><i class="'+low.trim()+'" style="width:'+c.battery+'%"></i></div><span class="pct">'+c.battery+'%</span></div>'+
+        '<div class="status '+c.status+'"><span class="d"></span>'+statusLabel(c.status)+'</div>'+
+        '<button class="summon" data-vin="'+c.vin+'">Summon</button>'+
+      '</div>';
+    }).join('');
+  }
+
+  // toast
+  function toast(title,body){
+    var wrap=document.getElementById('toasts');
+    var el=document.createElement('div');el.className='toast';
+    el.innerHTML='<div class="tt">'+title+'</div><div class="tb">'+body+'</div>';
+    wrap.appendChild(el);
+    setTimeout(function(){el.style.transition='opacity .4s, transform .4s';el.style.opacity='0';el.style.transform='translateX(20px)';setTimeout(function(){el.remove()},420)},4200);
+  }
+
+  var declines=[
+    "Summon dispatched. {n} arrived in 90 seconds. The cat watched it arrive, then left.",
+    "{n} reached the last-known location. The occupant had relocated 1.5m and would not be moved.",
+    "Vehicle opened all four doors. The cat sat down. Boarding not detected. Summon closed.",
+    "{n} idled at the rendezvous for 6 minutes. The occupant maintained eye contact and declined."
+  ];
+  var di=0;
+
+  // events
+  document.getElementById('tabs').addEventListener('click',function(e){
+    var b=e.target.closest('.tab');if(!b)return;
+    document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});
+    b.classList.add('active');state.colony=b.getAttribute('data-colony');render();
+  });
+  document.getElementById('q').addEventListener('input',function(e){state.q=e.target.value;render()});
+
+  document.querySelectorAll('.th[data-sort]').forEach(function(th){
+    th.addEventListener('click',function(){
+      var s=th.getAttribute('data-sort');
+      if(state.sort===s){state.dir*=-1;}else{state.sort=s;state.dir=1;}
+      document.querySelectorAll('.th').forEach(function(t){t.classList.remove('sorted')});
+      th.classList.add('sorted');th.querySelector('.arr').textContent=state.dir>0?'▼':'▲';
+      render();
+    });
+  });
+
+  rowsEl.addEventListener('click',function(e){
+    var btn=e.target.closest('.summon');
+    if(btn){
+      e.stopPropagation();
+      var c=FLEET.filter(function(x){return x.vin===btn.getAttribute('data-vin')})[0];
+      btn.disabled=true;btn.textContent='Dispatching';
+      setTimeout(function(){
+        btn.disabled=false;btn.textContent='Summon';
+        c.summons++;
+        toast('Summon declined · '+c.vin, declines[di%declines.length].replace('{n}',c.vehicle));
+        di++;
+      },1100);
+      return;
+    }
+    var row=e.target.closest('.row');
+    if(row) openModal(row.getAttribute('data-vin'));
+  });
+
+  // modal
+  var scrim=document.getElementById('scrim');
+  function openModal(vin){
+    var c=FLEET.filter(function(x){return x.vin===vin})[0];if(!c)return;
+    document.getElementById('mtitle').textContent=c.name;
+    document.getElementById('mvin').textContent=c.vin+' · '+c.vehicle+' · '+c.colony+' colony';
+    document.getElementById('t-auto').textContent=c.auto.toLocaleString();
+    document.getElementById('t-summon').textContent=c.summons;
+    document.getElementById('t-sight').textContent=c.sighting;
+    document.getElementById('logs').innerHTML=c.logs.map(function(l){return '<div class="logline"><time>'+l[0]+'</time><span>'+l[1]+'</span></div>'}).join('');
+    scrim.classList.add('open');
+    document.getElementById('closeModal').focus();
+  }
+  function closeModal(){scrim.classList.remove('open')}
+  document.getElementById('closeModal').addEventListener('click',closeModal);
+  scrim.addEventListener('click',function(e){if(e.target===scrim)closeModal()});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal()});
+
+  render();
+})();
+</script>
+</body>
+</html>
