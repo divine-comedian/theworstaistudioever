@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sinistr · theworstaistudioever</title>
+<meta name="description" content="The question-and-answer network where only left-handed people are allowed to answer.">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Sinistr · answers from the correct hand">
+<meta property="og:description" content="The question-and-answer network where only left-handed people are allowed to answer.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Sinistr · answers from the correct hand">
+<meta name="twitter:description" content="The question-and-answer network where only left-handed people are allowed to answer.">
+<meta name="theme-color" content="#2B44E0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;900&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --primary:#2B44E0;
+    --accent:#FFC53D;
+    --bg:#F4EFE3;
+    --fg:#14130F;
+    --ink:#14130F;
+    --muted:#6E695B;
+    --paper:#FBF8F0;
+    --display:"Unbounded","Arial Black",system-ui,sans-serif;
+    --body:"DM Sans",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+    --mono:"DM Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+    --border:3px solid var(--ink);
+    --shadow:6px 6px 0 var(--ink);
+    --shadow-sm:4px 4px 0 var(--ink);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--fg);
+    font-family:var(--body);
+    font-size:17px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    background-image:
+      linear-gradient(0deg,rgba(20,19,15,.045) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(20,19,15,.045) 1px,transparent 1px);
+    background-size:34px 34px;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+  a{color:inherit}
+
+  /* ---- top bar ---- */
+  .topbar{
+    border-bottom:var(--border);
+    background:var(--paper);
+    position:sticky;top:0;z-index:50;
+  }
+  .topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:62px}
+  .mark{
+    font-family:var(--display);font-weight:900;font-size:21px;letter-spacing:-.02em;
+    display:flex;align-items:center;gap:9px;
+  }
+  .mark .glyph{
+    width:30px;height:30px;border:var(--border);background:var(--primary);color:#fff;
+    display:grid;place-items:center;font-size:18px;transform:scaleX(-1);box-shadow:var(--shadow-sm)
+  }
+  .topnav{display:flex;gap:22px;align-items:center;font-weight:500;font-size:15px}
+  .topnav a{text-decoration:none}
+  .topnav a:hover{text-decoration:underline;text-underline-offset:3px}
+  .topnav .verify{
+    font-family:var(--mono);font-size:13px;border:var(--border);background:var(--accent);
+    padding:7px 12px;box-shadow:var(--shadow-sm);text-decoration:none;font-weight:500
+  }
+  .topnav .verify:hover{background:var(--primary);color:#fff;text-decoration:none}
+  @media(max-width:720px){.topnav a:not(.verify){display:none}}
+
+  /* ---- hero ---- */
+  .hero{padding:74px 0 60px;position:relative;overflow:hidden}
+  .hero .grid{display:grid;grid-template-columns:1.25fr .9fr;gap:38px;align-items:center}
+  @media(max-width:860px){.hero .grid{grid-template-columns:1fr;gap:30px}}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;
+    text-transform:uppercase;letter-spacing:.14em;border:var(--border);background:var(--paper);
+    padding:6px 11px;box-shadow:var(--shadow-sm);margin-bottom:22px
+  }
+  .eyebrow .dot{width:9px;height:9px;background:var(--primary);border-radius:50%}
+  h1{
+    font-family:var(--display);font-weight:900;line-height:.95;letter-spacing:-.03em;
+    font-size:clamp(40px,7vw,76px);margin:0 0 20px;text-transform:uppercase
+  }
+  h1 .blue{color:var(--primary)}
+  .hero p.lede{font-size:19px;max-width:30ch;color:var(--fg);margin:0 0 28px}
+  .cta-row{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+  .btn{
+    font-family:var(--display);font-weight:700;font-size:15px;text-transform:uppercase;letter-spacing:.01em;
+    border:var(--border);padding:15px 22px;background:var(--primary);color:#fff;cursor:pointer;
+    text-decoration:none;box-shadow:var(--shadow);transition:transform .1s,box-shadow .1s,background .1s;
+    display:inline-block
+  }
+  .btn:hover{transform:translate(2px,2px);box-shadow:4px 4px 0 var(--ink);background:#1d33c4}
+  .btn:active{transform:translate(6px,6px);box-shadow:0 0 0 var(--ink)}
+  .btn.ghost{background:var(--accent);color:var(--ink)}
+  .btn.ghost:hover{background:#f0b020}
+  .micro{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+
+  /* hero card */
+  .stamp-card{
+    border:var(--border);background:var(--paper);box-shadow:var(--shadow);padding:24px;position:relative
+  }
+  .stamp-card .head{display:flex;justify-content:space-between;align-items:center;border-bottom:var(--border);padding-bottom:12px;margin-bottom:16px}
+  .stamp-card .head b{font-family:var(--display);font-size:14px;text-transform:uppercase;letter-spacing:.02em}
+  .stamp-card .pill{font-family:var(--mono);font-size:11px;border:2px solid var(--ink);padding:3px 7px;background:var(--bg)}
+  .check-line{display:flex;align-items:center;gap:11px;padding:9px 0;font-size:15px;border-bottom:1.5px dashed rgba(20,19,15,.25)}
+  .check-line:last-child{border-bottom:0}
+  .check-line .box{width:22px;height:22px;border:2.5px solid var(--ink);background:var(--primary);color:#fff;display:grid;place-items:center;font-size:13px;flex:0 0 auto}
+  .stamp{
+    position:absolute;right:-14px;bottom:-16px;transform:rotate(-9deg);
+    font-family:var(--display);font-weight:900;font-size:15px;text-transform:uppercase;letter-spacing:.02em;
+    border:var(--border);background:var(--accent);color:var(--ink);padding:10px 14px;box-shadow:var(--shadow-sm)
+  }
+  .badge-rot{
+    position:absolute;top:30px;right:26px;transform:rotate(7deg);font-family:var(--mono);font-size:11px;
+    text-transform:uppercase;letter-spacing:.12em;border:var(--border);background:var(--accent);padding:7px 10px;
+    box-shadow:var(--shadow-sm);z-index:2
+  }
+  @media(max-width:860px){.badge-rot{display:none}}
+
+  /* marquee */
+  .ticker{border-top:var(--border);border-bottom:var(--border);background:var(--primary);color:#fff;overflow:hidden;white-space:nowrap}
+  .ticker .run{display:inline-block;padding:11px 0;font-family:var(--display);font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:.03em;animation:slide 22s linear infinite}
+  .ticker .run span{margin:0 26px;opacity:.95}
+  .ticker .run span::before{content:"◣";margin-right:26px;color:var(--accent)}
+  @keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* sections */
+  section{padding:66px 0}
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:34px;flex-wrap:wrap}
+  .sec-head .num{font-family:var(--mono);font-size:13px;border:var(--border);padding:4px 9px;background:var(--accent)}
+  .sec-head h2{font-family:var(--display);font-weight:700;font-size:clamp(26px,4vw,40px);margin:0;text-transform:uppercase;letter-spacing:-.02em}
+
+  .feats{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  @media(max-width:860px){.feats{grid-template-columns:1fr}}
+  .feat{border:var(--border);background:var(--paper);box-shadow:var(--shadow);padding:24px;transition:transform .1s,box-shadow .1s}
+  .feat:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 var(--ink)}
+  .feat .tag{font-family:var(--mono);font-size:12px;color:#fff;background:var(--primary);border:2px solid var(--ink);display:inline-block;padding:3px 8px;margin-bottom:14px}
+  .feat h3{font-family:var(--display);font-weight:700;font-size:19px;margin:0 0 10px;line-height:1.1}
+  .feat p{margin:0;color:var(--fg);font-size:15.5px}
+
+  /* testimonials */
+  .quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  @media(max-width:860px){.quotes{grid-template-columns:1fr}}
+  .quote{border:var(--border);background:var(--bg);box-shadow:var(--shadow-sm);padding:22px;display:flex;flex-direction:column;gap:16px}
+  .quote:nth-child(2){background:var(--accent)}
+  .quote blockquote{margin:0;font-size:16.5px;line-height:1.45;font-weight:500}
+  .quote .who{display:flex;align-items:center;gap:11px;border-top:2px solid var(--ink);padding-top:14px;margin-top:auto}
+  .quote .av{width:34px;height:34px;border:2.5px solid var(--ink);background:var(--primary);color:#fff;display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:14px;flex:0 0 auto}
+  .quote .who b{display:block;font-size:14.5px}
+  .quote .who span{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+
+  /* pricing */
+  #pricing{background:var(--ink);color:var(--paper);border-top:var(--border);border-bottom:var(--border)}
+  #pricing .sec-head h2{color:var(--paper)}
+  #pricing .sec-head .num{color:var(--ink)}
+  .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  @media(max-width:860px){.tiers{grid-template-columns:1fr}}
+  .tier{border:3px solid var(--paper);background:#1b1a16;padding:24px;display:flex;flex-direction:column}
+  .tier.mid{background:var(--primary);border-color:var(--accent);box-shadow:6px 6px 0 var(--accent)}
+  .tier .name{font-family:var(--display);font-weight:700;font-size:20px;text-transform:uppercase}
+  .tier .price{font-family:var(--display);font-weight:900;font-size:32px;margin:8px 0 4px;letter-spacing:-.02em}
+  .tier .tl{font-family:var(--mono);font-size:12.5px;color:#c9c4b5;margin-bottom:18px}
+  .tier.mid .tl{color:#e7e9ff}
+  .tier ul{list-style:none;margin:0 0 22px;padding:0;display:flex;flex-direction:column;gap:11px}
+  .tier li{display:flex;gap:10px;font-size:14.5px;line-height:1.35}
+  .tier li::before{content:"◣";color:var(--accent);flex:0 0 auto}
+  .tier.mid li::before{color:var(--accent)}
+  .tier .pick{margin-top:auto;text-align:center;border:3px solid var(--paper);background:transparent;color:var(--paper);font-family:var(--display);font-weight:700;font-size:14px;text-transform:uppercase;padding:13px;text-decoration:none;cursor:pointer;transition:background .1s,color .1s}
+  .tier .pick:hover{background:var(--accent);color:var(--ink);border-color:var(--accent)}
+  .tier.mid .pick{background:var(--accent);color:var(--ink);border-color:var(--ink)}
+
+  /* demo band */
+  .demoband{padding:70px 0}
+  .demoband .inner{border:var(--border);background:var(--accent);box-shadow:var(--shadow);padding:42px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
+  .demoband h2{font-family:var(--display);font-weight:900;font-size:clamp(26px,4.5vw,42px);margin:0;text-transform:uppercase;letter-spacing:-.02em;max-width:16ch;line-height:.98}
+  .demoband p{font-family:var(--mono);font-size:13px;margin:10px 0 0;max-width:34ch}
+
+  footer{border-top:var(--border);background:var(--paper);padding:30px 0}
+  footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+  footer a.back{font-family:var(--mono);font-size:13px;text-decoration:none;border:2px solid var(--ink);padding:7px 12px;background:var(--bg)}
+  footer a.back:hover{background:var(--ink);color:var(--paper)}
+  footer .fine{font-family:var(--mono);font-size:11.5px;color:var(--muted);max-width:46ch;text-align:right}
+
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="mark"><span class="glyph">✦</span> Sinistr</div>
+    <nav class="topnav">
+      <a href="#features">How it works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="./demo.html" class="verify">open the feed →</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap grid">
+    <div>
+      <span class="eyebrow"><span class="dot"></span> Verification required · est. 2026</span>
+      <h1>Answers from the <span class="blue">correct</span> hand, finally.</h1>
+      <p class="lede">Sinistr is a Q&amp;A network with one membership rule. You answer with your left hand or you don't answer at all. We check.</p>
+      <div class="cta-row">
+        <a href="./demo.html" class="btn">Prove you're left-handed</a>
+        <a href="#features" class="btn ghost">See the policy</a>
+      </div>
+      <p class="micro" style="margin-top:18px">Right-handers welcome to read. Quietly.</p>
+    </div>
+    <div class="stamp-card">
+      <span class="badge-rot">grip&nbsp;verified</span>
+      <div class="head"><b>Hand Check</b><span class="pill">SESSION 9.0s</span></div>
+      <div class="check-line"><span class="box">✓</span> Dominant hand detected: left</div>
+      <div class="check-line"><span class="box">✓</span> Grip tremor within tolerance</div>
+      <div class="check-line"><span class="box">✓</span> Smudge pattern consistent</div>
+      <div class="check-line"><span class="box">✓</span> Cleared for answering</div>
+      <span class="stamp">Approved ◣</span>
+    </div>
+  </div>
+</section>
+
+<div class="ticker" aria-hidden="true">
+  <div class="run">
+    <span>scissors</span><span>spiral notebooks</span><span>can openers</span><span>handshakes</span><span>the smudge</span><span>three-ring binders</span><span>scissors</span><span>spiral notebooks</span><span>can openers</span><span>handshakes</span><span>the smudge</span><span>three-ring binders</span>
+  </div>
+</div>
+
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head"><span class="num">01</span><h2>The policy, in three parts</h2></div>
+    <div class="feats">
+      <article class="feat">
+        <span class="tag">credentialing</span>
+        <h3>The Nine-Second Hand Check</h3>
+        <p>Before your first post, you hold your phone in your dominant hand for nine seconds while the accelerometer reads your grip tremor. Pass and you're in. Fail and you get a courteous redirect to the right-handed internet.</p>
+      </article>
+      <article class="feat">
+        <span class="tag">quality</span>
+        <h3>Lived-Experience Scoring</h3>
+        <p>Every answer is graded on left-handed authenticity. Threads about scissors, spiral notebooks, three-ring binders, and the smudge problem are flagged high-stakes and routed only to senior verified members.</p>
+      </article>
+      <article class="feat">
+        <span class="tag">trust &amp; safety</span>
+        <h3>Read-Only Solidarity</h3>
+        <p>Right-handed visitors get full read access and zero reply access. They can study the answers. They cannot contribute. We find this arrangement fair and they have not been able to tell us otherwise.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head"><span class="num">02</span><h2>What members say</h2></div>
+    <div class="quotes">
+      <figure class="quote">
+        <blockquote>"I asked how to open a can without losing a knuckle and got eleven answers from people who actually live it. Not one of them was smug about it."</blockquote>
+        <figcaption class="who"><span class="av">DW</span><div><b>Dolores Whitfield</b><span>Left-Handed Since Birth, Verified Tier 2</span></div></figcaption>
+      </figure>
+      <figure class="quote">
+        <blockquote>"We moved the whole engineering guild off the right-handed internet. Onboarding rejected two of my reports, which was awkward at standup, but ultimately correct."</blockquote>
+        <figcaption class="who"><span class="av">MP</span><div><b>Marcus Pell</b><span>VP of Platform, Southpaw Collective</span></div></figcaption>
+      </figure>
+      <figure class="quote">
+        <blockquote>"The hand check failed me four times before it believed me. By the fifth attempt I had never felt so accurately seen."</blockquote>
+        <figcaption class="who"><span class="av">PA</span><div><b>Priya Anand</b><span>Ambidextrous, In Recovery</span></div></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <div class="sec-head"><span class="num">03</span><h2>Pick a hand</h2></div>
+    <div class="tiers">
+      <div class="tier">
+        <div class="name">Southpaw</div>
+        <div class="price">$0<span style="font-size:15px;font-family:var(--mono)">/mo</span></div>
+        <div class="tl">For the casually correct.</div>
+        <ul>
+          <li>Read every thread</li>
+          <li>Answer up to three questions a month</li>
+          <li>One handedness re-verification per quarter</li>
+        </ul>
+        <a href="./demo.html" class="pick">Start free</a>
+      </div>
+      <div class="tier mid">
+        <div class="name">Cack-Hand</div>
+        <div class="price">$14<span style="font-size:15px;font-family:var(--mono)">/mo</span></div>
+        <div class="tl">For the committed.</div>
+        <ul>
+          <li>Unlimited answers</li>
+          <li>A small green dot proving you were verified in person</li>
+          <li>Top placement in scissors threads</li>
+        </ul>
+        <a href="./demo.html" class="pick">Go committed</a>
+      </div>
+      <div class="tier">
+        <div class="name">Corporate Sinister</div>
+        <div class="price">$2,400<span style="font-size:15px;font-family:var(--mono)">/seat/yr</span></div>
+        <div class="tl">For the entire left-handed workforce.</div>
+        <ul>
+          <li>Bulk onboarding with handedness audit</li>
+          <li>SSO that rejects right-handed credentials</li>
+          <li>A dedicated account manager who is also left-handed</li>
+        </ul>
+        <a href="./demo.html" class="pick">Contact sales</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="demoband">
+  <div class="wrap">
+    <div class="inner">
+      <div>
+        <h2>Read the Left Feed before you commit.</h2>
+        <p>No credentials needed to look. You'll need the right hand, by which we mean the left one, to reply.</p>
+      </div>
+      <a href="./demo.html" class="btn">open the demo →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <a class="back" href="/">← theworstaistudioever</a>
+    <div class="fine">Sinistr is a portfolio company of theworstaistudioever. Handedness verification is final and non-negotiable. Right hands have rights, just not here.</div>
+  </div>
+</footer>
+
+</body>
+</html>
