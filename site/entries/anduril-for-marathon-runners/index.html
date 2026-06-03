@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Picket · theworstaistudioever</title>
+<meta name="description" content="Autonomous perimeter surveillance, real-time contact classification, and quadcopter overwatch for the recreational 10K.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Picket · theworstaistudioever">
+<meta property="og:description" content="Autonomous perimeter surveillance, real-time contact classification, and quadcopter overwatch for the recreational 10K.">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Picket · theworstaistudioever">
+<meta name="twitter:description" content="Autonomous perimeter surveillance, real-time contact classification, and quadcopter overwatch for the recreational 10K.">
+<meta name="theme-color" content="#0A0F0B">
+<link rel="icon" type="image/png" href="/favicon.png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --primary:#5FD17A;
+  --accent:#FF4438;
+  --bg:#0A0F0B;
+  --fg:#DCE6DA;
+  --muted:#6E7C6F;
+  --ink:#DCE6DA;
+  --panel:#0E140F;
+  --line:rgba(95,209,122,.18);
+  --line-soft:rgba(220,230,218,.08);
+  --display:"Saira Condensed","Arial Narrow",sans-serif;
+  --body:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--fg);
+  font-family:var(--body);
+  font-size:15px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  position:relative;
+}
+/* atmospheric layers */
+body::before{
+  content:"";
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(var(--line-soft) 1px,transparent 1px),
+    linear-gradient(90deg,var(--line-soft) 1px,transparent 1px);
+  background-size:44px 44px;
+  mask-image:radial-gradient(ellipse 120% 90% at 70% 0%,#000 30%,transparent 80%);
+}
+body::after{
+  content:"";
+  position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,0) 0px,rgba(0,0,0,0) 2px,rgba(0,0,0,.16) 3px,rgba(0,0,0,0) 4px);
+  opacity:.5;
+}
+.wrap{position:relative;z-index:2;max-width:1180px;margin:0 auto;padding:0 24px}
+
+/* classification banner */
+.classbar{
+  position:sticky;top:0;z-index:60;
+  background:var(--primary);color:#06140A;
+  font-family:var(--display);font-weight:700;letter-spacing:.22em;
+  text-transform:uppercase;font-size:12px;
+  text-align:center;padding:5px 12px;
+  border-bottom:1px solid #06140A;
+}
+.classbar span{opacity:.75}
+
+/* nav */
+nav{
+  position:relative;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 0;border-bottom:1px solid var(--line);
+}
+.brand{display:flex;align-items:center;gap:11px;font-family:var(--display);font-weight:700;letter-spacing:.16em;text-transform:uppercase;font-size:19px}
+.brand .mk{
+  width:26px;height:26px;border:2px solid var(--primary);position:relative;display:grid;place-items:center;flex:none;
+}
+.brand .mk::before{content:"";width:8px;height:8px;background:var(--primary);border-radius:50%}
+.brand .mk::after{content:"";position:absolute;inset:-6px;border:1px solid var(--line);border-radius:50%}
+.brand small{color:var(--muted);font-weight:500;letter-spacing:.1em;font-size:10px;display:block;margin-top:-3px}
+.navlinks{display:flex;gap:26px;align-items:center;font-size:12.5px;text-transform:uppercase;letter-spacing:.14em}
+.navlinks a{color:var(--muted);text-decoration:none;transition:color .2s}
+.navlinks a:hover{color:var(--primary)}
+.navlinks .cta{
+  color:var(--bg);background:var(--primary);padding:9px 16px;font-weight:600;
+  border:1px solid var(--primary);transition:.2s;
+}
+.navlinks .cta:hover{background:transparent;color:var(--primary)}
+@media(max-width:720px){.navlinks a:not(.cta){display:none}}
+
+/* hero */
+.hero{position:relative;padding:70px 0 40px;display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center}
+@media(max-width:880px){.hero{grid-template-columns:1fr;gap:32px;padding:48px 0 24px}}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:9px;font-size:11px;text-transform:uppercase;
+  letter-spacing:.22em;color:var(--primary);border:1px solid var(--line);
+  padding:6px 12px;margin-bottom:26px;
+}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--primary);animation:blink 1.6s steps(1) infinite}
+@keyframes blink{50%{opacity:.15}}
+h1{
+  font-family:var(--display);font-weight:800;text-transform:uppercase;
+  font-size:clamp(40px,6.4vw,76px);line-height:.94;letter-spacing:-.01em;color:var(--fg);
+  margin-bottom:22px;
+}
+h1 em{font-style:normal;color:var(--primary)}
+.lede{color:var(--muted);max-width:46ch;font-size:15.5px;margin-bottom:30px}
+.lede b{color:var(--fg);font-weight:500}
+.actions{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.btn{
+  font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-weight:700;
+  font-size:15px;padding:14px 26px;text-decoration:none;cursor:pointer;border:1px solid var(--primary);
+  display:inline-flex;align-items:center;gap:10px;transition:.2s;
+}
+.btn-primary{background:var(--primary);color:var(--bg)}
+.btn-primary:hover{background:transparent;color:var(--primary);box-shadow:0 0 24px rgba(95,209,122,.25)}
+.btn-ghost{background:transparent;color:var(--fg);border-color:var(--line)}
+.btn-ghost:hover{border-color:var(--primary);color:var(--primary)}
+
+/* telemetry strip */
+.telemetry{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:34px}
+.telemetry .cell{background:var(--panel);padding:13px 15px}
+.telemetry .k{font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:var(--muted)}
+.telemetry .v{font-family:var(--display);font-weight:700;font-size:24px;color:var(--fg);margin-top:2px}
+.telemetry .v .u{font-size:12px;color:var(--primary);font-weight:600}
+
+/* radar */
+.radar-frame{position:relative;aspect-ratio:1/1;border:1px solid var(--line);background:
+  radial-gradient(circle at 50% 50%,rgba(95,209,122,.06),transparent 70%),var(--panel);
+  display:grid;place-items:center;overflow:hidden}
+.radar-frame .corner{position:absolute;width:16px;height:16px;border:2px solid var(--primary)}
+.radar-frame .corner.tl{top:8px;left:8px;border-right:0;border-bottom:0}
+.radar-frame .corner.tr{top:8px;right:8px;border-left:0;border-bottom:0}
+.radar-frame .corner.bl{bottom:8px;left:8px;border-right:0;border-top:0}
+.radar-frame .corner.br{bottom:8px;right:8px;border-left:0;border-top:0}
+.radar{position:relative;width:78%;aspect-ratio:1/1;border-radius:50%;border:1px solid var(--line);
+  background:repeating-radial-gradient(circle at 50% 50%,transparent 0,transparent 13.5%,var(--line) 14%,transparent 14.4%)}
+.radar::before{content:"";position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(from 0deg,rgba(95,209,122,.42),transparent 38%);
+  animation:sweep 4.2s linear infinite}
+.radar::after{content:"";position:absolute;top:50%;left:0;right:0;height:1px;background:var(--line)}
+.radar .vline{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--line)}
+@keyframes sweep{to{transform:rotate(360deg)}}
+.blip{position:absolute;width:9px;height:9px;border-radius:50%;transform:translate(-50%,-50%)}
+.blip.f{background:var(--primary);box-shadow:0 0 8px var(--primary)}
+.blip.h{background:var(--accent);box-shadow:0 0 8px var(--accent);animation:pulse 1.4s ease-out infinite}
+.blip.n{background:var(--muted)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,68,56,.5)}100%{box-shadow:0 0 0 12px rgba(255,68,56,0)}}
+.radar-tag{position:absolute;bottom:12px;left:14px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.radar-tag b{color:var(--primary);font-weight:600}
+
+/* section heads */
+section{position:relative;z-index:2;padding:60px 0;border-top:1px solid var(--line)}
+.sec-label{display:flex;align-items:baseline;gap:14px;margin-bottom:34px;flex-wrap:wrap}
+.sec-label .no{font-family:var(--display);color:var(--primary);font-weight:700;font-size:14px;letter-spacing:.2em}
+.sec-label h2{font-family:var(--display);text-transform:uppercase;font-weight:700;font-size:clamp(26px,3.6vw,40px);letter-spacing:.01em;line-height:1}
+.sec-label .meta{margin-left:auto;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.16em}
+
+/* capability ribbon */
+.ribbon{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+@media(max-width:720px){.ribbon{grid-template-columns:repeat(2,1fr)}}
+.ribbon .stat{background:var(--panel);padding:22px 18px}
+.ribbon .stat .num{font-family:var(--display);font-weight:800;font-size:34px;color:var(--primary);line-height:1}
+.ribbon .stat .desc{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.12em;margin-top:8px}
+
+/* features */
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:880px){.features{grid-template-columns:1fr}}
+.fcard{
+  border:1px solid var(--line);background:var(--panel);padding:26px 24px 30px;position:relative;
+  transition:.25s;overflow:hidden;
+}
+.fcard::before{content:"";position:absolute;top:0;left:0;width:0;height:2px;background:var(--primary);transition:width .35s}
+.fcard:hover{transform:translateY(-3px);border-color:rgba(95,209,122,.4)}
+.fcard:hover::before{width:100%}
+.fcard .idx{font-family:var(--display);font-size:12px;letter-spacing:.2em;color:var(--muted)}
+.fcard h3{font-family:var(--display);text-transform:uppercase;font-size:24px;font-weight:700;margin:14px 0 12px;letter-spacing:.02em}
+.fcard p{color:var(--muted);font-size:13.5px}
+.fcard .status{margin-top:18px;display:inline-flex;align-items:center;gap:8px;font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:var(--primary)}
+.fcard .status .led{width:6px;height:6px;border-radius:50%;background:var(--primary);box-shadow:0 0 6px var(--primary)}
+
+/* testimonials */
+.quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:880px){.quotes{grid-template-columns:1fr}}
+.qcard{border:1px solid var(--line);padding:26px 24px;background:linear-gradient(180deg,rgba(95,209,122,.04),transparent)}
+.qcard .mark{font-family:var(--display);color:var(--primary);font-size:40px;line-height:.6;height:20px}
+.qcard blockquote{font-size:14.5px;color:var(--fg);margin:14px 0 22px}
+.qcard .who{display:flex;flex-direction:column;border-top:1px solid var(--line);padding-top:14px}
+.qcard .who .name{font-family:var(--display);text-transform:uppercase;letter-spacing:.08em;font-weight:600;font-size:15px}
+.qcard .who .role{color:var(--muted);font-size:11px;margin-top:3px}
+
+/* pricing */
+.pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:880px){.pricing{grid-template-columns:1fr}}
+.tier{border:1px solid var(--line);background:var(--panel);padding:28px 24px;display:flex;flex-direction:column;position:relative}
+.tier.mid{border-color:var(--primary);box-shadow:0 0 0 1px var(--primary) inset,0 0 40px rgba(95,209,122,.08)}
+.tier.mid .flag{position:absolute;top:-1px;right:-1px;background:var(--primary);color:var(--bg);font-family:var(--display);font-weight:700;font-size:10px;letter-spacing:.16em;padding:5px 11px;text-transform:uppercase}
+.tier .tname{font-family:var(--display);text-transform:uppercase;font-size:20px;font-weight:700;letter-spacing:.06em}
+.tier .price{font-family:var(--display);font-size:38px;font-weight:800;color:var(--primary);margin:14px 0 4px;line-height:1}
+.tier .ttag{color:var(--muted);font-size:12.5px;min-height:42px}
+.tier ul{list-style:none;margin:20px 0 24px;display:flex;flex-direction:column;gap:11px}
+.tier li{font-size:13px;padding-left:22px;position:relative;color:var(--fg)}
+.tier li::before{content:"+";position:absolute;left:0;color:var(--primary);font-weight:700}
+.tier .pick{margin-top:auto;text-align:center;text-decoration:none;font-family:var(--display);text-transform:uppercase;letter-spacing:.12em;font-weight:700;font-size:14px;padding:13px;border:1px solid var(--line);color:var(--fg);transition:.2s}
+.tier .pick:hover{border-color:var(--primary);color:var(--primary)}
+.tier.mid .pick{background:var(--primary);color:var(--bg);border-color:var(--primary)}
+.tier.mid .pick:hover{background:transparent;color:var(--primary)}
+
+/* demo cta band */
+.deploy{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:
+  linear-gradient(120deg,rgba(95,209,122,.08),transparent 60%);position:relative;z-index:2}
+.deploy .wrap{padding:64px 24px;display:flex;align-items:center;justify-content:space-between;gap:30px;flex-wrap:wrap}
+.deploy h2{font-family:var(--display);text-transform:uppercase;font-size:clamp(28px,4vw,46px);font-weight:800;line-height:.96;max-width:18ch}
+.deploy p{color:var(--muted);max-width:34ch;margin-top:10px;font-size:13.5px}
+
+/* footer */
+footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:34px 0 50px}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}
+footer a.back{color:var(--muted);text-decoration:none;font-size:12.5px;text-transform:uppercase;letter-spacing:.14em;transition:color .2s}
+footer a.back:hover{color:var(--primary)}
+footer .fineprint{color:var(--muted);font-size:11px;max-width:48ch;line-height:1.6}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;scroll-behavior:auto!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<div class="classbar">UNCLASSIFIED <span>// FOR RECREATIONAL USE // DISTRIBUTION D: APPROVED FOR JOGGERS</span></div>
+
+<div class="wrap">
+  <nav>
+    <div class="brand">
+      <span class="mk"></span>
+      <span>Picket<small>defense for the morning loop</small></span>
+    </div>
+    <div class="navlinks">
+      <a href="#capabilities">Capabilities</a>
+      <a href="#systems">Systems</a>
+      <a href="#pricing">Procurement</a>
+      <a class="cta" href="./demo.html">Open console →</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <span class="eyebrow"><span class="dot"></span>Live operating area · 1 runner under track</span>
+      <h1>Total domain awareness for the <em>recreational loop.</em></h1>
+      <p class="lede">Picket brings autonomous perimeter surveillance, sub-second contact classification, and quadcopter overwatch to your morning run. <b>The geese have held the initiative long enough.</b></p>
+      <div class="actions">
+        <a class="btn btn-primary" href="#pricing">Request a capability brief</a>
+        <a class="btn btn-ghost" href="./demo.html">Open the console →</a>
+      </div>
+      <div class="telemetry">
+        <div class="cell"><div class="k">Avg pace</div><div class="v">8:42<span class="u"> /mi</span></div></div>
+        <div class="cell"><div class="k">Contacts tracked</div><div class="v">11<span class="u"> live</span></div></div>
+        <div class="cell"><div class="k">Mesh status</div><div class="v" style="color:var(--primary)">NOMINAL</div></div>
+      </div>
+    </div>
+    <div class="radar-frame">
+      <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+      <div class="radar">
+        <span class="vline"></span>
+        <span class="blip f" style="top:33%;left:62%"></span>
+        <span class="blip n" style="top:58%;left:40%"></span>
+        <span class="blip h" style="top:70%;left:66%"></span>
+        <span class="blip f" style="top:46%;left:30%"></span>
+        <span class="blip n" style="top:24%;left:44%"></span>
+      </div>
+      <div class="radar-tag">SECTOR 07 · <b>3 FRIENDLY</b> · 1 HOSTILE (GOOSE)</div>
+    </div>
+  </header>
+</div>
+
+<section id="capabilities" class="wrap">
+  <div class="sec-label"><span class="no">01</span><h2>Operational capability</h2><span class="meta">as fielded · v4.2</span></div>
+  <div class="ribbon">
+    <div class="stat"><div class="num">40<span style="font-size:18px">s</span></div><div class="desc">Coverage gap closure</div></div>
+    <div class="stat"><div class="num">2<span style="font-size:18px">/s</span></div><div class="desc">Classification refresh</div></div>
+    <div class="stat"><div class="num">9</div><div class="desc">Pylons per cul-de-sac</div></div>
+    <div class="stat"><div class="num">0</div><div class="desc">Munitions carried*</div></div>
+  </div>
+</section>
+
+<section id="systems" class="wrap">
+  <div class="sec-label"><span class="no">02</span><h2>Fielded systems</h2><span class="meta">three of three online</span></div>
+  <div class="features">
+    <div class="fcard">
+      <div class="idx">SYS-01</div>
+      <h3>Sentry Mesh</h3>
+      <p>Solar surveillance pylons stand themselves up along your usual route and hand off tracking as you pass. Coverage gaps close in under 40 seconds. You will not be surprised by a sprinkler again.</p>
+      <span class="status"><span class="led"></span>Deployed</span>
+    </div>
+    <div class="fcard">
+      <div class="idx">SYS-02</div>
+      <h3>Contact Classification</h3>
+      <p>Every cyclist, dog walker, and squirrel inside your operating area is tagged friendly, neutral, or hostile and pushed to your watch. Confidence updates twice a second. Most strollers resolve to neutral.</p>
+      <span class="status"><span class="led"></span>Deployed</span>
+    </div>
+    <div class="fcard">
+      <div class="idx">SYS-03</div>
+      <h3>Overwatch</h3>
+      <p>A company-owned quadcopter holds a pattern above your easy run and relays a top-down feed to the ground station. It does not carry anything. We have been clear with the FAA about this.</p>
+      <span class="status"><span class="led"></span>Deployed</span>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="sec-label"><span class="no">03</span><h2>After-action reports</h2><span class="meta">verified operators</span></div>
+  <div class="quotes">
+    <div class="qcard">
+      <div class="mark">"</div>
+      <blockquote>I have not been passed on the Greenway since we stood up the mesh. The telemetry is unambiguous.</blockquote>
+      <div class="who"><span class="name">Dale Ferro</span><span class="role">Age-Group Podium Finisher (M 50-54), Reston Pace Collective</span></div>
+    </div>
+    <div class="qcard">
+      <div class="mark">"</div>
+      <blockquote>The geese relocated to a different pond within nine days. I did nothing the township could cite.</blockquote>
+      <div class="who"><span class="name">Marguerite Voss</span><span class="role">Homeowner, Contested Cul-de-Sac</span></div>
+    </div>
+    <div class="qcard">
+      <div class="mark">"</div>
+      <blockquote>Explaining the procurement to my wife was difficult. Explaining the overwatch feed was not.</blockquote>
+      <div class="who"><span class="name">Tomas Brandt</span><span class="role">Recreational Runner, 14-Minute 5K Aspirant</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing" class="wrap">
+  <div class="sec-label"><span class="no">04</span><h2>Procurement tiers</h2><span class="meta">net 30 · GSA pending</span></div>
+  <div class="pricing">
+    <div class="tier">
+      <div class="tname">Patrol</div>
+      <div class="price">$49<span style="font-size:15px;color:var(--muted)">/mo</span></div>
+      <div class="ttag">For the runner securing a single loop.</div>
+      <ul><li>One surveillance pylon</li><li>Friendly / hostile tagging</li><li>Threat feed, 7-day retention</li></ul>
+      <a class="pick" href="./demo.html">Stand up</a>
+    </div>
+    <div class="tier mid">
+      <span class="flag">Most fielded</span>
+      <div class="tname">Forward Operating</div>
+      <div class="price">$640<span style="font-size:15px;color:var(--muted)">/mo</span></div>
+      <div class="ttag">For the household that has decided the cul-de-sac is contested.</div>
+      <ul><li>Up to nine pylons</li><li>Quadcopter overwatch, daylight hours</li><li>Rules of engagement editor</li><li>Priority goose response</li></ul>
+      <a class="pick" href="./demo.html">Stand up</a>
+    </div>
+    <div class="tier">
+      <div class="tname">Theater Command</div>
+      <div class="price" style="font-size:26px;letter-spacing:.02em">Priced per engagement</div>
+      <div class="ttag">For municipalities, run clubs, and one very committed retiree.</div>
+      <ul><li>Unlimited pylons and airframes</li><li>Dedicated mission integrator</li><li>Standoff enforcement</li><li>We do not put this tier in writing</li></ul>
+      <a class="pick" href="./demo.html">Contact a rep</a>
+    </div>
+  </div>
+</section>
+
+<div class="deploy">
+  <div class="wrap">
+    <div>
+      <h2>Take the loop.</h2>
+      <p>Walk the live console before you commit a single pylon. No card. No goose left unclassified.</p>
+    </div>
+    <a class="btn btn-primary" href="./demo.html" style="font-size:17px;padding:16px 30px">Open the demo →</a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <a class="back" href="/">← theworstaistudioever</a>
+    <p class="fineprint">*Picket airframes carry no munitions. They carry a camera and, on the Forward Operating tier, a small speaker for goose dissuasion. Picket is a portfolio company of theworstaistudioever. Not affiliated with any actual defense prime, race organizer, or waterfowl.</p>
+  </div>
+</footer>
+
+<script>
+// staggered reveal of panels on scroll
+(function(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var targets=document.querySelectorAll('.fcard,.qcard,.tier,.ribbon .stat');
+  targets.forEach(function(el){el.style.opacity='0';el.style.transform='translateY(16px)';el.style.transition='opacity .5s ease,transform .5s ease'});
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e,i){
+      if(e.isIntersecting){
+        var el=e.target;
+        setTimeout(function(){el.style.opacity='1';el.style.transform='none'},(Array.prototype.indexOf.call(el.parentNode.children,el)%4)*70);
+        io.unobserve(el);
+      }
+    });
+  },{threshold:.18});
+  targets.forEach(function(el){io.observe(el)});
+
+  // live-ish telemetry flicker on the pace cell
+  var pace=document.querySelector('.telemetry .v');
+  var paces=['8:42','8:39','8:44','8:41','8:38'];var pi=0;
+  setInterval(function(){pi=(pi+1)%paces.length;pace.firstChild.nodeValue=paces[pi];},2600);
+})();
+</script>
+</body>
+</html>

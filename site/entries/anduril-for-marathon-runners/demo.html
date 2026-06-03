@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Picket · Loop Console</title>
+<meta name="description" content="Live tactical console for one morning run. Classify contacts, set rules of engagement, hold the loop.">
+<meta name="theme-color" content="#0A0F0B">
+<link rel="icon" type="image/png" href="/favicon.png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+:root{
+  --primary:#5FD17A;--accent:#FF4438;--bg:#0A0F0B;--fg:#DCE6DA;--muted:#6E7C6F;
+  --panel:#0E140F;--panel2:#101810;--line:rgba(95,209,122,.18);--line-soft:rgba(220,230,218,.08);
+  --blue:#4DA8FF;--amber:#F2C14E;
+  --display:"Saira Condensed","Arial Narrow",sans-serif;
+  --body:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:14px;overflow:hidden;
+  -webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
+body::after{content:"";position:fixed;inset:0;z-index:9;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,0) 0,rgba(0,0,0,0) 2px,rgba(0,0,0,.14) 3px,rgba(0,0,0,0) 4px);opacity:.5}
+
+/* chrome */
+.classbar{background:var(--primary);color:#06140A;font-family:var(--display);font-weight:700;
+  letter-spacing:.2em;text-transform:uppercase;font-size:11px;text-align:center;padding:4px}
+.topbar{display:flex;align-items:center;gap:18px;padding:11px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.back{color:var(--muted);text-decoration:none;font-size:12px;text-transform:uppercase;letter-spacing:.12em;transition:color .2s;white-space:nowrap}
+.back:hover{color:var(--primary)}
+.mid-id{font-family:var(--display);font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:15px}
+.mid-id b{color:var(--primary)}
+.topstats{margin-left:auto;display:flex;gap:20px;align-items:center}
+.topstats .s{display:flex;flex-direction:column;line-height:1.1}
+.topstats .s .k{font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted)}
+.topstats .s .v{font-family:var(--display);font-weight:700;font-size:18px}
+.live{display:inline-flex;align-items:center;gap:7px;font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:var(--primary)}
+.live .d{width:7px;height:7px;border-radius:50%;background:var(--primary);animation:blink 1.4s steps(1) infinite}
+@keyframes blink{50%{opacity:.2}}
+
+/* layout */
+.console{flex:1;display:grid;grid-template-columns:1fr 340px;min-height:0}
+@media(max-width:860px){.console{grid-template-columns:1fr;overflow:auto}}
+
+/* map */
+.mapwrap{position:relative;border-right:1px solid var(--line);overflow:hidden;min-height:340px}
+.mapgrid{position:absolute;inset:0;
+  background-image:linear-gradient(var(--line-soft) 1px,transparent 1px),linear-gradient(90deg,var(--line-soft) 1px,transparent 1px);
+  background-size:38px 38px}
+.maphud{position:absolute;top:12px;left:14px;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);z-index:4}
+.maphud b{color:var(--primary);font-weight:600}
+.mapfilter{position:absolute;top:12px;right:14px;z-index:6;display:flex;gap:8px;align-items:center}
+.toggle-btn{font-family:var(--body);background:var(--panel);color:var(--muted);border:1px solid var(--line);
+  font-size:10px;text-transform:uppercase;letter-spacing:.12em;padding:7px 11px;cursor:pointer;transition:.2s}
+.toggle-btn:hover{color:var(--fg)}
+.toggle-btn.on{background:var(--accent);color:#150302;border-color:var(--accent)}
+svg.field{position:absolute;inset:0;width:100%;height:100%;z-index:1}
+.route{fill:none;stroke:var(--line);stroke-width:2.5;stroke-dasharray:7 7}
+.route.done{stroke:rgba(95,209,122,.55);stroke-dasharray:none;stroke-width:2.5}
+.pylon-arc{fill:rgba(95,209,122,.05);stroke:var(--line);stroke-width:1}
+
+/* contacts */
+.node{position:absolute;transform:translate(-50%,-50%);z-index:3;cursor:pointer;border:0;background:none;font-family:var(--body);padding:0}
+.node .pin{width:16px;height:16px;border-radius:50%;border:2px solid;display:grid;place-items:center;margin:0 auto;transition:.2s}
+.node .pin::after{content:"";width:5px;height:5px;border-radius:50%}
+.node.friendly .pin{border-color:var(--primary)}.node.friendly .pin::after{background:var(--primary)}
+.node.neutral .pin{border-color:var(--muted)}.node.neutral .pin::after{background:var(--muted)}
+.node.hostile .pin{border-color:var(--accent);animation:ping 1.5s ease-out infinite}.node.hostile .pin::after{background:var(--accent)}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(255,68,56,.45)}100%{box-shadow:0 0 0 13px rgba(255,68,56,0)}}
+.node .lab{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--fg);background:rgba(10,15,11,.82);
+  padding:2px 5px;margin-top:4px;white-space:nowrap;border:1px solid var(--line);text-align:center}
+.node .lab .cf{color:var(--muted)}
+.node:hover .pin{transform:scale(1.25)}
+.node.sel .lab{border-color:var(--primary);color:var(--primary)}
+.node.dim{opacity:.16;filter:grayscale(1)}
+
+/* runner (bluefor) */
+.runner{position:absolute;transform:translate(-50%,-50%);z-index:5}
+.runner .core{width:14px;height:14px;background:var(--blue);border-radius:50%;box-shadow:0 0 12px var(--blue);margin:0 auto}
+.runner .ring{position:absolute;top:50%;left:50%;width:34px;height:34px;border:1px solid var(--blue);border-radius:50%;transform:translate(-50%,-50%);opacity:.5}
+.runner .lab{font-size:9px;color:var(--blue);text-transform:uppercase;letter-spacing:.1em;text-align:center;margin-top:6px;font-weight:600}
+
+/* popover */
+.popover{position:absolute;z-index:20;width:212px;background:var(--panel2);border:1px solid var(--primary);
+  box-shadow:0 12px 40px rgba(0,0,0,.6);padding:14px;display:none}
+.popover.show{display:block}
+.popover .pv-h{font-family:var(--display);text-transform:uppercase;font-weight:700;letter-spacing:.06em;font-size:16px}
+.popover .pv-sub{color:var(--muted);font-size:11px;margin:2px 0 12px}
+.popover .pv-row{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:10px}
+.popover .pv-row b{color:var(--fg)}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:10px}
+.seg button{font-family:var(--body);background:var(--panel);color:var(--muted);border:0;padding:8px 4px;font-size:10px;
+  text-transform:uppercase;letter-spacing:.08em;cursor:pointer;transition:.15s}
+.seg button:hover{color:var(--fg)}
+.seg button.act-friendly{background:var(--primary);color:var(--bg)}
+.seg button.act-neutral{background:var(--muted);color:var(--bg)}
+.seg button.act-hostile{background:var(--accent);color:#150302}
+.designate{width:100%;font-family:var(--display);text-transform:uppercase;letter-spacing:.14em;font-weight:700;
+  background:transparent;color:var(--accent);border:1px solid var(--accent);padding:9px;cursor:pointer;font-size:12px;transition:.2s}
+.designate:hover{background:var(--accent);color:#150302}
+.designate:disabled{opacity:.4;cursor:not-allowed;border-color:var(--line);color:var(--muted)}
+.pv-close{position:absolute;top:8px;right:10px;background:none;border:0;color:var(--muted);cursor:pointer;font-size:16px}
+.pv-close:hover{color:var(--fg)}
+
+/* side panel */
+.panel{background:var(--panel);display:flex;flex-direction:column;min-height:0}
+.psec{border-bottom:1px solid var(--line);padding:15px 16px}
+.psec h3{font-family:var(--display);text-transform:uppercase;font-size:13px;letter-spacing:.16em;color:var(--muted);
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.psec h3 .ct{color:var(--primary);font-weight:600}
+.tally{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+.tally .t{background:var(--panel2);padding:9px 8px;text-align:center}
+.tally .t .n{font-family:var(--display);font-weight:800;font-size:22px;line-height:1}
+.tally .t .l{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-top:3px}
+.tally .t.f .n{color:var(--primary)}.tally .t.n_ .n{color:var(--muted)}.tally .t.h .n{color:var(--accent)}
+
+/* ROE */
+.roe{list-style:none;display:flex;flex-direction:column;gap:0}
+.roe li{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line-soft)}
+.roe li:last-child{border-bottom:0}
+.roe .rl{font-size:11.5px;color:var(--fg);max-width:200px;line-height:1.4}
+.sw{width:38px;height:20px;border:1px solid var(--line);background:var(--panel2);border-radius:0;position:relative;cursor:pointer;flex:none;transition:.2s}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;background:var(--muted);transition:.2s}
+.sw.on{background:rgba(95,209,122,.18);border-color:var(--primary)}
+.sw.on::after{left:20px;background:var(--primary)}
+
+/* feed */
+.feedsec{flex:1;min-height:0;display:flex;flex-direction:column;padding:15px 16px 0}
+.feed{flex:1;overflow:auto;font-size:11.5px;display:flex;flex-direction:column;gap:0;padding-bottom:14px}
+.feed::-webkit-scrollbar{width:6px}.feed::-webkit-scrollbar-thumb{background:var(--line)}
+.fline{display:flex;gap:9px;padding:7px 0;border-bottom:1px solid var(--line-soft);animation:fadein .35s ease}
+@keyframes fadein{from{opacity:0;transform:translateX(-6px)}}
+.fline .ts{color:var(--muted);flex:none}
+.fline .msg{color:var(--fg)}
+.fline.alert .msg{color:var(--accent)}
+.fline.ok .msg{color:var(--primary)}
+
+@media(prefers-reduced-motion:reduce){*,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="classbar">UNCLASSIFIED // FOR RECREATIONAL USE // LOOP CONSOLE</div>
+<div class="topbar">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="mid-id">MISSION <b>RP-0641</b> · GREENWAY LOOP</span>
+  <div class="topstats">
+    <div class="s"><span class="k">Elapsed</span><span class="v" id="pace">8:42</span></div>
+    <div class="s"><span class="k">Mesh</span><span class="v" style="color:var(--primary)">9/9</span></div>
+    <div class="s"><span class="live"><span class="d"></span>Tracking</span></div>
+  </div>
+</div>
+
+<div class="console">
+  <!-- MAP -->
+  <div class="mapwrap" id="mapwrap">
+    <div class="mapgrid"></div>
+    <div class="maphud">SECTOR 07 · GRID 044/118 · <b id="hudcount">5 contacts</b></div>
+    <div class="mapfilter">
+      <button class="toggle-btn" id="hostileFilter">Hostiles only</button>
+    </div>
+    <svg class="field" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid slice">
+      <path class="route done" d="M 150 540 C 120 380 220 250 400 230 C 560 212 640 300 700 250"/>
+      <path class="route" d="M 700 250 C 770 210 880 250 870 380 C 862 500 720 560 540 560 C 360 560 200 600 150 540"/>
+      <circle class="pylon-arc" cx="150" cy="540" r="95"/>
+      <circle class="pylon-arc" cx="400" cy="230" r="95"/>
+      <circle class="pylon-arc" cx="700" cy="250" r="95"/>
+      <circle class="pylon-arc" cx="870" cy="380" r="95"/>
+      <circle class="pylon-arc" cx="540" cy="560" r="95"/>
+    </svg>
+    <!-- runner -->
+    <div class="runner" style="top:35.7%;left:70%"><span class="ring"></span><span class="core"></span><div class="lab">BLUFOR · YOU</div></div>
+    <!-- contacts injected by JS -->
+    <!-- popover -->
+    <div class="popover" id="popover">
+      <button class="pv-close" id="pvClose">×</button>
+      <div class="pv-h" id="pvName">—</div>
+      <div class="pv-sub" id="pvKind">—</div>
+      <div class="pv-row"><span>Confidence</span><b id="pvConf">—</b></div>
+      <div class="pv-row"><span>Range</span><b id="pvRange">—</b></div>
+      <div class="seg" id="pvSeg">
+        <button data-c="friendly">Friendly</button>
+        <button data-c="neutral">Neutral</button>
+        <button data-c="hostile">Hostile</button>
+      </div>
+      <button class="designate" id="pvDesignate">Designate</button>
+    </div>
+  </div>
+
+  <!-- PANEL -->
+  <aside class="panel">
+    <div class="psec">
+      <h3>Contact tally <span class="ct" id="tallyLive">5 live</span></h3>
+      <div class="tally">
+        <div class="t f"><div class="n" id="cFriendly">0</div><div class="l">Friendly</div></div>
+        <div class="t n_"><div class="n" id="cNeutral">0</div><div class="l">Neutral</div></div>
+        <div class="t h"><div class="n" id="cHostile">0</div><div class="l">Hostile</div></div>
+      </div>
+    </div>
+    <div class="psec">
+      <h3>Rules of engagement</h3>
+      <ul class="roe" id="roe">
+        <li><span class="rl">Maintain 3m standoff from off-leash dogs</span><span class="sw on" data-roe="standoff"></span></li>
+        <li><span class="rl">Do not classify children as contacts</span><span class="sw on" data-roe="children"></span></li>
+        <li><span class="rl">Yield mesh and airspace to ambulances</span><span class="sw on" data-roe="ambulance"></span></li>
+        <li><span class="rl">Goose dissuasion speaker, daylight only</span><span class="sw" data-roe="speaker"></span></li>
+      </ul>
+    </div>
+    <div class="psec feedsec">
+      <h3>Threat feed <span class="ct">live</span></h3>
+      <div class="feed" id="feed"></div>
+    </div>
+  </aside>
+</div>
+
+<script>
+(function(){
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // contact model. positions are % of map.
+  var contacts=[
+    {id:'k9',  name:'K9-2',     kind:'Off-leash dog',  cls:'hostile', conf:91, range:'42m', x:66,  y:70, designable:false},
+    {id:'cyc1',name:'CYC-1',    kind:'Cyclist',        cls:'neutral', conf:77, range:'88m', x:40,  y:58, designable:false},
+    {id:'goose',name:'GAGGLE-A',kind:'Geese (6)',      cls:'hostile', conf:96, range:'31m', x:30,  y:78, designable:false},
+    {id:'cyc2',name:'CYC-2',    kind:'Cyclist',        cls:'neutral', conf:81, range:'120m',x:62,  y:30, designable:false},
+    {id:'rival',name:'RNR-9',   kind:'Rival runner (M 50-54)', cls:'friendly', conf:88, range:'19m', x:46, y:44, designable:true}
+  ];
+
+  var mapwrap=document.getElementById('mapwrap');
+  var feed=document.getElementById('feed');
+  var pop=document.getElementById('popover');
+  var hostileFilter=document.getElementById('hostileFilter');
+  var filterOn=false, selected=null;
+  var clock=8*60+42; // mission clock in seconds, fake
+
+  function fmtClock(){var m=Math.floor(clock/60),s=clock%60;return ('0'+m).slice(-2)+':'+('0'+s).slice(-2);}
+
+  function logFeed(msg,type){
+    var line=document.createElement('div');
+    line.className='fline'+(type?(' '+type):'');
+    line.innerHTML='<span class="ts">'+fmtClock()+'</span><span class="msg">'+msg+'</span>';
+    feed.insertBefore(line,feed.firstChild);
+    while(feed.children.length>40) feed.removeChild(feed.lastChild);
+  }
+
+  function renderNodes(){
+    // remove old
+    Array.prototype.forEach.call(mapwrap.querySelectorAll('.node'),function(n){n.remove()});
+    contacts.forEach(function(c){
+      var b=document.createElement('button');
+      b.className='node '+c.cls+(selected===c.id?' sel':'')+((filterOn&&c.cls!=='hostile')?' dim':'');
+      b.style.top=c.y+'%';b.style.left=c.x+'%';
+      b.setAttribute('aria-label',c.name+' '+c.kind+' '+c.cls);
+      b.innerHTML='<span class="pin"></span><span class="lab">'+c.name+' <span class="cf">'+c.conf+'%</span></span>';
+      b.addEventListener('click',function(e){e.stopPropagation();openPop(c,b);});
+      mapwrap.appendChild(b);
+    });
+    updateTally();
+  }
+
+  function updateTally(){
+    var f=0,n=0,h=0;
+    contacts.forEach(function(c){if(c.cls==='friendly')f++;else if(c.cls==='neutral')n++;else h++;});
+    document.getElementById('cFriendly').textContent=f;
+    document.getElementById('cNeutral').textContent=n;
+    document.getElementById('cHostile').textContent=h;
+    document.getElementById('tallyLive').textContent=contacts.length+' live';
+    document.getElementById('hudcount').textContent=(filterOn?h:contacts.length)+' contact'+((filterOn?h:contacts.length)===1?'':'s');
+  }
+
+  function openPop(c,btn){
+    selected=c.id;renderNodes();
+    document.getElementById('pvName').textContent=c.name;
+    document.getElementById('pvKind').textContent=c.kind;
+    document.getElementById('pvConf').textContent=c.conf+'%';
+    document.getElementById('pvRange').textContent=c.range;
+    // segmented active state
+    Array.prototype.forEach.call(pop.querySelectorAll('.seg button'),function(s){
+      s.className='';
+      if(s.getAttribute('data-c')===c.cls) s.classList.add('act-'+c.cls);
+    });
+    var dz=document.getElementById('pvDesignate');
+    if(c.designable){dz.disabled=false;dz.textContent= c.cls==='hostile' ? 'Designated' : 'Designate';}
+    else {dz.disabled=true;dz.textContent='Designate (n/a)';}
+    // position popover near node, clamp to map
+    var mr=mapwrap.getBoundingClientRect();
+    var nx=mr.width*(c.x/100), ny=mr.height*(c.y/100);
+    var px=Math.min(Math.max(nx+18,8), mr.width-220);
+    var py=Math.min(Math.max(ny-40,8), mr.height-200);
+    pop.style.left=px+'px';pop.style.top=py+'px';
+    pop.classList.add('show');
+    pop._cur=c;
+  }
+  function closePop(){pop.classList.remove('show');selected=null;renderNodes();}
+
+  pop.querySelector('#pvClose').addEventListener('click',closePop);
+  mapwrap.addEventListener('click',function(){if(pop.classList.contains('show'))closePop();});
+  pop.addEventListener('click',function(e){e.stopPropagation();});
+
+  // reclassify
+  pop.querySelectorAll('.seg button').forEach(function(s){
+    s.addEventListener('click',function(){
+      var c=pop._cur;if(!c)return;
+      var nc=s.getAttribute('data-c');
+      if(nc===c.cls)return;
+      var old=c.cls;c.cls=nc;
+      logFeed(c.name+' reclassified '+old.toUpperCase()+' → '+nc.toUpperCase(), nc==='hostile'?'alert':(nc==='friendly'?'ok':null));
+      openPop(c);renderNodes();
+    });
+  });
+  // designate
+  document.getElementById('pvDesignate').addEventListener('click',function(){
+    var c=pop._cur;if(!c||!c.designable||this.disabled)return;
+    if(c.cls!=='hostile'){c.cls='hostile';logFeed(c.name+' DESIGNATED. Standoff pace enforcement requested.','alert');}
+    else{logFeed(c.name+' designation standing. Operator advised to simply run faster.','alert');}
+    openPop(c);renderNodes();
+  });
+
+  // ROE toggles
+  document.querySelectorAll('.sw').forEach(function(sw){
+    sw.addEventListener('click',function(){
+      this.classList.toggle('on');
+      var on=this.classList.contains('on');
+      var label=this.parentNode.querySelector('.rl').textContent;
+      logFeed('ROE updated · "'+label+'" → '+(on?'ENABLED':'DISABLED'), on?'ok':'alert');
+    });
+  });
+
+  // hostile filter
+  hostileFilter.addEventListener('click',function(){
+    filterOn=!filterOn;this.classList.toggle('on',filterOn);
+    this.textContent=filterOn?'Showing hostiles':'Hostiles only';
+    logFeed(filterOn?'Display filtered to HOSTILE contacts':'Filter cleared · all contacts shown');
+    renderNodes();
+  });
+
+  // ambient feed + clock
+  var ambient=[
+    {m:'GAGGLE-A holding near pond. No advance.',t:null},
+    {m:'Pylon 4 handed off track to Pylon 5.',t:'ok'},
+    {m:'CYC-1 cleared operating area, low threat.',t:null},
+    {m:'Overwatch on station. Feed nominal.',t:'ok'},
+    {m:'K9-2 closing. Standoff buffer engaged.',t:'alert'},
+    {m:'Mesh coverage 100%. No gaps.',t:'ok'},
+    {m:'RNR-9 matching pace. Gap holding at 19m.',t:null}
+  ];
+  var ai=0;
+  // seed feed
+  logFeed('Console online. 5 contacts on track.','ok');
+  logFeed('Mesh stood up across Sector 07.','ok');
+
+  renderNodes();
+
+  if(!reduce){
+    setInterval(function(){clock++;document.getElementById('pace').textContent=fmtClock();},1000);
+    setInterval(function(){var a=ambient[ai%ambient.length];ai++;logFeed(a.m,a.t);},4200);
+  }
+})();
+</script>
+</body>
+</html>

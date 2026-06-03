@@ -1,0 +1,75 @@
+{
+  "date": "2026-06-03",
+  "company": "Anduril",
+  "subject": "marathon runners",
+  "tagline": "Anduril for marathon runners",
+  "slug": "anduril-for-marathon-runners",
+  "product_name": "Picket",
+  "one_liner": "Autonomous perimeter surveillance, real-time contact classification, and quadcopter overwatch for the recreational 10K.",
+  "brand_voice_notes": "Straight-faced defense-contractor copy applied to a Saturday jog. Procurement-speak, capability briefs, rules of engagement, domain awareness. Never acknowledges the absurdity. The geese are a credible adversary and we treat them as one.",
+  "hero": {
+    "h1": "Total domain awareness for the recreational loop.",
+    "sub": "Picket brings autonomous perimeter surveillance, sub-second contact classification, and quadcopter overwatch to your morning run. The geese have held the initiative long enough.",
+    "primary_cta": "Request a capability brief"
+  },
+  "features": [
+    {
+      "title": "Sentry Mesh",
+      "blurb": "Solar surveillance pylons stand themselves up along your usual route and hand off tracking as you pass. Coverage gaps close in under 40 seconds. You will not be surprised by a sprinkler again."
+    },
+    {
+      "title": "Contact Classification",
+      "blurb": "Every cyclist, dog walker, and squirrel inside your operating area is tagged friendly, neutral, or hostile and pushed to your watch. Confidence updates twice a second. Most strollers resolve to neutral."
+    },
+    {
+      "title": "Overwatch",
+      "blurb": "A company-owned quadcopter holds a pattern above your easy run and relays a top-down feed to the ground station. It does not carry anything. We have been clear with the FAA about this."
+    }
+  ],
+  "pricing_tiers": [
+    {
+      "name": "Patrol",
+      "price": "$49/mo",
+      "tagline": "For the runner securing a single loop.",
+      "perks": ["One surveillance pylon", "Friendly / hostile tagging", "Threat feed, 7-day retention"]
+    },
+    {
+      "name": "Forward Operating",
+      "price": "$640/mo",
+      "tagline": "For the household that has decided the cul-de-sac is contested.",
+      "perks": ["Up to nine pylons", "Quadcopter overwatch, daylight hours", "Rules of engagement editor", "Priority goose response"]
+    },
+    {
+      "name": "Theater Command",
+      "price": "Priced per engagement",
+      "tagline": "For municipalities, run clubs, and one very committed retiree.",
+      "perks": ["Unlimited pylons and airframes", "Dedicated mission integrator", "Standoff enforcement", "We do not put this tier in writing"]
+    }
+  ],
+  "testimonials": [
+    {
+      "quote": "I have not been passed on the Greenway since we stood up the mesh. The telemetry is unambiguous.",
+      "name": "Dale Ferro",
+      "title": "Age-Group Podium Finisher (M 50-54), Reston Pace Collective"
+    },
+    {
+      "quote": "The geese relocated to a different pond within nine days. I did nothing the township could cite.",
+      "name": "Marguerite Voss",
+      "title": "Homeowner, Contested Cul-de-Sac"
+    },
+    {
+      "quote": "Explaining the procurement to my wife was difficult. Explaining the overwatch feed was not.",
+      "name": "Tomas Brandt",
+      "title": "Recreational Runner, 14-Minute 5K Aspirant"
+    }
+  ],
+  "demo_screen_concept": "A tactical command console for one morning run. A top-down map of a city-park loop shows the runner as a blue BLUFOR icon mid-route, fixed surveillance pylons as numbered nodes with coverage arcs, and live contacts (an off-leash dog, a gaggle of geese, two cyclists, a rival age-group runner) moving along the paths, each tagged friendly / neutral / hostile with a live confidence percentage. A right-hand panel holds a scrolling threat feed, a Rules of Engagement switch list (maintain 3m standoff from off-leash dogs, do not classify children, yield to ambulances), and current pace. Clicking a contact opens a classification popover to reclassify it; the rival runner carries a DESIGNATE control. ROE toggles flip live and write entries to the feed. A filter shows hostiles only.",
+  "design_direction": {
+    "style": "Tactical command & control (C2) interface, defense-grade dark HUD. Olive near-black ground with a faint reticle grid and scanline wash, corner-bracket framing on every panel, monospace telemetry readouts, blinking status LEDs, a classification banner running edge to edge, and condensed stencil-grotesque headers. Radar-green is the system color; alert-red marks hostiles. Reads like a procurement portal for a defense prime that has misunderstood the customer.",
+    "palette": { "primary": "#5FD17A", "accent": "#FF4438", "bg": "#0A0F0B", "fg": "#DCE6DA", "muted": "#6E7C6F", "ink": "#DCE6DA" },
+    "fonts": { "display": "\"Saira Condensed\", \"Arial Narrow\", sans-serif", "body": "\"IBM Plex Mono\", ui-monospace, \"SFMono-Regular\", Menlo, monospace" },
+    "archetype": "Real-Time / Operations Landing (live status hero, capability metrics, how-it-works, demo CTA)",
+    "motion_vocab": "Sweeping radar arc on the hero, blinking status dots, panel corner-brackets that draw in on scroll, contact pings that fade. All motion gated behind prefers-reduced-motion.",
+    "hero_composition_notes": "Full-bleed dark hero with a top classification banner (UNCLASSIFIED // FOR RECREATIONAL USE), a condensed left-aligned headline over a live mock telemetry strip (pace, contacts tracked, mesh status), a single primary CTA, and a right-side reticle/radar graphic rendered in CSS. Spec ribbon of capability stats below the fold."
+  }
+}
