@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Repot · theworstaistudioever</title>
+<meta name="description" content="Production-grade machine learning inference for the seventeen plants on your windowsill.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Repot · theworstaistudioever">
+<meta property="og:description" content="Production-grade machine learning inference for the seventeen plants on your windowsill.">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Repot · theworstaistudioever">
+<meta name="twitter:description" content="Production-grade machine learning inference for the seventeen plants on your windowsill.">
+<meta name="theme-color" content="#F6F8F5">
+<link rel="icon" type="image/png" href="/favicon.png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --primary:#11221A;
+  --accent:#1FA85C;
+  --accent-ink:#0B7A40;
+  --bg:#F6F8F5;
+  --panel:#FFFFFF;
+  --fg:#11221A;
+  --muted:#67726B;
+  --ink:#11221A;
+  --line:#DDE3DD;
+  --line-strong:#C5CEC6;
+  --code-bg:#EEF2EC;
+  --display:"Geist","Inter",system-ui,sans-serif;
+  --body:"Geist",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+  --mono:"Geist Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--fg);
+  font-family:var(--body);
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+}
+/* faint engineering grid */
+body::before{
+  content:"";
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(17,34,26,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(17,34,26,.035) 1px,transparent 1px);
+  background-size:64px 64px;
+  mask-image:radial-gradient(ellipse 100% 70% at 50% 0%,#000 0%,transparent 75%);
+}
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 28px}
+a{color:inherit;text-decoration:none}
+
+.mono{font-family:var(--mono);font-feature-settings:"tnum" 1}
+code{
+  font-family:var(--mono);font-size:.86em;
+  background:var(--code-bg);color:var(--accent-ink);
+  padding:.12em .4em;border-radius:4px;border:1px solid var(--line);
+}
+
+/* ---------- header ---------- */
+header{
+  position:sticky;top:0;z-index:30;
+  background:rgba(246,248,245,.82);
+  backdrop-filter:saturate(140%) blur(8px);
+  border-bottom:1px solid var(--line);
+}
+.nav{display:flex;align-items:center;justify-content:space-between;height:62px}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-weight:600;font-size:15px;letter-spacing:-.01em}
+.logo .glyph{
+  width:24px;height:24px;border:1.5px solid var(--primary);border-radius:6px;
+  display:grid;place-items:center;position:relative;
+}
+.logo .glyph::after{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.logo .tag{color:var(--muted);font-weight:400}
+.nav-links{display:flex;align-items:center;gap:26px;font-family:var(--mono);font-size:13px;color:var(--muted)}
+.nav-links a{transition:color .18s ease}
+.nav-links a:hover{color:var(--fg)}
+.nav-links .ship{color:var(--accent-ink)}
+.btn{
+  font-family:var(--mono);font-size:13px;font-weight:500;
+  display:inline-flex;align-items:center;gap:8px;
+  padding:9px 15px;border-radius:7px;cursor:pointer;border:1px solid transparent;
+  transition:transform .14s ease,background .18s ease,box-shadow .18s ease,border-color .18s ease;
+}
+.btn-solid{background:var(--accent);color:#fff;box-shadow:0 1px 0 rgba(11,122,64,.45),0 6px 18px -8px rgba(31,168,92,.7)}
+.btn-solid:hover{background:#1c9a54;transform:translateY(-1px)}
+.btn-ghost{border-color:var(--line-strong);color:var(--fg);background:var(--panel)}
+.btn-ghost:hover{border-color:var(--primary)}
+@media(max-width:760px){.nav-links{display:none}}
+
+/* ---------- hero ---------- */
+.hero{padding:74px 0 36px;display:grid;grid-template-columns:1.05fr .95fr;gap:54px;align-items:center}
+.eyebrow{
+  font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--muted);
+  display:inline-flex;align-items:center;gap:9px;margin-bottom:22px;
+  border:1px solid var(--line);background:var(--panel);padding:5px 11px;border-radius:999px;
+}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px rgba(31,168,92,.18);animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+h1{
+  font-family:var(--display);font-weight:600;
+  font-size:clamp(38px,5.2vw,62px);line-height:1.02;letter-spacing:-.03em;
+  margin-bottom:20px;
+}
+h1 em{font-style:normal;color:var(--accent-ink)}
+.lede{font-size:18px;color:#33453B;max-width:30ch;margin-bottom:30px}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.hero-meta{margin-top:26px;font-family:var(--mono);font-size:12px;color:var(--muted);display:flex;gap:18px;flex-wrap:wrap}
+.hero-meta span{display:inline-flex;align-items:center;gap:7px}
+.hero-meta .ok{color:var(--accent-ink)}
+
+/* console card */
+.console{
+  background:var(--panel);border:1px solid var(--line-strong);border-radius:12px;
+  box-shadow:0 1px 0 #fff inset,0 24px 60px -34px rgba(17,34,26,.4);
+  overflow:hidden;font-family:var(--mono);font-size:13px;
+}
+.console-bar{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid var(--line);background:#FBFCFB}
+.console-bar .lights{display:flex;gap:6px}
+.console-bar .lights i{width:10px;height:10px;border-radius:50%;background:var(--line-strong)}
+.console-bar .lights i:nth-child(3){background:var(--accent)}
+.console-bar .path{color:var(--muted);font-size:12px}
+.console-body{padding:16px 16px 18px}
+.console-body .ln{white-space:pre-wrap;line-height:1.75}
+.c-cmd{color:var(--fg)}
+.c-flag{color:var(--accent-ink)}
+.c-str{color:#1c6e9c}
+.c-key{color:var(--muted)}
+.c-num{color:#9b5b1b}
+.c-comment{color:var(--muted)}
+.console-foot{
+  border-top:1px solid var(--line);padding:10px 14px;display:flex;justify-content:space-between;
+  color:var(--muted);font-size:11.5px;
+}
+@media(max-width:880px){.hero{grid-template-columns:1fr;gap:34px;padding-top:48px}.lede{max-width:none}}
+
+/* ---------- section scaffolding ---------- */
+section{position:relative;z-index:1}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:34px}
+.sec-num{font-family:var(--mono);font-size:12px;color:var(--accent-ink)}
+.sec-title{font-family:var(--display);font-weight:600;font-size:clamp(24px,3vw,33px);letter-spacing:-.02em}
+.sec-sub{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-left:auto;align-self:center}
+.divider{height:1px;background:var(--line);margin:0}
+
+/* features */
+.features{padding:64px 0}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel)}
+.feat{padding:30px 26px 34px;border-right:1px solid var(--line)}
+.feat:last-child{border-right:none}
+.feat .idx{font-family:var(--mono);font-size:12px;color:var(--muted);display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.feat .idx .ep{color:var(--accent-ink)}
+.feat h3{font-family:var(--display);font-weight:600;font-size:19px;letter-spacing:-.01em;margin-bottom:11px}
+.feat p{font-size:14.5px;color:#3a4a41}
+@media(max-width:820px){.feat-grid{grid-template-columns:1fr}.feat{border-right:none;border-bottom:1px solid var(--line)}.feat:last-child{border-bottom:none}}
+
+/* how it works strip */
+.flow{padding:10px 0 64px}
+.flow-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+.steps{display:flex;flex-direction:column;gap:2px}
+.step{display:flex;gap:16px;padding:16px 0;border-top:1px solid var(--line)}
+.step:last-child{border-bottom:1px solid var(--line)}
+.step .n{font-family:var(--mono);font-size:12px;color:var(--accent-ink);padding-top:2px;min-width:34px}
+.step h4{font-family:var(--display);font-weight:600;font-size:16px;margin-bottom:3px}
+.step p{font-size:14px;color:var(--muted)}
+.snippet{
+  background:var(--primary);color:#E7EFE9;border-radius:12px;padding:20px;
+  font-family:var(--mono);font-size:12.5px;line-height:1.9;overflow:auto;
+  box-shadow:0 24px 60px -34px rgba(17,34,26,.6);
+}
+.snippet .sk{color:#7FE0A6}.snippet .ss{color:#A9D5EE}.snippet .sc{color:#7B8C82}.snippet .sn{color:#E0B06A}
+@media(max-width:820px){.flow-grid{grid-template-columns:1fr;gap:26px}}
+
+/* testimonials */
+.quotes{padding:64px 0;border-top:1px solid var(--line)}
+.q-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.quote{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:24px 22px;display:flex;flex-direction:column;gap:18px}
+.quote p{font-size:15px;line-height:1.55}
+.quote .by{font-family:var(--mono);font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px;margin-top:auto}
+.quote .by b{color:var(--fg);font-weight:600;display:block;letter-spacing:-.01em}
+.quote .mark{font-family:var(--display);font-size:40px;line-height:.6;color:var(--accent);height:18px}
+@media(max-width:820px){.q-grid{grid-template-columns:1fr}}
+
+/* pricing */
+.pricing{padding:64px 0;border-top:1px solid var(--line)}
+.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.tier{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:28px 26px;display:flex;flex-direction:column}
+.tier.feature{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 24px 60px -36px rgba(31,168,92,.6)}
+.tier .name{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+.tier .name .badge{color:var(--accent-ink);text-transform:none;letter-spacing:0}
+.tier .price{font-family:var(--display);font-weight:600;font-size:34px;letter-spacing:-.02em;margin:16px 0 4px}
+.tier .ptag{font-size:13.5px;color:var(--muted);min-height:40px}
+.tier ul{list-style:none;margin:20px 0 24px;display:flex;flex-direction:column;gap:11px;flex:1}
+.tier li{font-size:13.5px;display:flex;gap:10px;align-items:flex-start;color:#3a4a41}
+.tier li::before{content:"";flex:none;width:15px;height:15px;margin-top:3px;border-radius:50%;background:var(--code-bg);border:1px solid var(--accent);background-image:radial-gradient(circle,var(--accent) 0 2.5px,transparent 3px)}
+.tier .btn{width:100%;justify-content:center}
+@media(max-width:820px){.price-grid{grid-template-columns:1fr}}
+
+/* demo banner */
+.demo-cta{padding:18px 0 80px}
+.demo-card{
+  background:var(--primary);border-radius:16px;padding:42px 40px;
+  display:flex;align-items:center;justify-content:space-between;gap:30px;flex-wrap:wrap;
+  position:relative;overflow:hidden;
+}
+.demo-card::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);
+  background-size:34px 34px;mask-image:radial-gradient(ellipse 80% 120% at 100% 50%,#000,transparent 70%);
+}
+.demo-card .txt{position:relative;z-index:1}
+.demo-card .eb{font-family:var(--mono);font-size:12px;color:#7FE0A6;letter-spacing:.04em;margin-bottom:10px}
+.demo-card h3{font-family:var(--display);font-weight:600;font-size:clamp(22px,3vw,30px);color:#F2F7F3;letter-spacing:-.02em}
+.demo-card p{color:#A9B7AE;font-family:var(--mono);font-size:13px;margin-top:8px}
+.demo-card .btn{position:relative;z-index:1;font-size:14px;padding:13px 22px}
+
+/* footer */
+footer{border-top:1px solid var(--line);padding:34px 0 60px}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+.foot a.home{display:inline-flex;align-items:center;gap:8px;transition:color .18s ease}
+.foot a.home:hover{color:var(--accent-ink)}
+.foot .fineprint{max-width:46ch;line-height:1.5}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="#top">
+      <span class="glyph"></span>
+      Repot<span class="tag">/ inference</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#features">Platform</a>
+      <a href="#flow">Docs</a>
+      <a href="#pricing">Pricing</a>
+      <a href="./demo.html" class="ship">Console →</a>
+    </nav>
+    <a class="btn btn-solid" href="./demo.html">Deploy a plant</a>
+  </div>
+</header>
+
+<main class="wrap" id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div>
+      <span class="eyebrow"><span class="dot"></span>v3.2 · inference platform · GA</span>
+      <h1>Deploy machine learning to your <em>windowsill</em>.</h1>
+      <p class="lede">Repot is an API-first inference platform for houseplants. Point a webcam at your fern, pick a model, and find out what your fern already knew.</p>
+      <div class="hero-cta">
+        <a class="btn btn-solid" href="./demo.html">Deploy a plant</a>
+        <a class="btn btn-ghost" href="#flow">Read the docs</a>
+      </div>
+      <div class="hero-meta">
+        <span class="ok">● all systems operational</span>
+        <span>1 plant alive</span>
+        <span>p99 4.2s cold start</span>
+      </div>
+    </div>
+
+    <div class="console" aria-hidden="true">
+      <div class="console-bar">
+        <div class="lights"><i></i><i></i><i></i></div>
+        <span class="path">POST /v1/plants/greg/infer</span>
+      </div>
+      <div class="console-body">
+<div class="ln c-cmd"><span class="c-flag">$</span> repot run greg \</div>
+<div class="ln c-cmd">  --model <span class="c-str">leaf-wilt-detector:v3</span> \</div>
+<div class="ln c-cmd">  --input <span class="c-str">webcam://sill-north</span></div>
+<div class="ln c-comment"> </div>
+<div class="ln c-comment"># cold start ... ready in 4.18s</div>
+<div class="ln"><span class="c-key">{</span></div>
+<div class="ln">  <span class="c-key">"plant"</span>: <span class="c-str">"greg"</span>,</div>
+<div class="ln">  <span class="c-key">"verdict"</span>: <span class="c-str">"needs water"</span>,</div>
+<div class="ln">  <span class="c-key">"confidence"</span>: <span class="c-num">0.94</span>,</div>
+<div class="ln">  <span class="c-key">"note"</span>: <span class="c-str">"you knew this"</span></div>
+<div class="ln"><span class="c-key">}</span></div>
+      </div>
+      <div class="console-foot"><span>200 OK</span><span>billed 4.18 leaf-seconds</span></div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- FEATURES -->
+  <section class="features" id="features">
+    <div class="sec-head">
+      <span class="sec-num">01</span>
+      <h2 class="sec-title">Infrastructure for things that photosynthesize.</h2>
+      <span class="sec-sub">3 primitives, fully managed</span>
+    </div>
+    <div class="feat-grid">
+      <article class="feat">
+        <div class="idx"><span>F-01</span><span class="ep">/registry</span></div>
+        <h3>Versioned plant registry</h3>
+        <p>Every photo of your monstera, tagged and immutable. Cut a release when it sprouts a leaf. Roll back to the version before you overwatered it. The photo is safe. The plant is a separate conversation.</p>
+      </article>
+      <article class="feat">
+        <div class="idx"><span>F-02</span><span class="ep">/infer</span></div>
+        <h3>Sub-five-second cold starts</h3>
+        <p>Your <code>is-this-basil-dead</code> endpoint sits at zero until you panic at 11pm. It spins up in 4.2 seconds, returns a verdict, and scales back down. Billed per leaf-second, rounded up.</p>
+      </article>
+      <article class="feat">
+        <div class="idx"><span>F-03</span><span class="ep">/autoscale</span></div>
+        <h3>Autoscaling foliage</h3>
+        <p>Buy a fourth pothos and we provision a fourth GPU. The plant does not know it has a GPU. The GPU does not know it has a plant. The invoice has been fully briefed.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- FLOW / DOCS -->
+  <section class="flow" id="flow">
+    <div class="sec-head">
+      <span class="sec-num">02</span>
+      <h2 class="sec-title">From repotting to production in four calls.</h2>
+      <span class="sec-sub">quickstart.sh</span>
+    </div>
+    <div class="flow-grid">
+      <div class="steps">
+        <div class="step"><span class="n">01</span><div><h4>Register the plant</h4><p>Name it. We assign an endpoint, a region, and a billing identity it never asked for.</p></div></div>
+        <div class="step"><span class="n">02</span><div><h4>Point a webcam</h4><p>Any RTSP feed aimed at the soil. We ingest at 30fps and discard 29 of them.</p></div></div>
+        <div class="step"><span class="n">03</span><div><h4>Pick a model</h4><p>Pull a verified model from the registry, or fine-tune one on a plant you have already lost.</p></div></div>
+        <div class="step"><span class="n">04</span><div><h4>Run inference</h4><p>Get a verdict, a confidence score, and a feeling. Scale to zero between panics.</p></div></div>
+      </div>
+      <pre class="snippet"><span class="sc"># install</span>
+$ npm i -g <span class="ss">@repot/cli</span>
+$ repot login
+
+<span class="sc"># register a plant</span>
+$ repot plants create <span class="ss">greg</span> \
+    --species <span class="ss">monstera</span> \
+    --region <span class="ss">sill-north-1</span>
+
+<span class="sc"># deploy a model and run it</span>
+$ repot deploy <span class="sk">soil-moisture-vibes</span>
+$ repot run greg --model <span class="sk">soil-moisture-vibes</span>
+  <span class="sc">→ "moist enough, emotionally and literally" (<span class="sn">0.91</span>)</span></pre>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="quotes">
+    <div class="sec-head">
+      <span class="sec-num">03</span>
+      <h2 class="sec-title">Trusted by people who own too many plants.</h2>
+      <span class="sec-sub">customers / self-reported</span>
+    </div>
+    <div class="q-grid">
+      <figure class="quote">
+        <div class="mark">"</div>
+        <p>I deployed a model to tell me the pothos needed water. It told me what I already knew, with 94% confidence. I have never felt so seen and so audited at the same time.</p>
+        <figcaption class="by"><b>Dana Reyes</b>Senior Plant Parent, two monsteras and one fiddle-leaf fig in hospice</figcaption>
+      </figure>
+      <figure class="quote">
+        <div class="mark">"</div>
+        <p>We migrated the entire succulent shelf to Repot over a weekend. Three of them have since died, but the dashboards are immaculate and the latency is excellent.</p>
+        <figcaption class="by"><b>Marcus Liu</b>Head of Foliage Reliability, home office, no reports</figcaption>
+      </figure>
+      <figure class="quote">
+        <div class="mark">"</div>
+        <p>The cold starts are faster than my last three therapists. I do not know what the model does. I run it every morning before coffee.</p>
+        <figcaption class="by"><b>Priya Anand</b>Individual Contributor on a single snake plant</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="pricing" id="pricing">
+    <div class="sec-head">
+      <span class="sec-num">04</span>
+      <h2 class="sec-title">Pricing that scales with your foliage.</h2>
+      <span class="sec-sub">billed per leaf-second</span>
+    </div>
+    <div class="price-grid">
+      <div class="tier">
+        <div class="name">Hobby</div>
+        <div class="price">$0<span style="font-family:var(--mono);font-size:14px;color:var(--muted)">/mo</span></div>
+        <div class="ptag">One plant, low expectations.</div>
+        <ul>
+          <li>Shared GPU, when one is free</li>
+          <li>Cold starts only</li>
+          <li>No SLA on whether the plant is alive</li>
+        </ul>
+        <a class="btn btn-ghost" href="./demo.html">Start free</a>
+      </div>
+      <div class="tier feature">
+        <div class="name">Greenhouse <span class="badge">● popular</span></div>
+        <div class="price">$290<span style="font-family:var(--mono);font-size:14px;color:var(--muted)">/mo</span></div>
+        <div class="ptag">Dedicated compute, per plant.</div>
+        <ul>
+          <li>One GPU pinned to each plant</li>
+          <li>Webcam ingestion at 30fps</li>
+          <li>Alerts your plant fully ignores</li>
+        </ul>
+        <a class="btn btn-solid" href="./demo.html">Provision compute</a>
+      </div>
+      <div class="tier">
+        <div class="name">Arboretum</div>
+        <div class="price">Let's talk</div>
+        <div class="ptag">For people who call their apartment a collection.</div>
+        <ul>
+          <li>Unlimited plants and regions</li>
+          <li>On-prem misting integration</li>
+          <li>A solutions engineer who has also killed a fiddle-leaf fig</li>
+        </ul>
+        <a class="btn btn-ghost" href="./demo.html">Contact sales</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEMO CTA -->
+  <section class="demo-cta">
+    <div class="demo-card">
+      <div class="txt">
+        <div class="eb">live console · no signup</div>
+        <h3>Run inference on a plant right now.</h3>
+        <p>greg is online and waiting to be diagnosed.</p>
+      </div>
+      <a class="btn btn-solid" href="./demo.html">open the demo →</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <a class="home" href="/">← theworstaistudioever</a>
+    <span class="fineprint">Repot is a portfolio company of theworstaistudioever. No plants are improved by this product. Leaf-seconds are non-refundable.</span>
+  </div>
+</footer>
+
+</body>
+</html>

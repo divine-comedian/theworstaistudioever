@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Repot Console · greg · theworstaistudioever</title>
+<meta name="description" content="Live inference console for one houseplant. Pick a model, run it, get a verdict you already had.">
+<meta name="theme-color" content="#F6F8F5">
+<link rel="icon" type="image/png" href="/favicon.png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --primary:#11221A;
+  --accent:#1FA85C;
+  --accent-ink:#0B7A40;
+  --bg:#F6F8F5;
+  --panel:#FFFFFF;
+  --fg:#11221A;
+  --muted:#67726B;
+  --ink:#11221A;
+  --line:#DDE3DD;
+  --line-strong:#C5CEC6;
+  --code-bg:#EEF2EC;
+  --display:"Geist","Inter",system-ui,sans-serif;
+  --body:"Geist",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+  --mono:"Geist Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;
+  -webkit-font-smoothing:antialiased;overflow:hidden;
+}
+.mono{font-family:var(--mono);font-feature-settings:"tnum" 1}
+button{font-family:inherit;cursor:pointer}
+a{color:inherit;text-decoration:none}
+
+/* top chrome */
+.topbar{
+  height:54px;border-bottom:1px solid var(--line);background:var(--panel);
+  display:flex;align-items:center;justify-content:space-between;padding:0 18px;gap:16px;
+}
+.back{font-family:var(--mono);font-size:13px;color:var(--muted);display:inline-flex;align-items:center;gap:8px;transition:color .18s ease}
+.back:hover{color:var(--accent-ink)}
+.brand{font-family:var(--mono);font-weight:600;font-size:14px;display:flex;align-items:center;gap:9px}
+.brand .glyph{width:22px;height:22px;border:1.5px solid var(--primary);border-radius:6px;display:grid;place-items:center}
+.brand .glyph::after{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.topbar .env{font-family:var(--mono);font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.topbar .env .live{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px rgba(31,168,92,.18)}
+
+/* layout */
+.app{display:grid;grid-template-columns:248px 1fr 270px;height:calc(100% - 54px)}
+.col{overflow-y:auto;padding:16px}
+.rail{border-right:1px solid var(--line);background:var(--panel)}
+.rail-r{border-left:1px solid var(--line);background:var(--panel)}
+.label{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:4px 0 12px}
+
+/* plant list */
+.plant{
+  width:100%;text-align:left;background:transparent;border:1px solid transparent;border-radius:9px;
+  padding:11px 11px;display:flex;gap:11px;align-items:center;margin-bottom:6px;transition:background .15s ease,border-color .15s ease;
+}
+.plant:hover{background:var(--code-bg)}
+.plant.active{background:var(--code-bg);border-color:var(--line-strong)}
+.plant .av{width:34px;height:34px;border-radius:8px;background:#EAF1EA;border:1px solid var(--line);flex:none;display:grid;place-items:center}
+.plant .meta{min-width:0}
+.plant .nm{font-weight:600;font-size:14px;letter-spacing:-.01em;display:flex;align-items:center;gap:7px}
+.plant .dot{width:7px;height:7px;border-radius:50%;flex:none}
+.dot.up{background:var(--accent)}.dot.warn{background:#D98E3A}.dot.crit{background:#D6453C}
+.plant .sb{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rail .addbtn{width:100%;margin-top:8px;border:1px dashed var(--line-strong);background:transparent;color:var(--muted);font-family:var(--mono);font-size:12px;padding:10px;border-radius:9px;transition:color .15s,border-color .15s}
+.rail .addbtn:hover{color:var(--accent-ink);border-color:var(--accent)}
+
+/* center */
+.center{display:flex;flex-direction:column;gap:16px}
+.feed{
+  position:relative;border:1px solid var(--line-strong);border-radius:12px;overflow:hidden;
+  background:#0E1A12;aspect-ratio:16/8;min-height:200px;
+}
+.feed svg{position:absolute;inset:0;width:100%;height:100%}
+.feed .hud{position:absolute;inset:0;pointer-events:none;font-family:var(--mono);font-size:11px;color:rgba(231,239,233,.8)}
+.feed .hud .tl{position:absolute;top:10px;left:12px;display:flex;align-items:center;gap:7px}
+.feed .hud .rec{width:8px;height:8px;border-radius:50%;background:#D6453C;animation:blink 1.4s steps(2) infinite}
+@keyframes blink{50%{opacity:.2}}
+.feed .hud .tr{position:absolute;top:10px;right:12px}
+.feed .hud .bl{position:absolute;bottom:10px;left:12px}
+.feed .scan{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(0,0,0,.16) 3px 4px);pointer-events:none;opacity:.5}
+.feed .bbox{position:absolute;border:1px solid var(--accent);border-radius:3px;box-shadow:0 0 0 1px rgba(31,168,92,.3)}
+.feed .bbox::after{content:attr(data-l);position:absolute;top:-17px;left:-1px;background:var(--accent);color:#06140C;font-family:var(--mono);font-size:9.5px;padding:1px 5px;border-radius:3px;white-space:nowrap}
+
+/* control bar */
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+select{
+  font-family:var(--mono);font-size:13px;background:var(--panel);color:var(--fg);
+  border:1px solid var(--line-strong);border-radius:8px;padding:9px 11px;min-width:240px;
+  appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2367726B' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 11px center;padding-right:30px;
+}
+select:focus{outline:2px solid rgba(31,168,92,.4);outline-offset:1px;border-color:var(--accent)}
+.run{
+  margin-left:auto;align-self:flex-end;background:var(--accent);color:#fff;border:none;
+  font-family:var(--mono);font-size:13px;font-weight:500;padding:10px 20px;border-radius:8px;
+  display:inline-flex;align-items:center;gap:9px;transition:background .16s ease,transform .14s ease,opacity .16s;
+  box-shadow:0 6px 18px -8px rgba(31,168,92,.7);
+}
+.run:hover:not(:disabled){background:#1c9a54;transform:translateY(-1px)}
+.run:disabled{opacity:.6;cursor:progress}
+.run .spin{width:13px;height:13px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none}
+.run.busy .spin{display:inline-block}
+.run.busy .lbl::after{content:"running"}
+.run .lbl::after{content:"Run inference"}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* output + gauge */
+.results{display:grid;grid-template-columns:1.5fr 1fr;gap:14px}
+.output{
+  background:var(--primary);color:#E7EFE9;border-radius:12px;padding:16px;
+  font-family:var(--mono);font-size:12.5px;line-height:1.8;min-height:200px;overflow:auto;
+}
+.output .ob{display:flex;justify-content:space-between;color:#7B8C82;font-size:11px;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:9px;margin-bottom:10px}
+.output .ok-dot{color:#7FE0A6}
+.out-lines .k{color:#A9B7AE}.out-lines .s{color:#A9D5EE}.out-lines .n{color:#E0B06A}.out-lines .b{color:#7FE0A6}
+.out-empty{color:#5C6E63;font-style:normal}
+.caret{display:inline-block;width:7px;background:#7FE0A6;animation:blink 1s steps(2) infinite}
+
+.gaugewrap{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.gaugewrap .gl{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);align-self:flex-start}
+.gauge{width:160px;height:96px;position:relative;margin-top:6px}
+.needle{transform-origin:80px 84px;transform:rotate(-90deg);transition:transform 1s cubic-bezier(.34,1.4,.5,1)}
+.gval{font-family:var(--display);font-weight:600;font-size:30px;letter-spacing:-.02em;line-height:1}
+.gsub{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:center}
+
+/* right rail */
+.meter{background:var(--code-bg);border:1px solid var(--line);border-radius:11px;padding:14px;margin-bottom:18px}
+.meter .big{font-family:var(--display);font-weight:600;font-size:28px;letter-spacing:-.02em}
+.meter .big .u{font-family:var(--mono);font-size:13px;color:var(--muted);font-weight:400}
+.meter .sub{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:3px}
+.meter .bar{height:5px;border-radius:3px;background:var(--line);margin-top:11px;overflow:hidden}
+.meter .bar i{display:block;height:100%;width:8%;background:var(--accent);transition:width .6s ease}
+.runs{display:flex;flex-direction:column;gap:0}
+.runrow{padding:11px 2px;border-top:1px solid var(--line);font-family:var(--mono);font-size:11.5px}
+.runrow:first-of-type{border-top:none}
+.runrow .l1{display:flex;justify-content:space-between;color:var(--fg)}
+.runrow .l2{color:var(--muted);margin-top:3px;display:flex;justify-content:space-between}
+.runrow .v{color:var(--accent-ink)}
+.empty{font-family:var(--mono);font-size:12px;color:var(--muted);padding:8px 0}
+
+@media(max-width:980px){
+  body{overflow:auto}
+  .app{grid-template-columns:1fr;height:auto}
+  .rail,.rail-r{border:none;border-bottom:1px solid var(--line)}
+  .results{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="brand"><span class="glyph"></span>Repot Console</span>
+  <span class="env"><span class="live"></span>sill-north-1 · prod</span>
+</div>
+
+<div class="app">
+
+  <!-- LEFT: plants -->
+  <aside class="col rail">
+    <div class="label">Your plants</div>
+    <div id="plantList"></div>
+    <button class="addbtn" id="addPlant">+ register a plant</button>
+  </aside>
+
+  <!-- CENTER -->
+  <main class="col center">
+    <div class="feed" id="feed"></div>
+
+    <div class="controls">
+      <div class="field">
+        <label for="modelSel">Model</label>
+        <select id="modelSel"></select>
+      </div>
+      <div class="field">
+        <label for="inputSel">Input source</label>
+        <select id="inputSel">
+          <option>webcam://sill-north</option>
+          <option>upload://last-photo.jpg</option>
+          <option>vibes://manual</option>
+        </select>
+      </div>
+      <button class="run" id="runBtn"><span class="spin"></span><span class="lbl"></span></button>
+    </div>
+
+    <div class="results">
+      <div class="output">
+        <div class="ob"><span id="obPath">POST /v1/plants/greg/infer</span><span id="obStatus" class="ok-dot">idle</span></div>
+        <div class="out-lines" id="outLines"><span class="out-empty">// pick a model and hit run. greg is waiting.</span></div>
+      </div>
+      <div class="gaugewrap">
+        <span class="gl">Confidence</span>
+        <div class="gauge">
+          <svg viewBox="0 0 160 96">
+            <path d="M14 84 A66 66 0 0 1 146 84" fill="none" stroke="#DDE3DD" stroke-width="9" stroke-linecap="round"/>
+            <path id="gaugeArc" d="M14 84 A66 66 0 0 1 146 84" fill="none" stroke="#1FA85C" stroke-width="9" stroke-linecap="round" stroke-dasharray="207" stroke-dashoffset="207" style="transition:stroke-dashoffset 1s ease"/>
+            <g class="needle" id="needle"><line x1="80" y1="84" x2="80" y2="30" stroke="#11221A" stroke-width="2.5" stroke-linecap="round"/><circle cx="80" cy="84" r="5" fill="#11221A"/></g>
+          </svg>
+        </div>
+        <div class="gval" id="gVal">—</div>
+        <div class="gsub" id="gSub">no inference run yet</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- RIGHT: billing + history -->
+  <aside class="col rail-r">
+    <div class="label">Billing · this session</div>
+    <div class="meter">
+      <div class="big"><span id="leafSec">0.00</span> <span class="u">leaf-seconds</span></div>
+      <div class="sub">est. <span id="cost">$0.00</span> · rounded up, always</div>
+      <div class="bar"><i id="meterBar"></i></div>
+    </div>
+    <div class="label">Run history</div>
+    <div class="runs" id="runs"><div class="empty">no runs yet</div></div>
+  </aside>
+
+</div>
+
+<script>
+// ---- plant illustrations (inline SVG, treated as a "webcam still") ----
+const ART = {
+  monstera:`<svg viewBox='0 0 320 160' preserveAspectRatio='xMidYMid slice'><rect width='320' height='160' fill='#0E1A12'/><rect x='138' y='112' width='44' height='40' rx='4' fill='#2A3A2E'/><rect x='138' y='112' width='44' height='9' fill='#36473A'/><path d='M160 116 C150 86 150 64 160 44' stroke='#3E6B4C' stroke-width='4' fill='none'/><g fill='#2E8B57'><path d='M160 60 C120 50 96 70 92 100 C120 104 150 92 160 60Z'/><path d='M160 56 C200 46 224 66 228 96 C200 100 170 88 160 56Z'/><path d='M158 86 C128 84 110 100 108 124 C132 126 154 112 158 86Z'/><path d='M162 86 C192 84 210 100 212 124 C188 126 166 112 162 86Z'/><path d='M160 40 C146 30 146 18 160 8 C174 18 174 30 160 40Z'/></g><g fill='#0E1A12'><circle cx='118' cy='86' r='4'/><circle cx='132' cy='96' r='3.4'/><circle cx='202' cy='82' r='4'/><circle cx='188' cy='94' r='3.4'/><circle cx='130' cy='110' r='3.6'/><circle cx='190' cy='110' r='3.6'/></g></svg>`,
+  pothos:`<svg viewBox='0 0 320 160' preserveAspectRatio='xMidYMid slice'><rect width='320' height='160' fill='#0E1A12'/><rect x='128' y='30' width='64' height='26' rx='4' fill='#2A3A2E'/><rect x='128' y='30' width='64' height='7' fill='#384a3c'/><g stroke='#3E6B4C' stroke-width='3' fill='none'><path d='M150 54 C120 80 116 120 96 150'/><path d='M170 54 C200 78 206 116 226 150'/><path d='M160 54 C158 90 160 120 160 152'/></g><g fill='#4F9D6B'><circle cx='104' cy='150' r='9'/><circle cx='120' cy='120' r='8'/><circle cx='132' cy='92' r='8'/><circle cx='160' cy='150' r='9'/><circle cx='160' cy='118' r='8'/><circle cx='160' cy='90' r='7'/><circle cx='216' cy='150' r='9'/><circle cx='200' cy='120' r='8'/><circle cx='188' cy='92' r='8'/></g></svg>`,
+  basil:`<svg viewBox='0 0 320 160' preserveAspectRatio='xMidYMid slice'><rect width='320' height='160' fill='#0E1A12'/><path d='M132 152 L138 110 L182 110 L188 152Z' fill='#7A4A2E'/><rect x='134' y='104' width='52' height='9' rx='2' fill='#8a5636'/><g stroke='#3E6B4C' stroke-width='3'><line x1='160' y1='104' x2='160' y2='52'/><line x1='160' y1='80' x2='138' y2='64'/><line x1='160' y1='80' x2='182' y2='64'/></g><g fill='#5BAE63'><ellipse cx='160' cy='46' rx='12' ry='8'/><ellipse cx='134' cy='60' rx='12' ry='7' transform='rotate(-25 134 60)'/><ellipse cx='186' cy='60' rx='12' ry='7' transform='rotate(25 186 60)'/><ellipse cx='142' cy='80' rx='11' ry='7' transform='rotate(-18 142 80)'/><ellipse cx='178' cy='80' rx='11' ry='7' transform='rotate(18 178 80)'/></g></svg>`
+};
+
+const PLANTS = [
+  {id:'greg', name:'Greg', species:'monstera', art:'monstera', status:'up', sub:'up 41d · v3', bbox:{t:18,l:30,w:42,h:60,label:'leaf · 0.97'}},
+  {id:'survivor', name:'The Survivor', species:'pothos', art:'pothos', status:'warn', sub:'up 9d · degraded', bbox:{t:22,l:28,w:46,h:55,label:'vine · 0.88'}},
+  {id:'probationary', name:'Probationary', species:'basil', art:'basil', status:'crit', sub:'up 2d · at risk', bbox:{t:26,l:36,w:30,h:48,label:'basil · 0.74'}}
+];
+
+const MODELS = [
+  {id:'leaf-wilt-detector', ver:'v3', lat:[3.4,4.9]},
+  {id:'soil-moisture-vibes', ver:'v2', lat:[2.1,3.3]},
+  {id:'will-it-survive-the-weekend', ver:'v1', lat:[5.0,7.2]},
+  {id:'is-this-a-bug-or-dirt', ver:'v4', lat:[1.6,2.4]}
+];
+
+// deadpan canned outputs: model -> per-plant result
+const RESULTS = {
+  'leaf-wilt-detector':{
+    greg:{verdict:'needs water',confidence:0.94,note:'you knew this'},
+    survivor:{verdict:'structurally fine, spiritually wilting',confidence:0.71,note:'within tolerance'},
+    probationary:{verdict:'wilt detected, onset imminent',confidence:0.88,note:'act, or do not'}
+  },
+  'soil-moisture-vibes':{
+    greg:{verdict:'moist enough, emotionally and literally',confidence:0.91,note:'leave it alone'},
+    survivor:{verdict:'bone dry, in denial',confidence:0.82,note:'it will not ask for help'},
+    probationary:{verdict:'overwatered, again',confidence:0.86,note:'this is on you'}
+  },
+  'will-it-survive-the-weekend':{
+    greg:{verdict:true,confidence:0.79,note:'probably. low confidence on Sunday'},
+    survivor:{verdict:true,confidence:0.61,note:'it always does, somehow'},
+    probationary:{verdict:false,confidence:0.66,note:'set expectations accordingly'}
+  },
+  'is-this-a-bug-or-dirt':{
+    greg:{verdict:'dirt',confidence:0.87,note:'87% dirt, 13% existential'},
+    survivor:{verdict:'a bug, and it has plans',confidence:0.69,note:'escalate to a human'},
+    probationary:{verdict:'dirt, pretending',confidence:0.78,note:'monitor'}
+  }
+};
+
+let sel = PLANTS[0];
+let model = MODELS[0];
+let leafSec = 0;
+let runCount = 0;
+let busy = false;
+const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+const $ = s => document.querySelector(s);
+const plantList = $('#plantList'), modelSel = $('#modelSel'), feed = $('#feed');
+
+// populate models
+MODELS.forEach((m,i)=>{const o=document.createElement('option');o.value=m.id;o.textContent=`${m.id}:${m.ver}`;modelSel.appendChild(o);});
+modelSel.onchange = () => { model = MODELS.find(m=>m.id===modelSel.value); };
+
+function renderPlants(){
+  plantList.innerHTML='';
+  PLANTS.forEach(p=>{
+    const b=document.createElement('button');
+    b.className='plant'+(p.id===sel.id?' active':'');
+    b.innerHTML=`<span class="av">${plantGlyph(p.art)}</span>
+      <span class="meta"><span class="nm"><span class="dot ${p.status}"></span>${p.name}</span><span class="sb">${p.species} · ${p.sub}</span></span>`;
+    b.onclick=()=>{ if(busy) return; sel=p; renderPlants(); renderFeed(); resetOutput(); };
+    plantList.appendChild(b);
+  });
+}
+function plantGlyph(art){
+  // tiny version of the art for the avatar
+  return `<svg width="22" height="22" viewBox="0 0 320 160" preserveAspectRatio="xMidYMid slice" style="border-radius:5px">${ART[art].replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'')}</svg>`;
+}
+function renderFeed(){
+  const bb=sel.bbox;
+  feed.innerHTML=`${ART[sel.art]}
+    <div class="scan"></div>
+    <div class="bbox" data-l="${bb.label}" style="top:${bb.t}%;left:${bb.l}%;width:${bb.w}%;height:${bb.h}%"></div>
+    <div class="hud">
+      <span class="tl"><span class="rec"></span>REC · ${sel.id}</span>
+      <span class="tr">sill-north · 30fps</span>
+      <span class="bl">conf ${(bb.label.split(' ').pop())} · 1280×720</span>
+    </div>`;
+}
+function resetOutput(){
+  $('#obPath').textContent=`POST /v1/plants/${sel.id}/infer`;
+  $('#obStatus').textContent='idle'; $('#obStatus').className='';
+  $('#outLines').innerHTML=`<span class="out-empty">// ${sel.name.toLowerCase()} is online. pick a model and run.</span>`;
+  setGauge(0,true); $('#gVal').textContent='—'; $('#gSub').textContent='no inference run yet';
+}
+
+function setGauge(c,instant){
+  const arc=$('#gaugeArc'), needle=$('#needle');
+  const deg=-90+c*180;
+  if(instant||reduce){arc.style.transition='none';needle.style.transition='none';}
+  else{arc.style.transition='stroke-dashoffset 1s ease';needle.style.transition='transform 1s cubic-bezier(.34,1.4,.5,1)';}
+  arc.style.strokeDashoffset = String(207-207*c);
+  needle.style.transform=`rotate(${deg}deg)`;
+  if(instant){requestAnimationFrame(()=>{arc.style.transition='';needle.style.transition='';});}
+}
+
+function fmt(v){
+  if(typeof v==='boolean') return v?'true':'false';
+  return `"${v}"`;
+}
+
+function run(){
+  if(busy) return;
+  busy=true;
+  const btn=$('#runBtn'); btn.classList.add('busy'); btn.disabled=true;
+  modelSel.disabled=true;
+  const r = RESULTS[model.id][sel.id];
+  const lat = (model.lat[0]+Math.random()*(model.lat[1]-model.lat[0]));
+  const out=$('#outLines'), status=$('#obStatus');
+  status.textContent='running'; status.className='';
+  out.innerHTML=`<span class="out-empty">cold start ...</span><span class="caret">&nbsp;</span>`;
+
+  const lines=[
+    {h:`<span class="out-empty"># ${model.id}:${model.ver} · cold start ${lat.toFixed(2)}s</span>`},
+    {h:`<span class="k">{</span>`},
+    {h:`&nbsp;&nbsp;<span class="k">"plant"</span>: <span class="s">"${sel.id}"</span>,`},
+    {h:`&nbsp;&nbsp;<span class="k">"model"</span>: <span class="s">"${model.id}:${model.ver}"</span>,`},
+    {h:`&nbsp;&nbsp;<span class="k">"verdict"</span>: <span class="${typeof r.verdict==='boolean'?'b':'s'}">${fmt(r.verdict)}</span>,`},
+    {h:`&nbsp;&nbsp;<span class="k">"confidence"</span>: <span class="n">${r.confidence.toFixed(2)}</span>,`},
+    {h:`&nbsp;&nbsp;<span class="k">"note"</span>: <span class="s">"${r.note}"</span>`},
+    {h:`<span class="k">}</span>`}
+  ];
+
+  const startLeaf = leafSec;
+  const step = reduce ? 0 : 240;
+  setTimeout(()=>{
+    out.innerHTML='';
+    let i=0;
+    const tick=()=>{
+      if(i<lines.length){
+        const div=document.createElement('div');
+        div.innerHTML=lines[i].h; out.appendChild(div);
+        out.scrollTop=out.scrollHeight; i++;
+        if(reduce){ while(i<lines.length){const d=document.createElement('div');d.innerHTML=lines[i].h;out.appendChild(d);i++;} finish();return;}
+        setTimeout(tick, step);
+      } else finish();
+    };
+    function finish(){
+      status.textContent='200 OK'; status.className='ok-dot';
+      setGauge(r.confidence,false);
+      $('#gVal').textContent=Math.round(r.confidence*100)+'%';
+      $('#gSub').textContent = r.confidence>=0.85?'high confidence':r.confidence>=0.7?'acceptable':'low confidence';
+      // billing
+      leafSec = startLeaf + lat;
+      $('#leafSec').textContent=leafSec.toFixed(2);
+      $('#cost').textContent='$'+(leafSec*0.011).toFixed(2);
+      const pct=Math.min(100, 8+leafSec*3.2);
+      $('#meterBar').style.width=pct+'%';
+      addRun(r,lat);
+      busy=false; btn.classList.remove('busy'); btn.disabled=false; modelSel.disabled=false;
+    }
+    tick();
+  }, reduce?0:520);
+}
+
+function addRun(r,lat){
+  runCount++;
+  const runs=$('#runs');
+  if(runCount===1) runs.innerHTML='';
+  const v = typeof r.verdict==='boolean'?(r.verdict?'survives':'does not'):r.verdict;
+  const row=document.createElement('div');
+  row.className='runrow';
+  row.innerHTML=`<div class="l1"><span>#${String(runCount).padStart(3,'0')} · ${sel.id}</span><span class="v">${Math.round(r.confidence*100)}%</span></div>
+    <div class="l2"><span>${model.id}:${model.ver}</span><span>${lat.toFixed(2)}s</span></div>`;
+  runs.prepend(row);
+}
+
+$('#runBtn').onclick=run;
+$('#addPlant').onclick=()=>{
+  alert("Registration is paused. You already own more plants than you can keep alive. We are protecting you from yourself, and from leaf-seconds.");
+};
+
+renderPlants(); renderFeed(); setGauge(0,true);
+</script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+{
+  "date": "2026-06-04",
+  "company": "Replicate",
+  "subject": "plant parents",
+  "tagline": "Replicate for plant parents",
+  "slug": "replicate-for-plant-parents",
+  "product_name": "Repot",
+  "one_liner": "Production-grade machine learning inference for the seventeen plants on your windowsill.",
+  "brand_voice_notes": "Deadpan developer-infra. Talks to a houseplant owner like they are a platform engineer with a burn rate. Every plant gets an endpoint, a version, and an invoice. Confident, technical, never winking. The joke is that nobody asked for GPUs on a pothos and we shipped them anyway, billed per leaf-second.",
+  "hero": {
+    "h1": "Deploy machine learning to your windowsill.",
+    "sub": "Repot is an API-first inference platform for houseplants. Point a webcam at your fern, pick a model, and find out what your fern already knew.",
+    "primary_cta": "Deploy a plant"
+  },
+  "features": [
+    {
+      "title": "Versioned plant registry",
+      "blurb": "Every photo of your monstera, tagged and immutable. Cut a release when it sprouts a leaf. Roll back to the version before you overwatered it. The photo is safe. The plant is a separate conversation."
+    },
+    {
+      "title": "Sub-five-second cold starts",
+      "blurb": "Your is-this-basil-dead endpoint sits at zero until you panic at 11pm. It spins up in 4.2 seconds, returns a verdict, and scales back down. Billed per leaf-second, rounded up."
+    },
+    {
+      "title": "Autoscaling foliage",
+      "blurb": "Buy a fourth pothos and we provision a fourth GPU. The plant does not know it has a GPU. The GPU does not know it has a plant. The invoice has been fully briefed."
+    }
+  ],
+  "pricing_tiers": [
+    {
+      "name": "Hobby",
+      "price": "$0/mo",
+      "tagline": "One plant, low expectations.",
+      "perks": ["Shared GPU, when one is free", "Cold starts only", "No SLA on whether the plant is alive"]
+    },
+    {
+      "name": "Greenhouse",
+      "price": "$290/mo",
+      "tagline": "Dedicated compute, per plant.",
+      "perks": ["One GPU pinned to each plant", "Webcam ingestion at 30fps", "Alerts your plant fully ignores"]
+    },
+    {
+      "name": "Arboretum",
+      "price": "Let's talk",
+      "tagline": "For people who call their apartment a collection.",
+      "perks": ["Unlimited plants and regions", "On-prem misting integration", "A solutions engineer who has also killed a fiddle-leaf fig"]
+    }
+  ],
+  "testimonials": [
+    {
+      "quote": "I deployed a model to tell me the pothos needed water. It told me what I already knew, with 94% confidence. I have never felt so seen and so audited at the same time.",
+      "name": "Dana Reyes",
+      "title": "Senior Plant Parent, two monsteras and one fiddle-leaf fig in hospice"
+    },
+    {
+      "quote": "We migrated the entire succulent shelf to Repot over a weekend. Three of them have since died, but the dashboards are immaculate and the latency is excellent.",
+      "name": "Marcus Liu",
+      "title": "Head of Foliage Reliability, home office, no reports"
+    },
+    {
+      "quote": "The cold starts are faster than my last three therapists. I do not know what the model does. I run it every morning before coffee.",
+      "name": "Priya Anand",
+      "title": "Individual Contributor on a single snake plant"
+    }
+  ],
+  "demo_screen_concept": "An inference console for one houseplant, modeled on a model-run page. Left rail: the user's plants as a selectable list (Monstera \"Greg\", Pothos \"The Survivor\", Basil \"Probationary\"), each with a live status dot and uptime. Center: a webcam still of the selected plant, a model picker (leaf-wilt-detector v3, soil-moisture-vibes v2, will-it-survive-the-weekend, is-this-a-bug-or-dirt), and a large Run inference button. On run: a fake latency readout, a streaming JSON output panel with predictions and confidence scores typed out line by line, and a confidence gauge whose needle animates to the result. Right rail: a billing meter ticking up in leaf-seconds and a version-history list. Interactive: switch plants, pick models, run inference (mock client-side streaming), watch the meter climb.",
+  "design_direction": {
+    "style": "Developer-platform technical docs, light. Cool near-white paper ground, hairline gray-green rules, generous whitespace and a precise gridded feel. Geist Mono for all metadata, labels, metrics and tabular numerals; Geist for headings and body. A single infra-green accent does all the work as a status/run color (deploy buttons, live dots, the confidence gauge, code-fence chips). Inline product nouns are styled like inline code. No gradients, no glow, no rounded blobs. Reads like the documentation of a deadly-serious inference platform that happens to host pothos.",
+    "palette": { "primary": "#11221A", "accent": "#1FA85C", "bg": "#F6F8F5", "fg": "#11221A", "muted": "#67726B", "ink": "#11221A" },
+    "fonts": { "display": "\"Geist\", \"Inter\", system-ui, sans-serif", "body": "\"Geist\", -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", Arial, sans-serif" },
+    "archetype": "Developer platform / API product landing page",
+    "motion_vocab": "Restrained, 150-250ms ease-out. Hairline underline reveals on links, a deploy button that transitions through a brief spinner to a 'deployed' state, mono counters that tick, a gauge needle that eases to position. All gated behind prefers-reduced-motion.",
+    "hero_composition_notes": "Left-aligned hero: a mono eyebrow ('v3.2 / inference platform'), a large Geist headline, Geist subhead, two CTAs (solid green 'Deploy a plant', ghost 'Read the docs'). Right side is a hairline-bordered console card showing an example API call against a plant (curl POST to /v1/plants/greg/infer) with a JSON response in IBM Plex Mono. A thin status strip below the fold reads 'all systems operational / 1 plant alive'."
+  }
+}
