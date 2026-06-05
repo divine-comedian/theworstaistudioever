@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Husk · live pod tracker</title>
+<meta name="description" content="Track your Husk pod creeping toward you at four miles per hour while it audits your cart.">
+<meta name="theme-color" content="#2F5D3A">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#2F5D3A;--accent:#C5462E;--bg:#EAF0E3;--paper:#F2F5EC;
+    --fg:#1C2418;--muted:#6E7A66;--ink:#1C2418;--rule:#C3CDB6;--rule-strong:#9AAA8B;
+    --display:"Fraunces","Hoefler Text",Georgia,serif;
+    --body:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+    --mono:"Spline Sans Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;}
+  ::selection{background:var(--accent);color:var(--paper);}
+  a{color:inherit;}
+
+  /* top chrome */
+  .topbar{display:flex;align-items:center;gap:18px;padding:14px 22px;border-bottom:1px solid var(--rule);background:var(--paper);flex-wrap:wrap;}
+  .back{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--primary);text-decoration:none;}
+  .back:hover{text-decoration:underline;text-underline-offset:3px;}
+  .brand{font-family:var(--display);font-weight:600;font-size:1.15rem;letter-spacing:-.01em;}
+  .brand .dot{color:var(--accent);}
+  .order-meta{margin-left:auto;display:flex;gap:26px;align-items:center;font-family:var(--mono);}
+  .order-meta .lab{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+  .order-meta .val{font-size:1rem;color:var(--ink);font-variant-numeric:tabular-nums;font-weight:500;}
+  .order-meta .eta .val{color:var(--accent);}
+
+  .grid{display:grid;grid-template-columns:1.25fr .95fr;gap:0;min-height:calc(100vh - 56px);}
+  @media(max-width:920px){.grid{grid-template-columns:1fr;}}
+
+  /* map panel */
+  .map{position:relative;border-right:1px solid var(--rule);padding:22px;background:
+    linear-gradient(var(--rule) 1px,transparent 1px) 0 0/100% 34px,
+    linear-gradient(90deg,var(--rule) 1px,transparent 1px) 0 0/34px 100%,
+    var(--bg);background-blend-mode:soft-light;}
+  .map-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;}
+  .panel-title{font-family:var(--display);font-weight:600;font-size:1.25rem;letter-spacing:-.01em;margin:0;}
+  .panel-tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+  .mapframe{border:1px solid var(--rule-strong);background:var(--paper);position:relative;}
+  .mapframe svg{display:block;width:100%;height:auto;}
+  .legend{display:flex;gap:20px;margin-top:14px;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);flex-wrap:wrap;}
+  .legend span{display:flex;align-items:center;gap:7px;}
+  .swatch{width:11px;height:11px;display:inline-block;border:1px solid var(--ink);}
+  .speedo{margin-top:16px;border:1px solid var(--rule);background:var(--paper);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;}
+  .speedo .big{font-family:var(--display);font-size:1.7rem;font-weight:600;color:var(--primary);letter-spacing:-.02em;}
+  .speedo .note{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);max-width:20ch;text-align:right;}
+
+  /* audit panel */
+  .audit{padding:22px;display:flex;flex-direction:column;}
+  .tabs{display:flex;gap:0;border:1px solid var(--rule-strong);margin-bottom:18px;}
+  .tab{flex:1;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:11px 8px;text-align:center;background:var(--paper);border-left:1px solid var(--rule);cursor:pointer;color:var(--muted);user-select:none;}
+  .tab:first-child{border-left:none;}
+  .tab.active{background:var(--primary);color:var(--paper);}
+  .tab .cnt{font-weight:600;}
+  .view{display:none;}
+  .view.active{display:block;}
+
+  .scan-status{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+  .blip{width:8px;height:8px;border-radius:50%;background:var(--primary);box-shadow:0 0 0 0 rgba(47,93,58,.5);animation:pulse 1.8s infinite;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(47,93,58,.45);}70%{box-shadow:0 0 0 7px rgba(47,93,58,0);}100%{box-shadow:0 0 0 0 rgba(47,93,58,0);}}
+
+  ul.cart{list-style:none;margin:0;padding:0;border:1px solid var(--rule-strong);}
+  ul.cart li{display:flex;align-items:center;gap:12px;padding:13px 14px;border-top:1px solid var(--rule);background:var(--paper);transition:background .2s,opacity .25s;}
+  ul.cart li:first-child{border-top:none;}
+  ul.cart li.out{opacity:.4;}
+  .chk{flex:0 0 auto;width:20px;height:20px;border:1.5px solid var(--rule-strong);background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:2px;}
+  .chk svg{width:13px;height:13px;color:var(--primary);opacity:0;transition:opacity .15s;}
+  li:not(.out) .chk svg{opacity:1;}
+  .item-name{font-weight:500;flex:1;}
+  .item-sub{font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:var(--muted);text-transform:uppercase;}
+  .verdict{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:4px 8px;border:1px solid;border-radius:2px;white-space:nowrap;}
+  .verdict.ok{color:var(--primary);border-color:var(--primary);}
+  .verdict.eject{color:var(--accent);border-color:var(--accent);}
+  .verdict.held{color:var(--muted);border-color:var(--rule-strong);}
+
+  /* drawer view */
+  .drawer-empty{font-family:var(--display);font-style:italic;color:var(--muted);padding:30px 6px;text-align:center;font-size:1.05rem;}
+  ul.drawer{list-style:none;margin:0;padding:0;}
+  ul.drawer li{border:1px solid var(--rule);border-left:3px solid var(--accent);background:var(--paper);padding:14px 16px;margin-bottom:10px;}
+  ul.drawer .dn{font-weight:600;display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
+  ul.drawer .dn .why{font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);}
+  ul.drawer .note{font-family:var(--display);font-style:italic;color:var(--ink);margin-top:7px;font-size:1.02rem;line-height:1.35;}
+  .appeal{margin-top:10px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;background:transparent;border:1px solid var(--rule-strong);color:var(--muted);padding:6px 11px;cursor:pointer;border-radius:2px;}
+  .appeal:hover{border-color:var(--accent);color:var(--accent);}
+  .appeal.spent{opacity:.5;cursor:default;}
+
+  /* nudge */
+  .nudge-zone{margin-top:auto;padding-top:18px;}
+  .nudge{width:100%;font-family:var(--body);font-weight:600;font-size:.95rem;padding:14px;border:1px solid var(--primary);background:var(--primary);color:var(--paper);border-radius:2px;cursor:pointer;transition:transform .12s;}
+  .nudge:active{transform:scale(.99);}
+  .impatience{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:var(--muted);margin-top:10px;min-height:30px;}
+  .impatience b{color:var(--accent);}
+  .log-line{opacity:0;animation:fadein .4s forwards;}
+  @keyframes fadein{to{opacity:1;}}
+
+  /* pod marker */
+  #pod{transition:none;}
+  .pod-pulse{animation:podpulse 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center;}
+  @keyframes podpulse{0%,100%{r:7;}50%{r:8.5;}}
+
+  @media(prefers-reduced-motion:reduce){.blip,.pod-pulse{animation:none;}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back" href="./index.html">&larr; back to the pitch</a>
+  <span class="brand">Husk<span class="dot">.</span></span>
+  <div class="order-meta">
+    <div><div class="lab">Order</div><div class="val">#HK-4417</div></div>
+    <div><div class="lab">Pod</div><div class="val">CELERY-9</div></div>
+    <div class="eta"><div class="lab">Arriving in</div><div class="val" id="eta">00:47:12</div></div>
+  </div>
+</div>
+
+<div class="grid">
+  <!-- MAP -->
+  <section class="map">
+    <div class="map-head">
+      <h2 class="panel-title">Pod CELERY-9, in transit</h2>
+      <span class="panel-tag">live &middot; 4 mph</span>
+    </div>
+    <div class="mapframe">
+      <svg viewBox="0 0 520 360" fill="none" aria-label="Live route map of your delivery pod">
+        <!-- faint plots -->
+        <g stroke="var(--rule)" stroke-width="1">
+          <rect x="36" y="40" width="64" height="44"/><rect x="120" y="40" width="80" height="44"/>
+          <rect x="330" y="46" width="70" height="50"/><rect x="420" y="40" width="64" height="56"/>
+          <rect x="40" y="250" width="74" height="60"/><rect x="300" y="270" width="80" height="50"/>
+        </g>
+        <!-- route -->
+        <path id="route" d="M70 320 C 120 320 150 260 150 220 C 150 170 110 150 120 110 C 130 75 200 70 250 95 C 290 115 280 175 250 190 C 215 207 200 175 230 160 C 270 140 330 150 350 200 C 372 254 420 250 450 210 C 470 184 462 130 440 110"
+          stroke="var(--rule-strong)" stroke-width="7" stroke-linecap="round" stroke-dasharray="2 11"/>
+        <path id="route-done" d="M70 320 C 120 320 150 260 150 220 C 150 170 110 150 120 110"
+          stroke="var(--primary)" stroke-width="7" stroke-linecap="round" opacity=".85"/>
+        <!-- detour loop around steakhouse -->
+        <circle cx="250" cy="150" r="34" stroke="var(--accent)" stroke-width="1.4" stroke-dasharray="4 5"/>
+        <!-- steakhouse marker (avoided) -->
+        <g transform="translate(250 150)">
+          <rect x="-13" y="-13" width="26" height="26" fill="var(--paper)" stroke="var(--accent)" stroke-width="1.5" transform="rotate(45)"/>
+          <path d="M-6 -3 h12 M-6 1 h12 M-6 5 h8" stroke="var(--accent)" stroke-width="1.4"/>
+        </g>
+        <text x="250" y="200" text-anchor="middle" font-family="Spline Sans Mono, monospace" font-size="9.5" letter-spacing="1.4" fill="var(--accent)">STEAKHOUSE &middot; AVOIDED</text>
+        <!-- origin -->
+        <g transform="translate(70 320)">
+          <circle r="6" fill="var(--paper)" stroke="var(--primary)" stroke-width="2"/><circle r="2" fill="var(--primary)"/>
+        </g>
+        <text x="70" y="345" text-anchor="middle" font-family="Spline Sans Mono, monospace" font-size="9" letter-spacing="1.2" fill="var(--muted)">DEPOT</text>
+        <!-- destination (you) -->
+        <g transform="translate(440 110)">
+          <path d="M0 -12 L12 0 L8 0 L8 11 L-8 11 L-8 0 L-12 0 Z" fill="var(--paper)" stroke="var(--primary)" stroke-width="1.6"/>
+        </g>
+        <text x="440" y="92" text-anchor="middle" font-family="Spline Sans Mono, monospace" font-size="9" letter-spacing="1.2" fill="var(--primary)">YOU</text>
+        <!-- pod -->
+        <circle id="pod" class="pod-pulse" r="7" fill="var(--accent)" stroke="var(--paper)" stroke-width="2"/>
+      </svg>
+    </div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--primary)"></i> travelled</span>
+      <span><i class="swatch" style="background:var(--rule-strong)"></i> remaining</span>
+      <span><i class="swatch" style="background:var(--accent)"></i> pod &middot; detour</span>
+    </div>
+    <div class="speedo">
+      <div class="big" id="speed">4.0 mph</div>
+      <div class="note">holding steady out of respect for the worms</div>
+    </div>
+  </section>
+
+  <!-- AUDIT -->
+  <section class="audit">
+    <div class="tabs">
+      <div class="tab active" data-tab="cart">Cart &middot; <span class="cnt" id="cart-cnt">0</span></div>
+      <div class="tab" data-tab="drawer">Ejected &middot; <span class="cnt" id="drawer-cnt">0</span></div>
+    </div>
+
+    <div class="view active" id="view-cart">
+      <div class="scan-status"><span class="blip"></span> ethics audit running &middot; toggle an item to re-scan</div>
+      <ul class="cart" id="cart-list"></ul>
+    </div>
+
+    <div class="view" id="view-drawer">
+      <div class="scan-status"><span class="blip"></span> sealed review drawer &middot; contents are yours to contemplate</div>
+      <div id="drawer-body"></div>
+    </div>
+
+    <div class="nudge-zone">
+      <button class="nudge" id="nudge">Nudge the pod</button>
+      <div class="impatience" id="impatience" aria-live="polite"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  // ----- cart data -----
+  var ITEMS = [
+    {id:'kale',   name:'Lacinato kale, 1 bunch',     sub:'produce',    vegan:true},
+    {id:'oat',    name:'Barrel-aged oat milk',        sub:'refrigerated',vegan:true},
+    {id:'sour',   name:'Sourdough loaf',              sub:'bakery',     vegan:false, why:'honey glaze', note:'Suspected of a honey glaze it did not disclose. Ejected pending an apology.'},
+    {id:'butter', name:'Almond butter, crunchy',      sub:'pantry',     vegan:true},
+    {id:'almond', name:'Honey-roasted almonds',       sub:'snacks',     vegan:false, why:'it is in the name', note:'The honey is the first word. We were not going to pretend we did not see it.'},
+    {id:'patty',  name:'Pea-protein burger patties',  sub:'frozen',     vegan:true},
+    {id:'worc',   name:'Worcestershire sauce',        sub:'condiments', vegan:false, why:'anchovies', note:'There are fish in here. There have always been fish in here. Ejected with sympathy.'},
+    {id:'choc',   name:'85% dark chocolate',          sub:'snacks',     vegan:true},
+    {id:'pesto',  name:'Jar of pesto, basil',         sub:'pantry',     vegan:false, why:'parmesan', note:'Contains a cheese. The pod cannot in good conscience deliver a cheese.'},
+    {id:'mallow', name:'Campfire marshmallows',       sub:'snacks',     vegan:false, why:'gelatin', note:'Gelatin. We will not be elaborating, though we have elaborated before.'}
+  ];
+
+  var state = {}; // id -> included
+  ITEMS.forEach(function(it){ state[it.id] = true; });
+
+  var cartList = document.getElementById('cart-list');
+  var drawerBody = document.getElementById('drawer-body');
+  var cartCnt = document.getElementById('cart-cnt');
+  var drawerCnt = document.getElementById('drawer-cnt');
+
+  function check(){ return '<span class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg></span>'; }
+
+  function render(){
+    // cart
+    cartList.innerHTML = '';
+    var clearedCount = 0, ejectCount = 0;
+    ITEMS.forEach(function(it){
+      var included = state[it.id];
+      var li = document.createElement('li');
+      if(!included) li.className = 'out';
+      var verdict;
+      if(!included){ verdict = '<span class="verdict held">held back</span>'; }
+      else if(it.vegan){ verdict = '<span class="verdict ok">cleared</span>'; clearedCount++; }
+      else { verdict = '<span class="verdict eject">ejected</span>'; ejectCount++; }
+      li.innerHTML = check() +
+        '<span class="item-name">'+it.name+'<br><span class="item-sub">'+it.sub+'</span></span>' + verdict;
+      li.querySelector('.chk').addEventListener('click', function(){
+        state[it.id] = !state[it.id];
+        render();
+      });
+      cartList.appendChild(li);
+    });
+    cartCnt.textContent = clearedCount;
+    // drawer
+    var ejected = ITEMS.filter(function(it){ return state[it.id] && !it.vegan; });
+    drawerCnt.textContent = ejected.length;
+    if(ejected.length === 0){
+      drawerBody.innerHTML = '<div class="drawer-empty">The drawer is empty. The pod is, for once, satisfied.</div>';
+    } else {
+      var ul = document.createElement('ul');
+      ul.className = 'drawer';
+      ejected.forEach(function(it){
+        var li = document.createElement('li');
+        li.innerHTML = '<div class="dn">'+it.name+' <span class="why">'+it.why+'</span></div>'+
+          '<div class="note">&ldquo;'+it.note+'&rdquo;</div>'+
+          '<button class="appeal" data-id="'+it.id+'">Appeal this ruling</button>';
+        ul.appendChild(li);
+      });
+      drawerBody.innerHTML = '';
+      drawerBody.appendChild(ul);
+      drawerBody.querySelectorAll('.appeal').forEach(function(b){
+        b.addEventListener('click', function(){
+          b.classList.add('spent');
+          b.textContent = 'Appeal logged. Nothing will come of it.';
+        });
+      });
+    }
+  }
+  render();
+
+  // ----- tabs -----
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click', function(){
+      document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});
+      document.querySelectorAll('.view').forEach(function(x){x.classList.remove('active');});
+      t.classList.add('active');
+      document.getElementById('view-'+t.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ----- ETA (only ever slips) -----
+  var etaEl = document.getElementById('eta');
+  var secs = 47*60 + 12;
+  function fmt(s){
+    var h = Math.floor(s/3600), m = Math.floor((s%3600)/60), x = s%60;
+    return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(x).padStart(2,'0');
+  }
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  setInterval(function(){
+    // counts down 1s, but every so often the estimate "updates" upward
+    secs -= 1;
+    if(Math.random() < 0.18){ secs += Math.floor(Math.random()*9)+3; } // re-estimation
+    if(secs < 0) secs = 0;
+    etaEl.textContent = fmt(secs);
+  }, 1000);
+
+  // ----- nudge -----
+  var nudges = 0;
+  var nudgeBtn = document.getElementById('nudge');
+  var imp = document.getElementById('impatience');
+  var LINES = [
+    'Nudge received. The pod has noted your tone.',
+    'The pod read your nudge and did not slow, did not speed.',
+    'Acknowledged. Forwarded to a queue no one reads.',
+    'The pod respects your urgency. It does not share it.',
+    'Logged. Your patience score has been revised downward.',
+    'The pod is already going as slow as it can. On purpose.'
+  ];
+  nudgeBtn.addEventListener('click', function(){
+    nudges++;
+    secs += 7; // impatience adds time
+    var line = LINES[(nudges-1) % LINES.length];
+    imp.innerHTML = '<div class="log-line">'+line+'</div><div class="log-line">Nudges today: <b>'+nudges+'</b> &middot; minutes added: <b>'+(nudges*7/60).toFixed(1)+'</b></div>';
+  });
+
+  // ----- pod crawl along route -----
+  var route = document.getElementById('route');
+  var done = document.getElementById('route-done');
+  var pod = document.getElementById('pod');
+  var L = route.getTotalLength();
+  var doneL = done.getTotalLength();
+  if(reduced){
+    var p = route.getPointAtLength(L*0.34);
+    pod.setAttribute('cx', p.x); pod.setAttribute('cy', p.y);
+  } else {
+    var t = 0.34;
+    function step(){
+      t += 0.00016; // very slow crawl
+      if(t > 0.999) t = 0.0;
+      var pt = route.getPointAtLength(L*t);
+      pod.setAttribute('cx', pt.x);
+      pod.setAttribute('cy', pt.y);
+      // grow the travelled stroke roughly with progress
+      done.setAttribute('stroke-dasharray', (doneL*Math.min(t/0.34,1))+' '+doneL);
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+})();
+</script>
+</body>
+</html>

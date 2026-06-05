@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Husk · theworstaistudioever</title>
+<meta name="description" content="Driverless electric pods that carry your groceries at four miles per hour and refuse, on principle, to touch anything with a face.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Husk · theworstaistudioever">
+<meta property="og:description" content="Driverless electric pods that carry your groceries at four miles per hour and refuse, on principle, to touch anything with a face.">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Husk · theworstaistudioever">
+<meta name="twitter:description" content="Driverless electric pods that carry your groceries at four miles per hour and refuse, on principle, to touch anything with a face.">
+<meta name="theme-color" content="#2F5D3A">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#2F5D3A;
+    --accent:#C5462E;
+    --bg:#EAF0E3;
+    --paper:#F2F5EC;
+    --fg:#1C2418;
+    --muted:#6E7A66;
+    --ink:#1C2418;
+    --rule:#C3CDB6;
+    --rule-strong:#9AAA8B;
+    --display:"Fraunces","Hoefler Text",Georgia,"Times New Roman",serif;
+    --body:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+    --mono:"Spline Sans Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background-color:var(--bg);
+    background-image:
+      radial-gradient(circle at 18% 12%, rgba(47,93,58,.05), transparent 38%),
+      radial-gradient(circle at 88% 78%, rgba(197,70,46,.045), transparent 42%);
+    color:var(--fg);
+    font-family:var(--body);
+    font-size:17px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--accent);color:var(--paper);}
+  a{color:inherit;}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 28px;}
+
+  /* ---- decorative double frame ---- */
+  .frame{position:fixed;inset:14px;border:1px solid var(--rule-strong);pointer-events:none;z-index:50;}
+  .frame::after{content:"";position:absolute;inset:4px;border:1px solid var(--rule);}
+  @media(max-width:640px){.frame{inset:8px;}}
+
+  /* ---- masthead ---- */
+  header.masthead{padding:34px 0 18px;}
+  .estline{
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--muted);border-bottom:1px solid var(--rule);padding-bottom:14px;
+  }
+  .estline .seal{color:var(--primary);font-weight:600;}
+  .estline .cat{font-weight:500;}
+
+  /* ---- hero ---- */
+  .hero{display:grid;grid-template-columns:1.35fr .9fr;gap:30px;align-items:center;padding:54px 0 34px;border-bottom:1px solid var(--rule);}
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin:0 0 20px;}
+  h1.lede{
+    font-family:var(--display);font-weight:600;
+    font-size:clamp(2.7rem,6.4vw,4.7rem);line-height:1.02;letter-spacing:-.02em;
+    margin:0 0 24px;color:var(--ink);
+    font-optical-sizing:auto;
+  }
+  h1.lede em{font-style:italic;color:var(--primary);font-weight:500;}
+  .sub{font-size:1.18rem;max-width:34ch;color:var(--fg);margin:0 0 30px;}
+  .cta-row{display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
+  .btn{
+    font-family:var(--body);font-weight:600;font-size:.98rem;letter-spacing:.01em;
+    padding:14px 26px;border:1px solid var(--accent);background:var(--accent);color:var(--paper);
+    text-decoration:none;border-radius:2px;cursor:pointer;transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+    box-shadow:3px 3px 0 rgba(28,36,24,.16);
+  }
+  .btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 rgba(28,36,24,.2);}
+  .btn.ghost{background:transparent;color:var(--primary);border-color:var(--rule-strong);box-shadow:none;}
+  .btn.ghost:hover{border-color:var(--primary);box-shadow:none;transform:none;text-decoration:underline;text-underline-offset:4px;}
+
+  /* ---- engraved plate ---- */
+  .plate{position:relative;aspect-ratio:1/1.06;border:1px solid var(--rule-strong);background:var(--paper);padding:18px;}
+  .plate::before{content:"";position:absolute;inset:7px;border:1px solid var(--rule);pointer-events:none;}
+  .plate svg{width:100%;height:100%;display:block;}
+  .plate .platecap{
+    position:absolute;left:0;right:0;bottom:14px;text-align:center;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);
+  }
+  .pod-wheel{transform-box:fill-box;transform-origin:center;animation:roll 6s linear infinite;}
+  @keyframes roll{to{transform:rotate(360deg);}}
+
+  /* ---- spec ribbon ---- */
+  .ribbon{
+    display:grid;grid-template-columns:repeat(4,1fr);
+    font-family:var(--mono);border-bottom:1px solid var(--rule);
+  }
+  .ribbon .cell{padding:20px 18px;border-left:1px solid var(--rule);}
+  .ribbon .cell:first-child{border-left:none;}
+  .ribbon .n{font-size:1.55rem;color:var(--primary);font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums;}
+  .ribbon .l{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:6px;}
+  @media(max-width:640px){.ribbon{grid-template-columns:repeat(2,1fr);}.ribbon .cell:nth-child(3){border-left:none;}}
+
+  /* ---- marquee ---- */
+  .crawl{overflow:hidden;border-bottom:1px solid var(--rule);background:var(--primary);}
+  .crawl-track{display:inline-flex;white-space:nowrap;animation:crawl 38s linear infinite;font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--paper);padding:11px 0;}
+  .crawl-track span{padding:0 26px;}
+  .crawl-track span::after{content:"❦";padding-left:26px;color:rgba(242,245,236,.5);}
+  @keyframes crawl{to{transform:translateX(-50%);}}
+
+  /* ---- section scaffolding ---- */
+  section{padding:74px 0;}
+  .sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:42px;}
+  .sec-num{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:.1em;padding-top:6px;}
+  .sec-title{font-family:var(--display);font-weight:600;font-size:clamp(1.7rem,3.4vw,2.5rem);letter-spacing:-.015em;margin:0;line-height:1.05;}
+  .sec-sub{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-left:auto;padding-top:8px;}
+
+  /* ---- features ---- */
+  .plates{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--rule-strong);}
+  .feat{padding:34px 30px 40px;border-left:1px solid var(--rule);position:relative;}
+  .feat:first-child{border-left:none;}
+  .feat .fno{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.12em;}
+  .feat .glyph{height:58px;margin:14px 0 22px;color:var(--primary);}
+  .feat .glyph svg{height:100%;width:auto;display:block;}
+  .feat h3{font-family:var(--display);font-weight:600;font-size:1.5rem;margin:0 0 14px;letter-spacing:-.01em;line-height:1.1;}
+  .feat p{margin:0;color:var(--fg);font-size:1.02rem;}
+  @media(max-width:760px){.plates{grid-template-columns:1fr;}.feat{border-left:none;border-top:1px solid var(--rule);}.feat:first-child{border-top:none;}}
+
+  /* ---- testimonials ---- */
+  .quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;}
+  .q{background:var(--paper);border:1px solid var(--rule);padding:30px 26px;position:relative;}
+  .q .mark{font-family:var(--display);font-size:3.4rem;line-height:.4;color:var(--accent);height:26px;display:block;}
+  .q blockquote{font-family:var(--display);font-style:italic;font-weight:400;font-size:1.18rem;line-height:1.4;margin:0 0 22px;color:var(--ink);}
+  .q .who{font-weight:600;font-size:.95rem;}
+  .q .role{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:5px;}
+  @media(max-width:760px){.quotes{grid-template-columns:1fr;}}
+
+  /* ---- pricing ---- */
+  .pricing{background:var(--paper);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);}
+  .skus{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--rule-strong);}
+  .sku{padding:34px 28px 38px;border-left:1px solid var(--rule);display:flex;flex-direction:column;}
+  .sku:first-child{border-left:none;}
+  .sku.feature{background:var(--bg);}
+  .sku .name{font-family:var(--display);font-weight:600;font-size:1.45rem;letter-spacing:-.01em;}
+  .sku .stag{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:6px 0 22px;}
+  .sku .price{font-family:var(--display);font-size:2.5rem;font-weight:500;color:var(--primary);letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums;}
+  .sku ul{list-style:none;padding:0;margin:24px 0 26px;flex:1;}
+  .sku li{font-size:.96rem;padding:11px 0 11px 24px;border-top:1px solid var(--rule);position:relative;color:var(--fg);}
+  .sku li:first-child{border-top:none;}
+  .sku li::before{content:"";position:absolute;left:2px;top:18px;width:9px;height:9px;border:1px solid var(--primary);transform:rotate(45deg);}
+  .sku .pick{font-family:var(--body);font-weight:600;text-align:center;padding:12px;border:1px solid var(--rule-strong);text-decoration:none;color:var(--primary);transition:background .16s,color .16s;border-radius:2px;}
+  .sku.feature .pick{background:var(--accent);color:var(--paper);border-color:var(--accent);}
+  .sku .pick:hover{background:var(--primary);color:var(--paper);border-color:var(--primary);}
+  @media(max-width:760px){.skus{grid-template-columns:1fr;}.sku{border-left:none;border-top:1px solid var(--rule);}.sku:first-child{border-top:none;}}
+
+  /* ---- demo band ---- */
+  .demoband{text-align:center;padding:90px 0;}
+  .demoband h2{font-family:var(--display);font-weight:600;font-size:clamp(2rem,4.6vw,3.3rem);letter-spacing:-.02em;margin:0 0 18px;line-height:1.04;}
+  .demoband h2 em{font-style:italic;color:var(--primary);}
+  .demoband p{color:var(--muted);max-width:46ch;margin:0 auto 34px;font-size:1.08rem;}
+
+  /* ---- footer ---- */
+  footer{border-top:1px solid var(--rule);padding:40px 0 60px;}
+  .foot-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+  .foot-row a{color:var(--primary);text-decoration:none;}
+  .foot-row a:hover{text-decoration:underline;text-underline-offset:3px;}
+
+  /* reveal */
+  .rise{opacity:0;transform:translateY(18px);transition:opacity .7s ease, transform .7s ease;}
+  .rise.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){
+    .rise{opacity:1;transform:none;transition:none;}
+    .crawl-track,.pod-wheel{animation:none;}
+    html{scroll-behavior:auto;}
+  }
+  @media(max-width:820px){.hero{grid-template-columns:1fr;}.plate{max-width:300px;}}
+</style>
+</head>
+<body>
+<div class="frame" aria-hidden="true"></div>
+
+<div class="wrap">
+  <header class="masthead">
+    <div class="estline">
+      <span class="seal">Husk &middot; an unmanned grocery concern</span>
+      <span class="cat">No. 0605 &middot; Est. this morning</span>
+    </div>
+  </header>
+
+  <section class="hero" style="padding-top:40px;">
+    <div>
+      <p class="kicker">Autonomous delivery, with reservations</p>
+      <h1 class="lede">Driverless delivery for people who <em>won't eat anything with a face.</em></h1>
+      <p class="sub">Husk is a fleet of unmanned electric pods that carry your groceries to your door at a respectful four miles per hour. No driver to tip. No animals harmed. No firm estimate on arrival.</p>
+      <div class="cta-row">
+        <a class="btn" href="./demo.html">Summon a pod &rarr;</a>
+        <a class="btn ghost" href="#how">See how it judges you</a>
+      </div>
+    </div>
+    <div class="plate" aria-hidden="true">
+      <svg viewBox="0 0 200 210" fill="none" stroke="currentColor" stroke-width="1.4" style="color:var(--primary)">
+        <!-- pod body -->
+        <rect x="34" y="78" width="132" height="62" rx="20" fill="var(--paper)"/>
+        <rect x="34" y="78" width="132" height="62" rx="20"/>
+        <line x1="34" y1="112" x2="166" y2="112" stroke="var(--rule-strong)"/>
+        <rect x="48" y="90" width="40" height="16" rx="3" stroke="var(--rule-strong)"/>
+        <rect x="112" y="90" width="40" height="16" rx="3" stroke="var(--rule-strong)"/>
+        <!-- wheels -->
+        <g class="pod-wheel"><circle cx="66" cy="140" r="15" fill="var(--paper)"/><circle cx="66" cy="140" r="15"/><circle cx="66" cy="140" r="4"/><line x1="66" y1="125" x2="66" y2="155"/><line x1="51" y1="140" x2="81" y2="140"/></g>
+        <g class="pod-wheel" style="animation-delay:-3s"><circle cx="134" cy="140" r="15" fill="var(--paper)"/><circle cx="134" cy="140" r="15"/><circle cx="134" cy="140" r="4"/><line x1="134" y1="125" x2="134" y2="155"/><line x1="119" y1="140" x2="149" y2="140"/></g>
+        <!-- sprout on top -->
+        <path d="M100 78 V52" stroke="var(--primary)"/>
+        <path d="M100 60 C100 48 86 44 80 50 C86 58 96 58 100 60Z" fill="var(--primary)" stroke="var(--primary)"/>
+        <path d="M100 66 C100 54 114 50 120 56 C114 64 104 64 100 66Z" fill="var(--paper)" stroke="var(--primary)"/>
+        <circle cx="100" cy="50" r="2.4" fill="var(--accent)" stroke="var(--accent)"/>
+      </svg>
+      <span class="platecap">Plate I &middot; the Husk pod, in repose</span>
+    </div>
+  </section>
+</div>
+
+<div class="ribbon wrap" style="margin-top:0;">
+  <div class="cell"><div class="n">4 mph</div><div class="l">Cruising speed</div></div>
+  <div class="cell"><div class="n">1.3</div><div class="l">Items ejected / order</div></div>
+  <div class="cell"><div class="n">0</div><div class="l">Faces carried</div></div>
+  <div class="cell"><div class="n">40&ndash;90</div><div class="l">Minutes, give or take</div></div>
+</div>
+
+<div class="crawl" aria-hidden="true">
+  <div class="crawl-track">
+    <span>now routing around your nearest steakhouse</span><span>the bread was rejected</span><span>your pod respects the worms</span><span>molecules purged</span><span>arrival window: widening</span>
+    <span>now routing around your nearest steakhouse</span><span>the bread was rejected</span><span>your pod respects the worms</span><span>molecules purged</span><span>arrival window: widening</span>
+  </div>
+</div>
+
+<div class="wrap">
+  <section id="how">
+    <div class="sec-head rise">
+      <span class="sec-num">01</span>
+      <h2 class="sec-title">Three engineering decisions<br>we stand behind, calmly.</h2>
+      <span class="sec-sub">Field manual</span>
+    </div>
+    <div class="plates rise">
+      <article class="feat">
+        <span class="fno">i.</span>
+        <div class="glyph" aria-hidden="true">
+          <svg viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="1.6">
+            <rect x="14" y="6" width="32" height="48" rx="3" fill="var(--paper)"/><rect x="14" y="6" width="32" height="48" rx="3"/>
+            <line x1="14" y1="20" x2="46" y2="20"/><circle cx="30" cy="36" r="9"/><line x1="30" y1="27" x2="30" y2="45"/><line x1="21" y1="36" x2="39" y2="36"/>
+            <path d="M24 13 h12" stroke="var(--accent)"/>
+          </svg>
+        </div>
+        <h3>The Honey Clause</h3>
+        <p>An onboard spectrometer scans every item for trace animal products and ejects anything suspect into a sealed review drawer. It catches roughly 1.3 items per order. It is almost always the bread.</p>
+      </article>
+      <article class="feat">
+        <span class="fno">ii.</span>
+        <div class="glyph" aria-hidden="true">
+          <svg viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="1.6">
+            <rect x="10" y="22" width="40" height="24" rx="6" fill="var(--paper)"/><rect x="10" y="22" width="40" height="24" rx="6"/>
+            <path d="M18 22 C18 12 42 12 42 22" stroke="var(--accent)"/>
+            <circle cx="22" cy="16" r="1.6" fill="var(--accent)" stroke="none"/><circle cx="30" cy="13" r="1.6" fill="var(--accent)" stroke="none"/><circle cx="38" cy="16" r="1.6" fill="var(--accent)" stroke="none"/>
+            <line x1="18" y1="34" x2="42" y2="34" stroke="var(--rule-strong)"/>
+          </svg>
+        </div>
+        <h3>Conscience-Grade Hold</h3>
+        <p>Each cargo bay is steam-purged between runs to remove residual non-vegan molecules. We have never detected these molecules. We remove them regardless. Certainty is not a thing you measure.</p>
+      </article>
+      <article class="feat">
+        <span class="fno">iii.</span>
+        <div class="glyph" aria-hidden="true">
+          <svg viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="1.6">
+            <circle cx="30" cy="30" r="20" fill="var(--paper)"/><circle cx="30" cy="30" r="20"/>
+            <line x1="30" y1="30" x2="30" y2="16"/><line x1="30" y1="30" x2="40" y2="34" stroke="var(--accent)"/>
+            <circle cx="30" cy="30" r="2.2" fill="currentColor" stroke="none"/>
+            <path d="M44 44 l6 6" stroke="var(--rule-strong)"/>
+          </svg>
+        </div>
+        <h3>Slow on Purpose</h3>
+        <p>Pods hold a steady four miles per hour to spare insects, pedestrians, and the climate. Delivery takes forty to ninety minutes. Anything quicker would be a statement about your values.</p>
+      </article>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head rise">
+      <span class="sec-num">02</span>
+      <h2 class="sec-title">People the pods<br>have not yet refused.</h2>
+      <span class="sec-sub">Unsolicited</span>
+    </div>
+    <div class="quotes rise">
+      <figure class="q">
+        <span class="mark" aria-hidden="true">&ldquo;</span>
+        <blockquote>It rejected my honey-roasted almonds and left a note. I have not stopped thinking about the note.</blockquote>
+        <div class="who">Daria Vosk</div>
+        <div class="role">Reformed Pescatarian, Portland</div>
+      </figure>
+      <figure class="q">
+        <span class="mark" aria-hidden="true">&ldquo;</span>
+        <blockquote>The pod arrived at four miles per hour and I respect it more than most people in my life.</blockquote>
+        <div class="who">Cormac Lindqvist</div>
+        <div class="role">Founder of a kombucha brand you have not heard of</div>
+      </figure>
+      <figure class="q">
+        <span class="mark" aria-hidden="true">&ldquo;</span>
+        <blockquote>I asked it to hurry. It did not acknowledge the request.</blockquote>
+        <div class="who">Priya Anand-Whitlock</div>
+        <div class="role">Director of Mindful Procurement, household of four</div>
+      </figure>
+    </div>
+  </section>
+</div>
+
+<div class="pricing">
+  <div class="wrap">
+    <section>
+      <div class="sec-head rise">
+        <span class="sec-num">03</span>
+        <h2 class="sec-title">Three ways to be<br>delivered to slowly.</h2>
+        <span class="sec-sub">Catalogue &middot; per month</span>
+      </div>
+      <div class="skus rise">
+        <div class="sku">
+          <div class="name">Forager</div>
+          <div class="stag">For the deeply suspicious</div>
+          <div class="price">$0</div>
+          <ul>
+            <li>One pod per month, eventually</li>
+            <li>Items ejected without explanation</li>
+            <li>Arrival shown as a range of hours</li>
+          </ul>
+          <a class="pick" href="./demo.html">Begin foraging</a>
+        </div>
+        <div class="sku feature">
+          <div class="name">Cleanse</div>
+          <div class="stag">For the committed</div>
+          <div class="price">$48</div>
+          <ul>
+            <li>Unlimited pods inside a four-mile radius</li>
+            <li>Live ethics-audit feed</li>
+            <li>Priority routing around leather shops</li>
+          </ul>
+          <a class="pick" href="./demo.html">Commit</a>
+        </div>
+        <div class="sku">
+          <div class="name">Pod People</div>
+          <div class="stag">For households that have decided</div>
+          <div class="price">$240</div>
+          <ul>
+            <li>A pod assigned to you by name</li>
+            <li>Quarterly molecule report, mailed</li>
+            <li>Your pod will refuse other customers</li>
+          </ul>
+          <a class="pick" href="./demo.html">Decide</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="wrap">
+  <section class="demoband rise">
+    <h2>Watch a pod <em>creep toward you</em><br>and judge your cart in real time.</h2>
+    <p>The live tracker shows your order in transit, the steakhouse it is avoiding, and every item it has decided to eject. You may nudge it. It will note that you nudged it.</p>
+    <a class="btn" href="./demo.html">Open the demo &rarr;</a>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-row">
+      <a href="/">&larr; theworstaistudioever</a>
+      <span>Husk &middot; unmanned, unhurried, unconvinced</span>
+      <a href="./demo.html">Track a pod &rarr;</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // staggered scroll reveal
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }});
+  },{threshold:.12});
+  document.querySelectorAll('.rise').forEach(function(el){ io.observe(el); });
+</script>
+</body>
+</html>
