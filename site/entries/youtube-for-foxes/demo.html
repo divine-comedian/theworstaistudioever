@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skulk Studio · theworstaistudioever</title>
+<meta name="description" content="The creator analytics dashboard for one fox's channel. Tag screams, hide the daytime uploads, watch nobody get paid.">
+<meta name="theme-color" content="#171024">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#EC7A3C;--primary-deep:#D5642A;--accent:#8AB4FF;
+    --bg:#171024;--fg:#F3EEF7;--muted:#A79DB8;
+    --glass:rgba(255,255,255,.055);--glass-2:rgba(255,255,255,.085);
+    --glass-line:rgba(255,255,255,.14);--glass-hi:rgba(255,255,255,.5);
+    --shadow:0 24px 60px -24px rgba(0,0,0,.7);
+    --display:"Sora",system-ui,-apple-system,sans-serif;
+    --body:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+    --sky1:#1B1230;--sky2:#171024;--sky3:#120D1E;--moon:#FDF6E9;
+  }
+  /* daytime / non-nocturnal reskin */
+  body.day{
+    --bg:#F4EFE6;--fg:#241A12;--muted:#7A6C5C;
+    --glass:rgba(255,255,255,.6);--glass-2:rgba(255,255,255,.78);
+    --glass-line:rgba(40,28,16,.12);--glass-hi:rgba(255,255,255,.9);
+    --shadow:0 20px 50px -24px rgba(120,90,50,.4);
+    --sky1:#FBF3E2;--sky2:#F4EFE6;--sky3:#EFE6D6;--accent:#3F6FD8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--body);color:var(--fg);background:var(--bg);line-height:1.5;
+    -webkit-font-smoothing:antialiased;min-height:100vh;transition:background .4s,color .4s}
+  .sky{position:fixed;inset:0;z-index:-2;background:
+    radial-gradient(110% 80% at 82% -10%, color-mix(in srgb,var(--sky1) 70%, transparent) 0%, transparent 55%),
+    linear-gradient(180deg,var(--sky1),var(--sky2) 50%,var(--sky3));transition:background .4s}
+  .moon{position:fixed;top:4%;right:6%;width:120px;height:120px;border-radius:50%;z-index:-1;
+    background:radial-gradient(circle at 38% 36%,var(--moon) 0%,#E9DCC2 60%,#CDBE9C 100%);
+    box-shadow:0 0 80px 20px rgba(245,233,200,.16);opacity:.9;transition:opacity .4s}
+  body.day .moon{background:radial-gradient(circle at 40% 38%,#FFF3C4 0%,#FFD86B 55%,#F6B73C 100%);
+    box-shadow:0 0 90px 30px rgba(255,200,90,.4)}
+
+  .glass{background:linear-gradient(160deg,var(--glass-2),var(--glass));
+    border:1px solid var(--glass-line);border-radius:18px;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    box-shadow:var(--shadow)}
+
+  .app{display:grid;grid-template-columns:236px 1fr;min-height:100vh}
+
+  /* sidebar */
+  aside{padding:18px 16px;display:flex;flex-direction:column;gap:6px;
+    border-right:1px solid var(--glass-line);backdrop-filter:blur(14px);position:sticky;top:0;height:100vh}
+  .back{display:inline-flex;align-items:center;gap:7px;color:var(--muted);text-decoration:none;font-size:.84rem;
+    font-weight:500;padding:6px 8px;border-radius:9px;margin-bottom:8px;transition:color .2s,background .2s}
+  .back:hover{color:var(--fg);background:var(--glass)}
+  .brand{display:flex;align-items:center;gap:10px;padding:6px 8px 16px}
+  .brand .mark{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
+    background:linear-gradient(150deg,var(--primary),var(--primary-deep))}
+  .brand .mark svg{width:18px;height:18px}
+  .brand b{font-family:var(--display);font-weight:800;font-size:1.06rem;letter-spacing:-.02em}
+  .brand small{display:block;color:var(--muted);font-size:.72rem;font-weight:500;letter-spacing:.02em}
+  .navbtn{display:flex;align-items:center;gap:11px;width:100%;text-align:left;border:none;cursor:pointer;
+    background:transparent;color:var(--muted);font-family:var(--body);font-size:.95rem;font-weight:500;
+    padding:10px 12px;border-radius:11px;transition:background .2s,color .2s}
+  .navbtn svg{width:19px;height:19px}
+  .navbtn:hover{background:var(--glass);color:var(--fg)}
+  .navbtn.active{background:var(--glass-2);color:var(--fg);font-weight:600;box-shadow:inset 0 0 0 1px var(--glass-line)}
+  .sb-foot{margin-top:auto;padding:12px;border-radius:13px}
+  .chan{display:flex;align-items:center;gap:10px}
+  .chan .av{width:36px;height:36px;border-radius:50%;flex:none;background:linear-gradient(150deg,#E9A24B,#9B3B1E)}
+  .chan .nm{font-family:var(--display);font-weight:600;font-size:.9rem;line-height:1.2}
+  .chan .sub{color:var(--muted);font-size:.74rem}
+
+  /* main */
+  main{padding:22px 28px 60px;max-width:1040px}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:24px;flex-wrap:wrap}
+  .top h1{font-family:var(--display);font-weight:700;font-size:1.5rem;letter-spacing:-.02em}
+  .top p{color:var(--muted);font-size:.88rem;margin-top:2px}
+  .toggle{display:flex;align-items:center;gap:10px;font-size:.85rem;color:var(--muted);user-select:none}
+  .switch{position:relative;width:46px;height:26px;border-radius:99px;background:var(--glass-2);
+    border:1px solid var(--glass-line);cursor:pointer;transition:background .25s}
+  .switch i{position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;
+    background:var(--primary);transition:transform .25s,background .25s}
+  body:not(.day) .switch{background:rgba(236,122,60,.25)}
+  body:not(.day) .switch i{transform:translateX(20px)}
+
+  .tabpane{display:none}
+  .tabpane.show{display:block;animation:fade .35s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* stat cards */
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
+  .card{padding:18px}
+  .card .lab{color:var(--muted);font-size:.8rem;display:flex;align-items:center;gap:7px}
+  .card .lab svg{width:15px;height:15px;color:var(--primary)}
+  .card .num{font-family:var(--display);font-weight:700;font-size:1.85rem;letter-spacing:-.02em;margin-top:8px}
+  .card .delta{font-size:.78rem;margin-top:3px}
+  .delta.up{color:#5FCf8a}.delta.down{color:var(--primary)}
+  @media(max-width:860px){.cards{grid-template-columns:repeat(2,1fr)}}
+
+  .panel{padding:22px;margin-bottom:18px}
+  .panel h3{font-family:var(--display);font-weight:600;font-size:1.05rem;margin-bottom:3px}
+  .panel .ph{color:var(--muted);font-size:.84rem;margin-bottom:20px}
+
+  /* bar chart */
+  .chart{display:flex;align-items:flex-end;gap:14px;height:190px;padding-top:10px}
+  .bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:9px;height:100%;justify-content:flex-end}
+  .bar .col{width:100%;max-width:44px;border-radius:8px 8px 4px 4px;
+    background:linear-gradient(180deg,var(--primary),var(--primary-deep));position:relative;
+    transition:height .6s cubic-bezier(.2,.8,.2,1),filter .2s}
+  .bar:hover .col{filter:brightness(1.15)}
+  .bar .col::after{content:attr(data-v);position:absolute;top:-22px;left:50%;transform:translateX(-50%);
+    font-family:var(--display);font-size:.72rem;font-weight:600;color:var(--fg);white-space:nowrap;opacity:0;transition:opacity .2s}
+  .bar:hover .col::after{opacity:1}
+  .bar .lab{color:var(--muted);font-size:.74rem}
+  .note{margin-top:18px;padding:12px 14px;border-radius:11px;background:var(--glass);border:1px solid var(--glass-line);
+    font-size:.85rem;color:var(--muted);display:flex;gap:9px;align-items:flex-start}
+  .note svg{width:16px;height:16px;color:var(--primary);flex:none;margin-top:2px}
+
+  /* content tab */
+  .ctrls{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:16px;flex-wrap:wrap}
+  .search{display:flex;align-items:center;gap:8px;padding:9px 13px;border-radius:11px;flex:1;min-width:200px}
+  .search svg{width:16px;height:16px;color:var(--muted)}
+  .search input{border:none;background:transparent;color:var(--fg);font-family:var(--body);font-size:.9rem;width:100%;outline:none}
+  .search input::placeholder{color:var(--muted)}
+  .chk{display:flex;align-items:center;gap:9px;font-size:.86rem;color:var(--muted);cursor:pointer;
+    padding:9px 13px;border-radius:11px;border:1px solid var(--glass-line);background:var(--glass);user-select:none}
+  .chk input{accent-color:var(--primary);width:16px;height:16px}
+
+  .clip{display:grid;grid-template-columns:96px 1fr auto;gap:16px;align-items:center;padding:12px;border-radius:14px;
+    border:1px solid transparent;cursor:pointer;transition:background .2s,border-color .2s}
+  .clip:hover{background:var(--glass);border-color:var(--glass-line)}
+  .clip+.clip{margin-top:4px}
+  .clip .pic{aspect-ratio:16/10;border-radius:9px;overflow:hidden;position:relative;
+    background:linear-gradient(160deg,#3A2A18,#221726)}
+  body.day .clip .pic{background:linear-gradient(160deg,#E6CBA0,#D8B98a)}
+  .clip .pic .dur{position:absolute;right:5px;bottom:4px;font-size:.66rem;font-weight:600;padding:1px 5px;border-radius:5px;background:rgba(10,6,16,.7);color:#fff}
+  .clip .meta h4{font-family:var(--display);font-weight:600;font-size:.97rem;letter-spacing:-.01em}
+  .clip .meta .sub{color:var(--muted);font-size:.8rem;margin-top:3px}
+  .clip .scream{display:inline-block;margin-top:7px;font-size:.72rem;font-weight:600;padding:3px 9px;border-radius:7px;
+    background:rgba(236,122,60,.14);color:var(--primary);border:1px solid rgba(236,122,60,.3)}
+  .clip .right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+  .clip .views{font-family:var(--display);font-weight:600;font-size:.92rem}
+  .clip .views span{color:var(--muted);font-weight:400;font-size:.74rem;display:block;text-align:right}
+  .pub{font-size:.72rem;font-weight:600;padding:4px 9px;border-radius:7px;border:1px solid var(--glass-line);cursor:pointer;
+    background:var(--glass);color:var(--muted);transition:all .2s}
+  .pub.live{background:rgba(95,207,138,.16);color:#5FCf8a;border-color:rgba(95,207,138,.35)}
+  .empty{text-align:center;color:var(--muted);padding:40px 0;font-size:.9rem}
+
+  /* audience tab */
+  .aud{display:flex;flex-direction:column;gap:16px}
+  .arow{display:grid;grid-template-columns:150px 1fr 54px;gap:14px;align-items:center}
+  .arow .pl{font-size:.88rem}
+  .arow .track{height:12px;border-radius:99px;background:var(--glass);overflow:hidden;border:1px solid var(--glass-line)}
+  .arow .track i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--primary),var(--primary-deep));transition:width .7s cubic-bezier(.2,.8,.2,1)}
+  .arow .pct{font-family:var(--display);font-weight:600;font-size:.86rem;text-align:right;color:var(--muted)}
+
+  /* modal */
+  .scrim{position:fixed;inset:0;background:rgba(8,5,14,.62);backdrop-filter:blur(4px);z-index:60;
+    display:none;align-items:center;justify-content:center;padding:20px}
+  .scrim.open{display:flex;animation:fade .2s ease}
+  .modal{max-width:440px;width:100%;padding:22px}
+  .modal .pic{aspect-ratio:16/9;border-radius:13px;background:linear-gradient(160deg,#3A2A18,#221726);
+    display:grid;place-items:center;margin-bottom:16px;position:relative;overflow:hidden}
+  .modal .pic .fox{font-family:var(--display);font-weight:800;font-size:.72rem;letter-spacing:.16em;color:rgba(255,255,255,.3)}
+  .modal h3{font-family:var(--display);font-weight:600;font-size:1.18rem;letter-spacing:-.01em}
+  .modal .msub{color:var(--muted);font-size:.86rem;margin:4px 0 18px}
+  .mstats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+  .mstats div{text-align:center;padding:13px 8px;border-radius:12px;background:var(--glass);border:1px solid var(--glass-line)}
+  .mstats .n{font-family:var(--display);font-weight:700;font-size:1.2rem}
+  .mstats .l{color:var(--muted);font-size:.72rem;margin-top:2px}
+  .modal .close{position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:9px;border:none;cursor:pointer;
+    background:var(--glass-2);color:var(--fg);font-size:1.1rem;display:grid;place-items:center}
+  .btn{font-family:var(--body);font-weight:600;font-size:.95rem;padding:12px 18px;border-radius:12px;border:none;cursor:pointer;
+    width:100%;background:linear-gradient(150deg,var(--primary),var(--primary-deep));color:#fff;transition:transform .2s}
+  .btn:hover{transform:translateY(-1px)}
+
+  @media(max-width:760px){
+    .app{grid-template-columns:1fr}
+    aside{position:relative;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;border-right:none;border-bottom:1px solid var(--glass-line)}
+    .sb-foot{display:none}
+    .navbtn{width:auto}
+    .cards{grid-template-columns:repeat(2,1fr)}
+  }
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body class="">
+<div class="sky"></div>
+<div class="moon"></div>
+
+<div class="app">
+  <aside class="glass" style="border-radius:0">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <div class="brand">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M5 4l3 4 4-3 4 3 3-4-1 9c-1 4-4 6-6 6s-5-2-6-6L5 4z" fill="#fff"/><circle cx="9.5" cy="11" r="1" fill="#D5642A"/><circle cx="14.5" cy="11" r="1" fill="#D5642A"/></svg></span>
+      <span><b>Skulk Studio</b><small>creator dashboard</small></span>
+    </div>
+    <button class="navbtn active" data-tab="overview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>Overview</button>
+    <button class="navbtn" data-tab="content"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9l5 3-5 3z"/></svg>Content</button>
+    <button class="navbtn" data-tab="audience"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19a5.5 5.5 0 0111 0M16 6a3 3 0 010 6M20.5 19a5.5 5.5 0 00-3-4.9"/></svg>Audience</button>
+    <div class="sb-foot glass">
+      <div class="chan">
+        <span class="av"></span>
+        <span><span class="nm">Reynard Tillery</span><br><span class="sub">4.1M dens · verified fox</span></span>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="top">
+      <div>
+        <h1 id="tab-title">Overview</h1>
+        <p id="tab-sub">Last 7 nights · all times local to the garden</p>
+      </div>
+      <label class="toggle">Nocturnal Mode
+        <span class="switch" id="nocturnal" role="switch" aria-checked="true" tabindex="0"><i></i></span>
+      </label>
+    </div>
+
+    <!-- OVERVIEW -->
+    <section class="tabpane show" id="overview">
+      <div class="cards">
+        <div class="card glass"><div class="lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12h2l2-6 3 14 3-10 2 4h4"/></svg>Screams logged</div><div class="num">1,284</div><div class="delta up">+212 this week</div></div>
+        <div class="card glass"><div class="lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M8 8V6a4 4 0 018 0v2M12 13v3"/></svg>Bins overturned</div><div class="num">47</div><div class="delta up">+9 this week</div></div>
+        <div class="card glass"><div class="lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Watch time after 12am</div><div class="num">9.2k<span style="font-size:.9rem;color:var(--muted);font-weight:500"> hrs</span></div><div class="delta up">+18% vs last week</div></div>
+        <div class="card glass"><div class="lab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><path d="M3.5 19a5.5 5.5 0 0111 0M16 6a3 3 0 010 6"/></svg>Subscribers</div><div class="num">4.10M</div><div class="delta down">−3 (a dispute)</div></div>
+      </div>
+
+      <div class="panel glass">
+        <h3>Activity by night</h3>
+        <p class="ph">Screams uploaded per night. Daytime is, as expected, quiet.</p>
+        <div class="chart" id="chart">
+          <div class="bar"><div class="col" data-v="88" style="height:35%"></div><div class="lab">Sun</div></div>
+          <div class="bar"><div class="col" data-v="104" style="height:42%"></div><div class="lab">Mon</div></div>
+          <div class="bar"><div class="col" data-v="156" style="height:62%"></div><div class="lab">Tue</div></div>
+          <div class="bar"><div class="col" data-v="132" style="height:53%"></div><div class="lab">Wed</div></div>
+          <div class="bar"><div class="col" data-v="201" style="height:80%"></div><div class="lab">Thu</div></div>
+          <div class="bar"><div class="col" data-v="248" style="height:99%"></div><div class="lab">Fri</div></div>
+          <div class="bar"><div class="col" data-v="175" style="height:70%"></div><div class="lab">Sat</div></div>
+        </div>
+        <div class="note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>Retention peaks at 3:14am and collapses at sunrise. We have stopped trying to change this.</div>
+      </div>
+    </section>
+
+    <!-- CONTENT -->
+    <section class="tabpane" id="content">
+      <div class="ctrls">
+        <div class="search glass">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+          <input id="q" type="text" placeholder="Search your dens, bins, and screams…">
+        </div>
+        <label class="chk"><input type="checkbox" id="after2"> Recorded after 2am only</label>
+      </div>
+      <div class="panel glass" style="padding:14px">
+        <div id="cliplist"></div>
+        <div class="empty" id="empty" style="display:none">No clips match. The fox was, presumably, asleep.</div>
+      </div>
+    </section>
+
+    <!-- AUDIENCE -->
+    <section class="tabpane" id="audience">
+      <div class="panel glass">
+        <h3>Where your viewers den</h3>
+        <p class="ph">Self-reported. Foxes are not reliable narrators of their own location.</p>
+        <div class="aud" id="aud"></div>
+      </div>
+      <div class="panel glass">
+        <h3>When they watch</h3>
+        <p class="ph">Share of total watch time by hour band.</p>
+        <div class="aud" id="aud2"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- clip modal -->
+<div class="scrim" id="scrim">
+  <div class="modal glass" role="dialog" aria-modal="true" aria-labelledby="m-title">
+    <button class="close" id="mclose" aria-label="Close">✕</button>
+    <div class="pic"><span class="fox">▲ FOX IN FRAME ▲</span></div>
+    <h3 id="m-title">Bin, 11:48pm (unedited)</h3>
+    <p class="msub" id="m-sub">Uploaded automatically · scream: territorial</p>
+    <div class="mstats">
+      <div><div class="n" id="m-v">823k</div><div class="l">views</div></div>
+      <div><div class="n" id="m-w">4:02</div><div class="l">avg watch</div></div>
+      <div><div class="n">$0.00</div><div class="l">earned</div></div>
+    </div>
+    <button class="btn" id="mclose2">Close (the fox has moved on)</button>
+  </div>
+</div>
+
+<script>
+  // ---- tab switching ----
+  var titles={
+    overview:["Overview","Last 7 nights · all times local to the garden"],
+    content:["Content","Every clip the garden recorded on your behalf"],
+    audience:["Audience","Who is watching, and from which storm drain"]
+  };
+  document.querySelectorAll('.navbtn').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.navbtn').forEach(function(x){x.classList.remove('active')});
+      b.classList.add('active');
+      var t=b.dataset.tab;
+      document.querySelectorAll('.tabpane').forEach(function(p){p.classList.toggle('show',p.id===t)});
+      document.getElementById('tab-title').textContent=titles[t][0];
+      document.getElementById('tab-sub').textContent=titles[t][1];
+    });
+  });
+
+  // ---- nocturnal toggle ----
+  var sw=document.getElementById('nocturnal');
+  function flip(){
+    var day=document.body.classList.toggle('day');
+    sw.setAttribute('aria-checked', String(!day));
+  }
+  sw.addEventListener('click',flip);
+  sw.addEventListener('keydown',function(e){if(e.key===' '||e.key==='Enter'){e.preventDefault();flip();}});
+
+  // ---- content list ----
+  var clips=[
+    {t:"Bin, 11:48pm (unedited)",time:"11:48pm",hour:23,scream:"territorial",views:"823k",dur:"0:40",pub:true,watch:"4:02"},
+    {t:"Standoff with a cat (I won)",time:"1:12am",hour:1,scream:"posturing",views:"1.2M",dur:"2:15",pub:true,watch:"5:41"},
+    {t:"Scream, 3:14am, no context",time:"3:14am",hour:3,scream:"inconsolable",views:"612k",dur:"0:08",pub:true,watch:"0:51"},
+    {t:"Trotting. Just trotting.",time:"2:40am",hour:2,scream:"none",views:"94k",dur:"6:30",pub:false,watch:"1:09"},
+    {t:"Found a shoe",time:"4:02am",hour:4,scream:"triumphant",views:"498k",dur:"1:22",pub:true,watch:"3:18"},
+    {t:"Daytime nap (accidental upload)",time:"1:30pm",hour:13,scream:"none",views:"7k",dur:"41:00",pub:false,watch:"0:22"},
+    {t:"Greeting the postman, aggressively",time:"9:05am",hour:9,scream:"territorial",views:"203k",dur:"0:33",pub:true,watch:"2:11"}
+  ];
+  function render(){
+    var q=document.getElementById('q').value.toLowerCase();
+    var only2=document.getElementById('after2').checked;
+    var list=document.getElementById('cliplist'); list.innerHTML='';
+    var shown=0;
+    clips.forEach(function(c){
+      if(only2 && !(c.hour>=2 && c.hour<6)) return;
+      if(q && c.t.toLowerCase().indexOf(q)<0 && c.scream.indexOf(q)<0) return;
+      shown++;
+      var el=document.createElement('div'); el.className='clip';
+      el.innerHTML='<div class="pic"><span class="dur">'+c.dur+'</span></div>'+
+        '<div class="meta"><h4>'+c.t+'</h4><div class="sub">'+c.time+' · '+c.dur+'</div>'+
+        (c.scream!=='none'?'<span class="scream">scream: '+c.scream+'</span>':'')+'</div>'+
+        '<div class="right"><div class="views">'+c.views+'<span>views</span></div>'+
+        '<button class="pub'+(c.pub?' live':'')+'">'+(c.pub?'Published':'Unlisted')+'</button></div>';
+      el.querySelector('.pub').addEventListener('click',function(e){
+        e.stopPropagation(); c.pub=!c.pub; render();
+      });
+      el.addEventListener('click',function(){openModal(c)});
+      list.appendChild(el);
+    });
+    document.getElementById('empty').style.display=shown?'none':'block';
+  }
+  document.getElementById('q').addEventListener('input',render);
+  document.getElementById('after2').addEventListener('change',render);
+  render();
+
+  // ---- modal ----
+  var scrim=document.getElementById('scrim');
+  function openModal(c){
+    document.getElementById('m-title').textContent=c.t;
+    document.getElementById('m-sub').textContent='Uploaded automatically · scream: '+c.scream;
+    document.getElementById('m-v').textContent=c.views;
+    document.getElementById('m-w').textContent=c.watch;
+    scrim.classList.add('open');
+  }
+  function close(){scrim.classList.remove('open')}
+  document.getElementById('mclose').addEventListener('click',close);
+  document.getElementById('mclose2').addEventListener('click',close);
+  scrim.addEventListener('click',function(e){if(e.target===scrim)close()});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});
+
+  // ---- audience bars ----
+  var aud=[["Underneath a shed","31%",31],["Storm drain, residential","24%",24],["Someone's allotment","19%",19],["The cemetery (quiet)","14%",14],["A roundabout","12%",12]];
+  var aud2=[["12am – 2am","28%",28],["2am – 4am","41%",41],["4am – 6am","22%",22],["Daylight hours","9%",9]];
+  function bars(id,data){
+    var w=document.getElementById(id);
+    data.forEach(function(r){
+      var row=document.createElement('div'); row.className='arow';
+      row.innerHTML='<span class="pl">'+r[0]+'</span><div class="track"><i style="width:0%"></i></div><span class="pct">'+r[1]+'</span>';
+      w.appendChild(row);
+      requestAnimationFrame(function(){setTimeout(function(){row.querySelector('i').style.width=r[2]+'%'},60)});
+    });
+  }
+  bars('aud',aud); bars('aud2',aud2);
+</script>
+</body>
+</html>

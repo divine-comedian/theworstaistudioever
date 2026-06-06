@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skulk · theworstaistudioever</title>
+<meta name="description" content="A video platform for foxes. Upload bin footage, get sorted by scream, and earn money you are structurally unable to collect.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Skulk: Video, for foxes.">
+<meta property="og:description" content="A video platform for foxes. Upload bin footage, get sorted by scream, and earn money you are structurally unable to collect.">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Skulk: Video, for foxes.">
+<meta name="twitter:description" content="A video platform for foxes. Upload bin footage, get sorted by scream, and earn money you cannot collect.">
+<meta name="theme-color" content="#171024">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#EC7A3C;
+    --primary-deep:#D5642A;
+    --accent:#8AB4FF;
+    --bg:#171024;
+    --bg-2:#1F1633;
+    --fg:#F3EEF7;
+    --muted:#A79DB8;
+    --ink:#F3EEF7;
+    --glass:rgba(255,255,255,.055);
+    --glass-2:rgba(255,255,255,.085);
+    --glass-line:rgba(255,255,255,.14);
+    --glass-hi:rgba(255,255,255,.5);
+    --shadow:0 24px 60px -24px rgba(0,0,0,.7);
+    --display:"Sora",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --body:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--body);
+    color:var(--fg);
+    background:var(--bg);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  /* night sky */
+  .sky{position:fixed;inset:0;z-index:-2;overflow:hidden;background:
+    radial-gradient(120% 90% at 80% -10%, #2A1B45 0%, rgba(42,27,69,0) 55%),
+    radial-gradient(90% 70% at 12% 110%, #241834 0%, rgba(36,24,52,0) 60%),
+    linear-gradient(180deg,#1B1230 0%,#171024 45%,#120D1E 100%);}
+  .moon{position:absolute;top:5%;right:8%;width:160px;height:160px;border-radius:50%;
+    background:radial-gradient(circle at 38% 36%, #FDF6E9 0%, #E9DCC2 55%, #CDBE9C 100%);
+    box-shadow:0 0 90px 24px rgba(245,233,200,.18), inset -16px -10px 28px rgba(120,104,72,.35);}
+  .moon::after{content:"";position:absolute;inset:0;border-radius:50%;
+    background:radial-gradient(circle at 64% 30%, rgba(120,104,72,.22) 0 9px, transparent 10px),
+    radial-gradient(circle at 40% 64%, rgba(120,104,72,.18) 0 6px, transparent 7px),
+    radial-gradient(circle at 70% 62%, rgba(120,104,72,.15) 0 5px, transparent 6px);}
+  .aurora{position:absolute;border-radius:50%;filter:blur(80px);opacity:.5;z-index:-1}
+  .aurora.a{width:540px;height:540px;left:-120px;top:18%;background:radial-gradient(circle,#EC7A3C 0%,rgba(236,122,60,0) 70%);animation:drift1 26s ease-in-out infinite}
+  .aurora.b{width:600px;height:600px;right:-160px;top:40%;background:radial-gradient(circle,#5C7BE0 0%,rgba(92,123,224,0) 70%);animation:drift2 32s ease-in-out infinite}
+  .stars{position:absolute;inset:0;background-image:
+    radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,.7) 50%, transparent),
+    radial-gradient(1px 1px at 70% 18%, rgba(255,255,255,.5) 50%, transparent),
+    radial-gradient(1.4px 1.4px at 45% 12%, rgba(255,255,255,.6) 50%, transparent),
+    radial-gradient(1px 1px at 85% 40%, rgba(255,255,255,.45) 50%, transparent),
+    radial-gradient(1px 1px at 33% 60%, rgba(255,255,255,.4) 50%, transparent),
+    radial-gradient(1.2px 1.2px at 60% 55%, rgba(255,255,255,.5) 50%, transparent);}
+  @keyframes drift1{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,30px)}}
+  @keyframes drift2{0%,100%{transform:translate(0,0)}50%{transform:translate(-50px,-20px)}}
+
+  .wrap{max-width:1140px;margin:0 auto;padding:0 24px}
+
+  /* top nav */
+  header.nav{position:sticky;top:0;z-index:40;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    background:rgba(23,16,36,.55);border-bottom:1px solid rgba(255,255,255,.06)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .logo{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:1.18rem;letter-spacing:-.02em}
+  .logo .mark{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
+    background:linear-gradient(150deg,var(--primary),var(--primary-deep));box-shadow:0 6px 16px -6px var(--primary)}
+  .logo .mark svg{width:18px;height:18px}
+  .nav-links{display:flex;align-items:center;gap:28px}
+  .nav-links a{color:var(--muted);text-decoration:none;font-size:.92rem;font-weight:500;transition:color .2s}
+  .nav-links a:hover{color:var(--fg)}
+  .nav-cta{padding:9px 16px;border-radius:11px;background:var(--glass-2);border:1px solid var(--glass-line);
+    color:var(--fg)!important;font-weight:600!important}
+  @media(max-width:720px){.nav-links a:not(.nav-cta){display:none}}
+
+  /* hero */
+  .hero{padding:72px 0 40px;position:relative}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;padding:6px 13px;border-radius:999px;
+    background:var(--glass);border:1px solid var(--glass-line);font-size:.8rem;color:var(--muted);
+    font-weight:600;letter-spacing:.01em;margin-bottom:24px}
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--primary);box-shadow:0 0 0 0 var(--primary);animation:pulse 2.4s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(236,122,60,.5)}70%{box-shadow:0 0 0 8px rgba(236,122,60,0)}100%{box-shadow:0 0 0 0 rgba(236,122,60,0)}}
+  h1{font-family:var(--display);font-weight:800;font-size:clamp(2.7rem,6vw,4.4rem);line-height:1.02;
+    letter-spacing:-.035em;margin-bottom:22px}
+  h1 .glow{color:var(--primary)}
+  .hero p.sub{font-size:1.13rem;color:var(--muted);max-width:30ch;margin-bottom:32px}
+  .cta-row{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+  .btn{font-family:var(--body);font-weight:600;font-size:1rem;padding:14px 24px;border-radius:13px;
+    border:1px solid transparent;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:9px;transition:transform .2s,box-shadow .2s,background .2s}
+  .btn-primary{background:linear-gradient(150deg,var(--primary),var(--primary-deep));color:#fff;
+    box-shadow:0 14px 30px -12px var(--primary)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 20px 38px -12px var(--primary)}
+  .btn-ghost{background:var(--glass);border-color:var(--glass-line);color:var(--fg)}
+  .btn-ghost:hover{background:var(--glass-2)}
+
+  /* glass primitive */
+  .glass{background:linear-gradient(160deg,var(--glass-2),var(--glass));
+    border:1px solid var(--glass-line);border-radius:20px;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    box-shadow:var(--shadow);position:relative}
+  .glass::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;
+    background:linear-gradient(160deg,var(--glass-hi),transparent 40%);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.6}
+
+  /* now playing card */
+  .player{padding:18px}
+  .thumb{position:relative;border-radius:14px;overflow:hidden;aspect-ratio:16/10;
+    background:linear-gradient(160deg,#3A2A18,#221726);display:grid;place-items:center}
+  .thumb .scene{position:absolute;inset:0;background:
+    radial-gradient(60% 80% at 50% 120%, rgba(236,122,60,.35), transparent 60%),
+    repeating-linear-gradient(180deg, rgba(255,255,255,.02) 0 2px, transparent 2px 5px);}
+  .thumb .fox{font-family:var(--display);font-weight:800;font-size:.74rem;letter-spacing:.16em;
+    color:rgba(255,255,255,.32);text-transform:uppercase}
+  .live{position:absolute;top:11px;left:11px;display:flex;align-items:center;gap:6px;padding:4px 9px;border-radius:7px;
+    background:rgba(20,12,30,.7);font-size:.7rem;font-weight:700;letter-spacing:.06em;color:#fff}
+  .live i{width:6px;height:6px;border-radius:50%;background:var(--primary);animation:pulse 1.8s infinite}
+  .play{position:absolute;inset:0;margin:auto;width:60px;height:60px;border-radius:50%;border:none;cursor:pointer;
+    background:rgba(20,12,30,.55);backdrop-filter:blur(6px);display:grid;place-items:center;color:#fff;transition:transform .2s,background .2s}
+  .play:hover{transform:scale(1.07);background:var(--primary)}
+  .play svg{width:22px;height:22px;margin-left:3px}
+  .pbar{height:4px;border-radius:99px;background:rgba(255,255,255,.14);margin:14px 2px 0;overflow:hidden}
+  .pbar i{display:block;height:100%;width:34%;border-radius:99px;background:var(--primary);animation:creep 9s linear infinite}
+  @keyframes creep{from{width:8%}to{width:92%}}
+  .pmeta{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:14px 4px 4px}
+  .pmeta h4{font-family:var(--display);font-weight:600;font-size:1rem;letter-spacing:-.01em}
+  .chrow{display:flex;align-items:center;gap:8px;margin-top:6px;color:var(--muted);font-size:.84rem}
+  .ch-av{width:22px;height:22px;border-radius:50%;background:linear-gradient(150deg,#E9A24B,#C2542F);flex:none}
+  .verified{color:var(--accent);display:inline-flex}.verified svg{width:14px;height:14px}
+  .tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+  .tag{font-size:.74rem;font-weight:600;padding:4px 10px;border-radius:8px;background:var(--glass);border:1px solid var(--glass-line);color:var(--muted)}
+  .tag.hot{color:var(--primary);border-color:rgba(236,122,60,.4)}
+
+  /* stat strip */
+  .strip{margin-top:34px;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;border-radius:16px;overflow:hidden;
+    background:var(--glass-line)}
+  .strip .cell{background:rgba(23,16,36,.6);backdrop-filter:blur(10px);padding:18px 16px;text-align:center}
+  .strip .num{font-family:var(--display);font-weight:700;font-size:1.5rem;letter-spacing:-.02em}
+  .strip .lab{font-size:.76rem;color:var(--muted);margin-top:3px}
+  @media(max-width:720px){.strip{grid-template-columns:repeat(2,1fr)}}
+
+  /* sections */
+  section.block{padding:80px 0}
+  .kicker{font-family:var(--display);font-weight:700;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--primary);margin-bottom:14px}
+  .sec-head{max-width:34ch;margin-bottom:44px}
+  .sec-head h2{font-family:var(--display);font-weight:700;font-size:clamp(1.9rem,3.6vw,2.7rem);letter-spacing:-.03em;line-height:1.08}
+  .sec-head p{color:var(--muted);margin-top:14px;font-size:1.05rem}
+
+  .features{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .feat{padding:26px}
+  .feat .ic{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;margin-bottom:18px;
+    background:var(--glass-2);border:1px solid var(--glass-line);color:var(--primary)}
+  .feat .ic svg{width:23px;height:23px}
+  .feat h3{font-family:var(--display);font-weight:600;font-size:1.18rem;letter-spacing:-.01em;margin-bottom:10px}
+  .feat p{color:var(--muted);font-size:.96rem}
+
+  .quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .quote{padding:28px;display:flex;flex-direction:column}
+  .quote blockquote{font-size:1.04rem;line-height:1.55;margin-bottom:22px;flex:1}
+  .quote .by{display:flex;align-items:center;gap:12px}
+  .quote .by .av{width:40px;height:40px;border-radius:50%;flex:none;background:linear-gradient(150deg,#E9A24B,#9B3B1E)}
+  .quote .by .nm{font-family:var(--display);font-weight:600;font-size:.95rem}
+  .quote .by .ti{color:var(--muted);font-size:.8rem}
+
+  .pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch}
+  .tier{padding:28px;display:flex;flex-direction:column}
+  .tier.featured{border-color:rgba(236,122,60,.5);box-shadow:0 24px 60px -24px rgba(236,122,60,.4)}
+  .tier .badge{position:absolute;top:-11px;left:28px;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    padding:4px 11px;border-radius:8px;background:var(--primary);color:#fff}
+  .tier .tname{font-family:var(--display);font-weight:700;font-size:1.05rem;letter-spacing:.02em}
+  .tier .price{font-family:var(--display);font-weight:800;font-size:2.5rem;letter-spacing:-.03em;margin:10px 0 2px}
+  .tier .price span{font-size:.9rem;font-weight:500;color:var(--muted);letter-spacing:0}
+  .tier .tt{color:var(--muted);font-size:.92rem;min-height:42px}
+  .tier ul{list-style:none;margin:18px 0 24px;display:flex;flex-direction:column;gap:11px}
+  .tier li{display:flex;gap:10px;align-items:flex-start;font-size:.93rem}
+  .tier li svg{width:18px;height:18px;flex:none;color:var(--primary);margin-top:2px}
+  .tier .btn{width:100%;justify-content:center;margin-top:auto}
+
+  /* demo banner */
+  .demo{margin:0 0 90px}
+  .demo-in{padding:46px 40px;display:flex;align-items:center;justify-content:space-between;gap:30px;flex-wrap:wrap}
+  .demo-in h2{font-family:var(--display);font-weight:700;font-size:clamp(1.6rem,3vw,2.2rem);letter-spacing:-.02em}
+  .demo-in p{color:var(--muted);margin-top:8px;max-width:46ch}
+
+  footer{border-top:1px solid rgba(255,255,255,.07);padding:34px 0 50px}
+  .foot-in{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+  .foot-in a{color:var(--muted);text-decoration:none;font-size:.9rem;transition:color .2s}
+  .foot-in a:hover{color:var(--fg)}
+  .foot-note{color:var(--muted);font-size:.82rem;max-width:48ch}
+
+  @media(max-width:880px){
+    .hero-grid,.features,.quotes,.pricing{grid-template-columns:1fr}
+    .hero{padding-top:48px}
+    .sec-head{margin-bottom:32px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;scroll-behavior:auto}
+    .btn:hover,.play:hover{transform:none}
+  }
+</style>
+</head>
+<body>
+<div class="sky">
+  <div class="stars"></div>
+  <div class="aurora a"></div>
+  <div class="aurora b"></div>
+  <div class="moon"></div>
+</div>
+
+<header class="nav">
+  <div class="wrap nav-in">
+    <div class="logo">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M5 4l3 4 4-3 4 3 3-4-1 9c-1 4-4 6-6 6s-5-2-6-6L5 4z" fill="#fff"/><circle cx="9.5" cy="11" r="1" fill="#D5642A"/><circle cx="14.5" cy="11" r="1" fill="#D5642A"/></svg></span>
+      Skulk
+    </div>
+    <nav class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#voices">Creators</a>
+      <a href="#pricing">Pricing</a>
+      <a class="nav-cta" href="./demo.html">Open Studio →</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <span class="eyebrow"><span class="dot"></span>Now in 4 million gardens</span>
+          <h1>Video, <span class="glow">for foxes.</span></h1>
+          <p class="sub">Skulk is home to four million nocturnal creators uploading footage of overturned bins, territorial screaming, and brief eye contact at the treeline. Built mobile-first for animals without thumbs.</p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="./demo.html">Claim your den</a>
+            <a class="btn btn-ghost" href="#features">See how it records</a>
+          </div>
+        </div>
+        <div class="hero-card glass player">
+          <div class="thumb">
+            <div class="scene"></div>
+            <span class="live"><i></i>LIVE</span>
+            <div class="fox">▲ FOX IN FRAME ▲</div>
+            <button class="play" aria-label="Play clip"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+          </div>
+          <div class="pbar"><i></i></div>
+          <div class="pmeta">
+            <div>
+              <h4>Bin, 11:48pm (unedited)</h4>
+              <div class="chrow">
+                <span class="ch-av"></span>
+                Reynard Tillery
+                <span class="verified" aria-label="Verified fox"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 1.8 3-.2.9 2.9 2.4 1.8-1 2.9 1 2.9-2.4 1.8-.9 2.9-3-.2L12 22l-2.4-1.8-3 .2-.9-2.9L3.3 16l1-2.9-1-2.9 2.4-1.8.9-2.9 3 .2L12 2z"/></svg></span>
+              </div>
+            </div>
+          </div>
+          <div class="tags">
+            <span class="tag hot">scream: territorial</span>
+            <span class="tag">823k views</span>
+            <span class="tag">no thumbs detected</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="strip glass">
+        <div class="cell"><div class="num">4.1M</div><div class="lab">foxes onboarded</div></div>
+        <div class="cell"><div class="num">28</div><div class="lab">screams classified</div></div>
+        <div class="cell"><div class="num">$0.00</div><div class="lab">paid out, to date</div></div>
+        <div class="cell"><div class="num">92%</div><div class="lab">midnight retention</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="features">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="kicker">The platform</div>
+        <h2>Everything a fox needs, and several things it actively cannot use.</h2>
+        <p>We shipped the roadmap. The foxes were not consulted, and the foxes are doing numbers.</p>
+      </div>
+      <div class="features">
+        <div class="feat glass">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3.2"/><path d="M3 12a9 9 0 0118 0M6 12a6 6 0 0112 0"/></svg></div>
+          <h3>Motion-Triggered Uploads</h3>
+          <p>Skulk starts recording the moment a fox enters frame and publishes before the fox has left the garden. Foxes cannot operate a record button. We have classified this as a feature and moved on.</p>
+        </div>
+        <div class="feat glass">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12h2l2-6 3 14 3-10 2 4h4"/></svg></div>
+          <h3>Scream Recognition</h3>
+          <p>Our audio model sorts all 28 documented fox screams by emotional register, from territorial to inconsolable, and tags every clip automatically. Confidence stays high as long as no fox is actually screaming nearby.</p>
+        </div>
+        <div class="feat glass">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M9.5 10.2c0-1.2 1.1-2 2.5-2s2.5.7 2.5 1.9c0 2.4-5 1.4-5 3.8 0 1.2 1.1 2 2.5 2s2.5-.8 2.5-2"/></svg></div>
+          <h3>Den-Side Monetization</h3>
+          <p>Earn 0.003 cents per thousand views, paid in a currency foxes cannot hold to an account foxes cannot open. The payout button is large, red, and satisfying to press.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="voices">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="kicker">From the skulk</div>
+        <h2>Creators who found their audience, and could not get away from it.</h2>
+      </div>
+      <div class="quotes">
+        <figure class="quote glass">
+          <blockquote>"I uploaded forty seconds of a bin and woke up with a following. I have not seen the bin since."</blockquote>
+          <figcaption class="by"><span class="av"></span><span><span class="nm">Reynard Tillery</span><br><span class="ti">Red Fox, 4.1M subscribers, mostly bins</span></span></figcaption>
+        </figure>
+        <figure class="quote glass">
+          <blockquote>"The tagger filed my best work under inconsolable. It was meant as a greeting. We are in talks."</blockquote>
+          <figcaption class="by"><span class="av"></span><span><span class="nm">Margot Underbrush</span><br><span class="ti">Urban Vixen and Lifestyle Creator, North London</span></span></figcaption>
+        </figure>
+        <figure class="quote glass">
+          <blockquote>"Nobody asked whether foxes want this. They built it anyway. The retention curve is, admittedly, remarkable."</blockquote>
+          <figcaption class="by"><span class="av"></span><span><span class="nm">Dr. Pell Hawthorne</span><br><span class="ti">Wildlife Ethologist Who Was Not Consulted</span></span></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="pricing">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="kicker">Plans</div>
+        <h2>Tiers priced with total confidence and no market research.</h2>
+      </div>
+      <div class="pricing">
+        <div class="tier glass">
+          <div class="tname">Kit</div>
+          <div class="price">Free</div>
+          <div class="tt">For the fox just emerging.</div>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l4 4 10-10"/></svg>Unlimited bin footage</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l4 4 10-10"/></svg>Three auto-tagged screams a night</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l4 4 10-10"/></svg>A watermark shaped like a paw</li>
+          </ul>
+          <a class="btn btn-ghost" href="./demo.html">Start free</a>
+        </div>
+        <div class="tier glass featured">
+          <span class="badge">Most dens</span>
+          <div class="tname">Skulk Pro</div>
+          <div class="price">$19<span>/mo</span></div>
+          <div class="tt">For the working urban fox.</div>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l4 4 10-10"/></svg>Unlimited screaming</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l4 4 10-10"/></svg>Den analytics after midnight</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l4 4 10-10"/></svg>We remove the paw and add a larger paw</li>
+          </ul>
+          <a class="btn btn-primary" href="./demo.html">Go Pro</a>
+        </div>
+        <div class="tier glass">
+          <div class="tname">Apex</div>
+          <div class="price">$340<span>/mo</span></div>
+          <div class="tt">For the fox running a small media estate.</div>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l4 4 10-10"/></svg>Multi-den publishing</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l4 4 10-10"/></svg>A manager who is also a fox</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l4 4 10-10"/></svg>Priority review on territorial disputes</li>
+          </ul>
+          <a class="btn btn-ghost" href="./demo.html">Contact a fox</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="demo glass">
+      <div class="demo-in">
+        <div>
+          <h2>Open the demo →</h2>
+          <p>Step inside Skulk Studio and run a fox's channel for the night. Tag screams, hide the daytime uploads, and watch nobody get paid.</p>
+        </div>
+        <a class="btn btn-primary" href="./demo.html">Open the Studio</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap foot-in">
+    <a href="/">← theworstaistudioever</a>
+    <p class="foot-note">Skulk is a fictional product from theworstaistudioever. No foxes were consulted, compensated, or notified.</p>
+  </div>
+</footer>
+
+<script>
+  // smooth-scroll for in-page anchors (respects reduced motion via CSS)
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click',function(e){
+      var t=document.querySelector(a.getAttribute('href'));
+      if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'});}
+    });
+  });
+  // play button is decorative on the pitch page; nudge people to the studio
+  var play=document.querySelector('.play');
+  if(play){play.addEventListener('click',function(){window.location.href='./demo.html';});}
+</script>
+</body>
+</html>
