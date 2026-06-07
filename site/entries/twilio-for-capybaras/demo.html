@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Serenity Console · Lull. · theworstaistudioever</title>
+<meta name="description" content="The Lull. Serenity Console. Send a message and watch it drift through soaking, considering, and delivered (eventually).">
+<meta name="theme-color" content="#C9784E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,600;0,6..12,700;0,6..12,800;1,6..12,400&family=Varela+Round&display=swap');
+
+:root{
+  --primary:#C9784E;--primary-deep:#B5673E;--accent:#4F9D90;--accent-deep:#3C8378;
+  --bg:#F3E7D9;--bg-2:#EEDFCD;--surface:#FBF2E7;--surface-2:#F6E9D8;
+  --fg:#3E2F26;--muted:#8C7A6B;--ink:#2E211A;
+  --r:20px;--r-sm:14px;
+  --clay: 8px 10px 22px rgba(120,82,52,.26), -7px -7px 16px rgba(255,250,242,.82), inset 2px 2px 5px rgba(255,250,242,.7), inset -4px -5px 10px rgba(150,104,66,.22);
+  --clay-sm: 4px 5px 12px rgba(120,82,52,.22), -3px -3px 9px rgba(255,250,242,.8), inset 1px 1px 3px rgba(255,250,242,.7), inset -2px -3px 6px rgba(150,104,66,.2);
+  --clay-press: inset 4px 5px 11px rgba(150,104,66,.34), inset -3px -3px 8px rgba(255,250,242,.6);
+  --ease:cubic-bezier(.34,1.56,.64,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Nunito Sans',system-ui,sans-serif;color:var(--fg);background:var(--bg);
+  background-image:
+    radial-gradient(50% 40% at 12% 6%, rgba(79,157,144,.14), transparent 70%),
+    radial-gradient(46% 46% at 92% 10%, rgba(201,120,78,.16), transparent 72%);
+  min-height:100vh;-webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,.brandmark,.btn,.meter-num{font-family:'Varela Round',system-ui,sans-serif}
+
+/* chrome */
+.chrome{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;flex-wrap:wrap;gap:12px}
+.back{color:var(--accent-deep);text-decoration:none;font-weight:800;font-size:.9rem;display:inline-flex;align-items:center;gap:8px;background:var(--surface);padding:10px 18px;border-radius:999px;box-shadow:var(--clay-sm);transition:transform .2s var(--ease)}
+.back:hover{transform:translateY(-2px)}
+.brandmark{display:flex;align-items:center;gap:10px;font-size:1.25rem;color:var(--ink)}
+.blob-logo{width:34px;height:34px;border-radius:48% 52% 56% 44%/52% 46% 54% 48%;background:linear-gradient(150deg,#D98A5E,var(--primary-deep));box-shadow:var(--clay-sm);display:grid;place-items:center}
+.blob-logo i{width:6px;height:6px;border-radius:50%;background:#2E211A;box-shadow:12px 0 0 #2E211A;margin-left:-6px;opacity:.85}
+.acct{display:inline-flex;align-items:center;gap:9px;background:var(--surface);border-radius:999px;padding:7px 15px;font-size:.8rem;color:var(--muted);font-weight:700;box-shadow:var(--clay-sm)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:breathe 3.2s ease-in-out infinite}
+
+.app{max-width:1180px;margin:8px auto 40px;padding:0 20px;display:grid;grid-template-columns:240px 1fr 268px;gap:20px;align-items:start}
+
+.panel{background:var(--surface);border-radius:var(--r);box-shadow:var(--clay);padding:22px}
+.panel h2{font-size:.78rem;text-transform:uppercase;letter-spacing:1.4px;color:var(--accent-deep);margin-bottom:16px}
+
+/* left rail */
+.chan{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:var(--r-sm);background:var(--bg-2);box-shadow:var(--clay-press);margin-bottom:12px}
+.chan .lab{display:flex;align-items:center;gap:11px;font-weight:700;font-size:.95rem;color:var(--ink)}
+.chan .lab svg{width:18px;height:18px;stroke:var(--primary-deep)}
+.toggle{width:46px;height:27px;border-radius:999px;background:#D8C7B2;position:relative;cursor:pointer;flex:none;box-shadow:var(--clay-press);transition:background .3s ease}
+.toggle::after{content:"";position:absolute;width:21px;height:21px;border-radius:50%;background:var(--surface);top:3px;left:3px;box-shadow:var(--clay-sm);transition:transform .3s var(--ease)}
+.toggle.on{background:linear-gradient(150deg,#6BB6A9,var(--accent-deep))}
+.toggle.on::after{transform:translateX(19px)}
+.inbox-card{margin-top:22px;background:linear-gradient(155deg,#FBF2E7,#F1E0CC);border-radius:var(--r-sm);padding:18px;text-align:center;box-shadow:var(--clay-sm)}
+.inbox-card .big{font-family:'Varela Round';font-size:2.4rem;color:var(--primary-deep);line-height:1}
+.inbox-card .cap{font-size:.78rem;color:var(--muted);margin-top:4px}
+
+/* center */
+.compose{display:flex;flex-direction:column;gap:12px;margin-bottom:22px}
+.compose input{font-family:'Nunito Sans';font-size:.96rem;color:var(--fg);background:var(--bg-2);border:none;border-radius:var(--r-sm);padding:14px 16px;box-shadow:var(--clay-press);width:100%}
+.compose input:focus{outline:2px solid rgba(79,157,144,.5);outline-offset:1px}
+.compose-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.btn{border:none;cursor:pointer;font-size:.95rem;padding:13px 22px;border-radius:var(--r-sm);display:inline-flex;align-items:center;gap:9px;transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
+.btn-primary{background:linear-gradient(150deg,#D5855B,var(--primary-deep));color:#FFF6EC;box-shadow:var(--clay)}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-primary:active{transform:translateY(1px);box-shadow:var(--clay-press)}
+.btn-primary:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.hint{font-size:.82rem;color:var(--muted)}
+
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.chip{font-size:.8rem;font-weight:700;color:var(--muted);background:var(--bg-2);border:none;cursor:pointer;padding:8px 14px;border-radius:999px;box-shadow:var(--clay-press);transition:all .2s ease}
+.chip.active{color:#FFF6EC;background:linear-gradient(150deg,#D5855B,var(--primary-deep));box-shadow:var(--clay-sm)}
+
+.queue{display:flex;flex-direction:column;gap:12px;min-height:120px}
+.msg{display:flex;align-items:center;gap:14px;background:var(--bg-2);border-radius:var(--r-sm);padding:14px 16px;box-shadow:var(--clay-press);animation:rise .4s var(--ease)}
+.msg .body{flex:1;min-width:0}
+.msg .to{font-size:.78rem;color:var(--muted);font-weight:700}
+.msg .txt{font-size:.93rem;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.status{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:6px 12px;border-radius:999px;flex:none;white-space:nowrap;transition:background .5s ease,color .5s ease}
+.status.soaking{background:rgba(79,157,144,.16);color:var(--accent-deep)}
+.status.considering{background:rgba(201,120,78,.16);color:var(--primary-deep)}
+.status.drifted{background:rgba(140,122,107,.18);color:var(--muted)}
+.status.delivered{background:rgba(76,143,80,.18);color:#3f7a43}
+.empty{text-align:center;color:var(--muted);padding:34px 10px;font-size:.92rem}
+
+/* right rail */
+.meter-wrap{text-align:center;margin-bottom:8px}
+.gauge{width:150px;height:150px;margin:6px auto 10px;position:relative}
+.gauge svg{transform:rotate(-90deg)}
+.gauge .ring-bg{fill:none;stroke:var(--bg-2);stroke-width:14}
+.gauge .ring-fg{fill:none;stroke:url(#cg);stroke-width:14;stroke-linecap:round;transition:stroke-dashoffset 1.2s var(--ease)}
+.meter-num{position:absolute;inset:0;display:grid;place-content:center;font-size:2.6rem;color:var(--accent-deep)}
+.meter-cap{font-size:.82rem;color:var(--muted);font-weight:700}
+.nudge{width:100%;margin:18px 0 8px;background:var(--surface-2);color:var(--primary-deep);box-shadow:var(--clay)}
+.nudge:hover{transform:translateY(-2px)}
+.nudge:active{transform:translateY(1px);box-shadow:var(--clay-press)}
+.nudge-note{font-size:.78rem;color:var(--muted);text-align:center;min-height:18px;transition:opacity .3s ease}
+.slider-block{margin-top:22px}
+.slider-block .lbl{display:flex;justify-content:space-between;font-size:.76rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:14px;border-radius:999px;background:var(--bg-2);box-shadow:var(--clay-press);cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:linear-gradient(150deg,#6BB6A9,var(--accent-deep));box-shadow:var(--clay-sm);transition:transform .2s var(--ease)}
+input[type=range]::-moz-range-thumb{width:26px;height:26px;border:none;border-radius:50%;background:linear-gradient(150deg,#6BB6A9,var(--accent-deep));box-shadow:var(--clay-sm)}
+.slider-note{font-size:.78rem;color:var(--muted);text-align:center;margin-top:12px;min-height:18px}
+
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes breathe{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes wobble{0%,100%{transform:rotate(0)}25%{transform:rotate(-2deg)}75%{transform:rotate(2deg)}}
+.wobble{animation:wobble .5s ease}
+
+@media (max-width:980px){.app{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <a href="./index.html" class="back">← back to the pitch</a>
+  <div class="brandmark"><span class="blob-logo"><i></i></span>Serenity Console</div>
+  <span class="acct"><span class="dot"></span>colony: driftwood-hollow</span>
+</div>
+
+<div class="app">
+  <!-- LEFT RAIL -->
+  <aside class="panel">
+    <h2>Channels</h2>
+    <div class="chan">
+      <span class="lab"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H7l-3 3V5Z"/></svg>SMS</span>
+      <div class="toggle on" data-ch="SMS" role="switch" aria-checked="true" tabindex="0" aria-label="Toggle SMS channel"></div>
+    </div>
+    <div class="chan">
+      <span class="lab"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h3l2 5-2 1c1 2 3 4 5 5l1-2 5 2v3c0 1-1 2-2 2C12 20 4 12 4 6c0-1 1-2 1-2Z"/></svg>Voice</span>
+      <div class="toggle" data-ch="Voice" role="switch" aria-checked="false" tabindex="0" aria-label="Toggle Voice channel"></div>
+    </div>
+    <div class="chan">
+      <span class="lab"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>Push</span>
+      <div class="toggle on" data-ch="Push" role="switch" aria-checked="true" tabindex="0" aria-label="Toggle Push channel"></div>
+    </div>
+    <div class="inbox-card">
+      <div class="big" id="inboxCount">41</div>
+      <div class="cap">unread in the shared<br>colony inbox</div>
+    </div>
+  </aside>
+
+  <!-- CENTER -->
+  <main class="panel">
+    <h2>Outbound queue</h2>
+    <div class="compose">
+      <input id="msgInput" type="text" maxlength="80" placeholder="Type a message nobody asked for…" aria-label="Message body">
+      <div class="compose-row">
+        <button class="btn btn-primary" id="sendBtn">Send, eventually</button>
+        <span class="hint" id="sendHint">It will go out when the colony settles.</span>
+      </div>
+    </div>
+
+    <div class="filters" id="filters">
+      <button class="chip active" data-f="all">All</button>
+      <button class="chip" data-f="soaking">Soaking</button>
+      <button class="chip" data-f="considering">Considering</button>
+      <button class="chip" data-f="drifted">Drifted off</button>
+      <button class="chip" data-f="delivered">Delivered</button>
+    </div>
+
+    <div class="queue" id="queue"></div>
+  </main>
+
+  <!-- RIGHT RAIL -->
+  <aside class="panel">
+    <h2>Colony vibe</h2>
+    <div class="meter-wrap">
+      <div class="gauge">
+        <svg width="150" height="150" viewBox="0 0 150 150">
+          <defs><linearGradient id="cg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6BB6A9"/><stop offset="1" stop-color="#3C8378"/></linearGradient></defs>
+          <circle class="ring-bg" cx="75" cy="75" r="62"/>
+          <circle class="ring-fg" id="ring" cx="75" cy="75" r="62" stroke-dasharray="389.6" stroke-dashoffset="350"/>
+        </svg>
+        <div class="meter-num" id="vibeNum">2</div>
+      </div>
+      <div class="meter-cap" id="vibeCap">pleasantly horizontal</div>
+    </div>
+    <button class="btn nudge" id="nudgeBtn">Nudge gently</button>
+    <div class="nudge-note" id="nudgeNote"></div>
+
+    <div class="slider-block">
+      <div class="lbl"><span>Calm</span><span>Chaos</span></div>
+      <input type="range" id="chaos" min="0" max="100" value="6" aria-label="Calm to chaos">
+      <div class="slider-note" id="chaosNote">Calibrated for stillness.</div>
+    </div>
+  </aside>
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- channel toggles ---- */
+  var activeChannels = {SMS:true, Voice:false, Push:true};
+  function bindToggle(t){
+    function flip(){
+      var ch = t.dataset.ch;
+      var on = t.classList.toggle('on');
+      activeChannels[ch] = on;
+      t.setAttribute('aria-checked', on ? 'true':'false');
+    }
+    t.addEventListener('click', flip);
+    t.addEventListener('keydown', function(e){ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); flip(); }});
+  }
+  document.querySelectorAll('.toggle').forEach(bindToggle);
+
+  /* ---- seed queue ---- */
+  var STATES = ['soaking','considering','drifted','delivered'];
+  var LABELS = {soaking:'soaking', considering:'considering', drifted:'drifted off', delivered:'delivered (eventually)'};
+  var queue = [
+    {to:'shared colony line', txt:'Your verification code is 4471', st:'considering'},
+    {to:'shared colony line', txt:'Standup starts in 5 minutes', st:'drifted'},
+    {to:'shared colony line', txt:'Re: the pond is at capacity', st:'soaking'},
+    {to:'shared colony line', txt:'Welcome to Lull. 🌿', st:'delivered'},
+    {to:'shared colony line', txt:'PagerDuty: prod is on fire', st:'drifted'}
+  ];
+  var filter = 'all';
+  var qEl = document.getElementById('queue');
+
+  function render(){
+    var rows = queue.filter(function(m){ return filter==='all' || m.st===filter; });
+    if(!rows.length){
+      qEl.innerHTML = '<div class="empty">Nothing here. The colony approves of this.</div>';
+      return;
+    }
+    qEl.innerHTML = rows.map(function(m){
+      return '<div class="msg"><div class="body"><div class="to">to · '+m.to+'</div>'+
+        '<div class="txt">'+escapeHtml(m.txt)+'</div></div>'+
+        '<span class="status '+m.st+'">'+LABELS[m.st]+'</span></div>';
+    }).join('');
+  }
+  function escapeHtml(s){ return s.replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+  /* ---- filters ---- */
+  document.getElementById('filters').addEventListener('click', function(e){
+    var b = e.target.closest('.chip'); if(!b) return;
+    filter = b.dataset.f;
+    document.querySelectorAll('.chip').forEach(function(c){ c.classList.toggle('active', c===b); });
+    render();
+  });
+
+  /* ---- send: message meanders through statuses ---- */
+  var input = document.getElementById('msgInput');
+  var sendBtn = document.getElementById('sendBtn');
+  var sendHint = document.getElementById('sendHint');
+
+  function advance(msg){
+    var i = STATES.indexOf(msg.st);
+    if(i < STATES.length-1){
+      // occasionally it drifts off instead of progressing. on brand.
+      if(msg.st==='considering' && Math.random()<0.35){ msg.st='drifted'; }
+      else { msg.st = STATES[i+1]; }
+      render();
+      if(msg.st!=='delivered'){
+        setTimeout(function(){ advance(msg); }, reduce?300:(1800 + Math.random()*2600));
+      }
+    }
+  }
+
+  sendBtn.addEventListener('click', function(){
+    var txt = input.value.trim();
+    if(!txt){ input.focus(); sendHint.textContent='Type something first. Or don’t. No rush.'; return; }
+    var anyCh = Object.keys(activeChannels).some(function(k){return activeChannels[k];});
+    if(!anyCh){ sendHint.textContent='Every channel is off. The colony is unreachable, as intended.'; return; }
+    var msg = {to:'shared colony line', txt:txt, st:'soaking'};
+    queue.unshift(msg);
+    input.value='';
+    filter='all';
+    document.querySelectorAll('.chip').forEach(function(c){ c.classList.toggle('active', c.dataset.f==='all'); });
+    render();
+    sendBtn.disabled = true;
+    sendHint.textContent = 'Queued behind a nap.';
+    setTimeout(function(){ sendBtn.disabled=false; sendHint.textContent='It will go out when the colony settles.'; }, 1600);
+    setTimeout(function(){ advance(msg); }, reduce?300:(1900 + Math.random()*1800));
+  });
+  input.addEventListener('keydown', function(e){ if(e.key==='Enter') sendBtn.click(); });
+
+  /* ---- nudge gently: accomplishes almost nothing ---- */
+  var nudgeBtn = document.getElementById('nudgeBtn');
+  var nudgeNote = document.getElementById('nudgeNote');
+  var NUDGES = [
+    'The colony stirred slightly.',
+    'One capybara opened an eye.',
+    'Acknowledged. No action taken.',
+    'A ripple was observed. Then nothing.',
+    'They appreciate the gesture.',
+    'Nudge received. Filed under "later."'
+  ];
+  var ni = 0;
+  nudgeBtn.addEventListener('click', function(){
+    if(!reduce){ nudgeBtn.classList.remove('wobble'); void nudgeBtn.offsetWidth; nudgeBtn.classList.add('wobble'); }
+    nudgeNote.textContent = NUDGES[ni % NUDGES.length]; ni++;
+    // inbox count drifts down by exactly one, occasionally
+    if(Math.random()<0.4){
+      var c = document.getElementById('inboxCount');
+      var n = parseInt(c.textContent,10);
+      if(n>0) c.textContent = n-1;
+    }
+  });
+
+  /* ---- chaos slider: snaps back to calm ---- */
+  var chaos = document.getElementById('chaos');
+  var chaosNote = document.getElementById('chaosNote');
+  var snapTimer;
+  chaos.addEventListener('input', function(){
+    var v = +chaos.value;
+    if(v>14){
+      chaosNote.textContent = 'Too much. Restoring serenity…';
+      clearTimeout(snapTimer);
+      snapTimer = setTimeout(function(){
+        chaos.value = 6;
+        chaosNote.textContent = 'Calibrated for stillness.';
+      }, 520);
+    } else {
+      chaosNote.textContent = 'Calibrated for stillness.';
+    }
+  });
+
+  /* ---- vibe gauge: stays low, drifts a little ---- */
+  var ring = document.getElementById('ring');
+  var vibeNum = document.getElementById('vibeNum');
+  var vibeCap = document.getElementById('vibeCap');
+  var CIRC = 389.6;
+  var CAPS = ['fully asleep','pleasantly horizontal','barely conscious','content','mildly alert'];
+  function setVibe(v){
+    v = Math.max(1, Math.min(10, v));
+    vibeNum.textContent = v;
+    ring.setAttribute('stroke-dashoffset', CIRC - (CIRC * (v/10)));
+    vibeCap.textContent = CAPS[Math.min(CAPS.length-1, Math.floor((v-1)/2))];
+  }
+  setVibe(2);
+  if(!reduce){
+    setInterval(function(){
+      setVibe(2 + Math.floor(Math.random()*2)); // wanders between 2 and 3. never more.
+    }, 4200);
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>

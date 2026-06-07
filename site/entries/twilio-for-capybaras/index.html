@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lull. · theworstaistudioever</title>
+<meta name="description" content="Programmable messaging that arrives whenever it arrives. SMS, voice, and push for animals who have never once checked their phone.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Lull. — the messaging API that refuses to hurry">
+<meta property="og:description" content="Programmable messaging that arrives whenever it arrives. Built for capybaras. Latency is a personality flaw.">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Lull. — the messaging API that refuses to hurry">
+<meta name="twitter:description" content="Programmable messaging that arrives whenever it arrives. Built for capybaras.">
+<meta name="theme-color" content="#C9784E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,600;0,6..12,700;0,6..12,800;1,6..12,400&family=Varela+Round&display=swap');
+
+:root{
+  --primary:#C9784E;
+  --primary-deep:#B5673E;
+  --accent:#4F9D90;
+  --accent-deep:#3C8378;
+  --bg:#F3E7D9;
+  --bg-2:#EEDFCD;
+  --surface:#FBF2E7;
+  --surface-2:#F6E9D8;
+  --fg:#3E2F26;
+  --muted:#8C7A6B;
+  --ink:#2E211A;
+  --r:22px;
+  --r-sm:14px;
+  --r-lg:30px;
+  /* clay shadow recipe: warm dark drop + light top-left + inner emboss */
+  --clay: 10px 12px 24px rgba(120,82,52,.28), -8px -8px 18px rgba(255,250,242,.85), inset 2px 2px 5px rgba(255,250,242,.7), inset -4px -5px 10px rgba(150,104,66,.22);
+  --clay-sm: 5px 6px 14px rgba(120,82,52,.24), -4px -4px 10px rgba(255,250,242,.8), inset 1px 1px 3px rgba(255,250,242,.7), inset -2px -3px 7px rgba(150,104,66,.2);
+  --clay-press: inset 4px 5px 11px rgba(150,104,66,.34), inset -3px -3px 8px rgba(255,250,242,.6);
+  --ease:cubic-bezier(.34,1.56,.64,1);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Nunito Sans',system-ui,sans-serif;
+  color:var(--fg);
+  background:var(--bg);
+  background-image:
+    radial-gradient(60% 50% at 18% 8%, rgba(79,157,144,.16), transparent 70%),
+    radial-gradient(55% 55% at 88% 14%, rgba(201,120,78,.18), transparent 72%),
+    radial-gradient(40% 40% at 50% 100%, rgba(255,250,242,.5), transparent 70%);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+h1,h2,h3,.brandmark,.tier-price,.btn{font-family:'Varela Round',system-ui,sans-serif;letter-spacing:.2px}
+
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+/* ---- top bar ---- */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:22px 0}
+.brandmark{display:flex;align-items:center;gap:12px;font-size:1.5rem;color:var(--ink);font-weight:400}
+.blob-logo{
+  width:40px;height:40px;border-radius:48% 52% 56% 44%/52% 46% 54% 48%;
+  background:linear-gradient(150deg,#D98A5E,var(--primary-deep));
+  box-shadow:var(--clay-sm);
+  display:grid;place-items:center;animation:bob 6s var(--ease) infinite;
+}
+.blob-logo span{width:7px;height:7px;border-radius:50%;background:#2E211A;box-shadow:14px 0 0 #2E211A;margin-left:-7px;opacity:.85}
+.top-status{display:inline-flex;align-items:center;gap:9px;background:var(--surface);border-radius:999px;padding:8px 16px;font-size:.82rem;color:var(--muted);font-weight:700;box-shadow:var(--clay-sm)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 rgba(79,157,144,.5);animation:breathe 3.2s ease-in-out infinite}
+
+/* ---- hero ---- */
+.hero{text-align:center;padding:46px 0 64px;position:relative}
+.steam{position:absolute;border-radius:50%;filter:blur(46px);opacity:.55;z-index:-1;animation:bob 9s var(--ease) infinite}
+.steam.a{width:320px;height:320px;background:rgba(79,157,144,.4);top:-30px;left:-40px}
+.steam.b{width:360px;height:360px;background:rgba(201,120,78,.42);top:20px;right:-60px;animation-delay:-3s}
+.eyebrow{display:inline-block;background:var(--surface);color:var(--accent-deep);font-weight:800;font-size:.78rem;letter-spacing:1.4px;text-transform:uppercase;padding:9px 18px;border-radius:999px;box-shadow:var(--clay-sm);margin-bottom:26px;opacity:0;animation:rise .7s var(--ease) .05s forwards}
+.hero h1{font-size:clamp(2.5rem,6.2vw,4.4rem);line-height:1.04;color:var(--ink);max-width:14ch;margin:0 auto 22px;opacity:0;animation:rise .7s var(--ease) .15s forwards}
+.hero p.sub{font-size:clamp(1.05rem,2.2vw,1.35rem);color:var(--fg);max-width:46ch;margin:0 auto 38px;opacity:0;animation:rise .7s var(--ease) .28s forwards}
+.cta-row{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;opacity:0;animation:rise .7s var(--ease) .4s forwards}
+
+.btn{
+  font-size:1.02rem;font-weight:400;border:none;cursor:pointer;text-decoration:none;
+  padding:16px 30px;border-radius:var(--r);display:inline-flex;align-items:center;gap:10px;
+  transition:transform .22s var(--ease), box-shadow .22s var(--ease);
+}
+.btn-primary{background:linear-gradient(150deg,#D5855B,var(--primary-deep));color:#FFF6EC;box-shadow:var(--clay)}
+.btn-primary:hover{transform:translateY(-3px)}
+.btn-primary:active{transform:translateY(1px);box-shadow:var(--clay-press);color:#FBEBD9}
+.btn-ghost{background:var(--surface);color:var(--accent-deep);box-shadow:var(--clay)}
+.btn-ghost:hover{transform:translateY(-3px)}
+.btn-ghost:active{transform:translateY(1px);box-shadow:var(--clay-press)}
+
+.hero-proof{margin:54px auto 0;max-width:560px;background:var(--surface);border-radius:var(--r-lg);padding:26px 28px;box-shadow:var(--clay);opacity:0;animation:rise .8s var(--ease) .55s forwards;text-align:left}
+.hero-proof .proof-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.hero-proof .proof-head strong{font-family:'Varela Round';color:var(--ink);font-size:.95rem}
+.pill{font-size:.74rem;font-weight:800;padding:5px 12px;border-radius:999px;text-transform:uppercase;letter-spacing:.6px}
+.pill.soak{background:rgba(79,157,144,.18);color:var(--accent-deep)}
+.codeline{font-family:'Nunito Sans';font-size:.84rem;color:var(--muted);background:var(--bg-2);border-radius:var(--r-sm);padding:12px 15px;box-shadow:var(--clay-press);white-space:pre-wrap;word-break:break-word}
+.codeline b{color:var(--primary-deep);font-weight:800}
+.codeline em{color:var(--accent-deep);font-style:normal;font-weight:700}
+
+/* ---- section frame ---- */
+section.band{padding:56px 0}
+.kicker{font-family:'Varela Round';color:var(--accent-deep);font-size:.9rem;letter-spacing:1.6px;text-transform:uppercase;margin-bottom:10px;text-align:center}
+.band h2{font-size:clamp(1.8rem,4vw,2.7rem);color:var(--ink);text-align:center;max-width:18ch;margin:0 auto 12px;line-height:1.1}
+.band .lede{text-align:center;color:var(--muted);max-width:48ch;margin:0 auto 44px;font-size:1.05rem}
+
+/* ---- features ---- */
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.feat{background:var(--surface);border-radius:var(--r-lg);padding:30px 26px;box-shadow:var(--clay);transition:transform .3s var(--ease)}
+.feat:hover{transform:translateY(-6px)}
+.feat .icn{width:62px;height:62px;border-radius:46% 54% 50% 50%/55% 50% 50% 45%;display:grid;place-items:center;margin-bottom:20px;box-shadow:var(--clay-sm)}
+.feat .icn svg{width:30px;height:30px}
+.feat:nth-child(1) .icn{background:linear-gradient(150deg,#E0915F,var(--primary-deep))}
+.feat:nth-child(2) .icn{background:linear-gradient(150deg,#6BB6A9,var(--accent-deep))}
+.feat:nth-child(3) .icn{background:linear-gradient(150deg,#E0915F,var(--primary-deep))}
+.feat h3{font-size:1.3rem;color:var(--ink);margin-bottom:10px}
+.feat p{color:var(--fg);font-size:.97rem}
+
+/* ---- testimonials ---- */
+.quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.quote{background:var(--surface-2);border-radius:var(--r-lg);padding:28px 26px;box-shadow:var(--clay)}
+.quote .mark{font-family:'Varela Round';font-size:3rem;color:var(--primary);line-height:.6;display:block;margin-bottom:10px}
+.quote blockquote{font-size:1rem;color:var(--fg);margin-bottom:22px;font-style:italic}
+.quote .who{display:flex;align-items:center;gap:13px}
+.avatar{width:46px;height:46px;border-radius:50% 50% 52% 48%/55% 48% 52% 45%;flex:none;box-shadow:var(--clay-sm);background:linear-gradient(150deg,#D98A5E,var(--accent-deep))}
+.quote .who b{font-family:'Varela Round';font-weight:400;color:var(--ink);font-size:.98rem;display:block}
+.quote .who span{font-size:.8rem;color:var(--muted)}
+
+/* ---- pricing ---- */
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:stretch}
+.tier{background:var(--surface);border-radius:var(--r-lg);padding:32px 28px;box-shadow:var(--clay);display:flex;flex-direction:column}
+.tier.featured{background:linear-gradient(160deg,#FBF2E7,#F2E1CD);transform:scale(1.03)}
+.tier .tname{font-family:'Varela Round';font-size:1.05rem;color:var(--accent-deep);letter-spacing:.5px;margin-bottom:6px}
+.tier .badge{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--primary-deep);background:rgba(201,120,78,.16);padding:4px 10px;border-radius:999px;float:right}
+.tier-price{font-size:2rem;color:var(--ink);margin:6px 0 4px;line-height:1.1}
+.tier .ttag{color:var(--muted);font-size:.9rem;margin-bottom:20px;min-height:42px}
+.tier ul{list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:24px;flex:1}
+.tier li{display:flex;gap:11px;align-items:flex-start;font-size:.93rem;color:var(--fg)}
+.tier li .tick{flex:none;width:22px;height:22px;border-radius:50%;background:rgba(79,157,144,.18);display:grid;place-items:center;margin-top:1px}
+.tier li .tick svg{width:13px;height:13px;stroke:var(--accent-deep)}
+.tier .btn{width:100%;justify-content:center;font-size:.95rem;padding:14px}
+
+/* ---- demo banner ---- */
+.demo-band{padding:66px 0}
+.demo-card{background:linear-gradient(155deg,#D5855B,var(--primary-deep));border-radius:var(--r-lg);padding:48px 40px;text-align:center;box-shadow:var(--clay);color:#FFF6EC;position:relative;overflow:hidden}
+.demo-card::after{content:"";position:absolute;width:240px;height:240px;border-radius:50%;background:rgba(255,250,242,.16);filter:blur(40px);top:-80px;right:-40px}
+.demo-card h2{color:#FFF6EC;margin-bottom:12px}
+.demo-card p{color:#FBEBD9;max-width:42ch;margin:0 auto 28px;position:relative}
+.demo-card .btn{background:var(--surface);color:var(--primary-deep);box-shadow:8px 10px 20px rgba(80,45,20,.35),-4px -4px 10px rgba(255,250,242,.35);position:relative}
+.demo-card .btn:hover{transform:translateY(-3px)}
+
+/* ---- footer ---- */
+footer{padding:46px 0 60px;text-align:center;color:var(--muted)}
+footer .home{color:var(--accent-deep);text-decoration:none;font-weight:800;font-size:.95rem;display:inline-flex;align-items:center;gap:7px;background:var(--surface);padding:11px 20px;border-radius:999px;box-shadow:var(--clay-sm);transition:transform .2s var(--ease)}
+footer .home:hover{transform:translateY(-2px)}
+footer .fine{margin-top:22px;font-size:.82rem;max-width:48ch;margin-left:auto;margin-right:auto}
+
+@keyframes rise{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes breathe{0%,100%{box-shadow:0 0 0 0 rgba(79,157,144,.5)}50%{box-shadow:0 0 0 7px rgba(79,157,144,0)}}
+
+@media (max-width:820px){
+  .feat-grid,.quotes,.tiers{grid-template-columns:1fr}
+  .tier.featured{transform:none}
+  .top-status{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important}
+  html{scroll-behavior:auto}
+  .eyebrow,.hero h1,.hero p.sub,.cta-row,.hero-proof{opacity:1!important}
+}
+</style>
+</head>
+<body>
+
+<header class="wrap topbar">
+  <div class="brandmark"><span class="blob-logo"><span></span></span>Lull.</div>
+  <div class="top-status"><span class="dot"></span>colony status: soaking</div>
+</header>
+
+<main>
+  <section class="wrap hero">
+    <div class="steam a"></div>
+    <div class="steam b"></div>
+    <span class="eyebrow">programmable serenity · v1, eventually</span>
+    <h1>The messaging API that refuses to hurry.</h1>
+    <p class="sub">SMS, voice, and push for animals who have never once checked their phone. Your message goes out when the colony is ready. Usually it is not.</p>
+    <div class="cta-row">
+      <a href="#pricing" class="btn btn-primary">Read the docs (slowly)</a>
+      <a href="./demo.html" class="btn btn-ghost">open the demo →</a>
+    </div>
+
+    <div class="hero-proof">
+      <div class="proof-head"><strong>POST /v1/messages</strong><span class="pill soak">202 soaking</span></div>
+      <div class="codeline"><b>curl</b> lull.dev/v1/messages \
+  -d to=<em>+1 (shared colony line)</em> \
+  -d body=<em>"your 2FA code is on its way"</em> \
+  -d urgency=<em>none</em>
+<span style="color:var(--accent-deep)">→ queued behind a nap. check back whenever.</span></div>
+    </div>
+  </section>
+
+  <section class="wrap band">
+    <p class="kicker">what it does, if anything</p>
+    <h2>Three capabilities. All of them slower than the last guy.</h2>
+    <p class="lede">We built a full communications stack and then removed the part that makes people anxious. The rest is here.</p>
+    <div class="feat-grid">
+      <article class="feat">
+        <div class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="#FFF6EC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12c0 4 3 7 9 7 1.2 0 2.3-.1 3.3-.4L21 21l-1.4-4C20.5 15.7 21 13.9 21 12c0-4-3-7-9-7s-9 3-9 7Z"/></svg></div>
+        <h3>Unhurried Delivery</h3>
+        <p>Outbound messages queue behind whatever the capybara is currently doing, which is nothing. Two tiers: "soon" and "when it gets there." We do not offer "now." Now is a human problem.</p>
+      </article>
+      <article class="feat">
+        <div class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="#FFF6EC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><circle cx="17" cy="10" r="2.6"/><path d="M3.5 19c.6-3 3-4.5 5.5-4.5S14 16 14.5 19M15 15c2 0 4 1.2 4.5 4"/></svg></div>
+        <h3>One Shared Colony Number</h3>
+        <p>Every capybara on your account answers the same phone number. Private channels were considered and rejected. If one of them gets a text, all of them get the text. This is the product working correctly.</p>
+      </article>
+      <article class="feat">
+        <div class="icn"><svg viewBox="0 0 24 24" fill="none" stroke="#FFF6EC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13c0-5 3.5-8 8-8s8 3 8 8M7 13c0-3 2-5 5-5s5 2 5 5"/><path d="M5 13c-.7 1.5-1 3-1 5M19 13c.7 1.5 1 3 1 5M9 19h6"/></svg></div>
+        <h3>Co-Regulation Webhooks</h3>
+        <p>No message fires until the herd collectively agrees it is a fine time. Each outbound event ships with a matching calm signal so nobody is ever startled. Your 2FA code arrives once everyone has settled.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="wrap band">
+    <p class="kicker">testimonials we did not edit</p>
+    <h2>Loved by colonies who have stopped checking.</h2>
+    <div class="quotes">
+      <figure class="quote">
+        <span class="mark">“</span>
+        <blockquote>We migrated our entire alerting stack to Lull. and our incident response time went from four minutes to roughly a long weekend. Honestly, the alerts were stressing everyone out.</blockquote>
+        <figcaption class="who"><span class="avatar"></span><span><b>Devon Marsh</b><span>Head of Reliability, a wetland co-working space for rodents</span></span></figcaption>
+      </figure>
+      <figure class="quote">
+        <span class="mark">“</span>
+        <blockquote>I sent a password reset on Tuesday. It arrived. I no longer remember what it was for, but it arrived, and that is the SLA they promised.</blockquote>
+        <figcaption class="who"><span class="avatar"></span><span><b>Priya Otterton</b><span>Solo Founder & Sole User, CapyChat</span></span></figcaption>
+      </figure>
+      <figure class="quote">
+        <span class="mark">“</span>
+        <blockquote>The shared colony number means I receive every message intended for forty-one other capybaras. I have never felt more included in a communications platform.</blockquote>
+        <figcaption class="who"><span class="avatar"></span><span><b>Big Gary</b><span>Verified Capybara, Tier 2 Soaker</span></span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="wrap band" id="pricing">
+    <p class="kicker">pricing, unbothered</p>
+    <h2>Pay for serenity by the depth.</h2>
+    <p class="lede">All plans include the same disregard for urgency. The expensive ones just have more capybaras ignoring you.</p>
+    <div class="tiers">
+      <div class="tier">
+        <div class="tname">Wading</div>
+        <div class="tier-price">$0<span style="font-size:1rem;color:var(--muted)">/mo</span></div>
+        <p class="ttag">For one capybara and a low-stakes pond.</p>
+        <ul>
+          <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4 10-10"/></svg></span>Up to 12 messages a month, give or take</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4 10-10"/></svg></span>Shared number with strangers</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4 10-10"/></svg></span>Delivery: "whenever"</li>
+        </ul>
+        <a href="./demo.html" class="btn btn-ghost">Start wading</a>
+      </div>
+      <div class="tier featured">
+        <span class="badge">most submerged</span>
+        <div class="tname">Fully Submerged</div>
+        <div class="tier-price">$340<span style="font-size:1rem;color:var(--muted)">/mo</span></div>
+        <p class="ttag">For a serious colony with real communication needs it will ignore.</p>
+        <ul>
+          <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4 10-10"/></svg></span>Unmetered messages, none of them urgent</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4 10-10"/></svg></span>Dedicated hot-spring number</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4 10-10"/></svg></span>Vibe-based SLA</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4 10-10"/></svg></span>Webhook that fires after a nap</li>
+        </ul>
+        <a href="./demo.html" class="btn btn-primary">Submerge fully</a>
+      </div>
+      <div class="tier">
+        <div class="tname">Apex Chill</div>
+        <div class="tier-price" style="font-size:1.5rem">Let's not rush this</div>
+        <p class="ttag">Enterprise serenity for fleets of more than forty capybaras.</p>
+        <ul>
+          <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4 10-10"/></svg></span>A named contact who replies in a few days</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4 10-10"/></svg></span>Compliance, eventually</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4 10-10"/></svg></span>On-prem hot spring</li>
+          <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4 10-10"/></svg></span>We will not call you. You will not call us.</li>
+        </ul>
+        <a href="./demo.html" class="btn btn-ghost">Attain apex chill</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap demo-band">
+    <div class="demo-card">
+      <h2>See a message take its time.</h2>
+      <p>Open the Serenity Console. Send a test message and watch it drift through soaking, considering, and delivered (eventually).</p>
+      <a href="./demo.html" class="btn">open the demo →</a>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <a href="/" class="home">← theworstaistudioever</a>
+  <p class="fine">Lull. is a fictional product from theworstaistudioever. No capybaras were notified in the making of this page. No messages were delivered on time.</p>
+</footer>
+
+</body>
+</html>
