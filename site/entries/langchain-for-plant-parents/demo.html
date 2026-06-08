@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tendril — trace viewer</title>
+<meta name="description" content="Step through a live houseplant care run, span by span.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Fira+Code:wght@400;500&family=Fira+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#5AA9C9;
+  --accent:#6FE3A0;
+  --amber:#E8B04B;
+  --bg:#0B2E4F;
+  --bg-deep:#082138;
+  --fg:#DCEFF7;
+  --muted:#5E84A0;
+  --ink:#EAF5FA;
+  --line:rgba(154,205,228,.22);
+  --line-strong:rgba(154,205,228,.46);
+  --panel:#0E3760;
+  --display:'Bricolage Grotesque',system-ui,sans-serif;
+  --body:'Fira Sans',system-ui,sans-serif;
+  --mono:'Fira Code',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;
+  -webkit-font-smoothing:antialiased;min-height:100vh;position:relative;overflow-x:hidden;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:40px 40px;opacity:.4;
+  -webkit-mask-image:radial-gradient(130% 80% at 30% 0%,#000 30%,transparent 88%);
+          mask-image:radial-gradient(130% 80% at 30% 0%,#000 30%,transparent 88%);
+}
+.mono{font-family:var(--mono)}
+a{color:inherit;text-decoration:none}
+.app{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:16px 20px 40px;min-height:100vh;display:flex;flex-direction:column;gap:14px}
+
+/* top chrome */
+.chrome{display:flex;align-items:center;gap:16px;border:1px solid var(--line);background:rgba(8,33,56,.55);padding:11px 16px}
+.back{font-family:var(--mono);font-size:13px;color:var(--muted);transition:color .2s ease}
+.back:hover{color:var(--accent)}
+.brandmark{display:flex;align-items:center;gap:9px;font-family:var(--display);font-weight:800;font-size:17px;border-left:1px solid var(--line);padding-left:16px}
+.chrome .spacer{flex:1}
+.env{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.1em;border:1px solid var(--line);padding:5px 9px}
+.run-btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:13px;padding:9px 15px;border:1px solid var(--accent);background:var(--accent);color:var(--bg-deep);cursor:pointer;transition:transform .12s ease,box-shadow .2s ease}
+.run-btn:hover{box-shadow:0 0 0 4px rgba(111,227,160,.18)}
+.run-btn:active{transform:scale(.97)}
+.run-btn[disabled]{opacity:.55;cursor:progress}
+
+/* layout */
+.layout{display:grid;grid-template-columns:230px 1fr;gap:14px;flex:1;min-height:0}
+
+/* plant rail */
+.rail{border:1px solid var(--line);background:rgba(8,33,56,.5);display:flex;flex-direction:column}
+.rail .rail-h{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:13px 15px 9px;border-bottom:1px solid var(--line)}
+.plant{display:flex;align-items:center;gap:10px;padding:12px 15px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .15s ease}
+.plant:hover{background:rgba(90,169,201,.08)}
+.plant.active{background:rgba(111,227,160,.08);box-shadow:inset 3px 0 0 var(--accent)}
+.plant .pdot{width:8px;height:8px;border-radius:50%;flex:none}
+.s-healthy{background:var(--accent);box-shadow:0 0 7px rgba(111,227,160,.5)}
+.s-watch{background:var(--amber);box-shadow:0 0 7px rgba(232,176,75,.45)}
+.s-crit{background:#E8694B;box-shadow:0 0 7px rgba(232,105,75,.5)}
+.plant .pname{font-size:14px;color:var(--fg);font-weight:500}
+.plant .pmeta{font-family:var(--mono);font-size:10px;color:var(--muted);margin-left:auto}
+
+/* main */
+.main{border:1px solid var(--line);background:rgba(8,33,56,.42);display:flex;flex-direction:column;min-width:0}
+.main-h{padding:15px 20px;border-bottom:1px solid var(--line)}
+.main-h .title{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.main-h h1{font-family:var(--display);font-weight:700;font-size:22px;color:var(--ink);letter-spacing:-.01em}
+.runid{font-family:var(--mono);font-size:11px;color:var(--primary);border:1px solid var(--line);padding:3px 8px}
+.verdict{font-family:var(--mono);font-size:11px;padding:3px 8px;border:1px solid var(--accent);color:var(--accent)}
+.verdict.watch{border-color:var(--amber);color:var(--amber)}
+
+/* sparkline */
+.spark-row{display:flex;align-items:center;gap:14px;margin-top:12px}
+.spark-row .lab{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+.spark{flex:1;height:34px}
+.spark .lin{fill:none;stroke:var(--primary);stroke-width:1.5}
+.spark .area{fill:rgba(90,169,201,.12)}
+.spark .now{fill:var(--accent)}
+
+/* tabs */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--line);padding:0 20px}
+.tab{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:13px 16px;cursor:pointer;border-bottom:2px solid transparent;transition:color .15s ease}
+.tab:hover{color:var(--fg)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.panes{padding:18px 20px;overflow:auto;flex:1}
+
+/* run sub-list */
+.runlist{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.runchip{font-family:var(--mono);font-size:11px;color:var(--muted);border:1px solid var(--line);padding:5px 9px;cursor:pointer;transition:all .15s ease;display:flex;gap:7px;align-items:center}
+.runchip:hover{border-color:var(--primary);color:var(--fg)}
+.runchip.active{border-color:var(--accent);color:var(--accent)}
+.runchip .rc-dot{width:6px;height:6px;border-radius:50%}
+
+/* span waterfall */
+.span{border:1px solid var(--line);border-left:2px solid var(--primary);margin-bottom:8px;background:rgba(14,55,96,.3);transition:background .15s ease}
+.span:hover{background:rgba(14,55,96,.5)}
+.span.ok{border-left-color:var(--accent)}
+.span.slow{border-left-color:var(--amber)}
+.span-row{display:grid;grid-template-columns:24px 1.4fr 2.6fr 64px;align-items:center;gap:12px;padding:11px 14px;cursor:pointer}
+.span-row .ix{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.span-row .nm{font-family:var(--mono);font-size:13px;color:var(--fg)}
+.bar-track{height:8px;background:rgba(154,205,228,.1);position:relative;border-radius:2px}
+.bar-fill{position:absolute;top:0;height:100%;background:var(--primary);border-radius:2px}
+.span.ok .bar-fill{background:var(--accent)}
+.span.slow .bar-fill{background:var(--amber)}
+.span-row .dur{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:right}
+.span-detail{display:none;border-top:1px dashed var(--line);padding:14px;gap:14px;grid-template-columns:1fr 1fr}
+.span.open .span-detail{display:grid}
+.io h4{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.io pre{font-family:var(--mono);font-size:12px;line-height:1.55;color:var(--fg);white-space:pre-wrap;background:rgba(8,33,56,.6);border:1px solid var(--line);padding:10px}
+.io .k{color:var(--primary)}
+.io .g{color:var(--accent)}
+
+/* config pane */
+.cfg{font-family:var(--mono);font-size:12.5px;line-height:1.7;background:rgba(8,33,56,.6);border:1px solid var(--line);padding:18px;white-space:pre;overflow:auto;color:var(--fg)}
+.cfg .key{color:var(--primary)}.cfg .str{color:var(--accent)}.cfg .cm{color:var(--muted)}
+
+/* logs pane */
+.log-line{font-family:var(--mono);font-size:12px;padding:5px 0;border-bottom:1px solid rgba(154,205,228,.08);display:flex;gap:12px}
+.log-line .ts{color:var(--muted);flex:none}
+.log-line .lv{flex:none;width:46px}
+.lv.INFO{color:var(--primary)}.lv.WARN{color:var(--amber)}.lv.OK{color:var(--accent)}
+.log-line .msg{color:var(--fg)}
+
+.hidden{display:none!important}
+.flash{animation:flash .9s ease}
+@keyframes flash{0%{background:rgba(111,227,160,.18)}100%{background:transparent}}
+
+@media(max-width:820px){
+  .layout{grid-template-columns:1fr}
+  .rail{flex-direction:column}
+  .span-row{grid-template-columns:20px 1fr 56px}
+  .span-row .bar-track{display:none}
+  .span-detail{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="chrome">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <span class="brandmark">
+      <svg width="18" height="18" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="10" fill="none" stroke="#6FE3A0" stroke-width="1.4"/><path d="M11 17 C11 12 7 11 6 8 M11 17 C11 11 15 10 16 7 M11 17 V5" fill="none" stroke="#5AA9C9" stroke-width="1.2"/></svg>
+      Tendril
+    </span>
+    <span class="spacer"></span>
+    <span class="env">prj: home-greenhouse · prod</span>
+    <button class="run-btn" id="runBtn"><span>▶</span> Run care chain</button>
+  </div>
+
+  <div class="layout">
+    <!-- PLANT RAIL -->
+    <aside class="rail">
+      <div class="rail-h">Plants · <span id="plantCount">5</span></div>
+      <div id="plantList"></div>
+    </aside>
+
+    <!-- MAIN -->
+    <section class="main">
+      <div class="main-h">
+        <div class="title">
+          <h1 id="plantTitle">Monstera</h1>
+          <span class="runid" id="runIdLabel">run_8f2a91</span>
+          <span class="verdict" id="verdict">watered</span>
+        </div>
+        <div class="spark-row">
+          <span class="lab">soil moisture · 24h</span>
+          <svg class="spark" id="spark" viewBox="0 0 300 34" preserveAspectRatio="none" aria-hidden="true"></svg>
+          <span class="lab mono" id="sparkNow" style="color:var(--accent)">31%</span>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" data-tab="traces">Traces</div>
+        <div class="tab" data-tab="config">Chain config</div>
+        <div class="tab" data-tab="logs">Logs</div>
+      </div>
+
+      <div class="panes">
+        <!-- TRACES -->
+        <div id="pane-traces">
+          <div class="runlist" id="runList"></div>
+          <div id="spans"></div>
+        </div>
+
+        <!-- CONFIG -->
+        <div id="pane-config" class="hidden">
+<pre class="cfg"><span class="cm"># care-chain.yaml — generated by Tendril, do not hand-edit</span>
+<span class="key">chain</span>: <span class="str">water-then-observe</span>
+<span class="key">schedule</span>: <span class="str">"every 6h, drift ok"</span>
+<span class="key">steps</span>:
+  - <span class="key">id</span>: <span class="str">poll_soil_sensor</span>
+    <span class="key">timeout</span>: <span class="str">2s</span>
+    <span class="key">on_error</span>: <span class="str">retry(3, backoff=exp)</span>
+  - <span class="key">id</span>: <span class="str">retrieve_memory</span>
+    <span class="key">store</span>: <span class="str">vector://plant/{id}</span>
+    <span class="key">k</span>: 8
+  - <span class="key">id</span>: <span class="str">llm_care_decision</span>
+    <span class="key">model</span>: <span class="str">tendril-agronomist-v2</span>
+    <span class="key">temperature</span>: 0.2
+    <span class="key">guardrail</span>: <span class="str">never_overwater</span>
+  - <span class="key">id</span>: <span class="str">actuate_water</span>
+    <span class="key">requires</span>: <span class="str">llm_care_decision.verdict == "water"</span>
+  - <span class="key">id</span>: <span class="str">log_outcome</span>
+    <span class="key">sink</span>: <span class="str">traces + your conscience</span>
+<span class="key">on_failure</span>: <span class="str">page_human(after=3am)</span></pre>
+        </div>
+
+        <!-- LOGS -->
+        <div id="pane-logs" class="hidden">
+          <div id="logList"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+(function(){
+  // ---- mock data ----
+  var moods={healthy:"s-healthy",watch:"s-watch",crit:"s-crit"};
+  var plants=[
+    {id:"monstera",name:"Monstera",sub:"deliciosa",status:"healthy",moist:31,verdict:"watered",vclass:""},
+    {id:"pothos",name:"Golden Pothos",sub:"aureum",status:"healthy",moist:44,verdict:"watered",vclass:""},
+    {id:"ficus",name:"Fiddle Leaf Fig",sub:"lyrata",status:"watch",moist:18,verdict:"deferred",vclass:"watch"},
+    {id:"snake",name:"Snake Plant",sub:"trifasciata",status:"healthy",moist:52,verdict:"no action",vclass:""},
+    {id:"basil",name:"Basil",sub:"genovese",status:"crit",moist:9,verdict:"escalated",vclass:"watch"}
+  ];
+
+  function spanSet(p){
+    var base=[
+      {nm:"poll_soil_sensor",cls:"ok",dur:42,off:0,w:8,
+        in:'{\n  "plant": "'+p.id+'",\n  "sensor": "capacitive-3"\n}',
+        out:'{\n  "moisture": '+p.moist+',\n  "unit": "%vwc",\n  "status": "'+(p.moist<20?"dry":"nominal")+'"\n}'},
+      {nm:"retrieve_memory",cls:"",dur:188,off:8,w:22,
+        in:'{\n  "query": "recent watering for '+p.id+'",\n  "k": 8\n}',
+        out:'8 vectors. last droop logged 11d ago.\nnote: "owner forgets on weekends"'},
+      {nm:"llm_care_decision",cls:"slow",dur:1430,off:30,w:48,
+        in:'system: you are a deeply cautious agronomist.\nmoisture: '+p.moist+'%  ·  memory: 8 docs',
+        out:'verdict: "'+(p.moist<12?"escalate":p.moist<20?"defer":"water")+'"\nreason: "the plant said nothing, as plants do."'},
+      {nm:"actuate_water",cls:(p.moist<20?"":"ok"),dur:(p.moist<20?6:610),off:78,w:(p.moist<20?2:18),
+        in:'{\n  "valve": "drip-7",\n  "volume_ml": '+(p.moist<20?0:120)+'\n}',
+        out:(p.moist<20?'skipped — guardrail "never_overwater" held':'{\n  "dispensed_ml": 120,\n  "ok": true\n}')},
+      {nm:"log_outcome",cls:"ok",dur:51,off:96,w:4,
+        in:'{\n  "trace": "current",\n  "sink": ["traces","conscience"]\n}',
+        out:'logged. the basil will find out in 6h.'}
+    ];
+    return base;
+  }
+
+  function genRun(p,seedTag){
+    return {id:"run_"+seedTag,verdict:p.verdict,vclass:p.vclass,spans:spanSet(p)};
+  }
+
+  // per-plant run history
+  var idSeq=0x8f2a91;
+  function nextId(){ idSeq=(idSeq*1664525+1013904223)>>>0; return idSeq.toString(16).slice(0,6); }
+  var runs={};
+  plants.forEach(function(p){
+    runs[p.id]=[genRun(p,nextId()),genRun(p,nextId()),genRun(p,nextId())];
+  });
+
+  var cur={plant:plants[0],runIx:0};
+
+  // ---- render: plant rail ----
+  var plantList=document.getElementById("plantList");
+  plants.forEach(function(p){
+    var el=document.createElement("div");
+    el.className="plant"+(p.id===cur.plant.id?" active":"");
+    el.dataset.id=p.id;
+    el.innerHTML='<span class="pdot '+moods[p.status]+'"></span>'
+      +'<span class="pname">'+p.name+'</span>'
+      +'<span class="pmeta">'+p.moist+'%</span>';
+    el.addEventListener("click",function(){ selectPlant(p.id); });
+    plantList.appendChild(el);
+  });
+  document.getElementById("plantCount").textContent=plants.length;
+
+  function selectPlant(id){
+    cur.plant=plants.filter(function(p){return p.id===id;})[0];
+    cur.runIx=0;
+    [].forEach.call(plantList.children,function(c){c.classList.toggle("active",c.dataset.id===id);});
+    renderMain();
+  }
+
+  // ---- sparkline ----
+  function drawSpark(moist){
+    var s=document.getElementById("spark");
+    var pts=[],n=24,v=moist+18;
+    for(var i=0;i<n;i++){
+      v+=((i*7+moist)%11)-5;
+      if(v<6)v=6; if(v>70)v=70;
+      pts.push(v);
+    }
+    pts[n-1]=moist;
+    var W=300,H=34,max=70;
+    var coords=pts.map(function(p,i){
+      return [ (i/(n-1))*W, H-2-(p/max)*(H-4) ];
+    });
+    var d=coords.map(function(c,i){return (i?"L":"M")+c[0].toFixed(1)+" "+c[1].toFixed(1);}).join(" ");
+    var area=d+" L"+W+" "+H+" L0 "+H+" Z";
+    var last=coords[n-1];
+    s.innerHTML='<path class="area" d="'+area+'"/><path class="lin" d="'+d+'"/>'
+      +'<circle class="now" cx="'+last[0].toFixed(1)+'" cy="'+last[1].toFixed(1)+'" r="2.6"/>';
+    document.getElementById("sparkNow").textContent=moist+"%";
+  }
+
+  // ---- main render ----
+  function renderMain(){
+    var p=cur.plant, rs=runs[p.id], run=rs[cur.runIx];
+    document.getElementById("plantTitle").textContent=p.name;
+    document.getElementById("runIdLabel").textContent=run.id;
+    var vd=document.getElementById("verdict");
+    vd.textContent=run.verdict;
+    vd.className="verdict"+(run.vclass?" "+run.vclass:"");
+    drawSpark(p.moist);
+    renderRunList(rs);
+    renderSpans(run);
+    renderLogs(p,run);
+  }
+
+  function renderRunList(rs){
+    var rl=document.getElementById("runList");
+    rl.innerHTML="";
+    rs.forEach(function(r,ix){
+      var c=document.createElement("span");
+      c.className="runchip"+(ix===cur.runIx?" active":"");
+      var dotc=r.vclass==="watch"?"var(--amber)":"var(--accent)";
+      c.innerHTML='<span class="rc-dot" style="background:'+dotc+'"></span>'+r.id+(ix===0?" · latest":"");
+      c.addEventListener("click",function(){ cur.runIx=ix; renderMain(); });
+      rl.appendChild(c);
+    });
+  }
+
+  function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;");}
+  function hl(s){
+    return esc(s)
+      .replace(/("[^"]*")/g,'<span class="g">$1</span>')
+      .replace(/^(\s*\w+):/gm,'<span class="k">$1</span>:');
+  }
+
+  function renderSpans(run){
+    var box=document.getElementById("spans");
+    box.innerHTML="";
+    run.spans.forEach(function(sp,i){
+      var el=document.createElement("div");
+      el.className="span "+sp.cls;
+      el.innerHTML=
+        '<div class="span-row">'
+        +'<span class="ix">'+i+'</span>'
+        +'<span class="nm">'+sp.nm+'</span>'
+        +'<div class="bar-track"><div class="bar-fill" style="left:'+sp.off+'%;width:'+sp.w+'%"></div></div>'
+        +'<span class="dur">'+sp.dur+'ms</span>'
+        +'</div>'
+        +'<div class="span-detail">'
+        +'<div class="io"><h4>input</h4><pre>'+hl(sp.in)+'</pre></div>'
+        +'<div class="io"><h4>output</h4><pre>'+hl(sp.out)+'</pre></div>'
+        +'</div>';
+      el.querySelector(".span-row").addEventListener("click",function(){ el.classList.toggle("open"); });
+      box.appendChild(el);
+    });
+  }
+
+  function renderLogs(p,run){
+    var ll=document.getElementById("logList");
+    var t=run.id.slice(4);
+    var dry=p.moist<20;
+    var lines=[
+      {ts:"08:00:02",lv:"INFO",msg:"chain water-then-observe started for "+p.id},
+      {ts:"08:00:02",lv:"INFO",msg:"poll_soil_sensor → "+p.moist+"% vwc"},
+      {ts:"08:00:03",lv:"INFO",msg:"retrieve_memory → 8 vectors, p50 188ms"},
+      {ts:"08:00:04",lv:(dry?"WARN":"OK"),msg:"llm_care_decision → "+(dry?"defer (guardrail held)":"water 120ml")},
+      {ts:"08:00:05",lv:(dry?"WARN":"OK"),msg:(dry?"actuate_water skipped — never_overwater":"actuate_water dispensed 120ml")},
+      {ts:"08:00:05",lv:"OK",msg:"log_outcome committed · trace "+run.id},
+      {ts:"08:00:05",lv:"INFO",msg:"chain finished in 1.91s · 5/5 spans"}
+    ];
+    ll.innerHTML=lines.map(function(l){
+      return '<div class="log-line"><span class="ts">'+l.ts+'</span><span class="lv '+l.lv+'">'+l.lv+'</span><span class="msg">'+l.msg+'</span></div>';
+    }).join("");
+  }
+
+  // ---- tabs ----
+  [].forEach.call(document.querySelectorAll(".tab"),function(t){
+    t.addEventListener("click",function(){
+      [].forEach.call(document.querySelectorAll(".tab"),function(x){x.classList.remove("active");});
+      t.classList.add("active");
+      ["traces","config","logs"].forEach(function(name){
+        document.getElementById("pane-"+name).classList.toggle("hidden",name!==t.dataset.tab);
+      });
+    });
+  });
+
+  // ---- run care chain ----
+  var btn=document.getElementById("runBtn");
+  btn.addEventListener("click",function(){
+    btn.disabled=true;
+    var old=btn.innerHTML;
+    btn.innerHTML='<span>◴</span> running…';
+    var p=cur.plant;
+    setTimeout(function(){
+      var nr=genRun(p,nextId());
+      // tiny jitter so each run reads differently
+      nr.spans[2].dur=1200+((idSeq%600));
+      runs[p.id].unshift(nr);
+      cur.runIx=0;
+      // make sure traces tab is showing
+      document.querySelector('.tab[data-tab="traces"]').click();
+      renderMain();
+      var first=document.querySelector("#runList .runchip");
+      if(first) first.classList.add("flash");
+      btn.disabled=false;
+      btn.innerHTML=old;
+    },820);
+  });
+
+  // boot
+  renderMain();
+})();
+</script>
+</body>
+</html>

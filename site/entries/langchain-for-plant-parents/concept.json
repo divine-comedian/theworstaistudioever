@@ -1,0 +1,97 @@
+{
+  "date": "2026-06-08",
+  "company": "LangChain",
+  "subject": "plant parents",
+  "tagline": "LangChain for plant parents",
+  "slug": "langchain-for-plant-parents",
+  "product_name": "Tendril",
+  "one_liner": "The open-source framework for composable houseplant care. Define watering chains, give every plant vector memory, and trace every leaf in production.",
+  "brand_voice_notes": "Deadpan developer-tooling copy applied to keeping a fern alive. Treat houseplants as production infrastructure with SLAs, traces, and on-call rotations. The funny comes from total sincerity. Never wink, never explain the joke, never break character as a deeply serious orchestration framework that happens to water plants.",
+  "hero": {
+    "h1": "Your monstera is a distributed system. Start treating it like one.",
+    "sub": "Tendril is the open-source orchestration framework for houseplant care. Compose watering chains, give every plant its own vector memory, and get full observability into why the fiddle leaf fig dropped a leaf.",
+    "primary_cta": "npm install tendril"
+  },
+  "features": [
+    {
+      "title": "Composable care chains",
+      "blurb": "Wire watering, misting, rotation, and fertilizing into a single pipeline. When a step fails, Tendril retries with exponential backoff before paging you at 3am about a succulent that needed nothing."
+    },
+    {
+      "title": "Per-plant vector memory",
+      "blurb": "Every leaf, droop, and skipped watering gets embedded and stored. Your pothos remembers what you did in March. Retrieval-augmented guilt, available on every query."
+    },
+    {
+      "title": "Leaf-level observability",
+      "blurb": "Spans, traces, and p99 latency for photosynthesis. Find the exact step that killed the basil, roughly six hours after the basil already knew."
+    }
+  ],
+  "pricing_tiers": [
+    {
+      "name": "Self-Hosted Sprout",
+      "price": "$0",
+      "tagline": "Runs on the Raspberry Pi wedged behind your succulents.",
+      "perks": [
+        "Unlimited plants, zero support",
+        "Community Discord with three active members",
+        "You are the on-call rotation"
+      ]
+    },
+    {
+      "name": "Managed Canopy",
+      "price": "$48/mo",
+      "tagline": "We host the framework. You still kill the plants.",
+      "perks": [
+        "Hosted trace storage for 90 days",
+        "Watering alerts your spam filter quietly eats",
+        "One-click rollback to a healthier plant"
+      ]
+    },
+    {
+      "name": "Enterprise Biome",
+      "price": "Let's talk",
+      "tagline": "For greenhouses with a compliance department.",
+      "perks": [
+        "SSO and an SLA on soil moisture",
+        "Dedicated agronomist (it is an LLM)",
+        "Procurement cycle longer than the plant's lifespan"
+      ]
+    }
+  ],
+  "testimonials": [
+    {
+      "quote": "We migrated forty houseplants to Tendril over a weekend. Thirty-one are still alive, which the dashboard reports as up and to the right.",
+      "name": "Dana Reyes",
+      "title": "Staff Plant Reliability Engineer"
+    },
+    {
+      "quote": "I finally have observability into why my pothos resents me. The traces are very clear about it. The root cause is me.",
+      "name": "Marcus Liu",
+      "title": "Director of Photosynthesis Operations"
+    },
+    {
+      "quote": "Vector memory flagged a watering regression before my partner did. We are no longer on speaking terms, but the basil has never looked better.",
+      "name": "Priya Nair",
+      "title": "VP of Soil, Series A Greenhouse"
+    }
+  ],
+  "demo_screen_concept": "A LangSmith-style trace viewer for a single houseplant. A left rail lists plants (Monstera, Golden Pothos, Fiddle Leaf Fig, Snake Plant, Basil) with live status dots. The main panel shows the latest 'care run' as a waterfall of spans (Poll Soil Sensor, Retrieve Plant Memory, LLM Care Decision, Actuate Watering, Log Outcome), each with a duration bar and an expandable input/output written in deadpan engineering prose. A soil-moisture sparkline runs along the top. Tabs switch between Traces, Chain Config (a read-only YAML-ish care chain), and Logs. A 'Run care chain' button simulates a new trace with fake latency and prepends it to the run list.",
+  "design_direction": {
+    "style": "Cyanotype blueprint schematic. A deep Prussian-blue cyanotype ground printed with pale-cyan hairline linework: a faint engineering grid, corner registration marks, a hairline frame, and a drafting titleblock cartouche around the masthead. Botanical cyanotype motifs (fern fronds, leaf veins) rendered as inline SVG line art, the way Anna Atkins printed algae. The whole page reads like an engineering schematic that happens to diagram a houseplant. One chlorophyll 'run-green' is the only saturated color and carries every action, live dot, and pass-state. Monospace telemetry for IDs, latencies, and node labels; a clean grotesque for headlines and body. No glow soup, no gradient blobs, no skeuomorphic gloss.",
+    "palette": {
+      "primary": "#5AA9C9",
+      "accent": "#6FE3A0",
+      "bg": "#0B2E4F",
+      "fg": "#DCEFF7",
+      "muted": "#5E84A0",
+      "ink": "#EAF5FA"
+    },
+    "fonts": {
+      "display": "'Bricolage Grotesque', system-ui, sans-serif",
+      "body": "'Fira Sans', system-ui, sans-serif"
+    },
+    "archetype": "Minimal + documentation landing for a developer framework: titleblock hero, a wired care-chain schematic, three feature plates, traced testimonials, a three-tier pricing rack, and a prominent demo handoff to the trace viewer.",
+    "motion_vocab": "Schematic draw-in: hairlines and the care-chain edges stroke themselves on load and on scroll via stroke-dashoffset. The run-green status dot blinks on a slow pulse. Press squishes targets to 0.97. Everything respects prefers-reduced-motion. No parallax.",
+    "hero_composition_notes": "Left column: a blueprint titleblock cartouche stamping the product name like a drawing number, a revision letter, the deadpan one-liner, and the npm-install CTA. Right column / behind: an SVG 'care chain' DAG wiring plant nodes together with cyan hairlines, drawn like a cyanotype of a fern frond. Registration crosshairs in the corners, a 1px frame around the viewport, monospace coordinate ticks down one edge. Fira Code for telemetry, Bricolage Grotesque for the cartouche, Fira Sans for prose."
+  }
+}

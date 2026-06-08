@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tendril · theworstaistudioever</title>
+<meta name="description" content="The open-source framework for composable houseplant care. Define watering chains, give every plant vector memory, and trace every leaf in production.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Tendril — orchestration for houseplants">
+<meta property="og:description" content="Your monstera is a distributed system. Start treating it like one. Composable care chains, per-plant vector memory, leaf-level observability.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Tendril — orchestration for houseplants">
+<meta name="twitter:description" content="Your monstera is a distributed system. Start treating it like one.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Fira+Code:wght@400;500&family=Fira+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#5AA9C9;
+  --accent:#6FE3A0;
+  --bg:#0B2E4F;
+  --bg-deep:#082138;
+  --fg:#DCEFF7;
+  --muted:#5E84A0;
+  --ink:#EAF5FA;
+  --line:rgba(154,205,228,.26);
+  --line-strong:rgba(154,205,228,.5);
+  --paper:#0E3760;
+  --display:'Bricolage Grotesque',system-ui,sans-serif;
+  --body:'Fira Sans',system-ui,sans-serif;
+  --mono:'Fira Code',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--fg);
+  font-family:var(--body);
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  position:relative;
+}
+/* engineering grid + cyanotype wash */
+body::before{
+  content:"";
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(var(--line) 1px,transparent 1px),
+    linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:38px 38px;
+  opacity:.5;
+  -webkit-mask-image:radial-gradient(120% 90% at 70% 0%,#000 35%,transparent 90%);
+          mask-image:radial-gradient(120% 90% at 70% 0%,#000 35%,transparent 90%);
+}
+body::after{
+  content:"";
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(80% 60% at 78% 8%,rgba(111,227,160,.10),transparent 60%),
+    radial-gradient(90% 70% at 12% 100%,rgba(90,169,201,.16),transparent 60%);
+}
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 28px}
+/* hairline frame + registration marks */
+.frame{position:fixed;inset:14px;z-index:2;pointer-events:none;border:1px solid var(--line-strong)}
+.reg{position:fixed;z-index:3;width:18px;height:18px;pointer-events:none}
+.reg::before,.reg::after{content:"";position:absolute;background:var(--primary);opacity:.7}
+.reg::before{left:50%;top:0;bottom:0;width:1px;transform:translateX(-.5px)}
+.reg::after{top:50%;left:0;right:0;height:1px;transform:translateY(-.5px)}
+.reg.tl{top:20px;left:20px}.reg.tr{top:20px;right:20px}
+.reg.bl{bottom:20px;left:20px}.reg.br{bottom:20px;right:20px}
+
+a{color:inherit;text-decoration:none}
+.mono{font-family:var(--mono)}
+.tick{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+
+/* top bar */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:26px 0 18px;border-bottom:1px solid var(--line)}
+.logo{display:flex;align-items:center;gap:11px;font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.01em}
+.logo svg{display:block}
+.topbar .tick{display:flex;gap:8px;align-items:center}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 rgba(111,227,160,.55);animation:pulse 2.6s ease-out infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(111,227,160,.5)}70%{box-shadow:0 0 0 7px rgba(111,227,160,0)}100%{box-shadow:0 0 0 0 rgba(111,227,160,0)}}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:34px;align-items:center;padding:54px 0 30px}
+.cartouche{border:1px solid var(--line-strong);background:linear-gradient(180deg,rgba(14,55,96,.6),rgba(8,33,56,.4));position:relative}
+.cartouche-head{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding:11px 16px}
+.cartouche-body{padding:26px 22px 24px}
+.drawing-no{font-family:var(--mono);font-size:12px;color:var(--primary);letter-spacing:.12em}
+.rev{font-family:var(--mono);font-size:12px;color:var(--muted)}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(31px,4.4vw,50px);line-height:1.02;letter-spacing:-.02em;color:var(--ink);margin-bottom:18px}
+h1 .grn{color:var(--accent)}
+.sub{color:var(--fg);max-width:42ch;font-size:16.5px}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:24px}
+.btn{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:14px;padding:13px 18px;border:1px solid var(--accent);color:var(--bg-deep);background:var(--accent);transition:transform .12s ease,box-shadow .2s ease}
+.btn:hover{box-shadow:0 0 0 4px rgba(111,227,160,.18)}
+.btn:active{transform:scale(.97)}
+.btn .pfx{opacity:.55}
+.btn-ghost{background:transparent;color:var(--fg);border:1px solid var(--line-strong)}
+.btn-ghost:hover{border-color:var(--primary);box-shadow:none}
+
+/* schematic panel */
+.schematic{border:1px solid var(--line);background:rgba(8,33,56,.5);position:relative;aspect-ratio:1/1;max-height:430px}
+.schematic .label{position:absolute;top:10px;left:12px}
+.schematic .coord{position:absolute;right:8px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:space-around;padding:24px 0}
+.schematic .coord span{font-family:var(--mono);font-size:9px;color:var(--muted);opacity:.7}
+svg .edge{fill:none;stroke:var(--primary);stroke-width:1.2;opacity:.7;stroke-dasharray:6 6}
+svg .frond{fill:none;stroke:var(--primary);stroke-width:1.1;opacity:.45}
+svg .node-c{fill:rgba(8,33,56,.9);stroke:var(--line-strong);stroke-width:1}
+svg .node-t{font-family:var(--mono);font-size:8.2px;fill:var(--fg)}
+svg .node-id{font-family:var(--mono);font-size:6.6px;fill:var(--muted)}
+svg .live{fill:var(--accent)}
+.draw{stroke-dasharray:1200;stroke-dashoffset:1200;animation:draw 2.4s ease forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+
+/* section scaffolding */
+section{padding:46px 0;position:relative}
+.sec-head{display:flex;align-items:baseline;gap:14px;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:30px}
+.sec-head h2{font-family:var(--display);font-weight:700;font-size:clamp(22px,2.8vw,30px);letter-spacing:-.01em;color:var(--ink)}
+.sec-head .tick{margin-left:auto}
+
+/* features */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.plate{border:1px solid var(--line);background:rgba(14,55,96,.34);padding:22px 20px;position:relative;transition:border-color .2s ease,transform .2s ease}
+.plate:hover{border-color:var(--primary);transform:translateY(-3px)}
+.plate .no{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.14em}
+.plate h3{font-family:var(--display);font-weight:700;font-size:19px;margin:14px 0 9px;color:var(--ink)}
+.plate p{color:var(--fg);font-size:14.5px;opacity:.92}
+.plate .leaf{position:absolute;top:18px;right:16px;opacity:.5}
+
+/* testimonials */
+.quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.quote{border:1px solid var(--line);background:rgba(8,33,56,.45);padding:22px 20px;display:flex;flex-direction:column;gap:16px}
+.quote .span-bar{height:5px;background:linear-gradient(90deg,var(--accent),rgba(111,227,160,.15));border-radius:2px}
+.quote blockquote{font-family:var(--body);font-size:15px;line-height:1.55;color:var(--ink)}
+.quote .who{margin-top:auto}
+.quote .who b{font-family:var(--display);font-weight:700;color:var(--fg);display:block;font-size:14.5px}
+.quote .who .role{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.04em}
+
+/* pricing */
+.rack{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.tier{border:1px solid var(--line);background:rgba(14,55,96,.3);padding:24px 22px;display:flex;flex-direction:column;gap:6px}
+.tier.mark{border-color:var(--accent);background:rgba(111,227,160,.06)}
+.tier .tname{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--primary)}
+.tier.mark .tname{color:var(--accent)}
+.tier .price{font-family:var(--display);font-weight:800;font-size:33px;color:var(--ink);letter-spacing:-.02em;margin-top:6px}
+.tier .ttag{color:var(--muted);font-size:13.5px;min-height:38px}
+.tier ul{list-style:none;margin-top:14px;display:flex;flex-direction:column;gap:11px}
+.tier li{display:flex;gap:10px;font-size:14px;color:var(--fg);align-items:flex-start}
+.tier li svg{flex:none;margin-top:3px}
+
+/* demo handoff */
+.handoff{border:1px solid var(--line-strong);background:linear-gradient(135deg,rgba(14,55,96,.6),rgba(8,33,56,.5));padding:40px 32px;text-align:center;margin-top:10px}
+.handoff h2{font-family:var(--display);font-weight:800;font-size:clamp(24px,3.2vw,34px);color:var(--ink);letter-spacing:-.02em}
+.handoff p{color:var(--muted);max-width:52ch;margin:12px auto 22px;font-size:15px}
+
+/* footer */
+footer{border-top:1px solid var(--line);padding:26px 0 40px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
+footer a.back{font-family:var(--mono);font-size:13px;color:var(--muted);transition:color .2s ease}
+footer a.back:hover{color:var(--accent)}
+footer .meta{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.1em}
+
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:none}
+
+@media(max-width:860px){
+  .hero{grid-template-columns:1fr;gap:24px}
+  .schematic{max-height:340px}
+  .grid3,.quotes,.rack{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .reveal{opacity:1;transform:none}
+  .draw{stroke-dashoffset:0}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+<div class="frame"></div>
+<i class="reg tl"></i><i class="reg tr"></i><i class="reg bl"></i><i class="reg br"></i>
+
+<div class="wrap">
+  <header class="topbar">
+    <span class="logo">
+      <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+        <circle cx="11" cy="11" r="10" fill="none" stroke="#6FE3A0" stroke-width="1.4"/>
+        <path d="M11 17 C11 12 7 11 6 8 M11 17 C11 11 15 10 16 7 M11 17 V5" fill="none" stroke="#5AA9C9" stroke-width="1.2"/>
+      </svg>
+      Tendril
+    </span>
+    <span class="tick"><span class="dot"></span> build&nbsp;passing</span>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero" style="padding-top:46px;border:none">
+    <div class="cartouche">
+      <div class="cartouche-head">
+        <span class="drawing-no">DWG&nbsp;TND-0608</span>
+        <span class="rev">REV&nbsp;C · SHEET 1/1</span>
+      </div>
+      <div class="cartouche-body">
+        <h1>Your monstera is a <span class="grn">distributed system.</span> Start treating it like one.</h1>
+        <p class="sub">Tendril is the open-source orchestration framework for houseplant care. Compose watering chains, give every plant its own vector memory, and get full observability into why the fiddle leaf fig dropped a leaf.</p>
+        <div class="cta-row">
+          <a class="btn" href="#"><span class="pfx">$</span> npm install tendril</a>
+          <a class="btn btn-ghost" href="./demo.html">open the trace viewer →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="schematic" aria-hidden="true">
+      <span class="label tick">FIG.1 — care chain</span>
+      <div class="coord"><span>y0</span><span>y1</span><span>y2</span><span>y3</span></div>
+      <svg viewBox="0 0 300 300" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+        <!-- fern cyanotype motif -->
+        <path class="frond draw" d="M40 270 C70 200 110 150 150 70" />
+        <g stroke="#5AA9C9" stroke-width="1" opacity=".4" fill="none">
+          <path d="M70 215 l-22 6 M82 192 l-24 3 M97 165 l-25 0 M114 135 l-25 -4 M132 102 l-24 -8"/>
+          <path d="M70 215 l16 -16 M82 192 l18 -14 M97 165 l20 -12 M114 135 l20 -10 M132 102 l20 -8"/>
+        </g>
+        <!-- edges -->
+        <path class="edge draw" d="M150 46 V86" />
+        <path class="edge draw" d="M150 116 V156" />
+        <path class="edge draw" d="M150 186 C150 206 150 206 150 226" />
+        <path class="edge draw" d="M150 116 C150 140 235 130 235 170" />
+        <!-- nodes -->
+        <g>
+          <rect class="node-c" x="98" y="26" width="104" height="22" rx="2"/>
+          <text class="node-t" x="150" y="40" text-anchor="middle">poll soil sensor</text>
+
+          <rect class="node-c" x="92" y="92" width="116" height="22" rx="2"/>
+          <text class="node-t" x="150" y="106" text-anchor="middle">retrieve memory</text>
+
+          <rect class="node-c" x="96" y="162" width="108" height="22" rx="2"/>
+          <text class="node-t" x="150" y="176" text-anchor="middle">llm care decision</text>
+
+          <rect class="node-c" x="104" y="228" width="92" height="22" rx="2"/>
+          <text class="node-t" x="150" y="242" text-anchor="middle">actuate water</text>
+          <circle class="live" cx="112" cy="239" r="3"/>
+
+          <rect class="node-c" x="196" y="160" width="74" height="22" rx="2"/>
+          <text class="node-id" x="233" y="174" text-anchor="middle">vector.store</text>
+        </g>
+      </svg>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="sec-head">
+      <h2>Three primitives. One fern.</h2>
+      <span class="tick">§ 2.0 capabilities</span>
+    </div>
+    <div class="grid3">
+      <article class="plate reveal">
+        <span class="no">F-01</span>
+        <svg class="leaf" width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><path d="M4 22 C4 10 14 4 22 4 C22 16 12 22 4 22Z M4 22 L16 10" fill="none" stroke="#5AA9C9" stroke-width="1.1"/></svg>
+        <h3>Composable care chains</h3>
+        <p>Wire watering, misting, rotation, and fertilizing into a single pipeline. When a step fails, Tendril retries with exponential backoff before paging you at 3am about a succulent that needed nothing.</p>
+      </article>
+      <article class="plate reveal">
+        <span class="no">F-02</span>
+        <svg class="leaf" width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><path d="M4 22 C4 10 14 4 22 4 C22 16 12 22 4 22Z M4 22 L16 10" fill="none" stroke="#5AA9C9" stroke-width="1.1"/></svg>
+        <h3>Per-plant vector memory</h3>
+        <p>Every leaf, droop, and skipped watering gets embedded and stored. Your pothos remembers what you did in March. Retrieval-augmented guilt, available on every query.</p>
+      </article>
+      <article class="plate reveal">
+        <span class="no">F-03</span>
+        <svg class="leaf" width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><path d="M4 22 C4 10 14 4 22 4 C22 16 12 22 4 22Z M4 22 L16 10" fill="none" stroke="#5AA9C9" stroke-width="1.1"/></svg>
+        <h3>Leaf-level observability</h3>
+        <p>Spans, traces, and p99 latency for photosynthesis. Find the exact step that killed the basil, roughly six hours after the basil already knew.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section id="proof">
+    <div class="sec-head">
+      <h2>Traced in production.</h2>
+      <span class="tick">§ 3.0 field reports</span>
+    </div>
+    <div class="quotes">
+      <figure class="quote reveal">
+        <div class="span-bar"></div>
+        <blockquote>“We migrated forty houseplants to Tendril over a weekend. Thirty-one are still alive, which the dashboard reports as up and to the right.”</blockquote>
+        <figcaption class="who"><b>Dana Reyes</b><span class="role">Staff Plant Reliability Engineer</span></figcaption>
+      </figure>
+      <figure class="quote reveal">
+        <div class="span-bar"></div>
+        <blockquote>“I finally have observability into why my pothos resents me. The traces are very clear about it. The root cause is me.”</blockquote>
+        <figcaption class="who"><b>Marcus Liu</b><span class="role">Director of Photosynthesis Operations</span></figcaption>
+      </figure>
+      <figure class="quote reveal">
+        <div class="span-bar"></div>
+        <blockquote>“Vector memory flagged a watering regression before my partner did. We are no longer on speaking terms, but the basil has never looked better.”</blockquote>
+        <figcaption class="who"><b>Priya Nair</b><span class="role">VP of Soil, Series A Greenhouse</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing">
+    <div class="sec-head">
+      <h2>Provision your greenhouse.</h2>
+      <span class="tick">§ 4.0 pricing</span>
+    </div>
+    <div class="rack">
+      <div class="tier reveal">
+        <span class="tname">Self-Hosted Sprout</span>
+        <span class="price">$0</span>
+        <span class="ttag">Runs on the Raspberry Pi wedged behind your succulents.</span>
+        <ul>
+          <li><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7.5 5 11 12 3" fill="none" stroke="#6FE3A0" stroke-width="1.6"/></svg> Unlimited plants, zero support</li>
+          <li><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7.5 5 11 12 3" fill="none" stroke="#6FE3A0" stroke-width="1.6"/></svg> Community Discord with three active members</li>
+          <li><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7.5 5 11 12 3" fill="none" stroke="#6FE3A0" stroke-width="1.6"/></svg> You are the on-call rotation</li>
+        </ul>
+      </div>
+      <div class="tier mark reveal">
+        <span class="tname">Managed Canopy</span>
+        <span class="price">$48<span style="font-size:15px;color:var(--muted)">/mo</span></span>
+        <span class="ttag">We host the framework. You still kill the plants.</span>
+        <ul>
+          <li><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7.5 5 11 12 3" fill="none" stroke="#6FE3A0" stroke-width="1.6"/></svg> Hosted trace storage for 90 days</li>
+          <li><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7.5 5 11 12 3" fill="none" stroke="#6FE3A0" stroke-width="1.6"/></svg> Watering alerts your spam filter quietly eats</li>
+          <li><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7.5 5 11 12 3" fill="none" stroke="#6FE3A0" stroke-width="1.6"/></svg> One-click rollback to a healthier plant</li>
+        </ul>
+      </div>
+      <div class="tier reveal">
+        <span class="tname">Enterprise Biome</span>
+        <span class="price">Let's talk</span>
+        <span class="ttag">For greenhouses with a compliance department.</span>
+        <ul>
+          <li><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7.5 5 11 12 3" fill="none" stroke="#6FE3A0" stroke-width="1.6"/></svg> SSO and an SLA on soil moisture</li>
+          <li><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7.5 5 11 12 3" fill="none" stroke="#6FE3A0" stroke-width="1.6"/></svg> Dedicated agronomist (it is an LLM)</li>
+          <li><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 7.5 5 11 12 3" fill="none" stroke="#6FE3A0" stroke-width="1.6"/></svg> Procurement cycle longer than the plant's lifespan</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEMO HANDOFF -->
+  <section style="padding-top:8px">
+    <div class="handoff reveal">
+      <h2>Watch a watering chain execute.</h2>
+      <p>Open the trace viewer and step through a live care run, span by span, down to the moment the LLM decided your snake plant could wait.</p>
+      <a class="btn" href="./demo.html">open the demo →</a>
+    </div>
+  </section>
+
+  <footer>
+    <a class="back" href="/">← theworstaistudioever</a>
+    <span class="meta">TENDRIL · MIT-ish · v0.6.8</span>
+  </footer>
+</div>
+
+<script>
+// reveal-on-scroll
+(function(){
+  var els=[].slice.call(document.querySelectorAll('.reveal'));
+  if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in')});return;}
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}
+    });
+  },{threshold:.16});
+  els.forEach(function(e,i){e.style.transitionDelay=(i%3*70)+'ms';io.observe(e);});
+})();
+</script>
+</body>
+</html>
