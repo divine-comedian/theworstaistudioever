@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Divest · theworstaistudioever</title>
+<meta name="description" content="An exchange for liquidating everything you own. List your possessions, watch the order book, and ride your net worth down to a clean zero.">
+<meta name="theme-color" content="#F4F1EA">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Divest. An exchange for owning less of everything.">
+<meta property="og:description" content="An exchange for liquidating everything you own. List your possessions, watch the order book, and ride your net worth down to a clean zero.">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Divest. An exchange for owning less of everything.">
+<meta name="twitter:description" content="An exchange for liquidating everything you own. Ride your net worth down to a clean zero.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,900;1,400;1,500&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#F4F1EA;
+    --fg:#16140F;
+    --ink:#16140F;
+    --muted:#8A8578;
+    --accent:#B07E1C;
+    --line:#16140F;
+    --hair:rgba(22,20,15,.16);
+    --paper:#FBF9F3;
+    --display:"Playfair Display",Georgia,"Times New Roman",serif;
+    --body:"Source Serif 4",Georgia,"Times New Roman",serif;
+    --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+    --gut:clamp(20px,5vw,72px);
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    background:var(--bg);
+    color:var(--fg);
+    font-family:var(--body);
+    font-weight:400;
+    font-size:18px;
+    line-height:1.6;
+    font-feature-settings:"liga" 1,"onum" 1;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding-inline:var(--gut)}
+  a{color:inherit}
+  ::selection{background:var(--accent);color:var(--paper)}
+
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.24em;
+    text-transform:uppercase;
+    color:var(--muted);
+    font-weight:500;
+  }
+  .num{font-family:var(--mono);font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+
+  /* ---- top bar ---- */
+  .topbar{
+    border-bottom:1px solid var(--line);
+  }
+  .topbar .wrap{
+    display:flex;align-items:center;justify-content:space-between;
+    height:54px;
+  }
+  .topbar .brand{font-family:var(--mono);font-weight:700;font-size:13px;letter-spacing:.18em;text-transform:uppercase}
+  .topbar .ticker{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--muted);display:flex;gap:18px}
+  .topbar .ticker .dn{color:var(--accent)}
+  @media(max-width:680px){.topbar .ticker{display:none}}
+
+  /* ---- hero ---- */
+  .hero{padding-top:clamp(56px,10vw,120px);padding-bottom:clamp(56px,9vw,108px)}
+  .hero .grid{display:grid;grid-template-columns:1.35fr .9fr;gap:clamp(28px,6vw,72px);align-items:end}
+  @media(max-width:880px){.hero .grid{grid-template-columns:1fr;align-items:start;gap:40px}}
+
+  .hero .estline{display:flex;flex-wrap:wrap;gap:10px 26px;margin-bottom:30px}
+  .hero .estline span{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  h1.h1{
+    font-family:var(--display);
+    font-weight:500;
+    font-size:clamp(44px,8vw,92px);
+    line-height:.99;
+    letter-spacing:-.015em;
+    margin-bottom:26px;
+  }
+  h1.h1 em{font-style:italic;color:var(--accent);font-weight:500}
+  .hero .sub{
+    font-size:clamp(18px,2.1vw,22px);
+    line-height:1.5;
+    max-width:30ch;
+    color:#2c2920;
+    margin-bottom:36px;
+  }
+  .ctas{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+  .btn{
+    display:inline-block;
+    font-family:var(--mono);
+    font-size:13px;
+    font-weight:500;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    text-decoration:none;
+    padding:15px 26px;
+    background:var(--accent);
+    color:#1b1505;
+    border:1px solid var(--accent);
+    transition:transform .12s ease,background .2s ease,color .2s ease;
+  }
+  .btn:hover{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+  .btn:active{transform:scale(.97)}
+  .link-demo{
+    font-family:var(--mono);font-size:13px;letter-spacing:.06em;text-transform:uppercase;
+    text-decoration:none;color:var(--ink);position:relative;padding-bottom:3px;
+  }
+  .link-demo::after{content:"";position:absolute;left:0;bottom:0;width:100%;height:1px;background:var(--ink);transform:scaleX(0);transform-origin:left;transition:transform .25s ease}
+  .link-demo:hover::after{transform:scaleX(1)}
+
+  /* ---- ticker card ---- */
+  .card{
+    border:1px solid var(--line);
+    background:var(--paper);
+    padding:0;
+  }
+  .card .chead{
+    display:flex;justify-content:space-between;align-items:baseline;
+    padding:14px 18px;border-bottom:1px solid var(--line);
+    font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)
+  }
+  .card .row{
+    display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:baseline;
+    padding:13px 18px;border-bottom:1px solid var(--hair);
+  }
+  .card .row:last-of-type{border-bottom:1px solid var(--line)}
+  .card .row .tk{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:.1em}
+  .card .row .px{font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums}
+  .card .row .ch{font-family:var(--mono);font-size:12px;color:var(--accent);font-variant-numeric:tabular-nums;text-align:right;min-width:64px}
+  .card .spark{padding:16px 18px;display:flex;justify-content:space-between;align-items:flex-end;gap:14px}
+  .card .spark svg{display:block;width:100%;height:54px;overflow:visible}
+  .card .nw{padding:14px 18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:baseline}
+  .card .nw .lab{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .card .nw .val{font-family:var(--mono);font-size:20px;font-weight:500;font-variant-numeric:tabular-nums}
+
+  /* ---- section frame ---- */
+  section.band{border-top:1px solid var(--line)}
+  .secthead{display:flex;justify-content:space-between;align-items:baseline;padding-top:22px;padding-bottom:8px;gap:20px}
+  .secthead h2{font-family:var(--display);font-weight:500;font-size:clamp(13px,1.4vw,15px);letter-spacing:.02em}
+  .secthead .idx{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
+
+  /* ---- features ---- */
+  .features{padding-bottom:clamp(40px,7vw,84px)}
+  .feat{
+    display:grid;grid-template-columns:80px 1fr 1.05fr;gap:clamp(18px,4vw,56px);
+    padding:clamp(30px,5vw,52px) 0;border-top:1px solid var(--hair);align-items:start;
+  }
+  .feat:first-of-type{border-top:none}
+  .feat .fno{font-family:var(--mono);font-size:13px;color:var(--accent);letter-spacing:.1em;padding-top:8px}
+  .feat h3{font-family:var(--display);font-weight:500;font-size:clamp(26px,3.4vw,40px);line-height:1.05;letter-spacing:-.01em}
+  .feat p{font-size:18px;line-height:1.62;color:#2c2920;max-width:46ch}
+  @media(max-width:760px){.feat{grid-template-columns:1fr;gap:14px}.feat .fno{padding-top:0}}
+
+  /* ---- testimonials ---- */
+  .tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;padding-bottom:clamp(40px,7vw,80px)}
+  @media(max-width:860px){.tgrid{grid-template-columns:1fr}}
+  .quote{
+    padding:clamp(28px,3.4vw,44px) clamp(22px,2.6vw,34px) clamp(28px,3.4vw,44px) 0;
+    border-right:1px solid var(--hair);
+  }
+  .tgrid .quote:last-child{border-right:none}
+  @media(max-width:860px){.quote{border-right:none;border-bottom:1px solid var(--hair);padding-right:0}.tgrid .quote:last-child{border-bottom:none}}
+  .quote blockquote{font-family:var(--display);font-style:italic;font-weight:400;font-size:clamp(19px,2vw,23px);line-height:1.34;letter-spacing:-.005em;margin-bottom:22px}
+  .quote .who{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);line-height:1.7}
+  .quote .who .t{display:block;color:var(--muted)}
+
+  /* ---- pricing ---- */
+  .pgrid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);margin-bottom:clamp(40px,7vw,86px)}
+  @media(max-width:860px){.pgrid{grid-template-columns:1fr}}
+  .tier{padding:clamp(26px,3vw,40px) clamp(22px,2.4vw,32px);border-right:1px solid var(--hair);display:flex;flex-direction:column;min-height:100%}
+  .pgrid .tier:last-child{border-right:none}
+  @media(max-width:860px){.tier{border-right:none;border-bottom:1px solid var(--hair)}.pgrid .tier:last-child{border-bottom:none}}
+  .tier .tname{font-family:var(--display);font-weight:500;font-size:24px;margin-bottom:4px}
+  .tier .ttag{font-size:15.5px;color:var(--muted);line-height:1.45;margin-bottom:26px;max-width:30ch}
+  .tier .price{font-family:var(--mono);font-size:30px;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.02em;margin-bottom:24px}
+  .tier ul{list-style:none;display:flex;flex-direction:column;gap:13px;margin-top:auto}
+  .tier li{font-size:15.5px;line-height:1.4;padding-left:20px;position:relative;color:#2c2920}
+  .tier li::before{content:"—";position:absolute;left:0;color:var(--accent);font-family:var(--mono)}
+
+  /* ---- big demo cta ---- */
+  .demo-cta{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .demo-cta .wrap{padding-block:clamp(48px,8vw,96px);display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap}
+  .demo-cta h2{font-family:var(--display);font-weight:500;font-size:clamp(30px,5vw,58px);line-height:1.02;letter-spacing:-.015em;max-width:16ch}
+  .demo-cta h2 em{font-style:italic;color:var(--accent)}
+
+  /* ---- footer ---- */
+  footer{padding-block:34px}
+  footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+  footer a.back{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-decoration:none;color:var(--ink);position:relative;padding-bottom:2px}
+  footer a.back::after{content:"";position:absolute;left:0;bottom:0;width:100%;height:1px;background:var(--ink);transform:scaleX(0);transform-origin:left;transition:transform .25s ease}
+  footer a.back:hover::after{transform:scaleX(1)}
+  footer .fine{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--muted);text-align:right;line-height:1.7}
+
+  /* ---- scroll reveal ---- */
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+    .reveal{opacity:1;transform:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <div class="brand">DIVEST</div>
+    <div class="ticker">
+      <span>MIXR <span class="dn">4.00 ▾</span></span>
+      <span>COUCH <span class="dn">38.50 ▾</span></span>
+      <span>TV55 <span class="dn">90.00 ▾</span></span>
+    </div>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="grid">
+      <div>
+        <div class="estline">
+          <span>Est. this morning</span>
+          <span>SEC reg. pending</span>
+          <span>Net worth target: 0.00</span>
+        </div>
+        <h1 class="h1">An exchange for owning <em>less</em> of everything.</h1>
+        <p class="sub">Divest is a real-time marketplace for the things you no longer want to be responsible for. List a possession, take the best bid, and watch your net worth fall toward a clean, total zero.</p>
+        <div class="ctas">
+          <a class="btn" href="./demo.html">Start liquidating</a>
+          <a class="link-demo" href="./demo.html">open the demo →</a>
+        </div>
+      </div>
+
+      <div class="card" aria-hidden="true">
+        <div class="chead"><span>Your holdings</span><span>LIVE</span></div>
+        <div class="row"><span class="tk">MIXR</span><span class="px">$4.00</span><span class="ch">−18.4%</span></div>
+        <div class="row"><span class="tk">COUCH</span><span class="px">$38.50</span><span class="ch">−6.1%</span></div>
+        <div class="row"><span class="tk">BOOKS</span><span class="px">$11.20</span><span class="ch">−40.0%</span></div>
+        <div class="spark">
+          <svg viewBox="0 0 240 54" preserveAspectRatio="none" role="img">
+            <line x1="0" y1="53" x2="240" y2="53" stroke="var(--hair)" stroke-width="1"/>
+            <polyline id="hsp" fill="none" stroke="var(--accent)" stroke-width="1.5"
+              points="0,6 30,9 60,8 90,16 120,15 150,26 180,30 210,40 240,49"
+              stroke-dasharray="400" stroke-dashoffset="400"/>
+          </svg>
+        </div>
+        <div class="nw"><span class="lab">Net worth</span><span class="val" id="hnw">$53.70</span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="band features">
+  <div class="wrap">
+    <div class="secthead"><h2>What it does to your things</h2><span class="idx">01 / Product</span></div>
+
+    <div class="feat reveal">
+      <div class="fno">F-01</div>
+      <h3>A live order book for your possessions</h3>
+      <p>Every item you own gets a ticker, a bid-ask spread, and a depth chart. The air fryer last traded at four dollars and is trending down, which on Divest is the entire point.</p>
+    </div>
+    <div class="feat reveal">
+      <div class="fno">F-02</div>
+      <h3>Net worth that only goes down</h3>
+      <p>Most exchanges fight to make the line go up. Ours is built so it cannot. Your portfolio is benchmarked against zero, and we mark the figure green every time you get closer to nothing.</p>
+    </div>
+    <div class="feat reveal">
+      <div class="fno">F-03</div>
+      <h3>Cold storage for what you cannot sell yet</h3>
+      <p>Stake the couch. The TV. The second couch. Locked items move to a vault you cannot reach, earning zero yield and one strong sense of progress. Unstaking takes a 30-day cooling-off period and a short written statement.</p>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="secthead"><h2>From members with nothing left</h2><span class="idx">02 / Holders</span></div>
+    <div class="tgrid">
+      <div class="quote reveal">
+        <blockquote>“I listed my entire apartment over a weekend and closed every position by Sunday. My net worth is now eleven dollars and falling. I have never slept better on the floor.”</blockquote>
+        <div class="who">Hannah Voss<span class="t">Former Owner of Things, Capsule Tier</span></div>
+      </div>
+      <div class="quote reveal">
+        <blockquote>“The order book told me my stand mixer was overpriced. It was right. I cut the ask, it cleared in minutes, and the kitchen has never felt so theoretical.”</blockquote>
+        <div class="who">Daniel Brecht<span class="t">Reformed Maximalist, 14 Months Clean</span></div>
+      </div>
+      <div class="quote reveal">
+        <blockquote>“I staked my sofa so I would stop using it. The 30-day cooling-off period is the most disciplined relationship I have ever been in.”</blockquote>
+        <div class="who">Mara Quill<span class="t">Head of Decluttering, Household of Five</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="secthead"><h2>Tiers, priced with confidence</h2><span class="idx">03 / Plans</span></div>
+    <div class="pgrid">
+      <div class="tier reveal">
+        <div class="tname">Tote Bag</div>
+        <div class="ttag">For your first few sell orders.</div>
+        <div class="price">$0<span style="font-size:14px;color:var(--muted)">/mo</span></div>
+        <ul>
+          <li>List up to nine possessions</li>
+          <li>Net worth tracked to two decimal places</li>
+          <li>Market orders only, no second-guessing</li>
+        </ul>
+      </div>
+      <div class="tier reveal">
+        <div class="tname">Capsule</div>
+        <div class="ttag">For the household actively shrinking.</div>
+        <div class="price">$40<span style="font-size:14px;color:var(--muted)">/mo</span></div>
+        <ul>
+          <li>Unlimited listings across every room</li>
+          <li>Limit orders, so you can hold out for the right buyer</li>
+          <li>A monthly statement of everything you no longer have</li>
+        </ul>
+      </div>
+      <div class="tier reveal">
+        <div class="tname">The Void</div>
+        <div class="ttag">For members who have nothing left and intend to keep it that way.</div>
+        <div class="price">$600<span style="font-size:14px;color:var(--muted)">/mo</span></div>
+        <ul>
+          <li>A dashboard that displays a single zero</li>
+          <li>A concierge who declines deliveries on your behalf</li>
+          <li>We mail you nothing, quarterly, with a certificate</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="demo-cta">
+  <div class="wrap">
+    <h2>Watch the line go <em>down</em>.</h2>
+    <a class="btn" href="./demo.html">open the demo →</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <a class="back" href="/">← theworstaistudioever</a>
+    <div class="fine">DIVEST EXCHANGE · ASSETS UNDER LIQUIDATION: ALL OF THEM<br>Not a broker-dealer. Not a clearinghouse. Not really anything.</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var rm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // scroll reveal
+  var items = document.querySelectorAll('.reveal');
+  if(rm || !('IntersectionObserver' in window)){
+    items.forEach(function(el){el.classList.add('in');});
+  } else {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+    },{threshold:.16});
+    items.forEach(function(el){io.observe(el);});
+  }
+
+  // hero sparkline draw-in
+  var sp = document.getElementById('hsp');
+  if(sp && !rm){
+    requestAnimationFrame(function(){
+      sp.style.transition='stroke-dashoffset 1.4s ease';
+      sp.style.strokeDashoffset='0';
+    });
+  } else if(sp){ sp.style.strokeDashoffset='0'; }
+
+  // net worth ticks down on load
+  var nw = document.getElementById('hnw');
+  if(nw){
+    if(rm){ nw.textContent='$53.70'; return; }
+    var from=412.00, to=53.70, t0=null, dur=1400;
+    function step(ts){
+      if(!t0) t0=ts;
+      var p=Math.min(1,(ts-t0)/dur);
+      var e=1-Math.pow(1-p,3);
+      var v=from+(to-from)*e;
+      nw.textContent='$'+v.toFixed(2);
+      if(p<1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+})();
+</script>
+</body>
+</html>

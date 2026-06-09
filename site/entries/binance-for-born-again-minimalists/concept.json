@@ -1,0 +1,98 @@
+{
+  "date": "2026-06-09",
+  "company": "Binance",
+  "subject": "born-again minimalists",
+  "tagline": "Binance for born-again minimalists",
+  "slug": "binance-for-born-again-minimalists",
+  "product_name": "Divest",
+  "one_liner": "An exchange for liquidating everything you own. List your possessions, watch the order book, and ride your net worth down to a clean zero.",
+  "brand_voice_notes": "Deadpan exchange and trading-desk copy applied to radical decluttering. Owning less is the asset class. A falling net worth is the bull case, and a portfolio of zero is the goal state, priced at a premium. Treat possessions as positions to be closed, with tickers, spreads, and order books. Never wink, never explain the joke, never break character as a deeply serious securities exchange that happens to help people own nothing.",
+  "hero": {
+    "h1": "An exchange for owning less of everything.",
+    "sub": "Divest is a real-time marketplace for the things you no longer want to be responsible for. List a possession, take the best bid, and watch your net worth fall toward a clean, total zero.",
+    "primary_cta": "Start liquidating"
+  },
+  "features": [
+    {
+      "title": "A live order book for your possessions",
+      "blurb": "Every item you own gets a ticker, a bid-ask spread, and a depth chart. The air fryer last traded at four dollars and is trending down, which on Divest is the entire point."
+    },
+    {
+      "title": "Net worth that only goes down",
+      "blurb": "Most exchanges fight to make the line go up. Ours is built so it cannot. Your portfolio is benchmarked against zero, and we mark the figure green every time you get closer to nothing."
+    },
+    {
+      "title": "Cold storage for what you cannot sell yet",
+      "blurb": "Stake the couch. The TV. The second couch. Locked items move to a vault you cannot reach, earning zero yield and one strong sense of progress. Unstaking takes a 30-day cooling-off period and a short written statement."
+    }
+  ],
+  "pricing_tiers": [
+    {
+      "name": "Tote Bag",
+      "price": "$0/mo",
+      "tagline": "For your first few sell orders.",
+      "perks": [
+        "List up to nine possessions",
+        "Net worth tracked to two decimal places",
+        "Market orders only, no second-guessing"
+      ]
+    },
+    {
+      "name": "Capsule",
+      "price": "$40/mo",
+      "tagline": "For the household actively shrinking.",
+      "perks": [
+        "Unlimited listings across every room",
+        "Limit orders, so you can hold out for the right buyer",
+        "A monthly statement of everything you no longer have"
+      ]
+    },
+    {
+      "name": "The Void",
+      "price": "$600/mo",
+      "tagline": "For members who have nothing left and intend to keep it that way.",
+      "perks": [
+        "A dashboard that displays a single zero",
+        "A concierge who declines deliveries on your behalf",
+        "We mail you nothing, quarterly, with a certificate"
+      ]
+    }
+  ],
+  "testimonials": [
+    {
+      "quote": "I listed my entire apartment over a weekend and closed every position by Sunday. My net worth is now eleven dollars and falling. I have never slept better on the floor.",
+      "name": "Hannah Voss",
+      "title": "Former Owner of Things, Capsule Tier"
+    },
+    {
+      "quote": "The order book told me my stand mixer was overpriced. It was right. I cut the ask, it cleared in minutes, and the kitchen has never felt so theoretical.",
+      "name": "Daniel Brecht",
+      "title": "Reformed Maximalist, 14 Months Clean"
+    },
+    {
+      "quote": "I staked my sofa so I would stop using it. The 30-day cooling-off period is the most disciplined relationship I have ever been in.",
+      "name": "Mara Quill",
+      "title": "Head of Decluttering, Household of Five"
+    }
+  ],
+  "demo_screen_concept": "The Liquidation Desk, a trading-terminal dashboard for selling off everything you own. A left watchlist lists owned items as tickers (MIXR, COUCH, TV55, AIRFRY, BOOKS, LAMP) with last price, a percent change shown in green when it falls (down is good here), and a held-count. The center panel shows the selected item: a price header, a portfolio sparkline that slopes down toward a zero baseline, and a Sell ticket with bid/ask, a quantity stepper, and a market Liquidate button. A right rail shows a Net Worth readout counting down, an Items Remaining counter, and a live feed of recent liquidations. Interactive, all vanilla JS: selecting a ticker repopulates the center, the quantity stepper works, clicking Liquidate opens a confirm modal, then decrements the holding, drops net worth, decrements items remaining, prepends a feed entry, and nudges the portfolio line lower. A 'still own' filter hides cleared items, and a Stake button moves an item into a locked vault list it cannot be sold from.",
+  "design_direction": {
+    "style": "Swiss-modernist gallery minimalism. A bone-paper ground with a faint hairline twelve-column grid, oversized high-contrast Playfair Display set against vast negative space, and JetBrains Mono for every number, ticker, price, and balance, because an exchange runs on figures. Source Serif 4 carries the small amount of prose. A single muted ochre is the only color in the building and it appears almost nowhere, reserved for the primary action and the falling net-worth line. Thin 1px rules, no shadows beyond a single hairline, no gradients, no rounded blobs, no glow. Generous margins are sold as the product. Reads like a gallery wall label that happens to operate a securities exchange.",
+    "palette": {
+      "primary": "#16140F",
+      "accent": "#B07E1C",
+      "bg": "#F4F1EA",
+      "fg": "#16140F",
+      "muted": "#8A8578",
+      "ink": "#16140F"
+    },
+    "fonts": {
+      "display": "\"Playfair Display\", Georgia, \"Times New Roman\", serif",
+      "body": "\"Source Serif 4\", Georgia, \"Times New Roman\", serif",
+      "mono": "\"JetBrains Mono\", ui-monospace, \"SFMono-Regular\", Menlo, monospace"
+    },
+    "archetype": "Fintech / exchange product landing rendered as austere Swiss editorial: a masthead hero, three feature rows, three pull-quote testimonials, a three-tier pricing rack, and a demo handoff to the Liquidation Desk.",
+    "motion_vocab": "Restrained. Hairline rules draw themselves in on scroll, the net-worth figure ticks downward on load, links underline left to right, and pressing a control dims it to 0.97. Numbers use tabular figures so nothing shifts. All motion gated behind prefers-reduced-motion. No parallax.",
+    "hero_composition_notes": "Left-aligned masthead on bone paper with a small mono establishment line (a fake exchange ID and 'NET WORTH TARGET: 0.00'), an oversized Playfair headline, a Source Serif sub, an ochre 'Start liquidating' button beside a quiet underlined 'open the demo' link. A right-hand hairline-bordered ticker card lists three owned items with last price and a small down-arrow, plus a tiny portfolio sparkline sloping toward a zero baseline. Vast empty space below the fold, labeled as a feature."
+  }
+}
