@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lurk · Meeting Room</title>
+  <meta name="description" content="A meeting you will not remember. The Stand-In is looping.">
+  <meta name="theme-color" content="#17150F">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Spline+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+    :root {
+      --bg: #17150F;
+      --panel: #1E1B14;
+      --tile: #221E16;
+      --tile-2: #25211889;
+      --fg: #ECE7DA;
+      --muted: #B4AB9C;
+      --faint: #6F685B;
+      --line: #2E2A20;
+      --amber: #D99A4E;
+      --amber-dim: #9C7440;
+      --sage: #7D998C;
+      --red: #C76B5A;
+      --display: "Newsreader", Georgia, serif;
+      --body: "Spline Sans", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      --mono: "DM Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--fg); font-family: var(--body);
+      font-size: 15px; -webkit-font-smoothing: antialiased; min-height: 100vh; min-height: 100dvh;
+      transition: background .4s ease;
+    }
+    body.dimmed { background: #110F0A; }
+    a { color: inherit; }
+    .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+    .shell { max-width: 1240px; margin: 0 auto; padding: 18px 22px 24px; }
+
+    /* top chrome */
+    .chrome { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+    .back { display: inline-flex; align-items: center; gap: 7px; text-decoration: none; color: var(--muted); font-size: 14px; transition: color .2s; }
+    .back:hover { color: var(--amber); }
+    .meeting-meta { display: flex; align-items: center; gap: 16px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+    .meeting-meta .pill { border: 1px solid var(--line); border-radius: 999px; padding: 5px 11px; letter-spacing: 0.04em; }
+    .meeting-meta .rec { display: inline-flex; align-items: center; gap: 7px; color: var(--fg); }
+    .meeting-meta .rec i { width: 7px; height: 7px; border-radius: 50%; background: var(--red); display: inline-block; animation: blink 2.4s steps(2,end) infinite; }
+    @keyframes blink { 50% { opacity: 0.25; } }
+
+    .room { display: grid; grid-template-columns: 1fr 312px; gap: 18px; align-items: start; }
+
+    /* participant grid */
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .cam {
+      position: relative; aspect-ratio: 4 / 3; border-radius: 12px; overflow: hidden;
+      background: var(--tile); border: 1px solid var(--line); display: grid; place-items: center;
+    }
+    .cam .initials {
+      width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center;
+      font-family: var(--display); font-size: 22px; color: var(--fg); background: #2C2719; border: 1px solid var(--line);
+    }
+    .cam .name {
+      position: absolute; left: 10px; bottom: 9px; display: flex; align-items: center; gap: 6px;
+      font-family: var(--mono); font-size: 11px; color: var(--fg);
+      background: rgba(15,13,9,0.62); padding: 3px 8px; border-radius: 6px;
+    }
+    .cam .name .d { width: 6px; height: 6px; border-radius: 50%; background: var(--sage); }
+    .cam .name .d.muted { background: var(--red); }
+    .cam .role { position: absolute; right: 10px; top: 9px; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); }
+
+    /* your stand-in tile */
+    .cam.you { background: radial-gradient(90% 90% at 50% 32%, #2A2519, #1A170F 78%); box-shadow: inset 0 0 0 2px rgba(217,154,78,0.5); }
+    .cam.you.looping { box-shadow: inset 0 0 0 2px rgba(217,154,78,0.5); }
+    .cam.you.looping::after { content:""; position:absolute; inset:0; border-radius:12px; box-shadow: inset 0 0 0 2px rgba(217,154,78,0.18); animation: lamp 4.5s ease-in-out infinite; pointer-events:none; }
+    @keyframes lamp { 0%,100% { box-shadow: inset 0 0 0 2px rgba(217,154,78,0.1);} 50% { box-shadow: inset 0 0 0 2px rgba(217,154,78,0.45);} }
+    .cam.you.frozen { box-shadow: inset 0 0 0 2px var(--line); filter: grayscale(0.5) brightness(0.8); }
+    .cam.you .avatar { width: 42%; color: var(--muted); transition: transform .3s ease; }
+    .cam.you.looping .avatar { animation: nod 3.8s ease-in-out infinite; }
+    @keyframes nod { 0%,100% { transform: translateY(0) rotate(0); } 45% { transform: translateY(3px) rotate(-1.5deg); } }
+    .cam.you .badge { position: absolute; left: 10px; top: 9px; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.08em; color: #17150F; background: var(--amber); padding: 2px 7px; border-radius: 5px; }
+    .cam.you.frozen .badge { background: var(--faint); color: var(--bg); }
+    .cam.you .frozenlabel { position: absolute; inset: 0; display: none; place-items: center; font-family: var(--mono); font-size: 11px; color: var(--faint); letter-spacing: 0.1em; text-transform: uppercase; }
+    .cam.you.frozen .frozenlabel { display: grid; }
+    .cam.you.frozen .avatar { opacity: 0.25; }
+
+    /* side rail */
+    .rail { display: flex; flex-direction: column; gap: 14px; }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+    .card h3 { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); margin: 0 0 14px; font-weight: 500; }
+
+    /* presence gauge */
+    .score { display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px; }
+    .score b { font-family: var(--mono); font-size: 34px; color: var(--amber); line-height: 1; font-weight: 500; }
+    .score span { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+    .bar { height: 7px; border-radius: 5px; background: var(--tile); overflow: hidden; }
+    .bar i { display: block; height: 100%; width: 87%; background: linear-gradient(90deg, var(--amber-dim), var(--amber)); transition: width .5s cubic-bezier(.2,.7,.2,1); }
+    .score-note { font-size: 12px; color: var(--faint); margin-top: 10px; line-height: 1.5; }
+
+    /* canned reactions */
+    .reacts { display: flex; flex-direction: column; gap: 8px; }
+    .reacts button {
+      text-align: left; font-family: var(--body); font-size: 13.5px; color: var(--fg);
+      background: var(--tile); border: 1px solid var(--line); border-radius: 9px; padding: 10px 12px; cursor: pointer;
+      transition: border-color .15s, transform .12s, background .15s;
+    }
+    .reacts button:hover { border-color: var(--amber-dim); }
+    .reacts button:active { transform: scale(0.98); }
+    .reacts button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    /* chat log */
+    .log { max-height: 168px; overflow-y: auto; display: flex; flex-direction: column; gap: 9px; }
+    .log .line { font-size: 13px; line-height: 1.45; animation: rise .3s ease; }
+    .log .line .who { color: var(--muted); font-family: var(--mono); font-size: 11px; }
+    .log .line.you .who { color: var(--amber); }
+    .log .empty { color: var(--faint); font-size: 12.5px; font-style: italic; }
+    @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+    /* bottom control bar */
+    .controls {
+      margin-top: 18px; display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+      background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 12px;
+    }
+    .ctrl {
+      display: inline-flex; flex-direction: column; align-items: center; gap: 5px; min-width: 64px;
+      background: transparent; border: 0; color: var(--muted); font-family: var(--body); font-size: 11px; cursor: pointer;
+      padding: 6px 10px; border-radius: 9px; transition: color .15s, background .15s;
+    }
+    .ctrl:hover { color: var(--fg); background: var(--tile); }
+    .ctrl .ic { width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--line); display: grid; place-items: center; background: var(--tile); transition: all .15s; }
+    .ctrl.active .ic { border-color: var(--amber-dim); color: var(--amber); }
+    .ctrl.locked { cursor: not-allowed; opacity: 0.55; }
+    .ctrl.danger:hover { color: var(--red); }
+    .ctrl.danger .ic { border-color: #3a2a23; }
+    .ctrl.danger:hover .ic { border-color: var(--red); color: var(--red); }
+    .ctrl svg { width: 18px; height: 18px; }
+
+    /* leave modal */
+    .scrim { position: fixed; inset: 0; background: rgba(8,7,4,0.66); display: none; place-items: center; z-index: 50; padding: 20px; }
+    .scrim.open { display: grid; }
+    .modal { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; max-width: 380px; width: 100%; padding: 30px 28px; text-align: center; }
+    .modal h2 { font-family: var(--display); font-weight: 400; font-size: 27px; margin: 0 0 10px; }
+    .modal p { color: var(--muted); font-size: 14.5px; line-height: 1.55; margin: 0 0 24px; }
+    .modal .row { display: flex; gap: 10px; }
+    .modal button { flex: 1; font-family: var(--body); font-weight: 600; font-size: 14px; padding: 12px; border-radius: 10px; cursor: pointer; transition: all .15s; }
+    .modal .stay { background: transparent; border: 1px solid var(--line); color: var(--fg); }
+    .modal .stay:hover { border-color: var(--amber-dim); }
+    .modal .go { background: var(--amber); border: 1px solid var(--amber); color: #17150F; }
+    .modal .go:hover { background: #E4A85C; }
+
+    @media (max-width: 920px) {
+      .room { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 520px) {
+      .grid { grid-template-columns: 1fr; }
+      .meeting-meta .pill.hide-sm { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .cam.you.looping::after, .cam.you.looping .avatar, .meeting-meta .rec i { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="chrome">
+      <a class="back" href="./index.html">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M13 8H4M7 4.5 3.5 8 7 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        back to the pitch
+      </a>
+      <div class="meeting-meta">
+        <span class="pill rec"><i></i>REC</span>
+        <span class="pill hide-sm">all-hands · q3 sync</span>
+        <span class="pill mono" id="clock">58:12</span>
+        <span class="pill mono">6 here</span>
+      </div>
+    </div>
+
+    <div class="room">
+      <div class="grid" id="grid">
+        <!-- your stand-in -->
+        <div class="cam you looping" id="youtile">
+          <span class="badge" id="youbadge">AI</span>
+          <svg class="avatar" viewBox="0 0 120 120" fill="none" aria-hidden="true">
+            <circle cx="60" cy="44" r="22" fill="currentColor" opacity="0.85"/>
+            <path d="M18 108c0-23 19-38 42-38s42 15 42 38" fill="currentColor" opacity="0.85"/>
+          </svg>
+          <span class="frozenlabel">frozen frame</span>
+          <span class="name"><span class="d" id="youdot"></span>You (Stand-In)</span>
+        </div>
+        <!-- others -->
+        <div class="cam"><span class="role">host</span><span class="initials">RA</span><span class="name"><span class="d"></span>Renée Adeyemi</span></div>
+        <div class="cam"><span class="role">presenting</span><span class="initials">MK</span><span class="name"><span class="d muted"></span>Marcus Kettleby</span></div>
+        <div class="cam"><span class="role">vp</span><span class="initials">SO</span><span class="name"><span class="d muted"></span>Sloane Okafor</span></div>
+        <div class="cam"><span class="role">notes</span><span class="initials">JP</span><span class="name"><span class="d"></span>Jin-ho Park</span></div>
+        <div class="cam"><span class="role">also lurking</span><span class="initials">DB</span><span class="name"><span class="d muted"></span>Dana Brandt</span></div>
+      </div>
+
+      <aside class="rail">
+        <div class="card">
+          <h3>Presence Score</h3>
+          <div class="score"><b id="scoreNum">87</b><span>/ 100 engaged</span></div>
+          <div class="bar"><i id="scoreBar"></i></div>
+          <p class="score-note" id="scoreNote">Your Stand-In is looping. The room believes you.</p>
+        </div>
+
+        <div class="card">
+          <h3>Canned Sincerity</h3>
+          <div class="reacts" id="reacts">
+            <button data-msg="Great point.">Great point.</button>
+            <button data-msg="Building on that, yeah.">Building on that, yeah.</button>
+            <button data-msg="+1, exactly this.">+1, exactly this.</button>
+            <button data-msg="Sorry, I was on mute.">Sorry, I was on mute.</button>
+            <button data-msg="Say more about that.">Say more about that.</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Chat</h3>
+          <div class="log" id="log">
+            <div class="line"><span class="who">Renée Adeyemi</span><br>ok let's give it two more minutes for stragglers</div>
+            <div class="line"><span class="who">Jin-ho Park</span><br>taking notes in the doc 👍</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="controls" role="toolbar" aria-label="Meeting controls">
+      <button class="ctrl" id="muteBtn" aria-pressed="true">
+        <span class="ic" id="muteIc">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z" stroke="currentColor" stroke-width="1.6"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M4 4l16 16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" id="muteSlash"/></svg>
+        </span>
+        <span id="muteLabel">Unmute</span>
+      </button>
+
+      <button class="ctrl locked" title="Your camera is off. It stays off. That is the product." aria-disabled="true">
+        <span class="ic">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h11v10H4zM15 10l5-3v10l-5-3" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M3 3l18 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </span>
+        <span>Camera off</span>
+      </button>
+
+      <button class="ctrl active" id="standinBtn" aria-pressed="true">
+        <span class="ic">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="3.4" stroke="currentColor" stroke-width="1.6"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </span>
+        <span id="standinLabel">Stand-In: on</span>
+      </button>
+
+      <button class="ctrl" id="reactBtn">
+        <span class="ic">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 11l5 5 9-10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span>React</span>
+      </button>
+
+      <button class="ctrl danger" id="leaveBtn">
+        <span class="ic">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M10 8l4 4-4 4M14 12H3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span>Leave quietly</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="leaveTitle">
+    <div class="modal">
+      <h2 id="leaveTitle">You left.</h2>
+      <p>No sound played. Your tile is still green. The Stand-In will keep nodding for eleven more minutes, then quietly stop. Nobody noticed.</p>
+      <div class="row">
+        <button class="stay" id="stayBtn">Rejoin silently</button>
+        <button class="go" id="goBtn">Stay gone</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // ---- Presence score ----
+      var score = 87, max = 99;
+      var scoreNum = document.getElementById('scoreNum');
+      var scoreBar = document.getElementById('scoreBar');
+      var scoreNote = document.getElementById('scoreNote');
+      scoreBar.style.width = score + '%';
+      function setScore(v, note) {
+        score = Math.max(0, Math.min(100, v));
+        scoreNum.textContent = score;
+        scoreBar.style.width = score + '%';
+        if (note) scoreNote.textContent = note;
+      }
+
+      // ---- Chat log ----
+      var log = document.getElementById('log');
+      function appendLine(who, text, mine) {
+        var line = document.createElement('div');
+        line.className = 'line' + (mine ? ' you' : '');
+        line.innerHTML = '<span class="who">' + who + '</span><br>' + text;
+        log.appendChild(line);
+        log.scrollTop = log.scrollHeight;
+      }
+
+      // ---- Canned reactions ----
+      var reactsUsed = 0;
+      document.getElementById('reacts').addEventListener('click', function (e) {
+        var btn = e.target.closest('button');
+        if (!btn) return;
+        appendLine('You', btn.dataset.msg, true);
+        reactsUsed++;
+        setScore(score + 2, 'Engagement logged. You have not spoken once.');
+        // brief cooldown so it feels like a real reaction, not a spam button
+        btn.disabled = true;
+        setTimeout(function () { btn.disabled = false; }, 900);
+      });
+
+      // ---- React control jumps to the rail ----
+      document.getElementById('reactBtn').addEventListener('click', function () {
+        document.getElementById('reacts').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+      });
+
+      // ---- Mute (dims the room as a reward) ----
+      var muted = true; // you arrive muted, obviously
+      var muteBtn = document.getElementById('muteBtn');
+      var muteLabel = document.getElementById('muteLabel');
+      var muteSlash = document.getElementById('muteSlash');
+      var muteIc = document.getElementById('muteIc');
+      function renderMute() {
+        muteBtn.setAttribute('aria-pressed', String(muted));
+        muteLabel.textContent = muted ? 'Unmute' : 'Mute';
+        muteSlash.style.display = muted ? '' : 'none';
+        muteIc.parentElement.classList.toggle('active', false);
+        document.body.classList.toggle('dimmed', muted);
+      }
+      muteBtn.addEventListener('click', function () { muted = !muted; renderMute(); });
+      renderMute();
+
+      // ---- Stand-In toggle (looping vs frozen) ----
+      var standinOn = true;
+      var youtile = document.getElementById('youtile');
+      var youbadge = document.getElementById('youbadge');
+      var youdot = document.getElementById('youdot');
+      var standinBtn = document.getElementById('standinBtn');
+      var standinLabel = document.getElementById('standinLabel');
+      standinBtn.addEventListener('click', function () {
+        standinOn = !standinOn;
+        standinBtn.classList.toggle('active', standinOn);
+        standinBtn.setAttribute('aria-pressed', String(standinOn));
+        youtile.classList.toggle('looping', standinOn);
+        youtile.classList.toggle('frozen', !standinOn);
+        standinLabel.textContent = standinOn ? 'Stand-In: on' : 'Stand-In: off';
+        youbadge.textContent = standinOn ? 'AI' : 'YOU?';
+        youdot.classList.toggle('muted', !standinOn);
+        if (standinOn) {
+          setScore(87, 'Your Stand-In is looping. The room believes you.');
+        } else {
+          setScore(31, 'Stand-In paused. That is just a frozen frame of you now. Risky.');
+        }
+      });
+
+      // ---- Leave quietly (no sound) ----
+      var scrim = document.getElementById('scrim');
+      document.getElementById('leaveBtn').addEventListener('click', function () { scrim.classList.add('open'); });
+      document.getElementById('stayBtn').addEventListener('click', function () { scrim.classList.remove('open'); });
+      document.getElementById('goBtn').addEventListener('click', function () {
+        scrim.classList.remove('open');
+        youtile.classList.remove('looping'); youtile.classList.add('frozen');
+        youbadge.textContent = 'GONE';
+        standinOn = false; standinBtn.classList.remove('active'); standinLabel.textContent = 'Stand-In: off';
+        setScore(91, 'You are not here. The number went up anyway.');
+        appendLine('You', 'just pulling up the deck, one sec', true);
+      });
+      scrim.addEventListener('click', function (e) { if (e.target === scrim) scrim.classList.remove('open'); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') scrim.classList.remove('open'); });
+
+      // ---- Ambient meeting clock, ticking forward ----
+      var t = 58 * 60 + 12;
+      var clock = document.getElementById('clock');
+      setInterval(function () {
+        t++;
+        var m = Math.floor(t / 60), s = t % 60;
+        clock.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+      }, 1000);
+
+      // ---- A little ambient chatter so the room feels alive ----
+      var ambient = [
+        ['Sloane Okafor', "can everyone see my screen?"],
+        ['Marcus Kettleby', "circling back to the q2 numbers"],
+        ['Renée Adeyemi', "great, let's park that and move on"],
+        ['Dana Brandt', "+1"],
+        ['Jin-ho Park', "added an action item for whoever's free"]
+      ];
+      var ai = 0;
+      setInterval(function () {
+        if (ai < ambient.length) { appendLine(ambient[ai][0], ambient[ai][1], false); ai++; }
+      }, 9000);
+    })();
+  </script>
+</body>
+</html>

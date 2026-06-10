@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lurk · theworstaistudioever</title>
+  <meta name="description" content="Video calls for people who would rather not be on the video call.">
+  <meta name="theme-color" content="#17150F">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="theworstaistudioever">
+  <meta property="og:title" content="Lurk · theworstaistudioever">
+  <meta property="og:description" content="Video calls for people who would rather not be on the video call.">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Lurk · theworstaistudioever">
+  <meta name="twitter:description" content="Video calls for people who would rather not be on the video call.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500;6..72,600&family=Spline+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+    :root {
+      --bg: #17150F;
+      --bg-raise: #1F1C15;
+      --bg-tile: #221E16;
+      --fg: #ECE7DA;
+      --muted: #B4AB9C;
+      --faint: #6F685B;
+      --line: #2E2A20;
+      --amber: #D99A4E;
+      --amber-dim: #9C7440;
+      --sage: #7D998C;
+      --display: "Newsreader", Georgia, "Times New Roman", serif;
+      --body: "Spline Sans", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      --mono: "DM Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--body);
+      font-size: 17px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    /* faint vignette so the room feels dimmed at the edges */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(120% 90% at 50% -10%, rgba(217,154,78,0.05), transparent 45%),
+                  radial-gradient(140% 120% at 50% 120%, rgba(0,0,0,0.55), transparent 60%);
+      z-index: 0;
+    }
+
+    .wrap { position: relative; z-index: 1; max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+
+    a { color: inherit; }
+
+    .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+    /* ---- top bar ---- */
+    .topbar {
+      position: relative; z-index: 2;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 22px 0 18px;
+      border-bottom: 1px solid var(--line);
+    }
+    .mark { display: flex; align-items: baseline; gap: 10px; }
+    .mark b { font-family: var(--display); font-weight: 500; font-size: 22px; letter-spacing: -0.01em; }
+    .mark span { font-family: var(--mono); font-size: 11px; color: var(--faint); letter-spacing: 0.12em; text-transform: uppercase; }
+    .status-chip {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px;
+    }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--sage); display: inline-block; }
+    .dot.green { background: #7FB069; box-shadow: 0 0 0 0 rgba(127,176,105,0.5); animation: ping 3.6s ease-out infinite; }
+    @keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(127,176,105,0.45); } 70%,100% { box-shadow: 0 0 0 7px rgba(127,176,105,0); } }
+
+    /* ---- hero ---- */
+    .hero { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 56px; align-items: center; padding: 88px 0 96px; }
+    .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--amber); margin: 0 0 24px; }
+    h1 {
+      font-family: var(--display); font-weight: 400; font-size: clamp(40px, 6.4vw, 76px);
+      line-height: 1.02; letter-spacing: -0.02em; margin: 0 0 26px; color: var(--fg);
+    }
+    h1 em { font-style: italic; color: var(--amber); }
+    .lede { font-size: 19px; line-height: 1.62; color: var(--muted); max-width: 30em; margin: 0 0 38px; }
+    .cta-row { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--amber); color: #17150F; font-family: var(--body); font-weight: 600; font-size: 15.5px;
+      border: 0; border-radius: 10px; padding: 14px 22px; cursor: pointer; text-decoration: none;
+      transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
+      box-shadow: 0 0 0 1px rgba(217,154,78,0.0), 0 14px 40px -18px rgba(217,154,78,0.7);
+    }
+    .btn:hover { transform: translateY(-1px); background: #E4A85C; }
+    .ghost { font-size: 15px; color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--line); padding-bottom: 2px; transition: color .2s, border-color .2s; }
+    .ghost:hover { color: var(--fg); border-color: var(--amber-dim); }
+
+    /* ---- hero meeting tile ---- */
+    .tile {
+      position: relative; background: var(--bg-tile); border: 1px solid var(--line);
+      border-radius: 16px; padding: 16px; box-shadow: 0 40px 80px -50px rgba(0,0,0,0.9);
+    }
+    .tile-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .tile-head .mono { font-size: 11px; color: var(--faint); letter-spacing: 0.1em; text-transform: uppercase; }
+    .rec { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 10.5px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+    .rec i { width: 6px; height: 6px; border-radius: 50%; background: var(--amber); display: inline-block; }
+    .stage {
+      position: relative; aspect-ratio: 4 / 3; border-radius: 11px; overflow: hidden;
+      background: radial-gradient(90% 90% at 50% 30%, #2A2519, #1A170F 75%);
+      display: grid; place-items: center;
+      box-shadow: inset 0 0 0 2px rgba(217,154,78,0.5), inset 0 0 60px rgba(0,0,0,0.4);
+    }
+    .stage::after { content: ""; position: absolute; inset: 0; box-shadow: inset 0 0 0 2px rgba(217,154,78,0.18); border-radius: 11px; animation: lamp 4.5s ease-in-out infinite; }
+    @keyframes lamp { 0%,100% { box-shadow: inset 0 0 0 2px rgba(217,154,78,0.10); } 50% { box-shadow: inset 0 0 0 2px rgba(217,154,78,0.42); } }
+    .avatar { width: 46%; color: var(--muted); opacity: 0.9; }
+    .badge { position: absolute; left: 12px; top: 11px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: #17150F; background: var(--amber); padding: 2px 7px; border-radius: 5px; }
+    .nameplate { position: absolute; left: 12px; bottom: 11px; display: flex; align-items: center; gap: 7px; font-family: var(--mono); font-size: 11px; color: var(--fg); background: rgba(15,13,9,0.6); padding: 4px 9px; border-radius: 6px; backdrop-filter: blur(2px); }
+    .tile-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 13px; }
+    .gauge { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+    .gauge b { color: var(--amber); font-weight: 500; }
+    .pillrow { display: flex; gap: 6px; }
+    .pillrow span { width: 26px; height: 5px; border-radius: 3px; background: var(--line); }
+    .pillrow span.on { background: var(--amber-dim); }
+
+    /* ---- section scaffolding ---- */
+    section { position: relative; z-index: 1; }
+    .sec-label { font-family: var(--mono); font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--faint); margin: 0 0 8px; }
+    .sec-title { font-family: var(--display); font-weight: 400; font-size: clamp(28px, 3.6vw, 40px); letter-spacing: -0.015em; margin: 0 0 56px; max-width: 18em; line-height: 1.12; }
+    .divider { height: 1px; background: var(--line); border: 0; margin: 0; }
+
+    /* ---- features ---- */
+    .features { padding: 92px 0; }
+    .feature { display: grid; grid-template-columns: 0.42fr 0.58fr; gap: 40px; padding: 38px 0; border-top: 1px solid var(--line); align-items: start; }
+    .feature:last-child { border-bottom: 1px solid var(--line); }
+    .feature .idx { font-family: var(--mono); font-size: 12px; color: var(--amber); letter-spacing: 0.1em; }
+    .feature h3 { font-family: var(--display); font-weight: 500; font-size: 27px; letter-spacing: -0.01em; margin: 12px 0 0; }
+    .feature p { color: var(--muted); margin: 0; font-size: 16.5px; line-height: 1.65; }
+
+    /* ---- testimonials ---- */
+    .voices { padding: 92px 0; }
+    .quote-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+    .quote { background: var(--bg-raise); border: 1px solid var(--line); border-radius: 14px; padding: 28px 26px; display: flex; flex-direction: column; gap: 22px; }
+    .quote p { font-family: var(--display); font-weight: 400; font-size: 19.5px; line-height: 1.4; margin: 0; color: var(--fg); }
+    .who { display: flex; flex-direction: column; gap: 2px; }
+    .who b { font-weight: 500; font-size: 14.5px; }
+    .who span { font-family: var(--mono); font-size: 11.5px; color: var(--faint); line-height: 1.4; }
+
+    /* ---- pricing ---- */
+    .pricing { padding: 92px 0 100px; }
+    .rack { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+    .plan { padding: 34px 28px 36px; border-right: 1px solid var(--line); display: flex; flex-direction: column; }
+    .plan:last-child { border-right: 0; }
+    .plan.featured { background: var(--bg-raise); }
+    .plan .name { font-family: var(--display); font-weight: 500; font-size: 23px; margin: 0 0 4px; }
+    .plan .tag { color: var(--muted); font-size: 14px; margin: 0 0 22px; }
+    .plan .price { font-family: var(--mono); font-size: 30px; color: var(--amber); letter-spacing: -0.01em; margin: 0 0 24px; }
+    .plan ul { list-style: none; padding: 0; margin: 0 0 28px; display: flex; flex-direction: column; gap: 13px; }
+    .plan li { position: relative; padding-left: 24px; font-size: 14.5px; color: var(--muted); line-height: 1.5; }
+    .plan li::before { content: ""; position: absolute; left: 2px; top: 8px; width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--amber-dim); }
+    .plan .pick { margin-top: auto; text-align: center; text-decoration: none; font-family: var(--body); font-weight: 600; font-size: 14px; padding: 12px; border-radius: 9px; border: 1px solid var(--line); color: var(--fg); transition: border-color .2s, background .2s; }
+    .plan .pick:hover { border-color: var(--amber-dim); }
+    .plan.featured .pick { background: var(--amber); color: #17150F; border-color: var(--amber); }
+    .plan.featured .pick:hover { background: #E4A85C; }
+
+    /* ---- demo handoff ---- */
+    .handoff { position: relative; z-index: 1; border-top: 1px solid var(--line); }
+    .handoff .inner { display: flex; align-items: center; justify-content: space-between; gap: 32px; padding: 64px 0; flex-wrap: wrap; }
+    .handoff h2 { font-family: var(--display); font-weight: 400; font-size: clamp(26px, 3.4vw, 38px); letter-spacing: -0.015em; margin: 0; max-width: 14em; line-height: 1.15; }
+    .handoff p { color: var(--muted); margin: 12px 0 0; max-width: 34em; }
+
+    /* ---- footer ---- */
+    footer { position: relative; z-index: 1; border-top: 1px solid var(--line); }
+    footer .inner { display: flex; align-items: center; justify-content: space-between; padding: 30px 0 44px; flex-wrap: wrap; gap: 14px; }
+    footer a.back { text-decoration: none; color: var(--muted); font-size: 14.5px; transition: color .2s; }
+    footer a.back:hover { color: var(--amber); }
+    footer .fine { font-family: var(--mono); font-size: 11px; color: var(--faint); letter-spacing: 0.06em; }
+
+    @media (max-width: 880px) {
+      .hero { grid-template-columns: 1fr; gap: 44px; padding: 56px 0 64px; }
+      .tile { max-width: 420px; }
+      .feature { grid-template-columns: 1fr; gap: 12px; }
+      .quote-grid { grid-template-columns: 1fr; }
+      .rack { grid-template-columns: 1fr; }
+      .plan { border-right: 0; border-bottom: 1px solid var(--line); }
+      .plan:last-child { border-bottom: 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .dot.green, .stage::after { animation: none; }
+      .btn:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="topbar">
+      <div class="mark"><b>Lurk</b><span>by theworstaistudioever</span></div>
+      <span class="status-chip"><span class="dot"></span>status: away</span>
+    </header>
+
+    <section class="hero">
+      <div>
+        <p class="eyebrow">presence, optional</p>
+        <h1>You're in the meeting. <em>Technically.</em></h1>
+        <p class="lede">Lurk keeps your camera off, your status green, and a calm AI version of you nodding along while you go do literally anything else. Attendance, without the attending.</p>
+        <div class="cta-row">
+          <a class="btn" href="./demo.html">Join silently
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M9 4.5 12.5 8 9 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a class="ghost" href="./demo.html">open the demo →</a>
+        </div>
+      </div>
+
+      <div class="tile" aria-label="A meeting tile showing your AI stand-in">
+        <div class="tile-head">
+          <span class="mono">all-hands · q3 sync</span>
+          <span class="rec"><i></i>live</span>
+        </div>
+        <div class="stage">
+          <span class="badge">AI</span>
+          <svg class="avatar" viewBox="0 0 120 120" fill="none" aria-hidden="true">
+            <circle cx="60" cy="44" r="22" fill="currentColor" opacity="0.85"/>
+            <path d="M18 108c0-23 19-38 42-38s42 15 42 38" fill="currentColor" opacity="0.85"/>
+          </svg>
+          <span class="nameplate"><span class="dot green"></span>You (Stand-In)</span>
+        </div>
+        <div class="tile-foot">
+          <span class="gauge">presence score · <b>87</b></span>
+          <div class="pillrow" aria-hidden="true"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <hr class="divider">
+
+  <section class="features">
+    <div class="wrap">
+      <p class="sec-label">how it works, allegedly</p>
+      <h2 class="sec-title">Three deliberate solutions to a problem you did not raise.</h2>
+
+      <div class="feature">
+        <div><span class="idx">F-01</span><h3>Stand-In Mode</h3></div>
+        <p>We render a composed, attentive version of you and loop it for up to four hours. It holds eye contact with whoever's talking. It tilts its head when someone says "to your point." It never asks a follow-up question. You are free to make tea.</p>
+      </div>
+      <div class="feature">
+        <div><span class="idx">F-02</span><h3>Canned Sincerity</h3></div>
+        <p>Tap once for "great point." Tap twice for "building on that." Every phrase was workshopped by a real linguist to sound like you meant it. You did not mean it. Nobody can tell.</p>
+      </div>
+      <div class="feature">
+        <div><span class="idx">F-03</span><h3>The Quiet Exit</h3></div>
+        <p>Leave whenever you want. Lurk holds your tile, keeps your dot green, and tells anyone who @-mentions you that you're "just pulling up the deck." There is no deck. There was never a deck.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="voices">
+    <div class="wrap">
+      <p class="sec-label">verified attendees</p>
+      <h2 class="sec-title">People who have not spoken aloud in months.</h2>
+      <div class="quote-grid">
+        <figure class="quote">
+          <p>"I haven't spoken in a standup since March. My skip-level says I've never been more aligned."</p>
+          <figcaption class="who"><b>Dwight Pell</b><span>Staff Engineer, perpetually 'half-listening'</span></figcaption>
+        </figure>
+        <figure class="quote">
+          <p>"The Stand-In nodded through my own performance review. I got a Meets Expectations."</p>
+          <figcaption class="who"><b>Carol Nuñez</b><span>Senior Program Manager, two cameras off</span></figcaption>
+        </figure>
+        <figure class="quote">
+          <p>"I attended four all-hands at the same time. Lurk rendered me in all of them, calmly."</p>
+          <figcaption class="who"><b>Theo Brandt-Sorensen</b><span>Director of Synchronous Operations (fully remote)</span></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="pricing">
+    <div class="wrap">
+      <p class="sec-label">plans for the reluctant</p>
+      <h2 class="sec-title">Pay more to be present less.</h2>
+      <div class="rack">
+        <div class="plan">
+          <p class="name">Wallflower</p>
+          <p class="tag">For the merely shy.</p>
+          <p class="price">$0<span style="font-size:14px;color:var(--faint)">/mo</span></p>
+          <ul>
+            <li>Camera stays off, permanently</li>
+            <li>One canned reaction per meeting</li>
+            <li>Green dot, no questions asked</li>
+          </ul>
+          <a class="pick" href="./demo.html">Start lurking</a>
+        </div>
+        <div class="plan featured">
+          <p class="name">Load-Bearing Mute</p>
+          <p class="tag">For people with recurring one-on-ones.</p>
+          <p class="price">$24<span style="font-size:14px;color:var(--faint)">/mo</span></p>
+          <ul>
+            <li>Unlimited Stand-In hours</li>
+            <li>The full Canned Sincerity library</li>
+            <li>Automatic "you're on mute" deflection</li>
+          </ul>
+          <a class="pick" href="./demo.html">Disappear properly</a>
+        </div>
+        <div class="plan">
+          <p class="name">Legally Present</p>
+          <p class="tag">For people who are paid to attend.</p>
+          <p class="price">$310<span style="font-size:14px;color:var(--faint)">/mo</span></p>
+          <ul>
+            <li>AI avatar with three board-approved facial expressions</li>
+            <li>Entire meetings attended on your behalf, gavel to gavel</li>
+            <li>A transcript confirming you contributed</li>
+          </ul>
+          <a class="pick" href="./demo.html">Delegate attendance</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="handoff">
+    <div class="wrap inner">
+      <div>
+        <h2>See the room without being seen in it.</h2>
+        <p>The Stand-In is looping. The score is at 87. The Leave Quietly button makes no sound. Step into a meeting you will not remember.</p>
+      </div>
+      <a class="btn" href="./demo.html">open the demo
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h9M9 4.5 12.5 8 9 11.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap inner">
+      <a class="back" href="/">← theworstaistudioever</a>
+      <span class="fine">Lurk renders your absence as engagement. Patent withheld out of shyness.</span>
+    </div>
+  </footer>
+
+  <script>
+    // Quiet handoff: respect reduced motion, otherwise let the smooth scroll do its thing.
+    document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        var t = document.querySelector(a.getAttribute('href'));
+        if (!t) return;
+        e.preventDefault();
+        var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        t.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+      });
+    });
+  </script>
+</body>
+</html>
