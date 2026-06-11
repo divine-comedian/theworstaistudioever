@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sinistra workspace · theworstaistudioever</title>
+<meta name="description" content="The Sinistra workspace. Channels on the right, send button on the left, exactly as intended.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --primary:#2447D6;
+  --accent:#D92D20;
+  --bg:#F2F4F8;
+  --fg:#1A2032;
+  --muted:#5A6478;
+  --ink:#0B0E1A;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"Public Sans",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  --border:2px solid var(--ink);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  background:var(--bg);color:var(--fg);font-family:var(--body);
+  font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;
+}
+::selection{background:var(--primary);color:#fff}
+button{font-family:inherit;cursor:pointer}
+
+/* top chrome */
+.chrome{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  border-bottom:var(--border);background:#fff;padding:10px 16px;flex-wrap:wrap;
+}
+.back{
+  font-family:var(--mono);font-size:.8rem;color:var(--muted);text-decoration:none;
+}
+.back:hover{color:var(--primary);text-decoration:underline;text-underline-offset:4px}
+.chrome-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.chrome .brand{font-family:var(--display);font-weight:900;font-size:1rem;color:var(--ink)}
+.pill{
+  font-family:var(--mono);font-size:.7rem;font-weight:600;border:var(--border);
+  background:#fff;padding:4px 10px;
+}
+.pill.left{background:var(--primary);color:#fff}
+.guest-toggle{
+  font-family:var(--mono);font-size:.7rem;font-weight:600;
+  border:var(--border);background:#fff;padding:4px 10px;
+  box-shadow:-3px 3px 0 var(--ink);
+  transition:transform .12s,box-shadow .12s;
+}
+.guest-toggle:hover{transform:translate(2px,-2px);box-shadow:-5px 5px 0 var(--ink)}
+.guest-toggle:active{transform:translate(-3px,3px);box-shadow:0 0 0 var(--ink)}
+
+/* attestation banner */
+.banner{
+  display:flex;align-items:center;justify-content:flex-end;gap:14px;
+  background:var(--ink);color:var(--bg);padding:8px 16px;
+  font-family:var(--mono);font-size:.74rem;flex-wrap:wrap;
+}
+.banner b{color:#fff;font-weight:600}
+.banner button{
+  font-family:var(--mono);font-size:.7rem;font-weight:600;
+  border:2px solid var(--bg);background:transparent;color:var(--bg);padding:3px 10px;
+}
+.banner button:hover{background:var(--bg);color:var(--ink)}
+.banner.hidden{display:none}
+
+/* guest banner */
+.guest-banner{
+  display:none;background:var(--accent);color:#fff;padding:8px 16px;
+  font-family:var(--mono);font-size:.74rem;text-align:center;font-weight:600;
+}
+body.guest .guest-banner{display:block}
+
+/* layout: rail on the RIGHT */
+.app{flex:1;display:flex;flex-direction:row-reverse;min-height:0}
+body.guest .app{flex-direction:row}
+
+.rail{
+  width:248px;flex-shrink:0;background:var(--primary);color:#fff;
+  border-left:var(--border);display:flex;flex-direction:column;
+  text-align:right;overflow-y:auto;
+}
+body.guest .rail{border-left:none;border-right:var(--border);text-align:left}
+.rail-head{
+  font-family:var(--display);font-weight:900;font-size:1.05rem;
+  padding:16px 16px 12px;border-bottom:2px solid rgba(255,255,255,.35);
+}
+.rail-head .ws{font-family:var(--mono);font-weight:400;font-size:.68rem;opacity:.8;display:block;margin-top:3px}
+.rail-sec{padding:14px 10px 6px;font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;opacity:.7}
+.ch-btn{
+  display:block;width:100%;text-align:inherit;background:none;border:none;color:#fff;
+  font-family:var(--mono);font-size:.82rem;padding:7px 16px;opacity:.92;
+}
+.ch-btn:hover{background:rgba(255,255,255,.14)}
+.ch-btn.on{background:#fff;color:var(--primary);font-weight:600}
+.ch-btn .unread{
+  display:inline-block;background:var(--accent);color:#fff;font-size:.62rem;
+  font-weight:600;padding:0 6px;margin:0 6px;vertical-align:1px;
+}
+.rail-guest{opacity:.55;font-family:var(--mono);font-size:.78rem;padding:6px 16px}
+.rail-foot{
+  margin-top:auto;padding:12px 16px;border-top:2px solid rgba(255,255,255,.35);
+  font-family:var(--mono);font-size:.68rem;opacity:.85;
+}
+
+/* main column */
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.ch-head{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  border-bottom:var(--border);background:#fff;padding:10px 16px;
+  flex-direction:row-reverse;flex-wrap:wrap;
+}
+body.guest .ch-head{flex-direction:row}
+.ch-title{font-family:var(--display);font-weight:800;font-size:1.05rem}
+.ch-topic{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.search{
+  border:var(--border);background:var(--bg);font-family:var(--mono);font-size:.75rem;
+  padding:6px 10px;width:210px;max-width:45vw;text-align:right;color:var(--fg);
+}
+body.guest .search{text-align:left}
+.search:focus{outline:3px solid var(--primary);outline-offset:1px}
+
+/* messages */
+.msgs{flex:1;overflow-y:auto;padding:18px 20px;display:flex;flex-direction:column;gap:4px}
+.msg{
+  text-align:right;padding:8px 12px;border:2px solid transparent;max-width:760px;
+  margin-left:auto;
+}
+body.guest .msg{text-align:left;margin-left:0;margin-right:auto}
+.msg:hover{border-color:var(--ink);background:#fff}
+.msg .who{font-family:var(--mono);font-size:.7rem;color:var(--muted)}
+.msg .who b{color:var(--ink);font-weight:600}
+.msg .badge{
+  display:inline-block;font-size:.58rem;border:1.5px solid var(--primary);
+  color:var(--primary);padding:0 5px;font-weight:600;font-family:var(--mono);
+  vertical-align:1px;
+}
+.msg .badge.guest{border-color:var(--muted);color:var(--muted)}
+.msg .badge.bot{border-color:var(--accent);color:var(--accent)}
+.msg p{font-size:.95rem;margin-top:1px;color:var(--fg)}
+.msg.sys{opacity:.75}
+.msg.sys p{font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+.day-rule{
+  display:flex;align-items:center;gap:12px;margin:10px 0;
+  font-family:var(--mono);font-size:.66rem;color:var(--muted);
+  flex-direction:row-reverse;
+}
+.day-rule::after{content:"";flex:1;border-top:1.5px solid var(--muted);opacity:.4}
+.empty{
+  font-family:var(--mono);font-size:.8rem;color:var(--muted);text-align:right;padding:30px 8px;
+}
+body.guest .empty{text-align:left}
+
+/* composer: send on the LEFT */
+.compose{
+  display:flex;flex-direction:row-reverse;gap:12px;align-items:center;
+  border-top:var(--border);background:#fff;padding:12px 16px;
+}
+body.guest .compose{flex-direction:row}
+.compose input{
+  flex:1;border:var(--border);background:var(--bg);padding:11px 14px;
+  font-family:var(--body);font-size:.92rem;text-align:right;color:var(--fg);min-width:0;
+}
+body.guest .compose input{text-align:left}
+.compose input:focus{outline:3px solid var(--primary);outline-offset:1px}
+.compose .send{
+  border:var(--border);background:var(--accent);color:#fff;
+  font-family:var(--display);font-weight:800;font-size:.9rem;
+  padding:11px 20px;box-shadow:-4px 4px 0 var(--ink);
+  transition:transform .12s,box-shadow .12s;white-space:nowrap;
+}
+.compose .send:hover{transform:translate(2px,-2px);box-shadow:-6px 6px 0 var(--ink)}
+.compose .send:active{transform:translate(-4px,4px);box-shadow:0 0 0 var(--ink)}
+body.guest .compose .send{box-shadow:4px 4px 0 var(--ink);opacity:.45;cursor:not-allowed}
+body.guest .compose input{opacity:.45;pointer-events:none}
+.smudge{
+  font-family:var(--mono);font-size:.66rem;font-weight:600;border:var(--border);
+  background:#fff;padding:5px 9px;white-space:nowrap;
+}
+.smudge .dot{color:#0A7D33}
+
+/* modal */
+.overlay{
+  position:fixed;inset:0;background:rgba(11,14,26,.55);display:none;
+  align-items:center;justify-content:center;z-index:100;padding:20px;
+}
+.overlay.open{display:flex}
+.modal{
+  background:#fff;border:var(--border);box-shadow:-10px 10px 0 var(--ink);
+  max-width:440px;width:100%;padding:28px;text-align:right;
+}
+.modal h2{font-family:var(--display);font-weight:900;font-size:1.3rem;margin-bottom:10px;color:var(--ink)}
+.modal p{font-size:.92rem;color:var(--muted);margin-bottom:8px}
+.modal .fine{font-family:var(--mono);font-size:.68rem;color:var(--muted);margin:14px 0 20px}
+.modal-row{display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap}
+.modal button{
+  border:var(--border);font-family:var(--display);font-weight:800;font-size:.85rem;
+  padding:10px 18px;box-shadow:-4px 4px 0 var(--ink);
+  transition:transform .12s,box-shadow .12s;
+}
+.modal button:hover{transform:translate(2px,-2px);box-shadow:-6px 6px 0 var(--ink)}
+.modal .yes{background:var(--accent);color:#fff}
+.modal .no{background:#fff;color:var(--ink)}
+.scanbox{
+  border:var(--border);background:var(--ink);color:#7CFC9A;font-family:var(--mono);
+  font-size:.74rem;padding:16px;text-align:left;margin:14px 0;min-height:84px;white-space:pre-line;
+}
+
+/* toast */
+.toast{
+  position:fixed;bottom:22px;left:22px;z-index:120;
+  background:var(--ink);color:#fff;border:var(--border);
+  box-shadow:-5px 5px 0 var(--accent);
+  font-family:var(--mono);font-size:.74rem;padding:11px 16px;max-width:320px;
+  opacity:0;transform:translateY(12px);transition:opacity .2s,transform .2s;pointer-events:none;
+}
+.toast.show{opacity:1;transform:translateY(0)}
+
+@media (max-width:680px){
+  .rail{width:160px}
+  .rail-head{font-size:.9rem;padding:12px 10px 10px}
+  .ch-btn{padding:6px 10px;font-size:.72rem}
+  .msgs{padding:12px 10px}
+}
+@media (prefers-reduced-motion:reduce){
+  .guest-toggle,.compose .send,.modal button,.toast{transition:none}
+}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <div class="chrome-right">
+    <span class="pill left" id="handPill">VERIFIED LEFT</span>
+    <button class="guest-toggle" id="guestToggle">guest (right-handed) view</button>
+    <span class="brand">Sinistra</span>
+  </div>
+</div>
+
+<div class="banner" id="attestBanner">
+  <button id="reattest">Re-attest</button>
+  <span><b>Handedness attestation valid through Q3.</b> Lapsed attestations convert your account to guest. There is no appeals process.</span>
+</div>
+
+<div class="guest-banner">GUEST MODE · read-only · the interface has been flipped to accommodate you, which is more than anyone did for us</div>
+
+<div class="app">
+  <div class="main">
+    <div class="ch-head">
+      <div>
+        <div class="ch-title" id="chTitle">#left-general</div>
+        <div class="ch-topic" id="chTopic">general discussion, correctly aligned</div>
+      </div>
+      <input class="search" id="search" type="search" placeholder="search (results render right-first)" aria-label="Search messages">
+      <button class="smudge" id="smudgeToggle"><span class="dot">●</span> SMUDGE-SAFE: ON</button>
+    </div>
+    <div class="msgs" id="msgs" aria-live="polite"></div>
+    <div class="compose">
+      <input id="composeInput" type="text" placeholder="Message #left-general (your hand will not smudge this)" aria-label="Message input">
+      <button class="send" id="sendBtn">Send ←</button>
+    </div>
+  </div>
+
+  <aside class="rail">
+    <div class="rail-head">Sinistra<span class="ws">acme-corp.sinistra.app · 14 verified</span></div>
+    <div class="rail-sec">Channels</div>
+    <button class="ch-btn on" data-ch="left-general">#left-general</button>
+    <button class="ch-btn" data-ch="scissors-grievances">#scissors-grievances<span class="unread">3</span></button>
+    <button class="ch-btn" data-ch="desk-reorientation">#desk-reorientation</button>
+    <button class="ch-btn" data-ch="smudge-reports">#smudge-reports</button>
+    <div class="rail-sec">Guests (read-only)</div>
+    <div class="rail-guest">brian — pending dexterity review</div>
+    <div class="rail-guest">greg — review failed (expected)</div>
+    <div class="rail-foot">composer hand: LEFT<br>audit window: Q3<br>smudges: 0</div>
+  </aside>
+</div>
+
+<div class="overlay" id="guestModal" role="dialog" aria-modal="true" aria-labelledby="guestModalTitle">
+  <div class="modal">
+    <h2 id="guestModalTitle">Flip the interface?</h2>
+    <p>You are about to view Sinistra the wrong way around. The rail will move to the left and the send button to the right, the arrangement you have enjoyed, unexamined, your entire life.</p>
+    <p class="fine">Guest sessions are read-only and lightly judged. This is logged.</p>
+    <div class="modal-row">
+      <button class="no" id="guestCancel">Cancel (correct)</button>
+      <button class="yes" id="guestConfirm">Flip it, I'm a guest</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="scanModal" role="dialog" aria-modal="true" aria-labelledby="scanModalTitle">
+  <div class="modal">
+    <h2 id="scanModalTitle">Handedness attestation</h2>
+    <p>Hold a pen the way you actually hold it. Do not perform for the camera. We can tell.</p>
+    <div class="scanbox" id="scanLog">awaiting grip…</div>
+    <div class="modal-row">
+      <button class="no" id="scanClose" hidden>Close</button>
+      <button class="yes" id="scanStart">Begin scan</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+  var CHANNELS = {
+    'left-general': {
+      topic: 'general discussion, correctly aligned',
+      msgs: [
+        {who:'compliance-bot', badge:'BOT', time:'8:58', sys:true, text:'Channel renders right-to-left per policy LH-001. Reports of discomfort should be addressed to the nearest right-handed manager.'},
+        {who:'Dana O.', badge:'VERIFIED LEFT', time:'9:14', text:'The send button is on the left. I keep almost crying at standup.'},
+        {who:'Marcus L.', badge:'VERIFIED LEFT', time:'9:16', text:'My right-handed manager joined as a guest. He has been quiet. Good.'},
+        {who:'Priya R.', badge:'VERIFIED LEFT', time:'9:21', text:'Facilities moved my mouse to the left side without me filing a ticket. I think the software did it. Not asking questions.'},
+        {who:'compliance-bot', badge:'BOT', time:'9:24', sys:true, text:'Reminder: quarterly dexterity audit begins Monday. Bring your own pen.'},
+        {who:'Yusuf A.', badge:'VERIFIED LEFT', time:'9:30', text:'Used a normal messaging app at my last job for six years. Six years of reaching across. We are not going back.'}
+      ]
+    },
+    'scissors-grievances': {
+      topic: 'historical grievances, catalogued for the record',
+      msgs: [
+        {who:'compliance-bot', badge:'BOT', time:'7:00', sys:true, text:'This channel is for grievances against right-handed equipment. Grievances are permanent and non-deletable.'},
+        {who:'Dana O.', badge:'VERIFIED LEFT', time:'8:02', text:'Grievance #4112: "left-handed scissors" purchased by office manager are regular scissors with green handles. Filed under fraud.'},
+        {who:'Marcus L.', badge:'VERIFIED LEFT', time:'8:15', text:'Grievance #4113: the can opener in the kitchenette. No further detail necessary.'},
+        {who:'Priya R.', badge:'VERIFIED LEFT', time:'8:44', text:'Grievance #4114: spiral notebooks. I have a callus with seniority over half this company.'},
+        {who:'Yusuf A.', badge:'VERIFIED LEFT', time:'8:51', text:'Grievance #4115: the office ice cream scoop has a thumb lever. You know the one. You all know the one.'},
+        {who:'compliance-bot', badge:'BOT', time:'9:00', sys:true, text:'4,115 grievances on file. Resolution rate: 0%. Documentation rate: 100%. The record is what matters.'}
+      ]
+    },
+    'desk-reorientation': {
+      topic: 'logistics of the great flip',
+      msgs: [
+        {who:'compliance-bot', badge:'BOT', time:'8:30', sys:true, text:'On-site desk re-orientation is included in the Full Sinistral plan. Crews work overnight. Do not leave notes for them.'},
+        {who:'Priya R.', badge:'VERIFIED LEFT', time:'9:02', text:'Crew came Tuesday. Monitor, mouse, lamp, plant: all mirrored. My right-handed deskmate sat down and made a small sound. Worth every dollar of the $8,900.'},
+        {who:'Yusuf A.', badge:'VERIFIED LEFT', time:'9:10', text:'They flipped the whiteboard markers to the left tray. The right-handed staff now experience a four-inch reach. We are calling it feature parity.'},
+        {who:'Dana O.', badge:'VERIFIED LEFT', time:'9:18', text:'Requesting re-orientation of the conference room. The door handle is a right-handed door handle. You will hear from me again about this.'}
+      ]
+    },
+    'smudge-reports': {
+      topic: 'automated. zero is the only acceptable number.',
+      msgs: [
+        {who:'smudge-sentinel', badge:'BOT', time:'6:00', sys:true, text:'Daily smudge scan complete. Messages scanned: 48,211. Smudges detected: 0.'},
+        {who:'smudge-sentinel', badge:'BOT', time:'12:00', sys:true, text:'Midday smudge scan complete. Messages scanned: 51,907. Smudges detected: 0.'},
+        {who:'smudge-sentinel', badge:'BOT', time:'18:00', sys:true, text:'Evening smudge scan complete. Smudges detected: 0. Digital text remains unsmudgeable. We remain vigilant.'},
+        {who:'Marcus L.', badge:'VERIFIED LEFT', time:'18:04', text:'Thank you for your service.'},
+        {who:'smudge-sentinel', badge:'BOT', time:'18:04', sys:true, text:'Acknowledged. Returning to watch.'}
+      ]
+    }
+  };
+
+  var BOT_REPLIES = [
+    'Message delivered right-to-left. No smudging occurred.',
+    'Noted, timestamped, and mirrored for the permanent record.',
+    'Your message rendered correctly on the first try. Imagine that elsewhere.',
+    'Delivery confirmed. A guest attempted to reply and was prevented.',
+    'Logged. Your pen grip remains on file and remains excellent.'
+  ];
+
+  var current = 'left-general';
+  var sent = {};
+  var botIdx = 0;
+
+  var msgsEl = document.getElementById('msgs');
+  var chTitle = document.getElementById('chTitle');
+  var chTopic = document.getElementById('chTopic');
+  var composeInput = document.getElementById('composeInput');
+  var searchEl = document.getElementById('search');
+  var toastEl = document.getElementById('toast');
+  var toastTimer = null;
+
+  function toast(text){
+    toastEl.textContent = text;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 3600);
+  }
+
+  function msgNode(m){
+    var div = document.createElement('div');
+    div.className = 'msg' + (m.sys ? ' sys' : '');
+    var badgeClass = m.badge === 'BOT' ? 'badge bot' : (m.badge === 'GUEST' ? 'badge guest' : 'badge');
+    div.innerHTML =
+      '<span class="who"><b></b> ' + (m.badge ? '<span class="' + badgeClass + '"></span> ' : '') + '<span class="t"></span></span><p></p>';
+    div.querySelector('b').textContent = m.who;
+    if (m.badge) div.querySelector('.badge').textContent = m.badge;
+    div.querySelector('.t').textContent = m.time;
+    div.querySelector('p').textContent = m.text;
+    return div;
+  }
+
+  function allMsgs(ch){
+    return CHANNELS[ch].msgs.concat(sent[ch] || []);
+  }
+
+  function render(filter){
+    msgsEl.innerHTML = '';
+    var rule = document.createElement('div');
+    rule.className = 'day-rule';
+    rule.textContent = 'today, read it however you want, it was written right-to-left';
+    msgsEl.appendChild(rule);
+    var list = allMsgs(current);
+    var q = (filter || '').trim().toLowerCase();
+    var shown = 0;
+    list.forEach(function(m){
+      if (q && (m.text + ' ' + m.who).toLowerCase().indexOf(q) === -1) return;
+      msgsEl.appendChild(msgNode(m));
+      shown++;
+    });
+    if (!shown){
+      var e = document.createElement('div');
+      e.className = 'empty';
+      e.textContent = 'No matches. The message you want exists; your search is holding the query wrong.';
+      msgsEl.appendChild(e);
+    }
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+  }
+
+  // channel switching
+  document.querySelectorAll('.ch-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.ch-btn').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      var unread = btn.querySelector('.unread');
+      if (unread) unread.remove();
+      current = btn.dataset.ch;
+      chTitle.textContent = '#' + current;
+      chTopic.textContent = CHANNELS[current].topic;
+      composeInput.placeholder = 'Message #' + current + ' (your hand will not smudge this)';
+      searchEl.value = '';
+      render();
+    });
+  });
+
+  // search
+  searchEl.addEventListener('input', function(){ render(searchEl.value); });
+
+  // sending
+  function send(){
+    if (document.body.classList.contains('guest')){
+      toast('Guests are read-only. You knew this. The dialog told you.');
+      return;
+    }
+    var text = composeInput.value.trim();
+    if (!text) return;
+    var now = new Date();
+    var t = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+    (sent[current] = sent[current] || []).push({who:'you', badge:'VERIFIED LEFT', time:t, text:text});
+    composeInput.value = '';
+    render(searchEl.value);
+    setTimeout(function(){
+      (sent[current] = sent[current] || []).push({who:'compliance-bot', badge:'BOT', time:t, sys:true, text:BOT_REPLIES[botIdx++ % BOT_REPLIES.length]});
+      render(searchEl.value);
+    }, 900);
+  }
+  document.getElementById('sendBtn').addEventListener('click', send);
+  composeInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') send(); });
+
+  // smudge-safe toggle (it cannot be toggled)
+  document.getElementById('smudgeToggle').addEventListener('click', function(){
+    toast('Smudge-Safe cannot be disabled. This is for your protection.');
+  });
+
+  // guest mode
+  var guestModal = document.getElementById('guestModal');
+  var guestToggle = document.getElementById('guestToggle');
+  var handPill = document.getElementById('handPill');
+  guestToggle.addEventListener('click', function(){
+    if (document.body.classList.contains('guest')){
+      document.body.classList.remove('guest');
+      guestToggle.textContent = 'guest (right-handed) view';
+      handPill.textContent = 'VERIFIED LEFT';
+      handPill.classList.add('left');
+      toast('Welcome back. The interface is correct again.');
+      render(searchEl.value);
+    } else {
+      guestModal.classList.add('open');
+    }
+  });
+  document.getElementById('guestCancel').addEventListener('click', function(){
+    guestModal.classList.remove('open');
+    toast('Good call.');
+  });
+  document.getElementById('guestConfirm').addEventListener('click', function(){
+    guestModal.classList.remove('open');
+    document.body.classList.add('guest');
+    guestToggle.textContent = 'return to left view';
+    handPill.textContent = 'GUEST';
+    handPill.classList.remove('left');
+    render(searchEl.value);
+  });
+
+  // attestation scan
+  var scanModal = document.getElementById('scanModal');
+  var scanLog = document.getElementById('scanLog');
+  var scanStart = document.getElementById('scanStart');
+  var scanClose = document.getElementById('scanClose');
+  document.getElementById('reattest').addEventListener('click', function(){
+    scanLog.textContent = 'awaiting grip…';
+    scanStart.hidden = false;
+    scanClose.hidden = true;
+    scanModal.classList.add('open');
+  });
+  scanStart.addEventListener('click', function(){
+    scanStart.hidden = true;
+    var lines = [
+      '> initializing grip scanner v3.1',
+      '> camera: declined. proceeding on vibes.',
+      '> analyzing hypothetical pen angle… 47° hook detected',
+      '> ink-side smudge callus: PRESENT (distinguished)',
+      '> cross-referencing scissors trauma registry… MATCH',
+      '> verdict: VERIFIED LEFT. Obviously.',
+      '> attestation extended through Q4. carry on.'
+    ];
+    scanLog.textContent = '';
+    var i = 0;
+    var iv = setInterval(function(){
+      scanLog.textContent += (i ? '\n' : '') + lines[i];
+      i++;
+      if (i >= lines.length){ clearInterval(iv); scanClose.hidden = false; }
+    }, 520);
+  });
+  scanClose.addEventListener('click', function(){ scanModal.classList.remove('open'); });
+
+  // close modals on escape / backdrop
+  [guestModal, scanModal].forEach(function(ov){
+    ov.addEventListener('click', function(e){ if (e.target === ov) ov.classList.remove('open'); });
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape'){ guestModal.classList.remove('open'); scanModal.classList.remove('open'); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

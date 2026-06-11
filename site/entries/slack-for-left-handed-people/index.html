@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sinistra · theworstaistudioever</title>
+<meta name="description" content="Enterprise messaging mirrored right-to-left for the 10% of your workforce IT has been ignoring since the invention of the mouse.">
+<meta property="og:title" content="Sinistra — Slack for left-handed people">
+<meta property="og:description" content="Enterprise messaging mirrored right-to-left for the 10% of your workforce IT has been ignoring since the invention of the mouse.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Sinistra — Slack for left-handed people">
+<meta name="twitter:description" content="Enterprise messaging mirrored right-to-left. Channels on the right. Send button on the left.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800;900&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --primary:#2447D6;
+  --accent:#D92D20;
+  --bg:#F2F4F8;
+  --fg:#1A2032;
+  --muted:#5A6478;
+  --ink:#0B0E1A;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"Public Sans",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  --border:2px solid var(--ink);
+  --shadow:-8px 8px 0 var(--ink);
+  --shadow-lg:-12px 12px 0 var(--ink);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--fg);
+  font-family:var(--body);
+  font-size:17px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--primary);color:#fff}
+.wrap{max-width:1160px;margin:0 auto;padding:0 24px}
+
+/* ---------- header: brand on the right, nav trailing left ---------- */
+.top{
+  border-bottom:var(--border);
+  background:var(--bg);
+  position:sticky;top:0;z-index:50;
+}
+.top-inner{
+  display:flex;align-items:center;justify-content:space-between;
+  flex-direction:row-reverse;
+  padding:18px 24px;max-width:1160px;margin:0 auto;
+}
+.brand{
+  font-family:var(--display);font-weight:900;font-size:1.35rem;
+  letter-spacing:-.02em;color:var(--ink);text-decoration:none;
+  display:flex;align-items:center;gap:10px;flex-direction:row-reverse;
+}
+.brand .mark{
+  width:30px;height:30px;background:var(--primary);
+  border:var(--border);display:grid;place-items:center;
+  color:#fff;font-family:var(--mono);font-size:.95rem;font-weight:600;
+  transform:scaleX(-1);
+}
+.nav-links{display:flex;gap:26px;flex-direction:row-reverse}
+.nav-links a{
+  color:var(--fg);text-decoration:none;font-weight:600;font-size:.92rem;
+}
+.nav-links a:hover{color:var(--primary);text-decoration:underline;text-underline-offset:4px}
+@media (max-width:640px){.nav-links{display:none}}
+
+/* ---------- hero ---------- */
+.hero{padding:84px 0 64px;text-align:right}
+.chip{
+  display:inline-block;font-family:var(--mono);font-size:.78rem;font-weight:500;
+  border:var(--border);background:#fff;padding:7px 14px;
+  box-shadow:-5px 5px 0 var(--ink);
+  margin-bottom:34px;letter-spacing:.02em;
+}
+.chip b{color:var(--accent);font-weight:600}
+h1{
+  font-family:var(--display);font-weight:900;
+  font-size:clamp(2.6rem,6.4vw,5rem);
+  line-height:1.0;letter-spacing:-.03em;color:var(--ink);
+  margin-bottom:28px;
+}
+h1 .flip{color:var(--primary)}
+.hero-sub{
+  font-size:1.18rem;color:var(--muted);max-width:600px;
+  margin:0 0 38px auto;
+}
+.cta-row{display:flex;gap:16px;justify-content:flex-end;flex-wrap:wrap}
+.btn{
+  font-family:var(--display);font-weight:800;font-size:1rem;
+  text-decoration:none;display:inline-block;
+  padding:16px 30px;border:var(--border);
+  box-shadow:var(--shadow);
+  transition:transform .15s cubic-bezier(.2,0,0,1),box-shadow .15s cubic-bezier(.2,0,0,1);
+  cursor:pointer;
+}
+.btn:hover{transform:translate(4px,-4px);box-shadow:var(--shadow-lg)}
+.btn:active{transform:translate(-8px,8px);box-shadow:0 0 0 var(--ink)}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-secondary{background:#fff;color:var(--ink)}
+
+/* hero vignette: a mirrored mini-workspace */
+.vignette{
+  margin:72px 0 0 auto;max-width:880px;
+  border:var(--border);background:#fff;
+  box-shadow:var(--shadow-lg);
+  transform:rotate(-1deg);
+  text-align:left;
+}
+.vig-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  flex-direction:row-reverse;
+  border-bottom:var(--border);padding:10px 14px;background:var(--bg);
+}
+.vig-dots{display:flex;gap:6px;flex-direction:row-reverse}
+.vig-dots span{width:11px;height:11px;border:2px solid var(--ink);border-radius:50%;background:#fff}
+.vig-dots span:first-child{background:var(--accent)}
+.vig-title{font-family:var(--mono);font-size:.75rem;color:var(--muted)}
+.vig-body{display:grid;grid-template-columns:1fr 200px;min-height:300px}
+.vig-rail{
+  border-left:var(--border);background:var(--primary);color:#fff;
+  padding:16px 14px;font-family:var(--mono);font-size:.8rem;
+  display:flex;flex-direction:column;gap:9px;text-align:right;
+}
+.vig-rail .rail-h{font-weight:600;font-size:.7rem;letter-spacing:.08em;opacity:.7;text-transform:uppercase}
+.vig-rail .ch{opacity:.92}
+.vig-rail .ch.on{background:#fff;color:var(--primary);padding:2px 6px;font-weight:600}
+.vig-msgs{padding:18px 20px;display:flex;flex-direction:column;gap:14px}
+.vig-msg{text-align:right}
+.vig-msg .who{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.vig-msg .who b{color:var(--ink);font-weight:600}
+.vig-msg .badge{
+  display:inline-block;font-size:.62rem;border:1.5px solid var(--primary);
+  color:var(--primary);padding:0 5px;font-weight:600;vertical-align:1px;
+}
+.vig-msg p{font-size:.95rem;margin-top:2px}
+.vig-compose{
+  grid-column:1 / -1;border-top:var(--border);
+  display:flex;flex-direction:row-reverse;align-items:center;gap:12px;
+  padding:12px 16px;background:var(--bg);
+}
+.vig-compose .field{
+  flex:1;border:var(--border);background:#fff;padding:9px 13px;
+  font-family:var(--mono);font-size:.8rem;color:var(--muted);text-align:right;
+}
+.vig-compose .send{
+  border:var(--border);background:var(--accent);color:#fff;
+  font-family:var(--display);font-weight:800;font-size:.85rem;
+  padding:9px 17px;box-shadow:-4px 4px 0 var(--ink);
+}
+@media (max-width:720px){
+  .vig-body{grid-template-columns:1fr 120px}
+  .vig-rail{padding:12px 8px;font-size:.68rem}
+}
+
+/* ---------- ticker ---------- */
+.ticker{
+  border-top:var(--border);border-bottom:var(--border);
+  background:var(--ink);color:var(--bg);
+  overflow:hidden;white-space:nowrap;padding:12px 0;
+}
+.ticker-track{
+  display:inline-block;
+  font-family:var(--mono);font-size:.85rem;letter-spacing:.04em;
+  animation:tick 28s linear infinite;
+}
+.ticker-track span{margin:0 18px}
+.ticker-track .d{color:var(--accent)}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){
+  .ticker-track{animation:none}
+  html{scroll-behavior:auto}
+  .reveal{opacity:1 !important;transform:none !important}
+}
+
+/* ---------- sections ---------- */
+section{padding:88px 0}
+.sec-head{
+  display:flex;align-items:baseline;justify-content:space-between;
+  flex-direction:row-reverse;margin-bottom:48px;gap:16px;flex-wrap:wrap;
+}
+.sec-head h2{
+  font-family:var(--display);font-weight:900;font-size:clamp(1.9rem,4vw,3rem);
+  letter-spacing:-.02em;color:var(--ink);text-align:right;
+}
+.sec-num{font-family:var(--mono);font-size:.85rem;color:var(--muted)}
+
+/* features: grid runs right-to-left so card 01 lands on the right */
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;direction:rtl}
+.feat{
+  direction:ltr;border:var(--border);background:#fff;padding:30px 26px;
+  box-shadow:var(--shadow);text-align:right;
+  transition:transform .15s cubic-bezier(.2,0,0,1),box-shadow .15s cubic-bezier(.2,0,0,1);
+}
+.feat:hover{transform:translate(4px,-4px);box-shadow:var(--shadow-lg)}
+.feat .num{
+  font-family:var(--mono);font-size:.78rem;color:var(--primary);font-weight:600;
+  display:block;margin-bottom:16px;
+}
+.feat h3{
+  font-family:var(--display);font-weight:800;font-size:1.3rem;
+  color:var(--ink);margin-bottom:12px;letter-spacing:-.01em;
+}
+.feat p{font-size:.97rem;color:var(--muted)}
+@media (max-width:860px){.feat-grid{grid-template-columns:1fr}}
+
+/* stats band */
+.stats{
+  border-top:var(--border);border-bottom:var(--border);background:var(--primary);
+  color:#fff;padding:54px 0;
+}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;direction:rtl}
+.stat{direction:ltr;text-align:right}
+.stat .n{font-family:var(--display);font-weight:900;font-size:clamp(2.2rem,5vw,3.4rem);line-height:1}
+.stat .l{font-family:var(--mono);font-size:.8rem;margin-top:10px;opacity:.85}
+@media (max-width:720px){.stats-grid{grid-template-columns:1fr}}
+
+/* testimonials */
+.quote-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;direction:rtl}
+.quote{
+  direction:ltr;border:var(--border);background:#fff;padding:30px 26px;
+  box-shadow:var(--shadow);text-align:right;display:flex;flex-direction:column;
+}
+.quote p{font-size:1.02rem;color:var(--ink);flex:1}
+.quote p::before{content:"“";color:var(--primary);font-family:var(--display);font-weight:900}
+.quote p::after{content:"”";color:var(--primary);font-family:var(--display);font-weight:900}
+.quote .who{margin-top:22px;font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+.quote .who b{color:var(--ink);font-weight:600;display:block}
+@media (max-width:860px){.quote-grid{grid-template-columns:1fr}}
+
+/* pricing */
+.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;direction:rtl;align-items:stretch}
+.tier{
+  direction:ltr;border:var(--border);background:#fff;padding:32px 26px;
+  box-shadow:var(--shadow);text-align:right;display:flex;flex-direction:column;
+  transition:transform .15s cubic-bezier(.2,0,0,1),box-shadow .15s cubic-bezier(.2,0,0,1);
+}
+.tier:hover{transform:translate(4px,-4px);box-shadow:var(--shadow-lg)}
+.tier.hot{background:var(--primary);color:#fff}
+.tier.hot .tier-tag,.tier.hot li{color:#E6EAFB}
+.tier-name{font-family:var(--display);font-weight:800;font-size:1.25rem;letter-spacing:-.01em}
+.tier-price{font-family:var(--display);font-weight:900;font-size:2.3rem;margin:14px 0 4px;letter-spacing:-.02em}
+.tier-tag{font-size:.92rem;color:var(--muted);font-style:italic;margin-bottom:22px}
+.tier ul{list-style:none;flex:1}
+.tier li{
+  font-size:.93rem;color:var(--muted);padding:9px 22px 9px 0;position:relative;
+  border-top:1px solid rgba(90,100,120,.25);
+}
+.tier li::after{content:"←";position:absolute;right:0;top:9px;font-family:var(--mono);color:var(--accent);font-size:.8rem}
+.tier.hot li{border-top-color:rgba(255,255,255,.3)}
+.tier.hot li::after{color:#fff}
+.tier .btn{margin-top:26px;text-align:center}
+.tier.hot .btn{background:#fff;color:var(--primary)}
+@media (max-width:860px){.price-grid{grid-template-columns:1fr}}
+
+/* demo band */
+.demo-band{
+  border-top:var(--border);background:var(--ink);color:var(--bg);
+  padding:96px 0;text-align:right;
+}
+.demo-band h2{
+  font-family:var(--display);font-weight:900;font-size:clamp(2rem,5vw,3.6rem);
+  letter-spacing:-.02em;margin-bottom:18px;color:#fff;
+}
+.demo-band p{color:#9AA3B8;max-width:540px;margin:0 0 36px auto;font-size:1.1rem}
+.demo-band .btn-primary{box-shadow:-8px 8px 0 var(--primary)}
+.demo-band .btn-primary:hover{box-shadow:-12px 12px 0 var(--primary)}
+
+/* footer */
+footer{border-top:var(--border);padding:38px 0;background:var(--bg)}
+.foot{
+  display:flex;justify-content:space-between;align-items:center;
+  flex-direction:row-reverse;gap:14px;flex-wrap:wrap;
+}
+.foot .legal{font-family:var(--mono);font-size:.75rem;color:var(--muted);text-align:right}
+.foot a{color:var(--muted);text-decoration:none;font-family:var(--mono);font-size:.8rem}
+.foot a:hover{color:var(--primary);text-decoration:underline;text-underline-offset:4px}
+
+/* reveal on scroll */
+.reveal{opacity:0;transform:translateX(36px);transition:opacity .5s ease,transform .5s cubic-bezier(.2,0,0,1)}
+.reveal.in{opacity:1;transform:translateX(0)}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <a class="brand" href="#"><span class="mark">S</span>Sinistra</a>
+    <nav class="nav-links">
+      <a href="#pricing">Pricing</a>
+      <a href="#testimonials">Customers</a>
+      <a href="#features">Capabilities</a>
+      <a href="./demo.html">Demo</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <div class="chip">NOTICE: This page is left-handed. <b>The discomfort you feel is the product.</b></div>
+    <h1>Your workspace has been <span class="flip">right-handed</span> this whole time.</h1>
+    <p class="hero-sub">Sinistra is workplace messaging built mirror-first. Channels on the right. Send button on the left. Ninety percent of your company will hate it. They'll adjust, the way you did.</p>
+    <div class="cta-row">
+      <a class="btn btn-secondary" href="./demo.html">open the demo →</a>
+      <a class="btn btn-primary" href="#pricing">Request left access</a>
+    </div>
+
+    <div class="vignette reveal">
+      <div class="vig-bar">
+        <div class="vig-dots"><span></span><span></span><span></span></div>
+        <div class="vig-title">sinistra — #left-general — 14 verified members</div>
+      </div>
+      <div class="vig-body">
+        <div class="vig-msgs">
+          <div class="vig-msg">
+            <span class="who"><b>Dana O.</b> <span class="badge">VERIFIED LEFT</span> 9:14</span>
+            <p>The send button is on the left. I keep almost crying at standup.</p>
+          </div>
+          <div class="vig-msg">
+            <span class="who"><b>Marcus L.</b> <span class="badge">VERIFIED LEFT</span> 9:16</span>
+            <p>My right-handed manager joined as a guest. He's been quiet. Good.</p>
+          </div>
+          <div class="vig-msg">
+            <span class="who"><b>compliance-bot</b> 9:17</span>
+            <p>Reminder: quarterly dexterity audit begins Monday. Bring your own pen.</p>
+          </div>
+        </div>
+        <aside class="vig-rail">
+          <span class="rail-h">Channels</span>
+          <span class="ch on">#left-general</span>
+          <span class="ch">#scissors-grievances</span>
+          <span class="ch">#desk-reorientation</span>
+          <span class="ch">#smudge-reports</span>
+          <span class="rail-h" style="margin-top:8px">Guests</span>
+          <span class="ch" style="opacity:.55">brian (read-only)</span>
+        </aside>
+        <div class="vig-compose">
+          <div class="field">Message #left-general (your hand will not smudge this)</div>
+          <div class="send">Send ←</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      <span>THE SEND BUTTON IS ON THE LEFT</span><span class="d">◆</span>
+      <span>0 SMUDGES SINCE LAUNCH</span><span class="d">◆</span>
+      <span>CHANNELS ON THE RIGHT, WHERE YOUR HAND IS</span><span class="d">◆</span>
+      <span>RIGHT-HANDED? A GUEST PASS IS AVAILABLE</span><span class="d">◆</span>
+      <span>DEXTERITY AUDITS QUARTERLY</span><span class="d">◆</span>
+      <span>THE SEND BUTTON IS ON THE LEFT</span><span class="d">◆</span>
+      <span>0 SMUDGES SINCE LAUNCH</span><span class="d">◆</span>
+      <span>CHANNELS ON THE RIGHT, WHERE YOUR HAND IS</span><span class="d">◆</span>
+      <span>RIGHT-HANDED? A GUEST PASS IS AVAILABLE</span><span class="d">◆</span>
+      <span>DEXTERITY AUDITS QUARTERLY</span><span class="d">◆</span>
+    </div>
+  </div>
+
+  <section id="features" class="wrap">
+    <div class="sec-head">
+      <h2>Capabilities, mirrored.</h2>
+      <span class="sec-num">10 / ytilibapac</span>
+    </div>
+    <div class="feat-grid">
+      <article class="feat reveal">
+        <span class="num">01 ←</span>
+        <h3>Mirror-First Architecture</h3>
+        <p>The entire interface renders right-to-left. The channel rail sits on the right edge, where your dominant hand already is. Right-handed colleagues describe the layout as "disorienting and hostile." We log each report as a feature confirmation.</p>
+      </article>
+      <article class="feat reveal">
+        <span class="num">02 ←</span>
+        <h3>Smudge-Safe Threads</h3>
+        <p>Threads scroll upward so your palm never drags across an unread message. Digital text cannot smudge. We fixed it anyway, and we billed for it.</p>
+      </article>
+      <article class="feat reveal">
+        <span class="num">03 ←</span>
+        <h3>Handedness SSO</h3>
+        <p>Webcam pen-grip attestation at every login. Verified lefties get the badge. Right-handed users may join as read-only guests, pending a dexterity review they will not pass.</p>
+      </article>
+    </div>
+  </section>
+
+  <div class="stats">
+    <div class="wrap stats-grid">
+      <div class="stat reveal"><div class="n">10%</div><div class="l">of the workforce. 100% of the roadmap.</div></div>
+      <div class="stat reveal"><div class="n">0</div><div class="l">smudges recorded since general availability</div></div>
+      <div class="stat reveal"><div class="n">1</div><div class="l">send button, correctly placed at last</div></div>
+    </div>
+  </div>
+
+  <section id="testimonials" class="wrap">
+    <div class="sec-head">
+      <h2>Verified accounts.</h2>
+      <span class="sec-num">20 / ecnedive</span>
+    </div>
+    <div class="quote-grid">
+      <figure class="quote reveal">
+        <p>I onboarded all forty people on my team. The right-handed ones quit within the week. Retention has never been easier to read.</p>
+        <figcaption class="who"><b>Dana Okafor</b>VP of Internal Tooling, regional escrow company</figcaption>
+      </figure>
+      <figure class="quote reveal">
+        <p>The send button is finally where my thumb already was. I closed my laptop and sat quietly for a while.</p>
+        <figcaption class="who"><b>Marcus Lindqvist</b>Staff Engineer (left-handed, verified), Series B pallet-logistics startup</figcaption>
+      </figure>
+      <figure class="quote reveal">
+        <p>We failed our first dexterity audit. Sinistra walked us through remediation. We failed the second one with much more confidence.</p>
+        <figcaption class="who"><b>Priya Raghunathan</b>Director of Workplace Symmetry, 400-person actuarial firm</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="pricing" class="wrap">
+    <div class="sec-head">
+      <h2>Pricing, stated once.</h2>
+      <span class="sec-num">30 / gnicirp</span>
+    </div>
+    <div class="price-grid">
+      <article class="tier reveal">
+        <div class="tier-name">Scissors</div>
+        <div class="tier-price">$0</div>
+        <div class="tier-tag">Technically usable, like everything else you've been given.</div>
+        <ul>
+          <li>One mirrored channel</li>
+          <li>90-day message history, reversed</li>
+          <li>Community condolences</li>
+        </ul>
+        <a class="btn btn-secondary" href="./demo.html">Cope for free</a>
+      </article>
+      <article class="tier hot reveal">
+        <div class="tier-name">Fountain Pen</div>
+        <div class="tier-price">$34<span style="font-size:1rem;font-weight:700">/user/mo</span></div>
+        <div class="tier-tag">For teams ready to stop smudging.</div>
+        <ul>
+          <li>Unlimited mirrored channels</li>
+          <li>Smudge-Safe Threads</li>
+          <li>Quarterly dexterity audit</li>
+          <li>Priority support, answered left to right</li>
+        </ul>
+        <a class="btn" href="./demo.html">Request left access</a>
+      </article>
+      <article class="tier reveal">
+        <div class="tier-name">Full Sinistral</div>
+        <div class="tier-price">$8,900<span style="font-size:1rem;font-weight:700">/mo</span></div>
+        <div class="tier-tag">Your entire org, contractually left.</div>
+        <ul>
+          <li>Mandatory handedness attestation</li>
+          <li>Dedicated southpaw success manager</li>
+          <li>On-site desk re-orientation</li>
+          <li>We speak to your IT department so you never have to</li>
+        </ul>
+        <a class="btn btn-secondary" href="./demo.html">Contact sales</a>
+      </article>
+    </div>
+  </section>
+
+  <div class="demo-band">
+    <div class="wrap">
+      <h2>Sit in the workspace.</h2>
+      <p>The channel rail is on the right. The send button is on the left. There is a guest mode for the other people, behind a dialog they deserve.</p>
+      <a class="btn btn-primary" href="./demo.html">open the demo →</a>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div class="legal">Sinistra is a portfolio prototype. Handedness data is never collected, because nothing here works.<br>© 2026 Sinistra Workplace Compliance, Inc.</div>
+    <a href="/">← theworstaistudioever</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var els = document.querySelectorAll('.reveal');
+  if (reduce || !('IntersectionObserver' in window)) {
+    els.forEach(function(el){ el.classList.add('in'); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.15 });
+  els.forEach(function(el){ io.observe(el); });
+})();
+</script>
+</body>
+</html>
