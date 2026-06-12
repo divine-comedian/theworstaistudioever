@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Raft · the deck</title>
+<meta name="description" content="The Raft swipe deck. Verified rocks only.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#2B6B66;
+    --primary-deep:#1E4F4B;
+    --accent:#D95B36;
+    --accent-deep:#B8421F;
+    --bg:#F6DFB7;
+    --fg:#33291C;
+    --muted:#8A7657;
+    --ink:#2A2114;
+    --paper:#FBF3DF;
+    --display:"Abril Fatface", Georgia, "Times New Roman", serif;
+    --body:"Merriweather", Georgia, "Times New Roman", serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:var(--body);
+    background:var(--bg);
+    color:var(--fg);
+    min-height:100dvh;
+    display:flex;
+    flex-direction:column;
+    overflow-x:hidden;
+  }
+  body::after{
+    content:"";
+    position:fixed;inset:0;
+    pointer-events:none;z-index:9999;opacity:.06;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ---------- app chrome ---------- */
+  .appbar{
+    background:var(--primary-deep);
+    color:#EAF2EC;
+    padding:12px 18px;
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    flex-wrap:wrap;
+  }
+  .appbar .back{
+    color:#F6DFB7;text-decoration:none;
+    font-size:.78rem;font-weight:700;
+  }
+  .appbar .back:hover{color:var(--accent)}
+  .appbar .brand{
+    font-family:var(--display);
+    font-size:1.15rem;
+    color:#FBF3DF;
+  }
+  .status{display:flex;align-items:center;gap:16px;font-size:.7rem}
+  .pill{
+    display:flex;align-items:center;gap:6px;
+    background:rgba(251,243,223,.12);
+    border-radius:999px;
+    padding:5px 12px;
+    white-space:nowrap;
+  }
+  .dot{width:8px;height:8px;border-radius:50%;background:#7FBF7A;animation:pulse 2s infinite}
+  .dot.off{background:#C9BBA4;animation:none}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  .pill button{
+    background:none;border:none;color:#F6DFB7;
+    font-family:var(--body);font-size:.7rem;font-weight:700;
+    cursor:pointer;text-decoration:underline;
+  }
+  .holds strong{color:#F6DFB7}
+
+  /* ---------- deck ---------- */
+  main{
+    flex:1;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:26px 18px 34px;
+  }
+  .deck-zone{position:relative;width:min(360px,92vw);height:520px}
+  .card{
+    position:absolute;inset:0;
+    background:var(--paper);
+    border-radius:14px;
+    box-shadow:0 12px 28px rgba(51,41,28,.22);
+    padding:14px 14px 0;
+    user-select:none;
+    touch-action:none;
+    cursor:grab;
+    transition:transform .25s ease-out;
+  }
+  .card.dragging{transition:none;cursor:grabbing}
+  .card.gone{transition:transform .45s ease-in,opacity .45s ease-in;opacity:0;pointer-events:none}
+  .card:nth-last-child(2){transform:translateY(10px) scale(.97)}
+  .card:nth-last-child(3){transform:translateY(20px) scale(.94)}
+  .card .photo{
+    height:240px;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    position:relative;
+  }
+  .card .initial{font-family:var(--display);font-size:6rem;color:rgba(251,243,223,.85)}
+  .rockbadge{
+    position:absolute;bottom:10px;left:10px;
+    background:var(--paper);
+    border-radius:6px;
+    padding:6px 10px;
+    font-size:.62rem;
+    line-height:1.4;
+    box-shadow:0 2px 8px rgba(51,41,28,.25);
+  }
+  .rockbadge .rb-status{font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+  .rockbadge.ok .rb-status{color:var(--primary-deep)}
+  .rockbadge.pending .rb-status{color:var(--accent-deep)}
+  .gripring{
+    position:absolute;top:10px;right:10px;
+    width:54px;height:54px;border-radius:50%;
+    background:var(--primary-deep);
+    color:#FBF3DF;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    box-shadow:0 2px 8px rgba(51,41,28,.3);
+  }
+  .gripring .g-num{font-family:var(--display);font-size:1.15rem;line-height:1}
+  .gripring .g-lbl{font-size:.45rem;letter-spacing:.12em;text-transform:uppercase;opacity:.8}
+  .card-body{padding:14px 6px 0}
+  .card-top{display:flex;justify-content:space-between;align-items:baseline}
+  .card .who{font-family:var(--display);font-size:1.5rem;color:var(--ink)}
+  .card .dist{font-size:.7rem;color:var(--muted);font-style:italic;white-space:nowrap}
+  .card .raft-loc{font-size:.75rem;color:var(--muted);margin:2px 0 10px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{
+    font-size:.64rem;font-weight:700;
+    color:var(--primary-deep);
+    border:1.5px solid var(--primary);
+    border-radius:999px;
+    padding:4px 10px;
+    background:rgba(43,107,102,.07);
+  }
+  .verdict{
+    position:absolute;top:24px;
+    font-family:var(--display);
+    font-size:2rem;
+    padding:4px 18px;
+    border:3px solid;
+    border-radius:8px;
+    opacity:0;
+    pointer-events:none;
+    background:rgba(251,243,223,.85);
+  }
+  .verdict.hold{left:18px;color:var(--primary-deep);border-color:var(--primary-deep);transform:rotate(-12deg)}
+  .verdict.drift{right:18px;color:var(--accent-deep);border-color:var(--accent-deep);transform:rotate(12deg)}
+
+  .empty{
+    position:absolute;inset:0;
+    display:none;
+    flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;
+    border:2px dashed var(--muted);
+    border-radius:14px;
+    padding:30px;
+    color:var(--muted);
+  }
+  .empty h2{font-family:var(--display);font-weight:400;color:var(--ink);font-size:1.5rem;margin-bottom:10px}
+  .empty p{font-size:.82rem;font-style:italic}
+
+  /* ---------- actions ---------- */
+  .actions{display:flex;gap:26px;margin-top:26px}
+  .act{
+    font-family:var(--body);font-weight:700;font-size:.85rem;
+    border:none;border-radius:999px;
+    padding:15px 30px;
+    cursor:pointer;
+    transition:transform .15s ease-out,box-shadow .15s ease-out;
+  }
+  .act:active{transform:translateY(2px)}
+  .act.drift{
+    background:var(--paper);color:var(--accent-deep);
+    border:2px solid var(--accent-deep);
+    box-shadow:0 4px 0 rgba(184,66,31,.35);
+  }
+  .act.hold{
+    background:var(--primary);color:#FBF3DF;
+    box-shadow:0 4px 0 var(--primary-deep);
+  }
+  .act:disabled{opacity:.45;cursor:not-allowed}
+  .deck-note{margin-top:16px;font-size:.7rem;font-style:italic;color:var(--muted);text-align:center;max-width:30em}
+
+  /* ---------- modals ---------- */
+  .overlay{
+    position:fixed;inset:0;
+    background:rgba(42,33,20,.55);
+    display:none;
+    align-items:center;justify-content:center;
+    z-index:100;
+    padding:20px;
+  }
+  .overlay.open{display:flex}
+  .modal{
+    background:var(--paper);
+    border-radius:14px;
+    max-width:380px;width:100%;
+    padding:36px 30px 30px;
+    text-align:center;
+    box-shadow:0 18px 50px rgba(42,33,20,.4);
+  }
+  .modal h2{font-family:var(--display);font-weight:400;font-size:2rem;color:var(--accent);margin-bottom:8px}
+  .modal h2.calm{color:var(--primary-deep)}
+  .modal p{font-size:.85rem;margin-bottom:10px}
+  .modal .small{font-size:.7rem;font-style:italic;color:var(--muted);margin-bottom:22px}
+  .modal .act{width:100%}
+  .paws{font-size:2.2rem;letter-spacing:.2em;margin-bottom:12px;font-family:var(--display);color:var(--primary)}
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+  }
+  @media (max-width:480px){
+    .deck-zone{height:480px}
+    .card .photo{height:210px}
+    .status{width:100%;justify-content:space-between}
+  }
+</style>
+</head>
+<body>
+
+<header class="appbar">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="brand">Raft~</span>
+  <div class="status">
+    <span class="pill"><span class="dot" id="dgDot"></span><span id="dgText">DriftGuard armed</span><button id="dgToggle" type="button">disarm</button></span>
+    <span class="pill holds">paw-holds left: <strong id="holdsLeft">3</strong></span>
+  </div>
+</header>
+
+<main>
+  <div class="deck-zone" id="deck">
+    <div class="empty" id="empty">
+      <h2>That's every otter.</h2>
+      <p>You have seen all verified members within 5 nautical miles. The ocean is large but finite. Check back after the next high tide, or lower your grip standards in settings. We don't recommend it.</p>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="act drift" id="btnDrift" type="button">let drift</button>
+    <button class="act hold" id="btnHold" type="button">hold hands</button>
+  </div>
+  <p class="deck-note">Drag cards or use the buttons. Profiles scoring 8.0+ may trigger immediate kelp reservation. This is not reversible.</p>
+</main>
+
+<div class="overlay" id="matchOverlay">
+  <div class="modal">
+    <div class="paws">~&hearts;~</div>
+    <h2>It's a raft!</h2>
+    <p>You and <strong id="matchName">someone</strong> are now holding hands. One prepaid strand of anchoring kelp has been reserved on your behalf.</p>
+    <p class="small">DriftGuard will monitor your first nap. Estimated overnight drift: 9 to 14 meters. This is considered excellent.</p>
+    <button class="act hold" id="matchClose" type="button">begin napping</button>
+  </div>
+</div>
+
+<div class="overlay" id="paywallOverlay">
+  <div class="modal">
+    <h2 class="calm">Out of paw-holds.</h2>
+    <p>The Floater plan includes 3 paw-holds per day. You have used all 3. The otters you didn't choose are still out there, floating.</p>
+    <p class="small">Raft+ members never run out. They also see who gripped them first, which changes a relationship before it starts.</p>
+    <button class="act hold" id="paywallClose" type="button">remain a Floater</button>
+  </div>
+</div>
+
+<script>
+  const PROFILES = [
+    { name:"Cilantro", age:2, loc:"Pacific Grove Nursery Raft", dist:"0.5 nm", grip:7.2,
+      rock:{ name:"Twin Rocks (one lost)", weight:"150 g", ok:true },
+      chips:["first rock","enthusiasm","short naps"], bg:"linear-gradient(160deg,#6E9C8E,#3E6E5E)" },
+    { name:"Mort", age:9, loc:"Moss Landing, north pylon", dist:"4.6 nm", grip:8.8,
+      rock:{ name:"Rock", weight:"990 g", ok:true },
+      chips:["silence","holding on","abalone"], bg:"linear-gradient(160deg,#4A7B7C,#27585B)" },
+    { name:"Bubbles", age:3, loc:"Santa Cruz Wharf Raft", dist:"0.8 nm", grip:6.2,
+      rock:{ name:"submitted for review", weight:"unweighed", ok:false },
+      chips:["spinning","loud chewing","optimism"], bg:"linear-gradient(160deg,#D98E5F,#B8642F)" },
+    { name:"Denise", age:5, loc:"Morro Bay Raft #2", dist:"2.0 nm", grip:9.1,
+      rock:{ name:"Susan", weight:"380 g", ok:true },
+      chips:["grip training","homepage appearances","early wake-ups"], bg:"linear-gradient(160deg,#3E6E5E,#1E4F4B)" },
+    { name:"Gary", age:6, loc:"Elkhorn Slough", dist:"1.1 nm", grip:7.9,
+      rock:{ name:"The Big One", weight:"620 g", ok:true },
+      chips:["mussel cracking","long naps","drifting (recovering)"], bg:"linear-gradient(160deg,#C97A4A,#9C5326)" },
+    { name:"Pebbles", age:4, loc:"Monterey Bay Raft #7", dist:"0.3 nm", grip:8.4,
+      rock:{ name:"Gerald", weight:"410 g", ok:true },
+      chips:["urchin tasting","synchronized floating","kelp wrapping"], bg:"linear-gradient(160deg,#4A7B7C,#2B6B66)" }
+  ];
+
+  const deck = document.getElementById('deck');
+  const empty = document.getElementById('empty');
+  const holdsEl = document.getElementById('holdsLeft');
+  let holds = 3;
+
+  // build cards; last element in DOM = top of deck
+  for (const p of PROFILES) {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="photo" style="background:${p.bg}">
+        <span class="initial">${p.name[0]}</span>
+        <span class="gripring"><span class="g-num">${p.grip.toFixed(1)}</span><span class="g-lbl">grip</span></span>
+        <span class="rockbadge ${p.rock.ok ? 'ok' : 'pending'}">
+          <span class="rb-status">${p.rock.ok ? '✓ rock verified' : '⚠ rock pending'}</span><br>
+          "${p.rock.name}" · ${p.rock.weight}
+        </span>
+      </div>
+      <div class="card-body">
+        <div class="card-top">
+          <span class="who">${p.name}, ${p.age}</span>
+          <span class="dist">${p.dist} away</span>
+        </div>
+        <div class="raft-loc">${p.loc}</div>
+        <div class="chips">${p.chips.map(c => `<span class="chip">${c}</span>`).join('')}</div>
+      </div>
+      <span class="verdict hold">HOLD</span>
+      <span class="verdict drift">DRIFT</span>
+    `;
+    card.dataset.name = p.name;
+    card.dataset.grip = p.grip;
+    deck.appendChild(card);
+    attachDrag(card);
+  }
+
+  function topCard() {
+    const cards = deck.querySelectorAll('.card:not(.gone)');
+    return cards.length ? cards[cards.length - 1] : null;
+  }
+
+  function swipe(card, dir) { // dir: 1 = hold hands, -1 = let drift
+    if (!card) return;
+    if (dir === 1) {
+      if (holds <= 0) { openOverlay('paywallOverlay'); resetCard(card); return; }
+      holds--; holdsEl.textContent = holds;
+    }
+    card.classList.add('gone');
+    card.style.transform = `translateX(${dir * 130}%) rotate(${dir * 22}deg)`;
+    if (dir === 1 && parseFloat(card.dataset.grip) >= 8.0) {
+      document.getElementById('matchName').textContent = card.dataset.name;
+      setTimeout(() => openOverlay('matchOverlay'), 350);
+    }
+    setTimeout(() => { card.remove(); checkEmpty(); }, 480);
+  }
+
+  function checkEmpty() {
+    if (!topCard()) {
+      empty.style.display = 'flex';
+      document.getElementById('btnHold').disabled = true;
+      document.getElementById('btnDrift').disabled = true;
+    }
+  }
+
+  function resetCard(card) {
+    card.classList.remove('dragging');
+    card.style.transform = '';
+    setVerdict(card, 0);
+  }
+
+  function setVerdict(card, dx) {
+    const hold = card.querySelector('.verdict.hold');
+    const drift = card.querySelector('.verdict.drift');
+    hold.style.opacity = dx > 30 ? Math.min((dx - 30) / 90, 1) : 0;
+    drift.style.opacity = dx < -30 ? Math.min((-dx - 30) / 90, 1) : 0;
+  }
+
+  function attachDrag(card) {
+    let startX = 0, startY = 0, dx = 0, dy = 0, dragging = false;
+    card.addEventListener('pointerdown', (e) => {
+      if (card !== topCard()) return;
+      dragging = true; startX = e.clientX; startY = e.clientY;
+      card.classList.add('dragging');
+      card.setPointerCapture(e.pointerId);
+    });
+    card.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      dx = e.clientX - startX; dy = e.clientY - startY;
+      card.style.transform = `translate(${dx}px, ${dy * 0.4}px) rotate(${dx / 18}deg)`;
+      setVerdict(card, dx);
+    });
+    const release = () => {
+      if (!dragging) return;
+      dragging = false;
+      if (dx > 90) swipe(card, 1);
+      else if (dx < -90) swipe(card, -1);
+      else resetCard(card);
+      dx = 0; dy = 0;
+    };
+    card.addEventListener('pointerup', release);
+    card.addEventListener('pointercancel', release);
+  }
+
+  document.getElementById('btnHold').addEventListener('click', () => swipe(topCard(), 1));
+  document.getElementById('btnDrift').addEventListener('click', () => swipe(topCard(), -1));
+
+  // DriftGuard toggle
+  let armed = true;
+  const dgDot = document.getElementById('dgDot');
+  const dgText = document.getElementById('dgText');
+  document.getElementById('dgToggle').addEventListener('click', function () {
+    armed = !armed;
+    dgDot.classList.toggle('off', !armed);
+    dgText.textContent = armed ? 'DriftGuard armed' : 'DriftGuard disarmed (not advised)';
+    this.textContent = armed ? 'disarm' : 'arm';
+  });
+
+  // modals
+  function openOverlay(id) { document.getElementById(id).classList.add('open'); }
+  function closeOverlay(el) { el.classList.remove('open'); }
+  document.getElementById('matchClose').addEventListener('click', () => closeOverlay(document.getElementById('matchOverlay')));
+  document.getElementById('paywallClose').addEventListener('click', () => closeOverlay(document.getElementById('paywallOverlay')));
+  document.querySelectorAll('.overlay').forEach(ov => {
+    ov.addEventListener('click', (e) => { if (e.target === ov) closeOverlay(ov); });
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') document.querySelectorAll('.overlay.open').forEach(closeOverlay);
+    if (e.key === 'ArrowRight') swipe(topCard(), 1);
+    if (e.key === 'ArrowLeft') swipe(topCard(), -1);
+  });
+</script>
+</body>
+</html>

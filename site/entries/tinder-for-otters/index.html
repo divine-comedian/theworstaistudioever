@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Raft · theworstaistudioever</title>
+<meta name="description" content="Raft matches sea otters with hand-holding partners vetted for grip strength, rock taste, and nap drift, so nobody wakes up alone in open water.">
+<meta property="og:title" content="Raft · Wake up still holding hands.">
+<meta property="og:description" content="Raft matches sea otters with hand-holding partners vetted for grip strength, rock taste, and nap drift, so nobody wakes up alone in open water.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#2B6B66;
+    --primary-deep:#1E4F4B;
+    --accent:#D95B36;
+    --accent-deep:#B8421F;
+    --bg:#F6DFB7;
+    --bg-warm:#F2D49E;
+    --fg:#33291C;
+    --muted:#8A7657;
+    --ink:#2A2114;
+    --paper:#FBF3DF;
+    --display:"Abril Fatface", Georgia, "Times New Roman", serif;
+    --body:"Merriweather", Georgia, "Times New Roman", serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--body);
+    background:var(--bg);
+    color:var(--fg);
+    line-height:1.7;
+    overflow-x:hidden;
+  }
+  /* film grain over everything */
+  body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:9999;
+    opacity:.07;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  /* sun-fade wash */
+  .sunfade{
+    background:
+      radial-gradient(120% 90% at 80% -10%, rgba(217,91,54,.14), transparent 55%),
+      var(--bg);
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+  /* ---------- header ---------- */
+  header.top{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:22px 0;
+  }
+  .wordmark{
+    font-family:var(--display);
+    font-size:1.7rem;
+    color:var(--ink);
+    text-decoration:none;
+    letter-spacing:.01em;
+  }
+  .wordmark .tilde{color:var(--accent)}
+  .top-demo{
+    font-size:.78rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    font-weight:700;
+    color:var(--primary-deep);
+    text-decoration:none;
+    border:2px solid var(--primary-deep);
+    border-radius:999px;
+    padding:9px 18px;
+    transition:background .2s ease-out,color .2s ease-out;
+  }
+  .top-demo:hover{background:var(--primary-deep);color:var(--paper)}
+
+  /* ---------- hero ---------- */
+  .hero{
+    display:grid;
+    grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);
+    gap:48px;
+    align-items:center;
+    padding:56px 0 110px;
+  }
+  .kicker{
+    display:inline-block;
+    font-size:.72rem;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    font-weight:700;
+    color:var(--paper);
+    background:var(--primary);
+    border-radius:3px;
+    padding:6px 12px;
+    transform:rotate(-1.5deg);
+    margin-bottom:26px;
+  }
+  h1{
+    font-family:var(--display);
+    font-size:clamp(2.6rem,6vw,4.4rem);
+    line-height:1.04;
+    color:var(--ink);
+    font-weight:400;
+    margin-bottom:24px;
+  }
+  .hero-sub{
+    font-size:1.02rem;
+    max-width:34em;
+    color:var(--fg);
+    margin-bottom:34px;
+  }
+  .hero-sub strong{color:var(--primary-deep)}
+  .cta-row{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+  .btn-primary{
+    font-family:var(--body);
+    font-weight:700;
+    font-size:.95rem;
+    color:#FFF6E8;
+    background:var(--accent);
+    border:none;
+    border-radius:999px;
+    padding:16px 34px;
+    text-decoration:none;
+    display:inline-block;
+    box-shadow:0 4px 0 var(--accent-deep);
+    cursor:pointer;
+    transition:transform .15s ease-out,box-shadow .15s ease-out,background .2s ease-out;
+  }
+  .btn-primary:hover{background:var(--accent-deep);transform:translateY(2px);box-shadow:0 2px 0 var(--accent-deep)}
+  .cta-note{font-size:.8rem;font-style:italic;color:var(--muted);max-width:16em}
+
+  /* polaroid stack */
+  .stack{position:relative;height:430px}
+  .polaroid{
+    position:absolute;
+    width:240px;
+    background:var(--paper);
+    padding:12px 12px 0;
+    border-radius:4px;
+    box-shadow:0 10px 24px rgba(51,41,28,.25);
+    animation:bob 6s ease-in-out infinite;
+  }
+  .polaroid:nth-child(1){top:8%;left:4%;transform:rotate(-7deg);z-index:1;animation-delay:0s}
+  .polaroid:nth-child(2){top:0;left:38%;transform:rotate(3deg);z-index:3;animation-delay:1.2s}
+  .polaroid:nth-child(3){top:36%;left:20%;transform:rotate(-2deg);z-index:2;animation-delay:2.4s}
+  @keyframes bob{
+    0%,100%{margin-top:0}
+    50%{margin-top:-9px}
+  }
+  .photo{
+    height:170px;
+    border-radius:2px;
+    display:flex;align-items:center;justify-content:center;
+    position:relative;
+    overflow:hidden;
+  }
+  .photo.p1{background:linear-gradient(160deg,#4A7B7C 0%,#2B6B66 70%)}
+  .photo.p2{background:linear-gradient(160deg,#D98E5F 0%,#B8642F 75%)}
+  .photo.p3{background:linear-gradient(160deg,#6E9C8E 0%,#3E6E5E 70%)}
+  .photo .initial{
+    font-family:var(--display);
+    font-size:4.4rem;
+    color:rgba(251,243,223,.85);
+  }
+  .verified{
+    position:absolute;
+    bottom:8px;right:8px;
+    background:var(--paper);
+    color:var(--primary-deep);
+    font-size:.58rem;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    border-radius:999px;
+    padding:4px 9px;
+    display:flex;align-items:center;gap:4px;
+  }
+  .verified svg{width:10px;height:10px;flex:none}
+  .caption{
+    padding:10px 4px 14px;
+    display:flex;justify-content:space-between;align-items:baseline;
+  }
+  .caption .who{font-weight:700;font-size:.88rem;color:var(--ink)}
+  .caption .where{font-size:.68rem;color:var(--muted);font-style:italic}
+  .grip-chip{
+    font-size:.66rem;font-weight:700;
+    color:var(--paper);
+    background:var(--primary);
+    border-radius:3px;
+    padding:2px 7px;
+    white-space:nowrap;
+  }
+
+  /* wavy divider */
+  .wave{display:block;width:100%;height:70px;margin-bottom:-1px}
+
+  /* ---------- features (teal band) ---------- */
+  .band{
+    background:var(--primary);
+    color:#EAF2EC;
+    padding:80px 0 96px;
+  }
+  .band h2{
+    font-family:var(--display);
+    font-weight:400;
+    font-size:clamp(1.9rem,4vw,2.8rem);
+    color:#FBF3DF;
+    margin-bottom:10px;
+  }
+  .band .lede{
+    max-width:42em;
+    color:#CFE0D6;
+    font-size:.95rem;
+    margin-bottom:54px;
+  }
+  .features{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:26px;
+  }
+  .feature{
+    background:#FBF3DF;
+    color:var(--fg);
+    border-radius:10px;
+    padding:30px 26px 32px;
+    position:relative;
+    transition:transform .2s ease-out;
+  }
+  .feature:hover{transform:translateY(-4px) rotate(-.4deg)}
+  .feature .badge{
+    position:absolute;
+    top:-16px;left:22px;
+    background:var(--accent);
+    color:#FFF6E8;
+    font-size:.62rem;
+    font-weight:700;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    padding:6px 12px;
+    border-radius:999px;
+    transform:rotate(-2deg);
+  }
+  .feature h3{
+    font-family:var(--display);
+    font-weight:400;
+    font-size:1.35rem;
+    color:var(--primary-deep);
+    margin:8px 0 12px;
+  }
+  .feature p{font-size:.86rem;color:var(--fg)}
+
+  /* ---------- testimonials (postcards) ---------- */
+  .postcards{padding:90px 0 70px}
+  .postcards h2{
+    font-family:var(--display);
+    font-weight:400;
+    font-size:clamp(1.9rem,4vw,2.8rem);
+    color:var(--ink);
+    margin-bottom:8px;
+  }
+  .postcards .lede{color:var(--muted);font-size:.95rem;font-style:italic;margin-bottom:50px}
+  .cards{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:26px;
+  }
+  .postcard{
+    background:var(--paper);
+    border:1px solid #E2CFA4;
+    border-radius:6px;
+    padding:26px 24px 22px;
+    position:relative;
+    box-shadow:0 6px 16px rgba(51,41,28,.12);
+  }
+  .postcard:nth-child(1){transform:rotate(-1.2deg)}
+  .postcard:nth-child(2){transform:rotate(.8deg)}
+  .postcard:nth-child(3){transform:rotate(-.6deg)}
+  .stamp{
+    position:absolute;
+    top:12px;right:12px;
+    width:40px;height:48px;
+    border:2px dashed var(--accent);
+    border-radius:3px;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--accent);
+    transform:rotate(4deg);
+    opacity:.85;
+  }
+  .stamp svg{width:22px;height:22px}
+  .postcard blockquote{
+    font-size:.92rem;
+    font-style:italic;
+    color:var(--fg);
+    margin-bottom:18px;
+    padding-right:44px;
+  }
+  .postcard .sig{font-weight:700;font-size:.85rem;color:var(--primary-deep)}
+  .postcard .sig-title{font-size:.72rem;color:var(--muted)}
+
+  /* ---------- pricing (motel rate rack) ---------- */
+  .rates{padding:30px 0 100px}
+  .rates h2{
+    font-family:var(--display);
+    font-weight:400;
+    font-size:clamp(1.9rem,4vw,2.8rem);
+    color:var(--ink);
+    margin-bottom:8px;
+  }
+  .rates .lede{color:var(--muted);font-size:.95rem;font-style:italic;margin-bottom:50px}
+  .tiers{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:26px;
+    align-items:stretch;
+  }
+  .tier{
+    background:var(--paper);
+    border:2px solid var(--primary-deep);
+    border-radius:10px;
+    padding:30px 26px 30px;
+    display:flex;flex-direction:column;
+    position:relative;
+  }
+  .tier.featured{
+    background:var(--primary-deep);
+    color:#EAF2EC;
+    transform:translateY(-10px);
+  }
+  .tier .flag{
+    position:absolute;top:-14px;left:50%;
+    transform:translateX(-50%) rotate(-1deg);
+    background:var(--accent);
+    color:#FFF6E8;
+    font-size:.6rem;font-weight:700;
+    letter-spacing:.16em;text-transform:uppercase;
+    padding:5px 14px;border-radius:999px;
+    white-space:nowrap;
+  }
+  .tier h3{
+    font-family:var(--display);
+    font-weight:400;
+    font-size:1.5rem;
+    color:var(--primary-deep);
+    margin-bottom:2px;
+  }
+  .tier.featured h3{color:#FBF3DF}
+  .tier .price{
+    font-family:var(--display);
+    font-size:2.3rem;
+    color:var(--accent);
+    margin:6px 0 4px;
+  }
+  .tier .tier-tag{
+    font-size:.78rem;font-style:italic;
+    color:var(--muted);
+    margin-bottom:20px;
+    min-height:3em;
+  }
+  .tier.featured .tier-tag{color:#BFD4C8}
+  .tier ul{list-style:none;margin-bottom:26px;flex:1}
+  .tier li{
+    font-size:.83rem;
+    padding:7px 0 7px 24px;
+    position:relative;
+    border-bottom:1px dotted rgba(138,118,87,.4);
+  }
+  .tier.featured li{border-bottom-color:rgba(234,242,236,.25)}
+  .tier li::before{
+    content:"";
+    position:absolute;left:2px;top:14px;
+    width:10px;height:10px;
+    border-radius:50%;
+    background:var(--accent);
+  }
+  .tier .btn-primary{text-align:center}
+  .tier.featured .btn-primary{background:var(--accent)}
+
+  /* ---------- demo CTA ---------- */
+  .demo-cta{
+    background:var(--accent);
+    padding:76px 0;
+    text-align:center;
+  }
+  .demo-cta h2{
+    font-family:var(--display);
+    font-weight:400;
+    font-size:clamp(2rem,4.5vw,3rem);
+    color:#FFF6E8;
+    margin-bottom:14px;
+  }
+  .demo-cta p{color:#FFE3D4;font-size:.95rem;margin-bottom:34px;font-style:italic}
+  .btn-demo{
+    font-weight:700;
+    font-size:1rem;
+    color:var(--accent-deep);
+    background:#FFF6E8;
+    border-radius:999px;
+    padding:18px 42px;
+    text-decoration:none;
+    display:inline-block;
+    box-shadow:0 4px 0 rgba(112,42,16,.5);
+    transition:transform .15s ease-out,box-shadow .15s ease-out;
+  }
+  .btn-demo:hover{transform:translateY(2px);box-shadow:0 2px 0 rgba(112,42,16,.5)}
+
+  /* ---------- footer ---------- */
+  footer{
+    background:var(--ink);
+    color:#C9BBA4;
+    padding:42px 0;
+    font-size:.78rem;
+  }
+  footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}
+  footer a{color:#F6DFB7;text-decoration:none;font-weight:700}
+  footer a:hover{color:var(--accent)}
+  .fineprint{font-style:italic;max-width:38em}
+
+  /* reveal on scroll */
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .5s ease-out,transform .5s ease-out}
+  .reveal.in{opacity:1;transform:none}
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+    html{scroll-behavior:auto}
+    .reveal{opacity:1;transform:none}
+  }
+  @media (max-width:880px){
+    .hero{grid-template-columns:1fr;padding-bottom:60px}
+    .stack{height:420px;max-width:420px;margin:0 auto;width:100%}
+    .features,.cards,.tiers{grid-template-columns:1fr}
+    .tier.featured{transform:none}
+    .feature{margin-top:10px}
+  }
+</style>
+</head>
+<body>
+
+<div class="sunfade">
+  <div class="wrap">
+    <header class="top">
+      <a class="wordmark" href="#">Raft<span class="tilde">~</span></a>
+      <a class="top-demo" href="./demo.html">open the demo →</a>
+    </header>
+
+    <section class="hero">
+      <div>
+        <span class="kicker">Matchmaking for marine mammals</span>
+        <h1>Wake up still holding hands.</h1>
+        <p class="hero-sub">Raft pairs you with otters whose grip strength, sleep schedule, and shellfish preferences are statistically unlikely to end in drift. <strong>94% of matched pairs are still within one kelp strand after seven naps.</strong></p>
+        <div class="cta-row">
+          <a class="btn-primary" href="./demo.html">Float your profile</a>
+          <span class="cta-note">Rock verification required before your first paw-hold.</span>
+        </div>
+      </div>
+      <div class="stack" aria-hidden="true">
+        <div class="polaroid">
+          <div class="photo p1">
+            <span class="initial">P</span>
+            <span class="verified"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 14.4 7.2 16.9l.9-5.4L4.2 7.7l5.4-.8z"/></svg>rock verified</span>
+          </div>
+          <div class="caption">
+            <span class="who">Pebbles, 4</span>
+            <span class="grip-chip">grip 8.4</span>
+          </div>
+        </div>
+        <div class="polaroid">
+          <div class="photo p2">
+            <span class="initial">G</span>
+            <span class="verified"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 14.4 7.2 16.9l.9-5.4L4.2 7.7l5.4-.8z"/></svg>rock verified</span>
+          </div>
+          <div class="caption">
+            <span class="who">Gary, 6</span>
+            <span class="grip-chip">grip 7.9</span>
+          </div>
+        </div>
+        <div class="polaroid">
+          <div class="photo p3">
+            <span class="initial">D</span>
+            <span class="verified"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 14.4 7.2 16.9l.9-5.4L4.2 7.7l5.4-.8z"/></svg>rock verified</span>
+          </div>
+          <div class="caption">
+            <span class="who">Denise, 5</span>
+            <span class="grip-chip">grip 9.1</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <svg class="wave" viewBox="0 0 1440 70" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0,40 C180,75 360,5 540,35 C720,65 900,10 1080,35 C1260,60 1380,30 1440,40 L1440,70 L0,70 Z" fill="#2B6B66"/>
+  </svg>
+</div>
+
+<section class="band" id="features">
+  <div class="wrap">
+    <h2 class="reveal">Drift is a solved problem.</h2>
+    <p class="lede reveal">Other platforms match on photos and hope. We match on retention. Our pairing model was trained on 11,000 hours of observed napping, none of it consensual to discuss further.</p>
+    <div class="features">
+      <article class="feature reveal">
+        <span class="badge">Proprietary</span>
+        <h3>Grip Compatibility Index</h3>
+        <p>Our matching algorithm scores paw-to-paw retention across 14 grip dimensions, including wet torque, mid-nap slack, and recovery time after a wave event. Pairs scoring below 6.0 are never introduced. We consider this a kindness.</p>
+      </article>
+      <article class="feature reveal">
+        <span class="badge">Trust &amp; Safety</span>
+        <h3>Rock Verification</h3>
+        <p>Every member's pouch rock is photographed, weighed, and authenticated by our Trust team before their profile goes live. Posing with a borrowed rock is a lifetime ban, no appeals. We take rock fraud more seriously than any platform in this category.</p>
+      </article>
+      <article class="feature reveal">
+        <span class="badge">Included</span>
+        <h3>DriftGuard</h3>
+        <p>If a matched pair exceeds 40 meters of overnight drift, both parties receive a wake-up nudge and one prepaid strand of anchoring kelp, delivered to the nearer otter. Included on all annual plans. Claims are processed while you nap.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="postcards">
+  <div class="wrap">
+    <h2 class="reveal">Postcards from the raft.</h2>
+    <p class="lede reveal">Unsolicited. Lightly edited for length, never for enthusiasm.</p>
+    <div class="cards">
+      <article class="postcard reveal">
+        <span class="stamp" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/></svg></span>
+        <blockquote>"I matched with Gary on a Tuesday. By Thursday we had drifted only 11 meters overnight. The numbers don't lie."</blockquote>
+        <div class="sig">Pebbles</div>
+        <div class="sig-title">Senior Rock Curator, Monterey Bay Raft #7</div>
+      </article>
+      <article class="postcard reveal">
+        <span class="stamp" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h16M12 4v16"/></svg></span>
+        <blockquote>"After my last partner let go mid-nap, I didn't think I could trust again. The Grip Compatibility Index gave me a framework for that trust."</blockquote>
+        <div class="sig">Gary</div>
+        <div class="sig-title">Recently Re-Paired, Elkhorn Slough</div>
+      </article>
+      <article class="postcard reveal">
+        <span class="stamp" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 19l7-14 7 14z"/></svg></span>
+        <blockquote>"The rock verification process was invasive and took nine days. Then they featured my rock on the homepage, and honestly, it was all worth it."</blockquote>
+        <div class="sig">Denise</div>
+        <div class="sig-title">Apex Mustelid Member Since March, Morro Bay</div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="rates">
+  <div class="wrap">
+    <h2 class="reveal">Nightly rates.</h2>
+    <p class="lede reveal">All plans billed in advance. Kelp is non-refundable once anchored.</p>
+    <div class="tiers">
+      <article class="tier reveal">
+        <h3>Floater</h3>
+        <div class="price">$0</div>
+        <p class="tier-tag">For otters who insist they're fine out there alone.</p>
+        <ul>
+          <li>3 paw-holds per day</li>
+          <li>Standard drift alerts (delivered next morning)</li>
+          <li>1 unverified rock on profile</li>
+        </ul>
+        <a class="btn-primary" href="./demo.html">Start floating</a>
+      </article>
+      <article class="tier featured reveal">
+        <span class="flag">Most chosen</span>
+        <h3>Raft+</h3>
+        <div class="price">$14<span style="font-size:1rem">/mo</span></div>
+        <p class="tier-tag">Our most popular plan among the recently drifted.</p>
+        <ul>
+          <li>Unlimited paw-holds</li>
+          <li>See who gripped you first</li>
+          <li>Priority rock authentication (48 hours)</li>
+          <li>DriftGuard at 60-meter sensitivity</li>
+        </ul>
+        <a class="btn-primary" href="./demo.html">Hold on tighter</a>
+      </article>
+      <article class="tier reveal">
+        <h3>Apex Mustelid</h3>
+        <div class="price">$499<span style="font-size:1rem">/yr</span></div>
+        <p class="tier-tag">For otters who are done floating solo. Permanently.</p>
+        <ul>
+          <li>Dedicated kelp concierge</li>
+          <li>Quarterly one-on-one grip coaching</li>
+          <li>Profile boosted to every raft within 2 nautical miles</li>
+          <li>Your rock featured on our homepage</li>
+        </ul>
+        <a class="btn-primary" href="./demo.html">Commit fully</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="demo-cta">
+  <div class="wrap">
+    <h2 class="reveal">Someone out there has a 9.1 grip.</h2>
+    <p class="reveal">The deck is live. The rocks are verified. The kelp is prepaid.</p>
+    <a class="btn-demo reveal" href="./demo.html">open the demo →</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <a href="/">← theworstaistudioever</a>
+    <p class="fineprint">Raft is a portfolio company of theworstaistudioever. Grip scores are final. Rock verification decisions cannot be appealed, reversed, or discussed at parties.</p>
+  </div>
+</footer>
+
+<script>
+  const obs = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }
+    }
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
