@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MR !2317 · Decline.</title>
+<meta name="description" content="Review one incoming merge request against your weekend. The pipeline failed. All three reviewers are you.">
+<meta name="theme-color" content="#E8EAF0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#3A3E8C;--accent:#D45F45;--accent-soft:#E58B76;
+    --bg:#E8EAF0;--card:#FFFFFF;--card-2:#F4F5F9;--fg:#2A2D38;--muted:#767C8C;--ink:#15171F;
+    --line:#D5D8E2;--line-strong:#C2C6D4;--ok:#3E8E6A;--warn:#caa53a;
+    --display:"Familjen Grotesk","Helvetica Neue",Arial,sans-serif;
+    --body:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  body{font-family:var(--body);color:var(--fg);background:var(--bg);line-height:1.5;-webkit-font-smoothing:antialiased;font-size:14px}
+  .mono{font-family:var(--mono)}
+  a{color:var(--primary);text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  /* top chrome */
+  .chrome{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+  .chrome .row{max-width:1180px;margin:0 auto;padding:11px 22px;display:flex;align-items:center;gap:16px}
+  .back{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+  .back:hover{color:var(--ink);text-decoration:none}
+  .repo{font-family:var(--mono);font-size:13px;color:var(--ink)}
+  .repo .sep{color:var(--line-strong)}
+  .brand{margin-left:auto;font-family:var(--display);font-weight:700;color:var(--ink);font-size:16px}
+  .brand .d{color:var(--accent)}
+
+  .head{max-width:1180px;margin:0 auto;padding:22px 22px 0}
+  .mrtitle{font-family:var(--display);font-weight:600;font-size:24px;color:var(--ink);letter-spacing:-.01em;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .mrtitle .num{color:var(--muted);font-weight:400}
+  .state{font-family:var(--mono);font-size:11.5px;font-weight:600;padding:4px 11px;border-radius:999px;display:inline-flex;align-items:center;gap:7px}
+  .state.open{background:rgba(212,95,69,.1);color:var(--accent);border:1px solid var(--accent-soft)}
+  .state.closed{background:var(--card-2);color:var(--muted);border:1px solid var(--line-strong)}
+  .state .d{width:8px;height:8px;border-radius:50%;background:currentColor}
+  .subline{color:var(--muted);font-size:13px;margin:9px 0 16px;font-family:var(--mono)}
+  .subline b{color:var(--ink)}
+  .subline .br{color:var(--primary);background:rgba(58,62,140,.08);border:1px solid var(--line);border-radius:6px;padding:1px 7px}
+
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);max-width:1180px;margin:0 auto;padding:0 22px}
+  .tab{font-family:var(--mono);font-size:13px;color:var(--muted);background:none;border:0;border-bottom:2px solid transparent;padding:11px 12px;cursor:pointer}
+  .tab .c{background:var(--card-2);border:1px solid var(--line);border-radius:999px;font-size:11px;padding:0 7px;margin-left:6px;color:var(--fg)}
+  .tab:hover{color:var(--ink)}
+  .tab.active{color:var(--ink);border-bottom-color:var(--accent)}
+
+  .layout{max-width:1180px;margin:0 auto;padding:22px;display:grid;grid-template-columns:1fr 290px;gap:22px;align-items:start}
+  .panel{display:none}
+  .panel.active{display:block}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:18px}
+  .card .ch{padding:13px 16px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12.5px;color:var(--ink);display:flex;align-items:center;gap:10px;background:var(--card-2)}
+
+  /* merge widget */
+  .merge{padding:16px}
+  .check{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--accent-soft);background:rgba(212,95,69,.06);border-radius:10px;margin-bottom:14px}
+  .check .ic{width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:600;flex-shrink:0}
+  .check .ic.run{background:var(--warn);animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .check .meta{flex:1}
+  .check .nm{font-family:var(--mono);font-size:13px;color:var(--ink);font-weight:500}
+  .check .ds{font-size:12px;color:var(--muted);font-family:var(--mono)}
+  .check .req{font-family:var(--mono);font-size:10.5px;color:var(--accent);border:1px solid var(--accent-soft);border-radius:6px;padding:2px 7px}
+  .rerun{font-family:var(--mono);font-size:12px;color:var(--primary);background:none;border:0;cursor:pointer;padding:0}
+  .rerun:hover{text-decoration:underline}
+  .blocked{font-family:var(--mono);font-size:12.5px;color:var(--accent);margin-bottom:14px}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .btn{font-family:var(--mono);font-size:13px;border-radius:9px;padding:10px 16px;cursor:pointer;border:1px solid transparent}
+  .btn-merge{background:var(--card-2);color:var(--muted);border-color:var(--line-strong);cursor:not-allowed}
+  .btn-close{background:var(--accent);color:#fff}
+  .btn-close:hover{background:#c5543b}
+  .btn-ghost{background:var(--card);border-color:var(--line-strong);color:var(--ink)}
+  .btn-ghost:hover{border-color:var(--primary)}
+
+  /* diff */
+  .diff{font-family:var(--mono);font-size:12.5px}
+  .diff .fn{padding:10px 16px;background:var(--card-2);border-bottom:1px solid var(--line);color:var(--ink);display:flex;justify-content:space-between}
+  .diff .ln{display:flex;gap:0;border-bottom:1px solid #eef0f5}
+  .diff .g{width:46px;text-align:right;padding:3px 10px;color:var(--line-strong);background:#fafbfd;user-select:none;flex-shrink:0}
+  .diff .tx{padding:3px 12px;white-space:pre-wrap;flex:1}
+  .diff .add{background:rgba(62,142,106,.10)} .diff .add .tx{color:#2c6b50}
+  .diff .add .g{background:rgba(62,142,106,.12)}
+  .diff .rm{background:rgba(212,95,69,.09)} .diff .rm .tx{color:#a9442f}
+  .diff .rm .g{background:rgba(212,95,69,.12)}
+  .diff .ctx .tx{color:var(--fg)}
+
+  /* discussion */
+  .thread{display:flex;flex-direction:column;gap:14px;padding:16px}
+  .cmt{display:flex;gap:12px}
+  .cmt .av{flex-shrink:0}
+  .cmt .bub{flex:1;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .cmt .bh{background:var(--card-2);border-bottom:1px solid var(--line);padding:7px 12px;font-size:12px;font-family:var(--mono);color:var(--muted)}
+  .cmt .bh b{color:var(--ink)}
+  .cmt .bb{padding:11px 12px;font-size:13.5px;color:var(--ink)}
+  .sys{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:center;padding:4px;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line)}
+  .sys b{color:var(--accent)}
+  .composer{padding:16px;border-top:1px solid var(--line)}
+  .composer .canned{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+  .chipbtn{font-family:var(--mono);font-size:12px;color:var(--ink);background:var(--card-2);border:1px solid var(--line);border-radius:999px;padding:6px 11px;cursor:pointer}
+  .chipbtn:hover{border-color:var(--primary);color:var(--primary)}
+  .composer textarea{width:100%;min-height:64px;border:1px solid var(--line-strong);border-radius:10px;padding:11px;font-family:var(--body);font-size:13.5px;color:var(--ink);resize:vertical}
+  .composer textarea:focus{outline:2px solid var(--primary);outline-offset:1px;border-color:var(--primary)}
+  .composer .crow{display:flex;gap:10px;margin-top:11px;flex-wrap:wrap}
+
+  /* sidebar */
+  .side .card{margin-bottom:16px}
+  .side h5{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:13px 16px 0;font-weight:500}
+  .side .body{padding:12px 16px 16px}
+  .reviewer{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line);cursor:pointer}
+  .reviewer:last-child{border-bottom:0}
+  .reviewer .av{flex-shrink:0}
+  .reviewer .nm{font-size:13px;color:var(--ink);flex:1}
+  .reviewer .vd{font-family:var(--mono);font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px}
+  .vd.req{color:var(--accent);background:rgba(212,95,69,.1);border:1px solid var(--accent-soft)}
+  .vd.pend{color:var(--warn);background:rgba(202,165,58,.12);border:1px solid #e3cf86}
+  .reviewer .hint{font-family:var(--mono);font-size:10.5px;color:var(--line-strong);text-align:center;margin-top:8px}
+  .labels{display:flex;flex-wrap:wrap;gap:7px}
+  .lab{font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:999px;border:1px solid var(--line)}
+  .lab.a{color:var(--accent);border-color:var(--accent-soft);background:rgba(212,95,69,.06)}
+  .lab.b{color:var(--primary);border-color:#b9bce0;background:rgba(58,62,140,.06)}
+  .lab.c{color:var(--muted);background:var(--card-2)}
+  .kv{display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-bottom:1px dashed var(--line)}
+  .kv:last-child{border-bottom:0}
+  .kv .k{color:var(--muted)}
+  .kv .v{font-family:var(--mono);color:var(--ink)}
+
+  .closedbanner{display:none;background:var(--ink);color:#fff;border-radius:12px;padding:16px 18px;margin-bottom:18px;font-family:var(--mono);font-size:13px}
+  .closedbanner.show{display:block}
+  .closedbanner b{color:var(--accent-soft)}
+
+  .empty{padding:40px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:13px}
+
+  @media(max-width:840px){.layout{grid-template-columns:1fr}.side{order:-1}}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="row">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <span class="repo">you<span class="sep"> / </span>your-life<span class="sep"> · </span>merge_requests</span>
+    <span class="brand">Decline<span class="d">.</span></span>
+  </div>
+</div>
+
+<div class="head">
+  <div class="mrtitle">Drinks Thursday 7pm <span class="num">!2317</span> <span class="state open" id="stateBadge"><span class="d"></span>Open</span></div>
+  <div class="subline"><b>m.coworker</b> wants to merge <span class="br">drinks-thursday</span> into <span class="br">your-saturday</span> · opened 41 days ago</div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" data-tab="overview">Overview</button>
+  <button class="tab" data-tab="changes">Changes <span class="c">3</span></button>
+  <button class="tab" data-tab="pipelines">Pipelines <span class="c">1</span></button>
+  <button class="tab" data-tab="closed">Closed <span class="c" id="closedCount">41</span></button>
+</div>
+
+<div class="layout">
+  <div class="main">
+
+    <div class="closedbanner" id="closedBanner">Merge request <b>!2317</b> closed without merging. Filed under Closed. You may now return to your protected branch.</div>
+
+    <!-- OVERVIEW -->
+    <div class="panel active" id="overview">
+      <div class="card">
+        <div class="ch">Merge widget</div>
+        <div class="merge">
+          <div class="check" id="checkRow">
+            <div class="ic" id="checkIc">✕</div>
+            <div class="meta">
+              <div class="nm">Social-Battery CI <span id="battPct">22%</span></div>
+              <div class="ds" id="checkDs">battery-check failed · build #4019 · required to merge</div>
+            </div>
+            <span class="req">required</span>
+          </div>
+          <div class="blocked" id="blockedMsg">⚠ Merge blocked: 1 required pipeline failing, 3 reviewers requesting changes.</div>
+          <div class="actions" id="mergeActions">
+            <button class="btn btn-merge" id="mergeBtn" disabled title="Blocked by failing required checks">Merge</button>
+            <button class="btn btn-close" id="closeBtn">Close without merging</button>
+            <button class="rerun" id="rerunBtn">↻ Re-run pipeline</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="ch">Discussion <span class="mono" style="color:var(--muted)">· <span id="cmtCount">3</span> comments</span></div>
+        <div class="thread" id="thread">
+          <div class="cmt">
+            <div class="av" id="avA"></div>
+            <div class="bub">
+              <div class="bh"><b>m.coworker</b> opened · 41 days ago</div>
+              <div class="bb">heyyy a few of us are doing drinks thursday, you should come!! it'll be fun, low key, home by 10. lmk 🙂</div>
+            </div>
+          </div>
+          <div class="sys">Social-Battery CI ran and <b>failed</b> (22%). Merge blocked.</div>
+          <div class="cmt">
+            <div class="av" id="avB"></div>
+            <div class="bub">
+              <div class="bh"><b>you</b> · reviewer · requested changes · 41 days ago</div>
+              <div class="bb">Thanks for the MR. Requesting changes: scope is too broad and the timeline conflicts with a hard dependency (lying down). Happy to revisit next quarter.</div>
+            </div>
+          </div>
+        </div>
+        <div class="composer" id="composer">
+          <div class="canned">
+            <button class="chipbtn" data-c="Reopening this could destabilize main. Holding.">canned: holding</button>
+            <button class="chipbtn" data-c="Left a comment instead of attending. Same energy, less commute.">canned: commented</button>
+            <button class="chipbtn" data-c="LGTM in spirit. Not in calendar.">canned: in spirit</button>
+            <button class="chipbtn" data-c="Marking wontfix with love.">canned: wontfix</button>
+          </div>
+          <textarea id="cmtBox" placeholder="Leave a comment (you will not be attending either way)…"></textarea>
+          <div class="crow">
+            <button class="btn btn-ghost" id="commentBtn">Comment</button>
+            <button class="btn btn-close" id="reqChangesBtn">Comment &amp; request changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHANGES -->
+    <div class="panel" id="changes">
+      <div class="card">
+        <div class="ch">thursday-evening.diff <span class="mono" style="color:var(--muted)">· +3 −1</span></div>
+        <div class="diff">
+          <div class="fn"><span>your-evening.yml</span><span style="color:var(--muted)">@@ -1,4 +1,6 @@</span></div>
+          <div class="ln ctx"><span class="g">1</span><span class="tx">plan: thursday</span></div>
+          <div class="ln rm"><span class="g">2</span><span class="tx">- state: quiet evening at home</span></div>
+          <div class="ln add"><span class="g">2</span><span class="tx">+ state: drinks, venue TBD, group size 6+</span></div>
+          <div class="ln add"><span class="g">3</span><span class="tx">+ commute: +40min each way</span></div>
+          <div class="ln add"><span class="g">4</span><span class="tx">+ small_talk_surface: +14</span></div>
+          <div class="ln ctx"><span class="g">5</span><span class="tx">  exit_strategy: none provided</span></div>
+          <div class="ln ctx"><span class="g">6</span><span class="tx">  battery_cost: 78</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch">Reviewer note</div>
+        <div class="merge"><p style="font-size:13.5px;color:var(--ink)">This diff removes a working <span class="mono">quiet evening at home</span> and replaces it with three unbudgeted dependencies. No exit strategy is declared. Recommend request-changes until an exit strategy and a hard end-time are added. They will not be added.</p></div>
+      </div>
+    </div>
+
+    <!-- PIPELINES -->
+    <div class="panel" id="pipelines">
+      <div class="card">
+        <div class="ch">Pipelines</div>
+        <div class="merge">
+          <div class="check">
+            <div class="ic">✕</div>
+            <div class="meta">
+              <div class="nm">#4019 · battery-check</div>
+              <div class="ds">parse-invite ✓ · estimate-cost ✓ · battery-check ✕ · deploy:calendar (skipped)</div>
+            </div>
+            <span class="req">failed</span>
+          </div>
+          <p class="mono" style="font-size:12.5px;color:var(--muted)">Reserve at start of run: 22%. Required threshold: 40%. Result: build failed, plan not deployed to calendar. This pipeline has failed its last 1,400 runs. Status: stable.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLOSED -->
+    <div class="panel" id="closed">
+      <div class="card">
+        <div class="ch">Closed merge requests</div>
+        <div class="empty" id="closedList">41 plans closed without merging. Your main branch remains untouched.<br>The most recent was a wedding (declined, with a gift).</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SIDEBAR -->
+  <aside class="side">
+    <div class="card">
+      <h5>Reviewers · 3</h5>
+      <div class="body" id="reviewers">
+        <div class="reviewer" data-r="0"><div class="av"></div><div class="nm">you</div><span class="vd req">request changes</span></div>
+        <div class="reviewer" data-r="1"><div class="av"></div><div class="nm">you (work account)</div><span class="vd req">request changes</span></div>
+        <div class="reviewer" data-r="2"><div class="av"></div><div class="nm">you (the tired one)</div><span class="vd req">request changes</span></div>
+        <div class="hint">click a reviewer to change your verdict</div>
+      </div>
+    </div>
+    <div class="card">
+      <h5>Labels</h5>
+      <div class="body labels">
+        <span class="lab a">low-battery</span>
+        <span class="lab a">wontfix</span>
+        <span class="lab b">introvert</span>
+        <span class="lab c">no-exit-strategy</span>
+      </div>
+    </div>
+    <div class="card">
+      <h5>Details</h5>
+      <div class="body">
+        <div class="kv"><span class="k">Assignee</span><span class="v">you</span></div>
+        <div class="kv"><span class="k">Milestone</span><span class="v">Never</span></div>
+        <div class="kv"><span class="k">Target branch</span><span class="v">your-saturday</span></div>
+        <div class="kv"><span class="k">Open for</span><span class="v">41 days</span></div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script>
+  function identicon(seed, fg, sz){
+    sz=sz||30;
+    var h=0; for(var i=0;i<seed.length;i++){h=(h*31+seed.charCodeAt(i))>>>0;}
+    var cell=8, pad=3, grid=5, size=grid*cell+pad*2, r='';
+    for(var y=0;y<grid;y++){for(var x=0;x<3;x++){
+      h=(h*1103515245+12345)>>>0;
+      if(h>>16&1){var mx=grid-1-x;
+        r+='<rect x="'+(pad+x*cell)+'" y="'+(pad+y*cell)+'" width="'+cell+'" height="'+cell+'" fill="'+fg+'"/>';
+        if(mx!==x)r+='<rect x="'+(pad+mx*cell)+'" y="'+(pad+y*cell)+'" width="'+cell+'" height="'+cell+'" fill="'+fg+'"/>';}
+    }}
+    return '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 '+size+' '+size+'" style="border-radius:7px;border:1px solid #D5D8E2" xmlns="http://www.w3.org/2000/svg"><rect width="'+size+'" height="'+size+'" fill="#F4F5F9"/>'+r+'</svg>';
+  }
+  document.getElementById('avA').innerHTML=identicon('m.coworker','#3A3E8C',34);
+  document.getElementById('avB').innerHTML=identicon('you','#D45F45',34);
+  document.querySelectorAll('#reviewers .av').forEach(function(el,i){el.innerHTML=identicon('you'+i,'#D45F45',26);});
+
+  // tabs
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click',function(){
+      document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active')});
+      document.querySelectorAll('.panel').forEach(function(x){x.classList.remove('active')});
+      t.classList.add('active');
+      document.getElementById(t.dataset.tab).classList.add('active');
+    });
+  });
+
+  var closed=false;
+  // re-run pipeline: spins, then fails again
+  var rerun=document.getElementById('rerunBtn'), ic=document.getElementById('checkIc'),
+      ds=document.getElementById('checkDs'), pct=document.getElementById('battPct'), battP=document.getElementById('battPct');
+  rerun.addEventListener('click',function(){
+    if(closed) return;
+    ic.classList.add('run'); ic.textContent='↻'; ds.textContent='battery-check running… recharging reserves…';
+    var v=22, up=setInterval(function(){ v++; pct.textContent=v+'%'; if(v>=37){clearInterval(up); settle();} },70);
+    function settle(){ setTimeout(function(){
+      var v2=37, dn=setInterval(function(){ v2--; pct.textContent=v2+'%'; if(v2<=22){clearInterval(dn);
+        ic.classList.remove('run'); ic.textContent='✕';
+        ds.textContent='battery-check failed · build #'+(4019+Math.floor((37-22)))+' · required to merge';
+      }},70);
+    },420); }
+  });
+
+  // reviewer verdict cycle (Approve is not on the menu)
+  document.querySelectorAll('.reviewer').forEach(function(rv){
+    var vd=rv.querySelector('.vd'); var i=0; var states=[['req','request changes'],['pend','pending'],['req','request changes']];
+    rv.addEventListener('click',function(){
+      if(closed) return;
+      i=(i+1)%states.length;
+      vd.className='vd '+states[i][0]; vd.textContent=states[i][1];
+    });
+  });
+
+  // comments
+  var thread=document.getElementById('thread'), box=document.getElementById('cmtBox'),
+      cnt=document.getElementById('cmtCount'); var n=3;
+  document.querySelectorAll('.chipbtn').forEach(function(b){
+    b.addEventListener('click',function(){ box.value=b.dataset.c; box.focus(); });
+  });
+  function addComment(text, reqChanges){
+    text=(text||'').trim(); if(!text || closed) return;
+    var d=document.createElement('div'); d.className='cmt';
+    d.innerHTML='<div class="av">'+identicon('you'+n,'#D45F45',34)+'</div>'+
+      '<div class="bub"><div class="bh"><b>you</b>'+(reqChanges?' · requested changes':'')+' · just now</div>'+
+      '<div class="bb"></div></div>';
+    d.querySelector('.bb').textContent=text;
+    var comp=document.getElementById('composer'); thread.appendChild(d);
+    n++; cnt.textContent=n; box.value='';
+    d.scrollIntoView({block:'nearest'});
+  }
+  document.getElementById('commentBtn').addEventListener('click',function(){ addComment(box.value,false); });
+  document.getElementById('reqChangesBtn').addEventListener('click',function(){ addComment(box.value||'Requesting changes.',true); });
+
+  // close without merging
+  document.getElementById('closeBtn').addEventListener('click',function(){
+    if(closed) return; closed=true;
+    document.getElementById('stateBadge').className='state closed';
+    document.getElementById('stateBadge').innerHTML='<span class="d"></span>Closed';
+    document.getElementById('closedBanner').classList.add('show');
+    document.getElementById('blockedMsg').textContent='Closed without merging. main is safe.';
+    document.getElementById('mergeBtn').style.display='none';
+    document.getElementById('closeBtn').style.display='none';
+    document.getElementById('rerunBtn').style.display='none';
+    var c=document.getElementById('closedCount'); c.textContent=parseInt(c.textContent,10)+1;
+    document.getElementById('composer').style.opacity='.5';
+    document.getElementById('closedList').innerHTML='42 plans closed without merging. Your main branch remains untouched.<br>The most recent was <b>Drinks Thursday</b>.';
+  });
+</script>
+</body>
+</html>

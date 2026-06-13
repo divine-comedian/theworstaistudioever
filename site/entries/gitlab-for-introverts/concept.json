@@ -1,0 +1,90 @@
+{
+  "date": "2026-06-13",
+  "company": "GitLab",
+  "subject": "introverts",
+  "tagline": "GitLab for introverts",
+  "slug": "gitlab-for-introverts",
+  "product_name": "Decline.",
+  "one_liner": "The complete DevOps platform for your social life. Every invitation is a merge request, and you are the only reviewer.",
+  "brand_voice_notes": "Deadpan, faux-corporate DevOps vendor that treats avoiding people as rigorous engineering discipline. Plans are merge requests, your weekend is a protected branch, your social energy is a CI pipeline that never goes green. Never winks. Pitches solitude with the confidence of a Series B platform company and the vocabulary of a release-engineering blog.",
+  "hero": {
+    "h1": "Version control for plans you have no intention of merging.",
+    "sub": "Decline. brings merge requests, pipelines, and branch protection to your social life. Invitations open as draft MRs against your weekend. Nothing reaches production without three approvals, and you are all three reviewers. You have approved nothing since March.",
+    "primary_cta": "Stay on main"
+  },
+  "features": [
+    {
+      "title": "Merge Requests for plans",
+      "blurb": "Every invitation opens as a merge request against your weekend. Review the diff, leave inline comments, request changes, or let it sit in Draft until it closes itself for inactivity. “Drinks Thursday” has been open for 41 days and counting."
+    },
+    {
+      "title": "Social-Battery CI",
+      "blurb": "Each plan triggers a pipeline that estimates its energy cost against your current reserves. Below 40 percent, the build fails and the plan never deploys to your calendar. The pipeline is a required check. It has never once gone green."
+    },
+    {
+      "title": "Protected main branch",
+      "blurb": "Nobody pushes directly to your Saturday. Three required approvals, force-push disabled, you as sole maintainer. Outside contributors may open issues. An issue is not a commitment, and you reserve the right to mark it wontfix."
+    }
+  ],
+  "pricing_tiers": [
+    {
+      "name": "Free (Already Home)",
+      "price": "$0/mo",
+      "tagline": "For people who were never going to come anyway.",
+      "perks": ["Unlimited declined invitations", "One protected branch (your couch)", "Read receipts off by default"]
+    },
+    {
+      "name": "Self-Managed",
+      "price": "$28/seat/mo",
+      "tagline": "One seat. It does not recline, and neither do you.",
+      "perks": ["Private runners for your social-battery pipelines", "Custom auto-decline rules", "Audit log of every plan you let quietly expire"]
+    },
+    {
+      "name": "Enterprise (Do Not Perceive Me)",
+      "price": "Contact sales (they won't reply)",
+      "tagline": "For the organization of one that requires SSO into solitude.",
+      "perks": ["Single sign-on to an empty room", "A dedicated account manager you will never meet", "99.99% uptime on being unavailable"]
+    }
+  ],
+  "testimonials": [
+    {
+      "quote": "I have three approving reviewers and they are all me. Nothing has shipped to production since the offsite I did not attend.",
+      "name": "Dana Whitlock",
+      "title": "Staff Engineer of Not Going, Series B"
+    },
+    {
+      "quote": "My social-battery pipeline has failed fourteen hundred builds in a row. The dashboard labels this “stable.”",
+      "name": "Marcus Feld",
+      "title": "Principal Recluse, Platform Solitude"
+    },
+    {
+      "quote": "Someone tried to force-push a birthday dinner onto my Saturday. Branch protection held. I felt seen, which I did not enjoy.",
+      "name": "Priya Anand",
+      "title": "VP of Leaving Before Dessert"
+    }
+  ],
+  "demo_screen_concept": "A merge-request review screen for one incoming plan: MR #2317 “Drinks Thursday 7pm,” opened by a coworker, targeting branch your-saturday. It shows a file-style diff of what the evening would change (commute +40min, three hours allocated, small-talk surface +14), a red failing pipeline badge (Social-Battery CI: 22% · FAILED · required), a reviewer panel where all three reviewers are you and every verdict is Request changes, a comment thread with canned replies, a blocked grey Merge button, and a confident Close-without-merging button. Interactive: re-run the pipeline (it still fails), post a canned comment, flip a reviewer verdict, and close the MR, which files it into a Closed (41) tab.",
+  "design_direction": {
+    "style": "Bento-grid DevOps console, light cool-mode. Modular asymmetric tiles on a cool fog-grey ground, each feature, metric, and status pinned to its own card with a hairline border and a single soft shadow tier. Monospace figures carry every number that pretends to be telemetry: battery percentage, pipeline duration, open-MR age, commit short-hashes, prices. One deep indigo carries structure, brand, and merge-affordances; one muted coral is reserved as the failing-CI / decline signal and appears almost nowhere else. No gradient soup, no neon, no glassmorphism, no rounded blobs. Generous 8px-rhythm gaps, squared-honest 14px card radii. Reads like a release-engineering platform that version-controls a person who would strongly prefer not to be deployed.",
+    "palette": {
+      "primary": "#3A3E8C",
+      "accent": "#D45F45",
+      "bg": "#E8EAF0",
+      "fg": "#2A2D38",
+      "muted": "#767C8C",
+      "ink": "#15171F"
+    },
+    "fonts": {
+      "display": "\"Familjen Grotesk\", \"Helvetica Neue\", Arial, sans-serif",
+      "body": "\"IBM Plex Sans\", -apple-system, BlinkMacSystemFont, \"Helvetica Neue\", Arial, sans-serif",
+      "mono": "\"IBM Plex Mono\", ui-monospace, \"SFMono-Regular\", Menlo, monospace"
+    },
+    "archetype": "Developer / DevOps SaaS product landing rendered as a bento dashboard: a hero with a live pipeline-status strip, a bento grid of feature tiles, commit-styled testimonials, a monospace-figure pricing rack, and a demo handoff to a merge-request review screen.",
+    "motion_vocab": "Cheap and restrained: 150-220ms ease-out on card hover (translateY 2px + shadow lift, scale 1.0 only), a single looping pipeline-dot pulse on the hero status strip, smooth-scroll anchors. Everything respects prefers-reduced-motion.",
+    "hero_composition_notes": "Left column: oversized Familjen Grotesk headline, sub, and a flush primary CTA plus a ghost demo CTA. Right column: a stacked bento cluster previewing the product. A pipeline-status strip (FAILED, in coral mono) anchors the top of the right cluster; a mini open-MR card and a social-battery gauge tile sit below. The whole thing reads as a product screenshot assembled from tiles, not a photo."
+  },
+  "images": {
+    "rationale": "Whole IMAGES step deliberately skipped on design grounds. The style is typographic bento (tiles + monospace telemetry, no photographic surfaces), so the hero earns no photo. The demo is a literal merge-request console (file diff, pipeline badge, reviewer panel), so it has no photo-shaped subject assets. Testimonial headshots were considered and rejected: the product's whole premise is faceless avoidance (“Do Not Perceive Me”), so identicon / commit-hash SVG avatars are more on-theme than corporate headshots and cost nothing. GEMINI_API_KEY was available; this was a choice, not a forced skip. No images generated.",
+    "items": []
+  }
+}

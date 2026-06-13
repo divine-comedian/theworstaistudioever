@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Decline. · theworstaistudioever</title>
+<meta name="description" content="The complete DevOps platform for your social life. Every invitation is a merge request, and you are the only reviewer.">
+<meta name="theme-color" content="#E8EAF0">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Decline. — version control for plans you have no intention of merging">
+<meta property="og:description" content="Merge requests, pipelines, and branch protection for your social life. Nothing reaches production without three approvals. You are all three reviewers.">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Decline. — GitLab for introverts">
+<meta name="twitter:description" content="Invitations open as draft MRs against your weekend. The pipeline has never once gone green.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --primary:#3A3E8C;
+    --primary-soft:#5256A8;
+    --accent:#D45F45;
+    --accent-soft:#E58B76;
+    --bg:#E8EAF0;
+    --card:#FFFFFF;
+    --card-2:#F4F5F9;
+    --fg:#2A2D38;
+    --muted:#767C8C;
+    --ink:#15171F;
+    --line:#D5D8E2;
+    --line-strong:#C2C6D4;
+    --ok:#3E8E6A;
+    --display:"Familjen Grotesk","Helvetica Neue",Arial,sans-serif;
+    --body:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+    --r:14px;
+    --shadow:0 1px 0 #fff inset, 0 6px 18px -10px rgba(21,23,31,.32);
+    --shadow-lift:0 1px 0 #fff inset, 0 16px 34px -14px rgba(21,23,31,.40);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+  body{
+    font-family:var(--body);
+    color:var(--fg);
+    background:
+      radial-gradient(1100px 540px at 84% -8%, rgba(58,62,140,.10), transparent 60%),
+      radial-gradient(720px 420px at 6% 6%, rgba(212,95,69,.06), transparent 60%),
+      var(--bg);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    letter-spacing:.005em;
+  }
+  .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
+  .mono{font-family:var(--mono)}
+  a{color:inherit}
+
+  /* ---- top bar ---- */
+  .topbar{position:sticky;top:0;z-index:40;backdrop-filter:saturate(1.4) blur(6px);
+    background:rgba(232,234,240,.82);border-bottom:1px solid var(--line)}
+  .topbar .row{display:flex;align-items:center;gap:18px;height:62px}
+  .brand{font-family:var(--display);font-weight:700;font-size:20px;color:var(--ink);letter-spacing:-.01em;text-decoration:none}
+  .brand .dot{color:var(--accent)}
+  .pill{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--accent);
+    border:1px solid var(--accent-soft);background:rgba(212,95,69,.07);padding:3px 9px;border-radius:999px;white-space:nowrap}
+  .pill .blink{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--accent);margin-right:6px;vertical-align:1px;animation:pulse 1.8s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.28}}
+  .navlinks{margin-left:auto;display:flex;gap:22px;align-items:center}
+  .navlinks a{font-family:var(--mono);font-size:13px;color:var(--muted);text-decoration:none}
+  .navlinks a:hover{color:var(--ink)}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-weight:500;
+    font-size:13px;text-decoration:none;border-radius:10px;padding:9px 15px;cursor:pointer;border:1px solid transparent;transition:transform .18s ease, box-shadow .18s ease, background .18s ease}
+  .btn-primary{background:var(--primary);color:#fff;box-shadow:0 8px 20px -12px rgba(58,62,140,.9)}
+  .btn-primary:hover{transform:translateY(-1px);background:#33367d}
+  .btn-ghost{border-color:var(--line-strong);color:var(--ink);background:var(--card)}
+  .btn-ghost:hover{transform:translateY(-1px);border-color:var(--primary-soft)}
+  @media(max-width:760px){.navlinks a.hide-sm{display:none}}
+
+  /* ---- hero ---- */
+  .hero{padding:64px 0 22px}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--primary);margin-bottom:18px}
+  h1{font-family:var(--display);font-weight:700;color:var(--ink);
+    font-size:clamp(34px,5.2vw,58px);line-height:1.02;letter-spacing:-.02em;margin-bottom:20px}
+  h1 .u{color:var(--accent);text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:6px;text-decoration-color:var(--accent-soft)}
+  .lede{font-size:17px;color:var(--fg);max-width:46ch;margin-bottom:26px}
+  .lede b{color:var(--ink);font-weight:600}
+  .cta-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .cta-note{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:14px}
+
+  /* hero bento cluster */
+  .cluster{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:auto;gap:14px}
+  .tile{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:16px}
+  .tile h4{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+  .pipe{grid-column:span 2;border-color:var(--accent-soft);background:linear-gradient(180deg,#fff,rgba(212,95,69,.05))}
+  .pipe .stages{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--fg);flex-wrap:wrap}
+  .stage{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:8px;padding:5px 9px;background:var(--card-2)}
+  .stage .s{width:8px;height:8px;border-radius:50%}
+  .s.ok{background:var(--ok)} .s.run{background:#caa53a} .s.fail{background:var(--accent);animation:pulse 1.6s infinite}
+  .stage.failed{border-color:var(--accent-soft);background:rgba(212,95,69,.08);color:var(--accent);font-weight:600}
+  .arrow{color:var(--line-strong)}
+  .gauge{display:flex;align-items:flex-end;justify-content:space-between}
+  .gauge .big{font-family:var(--mono);font-weight:600;font-size:34px;color:var(--accent);line-height:1}
+  .gauge .meter{height:8px;border-radius:99px;background:var(--card-2);border:1px solid var(--line);overflow:hidden;margin-top:12px}
+  .gauge .fill{height:100%;width:22%;background:linear-gradient(90deg,var(--accent),var(--accent-soft))}
+  .mr .row2{display:flex;gap:9px;align-items:center;font-family:var(--mono);font-size:12.5px;color:var(--ink)}
+  .mr .badge{font-size:10px;border:1px solid var(--line-strong);border-radius:6px;padding:2px 6px;color:var(--muted)}
+  .mr .age{color:var(--accent);font-weight:600}
+  .mini-diff{font-family:var(--mono);font-size:12px;margin-top:10px;line-height:1.7}
+  .mini-diff .add{color:var(--ok)} .mini-diff .rm{color:var(--accent)}
+
+  /* ---- section scaffolding ---- */
+  section{padding:54px 0}
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:26px;flex-wrap:wrap}
+  .sec-tag{font-family:var(--mono);font-size:12px;color:var(--accent)}
+  h2{font-family:var(--display);font-weight:600;color:var(--ink);font-size:clamp(26px,3.4vw,36px);letter-spacing:-.015em}
+  .sec-sub{color:var(--muted);font-size:15px;max-width:54ch}
+
+  /* features bento */
+  .bento{display:grid;grid-template-columns:repeat(6,1fr);gap:16px}
+  .feat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);
+    padding:24px;transition:transform .2s ease, box-shadow .2s ease;display:flex;flex-direction:column}
+  .feat:hover{transform:translateY(-3px);box-shadow:var(--shadow-lift)}
+  .feat:nth-child(1){grid-column:span 3}
+  .feat:nth-child(2){grid-column:span 3}
+  .feat:nth-child(3){grid-column:span 6}
+  .feat .ix{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:14px;display:flex;justify-content:space-between}
+  .feat .ix .k{color:var(--primary)}
+  .feat h3{font-family:var(--display);font-weight:600;font-size:21px;color:var(--ink);margin-bottom:9px;letter-spacing:-.01em}
+  .feat p{font-size:15px;color:var(--fg);max-width:62ch}
+  .feat .chip{align-self:flex-start;margin-top:16px;font-family:var(--mono);font-size:11px;color:var(--accent);
+    border:1px solid var(--accent-soft);background:rgba(212,95,69,.06);border-radius:7px;padding:4px 9px}
+  .feat.wide{flex-direction:row;gap:28px;align-items:center;flex-wrap:wrap}
+  .feat.wide .txt{flex:1 1 320px}
+  .feat.wide .visual{flex:1 1 300px;min-width:260px}
+  .protect{font-family:var(--mono);font-size:12.5px;background:var(--card-2);border:1px solid var(--line);border-radius:10px;padding:14px}
+  .protect .ln{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--line)}
+  .protect .ln:last-child{border-bottom:0}
+  .protect .on{color:var(--ok)} .protect .off{color:var(--accent)}
+
+  /* testimonials */
+  .quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .quote{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:22px;display:flex;flex-direction:column}
+  .quote .commit{font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:14px;display:flex;gap:8px;align-items:center}
+  .quote .hash{color:var(--primary)}
+  .quote blockquote{font-size:15.5px;color:var(--ink);line-height:1.5;margin-bottom:18px}
+  .who{display:flex;gap:12px;align-items:center;margin-top:auto}
+  .who svg{border-radius:8px;border:1px solid var(--line);flex-shrink:0}
+  .who .n{font-weight:600;color:var(--ink);font-size:14px}
+  .who .t{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+
+  /* pricing */
+  .rack{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:stretch}
+  .plan{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:24px;display:flex;flex-direction:column}
+  .plan.mid{border-color:var(--primary);box-shadow:0 0 0 1px var(--primary),var(--shadow-lift)}
+  .plan .pn{font-family:var(--display);font-weight:600;font-size:18px;color:var(--ink);margin-bottom:4px}
+  .plan .pt{font-size:13px;color:var(--muted);min-height:38px;margin-bottom:14px}
+  .plan .price{font-family:var(--mono);font-weight:600;font-size:26px;color:var(--primary);margin-bottom:18px;letter-spacing:-.01em}
+  .plan.mid .price{color:var(--ink)}
+  .plan ul{list-style:none;display:flex;flex-direction:column;gap:11px;margin-bottom:20px}
+  .plan li{font-size:14px;color:var(--fg);display:flex;gap:9px;align-items:flex-start}
+  .plan li .tick{color:var(--ok);font-family:var(--mono);flex-shrink:0;margin-top:1px}
+  .plan .btn{margin-top:auto;justify-content:center}
+  .ribbon{align-self:flex-start;font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;color:#fff;background:var(--primary);border-radius:6px;padding:3px 8px;margin-bottom:12px}
+
+  /* big demo CTA */
+  .handoff{margin:8px 0 0}
+  .handoff .box{background:var(--ink);color:#fff;border-radius:18px;padding:40px;display:flex;gap:24px;align-items:center;justify-content:space-between;flex-wrap:wrap;
+    background-image:radial-gradient(620px 280px at 90% 10%,rgba(212,95,69,.22),transparent 60%),radial-gradient(520px 260px at 0% 90%,rgba(58,62,140,.5),transparent 60%)}
+  .handoff h2{color:#fff;margin-bottom:8px}
+  .handoff p{color:#c8cbd6;font-size:15px;max-width:48ch;font-family:var(--mono)}
+  .handoff .btn-primary{background:var(--accent);box-shadow:0 10px 26px -12px rgba(212,95,69,.9);font-size:14px;padding:13px 20px}
+  .handoff .btn-primary:hover{background:#c5543b}
+
+  /* footer */
+  footer{border-top:1px solid var(--line);padding:34px 0 56px;margin-top:30px}
+  .foot{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}
+  .foot a.back{font-family:var(--mono);font-size:13px;color:var(--muted);text-decoration:none}
+  .foot a.back:hover{color:var(--ink)}
+  .foot .fine{font-family:var(--mono);font-size:11.5px;color:var(--line-strong)}
+
+  @media(max-width:860px){
+    .hero-grid{grid-template-columns:1fr;gap:30px}
+    .bento{grid-template-columns:1fr}
+    .feat:nth-child(1),.feat:nth-child(2),.feat:nth-child(3){grid-column:auto}
+    .quotes{grid-template-columns:1fr}
+    .rack{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap row">
+    <a class="brand" href="#top">Decline<span class="dot">.</span></a>
+    <span class="pill"><span class="blink"></span>SOCIAL-BATTERY CI · FAILED</span>
+    <nav class="navlinks">
+      <a class="hide-sm" href="#features">features</a>
+      <a class="hide-sm" href="#pricing">pricing</a>
+      <a class="btn btn-ghost" href="./demo.html">open the demo →</a>
+    </nav>
+  </div>
+</header>
+
+<a id="top"></a>
+<main class="wrap">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow">GitLab, for introverts</p>
+        <h1>Version control for plans you have <span class="u">no intention</span> of merging.</h1>
+        <p class="lede">Decline. brings merge requests, pipelines, and branch protection to your social life. Invitations open as draft MRs against your weekend. <b>Nothing reaches production without three approvals, and you are all three reviewers.</b> You have approved nothing since March.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#pricing">Stay on main</a>
+          <a class="btn btn-ghost" href="./demo.html">open the demo →</a>
+        </div>
+        <p class="cta-note">No onboarding call. We would also rather not.</p>
+      </div>
+
+      <!-- bento preview cluster -->
+      <div class="cluster" aria-hidden="true">
+        <div class="tile pipe">
+          <h4>pipeline #4019 <span class="mono" style="color:var(--accent)">failed</span></h4>
+          <div class="stages">
+            <span class="stage"><span class="s ok"></span>parse-invite</span>
+            <span class="arrow">→</span>
+            <span class="stage"><span class="s ok"></span>estimate-cost</span>
+            <span class="arrow">→</span>
+            <span class="stage failed"><span class="s fail"></span>battery-check</span>
+            <span class="arrow">→</span>
+            <span class="stage" style="opacity:.5"><span class="s"></span>deploy:calendar</span>
+          </div>
+        </div>
+        <div class="tile gauge">
+          <div style="width:100%">
+            <h4>social battery</h4>
+            <div class="big" id="batt">22%</div>
+            <div class="meter"><div class="fill" id="battfill"></div></div>
+          </div>
+        </div>
+        <div class="tile mr">
+          <h4>open MR <span class="age">41d</span></h4>
+          <div class="row2"><span class="badge">#2317</span> Drinks&nbsp;Thursday</div>
+          <div class="mini-diff">
+            <div class="rm">- quiet evening at home</div>
+            <div class="add">+ commute +40min</div>
+            <div class="add">+ small-talk +14</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="sec-head">
+      <span class="sec-tag">// features</span>
+      <h2>The wrong tool for the wrong problem, shipped on a quarterly cadence.</h2>
+    </div>
+    <div class="bento">
+      <article class="feat">
+        <div class="ix"><span class="k">feature/merge-requests</span><span>01</span></div>
+        <h3>Merge Requests for plans</h3>
+        <p>Every invitation opens as a merge request against your weekend. Review the diff, leave inline comments, request changes, or let it sit in Draft until it closes itself for inactivity.</p>
+        <span class="chip">“Drinks Thursday” open for 41 days</span>
+      </article>
+
+      <article class="feat">
+        <div class="ix"><span class="k">feature/social-battery-ci</span><span>02</span></div>
+        <h3>Social-Battery CI</h3>
+        <p>Each plan triggers a pipeline that estimates its energy cost against your current reserves. Below 40 percent, the build fails and the plan never deploys to your calendar.</p>
+        <span class="chip">required check · never once green</span>
+      </article>
+
+      <article class="feat wide">
+        <div class="txt">
+          <div class="ix"><span class="k">feature/protected-main</span><span>03</span></div>
+          <h3>Protected main branch</h3>
+          <p>Nobody pushes directly to your Saturday. Three required approvals, force-push disabled, you as sole maintainer. Outside contributors may open issues. An issue is not a commitment, and you reserve the right to mark it <span class="mono" style="color:var(--accent)">wontfix</span>.</p>
+        </div>
+        <div class="visual">
+          <div class="protect" aria-hidden="true">
+            <div class="ln"><span>branch <b>your-saturday</b></span><span class="on">protected ✓</span></div>
+            <div class="ln"><span>required approvals</span><span>3 / 3 (all you)</span></div>
+            <div class="ln"><span>force-push</span><span class="off">disabled</span></div>
+            <div class="ln"><span>allow outside contributors</span><span class="off">issues only</span></div>
+            <div class="ln"><span>last merge to main</span><span class="off">never</span></div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section id="proof">
+    <div class="sec-head">
+      <span class="sec-tag">// adopters</span>
+      <h2>Trusted by people who would rather you didn't mention it.</h2>
+    </div>
+    <div class="quotes" id="quotes"></div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing">
+    <div class="sec-head">
+      <span class="sec-tag">// pricing</span>
+      <h2>Priced with confidence. Billed to a card you forgot you had.</h2>
+      <p class="sec-sub">Every plan includes the core platform. The platform's core competency is not coming.</p>
+    </div>
+    <div class="rack">
+      <article class="plan">
+        <div class="pn">Free (Already Home)</div>
+        <div class="pt">For people who were never going to come anyway.</div>
+        <div class="price">$0<span style="font-size:14px;color:var(--muted)">/mo</span></div>
+        <ul>
+          <li><span class="tick">+</span>Unlimited declined invitations</li>
+          <li><span class="tick">+</span>One protected branch (your couch)</li>
+          <li><span class="tick">+</span>Read receipts off by default</li>
+        </ul>
+        <a class="btn btn-ghost" href="./demo.html">open the demo →</a>
+      </article>
+
+      <article class="plan mid">
+        <span class="ribbon">MOST DEFLECTED</span>
+        <div class="pn">Self-Managed</div>
+        <div class="pt">One seat. It does not recline, and neither do you.</div>
+        <div class="price">$28<span style="font-size:14px;color:var(--muted)">/seat/mo</span></div>
+        <ul>
+          <li><span class="tick">+</span>Private runners for your social-battery pipelines</li>
+          <li><span class="tick">+</span>Custom auto-decline rules</li>
+          <li><span class="tick">+</span>Audit log of every plan you let quietly expire</li>
+        </ul>
+        <a class="btn btn-primary" href="./demo.html">Stay on main</a>
+      </article>
+
+      <article class="plan">
+        <div class="pn">Enterprise (Do Not Perceive Me)</div>
+        <div class="pt">For the organization of one that requires SSO into solitude.</div>
+        <div class="price">Contact&nbsp;sales</div>
+        <ul>
+          <li><span class="tick">+</span>Single sign-on to an empty room</li>
+          <li><span class="tick">+</span>A dedicated account manager you will never meet</li>
+          <li><span class="tick">+</span>99.99% uptime on being unavailable</li>
+        </ul>
+        <a class="btn btn-ghost" href="./demo.html">they won't reply →</a>
+      </article>
+    </div>
+  </section>
+
+  <!-- DEMO HANDOFF -->
+  <section class="handoff">
+    <div class="box">
+      <div>
+        <h2>Review one real merge request.</h2>
+        <p>MR #2317 is waiting. The pipeline failed. All three reviewers are you. Go close it without merging.</p>
+      </div>
+      <a class="btn btn-primary" href="./demo.html">open the demo →</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <a class="back" href="/">← theworstaistudioever</a>
+    <span class="fine">Decline. is a portfolio company of the worst AI studio ever. SLA measured in left-on-read.</span>
+  </div>
+</footer>
+
+<script>
+  // Identicon-style avatars: on-theme faceless "do not perceive me" generated marks.
+  function identicon(seed, fg){
+    var h=0; for(var i=0;i<seed.length;i++){h=(h*31+seed.charCodeAt(i))>>>0;}
+    var cell=9, pad=4, grid=5, size=grid*cell+pad*2, r='';
+    for(var y=0;y<grid;y++){
+      for(var x=0;x<3;x++){
+        h=(h*1103515245+12345)>>>0;
+        if((h>>16&1)){
+          var mx=grid-1-x;
+          var rect='<rect x="'+(pad+x*cell)+'" y="'+(pad+y*cell)+'" width="'+cell+'" height="'+cell+'" fill="'+fg+'"/>';
+          r+=rect;
+          if(mx!==x){r+='<rect x="'+(pad+mx*cell)+'" y="'+(pad+y*cell)+'" width="'+cell+'" height="'+cell+'" fill="'+fg+'"/>';}
+        }
+      }
+    }
+    return '<svg width="46" height="46" viewBox="0 0 '+size+' '+size+'" xmlns="http://www.w3.org/2000/svg"><rect width="'+size+'" height="'+size+'" fill="#F4F5F9"/>'+r+'</svg>';
+  }
+
+  var testimonials=[
+    {q:"I have three approving reviewers and they are all me. Nothing has shipped to production since the offsite I did not attend.",n:"Dana Whitlock",t:"Staff Engineer of Not Going, Series B",hash:"a1f9c0d",c:"#3A3E8C"},
+    {q:"My social-battery pipeline has failed fourteen hundred builds in a row. The dashboard labels this “stable.”",n:"Marcus Feld",t:"Principal Recluse, Platform Solitude",hash:"7e2b4aa",c:"#D45F45"},
+    {q:"Someone tried to force-push a birthday dinner onto my Saturday. Branch protection held. I felt seen, which I did not enjoy.",n:"Priya Anand",t:"VP of Leaving Before Dessert",hash:"0c84f31",c:"#3E8E6A"}
+  ];
+  document.getElementById('quotes').innerHTML = testimonials.map(function(x){
+    return '<article class="quote">'
+      +'<div class="commit"><span class="hash">'+x.hash+'</span><span>· committed · -0 +0</span></div>'
+      +'<blockquote>'+x.q+'</blockquote>'
+      +'<div class="who">'+identicon(x.n,x.c)
+      +'<div><div class="n">'+x.n+'</div><div class="t">'+x.t+'</div></div></div>'
+      +'</article>';
+  }).join('');
+
+  // hero battery: drains toward 22% and refuses to recover
+  var reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if(!reduce){
+    var el=document.getElementById('batt'), fill=document.getElementById('battfill'), v=31;
+    var t=setInterval(function(){
+      v-=1; if(v<=22){v=22; clearInterval(t);}
+      el.textContent=v+'%'; fill.style.width=v+'%';
+    },140);
+  }
+</script>
+</body>
+</html>
