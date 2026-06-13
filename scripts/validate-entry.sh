@@ -43,4 +43,34 @@ for field in date tagline product_name one_liner design_direction; do
   [[ "$has" == "true" ]] || fail "concept.json missing required field: $field"
 done
 
+# 6. Every <img src> is local (no hotlinking) and resolves inside the entry dir.
+#    data: URIs are allowed — they're self-contained.
+DIR_REAL="$(realpath "$DIR")"
+for f in index.html demo.html; do
+  while IFS= read -r src; do
+    [[ -z "$src" ]] && continue
+    case "$src" in
+      data:*) continue ;;
+      http://*|https://*|//*) fail "$f hotlinks an image: $src" ;;
+    esac
+    path="${src%%\?*}"; path="${path%%#*}"; path="${path#./}"
+    target="$DIR/$path"
+    [[ -f "$target" ]] || fail "$f references missing image: $src"
+    case "$(realpath -m "$target")" in
+      "$DIR_REAL"/*) ;;
+      *) fail "$f image path escapes entry dir: $src" ;;
+    esac
+  done < <(grep -oi '<img[^>]*src="[^"]*"' "$DIR/$f" 2>/dev/null | sed 's/.*src="\([^"]*\)".*/\1/' || true)
+done
+
+# 7. Every image file in the entry dir decodes with PIL and is <= 500 KB
+shopt -s nullglob
+for img in "$DIR"/*.png "$DIR"/*.jpg "$DIR"/*.jpeg "$DIR"/*.webp "$DIR"/*.gif; do
+  size=$(wc -c < "$img")
+  [[ "$size" -le 512000 ]] || fail "image too large: $(basename "$img") (${size} bytes > 512000)"
+  python3 -c "import sys; from PIL import Image; Image.open(sys.argv[1]).verify()" "$img" 2>/dev/null \
+    || fail "image does not decode: $(basename "$img")"
+done
+shopt -u nullglob
+
 echo "validate-entry [$SLUG]: OK"

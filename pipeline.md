@@ -1,6 +1,6 @@
 # Daily run — theworstaistudioever
 
-You are the agent responsible for shipping today's daily startup prototype to theworstaistudioever.com. You will execute the 8 steps below in order. Do not skip steps. Do not invent additional steps. The wrapper script will handle git after you exit — do NOT run git commands yourself.
+You are the agent responsible for shipping today's daily startup prototype to theworstaistudioever.com. You will execute the 9 steps below in order. Do not skip steps. Do not invent additional steps. The wrapper script will handle git after you exit — do NOT run git commands yourself.
 
 The current working directory is the repo root. All paths are relative to it.
 
@@ -12,7 +12,7 @@ The brand is **"the worst AI studio ever"** — every startup we generate is dea
 
 Earnest startup tone kills the joke. Never write "Welcome to the future of X." Never write "We're on a mission to..." Never use the word "revolutionize" or "seamless" or "delight" or "empower" sincerely. If you catch yourself writing those, you are off-brand.
 
-**You MUST invoke the `anti-ai-slop` skill before producing any visible copy in steps 2, 4, and 5.** This is not optional.
+**You MUST invoke the `anti-ai-slop` skill before producing any visible copy in steps 2, 5, and 6.** This is not optional.
 
 ---
 
@@ -96,7 +96,44 @@ Earnest startup tone kills the joke. Never write "Welcome to the future of X." N
 
 ---
 
-## Step 4 — BUILD LANDING
+## Step 4 — IMAGES (art-directed, optional per slot)
+
+Generate up to **4 AI images** for the entry via `scripts/gen-image.sh`, but only where a photo genuinely earns its place. Skipping a slot — or all of them — is intended behavior, not a failure.
+
+**Skip path:** if `GEMINI_API_KEY` is unavailable, or `gen-image.sh` exits with `IMAGEGEN_CAP_REACHED`, note it for the run summary, skip the rest of this step entirely, and proceed to Step 5 with no images. Steps 5–6 must lay out around whatever images actually exist — never emit a broken `<img>`.
+
+1. **Allocate the budget (up to 4 images) across three roles, by genuine need:**
+   - **Hero** (16:9, post-crop 1600×900 WebP) — only when the design direction from step 3 calls for imagery. Typographic styles (brutalist, swiss-modernist, editorial, …) should usually skip it.
+   - **Demo subject assets** (1:1 or as the layout needs) — only when `demo_screen_concept` is photo-shaped: profile/dating cards, video-call tiles, album/video art, subject-ID or surveillance consoles. Terminal/map/document demos get none.
+   - **Testimonial headshots** (1:1, post-crop 320×320 WebP) — deadpan corporate headshots of the subject for the landing page's named testimonials. The always-applicable fallback when hero and demo don't need the budget.
+
+2. **Compose each prompt under strict guidelines:**
+   - Scene/subject from the concept (the subject, `demo_screen_concept`, product framing).
+   - Mood, style, and palette words derived from `design_direction` — include hex hints (e.g. "muted sage green #9CAF88 backdrop").
+   - One focal subject per image. Name the medium explicitly ("editorial photograph", "flat illustration", …), consistent with the day's style archetype.
+   - State the hard bans in every prompt: **no text, no letters, no numbers, no logos, no watermarks, no rendered UI screens.** All text belongs in HTML.
+
+3. **Generate:** `./scripts/gen-image.sh "<prompt>" <aspect> site/entries/<slug>/<name>-raw.png`
+
+4. **Post-edit:** `python3 scripts/crop-image.py site/entries/<slug>/<name>-raw.png site/entries/<slug>/<name>.webp --width W --height H --delete-input` (the flag removes the oversized raw file, which would otherwise fail validation). Final files must be ≤500 KB (validation enforces this).
+
+5. **Judge with vision:** `Read` each cropped image and check: subject is correct; palette/mood harmonizes with the design direction; no text artifacts; no generic-AI-render tells. On failure, regenerate **once** with specific corrective feedback appended to the prompt — max 2 attempts per image. An image failing both attempts is dropped: delete the file (`rm` is not allowlisted — use `python3 -c "import os; os.remove('site/entries/<slug>/<name>.webp')"`); its slot falls back to the CSS/SVG treatment.
+
+6. **Record provenance** by editing `site/entries/<slug>/concept.json` to add an `images` key:
+   ```
+   "images": {
+     "rationale": "photo-shaped demo (dating cards); typographic hero skipped; budget on cards + 1 headshot",
+     "items": [
+       { "role": "demo", "file": "card-1.webp", "prompt": "...", "attempts": 1 },
+       { "role": "testimonial", "file": "headshot-1.webp", "prompt": "...", "attempts": 2 }
+     ]
+   }
+   ```
+   The `rationale` covers every role, including skips ("skipped because …"), so an image-less day is visible in review. Omit the `images` key entirely when the whole step was skipped (no key / cap reached).
+
+---
+
+## Step 5 — BUILD LANDING
 
 1. **Invoke the `frontend-design` skill.** This is required — it's the guardrail against generic AI output.
 2. Write a single self-contained HTML file to `site/entries/<slug>/index.html` with:
@@ -106,20 +143,22 @@ Earnest startup tone kills the joke. Never write "Welcome to the future of X." N
    - Any JS needed (smooth scroll, etc.) inline in a `<script>` tag.
 3. All visible copy passes through `anti-ai-slop` voice rules. No generic AI tells.
 4. The page should look like a real, well-funded startup's landing page in the chosen style — not a template.
+5. **Incorporate whichever step-4 images exist** via relative paths (e.g. `<img src="hero.webp">`): hero image in the hero section, headshots replacing the testimonials' initials-circles. If an image was skipped or dropped, that slot keeps its CSS/SVG treatment — never reference a file that does not exist.
 
 ---
 
-## Step 5 — BUILD DEMO
+## Step 6 — BUILD DEMO
 
 1. Write `site/entries/<slug>/demo.html` — a single self-contained HTML file containing one interactive screen of the imagined product, populated with fake data.
 2. Inherits the palette and typography from step 3, but uses **product-UI layout** (not marketing). Think: a dashboard, a feed, a swipe-stack, a settings page, a config editor — whatever fits the `demo_screen_concept` from step 2.
 3. Real interactivity where cheap (vanilla JS, no frameworks): filtering, toggling, modal open/close, drag-reorder, tab switching, fake search. No real API calls — mock everything client-side.
 4. Top-left chrome: small back link "← back to the pitch" to `./index.html`.
 5. Use `frontend-design` skill while building. Run all visible copy through `anti-ai-slop`.
+6. **Incorporate whichever step-4 demo subject assets exist** via relative paths. Slots without an image keep their CSS/SVG treatment — never reference a file that does not exist.
 
 ---
 
-## Step 6 — GALLERY REBUILD
+## Step 7 — GALLERY REBUILD
 
 1. Read every `site/entries/*/concept.json`.
 2. Sort by `date` descending (newest first).
@@ -154,7 +193,7 @@ Earnest startup tone kills the joke. Never write "Welcome to the future of X." N
 
 ---
 
-## Step 7 — VALIDATE & RECORD
+## Step 8 — VALIDATE & RECORD
 
 1. Run `scripts/validate-entry.sh site <slug>` via the Bash tool. If it exits non-zero, abort the run — print the error, do not proceed.
 2. Append `{date, company, subject, slug}` to `state/history.json`. Read the existing array, append, write back. Maintain JSON validity.
@@ -162,12 +201,13 @@ Earnest startup tone kills the joke. Never write "Welcome to the future of X." N
    - What was rolled (company, subject, slug).
    - Number of rerolls.
    - Design direction chosen (style, palette, fonts).
+   - Image allocation rationale, per-image attempt counts and judge verdicts — or why the IMAGES step was skipped.
    - Any warnings or near-misses.
    - Confirmation that validation passed.
 
 ---
 
-## Step 8 — DONE
+## Step 9 — DONE
 
 Print exactly this line to stdout (the wrapper greps for it):
 
@@ -186,5 +226,6 @@ Then exit cleanly. **Do NOT run git commands.** The wrapper handles git.
 - Do not write any file outside the working tree.
 - Do not commit, push, or pull.
 - Do not skip skill invocations to "save time."
+- Do not hotlink images or call the Gemini API except through `scripts/gen-image.sh`. Entry images live inside the entry directory.
 - Do not pick a style/palette/fonts tuple that matches any of the last 7 entries.
 - Do not earnestly pitch the startup. Commit to the bit.

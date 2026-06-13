@@ -86,7 +86,7 @@ BEFORE_ENTRIES=$(ls site/entries 2>/dev/null | sort || true)
 # Run the agent
 log "invoking claude -p"
 if ! claude -p "$(cat pipeline.md)" \
-      --allowed-tools "Read,Write,Edit,Glob,Grep,Bash(jq:*),Bash(node:*),Bash(python3:*),Bash(date:*),Bash(ls:*),Bash(cat:*),Bash(mkdir:*),Bash(./scripts/validate-entry.sh:*),Bash(scripts/validate-entry.sh:*),Skill" \
+      --allowed-tools "Read,Write,Edit,Glob,Grep,Bash(jq:*),Bash(node:*),Bash(python3:*),Bash(date:*),Bash(ls:*),Bash(cat:*),Bash(mkdir:*),Bash(./scripts/validate-entry.sh:*),Bash(scripts/validate-entry.sh:*),Bash(./scripts/gen-image.sh:*),Bash(scripts/gen-image.sh:*),Skill" \
       --max-turns 80 \
       >> "$LOG" 2>&1; then
   log "RUN FAILED: claude -p exited non-zero"

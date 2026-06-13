@@ -17,8 +17,10 @@ cp site/404.html "$SANDBOX/site/404.html"
 cp site/CNAME "$SANDBOX/site/CNAME"
 cp site/favicon.png "$SANDBOX/site/favicon.png"
 cp site/logo.png "$SANDBOX/site/logo.png"
-# Pipeline Step 7.1 invokes `scripts/validate-entry.sh`; the agent runs with cwd=$SANDBOX,
-# so the script must be reachable at that relative path.
+# Pipeline Step 8.1 invokes `scripts/validate-entry.sh` and Step 4 invokes
+# `scripts/gen-image.sh`; the agent runs with cwd=$SANDBOX, so the scripts must
+# be reachable at that relative path. gen-image.sh resolves its repo root from
+# its own location, so its daily-cap counter lands in $SANDBOX/state/runs.
 cp -r scripts "$SANDBOX/scripts"
 
 LOG="$SANDBOX/run.log"
@@ -30,7 +32,7 @@ cp ../pipeline.md ./pipeline.md
 
 echo "=== dry run start ==="
 if ! claude -p "$(cat pipeline.md)" \
-      --allowed-tools "Read,Write,Edit,Glob,Grep,Bash(jq:*),Bash(node:*),Bash(python3:*),Bash(date:*),Bash(ls:*),Bash(cat:*),Bash(mkdir:*),Bash(./scripts/validate-entry.sh:*),Bash(scripts/validate-entry.sh:*),Skill" \
+      --allowed-tools "Read,Write,Edit,Glob,Grep,Bash(jq:*),Bash(node:*),Bash(python3:*),Bash(date:*),Bash(ls:*),Bash(cat:*),Bash(mkdir:*),Bash(./scripts/validate-entry.sh:*),Bash(scripts/validate-entry.sh:*),Bash(./scripts/gen-image.sh:*),Bash(scripts/gen-image.sh:*),Skill" \
       --max-turns 80 \
       2>&1 | tee "../$LOG" >&2; then
   echo "DRY RUN FAILED — see $LOG"
