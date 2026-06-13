@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linger — Today's Match · theworstaistudioever</title>
+<meta name="description" content="One card. One decision. The next one arrives tomorrow at 5:15 AM.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&display=swap');
+
+:root{
+  --primary:#8C3B2E;
+  --accent:#A85751;
+  --bg:#F7F0E3;
+  --fg:#3E2F23;
+  --muted:#8B7A66;
+  --ink:#2B1F16;
+  --rule:rgba(62,47,35,.3);
+  --paper:#FBF6EC;
+  --approve:#5C7350;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--bg);color:var(--fg);
+  font-family:'Merriweather', Georgia, serif;font-weight:300;
+  font-size:15px;line-height:1.6;min-height:100vh;
+}
+.app{max-width:1060px;margin:0 auto;padding:18px 20px 48px}
+
+/* top chrome */
+.chrome{
+  display:flex;justify-content:space-between;align-items:center;gap:14px;
+  padding:10px 0 14px;border-bottom:1px solid var(--rule);flex-wrap:wrap;
+}
+.back{
+  font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--primary);text-decoration:none;
+  border-bottom:1px solid transparent;transition:border-color .3s ease;
+}
+.back:hover,.back:focus-visible{border-color:var(--primary)}
+.wordmark{font-family:'Abril Fatface', Georgia, serif;font-size:20px;color:var(--ink)}
+.day-meta{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:right}
+.day-meta strong{color:var(--primary);font-weight:400}
+
+/* layout */
+.deck{display:grid;grid-template-columns:1.25fr .9fr;gap:34px;margin-top:30px;align-items:start}
+
+/* match card */
+.stage{position:relative;display:flex;flex-direction:column;align-items:center}
+.stage-label{
+  font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;
+}
+.card{
+  width:100%;max-width:380px;background:var(--paper);
+  border:1px solid var(--rule);
+  box-shadow:10px 10px 0 rgba(43,31,22,.1);
+  padding:14px 14px 22px;
+  touch-action:pan-y;
+  cursor:grab;user-select:none;
+  transition:transform .35s ease, opacity .35s ease;
+  will-change:transform;
+}
+.card.dragging{transition:none;cursor:grabbing}
+.card.exit-left{transform:translateX(-130%) rotate(-9deg);opacity:0}
+.card.exit-right{transform:translateX(130%) rotate(9deg);opacity:0}
+.card img{display:block;width:100%;height:auto;border:1px solid var(--rule);filter:sepia(.15);pointer-events:none}
+.card h2{font-family:'Abril Fatface', Georgia, serif;font-weight:400;font-size:26px;color:var(--ink);margin:16px 4px 2px}
+.card .meta{font-size:12px;font-style:italic;color:var(--muted);margin:0 4px 14px}
+.facts{list-style:none;margin:0 4px;border-top:1px dotted var(--rule)}
+.facts li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dotted var(--rule);font-size:13px}
+.facts .k{color:var(--muted)}
+.facts .v{color:var(--ink);text-align:right}
+
+/* compatibility meter */
+.meter-wrap{margin:16px 4px 0}
+.meter-label{display:flex;justify-content:space-between;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.meter{height:8px;background:var(--bg);border:1px solid var(--rule)}
+.meter span{display:block;height:100%;width:74%;background:var(--accent)}
+
+/* decision row */
+.decide{display:flex;gap:16px;margin-top:26px}
+.dbtn{
+  font-family:'Merriweather', Georgia, serif;
+  font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  padding:14px 22px;border:1px solid var(--primary);
+  background:transparent;color:var(--primary);cursor:pointer;
+  transition:background .3s ease,color .3s ease;
+}
+.dbtn:hover:not(:disabled),.dbtn:focus-visible:not(:disabled){background:var(--primary);color:var(--bg)}
+.dbtn.yes{background:var(--primary);color:var(--bg)}
+.dbtn.yes:hover:not(:disabled),.dbtn.yes:focus-visible:not(:disabled){background:transparent;color:var(--primary)}
+.dbtn:disabled{opacity:.4;cursor:not-allowed}
+.swipe-hint{font-size:11px;font-style:italic;color:var(--muted);margin-top:14px;text-align:center}
+
+/* rest screen */
+.rest{
+  display:none;width:100%;max-width:380px;text-align:center;
+  background:var(--paper);border:1px solid var(--rule);
+  box-shadow:10px 10px 0 rgba(43,31,22,.1);
+  padding:64px 34px;
+}
+.rest.visible{display:block}
+.rest h2{font-family:'Abril Fatface', Georgia, serif;font-weight:400;font-size:30px;color:var(--ink);margin-bottom:14px}
+.rest p{font-size:14px;font-style:italic;color:var(--muted)}
+.rest .verdict{margin-top:20px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--primary);font-style:normal}
+
+/* oversight panel */
+.panel{background:var(--paper);border:1px solid var(--rule);padding:26px}
+.panel h3{
+  font-family:'Abril Fatface', Georgia, serif;font-weight:400;
+  font-size:19px;color:var(--ink);
+  padding-bottom:12px;border-bottom:3px double var(--ink);margin-bottom:6px;
+}
+.panel .sub{font-size:12px;font-style:italic;color:var(--muted);margin-bottom:18px}
+.voter{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px dotted var(--rule)}
+.voter:last-of-type{border-bottom:none}
+.avatar{
+  width:38px;height:38px;border-radius:50%;flex:none;
+  background:var(--bg);border:1px solid var(--rule);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Abril Fatface', Georgia, serif;font-size:15px;color:var(--accent);
+}
+.voter .who{flex:1;min-width:0}
+.voter .vname{font-size:14px;color:var(--ink)}
+.voter .vrole{font-size:11px;font-style:italic;color:var(--muted)}
+.badge{
+  font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  padding:5px 10px;border:1px solid currentColor;white-space:nowrap;
+}
+.badge.approved{color:var(--approve)}
+.badge.pending{color:var(--muted)}
+.badge.abstained{color:var(--accent)}
+.quorum{
+  margin-top:18px;padding-top:14px;border-top:1px solid var(--rule);
+  font-size:12px;color:var(--muted);font-style:italic;
+}
+.nudge{
+  margin-top:14px;width:100%;
+  font-family:'Merriweather', Georgia, serif;
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  padding:12px;border:1px solid var(--muted);background:transparent;color:var(--muted);cursor:pointer;
+  transition:border-color .3s ease,color .3s ease;
+}
+.nudge:hover,.nudge:focus-visible{border-color:var(--primary);color:var(--primary)}
+
+/* countdown */
+.countdown{
+  margin-top:22px;background:var(--ink);color:var(--bg);
+  padding:20px 26px;text-align:center;
+}
+.countdown .cd-label{font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:rgba(247,240,227,.6)}
+.countdown .cd-time{font-family:'Abril Fatface', Georgia, serif;font-size:30px;letter-spacing:.06em;margin-top:6px}
+
+/* toast */
+.toast{
+  position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(8px);
+  background:var(--ink);color:var(--bg);
+  font-size:13px;font-style:italic;padding:13px 22px;
+  opacity:0;pointer-events:none;transition:opacity .35s ease,transform .35s ease;
+  max-width:90vw;text-align:center;
+}
+.toast.visible{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (prefers-reduced-motion: reduce){
+  .card,.toast,.dbtn,.back,.nudge{transition:none}
+}
+@media (max-width:880px){
+  .deck{grid-template-columns:1fr}
+  .day-meta{display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="chrome">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <span class="wordmark">Linger</span>
+    <span class="day-meta">Thursday, June 12 · Match <strong>1 of 1</strong> · Window closes 6:00 PM</span>
+  </header>
+
+  <main class="deck">
+
+    <section class="stage" aria-label="Today's match">
+      <p class="stage-label">Today's Match</p>
+
+      <article class="card" id="card" aria-describedby="swipe-hint">
+        <img src="match-harold.webp" alt="Harold F., seated formally in a mustard cardigan" width="380" height="475">
+        <h2>Harold F., 78</h2>
+        <p class="meta">0.2 miles away. You share a building and a mail carrier.</p>
+        <ul class="facts">
+          <li><span class="k">Preferred dinner time</span><span class="v">4:45 PM</span></li>
+          <li><span class="k">Acquaintances shared since 1968</span><span class="v">3 (two confirmed)</span></li>
+          <li><span class="k">Hearing aid policy</span><span class="v">Wears it for company</span></li>
+          <li><span class="k">Last seen</span><span class="v">The lobby, Tuesday</span></li>
+        </ul>
+        <div class="meter-wrap">
+          <div class="meter-label"><span>Compatibility</span><span>Strong canasta partner</span></div>
+          <div class="meter" role="img" aria-label="Compatibility: strong canasta partner, roughly three quarters"><span></span></div>
+        </div>
+      </article>
+
+      <div class="rest" id="rest" role="status">
+        <h2>That is enough for today.</h2>
+        <p>Your decision has been recorded and forwarded to your grandchildren for review.</p>
+        <p class="verdict" id="verdict"></p>
+      </div>
+
+      <div class="decide">
+        <button class="dbtn" id="btn-no" type="button">Decline politely</button>
+        <button class="dbtn yes" id="btn-yes" type="button">Express interest</button>
+      </div>
+      <p class="swipe-hint" id="swipe-hint">You may also swipe the card, if your wrist allows.</p>
+    </section>
+
+    <aside>
+      <section class="panel" aria-label="Grandchild oversight">
+        <h3>Grandchild Oversight</h3>
+        <p class="sub">Your match unlocks after a majority vote. Abstentions count as no.</p>
+        <div class="voter">
+          <span class="avatar">M</span>
+          <span class="who">
+            <span class="vname">Megan, 34</span><br>
+            <span class="vrole">Eldest. Has power of attorney and opinions.</span>
+          </span>
+          <span class="badge approved" id="vote-megan">Approved</span>
+        </div>
+        <div class="voter">
+          <span class="avatar">T</span>
+          <span class="who">
+            <span class="vname">Tyler, 27</span><br>
+            <span class="vrole">Reads notifications. Does not open them.</span>
+          </span>
+          <span class="badge pending" id="vote-tyler">Pending</span>
+        </div>
+        <div class="voter">
+          <span class="avatar">B</span>
+          <span class="who">
+            <span class="vname">Braydon, 12</span><br>
+            <span class="vrole">Added by accident. Cannot be removed.</span>
+          </span>
+          <span class="badge abstained" id="vote-braydon">Abstained</span>
+        </div>
+        <p class="quorum" id="quorum">Quorum status: 1 of 2 required approvals. Tyler was reminded on Sunday.</p>
+        <button class="nudge" id="nudge" type="button">Remind Tyler again</button>
+      </section>
+
+      <div class="countdown">
+        <div class="cd-label">Next match arrives in</div>
+        <div class="cd-time" id="cd">--:--:--</div>
+      </div>
+    </aside>
+
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  var card = document.getElementById('card');
+  var rest = document.getElementById('rest');
+  var verdict = document.getElementById('verdict');
+  var btnYes = document.getElementById('btn-yes');
+  var btnNo = document.getElementById('btn-no');
+  var hint = document.getElementById('swipe-hint');
+  var toast = document.getElementById('toast');
+  var nudge = document.getElementById('nudge');
+  var voteTyler = document.getElementById('vote-tyler');
+  var quorum = document.getElementById('quorum');
+  var decided = false;
+  var toastTimer = null;
+  var nudges = 0;
+
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('visible');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('visible'); }, 3800);
+  }
+
+  function decide(liked){
+    if (decided) return;
+    decided = true;
+    card.classList.add(liked ? 'exit-right' : 'exit-left');
+    btnYes.disabled = true;
+    btnNo.disabled = true;
+    hint.textContent = 'Decisions reset at 5:15 AM. Rest now.';
+    verdict.textContent = liked ? 'You expressed interest in Harold F.' : 'You declined Harold F., politely.';
+    setTimeout(function(){
+      card.style.display = 'none';
+      rest.classList.add('visible');
+    }, 380);
+    showToast(liked
+      ? 'Interest noted. Harold will be informed within 3 to 5 business days.'
+      : 'Declined. Harold will not be told. He will simply sense it.');
+  }
+
+  btnYes.addEventListener('click', function(){ decide(true); });
+  btnNo.addEventListener('click', function(){ decide(false); });
+
+  // drag/swipe
+  var startX = null, dx = 0;
+  function pointerDown(x){ if (decided) return; startX = x; card.classList.add('dragging'); }
+  function pointerMove(x){
+    if (startX === null || decided) return;
+    dx = x - startX;
+    card.style.transform = 'translateX(' + dx + 'px) rotate(' + (dx / 22) + 'deg)';
+  }
+  function pointerUp(){
+    if (startX === null || decided) return;
+    card.classList.remove('dragging');
+    if (Math.abs(dx) > 90) {
+      card.style.transform = '';
+      decide(dx > 0);
+    } else {
+      card.style.transform = '';
+    }
+    startX = null; dx = 0;
+  }
+  card.addEventListener('mousedown', function(e){ e.preventDefault(); pointerDown(e.clientX); });
+  window.addEventListener('mousemove', function(e){ pointerMove(e.clientX); });
+  window.addEventListener('mouseup', pointerUp);
+  card.addEventListener('touchstart', function(e){ pointerDown(e.touches[0].clientX); }, {passive:true});
+  card.addEventListener('touchmove', function(e){ pointerMove(e.touches[0].clientX); }, {passive:true});
+  card.addEventListener('touchend', pointerUp);
+
+  // nudge Tyler
+  nudge.addEventListener('click', function(){
+    nudges++;
+    if (nudges === 1) {
+      showToast('Tyler has been reminded. Delivery receipts are not available.');
+    } else if (nudges === 2) {
+      voteTyler.textContent = 'Abstained';
+      voteTyler.classList.remove('pending');
+      voteTyler.classList.add('abstained');
+      quorum.textContent = 'Quorum status: 1 of 2 required approvals. Tyler has muted this conversation.';
+      nudge.disabled = true;
+      nudge.style.opacity = '.4';
+      nudge.style.cursor = 'not-allowed';
+      showToast('Tyler has abstained. Abstentions count as no.');
+    }
+  });
+
+  // countdown to 5:15 AM
+  var cd = document.getElementById('cd');
+  function pad(n){ return n < 10 ? '0' + n : '' + n; }
+  function tick(){
+    var now = new Date();
+    var next = new Date(now);
+    next.setHours(5, 15, 0, 0);
+    if (next <= now) next.setDate(next.getDate() + 1);
+    var s = Math.floor((next - now) / 1000);
+    cd.textContent = pad(Math.floor(s / 3600)) + ':' + pad(Math.floor((s % 3600) / 60)) + ':' + pad(s % 60);
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+</script>
+</body>
+</html>
