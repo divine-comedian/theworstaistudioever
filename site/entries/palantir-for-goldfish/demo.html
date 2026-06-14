@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Murk Console · ASSET GARY-01</title>
+<meta name="description" content="Live operations console for asset GARY-01. One fish, observed exhaustively.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#3FB6CC;--accent:#E5484D;--bg:#080B11;--panel:#0D131C;--panel-2:#101826;
+    --fg:#AEBED0;--muted:#5A6A7C;--ink:#E8F1FB;
+    --line:rgba(63,182,204,.16);--line-strong:rgba(63,182,204,.32);
+    --display:"Chakra Petch","Helvetica Neue",Arial,sans-serif;
+    --body:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,Arial,sans-serif;
+    --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:14px;
+    -webkit-font-smoothing:antialiased;min-height:100vh}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  ::selection{background:var(--primary);color:#03252c}
+  button{font-family:inherit;cursor:pointer}
+
+  /* top chrome */
+  .chrome{display:flex;align-items:center;justify-content:space-between;gap:16px;
+    padding:10px 18px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:30}
+  .chrome .left{display:flex;align-items:center;gap:18px;min-width:0}
+  .back{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--primary);text-decoration:none;white-space:nowrap}
+  .back:hover{text-decoration:underline}
+  .sys{display:flex;align-items:center;gap:9px;font-family:var(--display);font-weight:700;color:var(--ink);letter-spacing:.04em}
+  .sys svg{width:18px;height:18px}
+  .chrome .right{display:flex;align-items:center;gap:14px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .livep{display:flex;align-items:center;gap:7px;color:var(--accent)}
+  .livep i{width:7px;height:7px;background:var(--accent);border-radius:50%;animation:bl 1.5s infinite}
+  @keyframes bl{0%,100%{opacity:1}50%{opacity:.25}}
+  .clock{color:var(--primary)}
+  @media(max-width:680px){.chrome .right .hideabit{display:none}}
+
+  /* classification ribbon */
+  .ribbon{font-family:var(--mono);font-size:10px;letter-spacing:.26em;text-transform:uppercase;
+    text-align:center;padding:4px;background:var(--accent);color:#080B11}
+
+  /* layout */
+  .grid{display:grid;grid-template-columns:1.35fr 1fr 1fr;gap:1px;background:var(--line);
+    border-bottom:1px solid var(--line)}
+  @media(max-width:1000px){.grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:720px){.grid{grid-template-columns:1fr}}
+  .pane{background:var(--panel);padding:16px;min-width:0}
+  .pane.map{grid-row:span 2}
+  @media(max-width:1000px){.pane.map{grid-row:auto;grid-column:1 / -1}}
+  .ph{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+  .ph h2{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:0;font-weight:500}
+  .ph .tag{font-family:var(--mono);font-size:10px;color:var(--primary);border:1px solid var(--line);padding:2px 7px}
+
+  /* map */
+  .map-stage{position:relative;aspect-ratio:4/3;border:1px solid var(--line);background:
+    radial-gradient(120% 120% at 50% 40%, #0a141d, #05080c);overflow:hidden}
+  .map-grid{position:absolute;inset:0;background-image:
+    linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:32px 32px;opacity:.5}
+  .map-rings{position:absolute;inset:0;opacity:0;transition:opacity .25s}
+  .map-heat{position:absolute;inset:0;opacity:0;transition:opacity .25s;background:
+    radial-gradient(120px 120px at var(--fx,50%) var(--fy,50%), rgba(229,72,77,.35), transparent 70%)}
+  .map-path{position:absolute;inset:0;opacity:0;transition:opacity .25s}
+  .layer-on{opacity:1}
+  .asset-node{position:absolute;width:18px;height:18px;margin:-9px;transition:left .9s linear, top .9s linear}
+  .asset-node .ring{position:absolute;inset:0;border:1.5px solid var(--primary);border-radius:50%;
+    animation:pp 2s infinite}
+  .asset-node .core{position:absolute;left:50%;top:50%;width:5px;height:5px;margin:-2.5px;background:var(--primary);border-radius:50%;box-shadow:0 0 8px var(--primary)}
+  .asset-node .lbl{position:absolute;left:16px;top:-4px;font-family:var(--mono);font-size:9px;color:var(--primary);white-space:nowrap;letter-spacing:.1em}
+  @keyframes pp{0%{box-shadow:0 0 0 0 rgba(63,182,204,.5)}70%{box-shadow:0 0 0 12px rgba(63,182,204,0)}100%{box-shadow:0 0 0 0 rgba(63,182,204,0)}}
+  .crosshair{position:absolute;left:50%;top:8px;transform:translateX(-50%);font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.18em}
+  .layers{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .layers button{background:transparent;color:var(--muted);border:1px solid var(--line);
+    font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:6px 11px;transition:all .15s}
+  .layers button[aria-pressed="true"]{color:#03252c;background:var(--primary);border-color:var(--primary);font-weight:700}
+  .layers button:hover{border-color:var(--line-strong)}
+  .readouts{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);margin-top:12px;border:1px solid var(--line)}
+  .ro{background:var(--panel-2);padding:10px 12px}
+  .ro .k{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .ro .v{font-family:var(--mono);font-size:15px;color:var(--ink);margin-top:3px}
+  .ro .v.ok{color:var(--primary)}
+
+  /* forecast */
+  .chartbox{border:1px solid var(--line);background:var(--panel-2);padding:12px}
+  .chartbox svg{width:100%;height:120px;display:block}
+  .conf{display:flex;align-items:baseline;gap:10px;margin-top:12px;font-family:var(--mono)}
+  .conf .big{font-size:30px;color:var(--primary);font-weight:700}
+  .conf .small{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.14em}
+  .memory{margin-top:16px;border:1px dashed var(--line-strong);background:repeating-linear-gradient(45deg,#0a0f17,#0a0f17 8px,#0c121b 8px,#0c121b 16px);
+    min-height:74px;display:flex;align-items:center;justify-content:center;text-align:center;padding:14px}
+  .memory span{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.08em;line-height:1.6}
+  .memory b{color:var(--fg);font-weight:500}
+
+  /* link graph */
+  .graph{position:relative;border:1px solid var(--line);background:var(--panel-2);aspect-ratio:1/1}
+  .graph svg{position:absolute;inset:0;width:100%;height:100%}
+  .gnode{cursor:pointer}
+  .gnode circle{transition:all .15s}
+  .gnode:hover circle{stroke:var(--primary);stroke-width:2}
+  .gnode text{font-family:var(--mono);font-size:9px;fill:var(--fg);letter-spacing:.04em}
+  .glink{stroke:var(--line-strong);stroke-width:1}
+  .glabel{font-family:var(--mono);font-size:8px;fill:var(--muted)}
+  .ghint{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:10px;text-align:center}
+
+  /* threat feed */
+  .feed{padding:16px 18px 30px}
+  .feed .ph{margin-bottom:12px}
+  .filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .filters label{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .filters select{font-family:var(--mono);font-size:11px;background:var(--panel-2);color:var(--ink);
+    border:1px solid var(--line);padding:6px 10px}
+  .feedlist{margin-top:14px;border:1px solid var(--line);max-height:260px;overflow:auto}
+  .frow{display:grid;grid-template-columns:120px 90px 1fr 110px;gap:12px;align-items:center;
+    padding:10px 14px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:11.5px}
+  @media(max-width:680px){.frow{grid-template-columns:1fr;gap:3px}}
+  .frow:last-child{border-bottom:0}
+  .frow .ts{color:var(--muted)}
+  .frow .sev{display:inline-block;padding:2px 8px;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--line)}
+  .sev.low{color:var(--primary);border-color:var(--line-strong)}
+  .sev.med{color:#E5C04D;border-color:rgba(229,192,77,.4)}
+  .sev.high{color:var(--accent);border-color:rgba(229,72,77,.45)}
+  .frow .msg{color:var(--fg)}
+  .frow .stat{color:var(--primary);text-align:right;letter-spacing:.08em}
+  .feedfoot{font-family:var(--mono);font-size:10.5px;color:var(--muted);padding:12px 4px 0}
+
+  /* modal */
+  .scrim{position:fixed;inset:0;background:rgba(4,7,11,.78);backdrop-filter:blur(3px);
+    display:none;align-items:center;justify-content:center;padding:20px;z-index:80}
+  .scrim.open{display:flex}
+  .modal{width:min(440px,100%);background:var(--panel);border:1px solid var(--line-strong);
+    box-shadow:0 30px 90px -30px #000}
+  .modal .mhead{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;
+    border-bottom:1px solid var(--line);background:var(--accent);color:#080B11}
+  .modal .mhead .mt{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:700}
+  .modal .mhead button{background:transparent;border:0;color:#080B11;font-size:18px;line-height:1;padding:2px 6px}
+  .mbody{padding:18px 16px}
+  .mbody img{width:100%;aspect-ratio:1/1;object-fit:cover;border:1px solid var(--line);filter:contrast(1.05) saturate(.9);display:block;margin-bottom:14px}
+  .redactbox{aspect-ratio:1/1;border:1px solid var(--line);background:
+    repeating-linear-gradient(45deg,#0a0f17,#0a0f17 10px,#0c121b 10px,#0c121b 20px);
+    display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+  .redactbox span{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.18em}
+  .drow{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12px}
+  .drow:last-child{border-bottom:0}
+  .drow .dk{color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-size:10px}
+  .drow .dv{color:var(--ink);text-align:right}
+  .dv.flag{color:var(--accent)}
+  .dv.ok{color:var(--primary)}
+
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="ribbon">// Unclassified // Live Operations // Asset GARY-01 //</div>
+<div class="chrome">
+  <div class="left">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <span class="sys">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12Z"/><circle cx="12" cy="12" r="3.2"/></svg>
+      Murk Console
+    </span>
+  </div>
+  <div class="right">
+    <span class="hideabit">OPERATOR&nbsp;<span style="color:var(--ink)">analyst-04</span></span>
+    <span class="livep"><i></i>LIVE</span>
+    <span class="clock mono" id="clock">--:--:--</span>
+  </div>
+</div>
+
+<div class="grid">
+  <!-- MAP -->
+  <section class="pane map">
+    <div class="ph"><h2>Tank-Map · Feed 01</h2><span class="tag" id="trackTag">TRACKING</span></div>
+    <div class="map-stage">
+      <div class="map-grid"></div>
+      <div class="map-rings" id="layRings">
+        <svg viewBox="0 0 100 75" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%">
+          <circle cx="50" cy="40" r="12" fill="none" stroke="rgba(63,182,204,.35)" stroke-width=".4"/>
+          <circle cx="50" cy="40" r="22" fill="none" stroke="rgba(63,182,204,.22)" stroke-width=".4"/>
+          <circle cx="50" cy="40" r="32" fill="none" stroke="rgba(63,182,204,.12)" stroke-width=".4"/>
+        </svg>
+      </div>
+      <div class="map-path" id="layPath">
+        <svg viewBox="0 0 100 75" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%">
+          <path d="M30 30 Q60 12 70 38 T40 56 T30 30" fill="none" stroke="rgba(63,182,204,.5)" stroke-width=".6" stroke-dasharray="2 2"/>
+        </svg>
+      </div>
+      <div class="map-heat" id="layHeat"></div>
+      <div class="crosshair">+ GRID REF 12&deg;N // ESTABLISHED</div>
+      <div class="asset-node" id="asset" style="left:30%;top:40%">
+        <div class="ring"></div><div class="core"></div><div class="lbl">GARY-01</div>
+      </div>
+    </div>
+    <div class="layers" role="group" aria-label="Map layers">
+      <button data-layer="layPath" aria-pressed="false">Path</button>
+      <button data-layer="layHeat" aria-pressed="false">Heat</button>
+      <button data-layer="layRings" aria-pressed="false">Sonar</button>
+    </div>
+    <div class="readouts">
+      <div class="ro"><div class="k">Asset Status</div><div class="v ok">IN BOWL</div></div>
+      <div class="ro"><div class="k">Velocity</div><div class="v" id="vel">0.04 m/s</div></div>
+      <div class="ro"><div class="k">Laps Today</div><div class="v" id="laps">1,204</div></div>
+      <div class="ro"><div class="k">Threats YTD</div><div class="v ok">0</div></div>
+    </div>
+  </section>
+
+  <!-- FORECAST -->
+  <section class="pane">
+    <div class="ph"><h2>Predicted Next Lap</h2><span class="tag">MODELLED</span></div>
+    <div class="chartbox">
+      <svg viewBox="0 0 280 120" preserveAspectRatio="none" aria-label="Predicted lap trajectory">
+        <line x1="0" y1="90" x2="280" y2="90" stroke="rgba(63,182,204,.18)" stroke-width="1"/>
+        <line x1="0" y1="60" x2="280" y2="60" stroke="rgba(63,182,204,.1)" stroke-width="1"/>
+        <line x1="0" y1="30" x2="280" y2="30" stroke="rgba(63,182,204,.1)" stroke-width="1"/>
+        <polyline points="0,80 40,55 80,70 120,30 160,62 200,40 240,72 280,50" fill="none" stroke="#3FB6CC" stroke-width="2"/>
+        <polyline points="0,80 40,55 80,70 120,30 160,62 200,40 240,72 280,50" fill="none" stroke="rgba(63,182,204,.18)" stroke-width="10" stroke-linejoin="round"/>
+        <circle cx="120" cy="30" r="3.2" fill="#E5484D"/>
+      </svg>
+    </div>
+    <div class="conf"><span class="big">99.97%</span><span class="small">forecast confidence</span></div>
+    <div class="ph" style="margin-top:22px;margin-bottom:10px"><h2>Reconstructed Memory</h2></div>
+    <div class="memory">
+      <span><b>Recovered span: 3.0s.</b><br>No prior events on record. Asset has no recollection of being modelled.</span>
+    </div>
+  </section>
+
+  <!-- LINK GRAPH -->
+  <section class="pane">
+    <div class="ph"><h2>Associate Map</h2><span class="tag">4 ENTITIES</span></div>
+    <div class="graph">
+      <svg viewBox="0 0 220 220" id="graphSvg">
+        <line class="glink" x1="110" y1="110" x2="110" y2="40"/>
+        <line class="glink" x1="110" y1="110" x2="180" y2="110"/>
+        <line class="glink" x1="110" y1="110" x2="110" y2="182"/>
+        <line class="glink" x1="110" y1="110" x2="40" y2="110"/>
+        <text class="glabel" x="118" y="78">0.31</text>
+        <text class="glabel" x="146" y="104">0.88</text>
+        <text class="glabel" x="118" y="150">0.97</text>
+        <text class="glabel" x="70" y="104">0.42</text>
+
+        <g class="gnode" data-id="gary" tabindex="0" role="button" aria-label="Open dossier for GARY-01">
+          <circle cx="110" cy="110" r="26" fill="#0a141d" stroke="#3FB6CC" stroke-width="1.5"/>
+          <text x="110" y="113" text-anchor="middle" fill="#E8F1FB">GARY-01</text>
+        </g>
+        <g class="gnode" data-id="thermometer" tabindex="0" role="button" aria-label="Open dossier for thermometer">
+          <circle cx="110" cy="40" r="17" fill="#10131a" stroke="rgba(63,182,204,.4)"/>
+          <text x="110" y="43" text-anchor="middle">THERM</text>
+        </g>
+        <g class="gnode" data-id="filter" tabindex="0" role="button" aria-label="Open dossier for filter">
+          <circle cx="180" cy="110" r="17" fill="#10131a" stroke="rgba(63,182,204,.4)"/>
+          <text x="180" y="113" text-anchor="middle">FILTER</text>
+        </g>
+        <g class="gnode" data-id="castle" tabindex="0" role="button" aria-label="Open dossier for plastic castle">
+          <circle cx="110" cy="182" r="18" fill="#10131a" stroke="rgba(229,72,77,.6)"/>
+          <text x="110" y="185" text-anchor="middle" fill="#E5484D">CASTLE</text>
+        </g>
+        <g class="gnode" data-id="flake" tabindex="0" role="button" aria-label="Open dossier for single flake">
+          <circle cx="40" cy="110" r="16" fill="#10131a" stroke="rgba(63,182,204,.4)"/>
+          <text x="40" y="113" text-anchor="middle">FLAKE</text>
+        </g>
+      </svg>
+    </div>
+    <div class="ghint">Select any node to open its dossier.</div>
+  </section>
+</div>
+
+<!-- THREAT FEED -->
+<section class="feed">
+  <div class="ph">
+    <h2>Threat Feed</h2>
+    <div class="filters">
+      <label for="sevsel">Severity</label>
+      <select id="sevsel">
+        <option value="all">All</option>
+        <option value="low">Low</option>
+        <option value="med">Medium</option>
+        <option value="high">High / Critical</option>
+      </select>
+    </div>
+  </div>
+  <div class="feedlist" id="feedlist"></div>
+  <div class="feedfoot" id="feedfoot"></div>
+</section>
+
+<!-- DOSSIER MODAL -->
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="dossierTitle">
+  <div class="modal">
+    <div class="mhead">
+      <span class="mt" id="dossierTitle">Entity Dossier</span>
+      <button id="closeModal" aria-label="Close dossier">&times;</button>
+    </div>
+    <div class="mbody" id="dossierBody"></div>
+  </div>
+</div>
+
+<script>
+  // clock
+  function pad(n){return String(n).padStart(2,'0')}
+  function tick(){
+    var d=new Date();
+    document.getElementById('clock').textContent=pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+  }
+  tick(); setInterval(tick,1000);
+
+  // asset node drift around the bowl + live velocity/laps
+  var asset=document.getElementById('asset'), heat=document.getElementById('layHeat');
+  var pts=[[30,40],[58,22],[72,46],[50,62],[34,52],[44,30]], pi=0;
+  var laps=1204, lapsEl=document.getElementById('laps'), velEl=document.getElementById('vel');
+  function move(){
+    pi=(pi+1)%pts.length;
+    var x=pts[pi][0], y=pts[pi][1];
+    asset.style.left=x+'%'; asset.style.top=y+'%';
+    heat.style.setProperty('--fx',x+'%'); heat.style.setProperty('--fy',y+'%');
+    if(pi===0){laps++; lapsEl.textContent=laps.toLocaleString();}
+    velEl.textContent=(0.03+Math.abs(Math.sin(pi))*0.03).toFixed(2)+' m/s';
+  }
+  setInterval(move,1500);
+
+  // layer toggles
+  document.querySelectorAll('.layers button').forEach(function(b){
+    b.addEventListener('click',function(){
+      var on=b.getAttribute('aria-pressed')==='true';
+      b.setAttribute('aria-pressed',String(!on));
+      document.getElementById(b.dataset.layer).classList.toggle('layer-on',!on);
+    });
+  });
+
+  // dossiers
+  var DOS={
+    gary:{title:'Dossier · GARY-01',img:'./asset.webp',rows:[
+      ['Designation','GARY-01'],['Classification','Domestic Goldfish'],['Threat level','None','ok'],
+      ['Memory span','3.0 seconds'],['Last seen','the bowl'],['Cooperation','Unaware']]},
+    castle:{title:'Dossier · PLASTIC CASTLE',redact:true,rows:[
+      ['Designation','CASTLE-77'],['Classification','Persistent Associate'],['Relationship score','0.97','flag'],
+      ['First contact','Day 1'],['Status','Assets frozen','flag'],['Notes','Refuses interview']]},
+    filter:{title:'Dossier · FILTRATION UNIT',redact:true,rows:[
+      ['Designation','FILT-02'],['Classification','Dependency'],['Relationship score','0.88'],
+      ['Uptime','Continuous'],['Status','Monitored','ok'],['Notes','Hums. Suspiciously.']]},
+    flake:{title:'Dossier · SINGLE FLAKE',redact:true,rows:[
+      ['Designation','FLAKE-01'],['Classification','High-Value Object'],['Relationship score','0.42'],
+      ['Last seen','Surface, NE quadrant'],['Status','Consumed'],['Notes','Asset shows no remorse']]},
+    thermometer:{title:'Dossier · THERMOMETER',redact:true,rows:[
+      ['Designation','THRM-09'],['Classification','Passive Observer'],['Relationship score','0.31'],
+      ['Reading','21.4&deg;C'],['Status','Cleared','ok'],['Notes','Tells the truth, always']]}
+  };
+  var scrim=document.getElementById('scrim'), dbody=document.getElementById('dossierBody'),
+      dtitle=document.getElementById('dossierTitle');
+  function openDossier(id){
+    var d=DOS[id]; if(!d) return;
+    dtitle.textContent=d.title;
+    var html='';
+    d.rows.forEach(function(r){
+      html+='<div class="drow"><span class="dk">'+r[0]+'</span><span class="dv'+(r[2]?(' '+r[2]):'')+'">'+r[1]+'</span></div>';
+    });
+    dbody.innerHTML='';
+    if(d.img){
+      var im=document.createElement('img');
+      im.setAttribute('src', d.img);
+      im.setAttribute('alt','Surveillance identification photo of asset GARY-01');
+      dbody.appendChild(im);
+    } else {
+      var rb=document.createElement('div');
+      rb.className='redactbox';
+      rb.innerHTML='<span>[ IMAGE REDACTED ]</span>';
+      dbody.appendChild(rb);
+    }
+    dbody.insertAdjacentHTML('beforeend', html);
+    scrim.classList.add('open');
+  }
+  function closeDossier(){scrim.classList.remove('open')}
+  document.querySelectorAll('.gnode').forEach(function(g){
+    g.addEventListener('click',function(){openDossier(g.dataset.id)});
+    g.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();openDossier(g.dataset.id)}});
+  });
+  document.getElementById('closeModal').addEventListener('click',closeDossier);
+  scrim.addEventListener('click',function(e){if(e.target===scrim)closeDossier()});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeDossier()});
+
+  // threat feed — every entry, at every severity, is nothing
+  var SEV=['low','med','high'], SEVLBL={low:'Low',med:'Medium',high:'Critical'};
+  var sites=['TANK-A','FILTER LINE','SURFACE','SUBSTRATE','CASTLE PERIM.','NE QUADRANT','INTAKE','GLASS WALL'];
+  var feed=[];
+  (function build(){
+    var t=Date.now();
+    for(var i=0;i<22;i++){
+      var d=new Date(t - i*47000);
+      feed.push({ts:pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds()),
+        sev:SEV[i%3], site:sites[i%sites.length]});
+    }
+  })();
+  var listEl=document.getElementById('feedlist'), footEl=document.getElementById('feedfoot'),
+      sel=document.getElementById('sevsel');
+  function render(){
+    var f=sel.value, rows=feed.filter(function(r){return f==='all'||r.sev===f});
+    listEl.innerHTML=rows.map(function(r){
+      return '<div class="frow"><span class="ts">'+r.ts+'</span>'
+        +'<span><span class="sev '+r.sev+'">'+SEVLBL[r.sev]+'</span></span>'
+        +'<span class="msg">'+r.site+' — NO THREAT DETECTED</span>'
+        +'<span class="stat">NOMINAL</span></div>';
+    }).join('');
+    footEl.textContent='Showing '+rows.length+' events · 0 threats · 0 incidents · system confidence holding at 99.97%';
+  }
+  sel.addEventListener('change',render);
+  render();
+</script>
+</body>
+</html>
