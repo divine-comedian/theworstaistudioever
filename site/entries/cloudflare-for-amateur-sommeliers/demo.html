@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palate Firewall · Carafe</title>
+<meta name="description" content="Live edge events from the Carafe Palate Firewall.">
+<meta name="theme-color" content="#0D0C0A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Instrument+Sans:wght@400;500;600&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F4F2EC;
+    --ink:#0D0C0A;
+    --fg:#1C1B18;
+    --accent:#E04E13;
+    --muted:#8B867B;
+    --hair:#D8D3C7;
+    --paper:#FAF9F4;
+    --green:#2E7D4F;
+    --red:#B23A2E;
+    --amber:#B8791C;
+    --display:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
+    --body:"Instrument Sans",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+    --mono:"Spline Sans Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;-webkit-font-smoothing:antialiased;}
+  .tnum{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1;}
+  ::selection{background:var(--accent);color:#fff;}
+  a{color:inherit;}
+
+  /* top chrome */
+  .chrome{display:flex;align-items:center;gap:18px;background:var(--ink);color:#ECE8DE;padding:12px clamp(14px,3vw,28px);border-bottom:1px solid #000;}
+  .back{font-family:var(--mono);font-size:13px;text-decoration:none;color:#ECE8DE;opacity:.85;transition:opacity .15s ease;white-space:nowrap;}
+  .back:hover{opacity:1;color:#fff;}
+  .chrome .sep{width:1px;height:20px;background:#3a382f;}
+  .chrome .title{font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:-0.02em;display:flex;align-items:center;gap:9px;}
+  .chrome .title .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  .live{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9be0b4;display:inline-flex;align-items:center;gap:6px;}
+  .live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--green);animation:bp 2s infinite;}
+  @keyframes bp{0%{box-shadow:0 0 0 0 rgba(46,125,79,.6)}70%{box-shadow:0 0 0 6px rgba(46,125,79,0)}100%{box-shadow:0 0 0 0 rgba(46,125,79,0)}}
+  .chrome .spacer{flex:1;}
+  .ctl{font-family:var(--mono);font-size:12px;background:transparent;color:#ECE8DE;border:1px solid #3a382f;border-radius:7px;padding:8px 13px;cursor:pointer;transition:border-color .15s ease,background .15s ease;}
+  .ctl:hover{border-color:var(--accent);}
+  .ctl.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;}
+  .ctl.primary:hover{background:#c8430f;}
+  @media (max-width:680px){ .chrome .title .label{display:none;} .ctl{padding:8px 10px;} }
+
+  /* layout */
+  .console{display:grid;grid-template-columns:264px 1fr;min-height:calc(100% - 49px);}
+  @media (max-width:900px){ .console{grid-template-columns:1fr;} }
+
+  /* sidebar */
+  .rail{border-right:1px solid var(--hair);background:var(--paper);padding:22px 20px;}
+  @media (max-width:900px){ .rail{border-right:none;border-bottom:1px solid var(--hair);} }
+  .rail h2{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 14px;}
+  .rule{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:13px 0;border-top:1px solid var(--hair);}
+  .rule:first-of-type{border-top:none;}
+  .rule .meta{min-width:0;}
+  .rule .rn{font-weight:600;font-size:13.5px;color:var(--ink);}
+  .rule .rc{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:3px;letter-spacing:.02em;}
+  /* switch */
+  .sw{position:relative;flex:0 0 auto;width:38px;height:22px;border-radius:999px;background:#cfc9bc;border:none;cursor:pointer;transition:background .18s ease;margin-top:2px;}
+  .sw::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .18s ease;box-shadow:0 1px 2px rgba(0,0,0,.25);}
+  .sw[aria-checked="true"]{background:var(--accent);}
+  .sw[aria-checked="true"]::after{transform:translateX(16px);}
+  .sw:focus-visible{outline:2px solid var(--ink);outline-offset:2px;}
+  .rail .hint{font-size:11.5px;color:var(--muted);margin-top:16px;line-height:1.4;border-top:1px dashed var(--hair);padding-top:14px;}
+
+  /* main */
+  .main{padding:clamp(16px,2.4vw,26px);min-width:0;}
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px;}
+  @media (max-width:680px){ .tiles{grid-template-columns:1fr;} }
+  .tile{background:var(--paper);border:1px solid var(--hair);border-radius:12px;padding:18px;}
+  .tile .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);}
+  .tile .v{font-family:var(--mono);font-weight:600;font-size:clamp(28px,4vw,38px);letter-spacing:-0.02em;color:var(--ink);margin-top:9px;line-height:1;}
+  .tile.alert .v{color:var(--red);}
+  .tile .sub{font-size:11.5px;color:var(--muted);margin-top:7px;}
+
+  /* sparkline */
+  .spark{background:var(--ink);color:#ECE8DE;border-radius:12px;padding:16px 18px 6px;margin-bottom:18px;position:relative;overflow:hidden;}
+  .spark .sh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+  .spark .sh .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#9c968a;}
+  .spark .sh .now{font-family:var(--mono);font-size:14px;color:var(--accent);}
+  .spark svg{display:block;width:100%;height:62px;}
+
+  /* feed */
+  .feed-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
+  .feed-head .ft{font-family:var(--display);font-weight:600;font-size:18px;letter-spacing:-0.02em;color:var(--ink);}
+  .filters{display:flex;gap:7px;flex-wrap:wrap;}
+  .chip{font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;background:transparent;border:1px solid var(--hair);color:var(--muted);padding:6px 11px;border-radius:999px;cursor:pointer;transition:all .15s ease;}
+  .chip:hover{border-color:var(--ink);color:var(--ink);}
+  .chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg);}
+
+  .feed{border:1px solid var(--hair);border-radius:12px;overflow:hidden;background:var(--paper);}
+  .row{display:grid;grid-template-columns:78px 1fr 150px 120px;gap:14px;align-items:center;padding:13px 16px;border-top:1px solid var(--hair);cursor:pointer;transition:background .12s ease;}
+  .row:first-child{border-top:none;}
+  .row:hover{background:#F2EFE7;}
+  .row .time{font-family:var(--mono);font-size:11.5px;color:var(--muted);}
+  .row .q{min-width:0;}
+  .row .q .src{font-family:var(--mono);font-size:10.5px;color:var(--accent);letter-spacing:.03em;}
+  .row .q .txt{font-size:14px;color:var(--ink);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .row .threat{font-family:var(--mono);font-size:11px;color:var(--fg);}
+  .badge{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.02em;padding:5px 9px;border-radius:6px;text-align:center;white-space:nowrap;}
+  .b-block{background:rgba(178,58,46,.12);color:var(--red);}
+  .b-allow{background:rgba(139,134,123,.16);color:#6b6657;}
+  .b-mit{background:rgba(46,125,79,.13);color:var(--green);}
+  .b-chal{background:rgba(184,121,28,.15);color:var(--amber);}
+  @media (max-width:680px){
+    .row{grid-template-columns:1fr auto;grid-auto-rows:auto;}
+    .row .time{grid-column:1;}
+    .row .badge{grid-column:2;grid-row:1;}
+    .row .q{grid-column:1 / -1;}
+    .row .threat{grid-column:1 / -1;color:var(--muted);}
+  }
+  .feed.flash{animation:fl .5s ease;}
+  @keyframes fl{0%{box-shadow:0 0 0 0 rgba(224,78,19,.35)}100%{box-shadow:0 0 0 8px rgba(224,78,19,0)}}
+  .empty{padding:34px 16px;text-align:center;color:var(--muted);font-size:14px;}
+
+  /* detail modal */
+  .scrim{position:fixed;inset:0;background:rgba(13,12,10,.55);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;padding:20px;z-index:60;}
+  .scrim.open{display:flex;}
+  .sheet{background:var(--bg);border:1px solid var(--ink);border-radius:14px;max-width:520px;width:100%;overflow:hidden;animation:rise .22s cubic-bezier(.2,.7,.2,1);}
+  @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  .sheet header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--hair);background:var(--ink);color:#ECE8DE;}
+  .sheet header .h{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;}
+  .sheet header button{background:none;border:none;color:#ECE8DE;font-size:20px;cursor:pointer;line-height:1;padding:2px 6px;border-radius:6px;}
+  .sheet header button:hover{background:#2a2820;}
+  .sheet .body{padding:20px;}
+  .kv{display:grid;grid-template-columns:130px 1fr;gap:8px 14px;font-size:13.5px;margin-bottom:18px;}
+  .kv dt{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);align-self:center;}
+  .kv dd{margin:0;color:var(--ink);font-family:var(--mono);font-size:12.5px;}
+  .served{border:1px dashed var(--accent);border-radius:10px;padding:14px 16px;background:rgba(224,78,19,.05);}
+  .served .lab{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);margin-bottom:7px;}
+  .served .txt{font-family:var(--display);font-weight:500;font-size:17px;line-height:1.35;letter-spacing:-0.01em;color:var(--ink);}
+  @media (prefers-reduced-motion:reduce){ *{animation:none !important;} }
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="sep"></span>
+  <span class="title"><span class="dot"></span><span class="label">Palate&nbsp;Firewall</span></span>
+  <span class="live">live</span>
+  <span class="spacer"></span>
+  <button class="ctl" id="pauseBtn" aria-pressed="false">Pause</button>
+  <button class="ctl primary" id="floodBtn">Flood the table</button>
+</div>
+
+<div class="console">
+  <!-- RULES RAIL -->
+  <aside class="rail">
+    <h2>Firewall rules</h2>
+    <div id="ruleList"></div>
+    <p class="hint">Rules apply at the edge. A disabled rule lets that question reach your origin (you) unfiltered. We advise against it.</p>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="tiles">
+      <div class="tile">
+        <div class="k">Threats mitigated today</div>
+        <div class="v tnum" id="mMit">0</div>
+        <div class="sub">403 / 451 / 200 served at edge</div>
+      </div>
+      <div class="tile">
+        <div class="k">Questions inspected</div>
+        <div class="v tnum" id="mInsp">0</div>
+        <div class="sub">since you sat down</div>
+      </div>
+      <div class="tile alert">
+        <div class="k">Reached your origin</div>
+        <div class="v tnum" id="mLeak">0</div>
+        <div class="sub">you had to answer these yourself</div>
+      </div>
+    </div>
+
+    <div class="spark">
+      <div class="sh"><span class="k">Swirls per second</span><span class="now mono"><span id="swNow">0.0</span> /s</span></div>
+      <svg id="swSvg" viewBox="0 0 600 62" preserveAspectRatio="none" aria-hidden="true">
+        <polyline id="swLine" fill="none" stroke="#E04E13" stroke-width="2" points=""></polyline>
+      </svg>
+    </div>
+
+    <div class="feed-head">
+      <div class="ft">Live events</div>
+      <div class="filters" id="filters">
+        <button class="chip" data-f="all" aria-pressed="true">All</button>
+        <button class="chip" data-f="blocked" aria-pressed="false">Blocked</button>
+        <button class="chip" data-f="mitigated" aria-pressed="false">Mitigated</button>
+        <button class="chip" data-f="allowed" aria-pressed="false">Reached origin</button>
+      </div>
+    </div>
+    <div class="feed" id="feed">
+      <div class="empty" id="emptyState">Waiting for the first question. Someone always asks.</div>
+    </div>
+  </main>
+</div>
+
+<!-- DETAIL -->
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="shTitle">
+  <div class="sheet">
+    <header>
+      <span class="h" id="shTitle">Event detail</span>
+      <button id="closeSheet" aria-label="Close">×</button>
+    </header>
+    <div class="body">
+      <dl class="kv" id="shKv"></dl>
+      <div class="served">
+        <div class="lab" id="shLab">Response served to the table</div>
+        <div class="txt" id="shServed"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---- rule + threat model ----
+  var RULES = [
+    {id:"vintage", name:"Vintage interrogation", code:"waf.rule/year", on:true,  action:"blocked", badge:"403 BLOCKED", served:"there's a lot going on in this glass"},
+    {id:"region",  name:"Region guessing",       code:"waf.rule/origin", on:true, action:"blocked", badge:"451 BLOCKED", served:"the subject was gently moved to the cheese board"},
+    {id:"decant",  name:"Decant pressure",       code:"waf.rule/breathe", on:true, action:"blocked", badge:"403 BLOCKED", served:"I gave it exactly as long as it needed"},
+    {id:"nose",    name:"The word 'nose'",       code:"waf.rule/nose", on:true,  action:"blocked", badge:"403 BLOCKED", served:"a little bit of everything, honestly"},
+    {id:"pairing", name:"Pairing challenge",     code:"waf.rule/pair", on:false, action:"challenged", badge:"429 CHALLENGE", served:"it pairs with the evening"},
+    {id:"swirl",   name:"Swirl flood (DDoS)",    code:"ddos.rule/swirl", on:true, action:"mitigated", badge:"200 MITIGATED", served:"there's a lot going on in this glass"}
+  ];
+
+  var QUESTIONS = {
+    vintage: ["What year is this one?","Is this the '18 or the '19?","What's the vintage?","Older than it tastes, no?"],
+    region:  ["Guess the region. Go on.","Old world or new world?","Where do you think this is from?","Bet you can't name the appellation."],
+    decant:  ["Did you let it breathe?","Should we have decanted this?","How long has this been open?","Is it open enough yet?"],
+    nose:    ["What are you getting on the nose?","Big nose on this, right?","Describe the nose for us.","What's the bouquet doing for you?"],
+    pairing: ["What would you pair this with?","Does this go with the lamb?","Red or white with the fish?","What cheese works here?"],
+    swirl:   ["So what are you getting?","Well? Thoughts?","What do YOU think?","Come on, give us your read."]
+  };
+
+  var SOURCES = ["Aunt Carol","The Sommelier They Hired","Your Own Brother","The Host","A Confident Stranger","Your Father-in-Law","The Table, Generally","The Guy Who Brought It"];
+
+  function ruleById(id){ for(var i=0;i<RULES.length;i++){ if(RULES[i].id===id) return RULES[i]; } return null; }
+  function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+
+  // ---- state ----
+  var counts = {mit:0, insp:0, leak:0};
+  var events = [];          // newest first
+  var filter = "all";
+  var paused = false;
+  var MAX_ROWS = 14;
+
+  // ---- elements ----
+  var feed = document.getElementById("feed");
+  var empty = document.getElementById("emptyState");
+  var mMit = document.getElementById("mMit"), mInsp = document.getElementById("mInsp"), mLeak = document.getElementById("mLeak");
+
+  // ---- rules UI ----
+  var ruleList = document.getElementById("ruleList");
+  RULES.forEach(function(r){
+    var row = document.createElement("div");
+    row.className = "rule";
+    row.innerHTML = '<div class="meta"><div class="rn"></div><div class="rc"></div></div>';
+    row.querySelector(".rn").textContent = r.name;
+    row.querySelector(".rc").textContent = r.code;
+    var btn = document.createElement("button");
+    btn.className = "sw";
+    btn.setAttribute("role","switch");
+    btn.setAttribute("aria-checked", r.on ? "true":"false");
+    btn.setAttribute("aria-label","Toggle "+r.name);
+    btn.addEventListener("click", function(){
+      r.on = !r.on;
+      btn.setAttribute("aria-checked", r.on ? "true":"false");
+    });
+    row.appendChild(btn);
+    ruleList.appendChild(row);
+  });
+
+  // ---- event generation ----
+  function nowStr(){
+    var d = new Date();
+    function p(n){ return (n<10?"0":"")+n; }
+    return p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds());
+  }
+
+  function makeEvent(){
+    var r = pick(RULES);
+    var ev = {
+      id: (events.length ? events[0].id+1 : 1),
+      t: nowStr(),
+      rule: r,
+      threat: r.name,
+      src: pick(SOURCES),
+      q: pick(QUESTIONS[r.id])
+    };
+    if(r.on){
+      ev.action = r.action;          // blocked / mitigated / challenged
+      ev.badge = r.badge;
+      ev.served = r.served;
+      if(r.action === "mitigated" || r.action === "blocked" || r.action === "challenged"){ counts.mit++; }
+    } else {
+      ev.action = "allowed";
+      ev.badge = "200 → ORIGIN";
+      ev.served = "(nothing. it reached you. you said something about minerality and hoped.)";
+      counts.leak++;
+    }
+    counts.insp++;
+    events.unshift(ev);
+    if(events.length > 120) events.pop();
+    return ev;
+  }
+
+  function actionClass(a){
+    return a==="blocked" ? "b-block" : a==="mitigated" ? "b-mit" : a==="challenged" ? "b-chal" : "b-allow";
+  }
+  function matchesFilter(ev){
+    if(filter==="all") return true;
+    if(filter==="blocked") return ev.action==="blocked" || ev.action==="challenged";
+    if(filter==="mitigated") return ev.action==="mitigated";
+    if(filter==="allowed") return ev.action==="allowed";
+    return true;
+  }
+
+  function render(){
+    mMit.textContent = counts.mit.toLocaleString("en-US");
+    mInsp.textContent = counts.insp.toLocaleString("en-US");
+    mLeak.textContent = counts.leak.toLocaleString("en-US");
+
+    var visible = events.filter(matchesFilter).slice(0, MAX_ROWS);
+    if(visible.length === 0){
+      feed.innerHTML = '';
+      feed.appendChild(empty);
+      empty.textContent = events.length ? "No events match this filter." : "Waiting for the first question. Someone always asks.";
+      return;
+    }
+    if(empty.parentNode) empty.parentNode.removeChild(empty);
+    feed.innerHTML = '';
+    visible.forEach(function(ev){
+      var row = document.createElement("div");
+      row.className = "row";
+      row.tabIndex = 0;
+      row.innerHTML =
+        '<div class="time tnum"></div>'+
+        '<div class="q"><div class="src"></div><div class="txt"></div></div>'+
+        '<div class="threat"></div>'+
+        '<div class="badge '+actionClass(ev.action)+'"></div>';
+      row.querySelector(".time").textContent = ev.t;
+      row.querySelector(".src").textContent = ev.src;
+      row.querySelector(".txt").textContent = '"'+ev.q+'"';
+      row.querySelector(".threat").textContent = ev.threat;
+      row.querySelector(".badge").textContent = ev.badge;
+      function open(){ openSheet(ev); }
+      row.addEventListener("click", open);
+      row.addEventListener("keydown", function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); open(); } });
+      feed.appendChild(row);
+    });
+  }
+
+  function flashFeed(){ feed.classList.remove("flash"); void feed.offsetWidth; feed.classList.add("flash"); }
+
+  // ---- detail sheet ----
+  var scrim = document.getElementById("scrim");
+  var shKv = document.getElementById("shKv"), shServed = document.getElementById("shServed"), shLab = document.getElementById("shLab");
+  function openSheet(ev){
+    shKv.innerHTML =
+      '<dt>Source</dt><dd>'+ev.src+'</dd>'+
+      '<dt>Question</dt><dd>"'+ev.q+'"</dd>'+
+      '<dt>Classification</dt><dd>'+ev.threat+'</dd>'+
+      '<dt>Matched rule</dt><dd>'+ev.rule.code+'</dd>'+
+      '<dt>Edge response</dt><dd>'+ev.badge+'</dd>'+
+      '<dt>Timestamp</dt><dd>'+ev.t+'</dd>';
+    shLab.textContent = ev.action==="allowed" ? "Nothing was served. You were exposed." : "Response served to the table";
+    shServed.textContent = ev.served;
+    scrim.classList.add("open");
+    document.getElementById("closeSheet").focus();
+  }
+  function closeSheet(){ scrim.classList.remove("open"); }
+  document.getElementById("closeSheet").addEventListener("click", closeSheet);
+  scrim.addEventListener("click", function(e){ if(e.target===scrim) closeSheet(); });
+  document.addEventListener("keydown", function(e){ if(e.key==="Escape") closeSheet(); });
+
+  // ---- filters ----
+  document.getElementById("filters").addEventListener("click", function(e){
+    var b = e.target.closest(".chip"); if(!b) return;
+    filter = b.getAttribute("data-f");
+    Array.prototype.forEach.call(this.querySelectorAll(".chip"), function(c){
+      c.setAttribute("aria-pressed", c===b ? "true":"false");
+    });
+    render();
+  });
+
+  // ---- controls ----
+  var pauseBtn = document.getElementById("pauseBtn");
+  pauseBtn.addEventListener("click", function(){
+    paused = !paused;
+    pauseBtn.textContent = paused ? "Resume" : "Pause";
+    pauseBtn.setAttribute("aria-pressed", paused ? "true":"false");
+  });
+  document.getElementById("floodBtn").addEventListener("click", function(){
+    var n = 5 + Math.floor(Math.random()*4);
+    for(var i=0;i<n;i++){ makeEvent(); }
+    pushSwirl(n);
+    render(); flashFeed();
+  });
+
+  // ---- swirl sparkline ----
+  var swPts = [];
+  var SW_N = 60;
+  for(var i=0;i<SW_N;i++) swPts.push(0);
+  var swLine = document.getElementById("swLine");
+  var swNow = document.getElementById("swNow");
+  function pushSwirl(extra){
+    var base = paused ? 0 : (0.6 + Math.random()*2.2);
+    if(extra) base += extra*1.4;
+    swPts.push(base); if(swPts.length>SW_N) swPts.shift();
+    var max = 1; for(var j=0;j<swPts.length;j++){ if(swPts[j]>max) max=swPts[j]; }
+    var W=600, H=62, step=W/(SW_N-1), pts=[];
+    for(var k=0;k<swPts.length;k++){
+      var x=k*step, y=H-2-(swPts[k]/max)*(H-6);
+      pts.push(x.toFixed(1)+","+y.toFixed(1));
+    }
+    swLine.setAttribute("points", pts.join(" "));
+    swNow.textContent = base.toFixed(1);
+  }
+
+  // ---- loops ----
+  function tick(){
+    if(!paused){
+      // sometimes two arrive at once at a lively table
+      makeEvent();
+      if(Math.random() < 0.25) makeEvent();
+      pushSwirl(0);
+      render();
+    } else {
+      pushSwirl(0);
+    }
+  }
+  // seed a few so it doesn't start empty
+  for(var s=0;s<4;s++){ makeEvent(); }
+  render();
+  setInterval(tick, 1700);
+  setInterval(function(){ if(paused) pushSwirl(0); }, 1700);
+})();
+</script>
+</body>
+</html>
