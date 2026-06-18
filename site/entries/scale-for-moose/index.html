@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tine · theworstaistudioever</title>
+<meta name="description" content="The human-in-the-loop data foundry that labels, ranks, and benchmarks every moose your models will ever meet.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Tine · Ground truth for moose">
+<meta property="og:description" content="The human-in-the-loop data foundry that labels, ranks, and benchmarks every moose your models will ever meet.">
+<meta property="og:image" content="./hero.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Tine · Ground truth for moose">
+<meta name="twitter:description" content="The human-in-the-loop data foundry that labels, ranks, and benchmarks every moose your models will ever meet.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,400&family=Libre+Franklin:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#23291F;
+    --accent:#5C6B3C;
+    --bg:#ECE7DA;
+    --fg:#2B2A22;
+    --muted:#857F6B;
+    --ink:#16170F;
+    --line:rgba(35,41,31,.18);
+    --line-strong:rgba(35,41,31,.34);
+    --paper:#E3DCCB;
+    --display:"Fraunces","Hoefler Text",Georgia,serif;
+    --body:"Libre Franklin",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+    --mono:"DM Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--fg);
+    font-family:var(--body);
+    font-size:17px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 32px}
+  a{color:inherit}
+
+  /* mono utility label */
+  .mono{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .tnum{font-family:var(--mono);font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+
+  /* nav */
+  .topnav{border-bottom:1px solid var(--line)}
+  .topnav .wrap{display:flex;align-items:baseline;justify-content:space-between;gap:24px;padding-top:20px;padding-bottom:20px}
+  .wordmark{font-family:var(--display);font-weight:900;font-size:26px;letter-spacing:-.01em;color:var(--ink);text-decoration:none;line-height:1}
+  .wordmark .dot{color:var(--accent)}
+  .nav-meta{display:flex;align-items:baseline;gap:26px}
+  .nav-links{display:flex;gap:26px}
+  .nav-links a{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding-bottom:2px;border-bottom:1px solid transparent;transition:color .2s,border-color .2s}
+  .nav-links a:hover{color:var(--ink);border-color:var(--accent)}
+  @media (max-width:760px){.nav-links{display:none}}
+
+  /* hero */
+  .hero{position:relative;border-bottom:1px solid var(--line)}
+  .hero::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background-image:linear-gradient(var(--line) 1px,transparent 1px);
+    background-size:100% 38px;opacity:.4;
+    -webkit-mask-image:linear-gradient(180deg,transparent,#000 18%,#000 78%,transparent);
+            mask-image:linear-gradient(180deg,transparent,#000 18%,#000 78%,transparent);
+  }
+  .hero .wrap{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;padding-top:84px;padding-bottom:84px}
+  .eyebrow{margin:0 0 26px}
+  .hero h1{
+    font-family:var(--display);font-weight:900;color:var(--ink);
+    font-size:clamp(3.1rem,7.4vw,6rem);line-height:.94;letter-spacing:-.025em;
+    margin:0 0 28px;
+  }
+  .hero h1 em{font-style:italic;font-weight:400;color:var(--accent)}
+  .lede{font-size:19px;line-height:1.62;max-width:46ch;color:var(--fg);margin:0 0 34px}
+  .cta-row{display:flex;align-items:center;gap:26px;flex-wrap:wrap}
+  .btn{
+    display:inline-block;font-family:var(--body);font-weight:600;font-size:15px;
+    background:var(--accent);color:var(--bg);text-decoration:none;
+    padding:14px 26px;border:1px solid var(--accent);border-radius:2px;
+    transition:background .2s,color .2s;
+  }
+  .btn:hover{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+  .textlink{font-family:var(--mono);font-size:13px;letter-spacing:.06em;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--accent);padding-bottom:3px;transition:color .2s}
+  .textlink:hover{color:var(--accent)}
+
+  /* specimen plate (signature element) */
+  .plate{position:relative;padding:18px}
+  .plate-img{position:relative;display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--paper);border:1px solid var(--line-strong);filter:saturate(.92)}
+  .crop{position:absolute;width:16px;height:16px;border:0 solid var(--ink)}
+  .crop.tl{top:0;left:0;border-top-width:1.5px;border-left-width:1.5px}
+  .crop.tr{top:0;right:0;border-top-width:1.5px;border-right-width:1.5px}
+  .crop.bl{bottom:0;left:0;border-bottom-width:1.5px;border-left-width:1.5px}
+  .crop.br{bottom:0;right:0;border-bottom-width:1.5px;border-right-width:1.5px}
+  .label-block{margin-top:14px;border-top:1px solid var(--line);padding-top:12px;display:grid;grid-template-columns:auto 1fr;gap:4px 18px;font-family:var(--mono);font-size:12.5px;color:var(--fg)}
+  .label-block dt{color:var(--muted);letter-spacing:.1em;text-transform:uppercase;font-size:11px;align-self:center}
+  .label-block dd{margin:0;font-variant-numeric:tabular-nums}
+  .label-block dd em{font-style:italic;color:var(--accent)}
+
+  /* metrics strip */
+  .metrics{border-bottom:1px solid var(--line)}
+  .metrics .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+  .metric{padding:30px 26px 30px 0;border-right:1px solid var(--line)}
+  .metric:last-child{border-right:0;padding-right:0}
+  .metric .fig{font-family:var(--display);font-weight:600;font-size:34px;color:var(--ink);line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+  .metric .cap{margin-top:10px;font-size:13px;color:var(--muted);line-height:1.4}
+  @media (max-width:760px){.metrics .wrap{grid-template-columns:1fr 1fr}.metric{padding:22px 20px 22px 0}.metric:nth-child(2n){border-right:0;padding-right:0}}
+
+  /* section heading */
+  .section{padding:88px 0}
+  .section-head{display:flex;align-items:baseline;justify-content:space-between;gap:24px;margin-bottom:44px;border-bottom:1px solid var(--line-strong);padding-bottom:18px}
+  .section-head h2{font-family:var(--display);font-weight:600;font-size:clamp(1.7rem,3.4vw,2.5rem);letter-spacing:-.015em;color:var(--ink);margin:0;max-width:18ch}
+
+  /* features as accession entries */
+  .entry{display:grid;grid-template-columns:140px 1fr;gap:40px;padding:34px 0;border-top:1px solid var(--line)}
+  .entry:first-of-type{border-top:0}
+  .entry .code{font-family:var(--mono);font-size:13px;color:var(--accent);letter-spacing:.04em}
+  .entry h3{font-family:var(--display);font-weight:600;font-size:1.55rem;letter-spacing:-.01em;color:var(--ink);margin:0 0 12px}
+  .entry p{margin:0;max-width:62ch;color:var(--fg)}
+  @media (max-width:680px){.entry{grid-template-columns:1fr;gap:10px}}
+
+  /* testimonials */
+  .quotes{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .quote-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+  .qcard{position:relative;background:var(--bg);border:1px solid var(--line-strong);padding:30px 26px 26px}
+  .qcard .crop{border-color:var(--muted)}
+  .qcard blockquote{margin:0 0 26px;font-family:var(--display);font-size:1.18rem;line-height:1.42;color:var(--ink)}
+  .attr{display:flex;align-items:center;gap:14px;border-top:1px solid var(--line);padding-top:16px}
+  .specimen-tag{flex:0 0 auto;width:46px;height:46px;border:1px solid var(--line-strong);display:grid;place-items:center;font-family:var(--display);font-weight:600;font-size:18px;color:var(--accent);background:var(--paper)}
+  .attr .who{font-family:var(--body);font-weight:600;font-size:14px;color:var(--ink);line-height:1.2}
+  .attr .role{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-top:5px;line-height:1.35}
+  @media (max-width:860px){.quote-grid{grid-template-columns:1fr}}
+
+  /* pricing */
+  .rack{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line-strong)}
+  .tier{padding:34px 28px;border-right:1px solid var(--line)}
+  .tier:last-child{border-right:0}
+  .tier.feature{background:var(--paper)}
+  .tier .tname{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+  .tier .price{font-family:var(--display);font-weight:600;font-size:2.3rem;color:var(--ink);margin:16px 0 4px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .tier .price .per{font-family:var(--mono);font-size:13px;color:var(--muted);letter-spacing:0;font-weight:400}
+  .tier .tline{font-size:14.5px;color:var(--fg);min-height:42px;margin-bottom:20px}
+  .tier ul{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+  .tier li{font-size:14px;padding:11px 0 11px 22px;position:relative;border-bottom:1px solid var(--line);color:var(--fg)}
+  .tier li:last-child{border-bottom:0}
+  .tier li::before{content:"";position:absolute;left:0;top:18px;width:9px;height:1.5px;background:var(--accent)}
+  @media (max-width:860px){.rack{grid-template-columns:1fr}.tier{border-right:0;border-bottom:1px solid var(--line)}.tier:last-child{border-bottom:0}}
+
+  /* demo handoff */
+  .handoff{text-align:center;padding:92px 0;border-top:1px solid var(--line)}
+  .handoff .mono{display:block;margin-bottom:18px}
+  .handoff h2{font-family:var(--display);font-weight:900;font-size:clamp(2rem,5vw,3.4rem);letter-spacing:-.02em;color:var(--ink);margin:0 0 30px;line-height:1}
+  .handoff h2 em{font-style:italic;font-weight:400;color:var(--accent)}
+
+  /* footer */
+  footer{border-top:1px solid var(--line-strong)}
+  footer .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;padding-top:30px;padding-bottom:48px;flex-wrap:wrap}
+  .backlink{font-family:var(--mono);font-size:12.5px;letter-spacing:.06em;color:var(--muted);text-decoration:none;transition:color .2s}
+  .backlink:hover{color:var(--accent)}
+  footer .fine{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity .55s ease-out,transform .55s ease-out}
+  .reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  @media (max-width:880px){.hero .wrap{grid-template-columns:1fr;gap:44px}.plate{order:-1}}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="wrap">
+    <a class="wordmark" href="#top">Tine<span class="dot">.</span></a>
+    <div class="nav-meta">
+      <span class="mono">Cervidae Data Division</span>
+      <div class="nav-links">
+        <a href="#capabilities">Capabilities</a>
+        <a href="#benchmark">Benchmark</a>
+        <a href="#pricing">Pricing</a>
+        <a href="./demo.html">Console</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow mono">Frontier data &middot; Accession series MOOSE</p>
+      <h1>Ground truth<br>for <em>moose</em>.</h1>
+      <p class="lede">Tine is the data foundry frontier labs trust to label, rank, and benchmark moose at scale. Eighteen hundred pounds of training signal, annotated down to the antler tine, with inter-annotator agreement we will put in the contract.</p>
+      <div class="cta-row">
+        <a class="btn" href="#pricing">Request annotation capacity</a>
+        <a class="textlink" href="./demo.html">Open the review console &rarr;</a>
+      </div>
+    </div>
+    <figure class="plate" aria-label="Catalogued moose specimen plate">
+      <span class="crop tl"></span><span class="crop tr"></span><span class="crop bl"></span><span class="crop br"></span>
+      <img class="plate-img" src="./hero.webp" width="1600" height="900" alt="An adult bull moose with full palmate antlers standing in profile in a boreal wetland, photographed as a catalogued natural-history specimen.">
+      <dl class="label-block">
+        <dt>Accession</dt><dd>MOOSE&#8209;0001</dd>
+        <dt>Species</dt><dd><em>Alces alces</em></dd>
+        <dt>Locality</dt><dd>Boreal interior, plate north</dd>
+        <dt>Agreement</dt><dd>98.4%</dd>
+      </dl>
+    </figure>
+  </div>
+</header>
+
+<section class="metrics" aria-label="Operating figures">
+  <div class="wrap">
+    <div class="metric"><div class="fig tnum">98.4%</div><div class="cap">Inter-annotator agreement, contractually held</div></div>
+    <div class="metric"><div class="fig tnum">1,800<span style="font-size:18px"> lb</span></div><div class="cap">Average training signal per labeled subject</div></div>
+    <div class="metric"><div class="fig tnum">12,000</div><div class="cap">Held-out MOOSE-bench examples</div></div>
+    <div class="metric"><div class="fig">240&ndash;&infin;</div><div class="cap">Annotated moose per month, by tier</div></div>
+  </div>
+</section>
+
+<main class="wrap">
+
+  <section class="section reveal" id="capabilities">
+    <div class="section-head">
+      <h2>A full labeling apparatus, pointed at one ungulate.</h2>
+      <span class="mono">Cat. 01&ndash;03</span>
+    </div>
+
+    <article class="entry">
+      <div class="code">CAT&middot;01<br>Segmentation</div>
+      <div>
+        <h3>Pixel-perfect moose segmentation</h3>
+        <p>A vetted workforce of field biologists draws bounding boxes, antler-tine keypoints, and pelage masks around an animal that is, on average, the size of a delivery van and visible from a moving train. Inter-annotator agreement holds above 98.4%.</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <div class="code">CAT&middot;02<br>Alignment</div>
+      <div>
+        <h3>RLHF, where the H is a moose</h3>
+        <p>We collect pairwise preference data directly from the herd. Two forage options, one moose, one ranked judgment, logged. Your model learns to align with what a fourteen-hundred-pound ruminant actually prefers, which turns out to be willow.</p>
+      </div>
+    </article>
+
+    <article class="entry" id="benchmark">
+      <div class="code">CAT&middot;03<br>Evaluation</div>
+      <div>
+        <h3>MOOSE-bench evaluation suite</h3>
+        <p>Twelve thousand held-out examples measuring exactly one capability: can your model tell a moose from a horse wearing a winter coat. Most frontier models score below 60%. We send you the number on a card.</p>
+      </div>
+    </article>
+  </section>
+</main>
+
+<section class="quotes">
+  <div class="wrap section" style="padding-top:72px;padding-bottom:72px">
+    <div class="section-head">
+      <h2>Field notes from the people who deploy us.</h2>
+      <span class="mono">Verified annotators</span>
+    </div>
+    <div class="quote-grid">
+      <figure class="qcard">
+        <span class="crop tl"></span><span class="crop br"></span>
+        <blockquote>&ldquo;Our model confidently labeled three elk as moose the week before launch. Tine caught all three. The fourth one was an actual moose, and they caught that too.&rdquo;</blockquote>
+        <figcaption class="attr">
+          <span class="specimen-tag" aria-hidden="true">PV</span>
+          <span><span class="who">Dr. Priya Venkataraman</span><span class="role">Head of Ungulate Ground Truth, a frontier lab she has asked us not to name</span></span>
+        </figcaption>
+      </figure>
+      <figure class="qcard">
+        <span class="crop tl"></span><span class="crop br"></span>
+        <blockquote>&ldquo;Our last vendor outsourced the labeling to people who had never met a moose. Tine&rsquo;s annotators have all met a moose. Several of them more than once.&rdquo;</blockquote>
+        <figcaption class="attr">
+          <span class="specimen-tag" aria-hidden="true">GH</span>
+          <span><span class="who">Gunnar Holt</span><span class="role">Director of Wildlife Data Operations, North Boreal Compute</span></span>
+        </figcaption>
+      </figure>
+      <figure class="qcard">
+        <span class="crop tl"></span><span class="crop br"></span>
+        <blockquote>&ldquo;I asked for inter-annotator agreement above 95 percent. They returned 98.4 and a photograph of the one moose that disagreed.&rdquo;</blockquote>
+        <figcaption class="attr">
+          <span class="specimen-tag" aria-hidden="true">MC</span>
+          <span><span class="who">Marisol Chen</span><span class="role">Staff ML Engineer, Antlerwise</span></span>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<main class="wrap">
+  <section class="section reveal" id="pricing">
+    <div class="section-head">
+      <h2>Three ways to start labeling moose.</h2>
+      <span class="mono">Billed monthly &middot; USD</span>
+    </div>
+    <div class="rack">
+      <div class="tier">
+        <div class="tname">Yearling</div>
+        <div class="price tnum">$4,000<span class="per"> /mo</span></div>
+        <p class="tline">For teams labeling their first moose.</p>
+        <ul>
+          <li>Up to 240 annotated moose per month</li>
+          <li>Antler-tine keypoints included</li>
+          <li>Support answered within one rut cycle</li>
+        </ul>
+      </div>
+      <div class="tier feature">
+        <div class="tname">Bull</div>
+        <div class="price tnum">$38,000<span class="per"> /mo</span></div>
+        <p class="tline">Most teams land here. Their reasons vary.</p>
+        <ul>
+          <li>Dedicated annotation pod</li>
+          <li>Pelage masks and gait sequences</li>
+          <li>RLHF preference collection from the herd</li>
+          <li>A named account biologist</li>
+        </ul>
+      </div>
+      <div class="tier">
+        <div class="tname">Migratory</div>
+        <div class="price">Let&rsquo;s talk</div>
+        <p class="tline">For organizations operating at herd scale.</p>
+        <ul>
+          <li>Unlimited moose</li>
+          <li>Air-gapped tundra deployment</li>
+          <li>SOC 2, plus a firm handshake</li>
+          <li>Private MOOSE-bench leaderboard</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<section class="handoff reveal">
+  <div class="wrap">
+    <span class="mono">Live specimen-annotation console</span>
+    <h2>Watch a moose get <em>labeled</em>.</h2>
+    <a class="btn" href="./demo.html">Open the demo &rarr;</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <a class="backlink" href="/">&larr; theworstaistudioever</a>
+    <span class="fine">Tine &middot; Cervidae Data Division &middot; Accession series MOOSE</span>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var els = document.querySelectorAll('.reveal');
+    if(reduce || !('IntersectionObserver' in window)){
+      els.forEach(function(el){el.classList.add('in')});
+      return;
+    }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}
+      });
+    },{threshold:.12});
+    els.forEach(function(el){io.observe(el)});
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Specimen Review Station · Tine</title>
+<meta name="description" content="The Tine specimen-annotation review station: label, score, and accept ground-truth moose.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,900&family=Libre+Franklin:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#23291F;--accent:#5C6B3C;--bg:#ECE7DA;--fg:#2B2A22;
+    --muted:#857F6B;--ink:#16170F;--paper:#E3DCCB;
+    --line:rgba(35,41,31,.18);--line-strong:rgba(35,41,31,.34);
+    --flag:#9A4B2C;
+    --display:"Fraunces","Hoefler Text",Georgia,serif;
+    --body:"Libre Franklin",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+    --mono:"DM Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
+  .mono{font-family:var(--mono);letter-spacing:.04em}
+  .tnum{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  /* top chrome */
+  .chrome{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px 22px;border-bottom:1px solid var(--line-strong);background:var(--paper);flex-wrap:wrap}
+  .chrome .left{display:flex;align-items:center;gap:18px}
+  .back{font-family:var(--mono);font-size:12.5px;color:var(--muted);text-decoration:none;transition:color .2s}
+  .back:hover{color:var(--accent)}
+  .station{font-family:var(--display);font-weight:600;font-size:17px;color:var(--ink)}
+  .station .dot{color:var(--accent)}
+  .stat-strip{display:flex;gap:26px}
+  .stat-strip .s{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+  .stat-strip .s b{display:block;font-size:18px;color:var(--ink);letter-spacing:0;font-weight:500;font-variant-numeric:tabular-nums;margin-top:3px}
+
+  /* layout */
+  .station-grid{flex:1;display:grid;grid-template-columns:248px 1fr 300px;min-height:0}
+  .col{min-height:0;overflow:auto}
+  .queue{border-right:1px solid var(--line);background:var(--paper)}
+  .inspector{border-left:1px solid var(--line);background:var(--paper)}
+  .colhead{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);padding:16px 18px 12px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--paper);z-index:2}
+
+  /* queue items */
+  .qitem{display:grid;grid-template-columns:54px 1fr;gap:12px;align-items:center;width:100%;text-align:left;border:0;background:none;border-bottom:1px solid var(--line);padding:12px 16px;cursor:pointer;transition:background .15s}
+  .qitem:hover{background:var(--bg)}
+  .qitem[aria-current="true"]{background:var(--bg);box-shadow:inset 3px 0 0 var(--accent)}
+  .thumb{width:54px;height:54px;border:1px solid var(--line-strong);object-fit:cover;background:var(--bg);display:grid;place-items:center}
+  .thumb svg{width:34px;height:34px;opacity:.5}
+  .qmeta .cat{font-family:var(--mono);font-size:12.5px;color:var(--ink)}
+  .qmeta .sub{font-family:var(--body);font-size:12px;color:var(--muted);margin-top:2px}
+  .badge{display:inline-block;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;padding:2px 7px;border:1px solid var(--line-strong);margin-top:6px;color:var(--muted)}
+  .badge.accepted{color:var(--accent);border-color:var(--accent)}
+  .badge.review{color:var(--ink);border-color:var(--line-strong)}
+  .badge.flagged{color:var(--flag);border-color:var(--flag)}
+
+  /* stage */
+  .stage-col{display:flex;flex-direction:column;min-width:0}
+  .stage-tools{display:flex;gap:10px;padding:14px 22px;border-bottom:1px solid var(--line);flex-wrap:wrap;align-items:center}
+  .toggle{font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--ink);background:var(--bg);border:1px solid var(--line-strong);border-radius:2px;padding:8px 14px;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+  .toggle[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+  .slider-wrap{display:flex;align-items:center;gap:10px;margin-left:auto}
+  .slider-wrap label{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+  .slider-wrap output{font-family:var(--display);font-weight:600;font-size:20px;color:var(--ink);min-width:26px;text-align:right}
+  input[type=range]{accent-color:var(--accent);width:120px}
+
+  .stage{flex:1;display:grid;place-items:center;padding:28px;min-height:320px}
+  .canvas{position:relative;width:100%;max-width:680px;aspect-ratio:1/1;border:1px solid var(--line-strong);background:var(--paper);overflow:hidden;touch-action:none}
+  .canvas img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.9)}
+  .canvas .pending{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase}
+  .canvas .pending svg{width:120px;height:120px;opacity:.35;margin-bottom:14px}
+  .crop{position:absolute;width:18px;height:18px;border:0 solid var(--ink);z-index:3;pointer-events:none}
+  .crop.tl{top:8px;left:8px;border-top-width:1.5px;border-left-width:1.5px}
+  .crop.tr{top:8px;right:8px;border-top-width:1.5px;border-right-width:1.5px}
+  .crop.bl{bottom:8px;left:8px;border-bottom-width:1.5px;border-left-width:1.5px}
+  .crop.br{bottom:8px;right:8px;border-bottom-width:1.5px;border-right-width:1.5px}
+
+  /* bounding box */
+  .bbox{position:absolute;border:1.5px solid var(--accent);box-shadow:0 0 0 1px rgba(236,231,218,.6) inset;cursor:grab;z-index:5}
+  .bbox:active{cursor:grabbing}
+  .bbox .tag{position:absolute;top:-22px;left:-1px;background:var(--accent);color:var(--bg);font-family:var(--mono);font-size:10px;letter-spacing:.05em;padding:2px 6px;white-space:nowrap}
+  .bbox .h{position:absolute;width:8px;height:8px;background:var(--bg);border:1.5px solid var(--accent)}
+  .bbox .h.tl{top:-5px;left:-5px}.bbox .h.tr{top:-5px;right:-5px}
+  .bbox .h.bl{bottom:-5px;left:-5px}.bbox .h.br{bottom:-5px;right:-5px}
+
+  /* keypoints + mask */
+  .kpt{position:absolute;width:11px;height:11px;border-radius:50%;background:var(--bg);border:2px solid var(--flag);transform:translate(-50%,-50%);z-index:6;transition:opacity .2s}
+  .kpt::after{content:attr(data-l);position:absolute;left:14px;top:-2px;font-family:var(--mono);font-size:9px;color:var(--ink);white-space:nowrap;background:rgba(236,231,218,.7);padding:0 3px}
+  .mask{position:absolute;inset:0;z-index:4;pointer-events:none;transition:opacity .2s}
+  .mask svg{width:100%;height:100%}
+  .hidden{opacity:0;pointer-events:none}
+
+  /* inspector */
+  .card{padding:18px}
+  .label-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12.5px}
+  .label-table th{text-align:left;font-weight:400;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-size:10px;padding:9px 0;width:42%;vertical-align:top}
+  .label-table td{text-align:right;color:var(--ink);font-variant-numeric:tabular-nums;padding:9px 0;border-bottom:1px solid var(--line)}
+  .label-table td em{font-style:italic;color:var(--accent)}
+  .agreement{margin-top:20px}
+  .agreement .lab{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:7px}
+  .meter{height:7px;background:var(--bg);border:1px solid var(--line-strong)}
+  .meter span{display:block;height:100%;background:var(--accent);transition:width .4s ease}
+  .verdict{display:flex;gap:10px;margin-top:24px}
+  .verdict button{flex:1;font-family:var(--body);font-weight:600;font-size:14px;padding:13px 0;border-radius:2px;cursor:pointer;border:1px solid var(--line-strong);transition:all .15s}
+  .accept{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+  .accept:hover{background:var(--ink);border-color:var(--ink)}
+  .reject{background:transparent;color:var(--flag);border-color:var(--flag)}
+  .reject:hover{background:var(--flag);color:var(--bg)}
+  .note{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:14px;line-height:1.5;min-height:30px}
+
+  @media (max-width:1000px){
+    .station-grid{grid-template-columns:1fr;display:flex;flex-direction:column}
+    .col{overflow:visible}
+    .queue,.inspector{border:0;border-bottom:1px solid var(--line-strong)}
+    .queue{order:2}.stage-col{order:1}.inspector{order:3}
+    .colhead{position:static}
+  }
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="left">
+    <a class="back" href="./index.html">&larr; back to the pitch</a>
+    <span class="station">Specimen Review Station<span class="dot">.</span></span>
+  </div>
+  <div class="stat-strip">
+    <div class="s">Accepted today<b class="tnum" id="acceptedCount">312</b></div>
+    <div class="s">Queue depth<b class="tnum" id="queueCount">5</b></div>
+    <div class="s">Pod agreement<b class="tnum">98.4%</b></div>
+  </div>
+</div>
+
+<div class="station-grid">
+
+  <!-- QUEUE -->
+  <aside class="col queue">
+    <div class="colhead">Labeling queue</div>
+    <div id="queue"></div>
+  </aside>
+
+  <!-- STAGE -->
+  <section class="col stage-col">
+    <div class="stage-tools">
+      <button class="toggle" id="tBox" aria-pressed="true">Bounding box</button>
+      <button class="toggle" id="tKpt" aria-pressed="true">Antler-tine keypoints</button>
+      <button class="toggle" id="tMask" aria-pressed="false">Pelage mask</button>
+      <div class="slider-wrap">
+        <label for="majesty">Majesty</label>
+        <input type="range" id="majesty" min="1" max="10" step="1" value="8">
+        <output id="majestyOut">8</output>
+      </div>
+    </div>
+    <div class="stage">
+      <div class="canvas" id="canvas">
+        <span class="crop tl"></span><span class="crop tr"></span><span class="crop bl"></span><span class="crop br"></span>
+        <img id="stageImg" alt="" hidden>
+        <div class="pending" id="pending" hidden>
+          <div>
+            <svg viewBox="0 0 100 100" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" d="M30 70 V46 q0-10 10-10 h20 q10 0 10 10 V70 M40 36 q-4-14-16-18 q10 2 16 12 M60 36 q4-14 16-18 q-10 2-16 12 M44 52 h12"/></svg>
+            <div>Plate pending digitization</div>
+          </div>
+        </div>
+        <div class="mask hidden" id="mask">
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <polygon points="30,78 28,52 36,40 50,37 64,41 70,54 68,78" fill="#5C6B3C" fill-opacity="0.32" stroke="#5C6B3C" stroke-opacity="0.7" stroke-width="0.8"/>
+          </svg>
+        </div>
+        <div class="bbox" id="bbox" style="left:22%;top:30%;width:54%;height:50%">
+          <span class="tag mono">moose · 0.97</span>
+          <span class="h tl"></span><span class="h tr"></span><span class="h bl"></span><span class="h br"></span>
+        </div>
+        <div class="kpt" id="k1" data-l="tine L" style="left:34%;top:30%"></div>
+        <div class="kpt" id="k2" data-l="tine R" style="left:66%;top:30%"></div>
+        <div class="kpt" id="k3" data-l="muzzle" style="left:50%;top:60%"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSPECTOR -->
+  <aside class="col inspector">
+    <div class="colhead">Taxonomic label</div>
+    <div class="card">
+      <table class="label-table">
+        <tbody>
+          <tr><th>Accession</th><td id="iAcc">MOOSE-0148</td></tr>
+          <tr><th>Species</th><td><em>Alces alces</em></td></tr>
+          <tr><th>Sex / age</th><td id="iSex">Bull · adult</td></tr>
+          <tr><th>Locality</th><td id="iLoc">Pond margin</td></tr>
+          <tr><th>Box conf.</th><td>0.97</td></tr>
+          <tr><th>Majesty</th><td><span id="iMaj">8</span> / 10</td></tr>
+        </tbody>
+      </table>
+      <div class="agreement">
+        <div class="lab"><span>Inter-annotator agreement</span><span id="agrVal">98.4%</span></div>
+        <div class="meter"><span id="agrBar" style="width:98.4%"></span></div>
+      </div>
+      <div class="verdict">
+        <button class="accept" id="btnAccept">Accept</button>
+        <button class="reject" id="btnReject">Flag back</button>
+      </div>
+      <p class="note mono" id="note">Three of three annotators agree this is a moose. Pending your sign-off.</p>
+    </div>
+  </aside>
+</div>
+
+<script>
+(function(){
+  var SILHOUETTE = '<svg viewBox="0 0 100 100" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="3" d="M30 70 V46 q0-10 10-10 h20 q10 0 10 10 V70 M40 36 q-4-14-16-18 q10 2 16 12 M60 36 q4-14 16-18 q-10 2-16 12"/></svg>';
+
+  var queue = [
+    {acc:"MOOSE-0148", sub:"Pond margin, browsing", img:"./specimen-1.webp", sex:"Bull · adult", loc:"Pond margin", conf:"0.97", agr:98.4, status:"review"},
+    {acc:"MOOSE-0149", sub:"Spruce clearing, alert", img:"./specimen-2.webp", sex:"Cow · adult", loc:"Spruce clearing", conf:"0.94", agr:96.1, status:"pending"},
+    {acc:"MOOSE-0150", sub:"Awaiting digitization", img:null, sex:"Calf · juvenile", loc:"Willow flat", conf:"—", agr:0, status:"pending"},
+    {acc:"MOOSE-0151", sub:"Awaiting digitization", img:null, sex:"Bull · adult", loc:"Ridge line", conf:"—", agr:0, status:"pending"},
+    {acc:"MOOSE-0152", sub:"Disputed — see flag", img:null, sex:"Unconfirmed", loc:"River bend", conf:"0.41", agr:62.0, status:"flagged"}
+  ];
+  var active = 0, accepted = 312;
+
+  var $ = function(id){return document.getElementById(id)};
+  var queueEl=$("queue"), stageImg=$("stageImg"), pending=$("pending");
+  var bbox=$("bbox"), mask=$("mask");
+  var kpts=[$("k1"),$("k2"),$("k3")];
+
+  function badge(s){
+    if(s==="accepted") return '<span class="badge accepted">accepted</span>';
+    if(s==="flagged")  return '<span class="badge flagged">flagged</span>';
+    if(s==="review")   return '<span class="badge review">in review</span>';
+    return '<span class="badge">pending</span>';
+  }
+
+  function renderQueue(){
+    queueEl.innerHTML="";
+    queue.forEach(function(q,i){
+      var b=document.createElement("button");
+      b.className="qitem";
+      b.setAttribute("aria-current", i===active ? "true":"false");
+      b.innerHTML =
+        '<span class="qmeta"><span class="cat">'+q.acc+'</span>'+
+        '<span class="sub">'+q.sub+'</span>'+badge(q.status)+'</span>';
+      var thumb;
+      if(q.img){
+        thumb=document.createElement("img");
+        thumb.className="thumb"; thumb.alt="";
+        thumb.setAttribute("src", q.img);
+      }else{
+        thumb=document.createElement("span");
+        thumb.className="thumb"; thumb.innerHTML=SILHOUETTE;
+      }
+      b.insertBefore(thumb, b.firstChild);
+      b.addEventListener("click",function(){ active=i; loadActive(); });
+      queueEl.appendChild(b);
+    });
+    $("queueCount").textContent = queue.filter(function(q){return q.status!=="accepted"}).length;
+  }
+
+  function loadActive(){
+    var q=queue[active];
+    if(q.img){
+      stageImg.src=q.img; stageImg.hidden=false; pending.hidden=true;
+    }else{
+      stageImg.hidden=true; stageImg.removeAttribute("src"); pending.hidden=false;
+    }
+    $("iAcc").textContent=q.acc;
+    $("iSex").textContent=q.sex;
+    $("iLoc").textContent=q.loc;
+    $("agrVal").textContent = q.agr ? q.agr.toFixed(1)+"%" : "—";
+    $("agrBar").style.width = (q.agr||0)+"%";
+    // verdict note keyed to the specimen
+    if(q.status==="flagged"){
+      $("note").textContent="Annotators split. One insists this is a horse in a coat. Awaiting third pass.";
+    }else if(q.agr>=95){
+      $("note").textContent="Three of three annotators agree this is a moose. Pending your sign-off.";
+    }else{
+      $("note").textContent="Two of three agree. Confidence below the 95% floor. Review the antler tines.";
+    }
+    renderQueue();
+  }
+
+  // toggles
+  function bindToggle(btn, fn){
+    btn.addEventListener("click",function(){
+      var on = btn.getAttribute("aria-pressed")!=="true";
+      btn.setAttribute("aria-pressed", on?"true":"false");
+      fn(on);
+    });
+  }
+  bindToggle($("tBox"), function(on){ bbox.classList.toggle("hidden",!on); });
+  bindToggle($("tKpt"), function(on){ kpts.forEach(function(k){k.classList.toggle("hidden",!on)}); });
+  bindToggle($("tMask"),function(on){ mask.classList.toggle("hidden",!on); });
+
+  // majesty slider
+  var maj=$("majesty");
+  maj.addEventListener("input",function(){
+    $("majestyOut").textContent=maj.value;
+    $("iMaj").textContent=maj.value;
+  });
+
+  // draggable bbox
+  var drag=null;
+  bbox.addEventListener("pointerdown",function(e){
+    var c=$("canvas").getBoundingClientRect();
+    drag={x:e.clientX,y:e.clientY,left:bbox.offsetLeft,top:bbox.offsetTop,cw:c.width,ch:c.height};
+    bbox.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+  bbox.addEventListener("pointermove",function(e){
+    if(!drag) return;
+    var nx=drag.left+(e.clientX-drag.x);
+    var ny=drag.top +(e.clientY-drag.y);
+    nx=Math.max(0,Math.min(nx, drag.cw-bbox.offsetWidth));
+    ny=Math.max(0,Math.min(ny, drag.ch-bbox.offsetHeight));
+    bbox.style.left=(nx/drag.cw*100)+"%";
+    bbox.style.top =(ny/drag.ch*100)+"%";
+  });
+  function endDrag(e){ if(drag){drag=null; try{bbox.releasePointerCapture(e.pointerId)}catch(_){}}}
+  bbox.addEventListener("pointerup",endDrag);
+  bbox.addEventListener("pointercancel",endDrag);
+
+  // verdict
+  $("btnAccept").addEventListener("click",function(){
+    queue[active].status="accepted";
+    accepted++; $("acceptedCount").textContent=accepted;
+    advance();
+  });
+  $("btnReject").addEventListener("click",function(){
+    queue[active].status="flagged";
+    $("note").textContent="Flagged back to the pod. A biologist will look again.";
+    renderQueue();
+  });
+  function advance(){
+    var next = queue.findIndex(function(q,i){ return i>active && q.status!=="accepted"; });
+    if(next===-1) next = queue.findIndex(function(q){ return q.status!=="accepted"; });
+    if(next!==-1){ active=next; loadActive(); }
+    else { renderQueue(); $("note").textContent="Queue cleared. The herd, for now, is fully labeled."; }
+  }
+
+  renderQueue();
+  loadActive();
+})();
+</script>
+</body>
+</html>
