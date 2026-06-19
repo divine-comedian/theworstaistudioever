@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Call Board · Residuals</title>
+<meta name="description" content="The Residuals backstage call board: run global payroll, read your contract like a one-act, and clear the pre-show checklist.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Didact+Gothic&family=Poiret+One&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#1E1015;--bg-2:#260F17;--panel:#2A121A;
+    --primary:#C8A24B;--primary-soft:#9C7E3A;--accent:#B2362F;
+    --fg:#F4ECD8;--muted:#A89274;--ink:#EBD9A7;
+    --ok:#6FA46A;
+    --line:rgba(200,162,75,.30);--line-soft:rgba(200,162,75,.14);
+    --display:'Poiret One','Century Gothic','Futura',sans-serif;
+    --body:'Didact Gothic','Futura','Century Gothic',sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:var(--primary);text-decoration:none}
+  :focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+  .num{font-variant-numeric:tabular-nums;letter-spacing:.12em}
+
+  /* chrome */
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;border-bottom:1px solid var(--line-soft);position:sticky;top:0;background:rgba(30,16,21,.94);backdrop-filter:blur(4px);z-index:30}
+  .back{font-size:13px;letter-spacing:.05em;color:var(--muted)}
+  .back:hover{color:var(--ink)}
+  .stage-name{font-family:var(--display);color:var(--ink);font-size:20px;letter-spacing:.05em}
+  .stage-name b{color:var(--primary);font-weight:400}
+  .callsign{font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--primary)}
+
+  .layout{display:grid;grid-template-columns:266px 1fr;min-height:calc(100vh - 53px)}
+
+  /* cast rail */
+  .rail{border-right:1px solid var(--line-soft);padding:22px 18px;background:var(--bg-2)}
+  .rail h2{font-family:var(--display);font-size:13px;letter-spacing:.26em;text-transform:uppercase;color:var(--primary);margin:0 0 16px}
+  .cast{list-style:none;margin:0;padding:0}
+  .cast li{padding:13px 12px;border:1px solid var(--line-soft);border-radius:3px;margin-bottom:10px;background:var(--bg)}
+  .cast .ent{font-family:var(--display);color:var(--ink);font-size:15px;letter-spacing:.02em}
+  .cast .role{font-size:12px;color:var(--muted)}
+  .cast .row2{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+  .pill{font-size:11px;letter-spacing:.14em;text-transform:uppercase;padding:3px 9px;border-radius:2px;border:1px solid var(--line)}
+  .pill.pending{color:var(--muted)}
+  .pill.paid{color:var(--bg);background:var(--primary);border-color:var(--primary);font-weight:bold}
+  .amt{font-size:13px;color:var(--fg);font-variant-numeric:tabular-nums;letter-spacing:.05em}
+
+  /* main */
+  .main{padding:24px 28px 60px}
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line-soft);margin-bottom:26px;flex-wrap:wrap}
+  .tab{font-family:var(--body);background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);padding:11px 16px;font-size:14px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
+  .tab:hover{color:var(--ink)}
+  .tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+  .panel{display:none;animation:fade .35s ease}
+  .panel.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.panel{animation:none}}
+
+  h1.scene{font-family:var(--display);color:var(--ink);font-size:28px;font-weight:400;margin:0 0 4px;letter-spacing:.02em}
+  .sub{color:var(--muted);font-size:14px;margin:0 0 24px}
+
+  /* payroll */
+  .applause{border:1px solid var(--line-soft);border-radius:4px;padding:22px 24px;background:var(--panel);margin-bottom:24px}
+  .applause .lab{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--primary);margin-bottom:12px}
+  .applause .lab .lvl{color:var(--muted)}
+  .meter{height:14px;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:rgba(0,0,0,.25)}
+  .meter span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--primary-soft),var(--primary));transition:width 1.4s cubic-bezier(.2,.7,.2,1)}
+  @media (prefers-reduced-motion:reduce){.meter span{transition:width .01s}}
+  .runline{display:flex;align-items:center;gap:18px;margin-top:18px;flex-wrap:wrap}
+  .big-btn{font-family:var(--body);font-size:14px;letter-spacing:.14em;text-transform:uppercase;background:var(--accent);color:#fff;border:1px solid var(--accent);border-radius:3px;padding:13px 26px;cursor:pointer;transition:transform .15s ease,filter .15s ease}
+  .big-btn:hover{filter:brightness(1.08)}
+  .big-btn:active{transform:scale(.98)}
+  .big-btn:disabled{background:transparent;color:var(--muted);border-color:var(--line-soft);cursor:default;filter:none}
+  .runline .hint{font-size:13px;color:var(--muted)}
+
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:12px 12px;border-bottom:1px solid var(--line-soft)}
+  th{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--primary);font-weight:normal}
+  td .nm{color:var(--ink)}
+  td.amt-c{font-variant-numeric:tabular-nums;letter-spacing:.05em;text-align:right;white-space:nowrap}
+  .stat{font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+  .stat.pending{color:var(--muted)}
+  .stat.paid{color:var(--primary);font-weight:bold}
+
+  /* contracts */
+  .doc-list{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+  .doc{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line-soft);border-radius:3px;padding:16px 18px;background:var(--panel)}
+  .doc .t{font-family:var(--display);color:var(--ink);font-size:17px;letter-spacing:.02em}
+  .doc .m{font-size:12px;color:var(--muted)}
+  .mini{font-family:var(--body);font-size:12px;letter-spacing:.12em;text-transform:uppercase;border:1px solid var(--line);background:transparent;color:var(--primary);border-radius:2px;padding:8px 16px;cursor:pointer}
+  .mini:hover{color:var(--ink);border-color:var(--primary)}
+
+  /* modal — contract as a one-act */
+  .scrim{position:fixed;inset:0;background:rgba(10,5,8,.72);display:none;align-items:flex-start;justify-content:center;padding:40px 18px;z-index:60;overflow:auto}
+  .scrim.on{display:flex}
+  .script{background:var(--bg-2);border:1px solid var(--line);border-radius:5px;max-width:620px;width:100%;padding:38px 44px 44px;position:relative}
+  .script .x{position:absolute;top:14px;right:16px;background:none;border:0;color:var(--muted);font-size:24px;line-height:1;cursor:pointer}
+  .script .x:hover{color:var(--ink)}
+  .script .ttl{text-align:center;font-family:var(--display);color:var(--ink);font-size:22px;letter-spacing:.06em;margin-bottom:4px}
+  .script .by{text-align:center;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--primary);margin-bottom:26px}
+  .script .sd{font-style:italic;color:var(--muted);text-align:center;margin:18px auto;max-width:42ch}
+  .script .ch{text-align:center;font-family:var(--display);letter-spacing:.18em;text-transform:uppercase;color:var(--primary);margin:18px 0 2px}
+  .script .ln{text-align:center;max-width:46ch;margin:0 auto 6px;color:var(--fg)}
+  .script .sign{margin-top:30px;border-top:1px solid var(--line-soft);padding-top:18px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+  .script .sign .who{font-size:13px;color:var(--muted)}
+
+  /* compliance checklist */
+  .checklist{list-style:none;margin:0 0 20px;padding:0;display:grid;gap:10px;max-width:620px}
+  .check{display:flex;align-items:center;justify-content:space-between;gap:16px;border:1px solid var(--line-soft);border-radius:3px;padding:14px 18px;background:var(--panel)}
+  .check .lab2 .t{color:var(--ink)}
+  .check .lab2 .d{font-size:12px;color:var(--muted)}
+  .switch{flex:0 0 auto;width:48px;height:26px;border-radius:14px;border:1px solid var(--line);background:rgba(0,0,0,.25);position:relative;cursor:pointer;transition:background .2s ease,border-color .2s ease}
+  .switch::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:var(--muted);transition:transform .2s ease,background .2s ease}
+  .switch[aria-checked="true"]{background:rgba(200,162,75,.22);border-color:var(--primary)}
+  .switch[aria-checked="true"]::after{transform:translateX(22px);background:var(--primary)}
+  .houselights{border:1px solid var(--line-soft);border-radius:4px;padding:18px 20px;background:var(--bg-2);display:flex;align-items:center;justify-content:space-between;gap:16px;max-width:620px;flex-wrap:wrap}
+  .houselights .state{font-family:var(--display);color:var(--ink);font-size:18px;letter-spacing:.04em}
+  .houselights .lvl{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--primary)}
+
+  /* green room */
+  .notices{list-style:none;margin:0;padding:0;display:grid;gap:12px;max-width:640px}
+  .notice{border-left:3px solid var(--primary);background:var(--panel);padding:14px 18px;border-radius:0 3px 3px 0}
+  .notice .h{font-family:var(--display);color:var(--ink);letter-spacing:.03em;font-size:16px}
+  .notice .b{font-size:14px;color:var(--muted)}
+
+  /* toast */
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);font-size:14px;letter-spacing:.04em;padding:13px 22px;border-radius:3px;opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease;z-index:80}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  @media (max-width:780px){
+    .layout{grid-template-columns:1fr}
+    .rail{border-right:0;border-bottom:1px solid var(--line-soft)}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back" href="./index.html">&larr; back to the pitch</a>
+  <span class="stage-name">Residual<b>s.</b> <span style="color:var(--muted);font-size:13px;letter-spacing:.04em">Call Board</span></span>
+  <span class="callsign">Half hour to places</span>
+</div>
+
+<div class="layout">
+  <aside class="rail">
+    <h2>The Cast</h2>
+    <ul class="cast" id="cast">
+      <li data-id="us"><div class="ent">You, LLC</div><div class="role">United States &middot; W-2</div><div class="row2"><span class="amt">$6,200.00</span><span class="pill pending">Pending</span></div></li>
+      <li data-id="ca"><div class="ent">You (Canada)</div><div class="role">Canada &middot; EOR</div><div class="row2"><span class="amt">CA$2,950.00</span><span class="pill pending">Pending</span></div></li>
+      <li data-id="uk"><div class="ent">You, Ltd</div><div class="role">United Kingdom &middot; EOR</div><div class="row2"><span class="amt">&pound;1,740.00</span><span class="pill pending">Pending</span></div></li>
+      <li data-id="de"><div class="ent">Du GmbH</div><div class="role">Germany &middot; Contractor</div><div class="row2"><span class="amt">&euro;2,100.00</span><span class="pill pending">Pending</span></div></li>
+      <li data-id="pt"><div class="ent">Você, Unip.</div><div class="role">Portugal &middot; EOR</div><div class="row2"><span class="amt">&euro;1,480.00</span><span class="pill pending">Pending</span></div></li>
+      <li data-id="jp"><div class="ent">You K.K.</div><div class="role">Japan &middot; Contractor</div><div class="row2"><span class="amt">&yen;312,000</span><span class="pill pending">Pending</span></div></li>
+    </ul>
+  </aside>
+
+  <main class="main">
+    <div class="tabs" role="tablist" aria-label="Call board sections">
+      <button class="tab" role="tab" aria-selected="true" data-tab="payroll">Payroll</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="contracts">Contracts</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="compliance">Compliance</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="green">Green Room</button>
+    </div>
+
+    <!-- PAYROLL -->
+    <section class="panel on" id="p-payroll" role="tabpanel">
+      <h1 class="scene">Tonight's payroll run</h1>
+      <p class="sub">Six entities. Six currencies. One curtain call you'll receive by direct deposit.</p>
+
+      <div class="applause">
+        <div class="lab"><span>Applause meter</span><span class="lvl" id="applause-lvl">House silent</span></div>
+        <div class="meter"><span id="applause-bar"></span></div>
+        <div class="runline">
+          <button class="big-btn" id="run">Run payroll</button>
+          <span class="hint" id="run-hint">Pays all six. Triggers a standing ovation no one asked you to earn.</span>
+        </div>
+      </div>
+
+      <table>
+        <thead><tr><th>Entity</th><th>Jurisdiction</th><th class="amt-c">Net pay</th><th style="text-align:right">Status</th></tr></thead>
+        <tbody id="paytable">
+          <tr data-id="us"><td class="nm">You, LLC</td><td>United States</td><td class="amt-c">$6,200.00</td><td style="text-align:right"><span class="stat pending">Pending</span></td></tr>
+          <tr data-id="ca"><td class="nm">You (Canada)</td><td>Canada</td><td class="amt-c">CA$2,950.00</td><td style="text-align:right"><span class="stat pending">Pending</span></td></tr>
+          <tr data-id="uk"><td class="nm">You, Ltd</td><td>United Kingdom</td><td class="amt-c">&pound;1,740.00</td><td style="text-align:right"><span class="stat pending">Pending</span></td></tr>
+          <tr data-id="de"><td class="nm">Du GmbH</td><td>Germany</td><td class="amt-c">&euro;2,100.00</td><td style="text-align:right"><span class="stat pending">Pending</span></td></tr>
+          <tr data-id="pt"><td class="nm">Você, Unip.</td><td>Portugal</td><td class="amt-c">&euro;1,480.00</td><td style="text-align:right"><span class="stat pending">Pending</span></td></tr>
+          <tr data-id="jp"><td class="nm">You K.K.</td><td>Japan</td><td class="amt-c">&yen;312,000</td><td style="text-align:right"><span class="stat pending">Pending</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- CONTRACTS -->
+    <section class="panel" id="p-contracts" role="tabpanel">
+      <h1 class="scene">Contracts on file</h1>
+      <p class="sub">Every agreement is delivered in standard one-act format. Read it aloud if it helps. It usually helps.</p>
+      <ul class="doc-list">
+        <li class="doc">
+          <div><div class="t">Global Employment Agreement</div><div class="m">United Kingdom &middot; EOR &middot; signed</div></div>
+          <button class="mini" data-doc="uk">Read</button>
+        </li>
+        <li class="doc">
+          <div><div class="t">Independent Contractor Agreement</div><div class="m">Germany &middot; freelance &middot; awaiting initials</div></div>
+          <button class="mini" data-doc="de">Read</button>
+        </li>
+        <li class="doc">
+          <div><div class="t">Equity &amp; Severance Rider</div><div class="m">United States &middot; W-2 &middot; signed</div></div>
+          <button class="mini" data-doc="us">Read</button>
+        </li>
+      </ul>
+    </section>
+
+    <!-- COMPLIANCE -->
+    <section class="panel" id="p-compliance" role="tabpanel">
+      <h1 class="scene">Pre-show checklist</h1>
+      <p class="sub">House lights come up to full only when every item is cleared. No item, no curtain.</p>
+      <ul class="checklist" id="checklist">
+        <li class="check"><span class="lab2"><span class="t">W-8BEN on file</span><br><span class="d">So three countries stop calling you a mystery</span></span><span class="switch" role="switch" aria-checked="true" tabindex="0"></span></li>
+        <li class="check"><span class="lab2"><span class="t">Right-to-work verified</span><br><span class="d">Portugal would like to see something, anything</span></span><span class="switch" role="switch" aria-checked="true" tabindex="0"></span></li>
+        <li class="check"><span class="lab2"><span class="t">Pension auto-enrollment</span><br><span class="d">United Kingdom, on your behalf, against your instincts</span></span><span class="switch" role="switch" aria-checked="false" tabindex="0"></span></li>
+        <li class="check"><span class="lab2"><span class="t">Social charges registered</span><br><span class="d">Germany has a form. Germany always has a form</span></span><span class="switch" role="switch" aria-checked="false" tabindex="0"></span></li>
+        <li class="check"><span class="lab2"><span class="t">Residency certificate</span><br><span class="d">Japan, politely, would like to know where you are</span></span><span class="switch" role="switch" aria-checked="false" tabindex="0"></span></li>
+        <li class="check"><span class="lab2"><span class="t">Emergency contact</span><br><span class="d">Currently your old scene partner. Please update</span></span><span class="switch" role="switch" aria-checked="true" tabindex="0"></span></li>
+      </ul>
+      <div class="houselights">
+        <span class="state" id="hl-state">House lights at half</span>
+        <span class="lvl"><span class="num" id="hl-count">3</span> of 6 cleared</span>
+      </div>
+    </section>
+
+    <!-- GREEN ROOM -->
+    <section class="panel" id="p-green" role="tabpanel">
+      <h1 class="scene">Green Room</h1>
+      <p class="sub">Posted to the board this morning. Read it, sign nothing, eat a clementine.</p>
+      <ul class="notices">
+        <li class="notice"><div class="h">Direct deposit lands on the 1st</div><div class="b">Same date every month. We know that's not a thrill. That's the point.</div></li>
+        <li class="notice"><div class="h">Your benefits vested</div><div class="b">Quietly, on a Tuesday, while you were rehearsing a resignation letter you won't send.</div></li>
+        <li class="notice"><div class="h">Snack table restocked</div><div class="b">Clementines, almonds, and the specific tea you mentioned once. We were listening.</div></li>
+        <li class="notice"><div class="h">No notes tonight</div><div class="b">The director has no notes. There is no director. You're doing fine.</div></li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<!-- contract modal -->
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-label="Contract">
+  <div class="script" id="script">
+    <button class="x" id="close" aria-label="Close contract">&times;</button>
+    <div id="script-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+  // ---- tabs ----
+  var tabs = document.querySelectorAll('.tab');
+  tabs.forEach(function(t){
+    t.addEventListener('click', function(){
+      tabs.forEach(function(x){x.setAttribute('aria-selected','false')});
+      t.setAttribute('aria-selected','true');
+      document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on')});
+      document.getElementById('p-' + t.dataset.tab).classList.add('on');
+    });
+  });
+
+  // ---- toast ----
+  var toast = document.getElementById('toast'), toastT;
+  function say(msg){
+    toast.textContent = msg; toast.classList.add('on');
+    clearTimeout(toastT); toastT = setTimeout(function(){toast.classList.remove('on')}, 3600);
+  }
+
+  // ---- payroll run ----
+  var run = document.getElementById('run');
+  var bar = document.getElementById('applause-bar');
+  var lvl = document.getElementById('applause-lvl');
+  var reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
+  run.addEventListener('click', function(){
+    run.disabled = true;
+    run.textContent = 'Running…';
+    document.getElementById('run-hint').textContent = 'Processing six jurisdictions. Hold for applause.';
+    bar.style.width = '100%';
+    var stages = ['Polite clapping','Scattered cheers','Genuine applause','Standing ovation'];
+    var i = 0;
+    var iv = setInterval(function(){
+      lvl.textContent = stages[i]; i++;
+      if(i >= stages.length) clearInterval(iv);
+    }, reduce ? 1 : 380);
+    setTimeout(function(){
+      document.querySelectorAll('#paytable tr').forEach(function(tr){
+        tr.querySelector('.stat').className = 'stat paid';
+        tr.querySelector('.stat').textContent = 'Paid';
+      });
+      document.querySelectorAll('#cast li .pill').forEach(function(p){
+        p.className = 'pill paid'; p.textContent = 'Paid';
+      });
+      run.textContent = 'Payroll run complete';
+      say('Payroll run · 6 of 6 cast paid · standing ovation logged');
+    }, reduce ? 30 : 1500);
+  });
+
+  // ---- contracts modal (one-act format) ----
+  var DOCS = {
+    uk: {
+      ttl: 'Global Employment Agreement',
+      by: 'A one-act, United Kingdom',
+      sd: 'A kitchen. Morning. The EMPLOYEE holds a phone at arm’s length, reading.',
+      lines: [
+        ['Residuals', 'The Company shall employ the Employee. Salary is paid monthly, in arrears, in pounds sterling.'],
+        ['Employee', '(quietly) In arrears. Like a tragedy.'],
+        ['Residuals', 'Like a paycheck. The Employee accrues 28 days of holiday and one pension they will pretend to understand.']
+      ],
+      who: 'Countersigned by Residuals (UK) on your behalf.'
+    },
+    de: {
+      ttl: 'Independent Contractor Agreement',
+      by: 'A one-act, Germany',
+      sd: 'A co-working space. The CONTRACTOR squints at a clause translated three times.',
+      lines: [
+        ['Residuals', 'The Contractor is engaged for services and is, for the avoidance of doubt, not an employee.'],
+        ['Contractor', '(to no one) For the avoidance of doubt. My favorite stage direction.'],
+        ['Residuals', 'Invoices are paid net-15. Social charges are filed. A form exists. The form is handled.']
+      ],
+      who: 'Awaiting your initials, lower right, where the gold mark sits.'
+    },
+    us: {
+      ttl: 'Equity & Severance Rider',
+      by: 'A one-act, United States',
+      sd: 'A studio apartment. The EMPLOYEE reads aloud to a houseplant.',
+      lines: [
+        ['Residuals', 'Should the engagement end, the Employee departs with severance and a clear conscience.'],
+        ['Employee', '(to the plant) A clean exit. I never got one of those.'],
+        ['Residuals', 'You get one now. In writing. Notarized.']
+      ],
+      who: 'Signed and counter-signed. Kept on file indefinitely.'
+    }
+  };
+  var scrim = document.getElementById('scrim');
+  var body = document.getElementById('script-body');
+  var lastFocus = null;
+  function openDoc(key){
+    var d = DOCS[key]; if(!d) return;
+    var html = '<div class="ttl">' + d.ttl + '</div><div class="by">' + d.by + '</div>';
+    html += '<p class="sd">' + d.sd + '</p>';
+    d.lines.forEach(function(l){
+      html += '<div class="ch">' + l[0] + '</div><p class="ln">' + l[1] + '</p>';
+    });
+    html += '<div class="sign"><span class="who">' + d.who + '</span><button class="mini" id="signbtn">Sign with a flourish</button></div>';
+    body.innerHTML = html;
+    scrim.classList.add('on');
+    lastFocus = document.activeElement;
+    document.getElementById('close').focus();
+    document.getElementById('signbtn').addEventListener('click', function(){
+      closeDoc(); say('Signed with a flourish. Somewhere, a stage manager nods.');
+    });
+  }
+  function closeDoc(){
+    scrim.classList.remove('on');
+    if(lastFocus) lastFocus.focus();
+  }
+  document.querySelectorAll('[data-doc]').forEach(function(b){
+    b.addEventListener('click', function(){ openDoc(b.dataset.doc); });
+  });
+  document.getElementById('close').addEventListener('click', closeDoc);
+  scrim.addEventListener('click', function(e){ if(e.target === scrim) closeDoc(); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && scrim.classList.contains('on')) closeDoc(); });
+
+  // ---- compliance toggles ----
+  function refreshHouse(){
+    var on = document.querySelectorAll('#checklist .switch[aria-checked="true"]').length;
+    document.getElementById('hl-count').textContent = on;
+    var state = document.getElementById('hl-state');
+    if(on === 6) state.textContent = 'House lights at full · places, please';
+    else if(on >= 4) state.textContent = 'House lights at three-quarters';
+    else if(on >= 2) state.textContent = 'House lights at half';
+    else state.textContent = 'House dark';
+  }
+  function toggleSwitch(sw){
+    sw.setAttribute('aria-checked', sw.getAttribute('aria-checked') === 'true' ? 'false' : 'true');
+    refreshHouse();
+  }
+  document.querySelectorAll('#checklist .switch').forEach(function(sw){
+    sw.addEventListener('click', function(){ toggleSwitch(sw); });
+    sw.addEventListener('keydown', function(e){
+      if(e.key === ' ' || e.key === 'Enter'){ e.preventDefault(); toggleSwitch(sw); }
+    });
+  });
+  refreshHouse();
+</script>
+</body>
+</html>

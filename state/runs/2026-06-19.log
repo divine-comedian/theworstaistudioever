@@ -1,0 +1,80 @@
+[2026-06-19T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-06-19T08:00:02Z] invoking claude -p
+
+================================================
+theworstaistudioever — daily run summary 2026-06-19
+================================================
+
+ROLL
+  Company:  Deel
+  Subject:  recovering theater kids  (valid: a relatable type of person)
+  Slug:     deel-for-recovering-theater-kids
+  Tagline:  Deel for recovering theater kids
+  Rerolls:  0  (first PRNG draw was unused; deterministic LCG seeded from "2026-06-19")
+
+CONCEPT
+  Product:  Residuals
+  One-liner: Global payroll and compliance for people who can still do the whole monologue
+             but have never once filed a W-2.
+  Angle:    HR-tech sincerity (global payroll / EOR / contractor management / compliance)
+            pointed, deadpan, at people who peaked in the spring musical. Steady direct
+            deposit framed as the standing ovation that never came.
+
+DESIGN DIRECTION  (anti-sameness check passed vs. last 7)
+  Style:    Golden-age Broadway theater-program, dark mode — brass Art Deco vocabulary
+            (chevron borders, sunburst/marquee-bulb dividers, gilt proscenium hairlines)
+            on a deep curtain-aubergine ground.
+  Palette:  bg #1E1015 / primary brass #C8A24B / accent curtain-red #B2362F /
+            fg #F4ECD8 / muted #A89274 / ink #EBD9A7
+  Fonts:    Poiret One (display) + Didact Gothic (body)  [from ui-ux-pro-max deco pairing]
+  Archetype: Premium editorial landing as a theater program (marquee hero + framed stage
+            plate, three "Acts" of features, framed-headshot testimonials, ticket-class
+            pricing, handoff to a backstage call-board demo).
+  Note:     ui-ux-pro-max returned a museum-catalogue pattern (collides w/ scale-for-moose)
+            and a Liquid-Glass style (collides w/ palantir-for-ferrets); kept only the deco
+            font pairing + gold accent and authored a distinct theater-program style.
+  Distinct from last 7: museum-editorial (moose), swiss-modernist (cloudflare), frosted-glass
+            (ferrets), dark surveillance HUD (goldfish), bento console (gitlab), vintage
+            brochure (lonely-retirees), mirrored neo-brutalism (slack). No tuple collision.
+
+IMAGES  (cap: 0/10 used at start; 4 calls made, 4/10 after run)
+  Rationale: Theater-program style genuinely earns one photographic plate (spotlit empty
+             stage anchors the marquee hero better than pure type). Three deadpan corporate
+             headshots replace testimonial initials-circles. Demo is a call-board dashboard
+             (terminal/document-shaped) -> no demo subject assets allocated.
+  hero.webp        (16:9 -> 1600x900)  attempts 1  PASS — empty spotlit stage, brass deco
+                                                          proscenium, on-palette, no people/text.
+  headshot-1.webp  (1:1 -> 320x320)    attempts 1  PASS — man, dark blazer, deadpan; palette ok.
+  headshot-2.webp  (1:1 -> 320x320)    attempts 1  PASS — woman, charcoal blouse, poised; ok.
+  headshot-3.webp  (1:1 -> 320x320)    attempts 1  PASS — older man, salt-and-pepper; ok.
+  All four <= 500 KB (hero ~204 KB, headshots ~8-9 KB). No regenerations needed.
+
+BUILD
+  Landing: site/entries/deel-for-recovering-theater-kids/index.html (self-contained, inline
+           CSS/JS, Google Fonts import, OG/Twitter tags, hero img + 3 headshots wired in).
+  Demo:    demo.html — backstage call-board console. Tabs (Payroll/Contracts/Compliance/
+           Green Room), cast rail of 6 legal entities, Run Payroll -> animated applause meter
+           + PAID stamps, contract modal in one-act script format, compliance toggle checklist
+           with house-lights readout. Vanilla JS only; modal Esc/backdrop close; reduced-motion
+           respected. No demo images referenced (none generated).
+  Skills:  anti-ai-slop, ui-ux-pro-max, frontend-design all invoked.
+
+GALLERY
+  Rebuilt site/index.html from all 27 concept.json files, date desc (same-date tiebreak by
+  history order preserved: otters before lonely-retirees; dogs before okta). Header count
+  updated to "27 startups - since 2026". styles.css untouched. Metadata contract, favicon,
+  50x50 logo lockup, and carousel nav/script preserved.
+
+WARNINGS / NEAR-MISSES
+  - None. Gallery apostrophes are HTML-entity-escaped (&#x27;), which renders identically to
+    the prior raw apostrophes.
+
+VALIDATION
+  scripts/validate-entry.sh site deel-for-recovering-theater-kids -> OK (exit 0)
+  state/history.json appended (27 entries) and re-parsed as valid JSON.
+[2026-06-19T08:13:12Z] WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks
+[2026-06-19T08:13:12Z] new entry: deel-for-recovering-theater-kids
+validate-entry [deel-for-recovering-theater-kids]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 27 entries (domain theworstaistudioever.com)
+[2026-06-19T08:13:13Z] committing: Deel for recovering theater kids

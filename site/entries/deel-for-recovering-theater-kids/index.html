@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Residuals · theworstaistudioever</title>
+<meta name="description" content="Global payroll and compliance for people who can still do the whole monologue but have never once filed a W-2.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Residuals · theworstaistudioever">
+<meta property="og:description" content="Global payroll and compliance for people who can still do the whole monologue but have never once filed a W-2.">
+<meta property="og:image" content="./hero.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Residuals · theworstaistudioever">
+<meta name="twitter:description" content="Global payroll and compliance for people who can still do the whole monologue but have never once filed a W-2.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Didact+Gothic&family=Poiret+One&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#1E1015;
+    --bg-2:#260F17;
+    --primary:#C8A24B;
+    --primary-soft:#9C7E3A;
+    --accent:#B2362F;
+    --fg:#F4ECD8;
+    --muted:#A89274;
+    --ink:#EBD9A7;
+    --line:rgba(200,162,75,.32);
+    --line-soft:rgba(200,162,75,.16);
+    --display:'Poiret One','Century Gothic','Futura',sans-serif;
+    --body:'Didact Gothic','Futura','Century Gothic',sans-serif;
+    --maxw:1140px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--fg);
+    font-family:var(--body);
+    font-size:18px;
+    line-height:1.66;
+    -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    /* faint house-light vignette */
+    content:"";
+    position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:radial-gradient(120% 80% at 50% -10%, rgba(200,162,75,.10), transparent 60%);
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px;position:relative;z-index:1}
+  a{color:var(--primary);text-decoration:none}
+  a:hover{color:var(--ink)}
+  :focus-visible{outline:2px solid var(--primary);outline-offset:3px}
+  h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;letter-spacing:.01em}
+  .kicker{
+    font-family:var(--body);
+    text-transform:uppercase;
+    letter-spacing:.42em;
+    font-size:12px;
+    color:var(--primary);
+  }
+  .num{font-family:var(--body);letter-spacing:.18em;text-transform:uppercase;font-variant-numeric:tabular-nums}
+
+  /* ---- marquee-bulb divider (the signature) ---- */
+  .marquee{
+    display:flex;align-items:center;justify-content:center;gap:13px;
+    margin:0;padding:30px 0;list-style:none;
+  }
+  .marquee i{
+    width:7px;height:7px;border-radius:50%;
+    background:var(--primary);
+    box-shadow:0 0 9px rgba(200,162,75,.55);
+    animation:bulb 2.4s ease-in-out infinite;
+  }
+  .marquee i:nth-child(2n){animation-delay:.3s}
+  .marquee i:nth-child(3n){animation-delay:.6s}
+  .marquee i:nth-child(4n){animation-delay:.9s}
+  .marquee i:nth-child(5n){animation-delay:1.2s}
+  @keyframes bulb{0%,100%{opacity:.28}50%{opacity:1}}
+  @media (prefers-reduced-motion:reduce){.marquee i{animation:none;opacity:.8}}
+
+  /* ---- top nav ---- */
+  header.bar{position:relative;z-index:2;border-bottom:1px solid var(--line-soft)}
+  .bar .wrap{display:flex;align-items:center;justify-content:space-between;padding-top:22px;padding-bottom:22px}
+  .brand{font-family:var(--display);font-size:26px;color:var(--ink);letter-spacing:.04em}
+  .brand b{color:var(--primary);font-weight:400}
+  .nav-links{display:flex;gap:30px;align-items:center}
+  .nav-links a{font-size:14px;letter-spacing:.04em;color:var(--muted)}
+  .nav-links a:hover{color:var(--ink)}
+  .btn{
+    font-family:var(--body);font-size:14px;letter-spacing:.14em;text-transform:uppercase;
+    padding:11px 22px;border:1px solid var(--accent);color:var(--fg);
+    background:var(--accent);border-radius:2px;display:inline-block;cursor:pointer;
+    transition:transform .18s ease, filter .18s ease;
+  }
+  .btn:hover{color:#fff;filter:brightness(1.08)}
+  .btn:active{transform:scale(.98)}
+  .btn.ghost{background:transparent;border-color:var(--line);color:var(--primary)}
+  .btn.ghost:hover{border-color:var(--primary);color:var(--ink);filter:none}
+  @media (max-width:720px){.nav-links a:not(.btn){display:none}}
+
+  /* ---- hero ---- */
+  .hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:54px;align-items:center;padding-top:70px;padding-bottom:24px}
+  .proscenium-rule{height:1px;background:var(--line);margin:18px 0 26px;max-width:120px}
+  h1.head{font-size:clamp(44px,6.4vw,82px);line-height:1.02;color:var(--ink);margin:14px 0 0}
+  .hero-sub{color:var(--fg);max-width:30ch;margin:24px 0 30px;font-size:19px}
+  .hero-cta{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+  .hero-cta .note{font-size:13px;color:var(--muted);letter-spacing:.04em}
+
+  /* framed stage plate with deco corner crop-marks */
+  .plate{position:relative;padding:14px}
+  .plate img{display:block;width:100%;height:auto;border:1px solid var(--line);filter:saturate(1.02)}
+  .plate::before,.plate::after,.plate .c1,.plate .c2{
+    content:"";position:absolute;width:22px;height:22px;border:2px solid var(--primary);
+  }
+  .plate::before{top:0;left:0;border-right:0;border-bottom:0}
+  .plate::after{top:0;right:0;border-left:0;border-bottom:0}
+  .plate .c1{bottom:0;left:0;border-right:0;border-top:0}
+  .plate .c2{bottom:0;right:0;border-left:0;border-top:0}
+  .plate figcaption{margin-top:12px;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);text-align:center}
+
+  @media (max-width:860px){
+    .hero .wrap{grid-template-columns:1fr;gap:30px;padding-top:46px}
+    .plate{order:-1}
+  }
+
+  /* ---- now-playing statement ---- */
+  .statement{border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft)}
+  .statement .wrap{padding:54px 28px;text-align:center}
+  .statement p{font-family:var(--display);font-size:clamp(22px,3vw,34px);line-height:1.4;color:var(--ink);margin:14px auto 0;max-width:24ch}
+
+  /* ---- sections ---- */
+  section{position:relative;z-index:1}
+  .sec-head{text-align:center;padding-top:18px}
+  .sec-head h2{font-size:clamp(28px,3.6vw,40px);color:var(--ink);margin-top:8px}
+
+  /* features as a program of acts */
+  .acts{display:grid;gap:1px;background:var(--line-soft);border:1px solid var(--line-soft);margin:30px 0 8px}
+  .act{background:var(--bg);padding:38px 34px;display:grid;grid-template-columns:auto 1fr;gap:30px;align-items:start}
+  .act .label{font-family:var(--display);color:var(--primary);font-size:15px;letter-spacing:.3em;text-transform:uppercase;white-space:nowrap}
+  .act h3{font-size:25px;color:var(--ink);margin-bottom:8px}
+  .act p{margin:0;color:var(--fg)}
+  @media (max-width:680px){.act{grid-template-columns:1fr;gap:10px;padding:30px 22px}}
+
+  /* testimonials */
+  .house{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin:30px 0 8px}
+  .quote{border:1px solid var(--line-soft);padding:30px 28px;background:var(--bg-2)}
+  .quote blockquote{margin:0 0 22px;font-size:18px;color:var(--fg);line-height:1.6}
+  .quote blockquote::before{content:"\201C";font-family:var(--display);color:var(--primary);font-size:46px;line-height:0;vertical-align:-18px;margin-right:4px}
+  .who{display:flex;align-items:center;gap:14px;border-top:1px solid var(--line-soft);padding-top:18px}
+  .who img{width:50px;height:50px;border-radius:50%;object-fit:cover;border:1px solid var(--line);flex:0 0 auto}
+  .who .nm{font-family:var(--display);color:var(--ink);font-size:17px;letter-spacing:.02em}
+  .who .ti{font-size:12.5px;color:var(--muted);letter-spacing:.03em;line-height:1.35}
+  @media (max-width:820px){.house{grid-template-columns:1fr;max-width:460px;margin-left:auto;margin-right:auto}}
+
+  /* pricing — ticket classes */
+  .box-office{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin:30px 0 8px;align-items:stretch}
+  .ticket{border:1px solid var(--line-soft);padding:32px 28px;display:flex;flex-direction:column;background:var(--bg)}
+  .ticket.feature{border-color:var(--primary);background:var(--bg-2);position:relative}
+  .ticket.feature .tag{
+    position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+    background:var(--accent);color:#fff;font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+    padding:5px 14px;border-radius:2px;white-space:nowrap;
+  }
+  .ticket .tier{font-family:var(--display);font-size:24px;color:var(--ink);letter-spacing:.04em}
+  .ticket .price{font-family:var(--display);font-size:40px;color:var(--primary);margin:14px 0 4px}
+  .ticket .tl{color:var(--muted);font-size:14px;margin-bottom:22px;min-height:20px}
+  .ticket ul{list-style:none;margin:0 0 26px;padding:0;flex:1}
+  .ticket li{padding:9px 0;border-bottom:1px solid var(--line-soft);font-size:15px;color:var(--fg)}
+  .ticket li::before{content:"\2022";color:var(--primary);margin-right:10px}
+  .ticket li:last-child{border-bottom:0}
+  .ticket .btn{text-align:center}
+  @media (max-width:820px){.box-office{grid-template-columns:1fr;max-width:440px;margin-left:auto;margin-right:auto}}
+
+  /* demo handoff */
+  .handoff{border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:14px}
+  .handoff .wrap{padding:64px 28px;text-align:center}
+  .handoff h2{font-size:clamp(26px,3.4vw,40px);color:var(--ink)}
+  .handoff p{color:var(--muted);max-width:42ch;margin:14px auto 28px}
+
+  footer{padding:46px 0 60px;text-align:center}
+  footer .wrap{display:flex;flex-direction:column;gap:8px;align-items:center}
+  footer .back{font-size:14px;letter-spacing:.06em;color:var(--muted)}
+  footer .back:hover{color:var(--ink)}
+  footer .fine{font-size:12px;color:var(--primary-soft);letter-spacing:.04em}
+
+  .gap{padding:62px 0}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap">
+    <span class="brand">Residual<b>s.</b></span>
+    <nav class="nav-links">
+      <a href="#program">The program</a>
+      <a href="#house">The house</a>
+      <a href="#box-office">Box office</a>
+      <a class="btn ghost" href="./demo.html">Open the demo</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <span class="kicker">Now playing &middot; payroll for recovering theater kids</span>
+      <div class="proscenium-rule"></div>
+      <h1 class="head">You were going to be huge. Now you're on payroll.</h1>
+      <p class="hero-sub">Global payroll, contracts, and compliance for recovering theater kids. We handle the parts of adulthood that don't come with an intermission.</p>
+      <div class="hero-cta">
+        <a class="btn" href="./demo.html">Request a callback</a>
+        <span class="note">Direct deposit on the 1st. Every month. No notes.</span>
+      </div>
+    </div>
+    <figure class="plate">
+      <span class="c1"></span><span class="c2"></span>
+      <img src="./hero.webp" alt="An empty golden-age theater stage lit by a single spotlight, framed by a brass Art Deco proscenium and deep burgundy curtains.">
+      <figcaption>The stage you left. We kept the lights on.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<ul class="marquee" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></ul>
+
+<section class="statement">
+  <div class="wrap">
+    <span class="kicker">A note from the front of house</span>
+    <p>Residuals is the company that finally puts you on a recurring payment schedule for a job you didn't have to audition for.</p>
+  </div>
+</section>
+
+<section id="program" class="gap">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">The program</span>
+      <h2>Three acts, no intermission</h2>
+    </div>
+    <div class="acts">
+      <article class="act">
+        <span class="label">Act I</span>
+        <div>
+          <h3>Misclassification, resolved</h3>
+          <p>The IRS wants to know whether you're an employee or a contractor. You want to know whether you're a leading type or a character actor. We answer the first question in writing and quietly table the second.</p>
+        </div>
+      </article>
+      <article class="act">
+        <span class="label">Act II</span>
+        <div>
+          <h3>Employer of Record in 150 countries</h3>
+          <p>We become your legal employer anywhere you flee to after the cast party. Local payroll, local taxes, local benefits, so geography stops being your exit strategy.</p>
+        </div>
+      </article>
+      <article class="act">
+        <span class="label">Act III</span>
+        <div>
+          <h3>Onboarding that ships a chair</h3>
+          <p>A laptop, a standing desk, and one ergonomic chair arrive in five business days. We do not ship the spotlight. We have been very clear with everyone about the spotlight.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<ul class="marquee" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></ul>
+
+<section id="house" class="gap">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">The house</span>
+      <h2>Reviews from people who got out</h2>
+    </div>
+    <div class="house">
+      <figure class="quote">
+        <blockquote>I haven't been on a stage since 2014, and Residuals still pays me on the 1st. Longest run of my career.</blockquote>
+        <figcaption class="who">
+          <img src="./headshot-1.webp" alt="Dorian Ashby-Vale">
+          <span>
+            <span class="nm">Dorian Ashby-Vale</span><br>
+            <span class="ti">Former Mercutio, Senior Manager of Vendor Operations</span>
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="quote">
+        <blockquote>My contractor agreement arrived formatted like a script. I gave it a cold read in the kitchen. It held.</blockquote>
+        <figcaption class="who">
+          <img src="./headshot-2.webp" alt="Priya Nandakumar">
+          <span>
+            <span class="nm">Priya Nandakumar</span><br>
+            <span class="ti">Recovering Triple Threat, Revenue Enablement Lead</span>
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="quote">
+        <blockquote>The applause meter is technically a push notification. My therapist and I are working through it.</blockquote>
+        <figcaption class="who">
+          <img src="./headshot-3.webp" alt="Wes Kowalczyk">
+          <span>
+            <span class="nm">Wes Kowalczyk</span><br>
+            <span class="ti">Ensemble 1998 to 2009, Director of Procurement 2019 to present</span>
+          </span>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<ul class="marquee" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></ul>
+
+<section id="box-office" class="gap">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">Box office</span>
+      <h2>Choose your house seats</h2>
+    </div>
+    <div class="box-office">
+      <div class="ticket">
+        <span class="tier">Open Call</span>
+        <span class="price">$0<span style="font-size:16px;color:var(--muted)">/mo</span></span>
+        <span class="tl">For people between things.</span>
+        <ul>
+          <li>One contractor agreement</li>
+          <li>Self-serve tax forms</li>
+          <li>A welcome email you will leave unread</li>
+        </ul>
+        <a class="btn ghost" href="./demo.html">Get on the list</a>
+      </div>
+      <div class="ticket feature">
+        <span class="tag">Most booked</span>
+        <span class="tier">Callback</span>
+        <span class="price">$39<span style="font-size:16px;color:var(--muted)">/mo</span></span>
+        <span class="tl">For people who booked it.</span>
+        <ul>
+          <li>Global payroll in 14 currencies</li>
+          <li>Benefits that vest before you quit</li>
+          <li>Quarterly check-ins you may decline</li>
+        </ul>
+        <a class="btn" href="./demo.html">Take the part</a>
+      </div>
+      <div class="ticket">
+        <span class="tier">Standing Ovation</span>
+        <span class="price">$899<span style="font-size:16px;color:var(--muted)">/mo</span></span>
+        <span class="tl">For people who never really left.</span>
+        <ul>
+          <li>Employer of Record in 150 countries</li>
+          <li>A dedicated compliance lead</li>
+          <li>Recorded applause on every payroll run</li>
+          <li>Permission to say you work in operations now</li>
+        </ul>
+        <a class="btn ghost" href="./demo.html">Book the run</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="handoff">
+  <div class="wrap">
+    <span class="kicker">Backstage</span>
+    <h2>Step into the call board</h2>
+    <p>Run a full international payroll, read a contract written like a one-act, and watch the applause meter do what no audience did.</p>
+    <a class="btn" href="./demo.html">Open the demo &rarr;</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <a class="back" href="/">&larr; theworstaistudioever</a>
+    <span class="fine">Residuals is a portfolio company of the worst AI studio ever. Direct deposit not guaranteed to feel like enough.</span>
+  </div>
+</footer>
+
+<script>
+  // Smooth in-page nav for the program links (respects reduced motion via CSS).
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click', function(e){
+      var t = document.querySelector(a.getAttribute('href'));
+      if(t){ e.preventDefault(); t.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion:reduce)').matches ? 'auto':'smooth', block:'start'}); }
+    });
+  });
+</script>
+</body>
+</html>
