@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The reader · Frond</title>
+<meta name="description" content="The Frond reader: longform essays by red pandas, measured in naps, rewarded in bamboo.">
+<meta name="theme-color" content="#A23B1E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Bodoni:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&display=swap');
+
+:root{
+  --primary:#A23B1E;
+  --accent:#3E5E33;
+  --bg:#F4ECDC;
+  --fg:#2B2520;
+  --muted:#8C7E6A;
+  --ink:#1C1813;
+  --paper:#FBF6EC;
+  --rule:rgba(162,59,30,.5);
+  --hair:rgba(140,126,106,.34);
+  --display:'Libre Bodoni','Didot','Times New Roman',serif;
+  --body:'Source Serif 4','Iowan Old Style',Georgia,serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:18px;line-height:1.6;font-feature-settings:"onum" 1}
+a{color:inherit}
+img{display:block;max-width:100%}
+button{font-family:inherit;cursor:pointer}
+
+/* top chrome */
+.topbar{position:sticky;top:0;z-index:20;background:rgba(244,236,220,.94);backdrop-filter:saturate(1.1) blur(2px);border-bottom:1.5px solid var(--rule)}
+.topbar-inner{max-width:1060px;margin:0 auto;display:flex;align-items:center;gap:18px;padding:11px 24px}
+.back{font-size:13px;letter-spacing:.04em;color:var(--muted);text-decoration:none;white-space:nowrap;transition:color .18s ease}
+.back:hover{color:var(--primary)}
+.brand{font-family:var(--display);font-weight:700;color:var(--primary);font-size:19px;letter-spacing:.01em}
+.spacer{flex:1}
+.wallet{display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-weight:600;color:var(--ink);font-size:15px;font-variant-numeric:tabular-nums lining-nums;white-space:nowrap}
+.wallet svg{width:16px;height:16px;flex:none}
+.wallet .u{color:var(--muted);font-family:var(--body);font-weight:400;font-size:12px;letter-spacing:.06em}
+.toggle{display:inline-flex;align-items:center;gap:9px;border:none;background:transparent;color:var(--muted);font-size:12.5px;letter-spacing:.04em}
+.switch{width:38px;height:21px;border-radius:11px;background:var(--hair);position:relative;transition:background .2s ease;flex:none}
+.switch::after{content:"";position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:var(--paper);box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .2s ease}
+.toggle[aria-pressed="true"] .switch{background:var(--accent)}
+.toggle[aria-pressed="true"] .switch::after{transform:translateX(17px)}
+.toggle[aria-pressed="true"]{color:var(--accent)}
+
+/* layout */
+.shell{max-width:1060px;margin:0 auto;padding:26px 24px 80px;display:grid;grid-template-columns:1fr 268px;gap:40px}
+.feedhead{margin:0 0 22px}
+.feedhead .issue{font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--accent);margin:0 0 8px}
+.feedhead h1{font-family:var(--display);font-weight:700;font-size:clamp(2rem,5vw,2.9rem);line-height:1.04;margin:0;color:var(--ink);letter-spacing:-.01em}
+.feedhead p{color:var(--muted);margin:10px 0 0;max-width:52ch;font-size:.98rem}
+
+/* topic filter */
+.filters{display:flex;flex-wrap:wrap;gap:9px;margin:24px 0 8px;border-top:1.5px solid var(--rule);border-bottom:1px solid var(--hair);padding:14px 0}
+.chip{border:1px solid var(--hair);background:transparent;color:var(--fg);border-radius:2px;padding:6px 14px;font-family:var(--body);font-size:13.5px;letter-spacing:.02em;transition:all .16s ease}
+.chip:hover{border-color:var(--rule);color:var(--primary)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+/* article cards */
+.feed{list-style:none;margin:0;padding:0}
+.entry{padding:28px 0;border-bottom:1px solid var(--hair)}
+.entry.hidden{display:none}
+.byrow{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.av{width:38px;height:38px;border-radius:50%;object-fit:cover;border:1px solid var(--rule);flex:none}
+.byname{font-family:var(--display);font-weight:600;color:var(--primary);font-size:14.5px;line-height:1.1}
+.byrole{color:var(--muted);font-size:12px}
+.naps{margin-left:auto;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(62,94,51,.4);border-radius:2px;padding:4px 9px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.etitle{font-family:var(--display);font-weight:600;font-size:1.62rem;line-height:1.14;margin:2px 0 8px;color:var(--ink)}
+.edek{margin:0;color:var(--fg);font-size:1.04rem;line-height:1.55}
+.ebody{margin:14px 0 0;color:var(--fg);font-size:1.04rem;line-height:1.62}
+.ebody p{margin:0 0 12px}
+.ebody p:first-child::first-letter{font-family:var(--display);font-weight:700;color:var(--primary);float:left;font-size:3em;line-height:.76;padding:.05em .1em 0 0}
+.topictag{display:inline-block;margin-top:14px;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+/* clap control */
+.actions{display:flex;align-items:center;gap:16px;margin-top:18px}
+.clap{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--rule);background:transparent;color:var(--primary);border-radius:22px;padding:7px 15px;font-family:var(--display);font-weight:600;font-size:14px;font-variant-numeric:tabular-nums;transition:transform .12s ease,background .16s ease}
+.clap:hover{background:rgba(162,59,30,.06)}
+.clap:active{transform:scale(.94)}
+.clap.bumped{animation:bump .28s ease}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.12)}100%{transform:scale(1)}}
+.clap svg{width:15px;height:15px}
+.settle{font-size:12px;color:var(--muted);font-style:italic}
+.settle b{font-style:normal;color:var(--accent);font-family:var(--display);font-variant-numeric:tabular-nums}
+
+/* paywall */
+.paywall{margin-top:14px;border:1.5px solid var(--rule);background:linear-gradient(180deg,rgba(162,59,30,.05),rgba(162,59,30,0));border-radius:3px;padding:22px 22px 24px;text-align:center}
+.paywall .lock{font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--primary);margin:0 0 8px}
+.paywall p{margin:0 auto 16px;max-width:42ch;color:var(--fg);font-size:.98rem}
+.paywall .cost{font-family:var(--display);font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.unlock{border:none;background:var(--accent);color:var(--paper);font-family:var(--display);font-weight:600;font-size:14px;padding:11px 22px;border-radius:2px;transition:background .16s ease}
+.unlock:hover{background:#33502a}
+.unlock:disabled{background:var(--hair);color:var(--paper);cursor:default}
+.paywall .err{color:var(--primary);font-size:12.5px;margin:12px 0 0;min-height:1em}
+
+/* discussion rail */
+.rail{align-self:start;position:sticky;top:78px}
+.rail h2{font-family:var(--display);font-weight:600;font-size:1.15rem;margin:0 0 4px;color:var(--ink)}
+.rail .sub{font-size:12px;color:var(--muted);margin:0 0 16px;letter-spacing:.02em}
+.railbox{border:1px solid var(--hair);border-radius:3px;padding:22px;text-align:center;color:var(--muted);transition:opacity .2s ease,filter .2s ease}
+.railbox.muted{opacity:.5;filter:grayscale(.4)}
+.railbox .empty{font-style:italic;font-size:.95rem;line-height:1.4}
+.railbox .why{font-size:12px;margin-top:12px;color:var(--muted);letter-spacing:.02em}
+.ratecard{margin-top:18px;border:1px solid var(--hair);border-radius:3px;padding:16px 18px}
+.ratecard .rk{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--primary);margin:0 0 8px}
+.ratecard .rrow{display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px;padding:5px 0;border-bottom:1px dotted var(--hair)}
+.ratecard .rrow:last-child{border-bottom:none}
+.ratecard .rrow b{font-family:var(--display);color:var(--ink);font-variant-numeric:tabular-nums}
+.ratecard .float{color:var(--accent);font-style:italic;font-size:12px}
+
+a:focus-visible,button:focus-visible{outline:2.5px solid var(--accent);outline-offset:3px;border-radius:3px}
+
+@media (max-width:880px){
+  .shell{grid-template-columns:1fr;gap:30px}
+  .rail{position:static;order:2}
+  .toggle .lbltext{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="back" href="./index.html">&larr; back to the pitch</a>
+    <span class="brand">Frond</span>
+    <span class="spacer"></span>
+    <span class="wallet" title="Your bamboo wallet">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#3E5E33" stroke-width="2" stroke-linecap="round"><path d="M9 3v18"/><path d="M9 7h4"/><path d="M9 12h5"/><path d="M9 17h4"/><path d="M15 5c2 0 3 1.5 3 3"/></svg>
+      <span id="wallet">40</span><span class="u">stalks</span>
+    </span>
+    <button class="toggle" id="solitary" aria-pressed="true">
+      <span class="lbltext">Solitary Mode</span>
+      <span class="switch" aria-hidden="true"></span>
+    </button>
+  </div>
+</div>
+
+<main class="shell">
+  <div class="feedcol">
+    <header class="feedhead">
+      <p class="issue">Vol. I, No. 1 &middot; The Canopy Review</p>
+      <h1>The reader</h1>
+      <p>Five essays, measured in naps, rewarded in bamboo. One sits behind a member paywall. The discussion rail stays empty on purpose.</p>
+    </header>
+
+    <div class="filters" role="group" aria-label="Filter essays by topic">
+      <button class="chip" data-topic="all" aria-pressed="true">All</button>
+      <button class="chip" data-topic="bamboo" aria-pressed="false">Bamboo</button>
+      <button class="chip" data-topic="naps" aria-pressed="false">Naps</button>
+      <button class="chip" data-topic="trees" aria-pressed="false">Tall Trees</button>
+      <button class="chip" data-topic="alone" aria-pressed="false">Being Left Alone</button>
+    </div>
+
+    <ul class="feed" id="feed">
+      <li class="entry" data-topic="naps">
+        <div class="byrow">
+          <img class="av" src="./headshot-2.webp" alt="Dorje Vale" width="38" height="38">
+          <div><div class="byname">Dorje Vale</div><div class="byrole">Contributing Frugivore at Large</div></div>
+          <span class="naps">est. 3 naps</span>
+        </div>
+        <h3 class="etitle">In Defense of the Long Nap</h3>
+        <p class="edek">A working argument that the eighteen-hour sleep cycle is not a limitation on productivity but the entire point of it.</p>
+        <span class="topictag">Naps</span>
+        <div class="actions">
+          <button class="clap" data-claps="214" aria-label="Clap for this essay">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 11l-1-4a1.5 1.5 0 013-.6l1 3"/><path d="M14 9.5V6a1.5 1.5 0 013 0v4"/><path d="M17 8.5a1.5 1.5 0 013 0V13a6 6 0 01-6 6h-1a5 5 0 01-3.7-1.6L5 13.5a1.5 1.5 0 012.2-2L9 13"/></svg>
+            <span class="ct">214</span>
+          </button>
+          <span class="settle">settles to <b class="bam">26.8</b> stalks tonight</span>
+        </div>
+      </li>
+
+      <li class="entry" data-topic="bamboo">
+        <div class="byrow">
+          <img class="av" src="./headshot-1.webp" alt="Pemba Sett" width="38" height="38">
+          <div><div class="byname">Pemba Sett</div><div class="byrole">Senior Essayist, Eastern Himalaya Desk</div></div>
+          <span class="naps">est. 5 naps</span>
+        </div>
+        <h3 class="etitle">A Single Bamboo Shoot, Reconsidered</h3>
+        <p class="edek">The essay that funds two valleys. A close reading of one shoot, from the soil up, with no resolution offered and none required.</p>
+        <span class="topictag">Bamboo &middot; Member-only</span>
+        <div class="paywall" data-cost="12">
+          <p class="lock">Member-only frond</p>
+          <p>The rest of this shoot is reserved for members. Reading it costs <span class="cost">12 stalks</span> from your wallet. Bamboo does not refund.</p>
+          <button class="unlock">Spend 12 stalks to read</button>
+          <p class="err" role="status" aria-live="polite"></p>
+        </div>
+        <div class="ebody" hidden>
+          <p>The shoot arrived in March, as shoots do, with no announcement and a faint smell of wet stone. I considered it for most of a season before deciding it was about anything at all.</p>
+          <p>What I can tell you is that it tasted like a Tuesday, and that I have built a modest publishing income on the strength of that single sentence. The valleys send their regards. The shoot has been eaten. The essay remains.</p>
+        </div>
+        <div class="actions">
+          <button class="clap" data-claps="1031" aria-label="Clap for this essay">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 11l-1-4a1.5 1.5 0 013-.6l1 3"/><path d="M14 9.5V6a1.5 1.5 0 013 0v4"/><path d="M17 8.5a1.5 1.5 0 013 0V13a6 6 0 01-6 6h-1a5 5 0 01-3.7-1.6L5 13.5a1.5 1.5 0 012.2-2L9 13"/></svg>
+            <span class="ct">1031</span>
+          </button>
+          <span class="settle">settles to <b class="bam">128.9</b> stalks tonight</span>
+        </div>
+      </li>
+
+      <li class="entry" data-topic="trees">
+        <div class="byrow">
+          <img class="av" src="./headshot-3.webp" alt="Anjali Frond" width="38" height="38">
+          <div><div class="byname">Anjali Frond</div><div class="byrole">Reclusive Columnist</div></div>
+          <span class="naps">est. 2 naps</span>
+        </div>
+        <h3 class="etitle">The Canopy at Four in the Morning</h3>
+        <p class="edek">Field notes from the only hour worth being awake for, written for no one and addressed to the branch directly.</p>
+        <span class="topictag">Tall Trees</span>
+        <div class="actions">
+          <button class="clap" data-claps="88" aria-label="Clap for this essay">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 11l-1-4a1.5 1.5 0 013-.6l1 3"/><path d="M14 9.5V6a1.5 1.5 0 013 0v4"/><path d="M17 8.5a1.5 1.5 0 013 0V13a6 6 0 01-6 6h-1a5 5 0 01-3.7-1.6L5 13.5a1.5 1.5 0 012.2-2L9 13"/></svg>
+            <span class="ct">88</span>
+          </button>
+          <span class="settle">settles to <b class="bam">11.0</b> stalks tonight</span>
+        </div>
+      </li>
+
+      <li class="entry" data-topic="alone">
+        <div class="byrow">
+          <img class="av" src="./headshot-3.webp" alt="Anjali Frond" width="38" height="38">
+          <div><div class="byname">Anjali Frond</div><div class="byrole">Reclusive Columnist</div></div>
+          <span class="naps">est. 1 nap</span>
+        </div>
+        <h3 class="etitle">Why I Have Disabled Replies Forever</h3>
+        <p class="edek">A short and final statement on the discussion rail, the notes feature, and the general idea that anyone should respond to anything.</p>
+        <span class="topictag">Being Left Alone</span>
+        <div class="actions">
+          <button class="clap" data-claps="442" aria-label="Clap for this essay">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 11l-1-4a1.5 1.5 0 013-.6l1 3"/><path d="M14 9.5V6a1.5 1.5 0 013 0v4"/><path d="M17 8.5a1.5 1.5 0 013 0V13a6 6 0 01-6 6h-1a5 5 0 01-3.7-1.6L5 13.5a1.5 1.5 0 012.2-2L9 13"/></svg>
+            <span class="ct">442</span>
+          </button>
+          <span class="settle">settles to <b class="bam">55.3</b> stalks tonight</span>
+        </div>
+      </li>
+
+      <li class="entry" data-topic="trees alone">
+        <div class="byrow">
+          <img class="av" src="./headshot-2.webp" alt="Dorje Vale" width="38" height="38">
+          <div><div class="byname">Dorje Vale</div><div class="byrole">Contributing Frugivore at Large</div></div>
+          <span class="naps">est. 6 naps</span>
+        </div>
+        <h3 class="etitle">Notes Toward a Quieter Branch</h3>
+        <p class="edek">A long one. Six naps, no paragraphs that resolve, and a closing section that simply lists trees the author has slept in.</p>
+        <span class="topictag">Tall Trees &middot; Being Left Alone</span>
+        <div class="actions">
+          <button class="clap" data-claps="17" aria-label="Clap for this essay">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 11l-1-4a1.5 1.5 0 013-.6l1 3"/><path d="M14 9.5V6a1.5 1.5 0 013 0v4"/><path d="M17 8.5a1.5 1.5 0 013 0V13a6 6 0 01-6 6h-1a5 5 0 01-3.7-1.6L5 13.5a1.5 1.5 0 012.2-2L9 13"/></svg>
+            <span class="ct">17</span>
+          </button>
+          <span class="settle">settles to <b class="bam">2.1</b> stalks tonight</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <aside class="rail">
+    <h2>Discussion</h2>
+    <p class="sub">For the current frond</p>
+    <div class="railbox muted" id="railbox">
+      <p class="empty" id="railtext">Solitary Mode is on. The rail stays empty on purpose.</p>
+      <p class="why" id="railwhy">Red pandas do not reply. This is a courtesy, not a bug.</p>
+    </div>
+
+    <div class="ratecard">
+      <p class="rk">Bamboo exchange</p>
+      <div class="rrow"><span>Posted rate</span><b id="rate">8.0</b></div>
+      <div class="rrow"><span>Claps to stalks</span><span class="float">floating</span></div>
+      <div class="rrow"><span>Settles</span><b>nightly</b></div>
+    </div>
+  </aside>
+</main>
+
+<script>
+(function(){
+  // ---- Topic filter ----
+  var chips = Array.prototype.slice.call(document.querySelectorAll('.chip'));
+  var entries = Array.prototype.slice.call(document.querySelectorAll('.entry'));
+  chips.forEach(function(chip){
+    chip.addEventListener('click', function(){
+      chips.forEach(function(c){ c.setAttribute('aria-pressed', c===chip ? 'true':'false'); });
+      var topic = chip.getAttribute('data-topic');
+      entries.forEach(function(en){
+        var t = en.getAttribute('data-topic') || '';
+        en.classList.toggle('hidden', topic!=='all' && t.indexOf(topic)===-1);
+      });
+    });
+  });
+
+  // ---- Solitary Mode ----
+  var sol = document.getElementById('solitary');
+  var railbox = document.getElementById('railbox');
+  var railtext = document.getElementById('railtext');
+  var railwhy = document.getElementById('railwhy');
+  sol.addEventListener('click', function(){
+    var on = sol.getAttribute('aria-pressed')==='true';
+    on = !on;
+    sol.setAttribute('aria-pressed', on ? 'true':'false');
+    railbox.classList.toggle('muted', on);
+    if(on){
+      railtext.textContent = 'Solitary Mode is on. The rail stays empty on purpose.';
+      railwhy.textContent = 'Red pandas do not reply. This is a courtesy, not a bug.';
+    } else {
+      railtext.textContent = 'No comments yet.';
+      railwhy.textContent = 'Solitary Mode is off, and the rail is still empty. Nobody came.';
+    }
+  });
+
+  // ---- Bamboo wallet + paywall ----
+  var walletEl = document.getElementById('wallet');
+  var wallet = 40;
+  document.querySelectorAll('.paywall').forEach(function(pw){
+    var cost = parseInt(pw.getAttribute('data-cost'),10);
+    var btn = pw.querySelector('.unlock');
+    var err = pw.querySelector('.err');
+    var body = pw.parentNode.querySelector('.ebody');
+    btn.addEventListener('click', function(){
+      if(wallet < cost){
+        err.textContent = 'Not enough bamboo. You hold ' + wallet + ' stalks and this costs ' + cost + '.';
+        return;
+      }
+      wallet -= cost;
+      walletEl.textContent = wallet;
+      body.hidden = false;
+      pw.style.display = 'none';
+    });
+  });
+
+  // ---- Claps settle to bamboo at a floating rate ----
+  var rateEl = document.getElementById('rate');
+  var totalClaps = 0;
+  document.querySelectorAll('.clap').forEach(function(b){ totalClaps += parseInt(b.getAttribute('data-claps'),10); });
+  function rateNow(){ return 8 + ((totalClaps % 40) / 40) * 1.4; } // drifts 8.0 -> ~9.4, "floating"
+  function refreshAll(){
+    var r = rateNow();
+    rateEl.textContent = r.toFixed(1);
+    document.querySelectorAll('.clap').forEach(function(b){
+      var c = parseInt(b.getAttribute('data-claps'),10);
+      var settle = b.parentNode.querySelector('.bam');
+      if(settle) settle.textContent = (c / r).toFixed(1);
+    });
+  }
+  document.querySelectorAll('.clap').forEach(function(b){
+    b.addEventListener('click', function(){
+      var c = parseInt(b.getAttribute('data-claps'),10) + 1;
+      b.setAttribute('data-claps', c);
+      b.querySelector('.ct').textContent = c.toLocaleString('en-US');
+      totalClaps += 1;
+      b.classList.remove('bumped'); void b.offsetWidth; b.classList.add('bumped');
+      refreshAll();
+    });
+  });
+  // normalize initial clap labels with thousands separators
+  document.querySelectorAll('.clap').forEach(function(b){
+    b.querySelector('.ct').textContent = parseInt(b.getAttribute('data-claps'),10).toLocaleString('en-US');
+  });
+  refreshAll();
+})();
+</script>
+</body>
+</html>
