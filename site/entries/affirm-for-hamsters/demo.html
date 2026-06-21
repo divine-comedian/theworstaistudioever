@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hoard Checkout · theworstaistudioever</title>
+<meta name="description" content="Build a cart, split it into four payments, and approve a plan on a hamster's behalf.">
+<meta name="theme-color" content="#F4EDE0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#1F8A70;--primary-deep:#176B57;--accent:#E25C3B;--accent-deep:#C2492C;
+    --bg:#F4EDE0;--surface:#F8F1E5;--fg:#3A332B;--muted:#8C8275;--ink:#241F19;
+    --line:rgba(150,120,85,.22);
+    --clay:10px 10px 24px rgba(150,120,85,.30), -8px -8px 20px rgba(255,255,255,.78), inset 2px 2px 4px rgba(255,255,255,.55), inset -3px -3px 7px rgba(150,120,85,.14);
+    --clay-sm:6px 6px 15px rgba(150,120,85,.26), -5px -5px 13px rgba(255,255,255,.75), inset 1px 1px 3px rgba(255,255,255,.5), inset -2px -2px 5px rgba(150,120,85,.12);
+    --clay-press:inset 5px 5px 12px rgba(150,120,85,.30), inset -4px -4px 10px rgba(255,255,255,.55);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Nunito',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--fg);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+  h1,h2,h3,.display{font-family:'Fredoka','Baloo 2','Trebuchet MS',sans-serif;color:var(--ink);letter-spacing:-.01em}
+  .wrap{max-width:1060px;margin:0 auto;padding:0 22px}
+
+  .bar{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
+  .back{display:inline-flex;align-items:center;gap:8px;font-family:'Fredoka',sans-serif;font-weight:500;color:var(--muted);text-decoration:none;font-size:.95rem;background:var(--surface);padding:9px 16px;border-radius:14px;box-shadow:var(--clay-sm);transition:transform .15s ease}
+  .back:hover{transform:translateY(-2px);color:var(--primary-deep)}
+  .brand{display:flex;align-items:center;gap:10px;font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.15rem;color:var(--ink)}
+  .mark{width:34px;height:34px;border-radius:12px;background:var(--surface);box-shadow:var(--clay-sm);display:grid;place-items:center}
+  .mark svg{width:19px;height:19px}
+
+  .head{padding:14px 0 26px}
+  .head h1{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:600}
+  .head p{color:var(--muted);margin-top:6px}
+
+  .grid{display:grid;grid-template-columns:1.25fr .9fr;gap:26px;align-items:start;padding-bottom:60px}
+
+  .panel{background:var(--surface);border-radius:26px;box-shadow:var(--clay);padding:26px}
+  .panel h2{font-size:1.25rem;font-weight:600;margin-bottom:4px}
+  .panel .hint{color:var(--muted);font-size:.9rem;margin-bottom:20px}
+
+  /* cart rows */
+  .item{display:flex;align-items:center;gap:16px;padding:14px;border-radius:18px;margin-bottom:12px;background:var(--bg);box-shadow:var(--clay-press);cursor:pointer;transition:transform .14s ease}
+  .item:hover{transform:translateY(-2px)}
+  .item.on{background:var(--surface);box-shadow:var(--clay-sm)}
+  .item .tick{width:30px;height:30px;border-radius:10px;flex:none;background:var(--bg);box-shadow:var(--clay-press);display:grid;place-items:center;transition:background .15s ease}
+  .item.on .tick{background:var(--primary);box-shadow:6px 6px 12px rgba(23,107,87,.28), -4px -4px 10px rgba(255,255,255,.5)}
+  .item .tick svg{width:18px;height:18px;opacity:0;transition:opacity .15s ease}
+  .item.on .tick svg{opacity:1}
+  .item .meta{flex:1}
+  .item .meta b{display:block;font-family:'Fredoka',sans-serif;font-weight:500;color:var(--ink);font-size:1.02rem}
+  .item .meta span{font-size:.84rem;color:var(--muted)}
+  .item .cost{font-family:'Fredoka',sans-serif;font-weight:600;color:var(--ink)}
+  .item:not(.on) .meta b,.item:not(.on) .cost{color:var(--muted)}
+
+  /* term switch */
+  .switch{display:flex;gap:8px;background:var(--bg);padding:6px;border-radius:16px;box-shadow:var(--clay-press);margin-bottom:22px}
+  .switch button{flex:1;border:0;cursor:pointer;font-family:'Fredoka',sans-serif;font-weight:500;font-size:.92rem;color:var(--muted);background:transparent;padding:10px 8px;border-radius:11px;transition:all .15s ease}
+  .switch button.active{background:var(--surface);color:var(--ink);box-shadow:var(--clay-sm)}
+
+  /* summary */
+  .summary{position:sticky;top:18px}
+  .sched-line{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line)}
+  .sched-line:first-of-type{border-top:0}
+  .sched-line .pill{width:30px;height:30px;border-radius:10px;flex:none;background:var(--bg);box-shadow:var(--clay-sm);display:grid;place-items:center;font-family:'Fredoka',sans-serif;font-weight:600;color:var(--primary-deep);font-size:.9rem}
+  .sched-line .when{flex:1}
+  .sched-line .when b{display:block;font-weight:700;color:var(--ink);font-size:.95rem}
+  .sched-line .when span{font-size:.8rem;color:var(--muted)}
+  .sched-line .amt{font-family:'Fredoka',sans-serif;font-weight:600;color:var(--ink)}
+  .sched-line.first .amt{color:var(--accent-deep)}
+  .sched-more{font-size:.82rem;color:var(--muted);text-align:center;padding:10px 0 2px}
+
+  .totrow{display:flex;justify-content:space-between;align-items:baseline;margin:18px 0 4px}
+  .totrow .k{color:var(--muted);font-size:.92rem}
+  .totrow .v{font-family:'Fredoka',sans-serif;font-weight:700;font-size:1.7rem;color:var(--ink)}
+
+  .score{display:flex;align-items:center;gap:14px;margin:20px 0;padding:15px 16px;border-radius:18px;background:var(--bg);box-shadow:var(--clay-press)}
+  .score .ring{width:54px;height:54px;flex:none}
+  .score .lbl{font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+  .score .val{font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.7rem;color:var(--primary-deep);line-height:1.05}
+  .score .note{font-size:.78rem;color:var(--muted)}
+
+  .approve{width:100%;border:0;cursor:pointer;font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.08rem;color:#fff;background:var(--accent);padding:16px;border-radius:18px;box-shadow:8px 8px 18px rgba(194,73,44,.32), -6px -6px 14px rgba(255,255,255,.5), inset 2px 2px 4px rgba(255,255,255,.28), inset -3px -3px 7px rgba(150,40,20,.28);transition:transform .15s ease}
+  .approve:hover{transform:translateY(-2px)}
+  .approve:active{transform:translateY(1px) scale(.99)}
+  .approve:disabled{background:#D8C9B4;color:#fff;box-shadow:var(--clay-press);cursor:not-allowed;transform:none}
+  .micro{font-size:.78rem;color:var(--muted);text-align:center;margin-top:12px}
+
+  /* modal */
+  .scrim{position:fixed;inset:0;background:rgba(36,31,25,.5);display:none;align-items:center;justify-content:center;padding:22px;z-index:50}
+  .scrim.open{display:flex}
+  .modal{background:var(--surface);border-radius:26px;box-shadow:var(--clay);padding:30px;max-width:430px;width:100%}
+  .modal h3{font-size:1.4rem;font-weight:600;margin-bottom:10px}
+  .modal p{color:var(--fg);font-size:.98rem;margin-bottom:20px}
+  .confirm-row{display:flex;gap:13px;align-items:flex-start;padding:15px;border-radius:16px;background:var(--bg);box-shadow:var(--clay-press);cursor:pointer;margin-bottom:22px}
+  .confirm-row .box{width:26px;height:26px;border-radius:8px;flex:none;background:var(--bg);box-shadow:var(--clay-press);display:grid;place-items:center}
+  .confirm-row.checked .box{background:var(--primary);box-shadow:none}
+  .confirm-row .box svg{width:16px;height:16px;opacity:0;transition:opacity .15s ease}
+  .confirm-row.checked .box svg{opacity:1}
+  .confirm-row label{font-weight:600;color:var(--ink);cursor:pointer;font-size:.96rem}
+  .modal-actions{display:flex;gap:12px}
+  .modal-actions button{flex:1;border:0;cursor:pointer;font-family:'Fredoka',sans-serif;font-weight:600;font-size:1rem;padding:14px;border-radius:16px;transition:transform .15s ease}
+  .modal-actions .cancel{background:var(--surface);color:var(--ink);box-shadow:var(--clay-sm)}
+  .modal-actions .cancel:hover{transform:translateY(-2px)}
+  .modal-actions .release{background:var(--primary);color:#fff;box-shadow:6px 6px 14px rgba(23,107,87,.3)}
+  .modal-actions .release:hover{transform:translateY(-2px)}
+  .modal-actions .release:disabled{background:#D8C9B4;cursor:not-allowed;transform:none;box-shadow:var(--clay-press)}
+
+  .done{text-align:center}
+  .done .check{width:66px;height:66px;border-radius:22px;background:var(--primary);box-shadow:var(--clay-sm);display:grid;place-items:center;margin:0 auto 18px}
+  .done .check svg{width:34px;height:34px}
+
+  @media(max-width:860px){.grid{grid-template-columns:1fr}.summary{position:static}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="bar">
+    <a class="back" href="./index.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M11 6l-6 6 6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      back to the pitch
+    </a>
+    <div class="brand">
+      <span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 13c0-3.3 3.6-6 8-6s8 2.7 8 6c0 2.4-1.9 3.6-3.6 3.6-1.2 0-1.9-.6-2.6-1.2-.6-.5-1.1-1-1.8-1s-1.2.5-1.8 1c-.7.6-1.4 1.2-2.6 1.2C5.9 16.6 4 15.4 4 13Z" fill="#1F8A70"/><circle cx="8.4" cy="11.2" r="1.1" fill="#241F19"/><circle cx="15.6" cy="11.2" r="1.1" fill="#241F19"/></svg></span>
+      Hoard
+    </div>
+  </div>
+
+  <div class="head">
+    <h1>Habitat checkout</h1>
+    <p>Borrower: <b>Biscuit</b> · Syrian Hamster · account opened 3 sleeps ago</p>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <h2>Cart</h2>
+      <p class="hint">Tap an item to add or remove it. Every change re-runs underwriting.</p>
+      <div id="cart"></div>
+    </div>
+
+    <div class="panel summary">
+      <h2>Payment plan</h2>
+      <p class="hint">Choose a term. Hoard handles the rest, technically.</p>
+      <div class="switch" role="tablist" aria-label="Repayment term">
+        <button class="active" data-term="4" role="tab" aria-selected="true">Split into 4</button>
+        <button data-term="18" role="tab" aria-selected="false">Across lifespan</button>
+      </div>
+
+      <div id="schedule"></div>
+
+      <div class="totrow">
+        <span class="k">Financed today</span>
+        <span class="v num" id="total">$0.00</span>
+      </div>
+
+      <div class="score">
+        <svg class="ring" viewBox="0 0 36 36" aria-hidden="true">
+          <circle cx="18" cy="18" r="15.5" fill="none" stroke="#E7DAC4" stroke-width="4"/>
+          <circle id="ring-fill" cx="18" cy="18" r="15.5" fill="none" stroke="#1F8A70" stroke-width="4" stroke-linecap="round" stroke-dasharray="97.39" stroke-dashoffset="97.39" transform="rotate(-90 18 18)" style="transition:stroke-dashoffset .4s ease"/>
+        </svg>
+        <div>
+          <div class="lbl">HoardScore</div>
+          <div class="val num" id="score">742</div>
+          <div class="note" id="score-note">Healthy. Borrower likely awake.</div>
+        </div>
+      </div>
+
+      <button class="approve" id="approve">Approve installment plan</button>
+      <p class="micro">By approving you confirm you can locate the borrower.</p>
+    </div>
+  </div>
+</div>
+
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal" id="modal-body">
+    <h3 id="modal-title">One quick confirmation</h3>
+    <p>Before Hoard releases funds, the law and the borrower's biology both require that we ask.</p>
+    <div class="confirm-row" id="confirm-row">
+      <span class="box"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <label>I confirm the borrower is currently alive and was alive at checkout.</label>
+    </div>
+    <div class="modal-actions">
+      <button class="cancel" id="cancel">Not now</button>
+      <button class="release" id="release" disabled>Release funds</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var ITEMS = [
+    {id:'wheel', name:'Deluxe Silent Wheel', desc:'whisper bearings, regrettable resale value', price:48, on:true},
+    {id:'seeds', name:'5kg Sunflower-Seed Sack', desc:'a quarter is hoarded within the hour', price:22, on:true},
+    {id:'tubes', name:'Modular Tube Expansion Pack', desc:'six tubes, infinite obligation', price:64, on:false},
+    {id:'hideout', name:'Ceramic Hideout Cottage', desc:'frequently financed, rarely entered', price:19, on:true},
+    {id:'bedding', name:'Cedar Bedding Bale', desc:'consumable, non-refundable', price:14, on:false},
+    {id:'chews', name:'Mineral Chew Assortment', desc:'gnawed flat in two days', price:9, on:false}
+  ];
+  var DATES = ['Due today','Jul 3','Jul 15','Jul 27','Aug 8','Aug 20','Sep 1','Sep 13','Sep 25','Oct 7','Oct 19','Oct 31','Nov 12','Nov 24','Dec 6','Dec 18','Dec 30','Jan 11'];
+  var term = 4;
+  var CIRC = 97.39;
+
+  var cartEl = document.getElementById('cart');
+  var schedEl = document.getElementById('schedule');
+  var totalEl = document.getElementById('total');
+  var scoreEl = document.getElementById('score');
+  var noteEl = document.getElementById('score-note');
+  var ringEl = document.getElementById('ring-fill');
+  var approveBtn = document.getElementById('approve');
+
+  function money(n){ return '$' + n.toFixed(2); }
+
+  function render(){
+    cartEl.innerHTML = '';
+    ITEMS.forEach(function(it){
+      var row = document.createElement('div');
+      row.className = 'item' + (it.on ? ' on' : '');
+      row.setAttribute('role','button');
+      row.setAttribute('tabindex','0');
+      row.setAttribute('aria-pressed', it.on ? 'true':'false');
+      row.innerHTML =
+        '<span class="tick"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' +
+        '<span class="meta"><b>'+it.name+'</b><span>'+it.desc+'</span></span>' +
+        '<span class="cost num">'+money(it.price)+'</span>';
+      function toggle(){ it.on = !it.on; render(); }
+      row.addEventListener('click', toggle);
+      row.addEventListener('keydown', function(e){ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); toggle(); } });
+      cartEl.appendChild(row);
+    });
+    update();
+  }
+
+  function update(){
+    var total = ITEMS.reduce(function(s,it){ return s + (it.on ? it.price : 0); }, 0);
+    totalEl.textContent = money(total);
+
+    // build schedule
+    schedEl.innerHTML = '';
+    if(total === 0){
+      schedEl.innerHTML = '<p class="sched-more">Cart is empty. Even Hoard cannot finance nothing.</p>';
+      approveBtn.disabled = true;
+    } else {
+      approveBtn.disabled = false;
+      var base = Math.floor((total / term) * 100) / 100;
+      var shown = Math.min(term, 4);
+      for(var i=0;i<shown;i++){
+        var amt = (i === term - 1) ? (total - base*(term-1)) : base;
+        var line = document.createElement('div');
+        line.className = 'sched-line' + (i===0 ? ' first':'');
+        line.innerHTML =
+          '<span class="pill">'+(i+1)+'</span>' +
+          '<span class="when"><b>'+DATES[i]+'</b><span>'+(i===0?'at checkout':'auto-draft on waking')+'</span></span>' +
+          '<span class="amt num">'+money(amt)+'</span>';
+        schedEl.appendChild(line);
+      }
+      if(term > 4){
+        var more = document.createElement('p');
+        more.className = 'sched-more';
+        more.textContent = '+ ' + (term-4) + ' more payments through ' + DATES[term-1] + ', lifespan permitting';
+        schedEl.appendChild(more);
+      }
+    }
+
+    // HoardScore: more financed, lower score. longer term, slightly worse.
+    var penalty = total * 1.7 + (term > 4 ? 55 : 0);
+    var score = Math.max(312, Math.min(842, Math.round(842 - penalty)));
+    scoreEl.textContent = total === 0 ? '—' : score;
+    ringEl.style.strokeDashoffset = (total === 0 ? CIRC : CIRC * (1 - score/850)).toFixed(2);
+    if(total === 0){ noteEl.textContent = 'No exposure. No score.'; }
+    else if(score >= 700){ noteEl.textContent = 'Healthy. Borrower likely awake.'; }
+    else if(score >= 520){ noteEl.textContent = 'Elevated risk. Recommend fewer naps.'; }
+    else { noteEl.textContent = 'Distressed. Borrower may be hibernating.'; }
+  }
+
+  // term switch
+  Array.prototype.forEach.call(document.querySelectorAll('.switch button'), function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.switch button').forEach(function(b){ b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
+      btn.classList.add('active'); btn.setAttribute('aria-selected','true');
+      term = parseInt(btn.getAttribute('data-term'),10);
+      update();
+    });
+  });
+
+  // modal flow
+  var scrim = document.getElementById('scrim');
+  var modalBody = document.getElementById('modal-body');
+  var confirmRow = document.getElementById('confirm-row');
+  var releaseBtn = document.getElementById('release');
+  var modalHTML = modalBody.innerHTML;
+  var confirmed = false;
+
+  function openModal(){ scrim.classList.add('open'); }
+  function closeModal(){
+    scrim.classList.remove('open');
+    setTimeout(function(){ modalBody.innerHTML = modalHTML; wireModal(); confirmed=false; }, 150);
+  }
+  function wireModal(){
+    confirmRow = document.getElementById('confirm-row');
+    releaseBtn = document.getElementById('release');
+    var cancelBtn = document.getElementById('cancel');
+    if(confirmRow){
+      confirmRow.addEventListener('click', function(){
+        confirmed = !confirmed;
+        confirmRow.classList.toggle('checked', confirmed);
+        releaseBtn.disabled = !confirmed;
+      });
+    }
+    if(cancelBtn) cancelBtn.addEventListener('click', closeModal);
+    if(releaseBtn) releaseBtn.addEventListener('click', function(){
+      modalBody.innerHTML =
+        '<div class="done">' +
+        '<div class="check"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>' +
+        '<h3>Funds released</h3>' +
+        '<p>The plan is active. Payment one has cleared. We will check on the borrower nightly and adjust accordingly.</p>' +
+        '<div class="modal-actions"><button class="release" id="doneclose" style="flex:1">Back to checkout</button></div>' +
+        '</div>';
+      document.getElementById('doneclose').addEventListener('click', closeModal);
+    });
+  }
+  approveBtn.addEventListener('click', openModal);
+  scrim.addEventListener('click', function(e){ if(e.target===scrim) closeModal(); });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape' && scrim.classList.contains('open')) closeModal(); });
+  wireModal();
+
+  render();
+})();
+</script>
+</body>
+</html>
