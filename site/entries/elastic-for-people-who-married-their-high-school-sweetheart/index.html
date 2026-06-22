@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tenure · theworstaistudioever</title>
+<meta name="description" content="Full-text search and uptime monitoring for the one relationship you've run since the eleventh grade.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Tenure · theworstaistudioever">
+<meta property="og:description" content="Full-text search and uptime monitoring for the one relationship you've run since the eleventh grade.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Tenure · theworstaistudioever">
+<meta name="twitter:description" content="Full-text search and uptime monitoring for the one relationship you've run since the eleventh grade.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Lexend+Mega:wght@600;700;800&family=Public+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root{
+  --primary:#2440FF;
+  --accent:#FF2E88;
+  --bg:#FFFFFF;
+  --fg:#141414;
+  --muted:#6B6B6B;
+  --ink:#0A0A0A;
+  --butter:#FFE600;
+  --border:3px solid var(--ink);
+  --shadow:7px 7px 0 var(--ink);
+  --shadow-sm:4px 4px 0 var(--ink);
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--fg);
+  font-family:'Public Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  font-size:17px;
+  line-height:1.55;
+  background-image:radial-gradient(var(--ink) 1px, transparent 1px);
+  background-size:26px 26px;
+  background-position:-13px -13px;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1140px;margin:0 auto;padding:0 22px;}
+
+h1,h2,h3,.wordmark,.eyebrow,.tier-name,.metric-label,.btn{font-family:'Lexend Mega','Arial Black',sans-serif;}
+.mono{font-family:'JetBrains Mono','SFMono-Regular',Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;}
+
+a{color:var(--primary);text-underline-offset:3px;}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  background:var(--bg);
+  border-bottom:var(--border);
+}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:66px;gap:18px;}
+.wordmark{font-weight:800;font-size:21px;letter-spacing:1px;color:var(--ink);text-decoration:none;}
+.wordmark b{color:var(--primary);}
+.nav-links{display:flex;align-items:center;gap:22px;}
+.nav-links a{font-family:'Public Sans';font-weight:700;color:var(--ink);text-decoration:none;font-size:14px;letter-spacing:.3px;text-transform:uppercase;}
+.nav-links a:hover{color:var(--primary);}
+
+.btn{
+  display:inline-block;
+  font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;
+  text-decoration:none;cursor:pointer;
+  padding:13px 20px;
+  border:var(--border);
+  background:var(--bg);color:var(--ink);
+  box-shadow:var(--shadow-sm);
+  transition:transform .09s linear, box-shadow .09s linear;
+}
+.btn:hover{transform:translate(4px,4px);box-shadow:0 0 0 var(--ink);}
+.btn:focus-visible{outline:3px solid var(--primary);outline-offset:3px;}
+.btn-pink{background:var(--accent);color:#fff;}
+.btn-blue{background:var(--primary);color:#fff;}
+.btn-sm{padding:10px 15px;}
+
+/* ---------- hero ---------- */
+.hero{padding:70px 0 56px;}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:46px;align-items:center;}
+.eyebrow{
+  display:inline-block;font-weight:700;font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  background:var(--ink);color:var(--bg);padding:7px 11px;margin-bottom:24px;
+}
+.hero h1{
+  font-weight:800;font-size:clamp(40px,6.4vw,76px);line-height:.96;letter-spacing:-1px;
+  text-transform:uppercase;margin:0 0 22px;color:var(--ink);
+}
+.hero h1 em{font-style:normal;color:var(--primary);}
+.hero p.sub{font-size:19px;line-height:1.5;max-width:33ch;margin:0 0 30px;color:var(--fg);}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;}
+
+/* console panel (signature) */
+.console{
+  border:var(--border);background:var(--bg);box-shadow:var(--shadow);
+}
+.console-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--ink);color:var(--bg);padding:11px 15px;
+}
+.console-bar .idx{font-family:'JetBrains Mono';font-size:12px;letter-spacing:.5px;}
+.console-bar .dot{width:11px;height:11px;border-radius:50%;background:var(--accent);box-shadow:18px 0 0 var(--butter),36px 0 0 var(--primary);}
+.console-body{padding:8px 16px 16px;}
+.metric{
+  display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  padding:13px 0;border-bottom:1.5px dashed #d7d7d7;
+}
+.metric:last-of-type{border-bottom:none;}
+.metric-label{font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
+.metric-val{font-family:'JetBrains Mono';font-weight:700;font-size:21px;color:var(--ink);}
+.metric-val.ok{color:var(--primary);}
+.metric-val.warn{color:var(--accent);}
+.spark{margin-top:4px;border-top:1.5px solid var(--ink);padding-top:12px;}
+.spark .cap{font-family:'JetBrains Mono';font-size:10px;color:var(--muted);letter-spacing:.5px;display:block;margin-bottom:6px;text-transform:uppercase;}
+
+/* ---------- marquee ---------- */
+.marquee{
+  border-top:var(--border);border-bottom:var(--border);
+  background:var(--primary);color:#fff;overflow:hidden;white-space:nowrap;
+}
+.marquee-track{display:inline-block;padding:13px 0;animation:slide 26s linear infinite;}
+.marquee-track span{font-family:'JetBrains Mono';font-size:13px;letter-spacing:1px;text-transform:lowercase;margin:0 24px;}
+.marquee-track span::before{content:"·";margin-right:24px;color:rgba(255,255,255,.55);}
+@keyframes slide{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+/* ---------- sections ---------- */
+section{padding:74px 0;}
+.sec-head{margin-bottom:42px;max-width:50ch;}
+.sec-kicker{font-family:'JetBrains Mono';font-size:12px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:14px;}
+.sec-head h2{font-weight:700;font-size:clamp(27px,3.8vw,40px);line-height:1.04;letter-spacing:-.5px;text-transform:uppercase;color:var(--ink);margin:0;}
+
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.fcard{border:var(--border);background:var(--bg);box-shadow:var(--shadow);padding:26px 24px 28px;transition:transform .09s linear, box-shadow .09s linear;}
+.fcard:hover{transform:translate(4px,4px);box-shadow:0 0 0 var(--ink);}
+.fcard .ftag{font-family:'JetBrains Mono';font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:#fff;background:var(--primary);padding:5px 9px;display:inline-block;margin-bottom:18px;}
+.fcard h3{font-weight:700;font-size:18px;line-height:1.1;letter-spacing:-.2px;text-transform:uppercase;color:var(--ink);margin:0 0 12px;}
+.fcard p{margin:0;color:var(--fg);font-size:15.5px;line-height:1.55;}
+
+/* ---------- callout ---------- */
+.callout{background:var(--butter);border-top:var(--border);border-bottom:var(--border);padding:46px 0;}
+.callout p{margin:0;font-family:'Lexend Mega';font-weight:700;font-size:clamp(20px,2.9vw,30px);line-height:1.15;letter-spacing:-.5px;text-transform:uppercase;color:var(--ink);max-width:24ch;}
+.callout .small{font-family:'JetBrains Mono';font-size:13px;font-weight:500;letter-spacing:.5px;text-transform:none;color:var(--ink);margin-top:16px;max-width:46ch;}
+
+/* ---------- testimonials ---------- */
+.tcards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.tcard{border:var(--border);background:var(--bg);box-shadow:var(--shadow);padding:24px 22px 22px;display:flex;flex-direction:column;}
+.tcard blockquote{margin:0 0 22px;font-size:16px;line-height:1.5;color:var(--fg);}
+.tcard blockquote::before{content:"“";font-family:'Lexend Mega';color:var(--accent);font-size:30px;line-height:0;position:relative;top:10px;margin-right:2px;}
+.tperson{display:flex;align-items:center;gap:13px;margin-top:auto;border-top:1.5px solid var(--ink);padding-top:16px;}
+.tperson img{width:54px;height:54px;object-fit:cover;border:2.5px solid var(--ink);display:block;}
+.tperson .nm{font-weight:700;font-size:14px;color:var(--ink);line-height:1.2;}
+.tperson .ti{font-family:'JetBrains Mono';font-size:10.5px;color:var(--muted);letter-spacing:.2px;margin-top:3px;line-height:1.25;}
+
+/* ---------- pricing ---------- */
+.pricing-wrap{background:#f4f4f0;border-top:var(--border);border-bottom:var(--border);}
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:start;}
+.tier{border:var(--border);background:var(--bg);box-shadow:var(--shadow);padding:26px 24px;display:flex;flex-direction:column;}
+.tier.feat{background:var(--ink);color:#fff;}
+.tier.feat .tier-name,.tier.feat .tier-tag,.tier.feat .price{color:#fff;}
+.tier.feat .perks li{color:#eee;}
+.tier-name{font-weight:700;font-size:15px;letter-spacing:.5px;text-transform:uppercase;color:var(--ink);margin-bottom:6px;}
+.tier-flag{font-family:'JetBrains Mono';font-size:10px;letter-spacing:1px;text-transform:uppercase;background:var(--accent);color:#fff;padding:4px 8px;display:inline-block;margin-bottom:14px;align-self:flex-start;}
+.price{font-family:'JetBrains Mono';font-weight:700;font-size:27px;color:var(--ink);margin:6px 0 4px;}
+.tier-tag{font-size:14px;color:var(--muted);margin-bottom:18px;min-height:42px;}
+.tier.feat .tier-tag{color:#bdbdbd;}
+.perks{list-style:none;margin:0 0 22px;padding:0;flex:1;}
+.perks li{font-size:14px;color:var(--fg);padding:9px 0 9px 24px;position:relative;border-bottom:1px dashed #d0d0d0;line-height:1.4;}
+.tier.feat .perks li{border-bottom:1px dashed #3a3a3a;}
+.perks li::before{content:"+";font-family:'JetBrains Mono';font-weight:700;color:var(--primary);position:absolute;left:2px;top:8px;}
+.tier.feat .perks li::before{color:var(--accent);}
+.tier .btn{width:100%;text-align:center;}
+
+/* ---------- footer ---------- */
+.footer{border-top:var(--border);background:var(--ink);color:#fff;padding:54px 0;}
+.footer .wrap{display:flex;align-items:center;justify-content:space-between;gap:26px;flex-wrap:wrap;}
+.footer .back{font-family:'JetBrains Mono';font-size:13px;color:#cfcfcf;text-decoration:none;letter-spacing:.3px;}
+.footer .back:hover{color:#fff;}
+.footer .fnote{font-family:'JetBrains Mono';font-size:11px;color:#7d7d7d;letter-spacing:.4px;margin-top:8px;}
+
+.demo-band{padding:64px 0;text-align:center;}
+.demo-band h2{font-weight:800;font-size:clamp(26px,4vw,44px);line-height:1;letter-spacing:-1px;text-transform:uppercase;color:var(--ink);margin:0 0 10px;}
+.demo-band p{color:var(--muted);margin:0 0 26px;font-family:'JetBrains Mono';font-size:13px;letter-spacing:.4px;}
+
+/* ---------- responsive ---------- */
+@media(max-width:860px){
+  .hero-grid{grid-template-columns:1fr;gap:34px;}
+  .hero{padding:48px 0 40px;}
+  .hero p.sub{max-width:none;}
+  .features,.tcards,.tiers{grid-template-columns:1fr;}
+  .nav-links a:not(.btn){display:none;}
+  section{padding:54px 0;}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+  .marquee-track{animation:none;}
+  .btn,.fcard,.tier{transition:none;}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="wordmark" href="#top">TEN<b>U</b>RE</a>
+    <nav class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="./demo.html">Demo</a>
+      <a class="btn btn-pink btn-sm" href="#pricing">Index your marriage</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow">Observability · one relationship</span>
+        <h1>One relationship.<br><em>Fully indexed.</em></h1>
+        <p class="sub">Tenure ingests every text, anniversary, and argument since 2008 and makes the whole marriage searchable in milliseconds. Uptime dashboards. Latency on your apologies. An alert when the person you've known since homeroom says something they've never said before.</p>
+        <div class="hero-cta">
+          <a class="btn btn-pink" href="#pricing">Index your marriage</a>
+          <a class="btn" href="./demo.html">Open the demo →</a>
+        </div>
+      </div>
+
+      <div class="console" aria-label="Live status panel for the index named marriage-2008">
+        <div class="console-bar">
+          <span class="idx mono">index: marriage-2008</span>
+          <span class="dot" aria-hidden="true"></span>
+        </div>
+        <div class="console-body">
+          <div class="metric">
+            <span class="metric-label">Uptime</span>
+            <span class="metric-val ok mono">18y 4m 11d</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">p99 apology latency</span>
+            <span class="metric-val warn mono">3.9 days</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Anniversary recall</span>
+            <span class="metric-val ok mono">100.0%</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Documents indexed</span>
+            <span class="metric-val mono">241,907</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Current sentiment</span>
+            <span class="metric-val mono">+0.71</span>
+          </div>
+          <div class="spark">
+            <span class="cap mono">sentiment · trailing 30d</span>
+            <svg width="100%" height="46" viewBox="0 0 300 46" preserveAspectRatio="none" role="img" aria-label="Sentiment trend line, mostly steady with one dip">
+              <polyline points="0,30 25,26 50,28 75,18 100,22 125,12 150,16 175,38 200,24 225,20 250,14 275,18 300,10"
+                fill="none" stroke="#2440FF" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+              <circle cx="175" cy="38" r="4" fill="#FF2E88"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span>the thermostat dispute</span><span>2008</span><span>the silent treatment</span><span>thanksgiving (hosting)</span><span>who said it first</span><span>prom</span><span>the lake house</span><span>tone drift</span><span>the thermostat dispute</span><span>2008</span><span>the silent treatment</span><span>thanksgiving (hosting)</span><span>who said it first</span><span>prom</span><span>the lake house</span><span>tone drift</span>
+    </div>
+  </div>
+
+  <section id="features" class="wrap">
+    <div class="sec-head">
+      <span class="sec-kicker">// capabilities</span>
+      <h2>Production-grade tooling for the person you sat next to in homeroom.</h2>
+    </div>
+    <div class="features">
+      <article class="fcard">
+        <span class="ftag">Search</span>
+        <h3>Full-text marriage search</h3>
+        <p>Every text since the flip phone, every anniversary card, every disagreement about the thermostat. Indexed, ranked, searchable. Settle "I never said that" in 40 milliseconds, with the original document attached and timestamped.</p>
+      </article>
+      <article class="fcard">
+        <span class="ftag">Observability</span>
+        <h3>Apology latency dashboards</h3>
+        <p>Observability for the relationship you already have. Track p99 apology latency, anniversary recall rate, and a rolling sentiment score. Put an SLA on the silent treatment and get paged the moment you breach it.</p>
+      </article>
+      <article class="fcard">
+        <span class="ftag">Detection</span>
+        <h3>One-person anomaly detection</h3>
+        <p>A model trained on eighteen years of exactly one person. It flags the instant they use a word they have never used. When "fine" arrives in a tone the model has never logged, the alert fires before they finish the sentence.</p>
+      </article>
+    </div>
+  </section>
+
+  <div class="callout">
+    <div class="wrap">
+      <p>Your relationship has been in production for 6,732 days.</p>
+      <p class="small mono">No scheduled maintenance window. No rollback plan. Tenure recommends a backup before the in-laws visit.</p>
+    </div>
+  </div>
+
+  <section class="wrap">
+    <div class="sec-head">
+      <span class="sec-kicker">// signal from the field</span>
+      <h2>Users who have run the same relationship for decades.</h2>
+    </div>
+    <div class="tcards">
+      <figure class="tcard">
+        <blockquote>We've been together since sophomore homeroom, so I figured there was nothing left to find. Tenure surfaced a 2011 text where I agreed to host every Thanksgiving forever. I'd have argued. Now I host.</blockquote>
+        <figcaption class="tperson">
+          <img src="headshot-1.webp" alt="Dale Pruitt" width="54" height="54">
+          <span><span class="nm">Dale Pruitt</span><span class="ti">Married His Lab Partner, 19 Years (Dayton, OH)</span></span>
+        </figcaption>
+      </figure>
+      <figure class="tcard">
+        <blockquote>The dashboard told me my average apology latency was four days. I did not enjoy seeing that rendered on a chart in front of me. It has since come down.</blockquote>
+        <figcaption class="tperson">
+          <img src="headshot-2.webp" alt="Sandra Voss-Eakin" width="54" height="54">
+          <span><span class="nm">Sandra Voss-Eakin</span><span class="ti">Prom Date, Then Wife, Then Co-Signer</span></span>
+        </figcaption>
+      </figure>
+      <figure class="tcard">
+        <blockquote>It paged me at 6:14am because she said "sure" in a tone the model had never logged. The model was correct. Worth every dollar of the High Availability tier.</blockquote>
+        <figcaption class="tperson">
+          <img src="headshot-3.webp" alt="Marcus Ngata" width="54" height="54">
+          <span><span class="nm">Marcus Ngata</span><span class="ti">High School Sweetheart, Now Also Emergency Contact</span></span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <div id="pricing" class="pricing-wrap">
+    <section class="wrap">
+      <div class="sec-head">
+        <span class="sec-kicker">// cluster plans</span>
+        <h2>Pricing for one relationship, sized by how much you can afford to lose.</h2>
+      </div>
+      <div class="tiers">
+        <div class="tier">
+          <div class="tier-name">Single Node</div>
+          <div class="price mono">$0 / forever</div>
+          <div class="tier-tag">One relationship. No replication. If it goes down, it goes down.</div>
+          <ul class="perks">
+            <li>1 indexed relationship</li>
+            <li>30-day retention on arguments</li>
+            <li>Community support (your group chat)</li>
+          </ul>
+          <a class="btn" href="./demo.html">Start indexing</a>
+        </div>
+        <div class="tier feat">
+          <span class="tier-flag">Most deployed</span>
+          <div class="tier-name">High Availability</div>
+          <div class="price mono">$129 / mo</div>
+          <div class="tier-tag">For couples who refuse to fail over.</div>
+          <ul class="perks">
+            <li>Unlimited retention since the eleventh grade</li>
+            <li>Real-time apology latency alerts</li>
+            <li>Automatic failover to couples counseling</li>
+            <li>Anomaly detection on tone</li>
+          </ul>
+          <a class="btn btn-pink" href="./demo.html">Stay available</a>
+        </div>
+        <div class="tier">
+          <div class="tier-name">Enterprise · Renewal of Vows</div>
+          <div class="price mono">Talk to sales</div>
+          <div class="tier-tag">A dedicated cluster for a relationship that is, frankly, load-bearing.</div>
+          <ul class="perks">
+            <li>Dedicated single-tenant marriage</li>
+            <li>99.99% uptime SLA, witnessed and notarized</li>
+            <li>Quarterly business review with both sets of in-laws</li>
+            <li>Disaster recovery (the lake house)</li>
+          </ul>
+          <a class="btn" href="./demo.html">Contact sales</a>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="demo-band wrap">
+    <h2>See your marriage as a query.</h2>
+    <p class="mono">marriage-2008 · 241,907 documents · indexed and waiting</p>
+    <a class="btn btn-blue" href="./demo.html">Open the demo →</a>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div>
+      <a class="back" href="/">← theworstaistudioever</a>
+      <div class="fnote mono">Tenure is a fictional product. Your relationship does not have an SLA. Probably.</div>
+    </div>
+    <a class="btn btn-pink" href="./demo.html">Open the demo →</a>
+  </div>
+</footer>
+
+</body>
+</html>

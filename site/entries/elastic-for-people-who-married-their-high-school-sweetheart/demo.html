@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Console · Tenure</title>
+<meta name="description" content="Search and observe one marriage, indexed as marriage-2008.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Lexend+Mega:wght@700;800&family=Public+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root{
+  --primary:#2440FF;--accent:#FF2E88;--bg:#FFFFFF;--fg:#141414;--muted:#6B6B6B;--ink:#0A0A0A;--butter:#FFE600;
+  --panel:#f4f4f0;--border:3px solid var(--ink);
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;background:var(--bg);color:var(--fg);
+  font-family:'Public Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;
+}
+.mono{font-family:'JetBrains Mono','SFMono-Regular',Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;}
+button{font-family:inherit;cursor:pointer;}
+
+/* top chrome */
+.chrome{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  border-bottom:var(--border);padding:13px 20px;position:sticky;top:0;background:var(--bg);z-index:30;
+}
+.back{font-family:'JetBrains Mono';font-size:13px;color:var(--ink);text-decoration:none;font-weight:500;}
+.back:hover{color:var(--primary);}
+.chrome .idx{font-family:'JetBrains Mono';font-size:12px;color:var(--muted);}
+.chrome .live{display:inline-flex;align-items:center;gap:7px;font-family:'JetBrains Mono';font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--ink);}
+.chrome .live::before{content:"";width:9px;height:9px;border-radius:50%;background:#1bbf6a;box-shadow:0 0 0 3px rgba(27,191,106,.2);}
+
+/* search bar */
+.searchbar{border-bottom:var(--border);padding:18px 20px;display:flex;gap:12px;background:var(--panel);}
+.searchbar input{
+  flex:1;font-family:'JetBrains Mono';font-size:15px;
+  border:var(--border);background:#fff;padding:14px 15px;outline:none;color:var(--ink);
+  box-shadow:4px 4px 0 var(--ink);
+}
+.searchbar input:focus{box-shadow:4px 4px 0 var(--primary);border-color:var(--primary);}
+.searchbar button{
+  border:var(--border);background:var(--primary);color:#fff;font-weight:700;font-size:13px;
+  letter-spacing:1px;text-transform:uppercase;padding:0 22px;box-shadow:4px 4px 0 var(--ink);
+  transition:transform .09s linear, box-shadow .09s linear;font-family:'Lexend Mega';
+}
+.searchbar button:hover{transform:translate(4px,4px);box-shadow:0 0 0 var(--ink);}
+
+/* layout */
+.shell{display:grid;grid-template-columns:230px 1fr 270px;min-height:calc(100vh - 124px);}
+.facets{border-right:var(--border);padding:22px 18px;}
+.feedwrap{padding:20px 22px;min-width:0;}
+.rail{border-left:var(--border);padding:22px 18px;background:var(--panel);}
+
+.facet-group{margin-bottom:26px;}
+.facet-group h4{font-family:'Lexend Mega';font-weight:700;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink);margin:0 0 12px;}
+.pill{
+  display:block;width:100%;text-align:left;border:2.5px solid var(--ink);background:#fff;color:var(--ink);
+  font-family:'JetBrains Mono';font-size:12px;padding:8px 10px;margin-bottom:8px;letter-spacing:.3px;
+}
+.pill.on{background:var(--ink);color:#fff;}
+.pill .ct{float:right;color:var(--muted);}
+.pill.on .ct{color:#bdbdbd;}
+.facet-group select{
+  width:100%;font-family:'JetBrains Mono';font-size:12px;border:2.5px solid var(--ink);
+  padding:9px 8px;background:#fff;color:var(--ink);outline:none;
+}
+.reset{font-family:'JetBrains Mono';font-size:11px;color:var(--primary);background:none;border:none;padding:0;text-decoration:underline;text-underline-offset:3px;}
+
+/* feed */
+.feedhead{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px;gap:12px;}
+.feedhead .count{font-family:'JetBrains Mono';font-size:12px;color:var(--muted);letter-spacing:.3px;}
+.feedhead h3{font-family:'Lexend Mega';font-weight:700;font-size:14px;letter-spacing:.5px;text-transform:uppercase;margin:0;}
+
+.doc{border:2.5px solid var(--ink);background:#fff;margin-bottom:14px;box-shadow:5px 5px 0 var(--ink);}
+.doc summary{list-style:none;cursor:pointer;padding:14px 16px;display:grid;grid-template-columns:54px 1fr auto;gap:14px;align-items:center;}
+.doc summary::-webkit-details-marker{display:none;}
+.score{font-family:'JetBrains Mono';font-weight:700;font-size:15px;color:var(--primary);text-align:center;}
+.score small{display:block;font-size:8.5px;color:var(--muted);letter-spacing:1px;font-weight:500;margin-top:2px;}
+.doc .ttl{font-weight:700;font-size:15px;color:var(--ink);line-height:1.25;}
+.doc .meta{display:flex;gap:7px;margin-top:7px;flex-wrap:wrap;}
+.tag{font-family:'JetBrains Mono';font-size:10px;letter-spacing:.5px;text-transform:uppercase;padding:3px 7px;border:1.5px solid var(--ink);color:var(--ink);background:#fff;}
+.tag.t-argument{background:var(--accent);color:#fff;border-color:var(--accent);}
+.tag.t-affection{background:var(--primary);color:#fff;border-color:var(--primary);}
+.tag.t-promise{background:var(--butter);color:var(--ink);border-color:var(--ink);}
+.tag.t-logistics{background:#fff;color:var(--ink);}
+.tag.who{background:#ededea;color:var(--ink);border-color:#ededea;}
+.doc .chev{font-family:'JetBrains Mono';font-size:18px;color:var(--muted);transition:transform .12s;}
+.doc[open] .chev{transform:rotate(90deg);}
+.doc .body{padding:0 16px 18px 16px;border-top:1.5px dashed #cfcfcf;margin:0 0 0;}
+.doc .body p{margin:14px 0 10px;font-size:14.5px;color:var(--fg);}
+.doc .body .src{font-family:'JetBrains Mono';font-size:11px;color:var(--muted);letter-spacing:.3px;}
+
+.empty{border:2.5px dashed var(--ink);padding:34px 22px;text-align:center;background:#fff;}
+.empty strong{font-family:'Lexend Mega';font-size:14px;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:8px;}
+.empty span{font-family:'JetBrains Mono';font-size:12px;color:var(--muted);}
+
+/* rail metrics */
+.rail h4{font-family:'Lexend Mega';font-weight:700;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;margin:0 0 16px;}
+.rmetric{padding:12px 0;border-bottom:1.5px dashed #cfcfcf;}
+.rmetric:last-child{border-bottom:none;}
+.rmetric .lbl{font-family:'JetBrains Mono';font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px;}
+.rmetric .val{font-family:'JetBrains Mono';font-weight:700;font-size:20px;color:var(--ink);}
+.rmetric .val.ok{color:var(--primary);}
+.rmetric .val.warn{color:var(--accent);}
+.railnote{font-family:'JetBrains Mono';font-size:10px;color:var(--muted);line-height:1.5;margin-top:18px;border-top:1.5px solid var(--ink);padding-top:14px;}
+
+@media(max-width:920px){
+  .shell{grid-template-columns:1fr;}
+  .facets{border-right:none;border-bottom:var(--border);}
+  .rail{border-left:none;border-top:var(--border);}
+}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="idx mono">index: marriage-2008</span>
+  <span class="live">live</span>
+</div>
+
+<div class="searchbar">
+  <input id="q" type="text" placeholder="search the marriage…  e.g. thermostat, thanksgiving, 2011" aria-label="Search the marriage">
+  <button id="go">Search</button>
+</div>
+
+<div class="shell">
+
+  <aside class="facets">
+    <div class="facet-group">
+      <h4>Person</h4>
+      <button class="pill" data-facet="person" data-val="You">You <span class="ct" id="ct-you">0</span></button>
+      <button class="pill" data-facet="person" data-val="Them">Them <span class="ct" id="ct-them">0</span></button>
+    </div>
+    <div class="facet-group">
+      <h4>Document type</h4>
+      <button class="pill" data-facet="type" data-val="argument">Argument <span class="ct" id="ct-argument">0</span></button>
+      <button class="pill" data-facet="type" data-val="affection">Affection <span class="ct" id="ct-affection">0</span></button>
+      <button class="pill" data-facet="type" data-val="promise">Promise <span class="ct" id="ct-promise">0</span></button>
+      <button class="pill" data-facet="type" data-val="logistics">Logistics <span class="ct" id="ct-logistics">0</span></button>
+    </div>
+    <div class="facet-group">
+      <h4>Year</h4>
+      <select id="year">
+        <option value="">All years (2008–2026)</option>
+      </select>
+    </div>
+    <button class="reset" id="reset">clear all filters</button>
+  </aside>
+
+  <main class="feedwrap">
+    <div class="feedhead">
+      <h3>Results</h3>
+      <span class="count mono" id="count">—</span>
+    </div>
+    <div id="feed"></div>
+  </main>
+
+  <aside class="rail">
+    <h4>Observability</h4>
+    <div class="rmetric"><span class="lbl">Uptime</span><span class="val ok mono">18y 4m 11d</span></div>
+    <div class="rmetric"><span class="lbl">Documents in view</span><span class="val mono" id="m-count">0</span></div>
+    <div class="rmetric"><span class="lbl">p99 apology latency</span><span class="val warn mono" id="m-apology">3.9d</span></div>
+    <div class="rmetric"><span class="lbl">Anniversary recall</span><span class="val ok mono">100.0%</span></div>
+    <div class="rmetric"><span class="lbl">Avg relevance</span><span class="val mono" id="m-rel">0.00</span></div>
+    <div class="rmetric"><span class="lbl">Dominant signal</span><span class="val mono" id="m-dom" style="font-size:14px;">—</span></div>
+    <div class="railnote mono">Metrics recompute against the current filter set. No data leaves the cluster, because there is no cluster. This is a fictional console.</div>
+  </aside>
+
+</div>
+
+<script>
+const DOCS = [
+  {y:2008, person:"Them", type:"promise", ttl:"“I'll still think you're funny in twenty years.”", score:9.6,
+   body:"Passed during third-period chemistry on a folded note. No expiry set. Model has flagged it as still in effect, though confidence on ‘funny’ has drifted.", src:"source: note.scan / 2008-10-02"},
+  {y:2009, person:"You", type:"affection", ttl:"Drove 40 minutes to drop off a charger", score:8.1,
+   body:"Logged as the earliest recorded act of unprompted logistics-as-love. The charger was the wrong one. Sentiment impact remained positive.", src:"source: gps.history / 2009-03-14"},
+  {y:2011, person:"You", type:"promise", ttl:"Agreed to host every Thanksgiving “forever”", score:9.9,
+   body:"High-relevance document. Surfaced repeatedly every November. You have searched for a revocation clause four times. None exists in the index.", src:"source: sms.thread / 2011-11-21"},
+  {y:2012, person:"Them", type:"argument", ttl:"The thermostat dispute (first occurrence)", score:7.4,
+   body:"Root document of a recurring incident class. 38 related arguments link back to this one. Resolution: none. Status: ongoing since 2012.", src:"source: incident.log / 2012-01-09"},
+  {y:2013, person:"You", type:"logistics", ttl:"Who is calling the landlord", score:5.2,
+   body:"A low-relevance logistics exchange that escalated to type:argument for nine messages, then de-escalated. Included for completeness.", src:"source: sms.thread / 2013-06-30"},
+  {y:2014, person:"Them", type:"affection", ttl:"“You were right about the couch.”", score:8.8,
+   body:"Rare admission document. Only two of its kind exist in the entire index. Both are preserved at full retention regardless of plan tier.", src:"source: sms.thread / 2014-08-17"},
+  {y:2015, person:"You", type:"argument", ttl:"Reheating fish in the shared microwave", score:6.7,
+   body:"Brief, high-intensity, fully resolved within the hour. Apology latency on this document: 52 minutes. Well within SLA.", src:"source: kitchen.cam / 2015-02-11"},
+  {y:2016, person:"Them", type:"promise", ttl:"“We'll get the lake house someday.”", score:8.3,
+   body:"Aspirational promise document. Status: pending for 10 years. Referenced in your Enterprise disaster-recovery plan as the failover site.", src:"source: voice.transcript / 2016-07-04"},
+  {y:2018, person:"You", type:"affection", ttl:"Learned to make their grandmother's soup", score:9.1,
+   body:"Multi-week effort logged across 6 attempts. Attempt 6 cleared the sentiment threshold. Attempts 1–5 are retained for context and are not to be discussed.", src:"source: kitchen.cam / 2018-12-03"},
+  {y:2019, person:"Them", type:"argument", ttl:"The thermostat dispute (47th occurrence)", score:7.0,
+   body:"Periodic recurrence. The model now predicts these to within ±2 days of onset. An alert was suppressed at your request. The alert was correct.", src:"source: incident.log / 2019-11-22"},
+  {y:2020, person:"You", type:"logistics", ttl:"Who is on hold with the airline", score:4.9,
+   body:"Lowest-relevance document in the current quarter. Surfaced only because you searched ‘hold.’ You were on hold for 3h 11m. They brought you tea.", src:"source: call.log / 2020-04-08"},
+  {y:2021, person:"Them", type:"affection", ttl:"Left a sticky note on the coffee maker", score:8.6,
+   body:"Short-form affection document, three words, fully decoded. The original sticky note is degraded but the scan is preserved at full resolution.", src:"source: note.scan / 2021-05-19"},
+  {y:2022, person:"You", type:"promise", ttl:"Said you'd “definitely” fix the gutter", score:6.1,
+   body:"Promise document with the longest open duration in the index. Tenure has paged you about the gutter 14 times. The gutter remains unfixed.", src:"source: sms.thread / 2022-09-02"},
+  {y:2023, person:"Them", type:"argument", ttl:"“Fine.” (anomalous tone)", score:7.9,
+   body:"Anomaly-detection event. The word ‘fine’ arrived with an inflection the model had never logged in 15 years. Alert fired at 6:14am. The model was correct.", src:"source: anomaly.detector / 2023-10-30"},
+  {y:2024, person:"You", type:"affection", ttl:"Remembered the anniversary unprompted", score:9.4,
+   body:"Contributes to your 100.0% anniversary recall rate. Note: a calendar alert fired four days prior. The index does not distinguish memory from tooling.", src:"source: calendar.sync / 2024-06-21"},
+  {y:2026, person:"Them", type:"logistics", ttl:"Reminder that the in-laws arrive Friday", score:5.6,
+   body:"Recent logistics document. Tenure recommends a full backup before this event, per the callout on the pitch. You have not taken a backup.", src:"source: sms.thread / 2026-06-18"}
+];
+
+const state = { q:"", person:new Set(), type:new Set(), year:"" };
+
+const feed = document.getElementById('feed');
+const countEl = document.getElementById('count');
+const qEl = document.getElementById('q');
+
+// populate year dropdown
+const years = [...new Set(DOCS.map(d=>d.y))].sort();
+const yearSel = document.getElementById('year');
+years.forEach(y=>{ const o=document.createElement('option'); o.value=y; o.textContent=y; yearSel.appendChild(o); });
+
+function escapeHtml(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+
+function matches(d){
+  if(state.person.size && !state.person.has(d.person)) return false;
+  if(state.type.size && !state.type.has(d.type)) return false;
+  if(state.year && String(d.y)!==state.year) return false;
+  if(state.q){
+    const hay=(d.ttl+" "+d.body+" "+d.type+" "+d.y).toLowerCase();
+    if(!hay.includes(state.q.toLowerCase())) return false;
+  }
+  return true;
+}
+
+function render(){
+  const rows = DOCS.filter(matches).sort((a,b)=>b.score-a.score);
+  countEl.textContent = rows.length + (rows.length===1?" document":" documents");
+
+  if(!rows.length){
+    feed.innerHTML = '<div class="empty"><strong>No documents match.</strong><span>The index holds 16 years and finds nothing. Loosen a filter, or search a year between 2008 and 2026.</span></div>';
+  } else {
+    feed.innerHTML = rows.map(d=>`
+      <details class="doc">
+        <summary>
+          <span class="score mono">${d.score.toFixed(1)}<small>SCORE</small></span>
+          <span>
+            <span class="ttl">${escapeHtml(d.ttl)}</span>
+            <span class="meta">
+              <span class="tag t-${d.type}">${d.type}</span>
+              <span class="tag who">${d.person}</span>
+              <span class="tag mono">${d.y}</span>
+            </span>
+          </span>
+          <span class="chev mono">›</span>
+        </summary>
+        <div class="body">
+          <p>${escapeHtml(d.body)}</p>
+          <span class="src mono">${escapeHtml(d.src)}</span>
+        </div>
+      </details>`).join('');
+  }
+  updateRail(rows);
+  updateFacetCounts();
+}
+
+function updateRail(rows){
+  document.getElementById('m-count').textContent = rows.length;
+  const rel = rows.length ? (rows.reduce((s,d)=>s+d.score,0)/rows.length) : 0;
+  document.getElementById('m-rel').textContent = rel.toFixed(2);
+  // dominant type signal
+  const byType={};
+  rows.forEach(d=>byType[d.type]=(byType[d.type]||0)+1);
+  let dom="—";
+  if(rows.length){ dom = Object.entries(byType).sort((a,b)=>b[1]-a[1])[0][0]; }
+  document.getElementById('m-dom').textContent = dom;
+  // apology latency reacts to argument share
+  const args = rows.filter(d=>d.type==='argument').length;
+  const ratio = rows.length ? args/rows.length : 0;
+  const lat = (0.8 + ratio*7.2).toFixed(1);
+  document.getElementById('m-apology').textContent = lat + 'd';
+}
+
+function updateFacetCounts(){
+  // counts reflect current filters minus the facet's own dimension
+  const base = DOCS.filter(d=>{
+    if(state.year && String(d.y)!==state.year) return false;
+    if(state.q){ const hay=(d.ttl+" "+d.body+" "+d.type+" "+d.y).toLowerCase(); if(!hay.includes(state.q.toLowerCase())) return false; }
+    return true;
+  });
+  const pc = (sel,filterFn)=>document.getElementById(sel).textContent = base.filter(filterFn).length;
+  pc('ct-you', d=> (!state.type.size||state.type.has(d.type)) && d.person==='You');
+  pc('ct-them', d=> (!state.type.size||state.type.has(d.type)) && d.person==='Them');
+  ['argument','affection','promise','logistics'].forEach(t=>{
+    pc('ct-'+t, d=> (!state.person.size||state.person.has(d.person)) && d.type===t);
+  });
+}
+
+// wire facets
+document.querySelectorAll('.pill').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const f=btn.dataset.facet, v=btn.dataset.val;
+    if(state[f].has(v)){ state[f].delete(v); btn.classList.remove('on'); }
+    else { state[f].add(v); btn.classList.add('on'); }
+    render();
+  });
+});
+yearSel.addEventListener('change',()=>{ state.year=yearSel.value; render(); });
+qEl.addEventListener('input',()=>{ state.q=qEl.value.trim(); render(); });
+document.getElementById('go').addEventListener('click',()=>{ state.q=qEl.value.trim(); render(); qEl.focus(); });
+qEl.addEventListener('keydown',e=>{ if(e.key==='Enter'){ state.q=qEl.value.trim(); render(); }});
+document.getElementById('reset').addEventListener('click',()=>{
+  state.q=""; state.year=""; state.person.clear(); state.type.clear();
+  qEl.value=""; yearSel.value="";
+  document.querySelectorAll('.pill.on').forEach(p=>p.classList.remove('on'));
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
