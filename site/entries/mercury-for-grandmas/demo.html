@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Household Treasury · Knit</title>
+<meta name="description" content="The Knit passbook console: freeze a grandchild's card, model the holiday-fund runway, sweep the cookie tin, and send a little something.">
+<meta name="theme-color" content="#244536">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --leather:#244536; --leather-deep:#1b3527; --leather-hi:#2c5340;
+    --brass:#b0894a; --brass-bright:#d2b277; --brass-dim:#8c6c39;
+    --oxblood:#7a2417; --oxblood-deep:#5c1a0f;
+    --paper:#f1e7d2; --paper-card:#f4eddb; --paper-edge:#e3d6b6;
+    --ink:#2b2014; --ink-soft:#574733; --muted:#8a7b5e; --green-ok:#2f6a3f;
+    --display:'Cormorant Garamond','Hoefler Text',Georgia,serif;
+    --body:'EB Garamond','Iowan Old Style',Georgia,serif;
+    --mono:'Courier Prime','Courier New',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; color:var(--ink); font-family:var(--body); font-size:17px;
+    background-color:var(--leather);
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(255,255,255,.05), transparent 45%),
+      radial-gradient(circle at 85% 90%, rgba(0,0,0,.3), transparent 55%),
+      repeating-linear-gradient(125deg, rgba(0,0,0,.05) 0 2px, transparent 2px 5px);
+    min-height:100vh; -webkit-font-smoothing:antialiased;}
+  .mono{font-family:var(--mono); font-variant-numeric:tabular-nums;}
+
+  /* top chrome */
+  .chrome{display:flex; align-items:center; justify-content:space-between; gap:16px;
+    padding:18px 26px; border-bottom:1px solid var(--brass-dim); color:var(--paper);}
+  .chrome .back{font-family:var(--mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    text-decoration:none; color:var(--brass-bright); border-bottom:1px solid transparent; padding-bottom:3px;}
+  .chrome .back:hover{color:var(--paper); border-color:var(--brass);}
+  .chrome .mark{font-family:var(--display); font-weight:700; font-size:22px; color:var(--brass-bright); letter-spacing:.04em;}
+  .chrome .mark span{color:var(--oxblood);}
+  .chrome .who{font-family:var(--mono); font-size:11px; letter-spacing:.06em; color:#cdbf9f;}
+  @media (max-width:620px){ .chrome .who{display:none;} }
+
+  .stage{max-width:1040px; margin:30px auto 64px; padding:0 22px;}
+
+  /* the book */
+  .book{background:var(--paper-card); border-radius:7px; border:1px solid var(--paper-edge);
+    box-shadow:0 22px 50px rgba(0,0,0,.45), 0 1px 0 #fff inset; overflow:hidden;
+    background-image:repeating-linear-gradient(90deg, rgba(43,32,20,.03) 0 1px, transparent 1px 7px);}
+  .book::before{content:""; display:block; height:7px; background:linear-gradient(90deg,var(--brass-bright),var(--brass-dim));}
+
+  /* tabs */
+  .tabs{display:flex; gap:0; border-bottom:1.5px solid var(--brass); background:rgba(122,36,23,.04);}
+  .tab{flex:1; appearance:none; border:none; background:none; cursor:pointer; padding:16px 12px;
+    font-family:var(--mono); font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-soft);
+    border-bottom:3px solid transparent; transition:background .15s, color .15s;}
+  .tab:hover{background:rgba(176,137,74,.1);}
+  .tab[aria-selected="true"]{color:var(--oxblood); border-bottom-color:var(--oxblood); background:var(--paper-card);}
+
+  .panel{padding:30px 32px 38px;}
+  .panel[hidden]{display:none;}
+  .panel h2{font-family:var(--display); font-weight:600; font-size:30px; margin:0 0 4px; color:var(--ink);}
+  .panel .lede{color:var(--ink-soft); font-style:italic; margin:0 0 22px;}
+
+  /* passbook ledger */
+  .balance-bar{display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:14px;
+    border-bottom:2px solid var(--brass); padding-bottom:14px; margin-bottom:8px;}
+  .balance-bar .big{font-family:var(--mono); font-weight:700; font-size:40px; color:var(--ink); font-variant-numeric:tabular-nums;}
+  .balance-bar .lab{font-family:var(--mono); font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted);}
+  .toolbar{display:flex; gap:12px; flex-wrap:wrap; margin:18px 0 22px;}
+  .btn{appearance:none; cursor:pointer; font-family:var(--display); font-weight:600; font-size:17px;
+    border-radius:3px; padding:11px 20px; border:1px solid var(--brass-dim); background:#fbf6e8; color:var(--ink);
+    transition:transform .1s, background .15s;}
+  .btn:hover{background:#fff;}
+  .btn:active{transform:translateY(1px);}
+  .btn.primary{color:var(--paper); border:none;
+    background:linear-gradient(180deg,var(--oxblood),var(--oxblood-deep));
+    box-shadow:0 3px 0 #3f120a, inset 0 1px 0 rgba(255,255,255,.12);}
+  .btn.primary:active{transform:translateY(3px); box-shadow:0 0 0 #3f120a, inset 0 1px 0 rgba(255,255,255,.12);}
+  table{width:100%; border-collapse:collapse;}
+  thead th{font-family:var(--mono); font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--muted);
+    text-align:left; padding:8px 10px; border-bottom:1px solid var(--brass-dim);}
+  thead th.r, td.r{text-align:right;}
+  tbody td{padding:14px 10px; border-bottom:1px dotted rgba(138,123,94,.5); font-size:16px;}
+  tbody tr:last-child td{border-bottom:none;}
+  td.name{font-family:var(--display); font-weight:600; font-size:19px;}
+  td.amt{font-family:var(--mono); font-variant-numeric:tabular-nums; color:var(--ink-soft);}
+  tr.frozen td.name,tr.frozen td.amt{opacity:.5; text-decoration:line-through;}
+
+  /* freeze toggle */
+  .toggle{appearance:none; cursor:pointer; border:1px solid var(--brass-dim); background:#efe7d2;
+    font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--green-ok);
+    padding:6px 12px; border-radius:2px; min-width:96px; transition:transform .06s;}
+  .toggle[data-frozen="true"]{color:var(--oxblood); background:#f3e0da; border-color:var(--oxblood);}
+  .toggle.thunk{transform:scale(.92);}
+
+  /* cards grid */
+  .card-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:18px;}
+  .gc-card{position:relative; border-radius:9px; padding:20px 18px 16px; color:var(--paper); min-height:140px;
+    background:linear-gradient(140deg,var(--leather-hi),var(--leather-deep));
+    border:1px solid var(--brass-dim); box-shadow:0 8px 18px rgba(0,0,0,.3); overflow:hidden;
+    transition:filter .2s, transform .2s;}
+  .gc-card::after{content:""; position:absolute; right:-30px; top:-30px; width:90px; height:90px; border-radius:50%;
+    background:radial-gradient(circle,var(--brass),transparent 70%); opacity:.4;}
+  .gc-card .nm{font-family:var(--display); font-weight:600; font-size:22px;}
+  .gc-card .no{font-family:var(--mono); font-size:13px; letter-spacing:.12em; color:#cdbf9f; margin-top:30px;}
+  .gc-card .ytd{font-family:var(--mono); font-size:12px; color:var(--brass-bright); margin-top:6px;}
+  .gc-card.frozen{filter:grayscale(.85) brightness(.8);}
+  .gc-card .stamp{position:absolute; top:14px; right:14px; font-family:var(--mono); font-size:9px; letter-spacing:.18em;
+    text-transform:uppercase; border:1px solid currentColor; padding:3px 7px; border-radius:2px; color:var(--brass-bright);}
+  .gc-card.frozen .stamp{color:#e9b9ad; border-color:#e9b9ad; transform:rotate(-8deg);}
+  .gc-card .row{display:flex; justify-content:space-between; align-items:flex-end; margin-top:10px;}
+
+  /* cookie tin / runway */
+  .split{display:grid; grid-template-columns:1fr 1fr; gap:26px;}
+  @media (max-width:760px){ .split{grid-template-columns:1fr;} .card-grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:460px){ .card-grid{grid-template-columns:1fr;} }
+  .tin{background:#fbf6e8; border:1px solid var(--paper-edge); border-radius:6px; padding:24px;}
+  .tin h3{font-family:var(--display); font-weight:600; font-size:22px; margin:0 0 6px;}
+  .tin .yield{font-family:var(--mono); font-size:13px; color:var(--green-ok); letter-spacing:.04em;}
+  .sweep-amt{font-family:var(--mono); font-weight:700; font-size:34px; margin:14px 0 4px; font-variant-numeric:tabular-nums;}
+  .switch{display:inline-flex; align-items:center; gap:10px; cursor:pointer; margin-top:14px; font-family:var(--mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft);}
+  .switch .track{width:46px; height:26px; border-radius:13px; background:#d8cba8; position:relative; transition:background .2s; border:1px solid var(--brass-dim);}
+  .switch .knob{position:absolute; top:2px; left:2px; width:20px; height:20px; border-radius:50%; background:var(--brass-bright); transition:transform .2s; box-shadow:0 1px 2px rgba(0,0,0,.3);}
+  .switch[data-on="true"] .track{background:var(--green-ok);}
+  .switch[data-on="true"] .knob{transform:translateX(20px);}
+
+  .runway .bars{display:flex; align-items:flex-end; gap:7px; height:160px; margin-top:14px; border-bottom:1px solid var(--brass-dim); padding-bottom:0;}
+  .runway .bars .bar{flex:1; background:linear-gradient(180deg,var(--brass-bright),var(--brass-dim)); border-radius:2px 2px 0 0; position:relative;}
+  .runway .bars .bar.dry{background:linear-gradient(180deg,#c98a7a,var(--oxblood));}
+  .runway .bars .bar span{position:absolute; bottom:-20px; left:0; right:0; text-align:center; font-family:var(--mono); font-size:9px; color:var(--muted);}
+  .runway .note{margin-top:30px; font-family:var(--mono); font-size:12px; color:var(--ink-soft);}
+  .runway .note b{color:var(--oxblood);}
+
+  /* modal */
+  .scrim{position:fixed; inset:0; background:rgba(20,30,24,.62); display:none; align-items:center; justify-content:center; padding:20px; z-index:30;}
+  .scrim.open{display:flex;}
+  .modal{background:var(--paper-card); border-radius:7px; max-width:420px; width:100%; padding:28px;
+    border:1px solid var(--brass); box-shadow:0 24px 60px rgba(0,0,0,.5);}
+  .modal h3{font-family:var(--display); font-weight:600; font-size:26px; margin:0 0 4px;}
+  .modal p.sub{color:var(--ink-soft); font-style:italic; margin:0 0 20px; font-size:15px;}
+  label{display:block; font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); margin:14px 0 6px;}
+  select,input[type=text],input[type=number]{width:100%; padding:11px 12px; font-family:var(--body); font-size:16px;
+    border:1px solid var(--brass-dim); border-radius:3px; background:#fbf6e8; color:var(--ink);}
+  .modal .actions{display:flex; gap:12px; margin-top:24px;}
+  .modal .actions .btn{flex:1;}
+
+  /* toast */
+  .toast{position:fixed; left:50%; bottom:28px; transform:translateX(-50%) translateY(120%);
+    background:var(--ink); color:var(--paper); font-family:var(--mono); font-size:13px; letter-spacing:.03em;
+    padding:13px 22px; border-radius:4px; box-shadow:0 10px 26px rgba(0,0,0,.4); transition:transform .35s cubic-bezier(.2,.8,.3,1); z-index:40; max-width:90vw;}
+  .toast.show{transform:translateX(-50%) translateY(0);}
+
+  @media (prefers-reduced-motion:reduce){ *{transition:none !important;} }
+</style>
+</head>
+<body>
+  <div class="chrome">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <span class="mark">Knit<span>.</span></span>
+    <span class="who">Signed in · the Halloran Household</span>
+  </div>
+
+  <div class="stage">
+    <div class="book">
+      <div class="tabs" role="tablist" aria-label="Household Treasury">
+        <button class="tab" role="tab" aria-selected="true" aria-controls="p-book" id="t-book">Passbook</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="p-cards" id="t-cards">Cards</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="p-tin" id="t-tin">Cookie Tin</button>
+      </div>
+
+      <!-- PASSBOOK -->
+      <section class="panel" id="p-book" role="tabpanel" aria-labelledby="t-book">
+        <h2>Household Treasury</h2>
+        <p class="lede">Every disbursement, stamped and dated. Freeze on the left, send on the right.</p>
+        <div class="balance-bar">
+          <span class="big mono" id="balance">$84,210.00</span>
+          <span class="lab">Available · Account No. 1968-04</span>
+        </div>
+        <div class="toolbar">
+          <button class="btn primary" id="open-wire">Send a little something</button>
+          <button class="btn" id="reset">Reconcile the book</button>
+        </div>
+        <table>
+          <thead><tr><th>Grandchild</th><th>Last disbursement</th><th class="r">Lifetime</th><th class="r">Card</th></tr></thead>
+          <tbody id="ledger"></tbody>
+        </table>
+      </section>
+
+      <!-- CARDS -->
+      <section class="panel" id="p-cards" role="tabpanel" aria-labelledby="t-cards" hidden>
+        <h2>Per-grandchild cards</h2>
+        <p class="lede">One card each, so you always know who funded the sneakers. Freeze when the calls stop.</p>
+        <div class="card-grid" id="cards"></div>
+      </section>
+
+      <!-- COOKIE TIN -->
+      <section class="panel" id="p-tin" role="tabpanel" aria-labelledby="t-tin" hidden>
+        <h2>Cookie Tin sweep &amp; runway</h2>
+        <p class="lede">Idle reserves earn between visits. The holiday fund is on a clock.</p>
+        <div class="split">
+          <div class="tin">
+            <h3>Cookie Tin reserve</h3>
+            <span class="yield">Yielding 4.10% · swept nightly</span>
+            <div class="sweep-amt mono" id="tin-amt">$12,640.00</div>
+            <div class="mono" style="font-size:12px;color:var(--muted)">Returned this quarter: <span id="tin-earn">$129.56</span></div>
+            <div class="switch" id="sweep-switch" data-on="true" role="switch" aria-checked="true" tabindex="0" aria-label="Automatic nightly sweep">
+              <span class="track"><span class="knob"></span></span>
+              <span id="sweep-label">Sweeping nightly</span>
+            </div>
+          </div>
+          <div class="runway tin">
+            <h3>Holiday gift fund runway</h3>
+            <span class="yield" style="color:var(--ink-soft)">Projected at the current rate of generosity</span>
+            <div class="bars" id="bars" aria-hidden="true"></div>
+            <p class="note">At this pace the fund goes dry in <b id="dry-month">November</b>. Knit recommends rationing the twenties before <b>March</b>.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- wire modal -->
+  <div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="wire-h">
+    <div class="modal">
+      <h3 id="wire-h">Send a little something</h3>
+      <p class="sub">Same-day wire. The memo is already taken care of.</p>
+      <label for="wire-who">Recipient</label>
+      <select id="wire-who"></select>
+      <label for="wire-amt">Amount</label>
+      <input type="number" id="wire-amt" value="40" min="1" step="5">
+      <label for="wire-memo">Memo</label>
+      <input type="text" id="wire-memo" value="just because">
+      <div class="actions">
+        <button class="btn" id="wire-cancel">Never mind</button>
+        <button class="btn primary" id="wire-send">Disburse</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var grandkids = [
+    {name:"Kevin",   last:"$1,400.00", ytd:42180, no:"•••• 0461", frozen:true},
+    {name:"Priya",   last:"$220.00",   ytd:8640,  no:"•••• 0462", frozen:false},
+    {name:"Marcus",  last:"$60.00",    ytd:3110,  no:"•••• 0463", frozen:false},
+    {name:"Lena",    last:"$0.00",     ytd:12790, no:"•••• 0464", frozen:false}
+  ];
+  var balance = 84210;
+
+  function money(n){ return "$" + n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+  // ---- tabs ----
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+  tabs.forEach(function(tab){
+    tab.addEventListener('click', function(){ selectTab(tab); });
+    tab.addEventListener('keydown', function(e){
+      var i = tabs.indexOf(tab);
+      if(e.key==='ArrowRight'){ tabs[(i+1)%tabs.length].focus(); }
+      if(e.key==='ArrowLeft'){ tabs[(i-1+tabs.length)%tabs.length].focus(); }
+    });
+  });
+  function selectTab(tab){
+    tabs.forEach(function(t){
+      var on = t===tab;
+      t.setAttribute('aria-selected', on?'true':'false');
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+    });
+  }
+
+  // ---- ledger ----
+  var ledger = document.getElementById('ledger');
+  function renderLedger(){
+    ledger.innerHTML = '';
+    grandkids.forEach(function(g, idx){
+      var tr = document.createElement('tr');
+      if(g.frozen) tr.className = 'frozen';
+      tr.innerHTML =
+        '<td class="name">'+g.name+'</td>'+
+        '<td class="amt">'+g.last+'</td>'+
+        '<td class="amt r">'+money(g.ytd)+'</td>'+
+        '<td class="r"></td>';
+      var cell = tr.lastChild;
+      var btn = document.createElement('button');
+      btn.className = 'toggle';
+      btn.setAttribute('data-frozen', g.frozen?'true':'false');
+      btn.textContent = g.frozen ? 'Frozen' : 'Active';
+      btn.setAttribute('aria-label', (g.frozen?'Unfreeze ':'Freeze ')+g.name+"'s card");
+      btn.addEventListener('click', function(){ toggleFreeze(idx, btn); });
+      cell.appendChild(btn);
+      ledger.appendChild(tr);
+    });
+  }
+  function toggleFreeze(idx, btn){
+    grandkids[idx].frozen = !grandkids[idx].frozen;
+    if(!reduce){ btn.classList.add('thunk'); setTimeout(function(){ btn.classList.remove('thunk'); }, 90); }
+    renderLedger(); renderCards();
+    var g = grandkids[idx];
+    toast(g.name + "'s card " + (g.frozen ? "frozen. The calls will resume." : "reinstated. Generosity restored."));
+  }
+
+  // ---- cards ----
+  var cards = document.getElementById('cards');
+  function renderCards(){
+    cards.innerHTML = '';
+    grandkids.forEach(function(g, idx){
+      var d = document.createElement('div');
+      d.className = 'gc-card' + (g.frozen?' frozen':'');
+      d.innerHTML =
+        '<span class="stamp">'+(g.frozen?'Frozen':'Active')+'</span>'+
+        '<div class="nm">'+g.name+'</div>'+
+        '<div class="no">'+g.no+'</div>'+
+        '<div class="row"><span class="ytd">Lifetime '+money(g.ytd)+'</span></div>';
+      var b = document.createElement('button');
+      b.className = 'toggle';
+      b.style.marginTop = '12px';
+      b.setAttribute('data-frozen', g.frozen?'true':'false');
+      b.textContent = g.frozen ? 'Unfreeze' : 'Freeze';
+      b.addEventListener('click', function(){ toggleFreeze(idx, b); });
+      d.appendChild(b);
+      cards.appendChild(d);
+    });
+  }
+
+  // ---- runway bars ----
+  var months = [["Jun",96],["Jul",84],["Aug",70],["Sep",52],["Oct",30],["Nov",8],["Dec",0]];
+  (function(){
+    var box = document.getElementById('bars');
+    months.forEach(function(m){
+      var bar = document.createElement('div');
+      bar.className = 'bar' + (m[1] <= 10 ? ' dry' : '');
+      bar.style.height = Math.max(m[1],4) + '%';
+      bar.innerHTML = '<span>'+m[0]+'</span>';
+      box.appendChild(bar);
+    });
+  })();
+
+  // ---- sweep switch ----
+  var sw = document.getElementById('sweep-switch');
+  function flipSweep(){
+    var on = sw.getAttribute('data-on') !== 'true';
+    sw.setAttribute('data-on', on?'true':'false');
+    sw.setAttribute('aria-checked', on?'true':'false');
+    document.getElementById('sweep-label').textContent = on ? 'Sweeping nightly' : 'Sweep paused';
+    toast(on ? 'Nightly sweep on. The tin will keep earning.' : 'Sweep paused. The tin sits idle, as in the old days.');
+  }
+  sw.addEventListener('click', flipSweep);
+  sw.addEventListener('keydown', function(e){ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); flipSweep(); } });
+
+  // ---- wire modal ----
+  var scrim = document.getElementById('scrim');
+  var whoSel = document.getElementById('wire-who');
+  function openWire(){
+    whoSel.innerHTML = grandkids.map(function(g){ return '<option value="'+g.name+'">'+g.name+(g.frozen?' (card frozen)':'')+'</option>'; }).join('');
+    scrim.classList.add('open');
+    document.getElementById('wire-amt').focus();
+  }
+  function closeWire(){ scrim.classList.remove('open'); }
+  document.getElementById('open-wire').addEventListener('click', openWire);
+  document.getElementById('wire-cancel').addEventListener('click', closeWire);
+  scrim.addEventListener('click', function(e){ if(e.target===scrim) closeWire(); });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeWire(); });
+
+  document.getElementById('wire-send').addEventListener('click', function(){
+    var who = whoSel.value;
+    var amt = parseFloat(document.getElementById('wire-amt').value) || 0;
+    var memo = document.getElementById('wire-memo').value || 'just because';
+    if(amt <= 0){ toast('Enter an amount worth wiring.'); return; }
+    var g = grandkids.filter(function(x){ return x.name===who; })[0];
+    if(g){ g.ytd += amt; g.last = money(amt); }
+    balance -= amt;
+    document.getElementById('balance').textContent = money(balance);
+    renderLedger(); renderCards();
+    closeWire();
+    toast('Wired ' + money(amt) + ' to ' + who + ' · memo: "' + memo + '"');
+  });
+
+  document.getElementById('reset').addEventListener('click', function(){
+    toast('Book reconciled. Everything ties out to the penny, as always.');
+  });
+
+  // ---- toast ----
+  var toastEl = document.getElementById('toast'), toastTimer;
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 3400);
+  }
+
+  renderLedger(); renderCards();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Knit · theworstaistudioever</title>
+<meta name="description" content="Venture-grade banking for the woman who has run a household since 1968. Per-grandchild cards, disbursement runway, and a treasury sweep for the cookie tin.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Knit · banking for grandmas">
+<meta property="og:description" content="Venture-grade banking for the woman who has run a household since 1968.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Knit · banking for grandmas">
+<meta name="twitter:description" content="Venture-grade banking for the woman who has run a household since 1968.">
+<meta name="theme-color" content="#244536">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --leather:#244536; --leather-deep:#1b3527; --leather-hi:#2c5340;
+    --brass:#b0894a; --brass-bright:#d2b277; --brass-dim:#8c6c39;
+    --oxblood:#7a2417; --oxblood-deep:#5c1a0f;
+    --paper:#f1e7d2; --paper-card:#f4eddb; --paper-edge:#e3d6b6;
+    --ink:#2b2014; --ink-soft:#574733; --muted:#8a7b5e;
+    --display:'Cormorant Garamond','Hoefler Text',Georgia,serif;
+    --body:'EB Garamond','Iowan Old Style',Georgia,serif;
+    --mono:'Courier Prime','Courier New',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; color:var(--paper); font-family:var(--body);
+    font-size:19px; line-height:1.6;
+    background-color:var(--leather);
+    background-image:
+      radial-gradient(circle at 18% 12%, rgba(255,255,255,.05), transparent 42%),
+      radial-gradient(circle at 82% 88%, rgba(0,0,0,.28), transparent 55%),
+      repeating-linear-gradient(125deg, rgba(0,0,0,.05) 0 2px, transparent 2px 5px),
+      repeating-linear-gradient(35deg, rgba(255,255,255,.018) 0 1px, transparent 1px 4px);
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .reveal{opacity:0; transform:translateY(16px); transition:opacity .6s ease-out, transform .6s ease-out;}
+    .reveal.in{opacity:1; transform:none;}
+  }
+  .wrap{max-width:1120px; margin:0 auto; padding:0 28px;}
+
+  /* gold-foil frame around the whole document */
+  .foil-frame{
+    position:fixed; inset:14px; pointer-events:none; z-index:5;
+    border:1px solid var(--brass-dim);
+    box-shadow:inset 0 0 0 1px rgba(210,178,119,.35), inset 0 0 26px rgba(0,0,0,.35);
+  }
+  @media (max-width:640px){ .foil-frame{inset:8px;} }
+
+  a{color:inherit;}
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:.32em;
+    text-transform:uppercase; color:var(--brass-bright);
+  }
+
+  /* ---- top bar ---- */
+  header.bar{display:flex; align-items:center; justify-content:space-between; padding:30px 0 8px;}
+  .wordmark{font-family:var(--display); font-weight:700; font-size:30px; letter-spacing:.04em;
+    color:var(--brass-bright); text-shadow:0 1px 0 rgba(0,0,0,.5), 0 0 1px var(--brass);}
+  .wordmark .dot{color:var(--oxblood);}
+  .bar nav{font-family:var(--mono); font-size:12px; letter-spacing:.18em; text-transform:uppercase; color:var(--paper);}
+  .bar nav a{margin-left:22px; text-decoration:none; opacity:.78; border-bottom:1px solid transparent; padding-bottom:2px;}
+  .bar nav a:hover{opacity:1; border-color:var(--brass);}
+  @media (max-width:640px){ .bar nav a:not(.keep){display:none;} }
+
+  /* ---- hero ---- */
+  .hero{display:grid; grid-template-columns:1.05fr .95fr; gap:52px; align-items:center; padding:46px 0 70px;}
+  .hero h1{font-family:var(--display); font-weight:600; font-size:clamp(40px,6.2vw,76px);
+    line-height:1.02; margin:18px 0 8px; color:var(--paper); letter-spacing:.005em;}
+  .hero h1 em{font-style:italic; color:var(--brass-bright);}
+  .hero .sub{font-size:21px; color:#e4d8be; max-width:34ch; margin:18px 0 30px;}
+  .cta-row{display:flex; align-items:center; gap:22px; flex-wrap:wrap;}
+  .seal{
+    appearance:none; border:none; cursor:pointer; text-decoration:none;
+    font-family:var(--display); font-weight:600; font-size:20px; letter-spacing:.02em;
+    color:var(--paper); padding:15px 30px; border-radius:3px;
+    background:linear-gradient(180deg,var(--oxblood),var(--oxblood-deep));
+    box-shadow:0 3px 0 #3f120a, 0 8px 18px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.12);
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .seal:hover{transform:translateY(-1px);}
+  .seal:active{transform:translateY(3px); box-shadow:0 0 0 #3f120a, 0 3px 8px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.12);}
+  .ghost-link{font-family:var(--mono); font-size:13px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--brass-bright); text-decoration:none; border-bottom:1px solid var(--brass-dim); padding-bottom:3px;}
+  .ghost-link:hover{color:var(--paper);}
+
+  /* passbook plate (signature) */
+  .plate-stack{display:flex; flex-direction:column; gap:22px;}
+  .passbook{
+    position:relative; background:var(--paper-card); color:var(--ink); border-radius:5px;
+    padding:26px 28px 30px; border:1px solid var(--paper-edge);
+    box-shadow:0 1px 0 #fff inset, 0 16px 34px rgba(0,0,0,.42), 0 2px 0 var(--paper-edge);
+    background-image:
+      repeating-radial-gradient(circle at 30% 18%, rgba(122,36,23,.05) 0 1px, transparent 1px 9px),
+      repeating-linear-gradient(90deg, rgba(43,32,20,.035) 0 1px, transparent 1px 7px);
+  }
+  .passbook::before{content:""; position:absolute; left:0; top:14px; bottom:14px; width:5px;
+    background:linear-gradient(180deg,var(--brass-bright),var(--brass-dim)); border-radius:0 3px 3px 0;
+    box-shadow:1px 0 2px rgba(0,0,0,.25);}
+  .pb-head{display:flex; justify-content:space-between; align-items:baseline; border-bottom:1.5px solid var(--brass); padding-bottom:10px; margin-bottom:14px;}
+  .pb-head .label{font-family:var(--mono); font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--ink-soft);}
+  .pb-head .acct{font-family:var(--mono); font-size:11px; color:var(--muted);}
+  .balance{font-family:var(--display); font-style:italic; font-size:15px; color:var(--ink-soft); margin:0;}
+  .balance .fig{display:block; font-family:var(--mono); font-style:normal; font-weight:700;
+    font-size:38px; letter-spacing:-.01em; color:var(--ink); font-variant-numeric:tabular-nums; margin-top:2px;}
+  .ledger{margin-top:16px; border-top:1px dashed var(--brass-dim); padding-top:10px;}
+  .ledger-row{display:grid; grid-template-columns:1fr auto auto; gap:10px; align-items:center;
+    font-family:var(--mono); font-size:13px; padding:7px 0; border-bottom:1px dotted rgba(138,123,94,.5);}
+  .ledger-row:last-child{border-bottom:none;}
+  .ledger-row .who{color:var(--ink); letter-spacing:.02em;}
+  .ledger-row .amt{font-variant-numeric:tabular-nums; color:var(--ink-soft);}
+  .chip{font-family:var(--mono); font-size:9px; letter-spacing:.16em; text-transform:uppercase;
+    padding:3px 7px; border-radius:2px; border:1px solid currentColor;}
+  .chip.active{color:#2f6a3f;}
+  .chip.frozen{color:var(--oxblood);}
+  .portrait{
+    position:relative; background:var(--paper-card); padding:12px 12px 14px; border-radius:4px;
+    border:1px solid var(--paper-edge);
+    box-shadow:0 12px 26px rgba(0,0,0,.4);
+  }
+  .portrait img{display:block; width:100%; height:auto; border-radius:3px; border:2px solid var(--brass-dim);
+    filter:saturate(.96);}
+  .portrait figcaption{font-family:var(--display); font-style:italic; font-size:16px; color:var(--ink-soft);
+    text-align:center; margin:10px 0 2px;}
+  figure{margin:0;}
+
+  /* ---- statement strip ---- */
+  .statement{padding:54px 0; border-top:1px solid var(--brass-dim); border-bottom:1px solid var(--brass-dim);
+    text-align:center;}
+  .statement p{font-family:var(--display); font-style:italic; font-weight:500;
+    font-size:clamp(24px,3.4vw,38px); line-height:1.3; max-width:26ch; margin:0 auto; color:var(--paper);}
+  .statement .by{font-family:var(--mono); font-size:12px; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--brass-bright); margin-top:22px;}
+
+  /* ---- sections ---- */
+  section{padding:74px 0;}
+  .sec-head{display:flex; align-items:baseline; gap:18px; margin-bottom:38px;}
+  .sec-head h2{font-family:var(--display); font-weight:600; font-size:clamp(30px,4.4vw,48px); margin:0; color:var(--paper);}
+  .rule{flex:1; height:1px; background:linear-gradient(90deg,var(--brass),transparent);}
+
+  /* features as passbook pages */
+  .features{display:grid; grid-template-columns:repeat(3,1fr); gap:26px;}
+  .page-card{
+    background:var(--paper-card); color:var(--ink); border-radius:5px; padding:30px 26px 32px;
+    border:1px solid var(--paper-edge); position:relative;
+    box-shadow:0 1px 0 #fff inset, 0 12px 26px rgba(0,0,0,.34);
+    transition:transform .26s cubic-bezier(.2,.7,.3,1), box-shadow .26s ease;
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .page-card:hover{transform:translateY(-6px) rotate(-.3deg); box-shadow:0 1px 0 #fff inset, 0 22px 40px rgba(0,0,0,.42);}
+  }
+  .page-card .fnum{font-family:var(--mono); font-size:11px; letter-spacing:.2em; color:var(--brass-dim);}
+  .page-card h3{font-family:var(--display); font-weight:600; font-size:27px; margin:10px 0 12px; color:var(--ink);
+    border-bottom:1px solid var(--brass); padding-bottom:12px;}
+  .page-card p{margin:0; color:var(--ink-soft); font-size:18px;}
+
+  /* testimonials */
+  .quotes{display:grid; grid-template-columns:repeat(3,1fr); gap:26px;}
+  .quote{background:var(--leather-hi); border:1px solid var(--brass-dim); border-radius:5px; padding:28px 26px 24px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.05), 0 10px 22px rgba(0,0,0,.28);}
+  .quote blockquote{margin:0 0 20px; font-family:var(--display); font-style:italic; font-size:22px; line-height:1.34; color:var(--paper);}
+  .quote blockquote::before{content:"\201C"; color:var(--brass); font-size:30px; line-height:0; vertical-align:-6px; margin-right:2px;}
+  .byline{display:flex; align-items:center; gap:14px; border-top:1px solid var(--brass-dim); padding-top:16px;}
+  .byline img{width:52px; height:52px; border-radius:50%; object-fit:cover; border:2px solid var(--brass); flex:none;}
+  .byline .nm{font-family:var(--display); font-weight:600; font-size:18px; color:var(--brass-bright);}
+  .byline .tt{font-family:var(--mono); font-size:11px; letter-spacing:.04em; color:#cdbf9f; line-height:1.4;}
+
+  /* pricing */
+  .tiers{display:grid; grid-template-columns:repeat(3,1fr); gap:24px; align-items:start;}
+  .tier{background:var(--paper-card); color:var(--ink); border-radius:5px; padding:30px 26px;
+    border:1px solid var(--paper-edge); box-shadow:0 1px 0 #fff inset, 0 12px 26px rgba(0,0,0,.32); position:relative;}
+  .tier.feat{border:2px solid var(--brass); box-shadow:0 1px 0 #fff inset, 0 18px 38px rgba(0,0,0,.46);}
+  .tier .ribbon{position:absolute; top:-13px; left:26px; font-family:var(--mono); font-size:10px; letter-spacing:.18em;
+    text-transform:uppercase; background:var(--oxblood); color:var(--paper); padding:5px 11px; border-radius:2px;}
+  .tier .tname{font-family:var(--display); font-weight:700; font-size:30px; color:var(--ink); margin:0;}
+  .tier .price{font-family:var(--mono); font-weight:700; font-size:28px; color:var(--ink); margin:6px 0 4px; font-variant-numeric:tabular-nums;}
+  .tier .ttag{font-style:italic; color:var(--ink-soft); font-size:17px; min-height:74px; margin:8px 0 18px; border-bottom:1px solid var(--brass); padding-bottom:16px;}
+  .tier ul{list-style:none; margin:0; padding:0;}
+  .tier li{font-size:16px; color:var(--ink-soft); padding:8px 0 8px 24px; position:relative;}
+  .tier li::before{content:"\2014"; position:absolute; left:0; color:var(--brass-dim);}
+
+  /* demo cta band */
+  .band{text-align:center; padding:72px 0 80px;}
+  .band h2{font-family:var(--display); font-weight:600; font-size:clamp(30px,4.6vw,52px); margin:0 0 10px; color:var(--paper);}
+  .band p{color:#e0d4ba; max-width:42ch; margin:0 auto 30px;}
+
+  /* footer */
+  footer{border-top:1px solid var(--brass-dim); padding:34px 0 56px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;}
+  footer .back{font-family:var(--mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase; text-decoration:none; color:var(--brass-bright);}
+  footer .back:hover{color:var(--paper);}
+  footer .fine{font-family:var(--mono); font-size:11px; color:var(--muted); max-width:46ch; text-align:right;}
+
+  @media (max-width:880px){
+    .hero{grid-template-columns:1fr; gap:38px;}
+    .features,.quotes,.tiers{grid-template-columns:1fr;}
+    .tier .ttag{min-height:0;}
+    footer .fine{text-align:left;}
+  }
+</style>
+</head>
+<body>
+<div class="foil-frame" aria-hidden="true"></div>
+
+<div class="wrap">
+  <header class="bar">
+    <span class="wordmark">Knit<span class="dot">.</span></span>
+    <nav aria-label="Primary">
+      <a href="#how">The book</a>
+      <a href="#voices">Account holders</a>
+      <a href="#plans">Plans</a>
+      <a class="keep seal-link ghost-link" href="./demo.html">Open the demo →</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-copy">
+      <span class="eyebrow">Established for the household · Account since 1968</span>
+      <h1>Banking infrastructure for the <em>household CEO.</em></h1>
+      <p class="sub">Knit gives your grandmother treasury management, per-grandchild spend controls, and same-day wires to whoever just needs a little something. She has been doing this in her head for forty years. We added a ledger.</p>
+      <div class="cta-row">
+        <a class="seal" href="#plans">Open the family account</a>
+        <a class="ghost-link" href="./demo.html">Open the demo →</a>
+      </div>
+    </div>
+
+    <div class="plate-stack">
+      <div class="passbook" role="img" aria-label="A household savings passbook showing a balance and three grandchild disbursement entries, two active and one frozen.">
+        <div class="pb-head">
+          <span class="label">Household Treasury</span>
+          <span class="acct">No. 1968-04</span>
+        </div>
+        <p class="balance">Available across the household
+          <span class="fig">$84,210.00</span>
+        </p>
+        <div class="ledger" aria-hidden="true">
+          <div class="ledger-row"><span class="who">Kevin</span><span class="amt">$1,400.00</span><span class="chip frozen">Frozen</span></div>
+          <div class="ledger-row"><span class="who">Priya</span><span class="amt">$ 220.00</span><span class="chip active">Active</span></div>
+          <div class="ledger-row"><span class="who">Marcus</span><span class="amt">$  60.00</span><span class="chip active">Active</span></div>
+        </div>
+      </div>
+      <figure class="portrait">
+        <img src="hero.webp" width="1600" height="900" alt="The household chairwoman seated at a writing desk in a green study, a brass banker's lamp and a leather ledger beside her.">
+        <figcaption>The chairwoman, at the desk where it is decided</figcaption>
+      </figure>
+    </div>
+  </section>
+</div>
+
+<div class="statement">
+  <div class="wrap">
+    <p>She was running a treasury out of a cookie tin before your fund existed.</p>
+    <div class="by">Now it reconciles</div>
+  </div>
+</div>
+
+<div class="wrap">
+  <section id="how">
+    <div class="sec-head">
+      <h2>What the account does</h2>
+      <span class="rule"></span>
+    </div>
+    <div class="features">
+      <article class="page-card reveal">
+        <span class="fnum">PAGE 01</span>
+        <h3>A card for every grandchild</h3>
+        <p>Issue a dedicated virtual card to each grandchild so you know precisely which one is funding the sneakers. Freeze any card the moment the phone calls stop. Reinstate it the moment they resume.</p>
+      </article>
+      <article class="page-card reveal">
+        <span class="fnum">PAGE 02</span>
+        <h3>Disbursement runway</h3>
+        <p>Real-time burn-rate modeling on the holiday gift fund. Knit projects the exact day generosity becomes a liquidity event, so you can ration the twenties before March.</p>
+      </article>
+      <article class="page-card reveal">
+        <span class="fnum">PAGE 03</span>
+        <h3>Treasury sweep for the cookie tin</h3>
+        <p>Cash sitting in the tin earns nothing and you know it. Knit sweeps idle reserves into a yield account between visits, then sweeps them back before anyone lifts the lid.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="voices">
+    <div class="sec-head">
+      <h2>Account holders</h2>
+      <span class="rule"></span>
+    </div>
+    <div class="quotes">
+      <div class="quote reveal">
+        <blockquote>I froze Kevin's card in February and he called me within the hour. Forty years and that is what it took.</blockquote>
+        <div class="byline">
+          <img src="headshot-1.webp" width="320" height="320" alt="Marjorie Halloran">
+          <div>
+            <div class="nm">Marjorie Halloran</div>
+            <div class="tt">Chief Executive Grandmother,<br>the Halloran Household</div>
+          </div>
+        </div>
+      </div>
+      <div class="quote reveal">
+        <blockquote>The cookie tin returned four percent last quarter. I have not told the grandchildren and I do not intend to.</blockquote>
+        <div class="byline">
+          <img src="headshot-2.webp" width="320" height="320" alt="Dolores Petrakis">
+          <div>
+            <div class="nm">Dolores Petrakis</div>
+            <div class="tt">Treasurer &amp; Sole Signatory,<br>Petrakis Family Reserve</div>
+          </div>
+        </div>
+      </div>
+      <div class="quote reveal">
+        <blockquote>Brenda answers on the first ring. My own children let it go to voicemail.</blockquote>
+        <div class="byline">
+          <img src="headshot-3.webp" width="320" height="320" alt="Eunice Tran">
+          <div>
+            <div class="nm">Eunice Tran</div>
+            <div class="tt">Founder &amp; Matriarch,<br>est. 1949</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="plans">
+    <div class="sec-head">
+      <h2>Account classes</h2>
+      <span class="rule"></span>
+    </div>
+    <div class="tiers">
+      <div class="tier reveal">
+        <p class="tname">Pension</p>
+        <p class="price">$0<span style="font-size:15px;color:var(--muted)">/mo</span></p>
+        <p class="ttag">For the grandmother who keeps it in the mattress and trusts no one. We respect this completely.</p>
+        <ul>
+          <li>One checking account</li>
+          <li>A single virtual card</li>
+          <li>A monthly statement, printed and mailed, as God intended</li>
+        </ul>
+      </div>
+      <div class="tier feat reveal">
+        <span class="ribbon">Most households</span>
+        <p class="tname">Matriarch</p>
+        <p class="price">$39<span style="font-size:15px;color:var(--muted)">/mo</span></p>
+        <p class="ttag">For the operator running three to nine grandchildren across multiple time zones.</p>
+        <ul>
+          <li>Up to twelve per-grandchild cards</li>
+          <li>Disbursement runway forecasting</li>
+          <li>Same-day wires memo-stamped "a little something"</li>
+          <li>A support line answered by an actual person named Brenda</li>
+        </ul>
+      </div>
+      <div class="tier reveal">
+        <p class="tname">Estate</p>
+        <p class="price">$2,400<span style="font-size:15px;color:var(--muted)">/mo</span></p>
+        <p class="ttag">For the dynasty. You know who you are. Your accountant certainly does.</p>
+        <ul>
+          <li>Unlimited cards and beneficiaries</li>
+          <li>A dedicated treasury liaison, also named Brenda</li>
+          <li>Inheritance and trust modeling</li>
+          <li>A physical vault we will not discuss in writing</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="band">
+  <div class="wrap">
+    <h2>See the book.</h2>
+    <p>Open the Household Treasury passbook. Freeze a card, sweep the tin, send a little something.</p>
+    <a class="seal" href="./demo.html">Open the demo →</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <footer>
+    <a class="back" href="/">← theworstaistudioever</a>
+    <p class="fine">Knit is not a bank. Knit is not a credit union. Knit is a portfolio company of theworstaistudioever. Brenda is a role, not a person. The vault remains undiscussed.</p>
+  </footer>
+</div>
+
+<script>
+  if (window.matchMedia && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, {threshold:0.12});
+    document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  } else {
+    document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); });
+  }
+</script>
+</body>
+</html>

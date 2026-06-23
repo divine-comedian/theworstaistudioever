@@ -1,0 +1,73 @@
+[2026-06-23T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-06-23T08:00:02Z] invoking claude -p
+
+=== agent run summary (2026-06-23) ===
+
+ROLL
+  company: Mercury
+  subject: grandmas
+  slug:    mercury-for-grandmas
+  tagline: "Mercury for grandmas"
+  rerolls: 0 (first deterministic pair was unused)
+
+CONCEPT
+  product name: Knit
+  one-liner: Venture-grade banking for the woman who has run a household since 1968.
+  angle: Mercury's startup-banking stack (treasury, virtual cards, runway, same-day
+         wires) pointed dead-seriously at a grandmother running the household economy.
+         Per-grandchild cards, a holiday-fund "disbursement runway," a yield sweep on
+         the cookie tin. Brenda answers on the first ring.
+
+DESIGN DIRECTION
+  style:   Skeuomorphic heirloom-banking — rendered as a savings passbook. Debossed
+           banker's-green leatherette ground, gold-foil border, brass clasp, cream
+           guilloche-secured passbook pages, rubber-stamped Courier figures.
+  palette: bg #244536 (banker green) / primary #B0894A (brass) / accent #7A2417 (oxblood
+           wax seal) / fg #2B2014 / muted #8A7B5E / ink #F1E7D2 (parchment)
+  fonts:   display Cormorant Garamond, body EB Garamond, mono Courier Prime
+  signature: clasped cream passbook plate with a stamped balance + freeze toggles
+  anti-sameness: PASS. Last 7 were neo-brutalist, claymorphic, literary-magazine,
+           Broadway-deco, museum-specimen, swiss-modernist, glassmorphism. Skeuomorphic
+           passbook collides with none on style/palette/fonts.
+
+IMAGES (cap: 4 of 10 used today, started at 0)
+  rationale: demo is a passbook/ledger console (not photo-shaped) -> no demo assets.
+             Budget spent on people, which the heirloom direction genuinely earns.
+  hero.webp        (hero, 1600x900)  attempts 1 — environmental portrait of the household
+                   matriarch at a green-study desk w/ brass lamp + leather ledger. PASS:
+                   on-palette, authoritative, no text/UI/AI tells.
+  headshot-1.webp  (testimonial, 320) attempts 1 — silver hair, glasses, fair-isle. PASS.
+  headshot-2.webp  (testimonial, 320) attempts 1 — olive skin, low bun, pearls. PASS.
+  headshot-3.webp  (testimonial, 320) attempts 1 — East Asian, silver bob, oxblood scarf. PASS.
+  All four judged with vision on first attempt; zero regenerations. All <=500KB
+  (hero ~108KB, headshots 8-19KB).
+
+BUILD
+  landing: site/entries/mercury-for-grandmas/index.html — hero w/ passbook plate +
+           framed chairwoman portrait, 3 feature "pages", 3 testimonials w/ oval
+           headshots, 3 account-class tiers (Pension / Matriarch / Estate), demo CTA.
+  demo:    site/entries/mercury-for-grandmas/demo.html — "Household Treasury" passbook
+           console. Tabs (Passbook / Cards / Cookie Tin), freeze/unfreeze toggles that
+           thunk, "Send a little something" wire modal (memo prefilled "just because"),
+           cookie-tin yield sweep switch, holiday-fund runway bar chart. Vanilla JS,
+           reduced-motion respected, all mock client-side.
+  skills:  anti-ai-slop, ui-ux-pro-max, frontend-design all invoked.
+
+GALLERY
+  Rebuilt site/index.html from all 31 concept.json (date desc). Mercury slide on top.
+  Count -> "31 startups · since 2026". Verified existing 30 slides regenerate byte-
+  identically (diff = new slide + count + one dot only). styles.css untouched.
+
+WARNINGS / NEAR-MISSES
+  None. No rerolls, no image retries, no validation issues.
+
+VALIDATION
+  scripts/validate-entry.sh site mercury-for-grandmas -> OK (exit 0)
+  history.json appended (31 entries).
+
+RUN_COMPLETE: mercury-for-grandmas
+[2026-06-23T08:14:14Z] new entry: mercury-for-grandmas
+validate-entry [mercury-for-grandmas]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 31 entries (domain theworstaistudioever.com)
+[2026-06-23T08:14:15Z] committing: Mercury for grandmas
