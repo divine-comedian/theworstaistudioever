@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Covert camera · theworstaistudioever</title>
+<meta name="description" content="The Covert camera. Pick a Coat Lens, set how long it survives, snap, watch it vanish.">
+<meta name="theme-color" content="#0B1024">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#F2682C;--accent:#FFD24A;--bg:#0B1024;--bg-deep:#060814;
+    --fg:#E7ECF5;--muted:#8A93AD;--ink:#F4F7FF;
+    --glass:rgba(255,255,255,0.05);--glass-strong:rgba(255,255,255,0.085);--hair:rgba(255,255,255,0.09);
+    --ease:cubic-bezier(0.16,1,0.3,1);
+    --display:'Space Grotesk','Segoe UI',system-ui,sans-serif;
+    --body:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--body);color:var(--fg);background:var(--bg-deep);min-height:100dvh;
+    -webkit-font-smoothing:antialiased;display:flex;flex-direction:column;align-items:center;overflow-x:hidden}
+  .field{position:fixed;inset:0;z-index:-2;background:linear-gradient(180deg,#0B1024,#060814)}
+  .blob{position:fixed;z-index:-1;border-radius:50%;filter:blur(70px);opacity:.12;pointer-events:none}
+  .blob.b1{width:42vw;height:42vw;left:-8vw;top:-6vw;background:radial-gradient(circle,#F2682C,transparent 68%)}
+  .blob.b2{width:38vw;height:38vw;right:-10vw;bottom:0;background:radial-gradient(circle,#7B5BFF,transparent 68%)}
+
+  .topbar{width:100%;max-width:520px;display:flex;align-items:center;justify-content:space-between;padding:18px 20px}
+  .back{color:var(--muted);text-decoration:none;font-size:14px;display:inline-flex;gap:7px;align-items:center}
+  .back:hover{color:var(--fg)}
+  .streak{font-family:var(--mono);font-size:12px;color:var(--accent);display:flex;align-items:center;gap:6px;
+    background:rgba(255,210,74,.1);border:1px solid rgba(255,210,74,.3);padding:6px 11px;border-radius:999px}
+
+  .app{width:100%;max-width:520px;padding:0 16px 40px}
+
+  /* stories rail */
+  .stories{display:flex;gap:14px;padding:6px 4px 18px;overflow-x:auto;scrollbar-width:none}
+  .stories::-webkit-scrollbar{display:none}
+  .story{flex:none;width:62px;text-align:center;cursor:pointer;background:none;border:none;color:inherit}
+  .story .ring{width:58px;height:58px;border-radius:50%;padding:2px;margin:0 auto 6px;
+    background:conic-gradient(var(--primary),#ffab63,var(--primary));position:relative}
+  .story.flame .ring{background:conic-gradient(var(--accent),#ff9a4d,var(--accent))}
+  .story.seen .ring{background:var(--hair)}
+  .story .av{width:100%;height:100%;border-radius:50%;object-fit:cover;border:2px solid var(--bg-deep)}
+  .story .nm{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .story .dys{font-family:var(--mono);font-size:10px;color:var(--accent);display:block;margin-top:1px}
+  .story.flame .nm{color:var(--fg)}
+
+  /* viewfinder */
+  .vf{position:relative;width:100%;aspect-ratio:3/4;border-radius:26px;overflow:hidden;
+    border:1px solid var(--hair);box-shadow:0 40px 80px -40px rgba(0,0,0,.95),0 0 50px -24px rgba(242,104,44,.4);background:#05060f}
+  .vf img.subject{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:filter .4s var(--ease),transform .5s var(--ease)}
+  .vf .tint{position:absolute;inset:0;mix-blend-mode:soft-light;opacity:0;transition:opacity .4s;pointer-events:none}
+  .vf .frame-scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,6,15,.55),transparent 22%,transparent 60%,rgba(5,6,15,.7));pointer-events:none}
+
+  .vf-top{position:absolute;top:16px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center}
+  .chip-glass{font-family:var(--mono);font-size:11px;padding:7px 11px;border-radius:999px;background:rgba(8,10,22,.5);
+    border:1px solid var(--hair);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:var(--fg)}
+  .timer-btn{cursor:pointer;color:var(--accent);border-color:rgba(255,210,74,.35);display:flex;align-items:center;gap:7px}
+  .timer-btn .rng{width:9px;height:9px;border-radius:50%;border:2px solid var(--accent);border-right-color:transparent;animation:spin 1.5s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .lens-label{position:absolute;left:50%;transform:translateX(-50%);bottom:20px;font-family:var(--mono);font-size:11px;
+    letter-spacing:.05em;text-transform:uppercase;color:var(--primary);background:rgba(8,10,22,.5);
+    border:1px solid rgba(242,104,44,.4);padding:6px 13px;border-radius:999px;backdrop-filter:blur(6px);transition:opacity .3s}
+
+  .flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+  .flash.go{animation:flash .5s var(--ease)}
+  @keyframes flash{0%{opacity:0}10%{opacity:.85}100%{opacity:0;transform:scale(1.04)}}
+
+  /* lens carousel */
+  .lenses{display:flex;gap:10px;overflow-x:auto;padding:18px 4px 14px;scrollbar-width:none}
+  .lenses::-webkit-scrollbar{display:none}
+  .lens{flex:none;cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:.02em;color:var(--muted);
+    background:var(--glass);border:1px solid var(--hair);border-radius:12px;padding:11px 14px;white-space:nowrap;
+    transition:all .25s var(--ease)}
+  .lens:hover{color:var(--fg);background:var(--glass-strong)}
+  .lens.on{color:var(--bg-deep);background:var(--primary);border-color:var(--primary);box-shadow:0 0 20px rgba(242,104,44,.5)}
+
+  /* capture row */
+  .controls{display:flex;align-items:center;justify-content:center;gap:38px;padding:6px 0 4px}
+  .side{width:46px;height:46px;border-radius:14px;background:var(--glass);border:1px solid var(--hair);display:grid;place-items:center;cursor:pointer;transition:transform .3s var(--ease),background .25s}
+  .side:hover{background:var(--glass-strong);transform:translateY(-2px)}
+  .side svg{width:21px;height:21px;stroke:var(--fg);fill:none;stroke-width:1.7}
+  .capture{width:78px;height:78px;border-radius:50%;border:5px solid var(--accent);background:rgba(255,210,74,.12);
+    cursor:pointer;position:relative;box-shadow:0 0 32px rgba(255,210,74,.5);transition:transform .2s var(--ease)}
+  .capture::after{content:"";position:absolute;inset:9px;border-radius:50%;background:var(--accent);transition:transform .2s var(--ease)}
+  .capture:active{transform:scale(.94)}
+  .capture:active::after{transform:scale(.9)}
+  .hint{text-align:center;color:var(--muted);font-size:12.5px;margin-top:12px}
+  .hint b{color:var(--fg);font-weight:600}
+
+  /* toast */
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);font-family:var(--mono);font-size:12px;
+    background:rgba(8,10,22,.85);border:1px solid var(--hair);color:var(--fg);padding:11px 18px;border-radius:12px;
+    backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:all .35s var(--ease);z-index:60}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast .ac{color:var(--accent)}
+
+  /* snap viewer modal */
+  .viewer{position:fixed;inset:0;z-index:80;background:rgba(4,5,12,.92);display:none;flex-direction:column;align-items:center;justify-content:center}
+  .viewer.open{display:flex}
+  .vshell{position:relative;width:min(94vw,420px);aspect-ratio:9/16;border-radius:22px;overflow:hidden;border:1px solid var(--hair);background:#05060f}
+  .vshell img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .vshell .vscrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,6,15,.7),transparent 30%,transparent 64%,rgba(5,6,15,.78))}
+  .progress{position:absolute;top:12px;left:12px;right:12px;height:3px;border-radius:2px;background:rgba(255,255,255,.22);overflow:hidden}
+  .progress i{display:block;height:100%;width:100%;background:var(--accent);transform-origin:left;transform:scaleX(1)}
+  .vmeta{position:absolute;top:26px;left:14px;right:14px;display:flex;align-items:center;gap:10px}
+  .vmeta .av{width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid var(--primary)}
+  .vmeta .nm{font-weight:600;font-size:14px;color:var(--ink)}
+  .vmeta .tt{font-family:var(--mono);font-size:10px;color:#cfd6e6}
+  .vmeta .x{margin-left:auto;cursor:pointer;color:#fff;font-size:22px;line-height:1;background:none;border:none}
+  .vcap{position:absolute;bottom:18px;left:16px;right:16px;font-size:14px;color:#eef1f8;text-shadow:0 1px 8px rgba(0,0,0,.8)}
+  .vgone{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:24px}
+  .vgone.show{display:flex}
+  .vgone .big{font-family:var(--display);font-weight:600;font-size:22px;color:var(--ink)}
+  .vgone .sm{color:var(--muted);font-size:13px;font-family:var(--mono)}
+  .vhint{margin-top:16px;font-family:var(--mono);font-size:11px;color:#6b7590}
+
+  a:focus-visible,button:focus-visible,.lens:focus-visible,.story:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:8px}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="field"></div><div class="blob b1"></div><div class="blob b2"></div>
+
+<div class="topbar">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="streak" title="Your longest active dusk streak">🔥 <span id="streakDays">412</span>d streak</span>
+</div>
+
+<div class="app">
+  <div class="stories" id="stories" aria-label="Recent snaps from foxes you follow"></div>
+
+  <div class="vf">
+    <img class="subject" id="subject" src="./camera.webp" alt="Live camera view of a fox at night">
+    <div class="tint" id="tint"></div>
+    <div class="frame-scrim"></div>
+    <div class="vf-top">
+      <span class="chip-glass">night mode</span>
+      <button class="chip-glass timer-btn" id="timerBtn" aria-label="Change self-destruct timer"><span class="rng"></span><span id="timerLabel">00:09</span></button>
+    </div>
+    <span class="lens-label" id="lensLabel">lens · off</span>
+    <div class="flash" id="flash"></div>
+  </div>
+
+  <div class="lenses" id="lenses" aria-label="Coat Lenses"></div>
+
+  <div class="controls">
+    <button class="side" id="flipBtn" aria-label="Flip to the other fox">
+      <svg viewBox="0 0 24 24"><path d="M4 7h11l-2-2M20 17H9l2 2"/><path d="M4 7v3M20 17v-3"/></svg>
+    </button>
+    <button class="capture" id="captureBtn" aria-label="Capture and send a snap"></button>
+    <button class="side" id="saveBtn" aria-label="Save to den (you won't)">
+      <svg viewBox="0 0 24 24"><path d="M12 4v12m0 0 4-4m-4 4-4-4M5 20h14"/></svg>
+    </button>
+  </div>
+  <p class="hint">Pick a <b>Coat Lens</b>, set how long it survives, then capture. Tap a fox up top to watch their snap drain. Nothing is kept.</p>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- snap viewer -->
+<div class="viewer" id="viewer" aria-modal="true" role="dialog">
+  <div class="vshell">
+    <img id="vImg" src="" alt="A fox's snap">
+    <div class="vscrim"></div>
+    <div class="progress"><i id="vBar"></i></div>
+    <div class="vmeta">
+      <img class="av" id="vAv" src="" alt="">
+      <div><div class="nm" id="vNm"></div><div class="tt" id="vTt"></div></div>
+      <button class="x" id="vClose" aria-label="Close">×</button>
+    </div>
+    <div class="vcap" id="vCap"></div>
+    <div class="vgone" id="vGone">
+      <div class="big">This snap is gone.</div>
+      <div class="sm" id="vGoneSub">it lasted 0:09. as intended.</div>
+    </div>
+  </div>
+  <div class="vhint">tap to skip · it disappears either way</div>
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- Coat Lenses: each tweaks the viewfinder filter / transform / tint ----
+  var LENSES = [
+    {id:'off',   name:'off',                filter:'none',                          tint:'transparent',                 scale:1},
+    {id:'brush', name:'fuller brush',       filter:'saturate(1.5) contrast(1.12)',  tint:'rgba(242,104,44,.35)',        scale:1.02},
+    {id:'coat',  name:'healthier coat',     filter:'brightness(1.12) saturate(1.2) sepia(.12)', tint:'rgba(255,210,74,.4)', scale:1},
+    {id:'larger',name:'slightly larger fox',filter:'contrast(1.05)',                tint:'transparent',                 scale:1.12},
+    {id:'glow',  name:'rabies-free glow',   filter:'brightness(1.08) saturate(1.1)',tint:'radial-gradient(circle at 50% 42%, rgba(255,210,74,.5), transparent 60%)', scale:1},
+    {id:'chic',  name:'den-adjacent chic',  filter:'saturate(.85) hue-rotate(-12deg) brightness(.96)', tint:'rgba(123,91,255,.4)', scale:1}
+  ];
+  var subject = document.getElementById('subject');
+  var tint = document.getElementById('tint');
+  var lensLabel = document.getElementById('lensLabel');
+  var lensWrap = document.getElementById('lenses');
+  var activeLens = 'off';
+
+  LENSES.forEach(function(L){
+    var b = document.createElement('button');
+    b.className = 'lens' + (L.id==='off' ? ' on' : '');
+    b.textContent = L.name;
+    b.setAttribute('aria-pressed', L.id==='off');
+    b.addEventListener('click', function(){ applyLens(L.id); });
+    lensWrap.appendChild(b);
+  });
+
+  function applyLens(id){
+    activeLens = id;
+    var L = LENSES.find(function(x){return x.id===id;});
+    subject.style.filter = L.filter;
+    subject.style.transform = 'scale(' + L.scale + ')';
+    if(L.tint.indexOf('gradient') > -1){ tint.style.background = L.tint; tint.style.mixBlendMode='screen'; }
+    else { tint.style.background = L.tint; tint.style.mixBlendMode='soft-light'; }
+    tint.style.opacity = id==='off' ? 0 : 1;
+    lensLabel.textContent = 'lens · ' + L.name;
+    Array.prototype.forEach.call(lensWrap.children, function(c){
+      var on = c.textContent === L.name;
+      c.classList.toggle('on', on); c.setAttribute('aria-pressed', on);
+    });
+  }
+
+  // ---- self-destruct timer dial ----
+  var TIMERS = [
+    {label:'00:00.5', secs:0.5, say:'half a second'},
+    {label:'00:03',   secs:3,   say:'three seconds'},
+    {label:'00:09',   secs:9,   say:'nine seconds'},
+    {label:'∞ frost', secs:0,   say:'until first frost'}
+  ];
+  var tIdx = 2;
+  var timerBtn = document.getElementById('timerBtn');
+  var timerLabel = document.getElementById('timerLabel');
+  timerBtn.addEventListener('click', function(){
+    tIdx = (tIdx + 1) % TIMERS.length;
+    timerLabel.textContent = TIMERS[tIdx].label;
+  });
+
+  // ---- flip subject ----
+  var subjects = ['./camera.webp','./story.webp'];
+  var sIdx = 0;
+  document.getElementById('flipBtn').addEventListener('click', function(){
+    sIdx = (sIdx + 1) % subjects.length;
+    subject.src = subjects[sIdx];
+  });
+
+  // ---- toast ----
+  var toast = document.getElementById('toast'), toastT;
+  function showToast(html){
+    toast.innerHTML = html; toast.classList.add('show');
+    clearTimeout(toastT); toastT = setTimeout(function(){ toast.classList.remove('show'); }, 2600);
+  }
+
+  // ---- capture ----
+  var flash = document.getElementById('flash');
+  var streakDays = document.getElementById('streakDays');
+  document.getElementById('captureBtn').addEventListener('click', function(){
+    if(!reduce){ flash.classList.remove('go'); void flash.offsetWidth; flash.classList.add('go'); }
+    var t = TIMERS[tIdx];
+    var days = parseInt(streakDays.textContent,10) + 1; streakDays.textContent = days;
+    var lensName = LENSES.find(function(x){return x.id===activeLens;}).name;
+    showToast('snap sent · <span class="ac">' + lensName + '</span> · gone in ' + t.say);
+  });
+  document.getElementById('saveBtn').addEventListener('click', function(){
+    showToast('saved to den · <span class="ac">just kidding</span> · nothing is kept');
+  });
+
+  // ---- stories ----
+  var FOXES = [
+    {nm:'Bracken', av:'./story.webp', img:'./hero.webp', tt:'Vixen · Third Hedgerow', days:412, flame:true, cap:'the good chickens. don’t tell the others.'},
+    {nm:'Silas', av:'./camera.webp', img:'./camera.webp', tt:'Forager · Class II', days:400, flame:true, cap:'day four hundred. we have still never met.'},
+    {nm:'Ottoline', av:'./story.webp', img:'./story.webp', tt:'Influencer · 9 followers', days:0, flame:false, cap:'healthier coat lens. ignore the daylight version.'},
+    {nm:'Reynard', av:'./camera.webp', img:'./hero.webp', tt:'Apex · verified brush', days:88, flame:false, cap:'pinned a new den. it is none of your business which.'}
+  ];
+  var storiesWrap = document.getElementById('stories');
+  FOXES.forEach(function(f, i){
+    var b = document.createElement('button');
+    b.className = 'story' + (f.flame ? ' flame' : '');
+    var ring = document.createElement('span'); ring.className = 'ring';
+    var av = document.createElement('img'); av.className = 'av'; av.src = f.av; av.alt = '';
+    ring.appendChild(av);
+    var nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = f.nm;
+    b.appendChild(ring); b.appendChild(nm);
+    if(f.flame){
+      var dys = document.createElement('span'); dys.className = 'dys'; dys.textContent = f.days + 'd 🔥';
+      b.appendChild(dys);
+    }
+    b.addEventListener('click', function(){ openSnap(i, b); });
+    storiesWrap.appendChild(b);
+  });
+
+  // ---- snap viewer ----
+  var viewer = document.getElementById('viewer');
+  var vImg = document.getElementById('vImg'), vAv = document.getElementById('vAv');
+  var vNm = document.getElementById('vNm'), vTt = document.getElementById('vTt'), vCap = document.getElementById('vCap');
+  var vBar = document.getElementById('vBar'), vGone = document.getElementById('vGone'), vGoneSub = document.getElementById('vGoneSub');
+  var snapTimer = null, snapEl = null;
+
+  function openSnap(i, el){
+    var f = FOXES[i]; snapEl = el;
+    vImg.src = f.img; vAv.src = f.av; vNm.textContent = f.nm; vTt.textContent = f.tt; vCap.textContent = '“'+f.cap+'”';
+    vGone.classList.remove('show');
+    viewer.classList.add('open');
+    var dur = f.days >= 400 ? 9 : 6;
+    vGoneSub.textContent = 'it lasted 0:0'+dur+'. as intended.';
+    // drain the progress bar
+    vBar.style.transition = 'none'; vBar.style.transform = 'scaleX(1)';
+    void vBar.offsetWidth;
+    if(reduce){
+      vBar.style.transform = 'scaleX(0)';
+    } else {
+      vBar.style.transition = 'transform ' + dur + 's linear';
+      vBar.style.transform = 'scaleX(0)';
+    }
+    clearTimeout(snapTimer);
+    snapTimer = setTimeout(expireSnap, reduce ? 1600 : dur*1000);
+  }
+  function expireSnap(){
+    vGone.classList.add('show');
+    if(snapEl){ snapEl.classList.add('seen'); snapEl.classList.remove('flame'); }
+    clearTimeout(snapTimer);
+    snapTimer = setTimeout(closeSnap, 1400);
+  }
+  function closeSnap(){ viewer.classList.remove('open'); clearTimeout(snapTimer); }
+
+  document.querySelector('.vshell').addEventListener('click', function(e){
+    if(e.target.id === 'vClose') return;
+    expireSnap();
+  });
+  document.getElementById('vClose').addEventListener('click', closeSnap);
+  viewer.addEventListener('click', function(e){ if(e.target === viewer) closeSnap(); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeSnap(); });
+})();
+</script>
+</body>
+</html>

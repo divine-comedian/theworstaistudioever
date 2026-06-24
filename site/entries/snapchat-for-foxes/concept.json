@@ -1,0 +1,83 @@
+{
+  "date": "2026-06-24",
+  "company": "Snapchat",
+  "subject": "foxes",
+  "tagline": "Snapchat for foxes",
+  "slug": "snapchat-for-foxes",
+  "product_name": "Covert",
+  "one_liner": "Disappearing photos for an animal that was already trying very hard not to be seen.",
+  "brand_voice_notes": "Treat the fox as a discerning, slightly paranoid power user with real operational-security concerns. Everything is pitched at a wild nocturnal predator as if it has a phone, a den, a reputation, and a streak to protect. Deadpan, faux-corporate, never winking. Snapchat's whole pitch is ephemerality and being unseen, which is also the fox's entire personality, so the product is technically perfect and completely pointless.",
+  "hero": {
+    "h1": "The photos disappear. So do you.",
+    "sub": "Covert is the messaging network for foxes who would prefer no lasting evidence. Snap a vole, snap a den, snap a rival. It is gone in seconds, the way you intended to be.",
+    "primary_cta": "Start denning"
+  },
+  "features": [
+    {
+      "title": "Counter-Surveillance Snaps",
+      "blurb": "Every snap evaporates in under nine seconds. Not long enough for a hawk, a farmer, or a rival vixen to backtrace it to your den. We delete it from our servers too, which we are legally required to mention we have."
+    },
+    {
+      "title": "Dusk Streaks",
+      "blurb": "Trade a snap with the same fox every nightfall to build a streak. Miss a single dusk and it resets to zero, exactly like the rest of your relationships. A small flame appears. It is the only warm thing in your life."
+    },
+    {
+      "title": "Coat Lenses",
+      "blurb": "One hundred and forty augmented overlays. Look like a fuller fox, a healthier fox, a fox whose den is suspiciously close to the good chickens. None of it survives the nine seconds. All of it gets you seen, briefly, on your own terms."
+    }
+  ],
+  "pricing_tiers": [
+    {
+      "name": "Kit",
+      "price": "free",
+      "tagline": "For foxes still denning with their mother.",
+      "perks": ["12 snaps per night", "Dusk streaks", "The 6 starter Coat Lenses", "One den pin on the map"]
+    },
+    {
+      "name": "Brush",
+      "price": "4 eggs / moon",
+      "tagline": "For the fox with a reputation to manage.",
+      "perks": ["Unlimited snaps", "The full 140-lens vault", "See who screenshotted your den", "Replay any snap once, against everyone's advice"]
+    },
+    {
+      "name": "Reynard",
+      "price": "1 plump hen / moon",
+      "tagline": "Billed at first frost. For the apex of the hedgerow.",
+      "perks": ["Everything in Brush", "Priority placement on the Den Map", "Verified bushy-tail badge", "A digest of which hunters muted you"]
+    }
+  ],
+  "testimonials": [
+    {
+      "quote": "I keep eleven dens and a reputation. Covert is the only thing in this valley that has never once sold me out.",
+      "name": "Bracken Holloway",
+      "title": "Vixen, Third Hedgerow, Lower Pasture"
+    },
+    {
+      "quote": "My streak with a dog fox two valleys over is on day four hundred. We have never met. We never will. That is the relationship and it is working.",
+      "name": "Silas Vane",
+      "title": "Nocturnal Forager, Class II Permit"
+    },
+    {
+      "quote": "I look genuinely incredible in the Healthier Coat lens. In daylight I have mange. The nine-second limit was built for foxes like me.",
+      "name": "Ottoline Reddwhen",
+      "title": "Lifestyle Influencer, 9 Followers, All Siblings"
+    }
+  ],
+  "demo_screen_concept": "The Covert camera. A full-bleed nocturnal fox portrait as the live viewfinder, with a frosted-glass capture bar floating at the bottom. A horizontally swipeable Coat Lens carousel runs along the bottom edge, each lens a named absurd AR overlay (Fuller Brush, Healthier Coat, Slightly Larger Fox, Rabies-Free Glow, Den-Adjacent Chic) that visibly applies a glowing label and tint to the viewfinder when selected. A vertical self-destruct timer dial on the right cycles 0.5s, 3s, 9s, and 'until first frost'. A glowing capture button triggers a vanish animation. Above the camera, a stories rail of named foxes shows recent unviewed snaps with streak flames and ephemeral countdowns. Tapping a fox opens a tap-to-advance snap with a draining timer ring.",
+  "images": {
+    "rationale": "Camera-messaging product with a photo-shaped demo (a live fox viewfinder) and a visual glassmorphism style that earns atmosphere, so the budget went to imagery: one nocturnal hero fox, one front-facing camera-subject fox for the demo viewfinder, and one three-quarter fox for the demo stories rail. Testimonial headshots were skipped on purpose; the three testimonials use glass initial-chips instead to keep that row consistent. Fourth slot left unused.",
+    "items": [
+      { "role": "hero", "file": "hero.webp", "prompt": "Cinematic editorial photograph of a single red fox alert in a moonlit hedgerow at night; midnight-indigo darkness, moon-violet haze, ember-orange rim light, acid-yellow back-glow, glassy bokeh. No text/letters/numbers/logos/watermarks/UI.", "attempts": 1, "judge": "pass — correct subject, crescent-moon nocturnal mood, ember rim and bokeh harmonize with the midnight-indigo + ember palette, no text artifacts" },
+      { "role": "demo", "file": "camera.webp", "prompt": "Square close-up of a single red fox looking into a front-facing phone camera at night; midnight-indigo background, ember key light, moon-violet fill, acid-yellow muzzle glow, sharp eyes. No text/letters/numbers/logos/watermarks/UI.", "attempts": 1, "judge": "pass — centered front-facing portrait ideal for the viewfinder, sharp eyes, palette on-brief, no UI artifacts" },
+      { "role": "demo", "file": "story.webp", "prompt": "Square three-quarter-profile alert red fox at night, ears up; midnight-indigo backdrop, ember rim light, moon-violet haze, subtle acid-yellow glow, bushy brush tail. No text/letters/numbers/logos/watermarks/UI.", "attempts": 1, "judge": "pass — distinct second fox for the stories rail, full brush tail, nocturnal glow matches accent" }
+    ]
+  },
+  "design_direction": {
+    "style": "Cinematic dark glassmorphism, nocturnal mode. A deep midnight-indigo screen built on a vertical gradient (#0B1024 down to #060814) with two or three slow ambient glow blobs (ember-orange and cool moon-violet, blurred, opacity ~0.10) drifting behind the content. Every surface is a frosted glass panel: backdrop-blur, a translucent white fill at ~5 percent, a hairline rgba(255,255,255,0.08) top-edge border, and a 16px radius. One ember fox-orange carries the brand, glass border glows, and the streak flame; one rationed acid moon-yellow is reserved strictly for the single primary CTA, the live capture affordance, and the active streak count, appearing almost nowhere else. Space Grotesk does the heading work in tight tracking; Inter carries calm body copy. Every figure that pretends to be snap telemetry (self-destruct timers, streak day counts, view counts, follower counts, tier prices) is set in JetBrains Mono with tabular figures so it reads like the metadata strip on a snap, not a marketing number. Glass cards lift 0.97 to 1.0 on press, glow softening as they settle. No pure black, no flat hard-edged marketing cards, no skeuomorphic textures, no gradient soup beyond the single base gradient and the ambient blobs. Reads like a premium, well-funded ephemeral-social platform that has been pointed, with total seriousness, at a wild animal whose entire survival strategy is already not being perceived.",
+    "palette": { "primary": "#F2682C", "accent": "#FFD24A", "bg": "#0B1024", "fg": "#E7ECF5", "muted": "#8A93AD", "ink": "#F4F7FF" },
+    "fonts": { "display": "'Space Grotesk', 'Segoe UI', system-ui, sans-serif", "body": "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif", "mono": "'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" },
+    "archetype": "Ephemeral-social / camera-messaging app landing rendered in cinematic dark glassmorphism: a glowing hero with an oversized wordmark and a floating frosted phone-frame mock showing a self-destruct timer, three feature blocks as frosted glass panels with ember glow, a metrics strip in tabular mono (snaps evaporated, streaks alive, dens pinned), three pull-quote testimonials in glass cards, a three-tier pricing rack styled as fox tiers priced in eggs and hens, and a demo handoff to the Covert camera console.",
+    "motion_vocab": "Slow ambient glow-blob oscillation behind content; glass cards scale 0.97 to 1.0 on press with an ease-out cubic-bezier(0.16,1,0.3,1); the self-destruct timer ring drains on a linear sweep; snaps vanish with a quick blur-and-fade; streak flames flicker on a gentle opacity loop. All decorative motion respects prefers-reduced-motion.",
+    "hero_composition_notes": "Left-weighted hero: oversized Space Grotesk wordmark and h1 over the midnight gradient with two ember/violet glow blobs behind. To the right, a floating frosted-glass phone frame showing the Covert camera viewfinder with a nocturnal fox, a mono self-destruct timer counting down, and a glowing acid-yellow capture ring. A single acid-yellow primary CTA pill sits below the headline; a ghost-glass secondary link sits beside it."
+  }
+}

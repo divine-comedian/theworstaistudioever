@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Covert · theworstaistudioever</title>
+<meta name="description" content="Disappearing photos for an animal that was already trying very hard not to be seen.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Covert · Snapchat for foxes">
+<meta property="og:description" content="Disappearing photos for an animal that was already trying very hard not to be seen.">
+<meta property="og:image" content="./hero.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Covert · Snapchat for foxes">
+<meta name="twitter:description" content="Disappearing photos for an animal that was already trying very hard not to be seen.">
+<meta name="theme-color" content="#0B1024">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#F2682C;   /* ember fox-orange */
+    --accent:#FFD24A;    /* acid moon-yellow, rationed */
+    --bg:#0B1024;        /* midnight indigo */
+    --bg-deep:#060814;
+    --fg:#E7ECF5;
+    --muted:#8A93AD;
+    --ink:#F4F7FF;
+    --glass:rgba(255,255,255,0.05);
+    --glass-strong:rgba(255,255,255,0.075);
+    --hair:rgba(255,255,255,0.09);
+    --radius:18px;
+    --ease:cubic-bezier(0.16,1,0.3,1);
+    --display:'Space Grotesk','Segoe UI',system-ui,sans-serif;
+    --body:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--body);
+    color:var(--fg);
+    background:var(--bg-deep);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  /* ambient field */
+  .field{position:fixed;inset:0;z-index:-2;background:linear-gradient(180deg,#0B1024 0%,#080A1A 55%,#060814 100%)}
+  .blob{position:fixed;z-index:-1;border-radius:50%;filter:blur(70px);opacity:.13;pointer-events:none}
+  .blob.b1{width:46vw;height:46vw;left:-10vw;top:-8vw;background:radial-gradient(circle,#F2682C,transparent 68%);animation:drift1 26s var(--ease) infinite alternate}
+  .blob.b2{width:40vw;height:40vw;right:-12vw;top:18vh;background:radial-gradient(circle,#7B5BFF,transparent 68%);animation:drift2 32s var(--ease) infinite alternate}
+  .blob.b3{width:34vw;height:34vw;left:24vw;bottom:-14vw;background:radial-gradient(circle,#FFD24A,transparent 70%);opacity:.07;animation:drift1 38s var(--ease) infinite alternate-reverse}
+  @keyframes drift1{from{transform:translate(0,0)}to{transform:translate(6vw,5vh)}}
+  @keyframes drift2{from{transform:translate(0,0)}to{transform:translate(-5vw,4vh)}}
+
+  .wrap{max-width:1140px;margin:0 auto;padding:0 24px}
+
+  /* glass primitive */
+  .glass{
+    background:var(--glass);
+    border:1px solid var(--hair);
+    border-radius:var(--radius);
+    backdrop-filter:blur(16px) saturate(120%);
+    -webkit-backdrop-filter:blur(16px) saturate(120%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.06), 0 20px 50px -30px rgba(0,0,0,0.9);
+  }
+
+  /* top bar */
+  header.bar{position:sticky;top:0;z-index:40;border-bottom:1px solid var(--hair);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:rgba(8,10,22,0.55)}
+  .bar-in{display:flex;align-items:center;justify-content:space-between;height:62px}
+  .mark{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;letter-spacing:-.02em;font-size:19px;color:var(--ink)}
+  .mark .glyph{width:24px;height:24px;border-radius:7px;background:linear-gradient(135deg,var(--primary),#ff9a4d);
+    box-shadow:0 0 14px rgba(242,104,44,.55);position:relative}
+  .mark .glyph::after{content:"";position:absolute;inset:7px 7px auto auto;width:7px;height:7px;border-radius:50%;background:#080A1A}
+  .bar nav{display:flex;gap:26px;align-items:center}
+  .bar nav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500}
+  .bar nav a:hover{color:var(--fg)}
+  .bar .demo-link{color:var(--bg-deep);background:var(--accent);padding:9px 16px;border-radius:999px;font-weight:600;
+    box-shadow:0 0 22px rgba(255,210,74,.4)}
+  .bar .demo-link:hover{color:var(--bg-deep);filter:brightness(1.05)}
+  @media(max-width:760px){.bar nav .nav-hide{display:none}}
+
+  /* hero */
+  .hero{padding:74px 0 40px;display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:12px;letter-spacing:.04em;
+    text-transform:uppercase;color:var(--primary);margin-bottom:22px}
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--primary);box-shadow:0 0 10px var(--primary);
+    animation:pulse 2.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  h1{font-family:var(--display);font-weight:700;letter-spacing:-.035em;line-height:1.02;
+    font-size:clamp(40px,6.4vw,68px);color:var(--ink);margin-bottom:22px}
+  h1 .glow{color:var(--accent);text-shadow:0 0 32px rgba(255,210,74,.45)}
+  .lede{font-size:18px;color:#C3CADB;max-width:30em;margin-bottom:30px}
+  .cta-row{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+  .btn{font-family:var(--body);font-weight:600;font-size:15px;text-decoration:none;border-radius:999px;padding:14px 24px;
+    display:inline-flex;align-items:center;gap:9px;transition:transform .35s var(--ease),filter .25s,box-shadow .35s}
+  .btn-primary{background:var(--accent);color:var(--bg-deep);box-shadow:0 0 30px rgba(255,210,74,.42)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(255,210,74,.6)}
+  .btn-ghost{background:var(--glass);color:var(--fg);border:1px solid var(--hair)}
+  .btn-ghost:hover{background:var(--glass-strong);transform:translateY(-2px)}
+
+  /* hero phone */
+  .stage{position:relative;display:flex;justify-content:center}
+  .phone{position:relative;width:300px;max-width:78vw;aspect-ratio:9/19;border-radius:38px;padding:11px;
+    background:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,.03));
+    border:1px solid var(--hair);box-shadow:0 50px 90px -40px rgba(0,0,0,.95),0 0 60px -20px rgba(242,104,44,.35)}
+  .screen{position:relative;width:100%;height:100%;border-radius:28px;overflow:hidden;background:#05060f}
+  .screen .vf{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .screen .scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,6,15,.5) 0%,transparent 26%,transparent 62%,rgba(5,6,15,.78) 100%)}
+  .vf-top{position:absolute;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:center}
+  .pill-glass{font-family:var(--mono);font-size:11px;padding:6px 10px;border-radius:999px;background:rgba(8,10,22,.5);
+    border:1px solid var(--hair);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:var(--fg)}
+  .timer{color:var(--accent);display:flex;align-items:center;gap:6px}
+  .timer .ring{width:9px;height:9px;border-radius:50%;border:2px solid var(--accent);border-right-color:transparent;
+    animation:spin 1.4s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .vf-lens{position:absolute;left:50%;bottom:96px;transform:translateX(-50%);font-family:var(--mono);font-size:10px;
+    letter-spacing:.05em;text-transform:uppercase;color:var(--primary);background:rgba(8,10,22,.45);
+    border:1px solid rgba(242,104,44,.4);padding:5px 11px;border-radius:999px;backdrop-filter:blur(6px)}
+  .vf-bottom{position:absolute;left:0;right:0;bottom:20px;display:flex;justify-content:center;align-items:center;gap:30px}
+  .capture{width:60px;height:60px;border-radius:50%;border:4px solid var(--accent);background:rgba(255,210,74,.12);
+    box-shadow:0 0 28px rgba(255,210,74,.5);position:relative}
+  .capture::after{content:"";position:absolute;inset:7px;border-radius:50%;background:var(--accent)}
+  .mini{width:34px;height:34px;border-radius:11px;border:1px solid var(--hair);background:rgba(255,255,255,.06)}
+  .vf-stories{position:absolute;top:46px;left:14px;display:flex;gap:7px}
+  .vf-stories .st{width:30px;height:30px;border-radius:50%;border:2px solid var(--primary);overflow:hidden;
+    box-shadow:0 0 10px rgba(242,104,44,.5)}
+  .vf-stories .st img{width:100%;height:100%;object-fit:cover}
+  .vf-stories .st.flame{border-color:var(--accent)}
+
+  /* metrics strip */
+  .metrics{margin:8px 0 64px;padding:22px 18px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
+  .metric .num{font-family:var(--mono);font-weight:700;font-size:clamp(20px,3vw,28px);color:var(--ink);font-variant-numeric:tabular-nums}
+  .metric .lab{font-size:12px;color:var(--muted);margin-top:6px;text-transform:lowercase;letter-spacing:.01em}
+  @media(max-width:680px){.metrics{grid-template-columns:repeat(2,1fr);gap:18px 8px}}
+
+  /* sections */
+  section.block{padding:54px 0}
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--primary);margin-bottom:16px}
+  h2{font-family:var(--display);font-weight:600;letter-spacing:-.03em;font-size:clamp(28px,4.4vw,42px);color:var(--ink);line-height:1.06;margin-bottom:14px}
+  .sect-sub{color:var(--muted);max-width:40em;font-size:16px}
+
+  /* features */
+  .features{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:36px}
+  .feature{padding:26px 24px 30px}
+  .feature .fnum{font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .feature .ficon{width:46px;height:46px;border-radius:13px;margin:14px 0 18px;display:grid;place-items:center;
+    background:linear-gradient(150deg,rgba(242,104,44,.22),rgba(242,104,44,.05));border:1px solid rgba(242,104,44,.3)}
+  .feature .ficon svg{width:23px;height:23px;stroke:var(--primary);fill:none;stroke-width:1.7}
+  .feature h3{font-family:var(--display);font-weight:600;font-size:20px;color:var(--ink);margin-bottom:10px;letter-spacing:-.01em}
+  .feature p{color:#A9B1C6;font-size:14.5px}
+  @media(max-width:860px){.features{grid-template-columns:1fr}}
+
+  /* testimonials */
+  .quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:36px}
+  .quote{padding:26px 24px;display:flex;flex-direction:column;gap:18px}
+  .quote blockquote{font-size:16px;color:#D5DBEA;line-height:1.55}
+  .quote .who{display:flex;align-items:center;gap:12px}
+  .chip{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:700;
+    font-size:15px;color:var(--bg-deep);background:linear-gradient(140deg,var(--primary),#ffab63);
+    box-shadow:0 0 16px rgba(242,104,44,.4);flex:none}
+  .who .nm{font-weight:600;font-size:14px;color:var(--ink)}
+  .who .tt{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px}
+  @media(max-width:860px){.quotes{grid-template-columns:1fr}}
+
+  /* pricing */
+  .pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:36px;align-items:stretch}
+  .tier{padding:28px 24px 30px;display:flex;flex-direction:column}
+  .tier.feat{border-color:rgba(242,104,44,.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 50px -18px rgba(242,104,44,.6)}
+  .tier .tname{font-family:var(--display);font-weight:600;font-size:18px;color:var(--ink);display:flex;justify-content:space-between;align-items:center}
+  .tier .badge{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--primary);
+    border:1px solid rgba(242,104,44,.4);border-radius:999px;padding:3px 8px}
+  .tier .price{font-family:var(--mono);font-weight:700;font-size:26px;color:var(--ink);margin:16px 0 4px;font-variant-numeric:tabular-nums}
+  .tier .ptag{color:var(--muted);font-size:13px;min-height:36px}
+  .tier ul{list-style:none;margin:18px 0 24px;display:flex;flex-direction:column;gap:11px}
+  .tier li{font-size:14px;color:#B7BFD2;display:flex;gap:10px;align-items:flex-start}
+  .tier li svg{width:15px;height:15px;stroke:var(--primary);fill:none;stroke-width:2.2;flex:none;margin-top:3px}
+  .tier .tbtn{margin-top:auto;text-align:center;text-decoration:none;font-weight:600;font-size:14px;padding:12px;border-radius:12px;
+    border:1px solid var(--hair);background:var(--glass);color:var(--fg);transition:background .25s,transform .3s var(--ease)}
+  .tier .tbtn:hover{background:var(--glass-strong);transform:translateY(-2px)}
+  .tier.feat .tbtn{border-color:rgba(242,104,44,.5);background:rgba(242,104,44,.14);color:#ffd9bf}
+  @media(max-width:860px){.pricing{grid-template-columns:1fr}}
+
+  /* demo CTA banner */
+  .demo-cta{margin:30px 0 10px;padding:44px 32px;text-align:center;position:relative;overflow:hidden}
+  .demo-cta h2{margin-bottom:10px}
+  .demo-cta p{color:var(--muted);max-width:34em;margin:0 auto 26px;font-size:16px}
+
+  /* footer */
+  footer{border-top:1px solid var(--hair);margin-top:60px;padding:34px 0 50px}
+  .foot-in{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+  .foot-in a.back{color:var(--muted);text-decoration:none;font-size:14px}
+  .foot-in a.back:hover{color:var(--fg)}
+  .foot-fine{font-family:var(--mono);font-size:11px;color:#566079;max-width:34em;text-align:right}
+
+  a:focus-visible,button:focus-visible,.btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
+
+  @media(max-width:900px){
+    .hero{grid-template-columns:1fr;gap:36px;padding-top:54px}
+    .stage{order:-1}
+    .foot-fine{text-align:left}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;scroll-behavior:auto!important;transition:none!important}
+  }
+</style>
+</head>
+<body>
+<div class="field"></div>
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+
+<header class="bar">
+  <div class="wrap bar-in">
+    <div class="mark"><span class="glyph"></span>Covert</div>
+    <nav>
+      <a class="nav-hide" href="#features">Features</a>
+      <a class="nav-hide" href="#proof">Foxes</a>
+      <a class="nav-hide" href="#pricing">Pricing</a>
+      <a class="demo-link" href="./demo.html">Open the camera →</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div class="hero-copy">
+      <span class="eyebrow"><span class="dot"></span>Ephemeral by instinct</span>
+      <h1>The photos disappear.<br><span class="glow">So do you.</span></h1>
+      <p class="lede">Covert is the messaging network for foxes who would prefer no lasting evidence. Snap a vole, snap a den, snap a rival. It is gone in seconds, the way you intended to be.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="./demo.html">Open the camera →</a>
+        <a class="btn btn-ghost" href="#pricing">Start denning</a>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="phone" role="img" aria-label="The Covert camera viewfinder showing a fox at night with a nine-second self-destruct timer.">
+        <div class="screen">
+          <img class="vf" src="./camera.webp" alt="">
+          <div class="scrim"></div>
+          <div class="vf-top">
+            <span class="pill-glass">night mode</span>
+            <span class="pill-glass timer"><span class="ring"></span>00:09</span>
+          </div>
+          <div class="vf-stories">
+            <span class="st flame"><img src="./story.webp" alt=""></span>
+            <span class="st"><img src="./camera.webp" alt=""></span>
+          </div>
+          <span class="vf-lens">lens · healthier coat</span>
+          <div class="vf-bottom">
+            <span class="mini"></span>
+            <span class="capture"></span>
+            <span class="mini"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="metrics glass" aria-label="Tonight on Covert">
+    <div class="metric"><div class="num">4,182,907</div><div class="lab">snaps evaporated tonight</div></div>
+    <div class="metric"><div class="num">19,304</div><div class="lab">dusk streaks alive</div></div>
+    <div class="metric"><div class="num">2,611</div><div class="lab">dens pinned</div></div>
+    <div class="metric"><div class="num">6.4s</div><div class="lab">average snap lifespan</div></div>
+  </section>
+
+  <section class="block" id="features">
+    <div class="kicker">What it does</div>
+    <h2>Built for an animal with something to hide.</h2>
+    <p class="sect-sub">Three reasons the most paranoid predator in the hedgerow finally has an app it can trust, briefly.</p>
+    <div class="features">
+      <article class="feature glass">
+        <div class="fnum">/ 01</div>
+        <div class="ficon"><svg viewBox="0 0 24 24"><path d="M12 4C7 4 3 9 2 12c1 3 5 8 10 8s9-5 10-8c-1-3-5-8-10-8Z"/><path d="m4 4 16 16"/></svg></div>
+        <h3>Counter-Surveillance Snaps</h3>
+        <p>Every snap evaporates in under nine seconds. Not long enough for a hawk, a farmer, or a rival vixen to backtrace it to your den. We delete it from our servers too, which we are legally required to mention we have.</p>
+      </article>
+      <article class="feature glass">
+        <div class="fnum">/ 02</div>
+        <div class="ficon"><svg viewBox="0 0 24 24"><path d="M12 3c1 4-2 5-2 8a4 4 0 0 0 8 0c0-2-1-3-1-5 3 2 4 5 4 8a8 8 0 0 1-16 0c0-5 4-7 7-11Z"/></svg></div>
+        <h3>Dusk Streaks</h3>
+        <p>Trade a snap with the same fox every nightfall to build a streak. Miss a single dusk and it resets to zero, exactly like the rest of your relationships. A small flame appears. It is the only warm thing in your life.</p>
+      </article>
+      <article class="feature glass">
+        <div class="fnum">/ 03</div>
+        <div class="ficon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.4"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></div>
+        <h3>Coat Lenses</h3>
+        <p>One hundred and forty augmented overlays. Look like a fuller fox, a healthier fox, a fox whose den is suspiciously close to the good chickens. None of it survives the nine seconds. All of it gets you seen, briefly, on your own terms.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="block" id="proof">
+    <div class="kicker">From the hedgerow</div>
+    <h2>Foxes who would rather not be quoted.</h2>
+    <p class="sect-sub">They agreed to this on the condition it disappears. We screenshotted it anyway.</p>
+    <div class="quotes">
+      <figure class="quote glass">
+        <blockquote>"I keep eleven dens and a reputation. Covert is the only thing in this valley that has never once sold me out."</blockquote>
+        <figcaption class="who"><span class="chip">BH</span><span><span class="nm">Bracken Holloway</span><br><span class="tt">Vixen · Third Hedgerow, Lower Pasture</span></span></figcaption>
+      </figure>
+      <figure class="quote glass">
+        <blockquote>"My streak with a dog fox two valleys over is on day four hundred. We have never met. We never will. That is the relationship and it is working."</blockquote>
+        <figcaption class="who"><span class="chip">SV</span><span><span class="nm">Silas Vane</span><br><span class="tt">Nocturnal Forager · Class II Permit</span></span></figcaption>
+      </figure>
+      <figure class="quote glass">
+        <blockquote>"I look genuinely incredible in the Healthier Coat lens. In daylight I have mange. The nine-second limit was built for foxes like me."</blockquote>
+        <figcaption class="who"><span class="chip">OR</span><span><span class="nm">Ottoline Reddwhen</span><br><span class="tt">Lifestyle Influencer · 9 Followers, All Siblings</span></span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="block" id="pricing">
+    <div class="kicker">Tiers</div>
+    <h2>Priced in what a fox actually has.</h2>
+    <p class="sect-sub">No card on file. We accept eggs, voles, and one annual hen, billed at first frost.</p>
+    <div class="pricing">
+      <div class="tier glass">
+        <div class="tname">Kit</div>
+        <div class="price">free</div>
+        <div class="ptag">For foxes still denning with their mother.</div>
+        <ul>
+          <li><svg viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></svg>12 snaps per night</li>
+          <li><svg viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></svg>Dusk streaks</li>
+          <li><svg viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></svg>The 6 starter Coat Lenses</li>
+          <li><svg viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></svg>One den pin on the map</li>
+        </ul>
+        <a class="tbtn" href="./demo.html">Open the camera</a>
+      </div>
+      <div class="tier glass feat">
+        <div class="tname">Brush <span class="badge">most denned</span></div>
+        <div class="price">4 eggs<span style="font-size:13px;color:var(--muted);font-weight:400"> / moon</span></div>
+        <div class="ptag">For the fox with a reputation to manage.</div>
+        <ul>
+          <li><svg viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></svg>Unlimited snaps</li>
+          <li><svg viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></svg>The full 140-lens vault</li>
+          <li><svg viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></svg>See who screenshotted your den</li>
+          <li><svg viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></svg>Replay any snap once, against everyone's advice</li>
+        </ul>
+        <a class="tbtn" href="./demo.html">Open the camera</a>
+      </div>
+      <div class="tier glass">
+        <div class="tname">Reynard</div>
+        <div class="price">1 hen<span style="font-size:13px;color:var(--muted);font-weight:400"> / moon</span></div>
+        <div class="ptag">Billed at first frost. For the apex of the hedgerow.</div>
+        <ul>
+          <li><svg viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></svg>Everything in Brush</li>
+          <li><svg viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></svg>Priority placement on the Den Map</li>
+          <li><svg viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></svg>Verified bushy-tail badge</li>
+          <li><svg viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></svg>A digest of which hunters muted you</li>
+        </ul>
+        <a class="tbtn" href="./demo.html">Open the camera</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="demo-cta glass">
+    <h2>See it before it's gone.</h2>
+    <p>The whole product lasts nine seconds at a time. The demo lasts as long as you keep your eyes open.</p>
+    <a class="btn btn-primary" href="./demo.html">Open the camera →</a>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap foot-in">
+    <a class="back" href="/">← theworstaistudioever</a>
+    <div class="foot-fine">Covert is a portfolio company of the worst AI studio ever. No foxes were photographed. No data was retained, mostly because there was none.</div>
+  </div>
+</footer>
+
+<script>
+  // gentle parallax on the phone, disabled under reduced-motion
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const phone = document.querySelector('.phone');
+  if(phone && !reduce){
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      if(y < 800) phone.style.transform = `translateY(${y * -0.04}px)`;
+    }, {passive:true});
+  }
+</script>
+</body>
+</html>
