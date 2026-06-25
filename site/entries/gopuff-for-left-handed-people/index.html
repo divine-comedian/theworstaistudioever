@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sinistr · theworstaistudioever</title>
+<meta name="description" content="Left-handed essentials, delivered to your dominant hand in fifteen minutes.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Sinistr — built for the other hand">
+<meta property="og:description" content="Left-handed essentials, delivered to your dominant hand in fifteen minutes.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Sinistr — built for the other hand">
+<meta name="twitter:description" content="Left-handed essentials, delivered to your dominant hand in fifteen minutes.">
+<meta name="theme-color" content="#F4F2EA">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+:root{
+  --bg:#F4F2EA;
+  --ink:#14150E;
+  --paper:#FFFFFF;
+  --accent:#E8430F;
+  --lime:#D8F23A;
+  --muted:#7C7C70;
+  --rule:#14150E;
+  --display:'Archivo','Arial Narrow',system-ui,sans-serif;
+  --body:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:17px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+
+.wrap{max-width:1200px;margin:0 auto;padding:0 28px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+
+/* ---- header ---- */
+.top{
+  border-bottom:2px solid var(--rule);
+  background:var(--bg);
+  position:sticky;top:0;z-index:40;
+}
+.top .wrap{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:18px;min-height:64px;
+  flex-direction:row-reverse; /* mirror: brand pins to the right edge */
+}
+.brand{
+  font-family:var(--display);font-weight:900;font-size:26px;
+  letter-spacing:.16em;text-transform:uppercase;
+}
+.brand .dot{color:var(--accent)}
+.topnav{display:flex;align-items:center;gap:22px;flex-direction:row-reverse}
+.topnav a{
+  font-family:var(--mono);font-size:12.5px;text-transform:uppercase;
+  letter-spacing:.12em;color:var(--muted);padding:6px 0;
+}
+.topnav a:hover{color:var(--ink)}
+.topnav .demolink{
+  color:var(--ink);border-bottom:2px solid var(--accent);
+}
+.limehair{height:6px;background:var(--lime);border-bottom:2px solid var(--rule)}
+
+/* ---- hero ---- */
+.hero{padding:0 0 0}
+.hero .wrap{
+  display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);
+  gap:0;align-items:stretch;
+}
+.hero-art{
+  border-right:2px solid var(--rule);
+  padding:54px 36px 54px 0;
+  display:flex;align-items:flex-end;
+}
+.hero-copy{
+  padding:54px 0 48px 44px;
+  text-align:right; /* mirror: copy reads to the right */
+  display:flex;flex-direction:column;align-items:flex-end;justify-content:center;
+}
+.eyebrow{
+  font-family:var(--mono);font-size:12px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:22px;
+}
+.eyebrow b{color:var(--ink);font-weight:600}
+h1{
+  font-family:var(--display);font-weight:900;
+  font-size:clamp(48px,8.4vw,108px);line-height:.92;
+  letter-spacing:-.02em;text-transform:none;margin-bottom:26px;
+}
+.hero-sub{
+  font-size:19px;max-width:46ch;color:#2c2d22;margin-bottom:30px;
+}
+.cta{
+  display:inline-flex;align-items:center;gap:12px;
+  background:var(--accent);color:#fff;
+  font-family:var(--display);font-weight:800;font-size:17px;
+  letter-spacing:.01em;
+  padding:16px 26px;border:2px solid var(--rule);
+  cursor:pointer;transition:transform .12s ease,background .12s ease;
+}
+.cta .arr{font-family:var(--mono);font-weight:600}
+.cta:hover{transform:translateX(-6px);background:#cf3a0c} /* slides toward the left hand */
+
+/* phone plate */
+.plate{
+  width:100%;max-width:360px;background:var(--paper);
+  border:2px solid var(--rule);
+}
+.plate-bar{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:11px 14px;border-bottom:2px solid var(--rule);
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+}
+.live{display:inline-flex;align-items:center;gap:7px;color:var(--accent)}
+.live::before{content:"";width:8px;height:8px;background:var(--accent);border-radius:50%}
+.plate-rows{padding:6px 0}
+.prow{
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding:11px 14px;gap:10px;border-bottom:1px solid #e6e3d6;
+}
+.prow:last-child{border-bottom:0}
+.prow .nm{font-weight:600;font-size:14.5px}
+.prow .tag{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.06em}
+.prow .pr{font-family:var(--mono);font-size:13.5px;font-weight:500}
+.plate-bag{
+  border-top:2px solid var(--rule);background:var(--lime);
+  padding:13px 14px;display:flex;align-items:center;gap:12px;
+}
+.bag-eta{font-family:var(--mono);font-weight:600;font-size:13px;letter-spacing:.04em}
+.bag-deliver{
+  margin-left:auto;background:var(--accent);color:#fff;border:2px solid var(--rule);
+  font-family:var(--display);font-weight:800;font-size:12.5px;
+  padding:8px 14px;text-transform:uppercase;letter-spacing:.05em;
+}
+
+/* dispatch strip */
+.strip{border-top:2px solid var(--rule);border-bottom:2px solid var(--rule);background:var(--ink);color:var(--bg)}
+.strip .wrap{
+  display:flex;flex-direction:row-reverse;flex-wrap:wrap;gap:0;
+}
+.stat{
+  flex:1 1 0;min-width:160px;padding:16px 0 16px 22px;text-align:right;
+  border-left:1px solid #36372c;
+}
+.stat:last-child{border-left:0}
+.stat .k{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#9a9b8c}
+.stat .v{font-family:var(--mono);font-size:26px;font-weight:600;line-height:1.2}
+.stat .v .u{font-size:14px;color:#9a9b8c}
+
+/* section scaffold */
+section{padding:0}
+.sec-head{
+  display:flex;flex-direction:row-reverse;align-items:flex-end;justify-content:space-between;
+  gap:18px;padding:44px 0 26px;border-bottom:2px solid var(--rule);
+}
+.sec-head h2{
+  font-family:var(--display);font-weight:800;
+  font-size:clamp(26px,4vw,40px);letter-spacing:-.01em;text-align:right;
+}
+.sec-head .ix{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+
+/* features */
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr)}
+.feat{
+  padding:34px 26px 40px;border-left:2px solid var(--rule);text-align:right;
+  display:flex;flex-direction:column;
+}
+.feat:first-child{border-left:0}
+.feat .fn{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:.12em;margin-bottom:auto;padding-bottom:30px}
+.feat h3{font-family:var(--display);font-weight:800;font-size:22px;line-height:1.06;margin-bottom:14px}
+.feat p{font-size:15.5px;color:#33342a}
+
+/* lime callout */
+.callout{background:var(--lime);border-bottom:2px solid var(--rule)}
+.callout .wrap{padding:52px 28px;text-align:right}
+.callout p{
+  font-family:var(--display);font-weight:800;
+  font-size:clamp(24px,3.8vw,42px);line-height:1.04;letter-spacing:-.01em;
+  max-width:24ch;margin-left:auto;
+}
+.callout .sub{font-family:var(--mono);font-size:13px;font-weight:400;letter-spacing:.04em;color:#3a3d10;margin-top:16px;text-transform:uppercase}
+
+/* testimonials */
+.quotes{display:grid;grid-template-columns:repeat(3,1fr)}
+.q{
+  padding:36px 26px;border-left:2px solid var(--rule);text-align:right;
+  display:flex;flex-direction:column;gap:20px;
+}
+.q:first-child{border-left:0}
+.q blockquote{font-size:17px;line-height:1.45;font-weight:500}
+.q .who{display:flex;flex-direction:row-reverse;align-items:center;gap:14px;margin-top:auto}
+.q .who img{width:54px;height:54px;border:2px solid var(--rule);filter:grayscale(1) contrast(1.04)}
+.q .who .nm{font-family:var(--display);font-weight:700;font-size:15px}
+.q .who .tl{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.03em;line-height:1.3}
+
+/* pricing */
+.price-grid{display:grid;grid-template-columns:repeat(3,1fr)}
+.tier{
+  padding:32px 24px 30px;border-left:2px solid var(--rule);text-align:right;
+  display:flex;flex-direction:column;
+}
+.tier:first-child{border-left:0}
+.tier.feature{background:var(--ink);color:var(--bg)}
+.tier .tn{font-family:var(--display);font-weight:800;font-size:21px;letter-spacing:.01em}
+.tier .tp{font-family:var(--mono);font-weight:600;font-size:30px;margin:14px 0 6px}
+.tier.feature .tp{color:var(--lime)}
+.tier .tt{font-size:14px;color:#44453a;min-height:42px}
+.tier.feature .tt{color:#c9cabb}
+.tier ul{list-style:none;margin:20px 0 24px;border-top:1px solid #d8d5c6;padding-top:16px}
+.tier.feature ul{border-top-color:#3a3b30}
+.tier li{font-size:14px;padding:7px 0;border-bottom:1px solid #e6e3d6}
+.tier.feature li{border-bottom-color:#2a2b22}
+.tier li:last-child{border-bottom:0}
+.tier .pick{
+  margin-top:auto;display:inline-block;align-self:flex-end;
+  font-family:var(--display);font-weight:800;font-size:14px;
+  border:2px solid var(--rule);padding:11px 18px;text-transform:uppercase;letter-spacing:.04em;
+}
+.tier.feature .pick{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tier .pick:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* final cta */
+.final{border-top:2px solid var(--rule);background:var(--bg)}
+.final .wrap{padding:70px 28px;text-align:right}
+.final h2{font-family:var(--display);font-weight:900;font-size:clamp(32px,6vw,72px);line-height:.95;letter-spacing:-.02em;margin-bottom:14px}
+.final p{font-family:var(--mono);font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:30px}
+
+/* footer */
+footer{border-top:2px solid var(--rule);background:var(--ink);color:var(--bg)}
+footer .wrap{
+  display:flex;flex-direction:row-reverse;align-items:center;justify-content:space-between;
+  gap:14px;padding:24px 28px;flex-wrap:wrap;
+}
+footer .back{font-family:var(--mono);font-size:12.5px;letter-spacing:.06em;color:#cfd0c2}
+footer .back:hover{color:var(--lime)}
+footer .fine{font-family:var(--mono);font-size:11px;color:#6f7062;letter-spacing:.04em}
+
+@media (max-width:900px){
+  .hero .wrap{grid-template-columns:1fr}
+  .hero-art{border-right:0;border-bottom:2px solid var(--rule);padding:34px 0 30px;justify-content:flex-start}
+  .hero-copy{padding:34px 0 36px}
+  .feat-grid,.quotes,.price-grid{grid-template-columns:1fr}
+  .feat,.q,.tier{border-left:0;border-top:2px solid var(--rule)}
+  .feat:first-child,.q:first-child,.tier:first-child{border-top:0}
+  .feat .fn{padding-bottom:18px}
+}
+@media (max-width:560px){
+  .topnav .lbl-howit{display:none}
+  .stat{text-align:right;padding-left:16px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{scroll-behavior:auto!important;transition:none!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./index.html">Sinistr<span class="dot">.</span></a>
+    <nav class="topnav" aria-label="primary">
+      <a class="demolink" href="./demo.html">Open the storefront</a>
+      <a href="#pricing">Plans</a>
+      <a class="lbl-howit" href="#how">How it runs</a>
+    </nav>
+  </div>
+</header>
+<div class="limehair" aria-hidden="true"></div>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-art">
+      <div class="plate" role="img" aria-label="Sinistr app preview: a bag pinned to the left, fourteen-minute drop window.">
+        <div class="plate-bar">
+          <span class="live">Den 04 live</span>
+          <span>Handoff 47&deg; L</span>
+        </div>
+        <div class="plate-rows">
+          <div class="prow"><span><span class="nm">Lefty kitchen shears</span><br><span class="tag">LEFT-BOUND · MIRROR-STOCKED</span></span><span class="pr">$14</span></div>
+          <div class="prow"><span><span class="nm">Right-bound spiral pad</span><br><span class="tag">RIGHT-BOUND · WITHHELD</span></span><span class="pr">&mdash;</span></div>
+          <div class="prow"><span><span class="nm">Can opener, reversed</span><br><span class="tag">LEFT-BOUND · IN DEN</span></span><span class="pr">$9</span></div>
+        </div>
+        <div class="plate-bag">
+          <span class="bag-eta" id="plateEta">DROP 14:00</span>
+          <span class="mono" style="font-size:12px;color:#3a3d10">2 ITEMS · $23</span>
+          <span class="bag-deliver">Deliver L</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-copy">
+      <p class="eyebrow">Gopuff, <b>re-handed.</b> &nbsp;·&nbsp; q-commerce for the 10%</p>
+      <h1>Built for the<br>other hand.</h1>
+      <p class="hero-sub">Sinistr stocks left-optimized essentials in micro-dens across the city and routes them to your dominant side. Median drop: 14 minutes. Right-handers welcome, eventually.</p>
+      <a class="cta" href="./demo.html">Deliver to my left hand <span class="arr">&larr;</span></a>
+    </div>
+  </div>
+</section>
+
+<div class="strip">
+  <div class="wrap">
+    <div class="stat"><div class="k">Dens live</div><div class="v">38</div></div>
+    <div class="stat"><div class="k">Drops in flight</div><div class="v">211</div></div>
+    <div class="stat"><div class="k">Median window</div><div class="v">14<span class="u">min</span></div></div>
+    <div class="stat"><div class="k">Right-hand waitlist</div><div class="v">61,402</div></div>
+  </div>
+</div>
+
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Three things we do<br>that the corner store won't.</h2>
+      <span class="ix">/ how it runs</span>
+    </div>
+    <div class="feat-grid">
+      <div class="feat">
+        <div class="fn">F-01 · Handedness lock</div>
+        <h3>One-tap handedness lock</h3>
+        <p>We watch how you hold the phone during onboarding and lock the account to a dominant hand. The catalog reshapes around it. Right-handed accounts enter a managed waitlist, with updates.</p>
+      </div>
+      <div class="feat">
+        <div class="fn">F-02 · Approach vector</div>
+        <h3>Couriers that approach from your left</h3>
+        <p>Every drop is geofenced so the runner closes from your dominant side and presents the bag at a 47-degree handoff angle. No cross-body reaching. We measured the angle in a parking lot for a week.</p>
+      </div>
+      <div class="feat">
+        <div class="fn">F-03 · Den stocking</div>
+        <h3>Nothing in the den faces the wrong way</h3>
+        <p>Scissors, can openers, ledgers, mugs with the design pointed at you, spiral notebooks bound on the right. Every item is mirror-stocked. We threw out the rest of the inventory.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="callout">
+  <div class="wrap">
+    <p>Ten percent of the population. Zero percent of the shelf was built for them.</p>
+    <p class="sub">So we built the shelf. Then the truck. Then the city around it.</p>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>What the dominant<br>hand is saying.</h2>
+      <span class="ix">/ field reports</span>
+    </div>
+    <div class="quotes">
+      <div class="q">
+        <blockquote>&ldquo;I haven't smudged a single page since March. The notebooks are bound on the correct side. I cried at my desk.&rdquo;</blockquote>
+        <div class="who">
+          <img src="headshot-1.webp" width="54" height="54" alt="Dana Reuter">
+          <div><div class="nm">Dana Reuter</div><div class="tl">Left-Handed Calligrapher,<br>Third Generation</div></div>
+        </div>
+      </div>
+      <div class="q">
+        <blockquote>&ldquo;The courier closed from my left and I didn't have to pivot. Forty-one years of pivoting, finished.&rdquo;</blockquote>
+        <div class="who">
+          <img src="headshot-2.webp" width="54" height="54" alt="Marcus Vance">
+          <div><div class="nm">Marcus Vance</div><div class="tl">Recreational Bowler,<br>Southpaw Division</div></div>
+        </div>
+      </div>
+      <div class="q">
+        <blockquote>&ldquo;My can opener works now. That sentence took me four decades to be able to write.&rdquo;</blockquote>
+        <div class="who">
+          <img src="headshot-3.webp" width="54" height="54" alt="Priya Anand">
+          <div><div class="nm">Priya Anand</div><div class="tl">Operations Lead,<br>Regional Sandwich Concern</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Pick your<br>handoff.</h2>
+      <span class="ix">/ delivery plans</span>
+    </div>
+    <div class="price-grid">
+      <div class="tier">
+        <div class="tn">Off-Hand</div>
+        <div class="tp">$0<span style="font-size:14px;color:var(--muted)">/mo</span></div>
+        <div class="tt">For people who are technically left-handed and resent it.</div>
+        <ul>
+          <li>3 drops a month, right-side handoff</li>
+          <li>Standard 22-minute window</li>
+          <li>Scissors that still hurt, but less</li>
+        </ul>
+        <a class="pick" href="./demo.html">Start free</a>
+      </div>
+      <div class="tier feature">
+        <div class="tn">Dominant</div>
+        <div class="tp">$19<span style="font-size:14px;color:#c9cabb">/mo</span></div>
+        <div class="tt">The default. Most southpaws land here and stay.</div>
+        <ul>
+          <li>Unlimited drops, left-side handoff</li>
+          <li>14-minute median window</li>
+          <li>Full mirror-stocked catalog access</li>
+        </ul>
+        <a class="pick" href="./demo.html">Lock my hand</a>
+      </div>
+      <div class="tier">
+        <div class="tn">Full Sinister</div>
+        <div class="tp">$79<span style="font-size:14px;color:var(--muted)">/mo</span></div>
+        <div class="tt">For households where no one reaches across the table.</div>
+        <ul>
+          <li>Same-den priority, sub-10-minute drops</li>
+          <li>Dedicated left-handed courier pod</li>
+          <li>Annual ergonomic audit of your kitchen</li>
+        </ul>
+        <a class="pick" href="./demo.html">Go full</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="final">
+  <div class="wrap">
+    <h2>The storefront is<br>laid out for your thumb.</h2>
+    <p>Bag on the left. Drop in fourteen. Right hand optional.</p>
+    <a class="cta" href="./demo.html">Open the demo <span class="arr">&larr;</span></a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <a class="back" href="/">&larr; theworstaistudioever</a>
+    <span class="fine">Sinistr is a portfolio company of theworstaistudioever. Median drop window not contractual.</span>
+  </div>
+</footer>
+
+<script>
+// the hero plate ETA ticks down, then resets — a small ambient affordance, reduced-motion safe
+(function(){
+  if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var el=document.getElementById('plateEta');
+  if(!el) return;
+  var s=14*60;
+  setInterval(function(){
+    s=(s<=0)?14*60:s-1;
+    var m=Math.floor(s/60), ss=s%60;
+    el.textContent='DROP '+m+':'+(ss<10?'0':'')+ss;
+  },1000);
+})();
+</script>
+</body>
+</html>

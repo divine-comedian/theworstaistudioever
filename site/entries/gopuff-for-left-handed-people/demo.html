@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sinistr storefront · theworstaistudioever</title>
+<meta name="description" content="The Sinistr storefront, laid out for the left thumb. Mirror-stocked essentials, fourteen-minute drops.">
+<meta name="theme-color" content="#F4F2EA">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+:root{
+  --bg:#F4F2EA;--ink:#14150E;--paper:#FFFFFF;--accent:#E8430F;--lime:#D8F23A;--muted:#7C7C70;--rule:#14150E;
+  --display:'Archivo','Arial Narrow',system-ui,sans-serif;
+  --body:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:.02em}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* top chrome */
+.chrome{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:12px 22px;border-bottom:2px solid var(--rule);
+  position:sticky;top:0;background:var(--bg);z-index:30;flex-wrap:wrap;
+}
+.back{font-family:var(--mono);font-size:12.5px;letter-spacing:.05em;color:var(--muted)}
+.back:hover{color:var(--ink)}
+.chrome-right{display:flex;align-items:center;gap:16px}
+.wm{font-family:var(--display);font-weight:900;letter-spacing:.14em;text-transform:uppercase;font-size:18px}
+.wm .dot{color:var(--accent)}
+.etachip{font-family:var(--mono);font-size:12px;border:2px solid var(--rule);padding:6px 10px;letter-spacing:.04em}
+.etachip b{color:var(--accent)}
+.lbtoggle{
+  display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11.5px;
+  text-transform:uppercase;letter-spacing:.08em;border:2px solid var(--rule);
+  background:var(--paper);padding:6px 10px;color:var(--ink);
+}
+.lbtoggle .sw{width:30px;height:16px;border:2px solid var(--rule);background:#e6e3d6;position:relative}
+.lbtoggle .sw::after{content:"";position:absolute;top:1px;left:1px;width:10px;height:10px;background:var(--ink);transition:transform .12s ease}
+.lbtoggle[aria-pressed="true"]{background:var(--lime)}
+.lbtoggle[aria-pressed="true"] .sw{background:var(--paper)}
+.lbtoggle[aria-pressed="true"] .sw::after{transform:translateX(14px);background:var(--accent)}
+
+/* shell: rail on the LEFT (thumb side), grid main */
+.shell{display:grid;grid-template-columns:210px minmax(0,1fr);max-width:1180px;margin:0 auto;min-height:calc(100vh - 57px)}
+.rail{border-right:2px solid var(--rule);padding:20px 0}
+.rail .rlabel{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:0 18px 12px}
+.cat{
+  display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;
+  background:none;border:0;border-top:1px solid #e2dfd1;
+  padding:13px 18px;text-align:left;font-size:14.5px;font-weight:600;color:var(--ink);
+}
+.cat .ct{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400}
+.cat:hover{background:#ece9dd}
+.cat[aria-current="true"]{background:var(--ink);color:var(--bg)}
+.cat[aria-current="true"] .ct{color:#9a9b8c}
+
+.main{padding:22px 24px 140px}
+.mhead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.mhead h1{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:-.01em}
+.mhead .note{font-family:var(--mono);font-size:11.5px;color:var(--muted);letter-spacing:.04em}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:0;border-top:2px solid var(--rule);border-left:2px solid var(--rule)}
+.card{
+  border-right:2px solid var(--rule);border-bottom:2px solid var(--rule);
+  background:var(--paper);padding:16px 16px 14px;display:flex;flex-direction:column;gap:10px;min-height:188px;
+}
+.card .thumb{
+  height:64px;border:2px solid var(--rule);display:flex;align-items:center;justify-content:center;
+  background:var(--bg);
+}
+.card .thumb svg{width:38px;height:38px}
+.card .nm{font-weight:700;font-size:15px;line-height:1.12;cursor:pointer}
+.card .nm:hover{color:var(--accent)}
+.bound{font-family:var(--mono);font-size:10px;letter-spacing:.07em;text-transform:uppercase;display:inline-block;padding:2px 6px;border:1.5px solid var(--rule);width:max-content}
+.bound.left{background:var(--lime)}
+.bound.right{background:#e6e3d6;color:var(--muted)}
+.card .row{display:flex;align-items:center;justify-content:space-between;margin-top:auto;gap:8px}
+.card .pr{font-family:var(--mono);font-weight:600;font-size:16px}
+.add{
+  border:2px solid var(--rule);background:var(--paper);color:var(--ink);
+  font-family:var(--display);font-weight:800;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;
+  padding:8px 12px;
+}
+.add:hover{background:var(--ink);color:var(--bg)}
+.add[data-in="1"]{background:var(--ink);color:var(--bg)}
+.card.blocked{opacity:.42}
+.card.blocked .add{pointer-events:none}
+.card.blocked .nm{cursor:default;color:var(--ink)}
+.card.hidden{display:none}
+
+/* bag pinned bottom-LEFT */
+.bag{
+  position:fixed;left:18px;bottom:18px;width:300px;max-width:calc(100vw - 36px);
+  background:var(--paper);border:2px solid var(--rule);z-index:25;
+}
+.bag-top{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:2px solid var(--rule);font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em}
+.bag-top .order{color:var(--muted)}
+.bag-body{max-height:168px;overflow:auto}
+.bag-empty{padding:18px 14px;font-size:13.5px;color:var(--muted)}
+.bitem{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #e6e3d6}
+.bitem .bn{font-size:13.5px;font-weight:600;flex:1;min-width:0}
+.bitem .bp{font-family:var(--mono);font-size:13px}
+.bitem .rm{border:1.5px solid var(--rule);background:none;width:24px;height:24px;font-family:var(--mono);font-weight:600;line-height:1}
+.bitem .rm:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.bag-foot{padding:12px 14px;border-top:2px solid var(--rule);display:flex;flex-direction:column;gap:10px}
+.bag-foot .sum{display:flex;justify-content:space-between;font-family:var(--mono);font-size:13px}
+.bag-foot .sum b{font-size:16px}
+.track{
+  width:100%;background:var(--accent);color:#fff;border:2px solid var(--rule);
+  font-family:var(--display);font-weight:800;font-size:14px;text-transform:uppercase;letter-spacing:.05em;
+  padding:12px;
+}
+.track:disabled{background:#e6e3d6;color:var(--muted);border-color:#c9c6b8;cursor:not-allowed}
+.track:not(:disabled):hover{background:#cf3a0c}
+
+/* sheets */
+.scrim{position:fixed;inset:0;background:rgba(20,21,14,.55);z-index:50;display:none;align-items:center;justify-content:center;padding:20px}
+.scrim.open{display:flex}
+.sheet{background:var(--paper);border:2px solid var(--rule);width:100%;max-width:420px}
+.sheet-bar{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:2px solid var(--rule);font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em}
+.x{border:0;background:none;font-family:var(--mono);font-size:18px;line-height:1}
+.sheet-body{padding:18px 16px}
+.sheet-body .big{height:120px;border:2px solid var(--rule);display:flex;align-items:center;justify-content:center;background:var(--bg);margin-bottom:16px}
+.sheet-body .big svg{width:64px;height:64px}
+.sheet-body h3{font-family:var(--display);font-weight:800;font-size:22px;margin-bottom:6px}
+.sheet-body .pr{font-family:var(--mono);font-weight:600;font-size:18px;margin-bottom:12px}
+.sheet-body p{font-size:14.5px;color:#33342a;margin-bottom:16px}
+.sheet-body .spec{font-family:var(--mono);font-size:11.5px;color:var(--muted);border-top:1px solid #e2dfd1;padding-top:12px;display:flex;flex-direction:column;gap:5px}
+.sheet-body .spec span{display:flex;justify-content:space-between}
+.sheet-add{width:100%;margin-top:16px;background:var(--ink);color:var(--bg);border:2px solid var(--rule);font-family:var(--display);font-weight:800;text-transform:uppercase;letter-spacing:.05em;font-size:14px;padding:12px}
+.sheet-add:hover{background:var(--accent);border-color:var(--accent)}
+
+/* track view */
+.tracksheet{max-width:440px}
+.route{background:var(--bg);border-bottom:2px solid var(--rule);padding:0}
+.route svg{display:block;width:100%;height:200px}
+.courier{fill:var(--accent)}
+.you{fill:var(--ink)}
+.track-stat{display:flex;border-top:2px solid var(--rule)}
+.track-stat div{flex:1;padding:14px;text-align:center;border-right:1px solid #e2dfd1}
+.track-stat div:last-child{border-right:0}
+.track-stat .k{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.track-stat .v{font-family:var(--mono);font-size:22px;font-weight:600}
+.track-msg{padding:14px 16px;font-size:14px;text-align:center}
+.track-msg b{color:var(--accent)}
+
+@media (max-width:760px){
+  .shell{grid-template-columns:1fr}
+  .rail{border-right:0;border-bottom:2px solid var(--rule);display:flex;gap:0;overflow-x:auto;padding:0}
+  .rail .rlabel{display:none}
+  .cat{border-top:0;border-right:1px solid #e2dfd1;white-space:nowrap;width:auto;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 14px}
+  .bag{left:12px;right:12px;width:auto}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <a class="back" href="./index.html">&larr; back to the pitch</a>
+  <div class="chrome-right">
+    <button class="lbtoggle" id="lbToggle" aria-pressed="true">
+      <span class="sw" aria-hidden="true"></span> Left-bound only
+    </button>
+    <span class="etachip mono">DROP <b id="etaChip">14:00</b></span>
+    <span class="wm">Sinistr<span class="dot">.</span></span>
+  </div>
+</div>
+
+<div class="shell">
+  <aside class="rail" aria-label="categories">
+    <div class="rlabel">Aisles · Den 04</div>
+    <nav id="cats"></nav>
+  </aside>
+
+  <main class="main">
+    <div class="mhead">
+      <h1 id="catTitle">Everything left-bound</h1>
+      <span class="note mono" id="catNote">mirror-stocked · 14 min from your door</span>
+    </div>
+    <div class="grid" id="grid"></div>
+  </main>
+</div>
+
+<!-- bag, pinned to the left thumb -->
+<section class="bag" aria-label="your bag">
+  <div class="bag-top">
+    <span>Your bag</span>
+    <span class="order">No. <span id="orderNo">SX-0000</span></span>
+  </div>
+  <div class="bag-body" id="bagBody">
+    <div class="bag-empty">Empty. Add something the right-handed world forgot about.</div>
+  </div>
+  <div class="bag-foot">
+    <div class="sum"><span>Subtotal</span><b class="mono" id="subtotal">$0</b></div>
+    <button class="track" id="trackBtn" disabled>Track drop</button>
+  </div>
+</section>
+
+<!-- product sheet -->
+<div class="scrim" id="prodScrim">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetName">
+    <div class="sheet-bar"><span id="sheetBound">LEFT-BOUND</span><button class="x" id="prodX" aria-label="Close">&times;</button></div>
+    <div class="sheet-body">
+      <div class="big" id="sheetIcon"></div>
+      <h3 id="sheetName">&nbsp;</h3>
+      <div class="pr mono" id="sheetPrice">$0</div>
+      <p id="sheetDesc">&nbsp;</p>
+      <div class="spec">
+        <span><span>Bound</span><span id="sheetBound2">Left</span></span>
+        <span><span>Den status</span><span id="sheetStatus">In den 04</span></span>
+        <span><span>Handoff angle</span><span>47&deg; left</span></span>
+      </div>
+      <button class="sheet-add" id="sheetAdd">Add to bag</button>
+    </div>
+  </div>
+</div>
+
+<!-- track view -->
+<div class="scrim" id="trackScrim">
+  <div class="sheet tracksheet" role="dialog" aria-modal="true" aria-labelledby="trackTitle">
+    <div class="sheet-bar"><span id="trackTitle">Drop in progress</span><button class="x" id="trackX" aria-label="Close">&times;</button></div>
+    <div class="route">
+      <svg viewBox="0 0 440 200" aria-hidden="true">
+        <path id="rpath" d="M 18 168 L 120 168 L 120 96 L 250 96 L 250 150 L 360 150 L 360 60 L 414 60"
+              fill="none" stroke="#c9c6b8" stroke-width="3" stroke-dasharray="6 7"/>
+        <circle class="you" cx="414" cy="60" r="9"/>
+        <rect class="you" x="409" y="40" width="10" height="10"/>
+        <circle class="courier" id="dot" cx="18" cy="168" r="8"/>
+      </svg>
+    </div>
+    <div class="track-stat">
+      <div><div class="k">Window</div><div class="v" id="tEta">14:00</div></div>
+      <div><div class="k">Approach</div><div class="v">47&deg;L</div></div>
+      <div><div class="k">Runner</div><div class="v" id="tRunner">M-9</div></div>
+    </div>
+    <div class="track-msg" id="trackMsg">Runner is closing from your <b>left</b>. Keep the dominant hand free.</div>
+  </div>
+</div>
+
+<script>
+var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// --- icons (inline SVG, no emoji) ---
+var IC = {
+  shears:'<svg viewBox="0 0 24 24" fill="none" stroke="#14150E" stroke-width="1.6"><circle cx="6" cy="6" r="2.4"/><circle cx="6" cy="18" r="2.4"/><path d="M8 7.5 20 17M8 16.5 20 7"/></svg>',
+  pen:'<svg viewBox="0 0 24 24" fill="none" stroke="#14150E" stroke-width="1.6"><path d="M16 3 21 8 8 21 3 21 3 16 16 3Z"/></svg>',
+  mug:'<svg viewBox="0 0 24 24" fill="none" stroke="#14150E" stroke-width="1.6"><path d="M4 7h12v8a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V7Z"/><path d="M16 9h3a2 2 0 0 1 0 6h-3"/></svg>',
+  opener:'<svg viewBox="0 0 24 24" fill="none" stroke="#14150E" stroke-width="1.6"><circle cx="9" cy="9" r="3"/><path d="M9 12v8M6 20h6M11 7l8-3"/></svg>',
+  pad:'<svg viewBox="0 0 24 24" fill="none" stroke="#14150E" stroke-width="1.6"><rect x="5" y="3" width="14" height="18"/><path d="M9 3v18M12 8h4M12 12h4"/></svg>',
+  ruler:'<svg viewBox="0 0 24 24" fill="none" stroke="#14150E" stroke-width="1.6"><rect x="3" y="8" width="18" height="8"/><path d="M7 8v3M11 8v4M15 8v3M19 8v4"/></svg>',
+  ladle:'<svg viewBox="0 0 24 24" fill="none" stroke="#14150E" stroke-width="1.6"><path d="M12 3v8"/><path d="M7 11a5 5 0 0 0 10 0Z"/></svg>',
+  guitar:'<svg viewBox="0 0 24 24" fill="none" stroke="#14150E" stroke-width="1.6"><path d="M15 4l5 5M14 9a4 4 0 1 1-5 5 3 3 0 1 0 5-5Z"/></svg>',
+  watch:'<svg viewBox="0 0 24 24" fill="none" stroke="#14150E" stroke-width="1.6"><circle cx="12" cy="12" r="5"/><path d="M12 9v3l2 1M9 4h6M9 20h6"/></svg>',
+  knife:'<svg viewBox="0 0 24 24" fill="none" stroke="#14150E" stroke-width="1.6"><path d="M3 14C9 12 16 7 20 3c1 4-1 11-7 13M3 14l4 4M7 18l-3 3"/></svg>'
+};
+
+// --- catalog ---
+var CATS = [
+  {id:'all',  name:'Everything left-bound', sub:'mirror-stocked · 14 min from your door'},
+  {id:'kitchen', name:'Kitchen', sub:'reversed for the dominant hand'},
+  {id:'desk', name:'Desk', sub:'bound on the correct side'},
+  {id:'tools', name:'Tools', sub:'handles cast for the left'},
+  {id:'pantry', name:'Pantry', sub:'spouts and seams, flipped'}
+];
+
+var ITEMS = [
+  {id:'p1', n:'Lefty kitchen shears', cat:'kitchen', price:14, bound:'left', ic:'shears', d:'Blades ground so the cut line stays visible from the left. The grip is cast for the dominant thumb. Right-handed pairs are not stocked here.'},
+  {id:'p2', n:'Can opener, reversed', cat:'kitchen', price:9, bound:'left', ic:'opener', d:'Turns counter-clockwise, feeds toward the left wrist. Forty years of struggle, retired at the seam.'},
+  {id:'p3', n:'Ladle, left-pour', cat:'kitchen', price:11, bound:'left', ic:'ladle', d:'Single spout on the left lip. Pours toward the bowl you are actually holding.'},
+  {id:'p4', n:'Chef knife, left-bevel', cat:'kitchen', price:42, bound:'left', ic:'knife', d:'Single bevel ground on the left face so the slice falls away clean. Den-sharpened weekly.'},
+  {id:'p5', n:'Spiral pad, right-bound', cat:'desk', price:6, bound:'right', ic:'pad', d:'Coil on the left, which means it digs into your dominant wrist. We stock it only to prove a point.'},
+  {id:'p6', n:'Notebook, right-coil', cat:'desk', price:8, bound:'left', ic:'pad', d:'Coil bound on the right edge. Your hand crosses nothing. No more graphite on the heel of your palm.'},
+  {id:'p7', n:'Calligraphy pen, oblique-L', cat:'desk', price:24, bound:'left', ic:'pen', d:'Oblique flange set for a left-leaning stroke. Ink flows away from the drag, not into it.'},
+  {id:'p8', n:'Desk ruler, right-zero', cat:'desk', price:5, bound:'left', ic:'ruler', d:'Numbered from the right so you measure without your hand hiding the marks.'},
+  {id:'p9', n:'Multi-tool, left-detent', cat:'tools', price:38, bound:'left', ic:'shears', d:'Every blade releases under the left thumb. Locks the same way. No re-gripping.'},
+  {id:'p10', n:'Tape measure, left-read', cat:'tools', price:12, bound:'right', ic:'ruler', d:'Reads upside down when you pull it with your dominant hand. Included for completeness. Toggle it off.'},
+  {id:'p11', n:'Mug, design-left', cat:'pantry', price:7, bound:'left', ic:'mug', d:'Handle on the right, artwork facing you when held in the left hand. The way a mug should arrive.'},
+  {id:'p12', n:'Travel watch, left-crown', cat:'pantry', price:29, bound:'left', ic:'watch', d:'Crown on the left case so winding does not jab the back of your hand. Reads in fourteen-minute ticks.'}
+];
+
+var state = { cat:'all', leftOnly:true, bag:[] };
+
+var grid = document.getElementById('grid');
+var catsEl = document.getElementById('cats');
+var bagBody = document.getElementById('bagBody');
+
+// build category rail
+CATS.forEach(function(c){
+  var b=document.createElement('button');
+  b.className='cat'; b.dataset.cat=c.id;
+  var cnt = c.id==='all' ? ITEMS.length : ITEMS.filter(function(i){return i.cat===c.id}).length;
+  b.innerHTML='<span>'+c.name+'</span><span class="ct">'+cnt+'</span>';
+  b.setAttribute('aria-current', c.id===state.cat ? 'true':'false');
+  b.addEventListener('click', function(){ state.cat=c.id; renderCats(); renderGrid(); var t=CATS.find(function(x){return x.id===c.id}); document.getElementById('catTitle').textContent=t.name; document.getElementById('catNote').textContent=t.sub; });
+  catsEl.appendChild(b);
+});
+function renderCats(){ Array.prototype.forEach.call(catsEl.children, function(b){ b.setAttribute('aria-current', b.dataset.cat===state.cat ? 'true':'false'); }); }
+
+// build grid
+function cardFor(it){
+  var c=document.createElement('div'); c.className='card'; c.dataset.id=it.id;
+  var inBag = state.bag.indexOf(it.id)>-1;
+  c.innerHTML =
+    '<div class="thumb">'+IC[it.ic]+'</div>'+
+    '<div class="nm" tabindex="0" role="button">'+it.n+'</div>'+
+    '<span class="bound '+it.bound+'">'+(it.bound==='left'?'left-bound':'right-bound')+'</span>'+
+    '<div class="row"><span class="pr">$'+it.price+'</span>'+
+    '<button class="add" data-in="'+(inBag?1:0)+'">'+(inBag?'Added':'Add')+'</button></div>';
+  c.querySelector('.add').addEventListener('click', function(e){ e.stopPropagation(); toggleBag(it.id); });
+  var nm=c.querySelector('.nm');
+  nm.addEventListener('click', function(){ if(!c.classList.contains('blocked')) openProduct(it.id); });
+  nm.addEventListener('keydown', function(e){ if((e.key==='Enter'||e.key===' ')&&!c.classList.contains('blocked')){e.preventDefault();openProduct(it.id);} });
+  return c;
+}
+function renderGrid(){
+  grid.innerHTML='';
+  ITEMS.forEach(function(it){
+    if(state.cat!=='all' && it.cat!==state.cat) return;
+    var c=cardFor(it);
+    if(state.leftOnly && it.bound==='right') c.classList.add('blocked');
+    grid.appendChild(c);
+  });
+}
+
+// bag
+function toggleBag(id){
+  var i=state.bag.indexOf(id);
+  if(i>-1) state.bag.splice(i,1); else state.bag.push(id);
+  renderGrid(); renderBag();
+}
+function renderBag(){
+  if(state.bag.length===0){
+    bagBody.innerHTML='<div class="bag-empty">Empty. Add something the right-handed world forgot about.</div>';
+  } else {
+    bagBody.innerHTML='';
+    state.bag.forEach(function(id){
+      var it=ITEMS.find(function(x){return x.id===id});
+      var r=document.createElement('div'); r.className='bitem';
+      r.innerHTML='<span class="bn">'+it.n+'</span><span class="bp mono">$'+it.price+'</span><button class="rm" aria-label="Remove '+it.n+'">&minus;</button>';
+      r.querySelector('.rm').addEventListener('click', function(){ toggleBag(id); });
+      bagBody.appendChild(r);
+    });
+  }
+  var sum=state.bag.reduce(function(a,id){ return a + ITEMS.find(function(x){return x.id===id}).price; },0);
+  document.getElementById('subtotal').textContent='$'+sum;
+  document.getElementById('trackBtn').disabled = state.bag.length===0;
+  // order number derives from bag size, deadpan-stable
+  document.getElementById('orderNo').textContent='SX-'+String(4280+state.bag.length*7).padStart(4,'0');
+}
+
+// left-bound toggle
+var lb=document.getElementById('lbToggle');
+lb.addEventListener('click', function(){
+  state.leftOnly=!state.leftOnly;
+  lb.setAttribute('aria-pressed', state.leftOnly?'true':'false');
+  renderGrid();
+});
+
+// product sheet
+var prodScrim=document.getElementById('prodScrim');
+var sheetAddId=null;
+function openProduct(id){
+  var it=ITEMS.find(function(x){return x.id===id});
+  sheetAddId=id;
+  document.getElementById('sheetIcon').innerHTML=IC[it.ic];
+  document.getElementById('sheetName').textContent=it.n;
+  document.getElementById('sheetPrice').textContent='$'+it.price;
+  document.getElementById('sheetDesc').textContent=it.d;
+  document.getElementById('sheetBound').textContent=(it.bound==='left'?'LEFT-BOUND':'RIGHT-BOUND');
+  document.getElementById('sheetBound2').textContent=(it.bound==='left'?'Left':'Right (withheld)');
+  document.getElementById('sheetStatus').textContent=(it.bound==='left'?'In den 04':'Not stocked');
+  var sa=document.getElementById('sheetAdd');
+  var inBag=state.bag.indexOf(id)>-1;
+  sa.textContent=inBag?'Remove from bag':'Add to bag';
+  openScrim(prodScrim);
+}
+document.getElementById('sheetAdd').addEventListener('click', function(){ if(sheetAddId){ toggleBag(sheetAddId); var inBag=state.bag.indexOf(sheetAddId)>-1; this.textContent=inBag?'Remove from bag':'Add to bag'; } });
+document.getElementById('prodX').addEventListener('click', function(){ closeScrim(prodScrim); });
+
+// track view
+var trackScrim=document.getElementById('trackScrim');
+var dot=document.getElementById('dot');
+var rpath=document.getElementById('rpath');
+var rafId=null;
+document.getElementById('trackBtn').addEventListener('click', function(){
+  document.getElementById('tRunner').textContent='M-'+(state.bag.length+8);
+  openScrim(trackScrim);
+  runCourier();
+});
+document.getElementById('trackX').addEventListener('click', function(){ closeScrim(trackScrim); if(rafId)cancelAnimationFrame(rafId); });
+
+function runCourier(){
+  var len=rpath.getTotalLength();
+  var total=9000; // ms
+  var start=null;
+  var etaEl=document.getElementById('tEta');
+  var msg=document.getElementById('trackMsg');
+  msg.innerHTML='Runner is closing from your <b>left</b>. Keep the dominant hand free.';
+  if(REDUCED){
+    var endp=rpath.getPointAtLength(len); dot.setAttribute('cx',endp.x); dot.setAttribute('cy',endp.y);
+    etaEl.textContent='00:00'; msg.innerHTML='Dropped. Handed off at <b>47&deg; left</b>.'; return;
+  }
+  function frame(ts){
+    if(!start) start=ts;
+    var t=Math.min((ts-start)/total,1);
+    var p=rpath.getPointAtLength(len*t);
+    dot.setAttribute('cx',p.x); dot.setAttribute('cy',p.y);
+    var remain=Math.round((1-t)*14*60);
+    var m=Math.floor(remain/60), s=remain%60;
+    etaEl.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+    if(t<1){ rafId=requestAnimationFrame(frame); }
+    else { msg.innerHTML='Dropped. Handed off at <b>47&deg; left</b>. No reaching.'; }
+  }
+  rafId=requestAnimationFrame(frame);
+}
+
+// scrim helpers
+function openScrim(s){ s.classList.add('open'); document.addEventListener('keydown', escClose); }
+function closeScrim(s){ s.classList.remove('open'); }
+function escClose(e){ if(e.key==='Escape'){ closeScrim(prodScrim); closeScrim(trackScrim); if(rafId)cancelAnimationFrame(rafId); } }
+[prodScrim,trackScrim].forEach(function(s){ s.addEventListener('click', function(e){ if(e.target===s){ closeScrim(s); if(rafId)cancelAnimationFrame(rafId);} }); });
+
+// header eta chip ticks
+(function(){
+  if(REDUCED) return;
+  var el=document.getElementById('etaChip'); var s=14*60;
+  setInterval(function(){ s=(s<=0)?14*60:s-1; var m=Math.floor(s/60),ss=s%60; el.textContent=(m<10?'0':'')+m+':'+(ss<10?'0':'')+ss; },1000);
+})();
+
+renderGrid(); renderBag();
+</script>
+</body>
+</html>

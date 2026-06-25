@@ -1,0 +1,83 @@
+{
+  "date": "2026-06-25",
+  "company": "Gopuff",
+  "subject": "left-handed people",
+  "tagline": "Gopuff for left-handed people",
+  "slug": "gopuff-for-left-handed-people",
+  "product_name": "Sinistr",
+  "one_liner": "Left-handed essentials, delivered to your dominant hand in fifteen minutes.",
+  "brand_voice_notes": "Deadpan q-commerce operations voice. Handedness is treated as a serious last-mile logistics constraint, never a joke. Everything is framed in delivery-SLA terms: drop windows, handoff angles, den stocking. Confident, faux-corporate, sincere about an absurd premise. Never winks at the camera.",
+  "hero": {
+    "h1": "Built for the other hand.",
+    "sub": "Sinistr stocks left-optimized essentials in micro-dens across the city and routes them to your dominant side. Median drop: 14 minutes. Right-handers welcome, eventually.",
+    "primary_cta": "Deliver to my left hand"
+  },
+  "features": [
+    {
+      "title": "One-tap handedness lock",
+      "blurb": "We watch how you hold the phone during onboarding and lock the account to a dominant hand. The catalog reshapes around it. Right-handed accounts enter a managed waitlist, with updates."
+    },
+    {
+      "title": "Couriers that approach from your left",
+      "blurb": "Every drop is geofenced so the runner closes from your dominant side and presents the bag at a 47-degree handoff angle. No cross-body reaching. We measured the angle in a parking lot for a week."
+    },
+    {
+      "title": "Nothing in the den faces the wrong way",
+      "blurb": "Scissors, can openers, ledgers, mugs with the design pointed at you, spiral notebooks bound on the right. Every item is mirror-stocked. We threw out the rest of the inventory."
+    }
+  ],
+  "pricing_tiers": [
+    {
+      "name": "Off-Hand",
+      "price": "$0/mo",
+      "tagline": "For people who are technically left-handed and resent it.",
+      "perks": ["3 drops a month, right-side handoff", "Standard 22-minute window", "Scissors that still hurt, but less"]
+    },
+    {
+      "name": "Dominant",
+      "price": "$19/mo",
+      "tagline": "The default. Most southpaws land here and stay.",
+      "perks": ["Unlimited drops, left-side handoff", "14-minute median window", "Full mirror-stocked catalog access"]
+    },
+    {
+      "name": "Full Sinister",
+      "price": "$79/mo",
+      "tagline": "For households where no one reaches across the table.",
+      "perks": ["Same-den priority, sub-10-minute drops", "Dedicated left-handed courier pod", "Annual ergonomic audit of your kitchen"]
+    }
+  ],
+  "testimonials": [
+    {
+      "quote": "I haven't smudged a single page since March. The notebooks are bound on the correct side. I cried at my desk.",
+      "name": "Dana Reuter",
+      "title": "Left-Handed Calligrapher, Third Generation"
+    },
+    {
+      "quote": "The courier closed from my left and I didn't have to pivot. Forty-one years of pivoting, finished.",
+      "name": "Marcus Vance",
+      "title": "Recreational Bowler, Southpaw Division"
+    },
+    {
+      "quote": "My can opener works now. That sentence took me four decades to be able to write.",
+      "name": "Priya Anand",
+      "title": "Operations Lead, Regional Sandwich Concern"
+    }
+  ],
+  "demo_screen_concept": "The Sinistr storefront, a q-commerce app screen fully mirrored for the left thumb. A category rail and a product grid of left-optimized goods (each with a mono price and a left-bound/right-bound tag), a bag pinned to the bottom-left corner with a live item count and a running mono subtotal, a 14-minute ETA chip, and a 'track drop' view that animates a courier dot moving along a route toward a 'you' pin and closing from the left. Interactive: filter by category, add and remove items (count and subtotal update live), toggle a 'left-bound only' filter that greys out right-bound items, open a product detail sheet, and start a 'track drop' that counts the ETA down.",
+  "images": {
+    "rationale": "Typographic Swiss-modernist flat style, so the hero photo was skipped (the wordmark and grid carry the page). Demo subject assets were skipped too: the storefront is a strict flat CSS product grid, not a photo-shaped screen, and product photography would clash with the flat aesthetic and risk text artifacts. Full budget spent on three deadpan corporate testimonial headshots of left-handed people, which the named-testimonial section genuinely uses.",
+    "items": [
+      { "role": "testimonial", "file": "headshot-1.webp", "prompt": "Deadpan corporate editorial headshot of a composed left-handed woman in her mid-forties, dark high-neck top, neutral expression, warm off-white #F4F2EA backdrop, Swiss-modernist flat grade.", "attempts": 1 },
+      { "role": "testimonial", "file": "headshot-2.webp", "prompt": "Deadpan corporate editorial headshot of a stoic left-handed man in his early sixties, charcoal polo, neutral expression, warm off-white #F4F2EA backdrop, Swiss-modernist flat grade.", "attempts": 1 },
+      { "role": "testimonial", "file": "headshot-3.webp", "prompt": "Deadpan corporate editorial headshot of a professional left-handed South Asian woman in her late thirties, slate button-up, neutral expression, warm off-white #F4F2EA backdrop, Swiss-modernist flat grade.", "attempts": 1 }
+    ]
+  },
+  "design_direction": {
+    "style": "Swiss-modernist flat operations grid, bright daylight mode, deliberately mirror-laid-out for the left hand. A stark warm off-white ground carries a strict modular grid divided by heavy 2px ink rules, oversized Archivo black headlines in tight tracking, and flat solid colour blocks with zero shadows, zero blur, zero gradients. The whole composition is mirrored: the wordmark and nav pin to the right edge, headings and body copy are right-aligned, and the app plate floats to the LEFT (the thumb side) so the primary affordances sit under a left hand. One rationed signal-orange does the single primary CTA, the live 'deliver' affordance, and the handedness lock, and appears almost nowhere else. One flat acid-lime field sits behind a single callout strip. Every figure that pretends to be delivery telemetry (drop windows, ETAs, prices, order numbers, handoff angles) is set in IBM Plex Mono with tabular figures so it reads like a dispatch receipt, not a marketing number. Reads like a well-funded fifteen-minute delivery platform that has been pointed, with total seriousness, at the ten percent of people who hold the fork in the correct hand.",
+    "palette": { "primary": "#14150E", "accent": "#E8430F", "bg": "#F4F2EA", "fg": "#14150E", "muted": "#7C7C70", "ink": "#14150E" },
+    "fonts": { "display": "'Archivo', 'Arial Narrow', system-ui, sans-serif", "body": "'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif", "mono": "'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" },
+    "archetype": "Instant-delivery / q-commerce app-store-style landing rendered in Swiss-modernist flat grid: a mirrored hero with an oversized right-aligned wordmark and a left-floated app plate showing a bag pinned to the left thumb-zone and a mono 14-minute ETA, three feature blocks in a modular grid divided by heavy ink rules, an acid-lime callout strip, three pull-quote testimonials with hard-framed headshots, a three-tier pricing rack styled as delivery plans, and a demo handoff to the Sinistr storefront console.",
+    "motion_vocab": "Snap-fast and mechanical. Elements slide in from the left (the dominant side) over 150-250ms with no soft easing, the bag ticks on each add, and the courier dot tracks its route in real time. No parallax. Respects prefers-reduced-motion.",
+    "hero_composition_notes": "Mirror layout: wordmark and nav pinned to the right edge, an oversized right-aligned Archivo headline, and the app plate floated bottom-left showing the bag pinned to the left thumb-zone with a mono 14-minute ETA chip and a signal-orange 'Deliver to my left hand' button. A thin lime hairline under the nav, heavy ink rules between every section, and a mono dispatch strip (dens live, drops in flight, median window) running under the hero."
+  }
+}
