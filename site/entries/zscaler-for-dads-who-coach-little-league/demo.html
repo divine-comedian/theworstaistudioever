@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dugout Access Console · Backstop</title>
+<meta name="description" content="Zero-trust operations console for the Northwood Wildcats 9U.">
+<meta name="theme-color" content="#143E28">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#1E5B3A;--primary-deep:#143E28;--accent:#D8542A;
+    --bg:#EAEEE1;--surface:#FFFFFF;--surface-2:#F3F6ED;
+    --fg:#18211B;--muted:#6E7A66;--line:#C9D3BF;--amber:#C98A1E;--green:#2e9c5a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--fg);font-family:'Barlow',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .mono{font-family:'Space Mono',ui-monospace,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+  button{font-family:inherit;cursor:pointer}
+
+  /* top chrome */
+  .chrome{background:var(--primary-deep);color:#e7f0e4;border-bottom:1px solid #0e2c1d;position:sticky;top:0;z-index:30}
+  .chrome-in{max-width:1280px;margin:0 auto;padding:11px 20px;display:flex;align-items:center;gap:18px}
+  .back{font-family:'Barlow Condensed';text-transform:uppercase;letter-spacing:.05em;font-weight:600;
+    font-size:15px;color:#aedcbd;text-decoration:none;white-space:nowrap}
+  .back:hover{color:#fff}
+  .chrome .sep{width:1px;height:22px;background:#2c5a40}
+  .chrome .team{font-family:'Barlow Condensed';font-weight:700;text-transform:uppercase;font-size:19px;letter-spacing:.03em}
+  .chrome .team small{display:block;font-family:'Space Mono',monospace;font-size:10px;color:#8fb79a;letter-spacing:.1em;font-weight:400}
+  .chrome .right{margin-left:auto;display:flex;align-items:center;gap:18px;font-family:'Space Mono',monospace;font-size:12px}
+  .pill{display:flex;align-items:center;gap:7px;color:#cfe2cd}
+  .pill b{color:#7fdca0}
+  .ldot{width:8px;height:8px;border-radius:50%;background:var(--green);position:relative}
+  .ldot::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:1.5px solid var(--green);animation:ping 2s infinite}
+  @keyframes ping{0%{transform:scale(.6);opacity:.9}80%,100%{transform:scale(1.7);opacity:0}}
+  @media(max-width:680px){.chrome .right .hideS{display:none}}
+
+  .layout{max-width:1280px;margin:0 auto;padding:18px 20px;display:grid;grid-template-columns:200px 1fr;gap:18px}
+  /* rail */
+  .rail{display:flex;flex-direction:column;gap:6px}
+  .rail .tab{display:flex;align-items:center;gap:10px;background:transparent;border:1px solid transparent;
+    border-radius:11px;padding:11px 13px;text-align:left;color:var(--fg);font-family:'Barlow Condensed';
+    text-transform:uppercase;letter-spacing:.04em;font-weight:600;font-size:16px;width:100%;transition:background .15s}
+  .rail .tab:hover{background:var(--surface-2)}
+  .rail .tab[aria-selected="true"]{background:var(--surface);border-color:var(--line);color:var(--primary-deep);box-shadow:0 2px 0 rgba(20,62,40,.05)}
+  .rail .tab .ic{width:18px;height:18px;flex:none;color:var(--primary)}
+  .rail .tab .ct{margin-left:auto;font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);font-weight:700}
+  .rail .tab[aria-selected="true"] .ct{color:var(--accent)}
+  .rail .railnote{margin-top:14px;font-family:'Space Mono',monospace;font-size:10.5px;color:var(--muted);line-height:1.5;padding:0 4px}
+
+  .panel{min-width:0}
+  .panel-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px}
+  .panel-head h1{font-family:'Barlow Condensed';font-weight:700;text-transform:uppercase;font-size:30px;
+    line-height:1;color:var(--primary-deep)}
+  .panel-head .sub{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+  .toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .search{border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:8px 11px;font-size:14px;
+    width:190px;color:var(--fg)}
+  .search:focus{outline:2px solid var(--primary);outline-offset:1px}
+  .chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 13px;
+    font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+  .chip[aria-pressed="true"]{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+  .view{display:none}
+  .view.active{display:block}
+
+  /* roster grid */
+  .roster{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+  .pcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:15px;text-align:left;
+    transition:transform .15s ease,box-shadow .15s ease}
+  .pcard:hover{transform:translateY(-2px);box-shadow:0 14px 28px -16px rgba(20,62,40,.4)}
+  .pcard .top{display:flex;align-items:center;gap:11px;margin-bottom:11px}
+  .num{width:38px;height:38px;border-radius:9px;background:var(--primary-deep);color:#fff;font-family:'Barlow Condensed';
+    font-weight:700;font-size:19px;display:flex;align-items:center;justify-content:center;flex:none}
+  .pcard .nm{font-family:'Barlow Condensed';font-weight:700;text-transform:uppercase;font-size:17px;
+    color:var(--primary-deep);line-height:1}
+  .pcard .pos{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--muted);letter-spacing:.06em;margin-top:2px}
+  .scorebar{display:flex;align-items:center;gap:9px}
+  .scorebar .track{flex:1;height:6px;border-radius:4px;background:var(--surface-2);overflow:hidden;border:1px solid var(--line)}
+  .scorebar .fill{height:100%}
+  .scoreval{font-family:'Space Mono',monospace;font-weight:700;font-size:13px}
+  .stat-row{display:flex;align-items:center;justify-content:space-between;margin-top:11px;font-family:'Space Mono',monospace;font-size:11px}
+  .badge{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:6px;font-weight:700;
+    letter-spacing:.04em;text-transform:uppercase;font-size:10px}
+  .b-ok{background:#e2f1e7;color:#1d6b3c}
+  .b-watch{background:#f6ecd6;color:#8a6314}
+  .b-block{background:#f7e1d8;color:#a23c18}
+  .mini-dot{width:7px;height:7px;border-radius:50%}
+
+  /* access table */
+  .tablewrap{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  table{width:100%;border-collapse:collapse}
+  th,td{text-align:left;padding:13px 15px;font-size:14px}
+  thead th{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);background:var(--surface-2);border-bottom:1px solid var(--line);font-weight:700}
+  tbody tr{border-bottom:1px solid var(--line)}
+  tbody tr:last-child{border-bottom:none}
+  tbody tr.revoked{background:#fbeee8}
+  td .gname{font-family:'Barlow Condensed';font-weight:700;text-transform:uppercase;font-size:16px;color:var(--primary-deep)}
+  td .grole{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--muted)}
+  .reauth{font-family:'Space Mono',monospace;font-size:12.5px}
+  /* toggle */
+  .toggle{position:relative;width:46px;height:26px;border-radius:14px;background:var(--green);border:none;transition:background .2s}
+  .toggle[aria-pressed="false"]{background:var(--accent)}
+  .toggle .knob{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s}
+  .toggle[aria-pressed="false"] .knob{left:23px}
+  .access-state{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+  .access-state.on{color:var(--green)}
+  .access-state.off{color:var(--accent)}
+
+  /* snack panel */
+  .grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-top:16px}
+  @media(max-width:820px){.grid2{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .card h2{font-family:'Barlow Condensed';font-weight:700;text-transform:uppercase;font-size:19px;color:var(--primary-deep);margin-bottom:4px}
+  .card .csub{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px}
+  .grant{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px dashed var(--line)}
+  .grant:last-child{border-bottom:none}
+  .grant .gicon{width:32px;height:32px;border-radius:8px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;flex:none}
+  .grant .glab{font-weight:600;font-size:14px}
+  .grant .gassign{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--muted)}
+  .grant .countdown{margin-left:auto;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--primary)}
+  .grant.expired .countdown{color:var(--accent)}
+
+  /* threat feed */
+  .threatlist{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .trow{display:flex;align-items:center;gap:14px;padding:13px 16px;border-bottom:1px solid var(--line)}
+  .trow:last-child{border-bottom:none}
+  .sev{width:9px;height:9px;border-radius:50%;flex:none}
+  .sev.high{background:var(--accent)}.sev.med{background:var(--amber)}.sev.low{background:var(--green)}
+  .trow .ttag{font-family:'Barlow Condensed';font-weight:700;text-transform:uppercase;font-size:16px;letter-spacing:.02em;color:var(--primary-deep);min-width:215px}
+  .trow .tdesc{color:#46523f;font-size:13.5px;flex:1;min-width:120px}
+  .trow .tsev{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:3px 8px;border-radius:5px}
+  .tsev.high{background:#f7e1d8;color:#a23c18}.tsev.med{background:#f6ecd6;color:#8a6314}.tsev.low{background:#e2f1e7;color:#1d6b3c}
+  .trow .ttime{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);white-space:nowrap}
+  @media(max-width:680px){.trow .ttag{min-width:0}.trow .ttime,.trow .tsev{display:none}}
+
+  /* drawer */
+  .scrim{position:fixed;inset:0;background:rgba(20,33,27,.5);opacity:0;pointer-events:none;transition:opacity .2s;z-index:40}
+  .scrim.open{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;right:0;height:100%;width:380px;max-width:92vw;background:var(--bg);
+    border-left:1px solid var(--line);transform:translateX(100%);transition:transform .24s ease;z-index:50;
+    overflow-y:auto;padding:20px}
+  .drawer.open{transform:none}
+  .drawer .dh{display:flex;align-items:center;gap:13px;margin-bottom:18px}
+  .drawer .closeb{margin-left:auto;background:var(--surface);border:1px solid var(--line);border-radius:8px;width:34px;height:34px;font-size:18px;color:var(--muted)}
+  .drawer .dname{font-family:'Barlow Condensed';font-weight:700;text-transform:uppercase;font-size:24px;color:var(--primary-deep);line-height:1}
+  .drawer .dpos{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted)}
+  .kv{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:11px}
+  .kv .krow{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--line);font-size:13.5px}
+  .kv .krow:last-child{border-bottom:none}
+  .kv .k{color:var(--muted);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.04em;text-transform:uppercase}
+  .kv .v{font-weight:600}
+  .kv .v.mono{font-family:'Space Mono',monospace;font-weight:700}
+  .dbtn{display:block;width:100%;text-align:center;border-radius:10px;padding:12px;font-family:'Barlow Condensed';
+    text-transform:uppercase;letter-spacing:.05em;font-weight:700;font-size:16px;border:1.5px solid var(--accent);
+    color:var(--accent);background:transparent}
+  .dbtn:hover{background:var(--accent);color:#fff}
+
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--primary-deep);
+    color:#e7f0e4;padding:12px 20px;border-radius:11px;font-family:'Space Mono',monospace;font-size:13px;
+    opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:60;box-shadow:0 12px 30px -12px rgba(0,0,0,.5)}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  @media(max-width:760px){.layout{grid-template-columns:1fr}.rail{flex-direction:row;overflow-x:auto;gap:8px}.rail .railnote{display:none}.rail .tab{white-space:nowrap}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-in">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <span class="sep"></span>
+    <div class="team">Northwood Wildcats<small>9U · CIRCUIT ID NW-0099 · HOME</small></div>
+    <div class="right">
+      <span class="pill hideS">posture <b id="postureTop">98.6%</b></span>
+      <span class="pill"><span class="ldot"></span>live · <span class="mono" id="clk">00:00:00</span></span>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+  <nav class="rail" role="tablist" aria-label="Console sections">
+    <button class="tab" role="tab" aria-selected="true" data-view="roster">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg>
+      Roster <span class="ct">12</span>
+    </button>
+    <button class="tab" role="tab" aria-selected="false" data-view="access">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+      Access <span class="ct">8</span>
+    </button>
+    <button class="tab" role="tab" aria-selected="false" data-view="threats">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M12 9v4M12 16h.01"/></svg>
+      Threats <span class="ct" id="threatCt">5</span>
+    </button>
+    <div class="railnote">Backstop dugout console. All data is fixture. Nothing here reaches an actual child.</div>
+  </nav>
+
+  <div class="panel">
+    <!-- ROSTER -->
+    <section class="view active" id="view-roster">
+      <div class="panel-head">
+        <div>
+          <h1>Bench Trust Posture</h1>
+          <div class="sub">12 rostered · continuous verification every 90s</div>
+        </div>
+        <div class="toolbar">
+          <input class="search" id="rosterSearch" placeholder="Filter players…" aria-label="Filter players">
+          <button class="chip" data-filter="all" aria-pressed="true">All</button>
+          <button class="chip" data-filter="watch" aria-pressed="false">Watchlist</button>
+        </div>
+      </div>
+      <div class="roster" id="rosterGrid"></div>
+    </section>
+
+    <!-- ACCESS -->
+    <section class="view" id="view-access">
+      <div class="panel-head">
+        <div>
+          <h1>Guardian Access</h1>
+          <div class="sub">least privilege · toggle to grant or revoke dugout access</div>
+        </div>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Guardian</th><th>Last re-auth</th><th>Device</th><th>State</th><th style="text-align:right">Dugout</th></tr></thead>
+          <tbody id="accessBody"></tbody>
+        </table>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <h2>Snack-Duty Grants</h2>
+          <div class="csub">least privilege · time-boxed · auto-expiring</div>
+          <div id="snackList"></div>
+        </div>
+        <div class="card">
+          <h2>Policy</h2>
+          <div class="csub">active enforcement</div>
+          <div class="kv" style="margin-bottom:0">
+            <div class="krow"><span class="k">Re-auth interval</span><span class="v mono">90s</span></div>
+            <div class="krow"><span class="k">Grant lifetime</span><span class="v mono">1 game</span></div>
+            <div class="krow"><span class="k">Background-check TTL</span><span class="v mono">180d</span></div>
+            <div class="krow"><span class="k">Cooler inspection</span><span class="v">Required</span></div>
+            <div class="krow"><span class="k">Manual override</span><span class="v">Disabled</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- THREATS -->
+    <section class="view" id="view-threats">
+      <div class="panel-head">
+        <div>
+          <h1>Bleacher Threat Feed</h1>
+          <div class="sub">live anomaly detection · this game</div>
+        </div>
+        <div class="toolbar">
+          <button class="chip" data-sev="all" aria-pressed="true">All</button>
+          <button class="chip" data-sev="high" aria-pressed="false">High</button>
+        </div>
+      </div>
+      <div class="threatlist" id="threatList"></div>
+    </section>
+  </div>
+</div>
+
+<!-- player drawer -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true" aria-label="Player detail">
+  <div class="dh">
+    <span class="num" id="dNum">0</span>
+    <div><div class="dname" id="dName">—</div><div class="dpos" id="dPos">—</div></div>
+    <button class="closeb" id="dClose" aria-label="Close">✕</button>
+  </div>
+  <div class="kv">
+    <div class="krow"><span class="k">Bench trust</span><span class="v mono" id="dScore">—</span></div>
+    <div class="krow"><span class="k">Status</span><span class="v" id="dStatus">—</span></div>
+    <div class="krow"><span class="k">Guardian</span><span class="v" id="dGuard">—</span></div>
+    <div class="krow"><span class="k">Last re-auth</span><span class="v mono" id="dReauth">—</span></div>
+    <div class="krow"><span class="k">Cleat posture</span><span class="v" id="dCleat">—</span></div>
+    <div class="krow"><span class="k">Snack clearance</span><span class="v" id="dSnack">—</span></div>
+  </div>
+  <button class="dbtn" id="dRevoke">Revoke bench access</button>
+</aside>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- fixtures ----
+  var players = [
+    {n:7,  nm:'Mason Petrowski', pos:'P / SS',   score:99, st:'ok',    guard:'Doug Petrowski',   reauth:'00:00:41', cleat:'Compliant (molded)', snack:'Cleared'},
+    {n:2,  nm:'Eli Okafor',      pos:'C',        score:96, st:'ok',    guard:'M. Okafor',        reauth:'00:01:58', cleat:'Compliant (molded)', snack:'Cleared'},
+    {n:11, nm:'Jaxon Reyes',     pos:'1B',       score:91, st:'ok',    guard:'A. Reyes',         reauth:'00:00:12', cleat:'Compliant (molded)', snack:'Cleared'},
+    {n:4,  nm:'Cooper Lang',     pos:'2B',       score:88, st:'ok',    guard:'T. Lang',          reauth:'00:03:04', cleat:'Compliant (molded)', snack:'Pending'},
+    {n:9,  nm:'Theo Calloway',   pos:'SS',       score:84, st:'watch', guard:'Steve Calloway',   reauth:'00:06:22', cleat:'Review (metal)',     snack:'Cleared'},
+    {n:5,  nm:'Brody Vance',     pos:'3B',       score:81, st:'watch', guard:'K. Vance',         reauth:'00:08:51', cleat:'Compliant (molded)', snack:'Pending'},
+    {n:24, nm:'Liam Whitfield',  pos:'LF',       score:79, st:'watch', guard:'R. Whitfield',     reauth:'00:11:09', cleat:'Compliant (molded)', snack:'Cleared'},
+    {n:16, nm:'Noah Brennan',    pos:'CF',       score:77, st:'watch', guard:'P. Brennan',       reauth:'00:13:40', cleat:'Compliant (molded)', snack:'Cleared'},
+    {n:3,  nm:'Gabe Soto',       pos:'RF',       score:73, st:'watch', guard:'L. Soto',          reauth:'00:17:02', cleat:'Compliant (molded)', snack:'Lapsed'},
+    {n:8,  nm:'Wyatt Friedman',  pos:'UTIL',     score:68, st:'watch', guard:'D. Friedman',      reauth:'00:21:33', cleat:'Compliant (molded)', snack:'Pending'},
+    {n:14, nm:'Caleb Ngata',     pos:'P',        score:61, st:'block', guard:'S. Ngata',         reauth:'EXPIRED',   cleat:'Review (metal)',     snack:'Lapsed'},
+    {n:21, nm:'Owen Marsh',      pos:'BENCH',    score:54, st:'block', guard:'(unverified)',     reauth:'EXPIRED',   cleat:'Noncompliant',       snack:'Revoked'}
+  ];
+
+  var guardians = [
+    {nm:'Doug Petrowski',   role:'Asst Coach · Compliance Lead', reauth:'00:00:41', dev:'Compliant',   on:true},
+    {nm:'Rick Vandermolen', role:'Head Coach',                   reauth:'00:01:10', dev:'Compliant',   on:true},
+    {nm:'Steve Calloway',   role:'Team Manager',                 reauth:'00:02:35', dev:'Compliant',   on:true},
+    {nm:'A. Reyes',         role:'Scorekeeper',                  reauth:'00:04:18', dev:'Compliant',   on:true},
+    {nm:'K. Vance',         role:'Pitch-Count Monitor',          reauth:'00:06:50', dev:'Stale OS',    on:true},
+    {nm:'L. Soto',          role:'Snack Coordinator',            reauth:'00:09:22', dev:'Compliant',   on:true},
+    {nm:'M. Okafor',        role:'Guardian',                     reauth:'EXPIRED',  dev:'Unenrolled',  on:false},
+    {nm:'Visitor: J. Doe',  role:'Unrostered Adult',             reauth:'—',        dev:'Unknown',     on:false}
+  ];
+
+  var snacks = [
+    {lab:'Orange slices', who:'L. Soto · Coordinator', mins:7,  ic:'🍊'},
+    {lab:'Juice boxes',   who:'T. Lang · Parent',      mins:21, ic:'🧃'},
+    {lab:'Post-game pizza',who:'K. Vance · Parent',    mins:48, ic:'🍕'},
+    {lab:'Sunflower seeds',who:'D. Petrowski (expired)',mins:0, ic:'🌻'}
+  ];
+
+  var threats = [
+    {tag:'Unrostered adult', desc:'Adult without verified identity loitering near the home dugout, section C.', sev:'high', t:'-00:00:09'},
+    {tag:'Lineup-card diff',  desc:'Visitors batting 4th does not match registration height by +4 in.', sev:'high', t:'-00:01:47'},
+    {tag:'Re-auth expired',   desc:'Guardian M. Okafor session lapsed. Bench access auto-revoked.', sev:'med', t:'-00:03:20'},
+    {tag:'Cooler not inspected',desc:'Home-bench cooler entered the perimeter without inspection scan.', sev:'med', t:'-00:05:55'},
+    {tag:'Cleat posture',     desc:'Player 7 flagged for review. Metal cleats prohibited at 9U.', sev:'med', t:'-00:08:31'},
+    {tag:'Gate breach',       desc:'Left-field fence gate opened off-schedule. Self-healed in 2s.', sev:'low', t:'-00:12:10'},
+    {tag:'Snack grant lapsed',desc:'Sunflower-seed grant exceeded its one-game lifetime. Privilege pulled.', sev:'low', t:'-00:15:44'}
+  ];
+
+  // ---- helpers ----
+  function el(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;}
+  function scoreColor(s){return s>=85?'var(--green)':s>=70?'var(--amber)':'var(--accent)';}
+  function badge(st){return st==='ok'?'<span class="badge b-ok"><span class="mini-dot" style="background:#2e9c5a"></span>Verified</span>':
+    st==='watch'?'<span class="badge b-watch"><span class="mini-dot" style="background:#C98A1E"></span>Watch</span>':
+    '<span class="badge b-block"><span class="mini-dot" style="background:#D8542A"></span>Blocked</span>';}
+  function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+    clearTimeout(t._tm);t._tm=setTimeout(function(){t.classList.remove('show');},2600);}
+
+  // ---- roster ----
+  var grid=document.getElementById('rosterGrid');
+  var curFilter='all', curSearch='';
+  function renderRoster(){
+    grid.innerHTML='';
+    players.filter(function(p){
+      if(curFilter==='watch' && p.st==='ok') return false;
+      if(curSearch && (p.nm+' '+p.pos+' '+p.n).toLowerCase().indexOf(curSearch)<0) return false;
+      return true;
+    }).forEach(function(p){
+      var c=el('button','pcard');
+      c.innerHTML='<div class="top"><span class="num">'+p.n+'</span><div><div class="nm">'+p.nm+'</div><div class="pos">'+p.pos+'</div></div></div>'+
+        '<div class="scorebar"><div class="track"><div class="fill" style="width:'+p.score+'%;background:'+scoreColor(p.score)+'"></div></div><span class="scoreval" style="color:'+scoreColor(p.score)+'">'+p.score+'</span></div>'+
+        '<div class="stat-row">'+badge(p.st)+'<span style="color:var(--muted)">re-auth '+p.reauth+'</span></div>';
+      c.addEventListener('click',function(){openDrawer(p);});
+      grid.appendChild(c);
+    });
+    if(!grid.children.length){grid.innerHTML='<div style="color:var(--muted);font-family:Space Mono,monospace;font-size:13px;padding:20px">No players match. Everyone is, technically, accounted for.</div>';}
+  }
+  document.getElementById('rosterSearch').addEventListener('input',function(e){curSearch=e.target.value.toLowerCase();renderRoster();});
+  document.querySelectorAll('[data-filter]').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('[data-filter]').forEach(function(x){x.setAttribute('aria-pressed','false');});
+      b.setAttribute('aria-pressed','true');curFilter=b.getAttribute('data-filter');renderRoster();
+    });
+  });
+
+  // ---- drawer ----
+  var drawer=document.getElementById('drawer'), scrim=document.getElementById('scrim');
+  function openDrawer(p){
+    document.getElementById('dNum').textContent=p.n;
+    document.getElementById('dName').textContent=p.nm;
+    document.getElementById('dPos').textContent=p.pos+' · NW-0099';
+    var sc=document.getElementById('dScore');sc.textContent=p.score+' / 100';sc.style.color=scoreColor(p.score);
+    document.getElementById('dStatus').innerHTML=badge(p.st);
+    document.getElementById('dGuard').textContent=p.guard;
+    document.getElementById('dReauth').textContent=p.reauth;
+    document.getElementById('dCleat').textContent=p.cleat;
+    document.getElementById('dSnack').textContent=p.snack;
+    var rb=document.getElementById('dRevoke');
+    rb.onclick=function(){toast('Bench access revoked · '+p.nm+' → pending re-verification');closeDrawer();};
+    drawer.classList.add('open');scrim.classList.add('open');drawer.setAttribute('aria-hidden','false');
+  }
+  function closeDrawer(){drawer.classList.remove('open');scrim.classList.remove('open');drawer.setAttribute('aria-hidden','true');}
+  document.getElementById('dClose').addEventListener('click',closeDrawer);
+  scrim.addEventListener('click',closeDrawer);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeDrawer();});
+
+  // ---- access table ----
+  var ab=document.getElementById('accessBody');
+  function renderAccess(){
+    ab.innerHTML='';
+    guardians.forEach(function(g,i){
+      var tr=el('tr');if(!g.on)tr.className='revoked';
+      tr.innerHTML='<td><div class="gname">'+g.nm+'</div><div class="grole">'+g.role+'</div></td>'+
+        '<td class="reauth" style="'+(g.reauth==='EXPIRED'?'color:var(--accent);font-weight:700':'')+'">'+g.reauth+'</td>'+
+        '<td><span class="grole">'+g.dev+'</span></td>'+
+        '<td><span class="access-state '+(g.on?'on':'off')+'">'+(g.on?'Granted':'Revoked')+'</span></td>'+
+        '<td style="text-align:right"></td>';
+      var btn=el('button','toggle');btn.setAttribute('aria-pressed',g.on?'true':'false');
+      btn.setAttribute('aria-label','Toggle dugout access for '+g.nm);
+      btn.innerHTML='<span class="knob"></span>';
+      btn.addEventListener('click',function(){
+        g.on=!g.on;renderAccess();
+        toast(g.on?('Dugout access granted · '+g.nm):('Dugout access revoked · '+g.nm+' → pending re-verification'));
+      });
+      tr.lastChild.appendChild(btn);
+      ab.appendChild(tr);
+    });
+  }
+
+  // ---- snacks ----
+  var snackList=document.getElementById('snackList');
+  function pad(n){return (n<10?'0':'')+n;}
+  function renderSnacks(){
+    snackList.innerHTML='';
+    snacks.forEach(function(s){
+      var exp=s.mins<=0;
+      var g=el('div','grant'+(exp?' expired':''));
+      var cd=exp?'EXPIRED':('T-'+pad(Math.floor(s.mins))+':00');
+      g.innerHTML='<span class="gicon">'+s.ic+'</span><div><div class="glab">'+s.lab+'</div><div class="gassign">'+s.who+'</div></div><span class="countdown">'+cd+'</span>';
+      snackList.appendChild(g);
+    });
+  }
+
+  // ---- threats ----
+  var tl=document.getElementById('threatList'), curSev='all';
+  function renderThreats(){
+    tl.innerHTML='';
+    var list=threats.filter(function(t){return curSev==='all'||t.sev===curSev;});
+    list.forEach(function(t){
+      var r=el('div','trow');
+      r.innerHTML='<span class="sev '+t.sev+'"></span><span class="ttag">'+t.tag+'</span><span class="tdesc">'+t.desc+'</span>'+
+        '<span class="tsev '+t.sev+'">'+t.sev+'</span><span class="ttime">'+t.t+'</span>';
+      tl.appendChild(r);
+    });
+    document.getElementById('threatCt').textContent=threats.filter(function(t){return t.sev==='high'||t.sev==='med';}).length;
+  }
+  document.querySelectorAll('[data-sev]').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('[data-sev]').forEach(function(x){x.setAttribute('aria-pressed','false');});
+      b.setAttribute('aria-pressed','true');curSev=b.getAttribute('data-sev');renderThreats();
+    });
+  });
+
+  // ---- tabs ----
+  document.querySelectorAll('.rail .tab').forEach(function(tab){
+    tab.addEventListener('click',function(){
+      document.querySelectorAll('.rail .tab').forEach(function(t){t.setAttribute('aria-selected','false');});
+      tab.setAttribute('aria-selected','true');
+      var v=tab.getAttribute('data-view');
+      document.querySelectorAll('.view').forEach(function(s){s.classList.remove('active');});
+      document.getElementById('view-'+v).classList.add('active');
+    });
+  });
+
+  // ---- clock ----
+  function tick(){
+    var d=new Date();
+    document.getElementById('clk').textContent=pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+  }
+  tick(); if(!reduce) setInterval(tick,1000);
+
+  renderRoster();renderAccess();renderSnacks();renderThreats();
+})();
+</script>
+</body>
+</html>
