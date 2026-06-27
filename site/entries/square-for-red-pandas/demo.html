@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Canopy Register · Tender</title>
+<meta name="description" content="The Tender point-of-sale console for a red panda's bamboo stand.">
+<meta name="theme-color" content="#1C4A47">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal:#1C4A47; --copper:#B0742B; --ivory:#F3E9D2; --fg:#211B12;
+    --muted:#857650; --ink:#16302E;
+    --panel:#F7EFDB; --panel-edge:#E6D9B6;
+    --hair:rgba(28,74,71,.55); --hair-soft:rgba(28,74,71,.20);
+  }
+  *{box-sizing:border-box}
+  html{height:100%}
+  body{
+    margin:0; min-height:100%; background:var(--ivory); color:var(--fg);
+    font-family:'Spectral',Georgia,serif; font-size:16px; line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(120% 80% at 50% -10%, rgba(176,116,43,.05), transparent 60%);
+  }
+  .num{font-variant-numeric:tabular-nums lining-nums; font-feature-settings:"tnum" 1,"lnum" 1}
+  .cinz{font-family:'Cinzel',serif}
+  button{font-family:inherit; cursor:pointer}
+  :focus-visible{outline:2px solid var(--copper); outline-offset:2px}
+
+  .shell{max-width:1180px; margin:0 auto; padding:16px 20px 48px}
+
+  /* top chrome */
+  .chrome{display:flex; align-items:center; justify-content:space-between; gap:16px; padding:6px 0 16px}
+  .back{font-family:'Cinzel',serif; font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); text-decoration:none}
+  .back:hover{color:var(--teal)}
+  .brand{display:flex; align-items:center; gap:10px}
+  .brand .mk{width:26px;height:26px}
+  .brand .mk svg{width:100%;height:100%;stroke:var(--teal);fill:none;stroke-width:1.1}
+  .brand .wm{font-family:'Cinzel',serif; font-weight:800; letter-spacing:.22em; text-transform:uppercase; font-size:14px; color:var(--ink)}
+
+  /* register header strip */
+  .strip{
+    background:var(--panel); border:1px solid var(--hair);
+    box-shadow:inset 0 0 0 4px var(--ivory), inset 0 0 0 5px var(--hair-soft);
+    padding:18px 22px; display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:18px; align-items:center;
+  }
+  @media (max-width:760px){.strip{grid-template-columns:1fr 1fr; row-gap:14px}}
+  @media (max-width:480px){.strip{grid-template-columns:1fr}}
+  .strip .merch .lbl,.stat .lbl{font-family:'Cinzel',serif; font-size:10.5px; letter-spacing:.22em; text-transform:uppercase; color:var(--muted); margin:0 0 4px}
+  .strip .merch .val{font-family:'Cinzel',serif; font-weight:700; font-size:18px; color:var(--ink); margin:0}
+  .strip .merch .sub{font-size:13px; color:var(--muted); font-style:italic; margin:2px 0 0}
+  .stat .val{font-family:'Cinzel',serif; font-weight:800; font-size:20px; color:var(--teal); margin:0}
+  .stat.ok .val{color:var(--teal)}
+  .stat .val small{font-size:12px; color:var(--muted); font-weight:400; font-family:'Spectral'}
+
+  /* tabs */
+  .tabs{display:flex; gap:4px; margin:18px 0 0; border-bottom:1px solid var(--hair)}
+  .tab{
+    background:transparent; border:1px solid transparent; border-bottom:none;
+    font-family:'Cinzel',serif; font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--muted); padding:11px 20px; position:relative; top:1px;
+  }
+  .tab[aria-selected="true"]{color:var(--ink); background:var(--panel); border-color:var(--hair); box-shadow:inset 0 3px 0 var(--copper)}
+  .tab:hover{color:var(--teal)}
+
+  .panel{display:none; padding-top:22px}
+  .panel.active{display:block}
+
+  /* register layout */
+  .register{display:grid; grid-template-columns:1.6fr .9fr; gap:22px; align-items:start}
+  @media (max-width:880px){.register{grid-template-columns:1fr}}
+
+  .skus{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
+  @media (max-width:880px){.skus{grid-template-columns:repeat(3,1fr)}}
+  @media (max-width:560px){.skus{grid-template-columns:repeat(2,1fr)}}
+  .sku{
+    text-align:left; background:var(--panel); border:1px solid var(--hair);
+    box-shadow:inset 0 0 0 3px var(--ivory);
+    padding:16px 14px; min-height:104px; display:flex; flex-direction:column; justify-content:space-between;
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .sku:hover{transform:translateY(-2px); box-shadow:inset 0 0 0 3px var(--ivory), 0 10px 22px -16px rgba(22,48,46,.6)}
+  .sku:active{transform:translateY(0)}
+  .sku .nm{font-family:'Cinzel',serif; font-weight:600; font-size:14.5px; color:var(--ink); line-height:1.2}
+  .sku .grade{font-size:12px; color:var(--muted); font-style:italic; margin-top:3px}
+  .sku .pr{font-family:'Cinzel',serif; font-weight:800; font-size:16px; color:var(--teal); margin-top:10px}
+
+  /* cart */
+  .cart{
+    background:var(--panel); border:1px solid var(--hair);
+    box-shadow:inset 0 0 0 4px var(--ivory), inset 0 0 0 5px var(--hair-soft);
+    padding:20px; position:sticky; top:14px;
+  }
+  .cart h2{font-family:'Cinzel',serif; font-weight:700; font-size:14px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink); margin:0 0 4px}
+  .cart .reg-sub{font-size:12.5px; color:var(--muted); font-style:italic; margin:0 0 16px}
+  .lines{list-style:none; margin:0; padding:0; min-height:90px; border-top:1px solid var(--hair-soft)}
+  .lines li{display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--hair-soft)}
+  .lines .l-nm{flex:1; font-size:14.5px; color:var(--fg)}
+  .lines .l-qty{font-family:'Cinzel',serif; font-size:12px; color:var(--muted)}
+  .lines .l-pr{font-family:'Cinzel',serif; font-weight:700; font-size:14px; color:var(--teal); min-width:64px; text-align:right}
+  .lines .l-rm{background:none; border:1px solid var(--hair-soft); color:var(--muted); width:24px; height:24px; line-height:1; font-size:15px; padding:0}
+  .lines .l-rm:hover{border-color:var(--copper); color:var(--copper)}
+  .empty{color:var(--muted); font-style:italic; padding:24px 0; text-align:center; font-size:14px}
+  .totals{margin-top:16px; padding-top:14px; border-top:1px solid var(--hair)}
+  .totals .row{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px}
+  .totals .row .k{font-size:13.5px; color:var(--muted)}
+  .totals .row .v{font-family:'Cinzel',serif; font-weight:700; color:var(--ink)}
+  .totals .row.grand .k{font-family:'Cinzel',serif; text-transform:uppercase; letter-spacing:.12em; font-size:12px; color:var(--ink)}
+  .totals .row.grand .v{font-size:22px; color:var(--teal)}
+  .totals .row.collected .v{color:var(--copper)}
+  .charge{
+    width:100%; margin-top:16px; background:var(--copper); color:var(--ivory);
+    font-family:'Cinzel',serif; font-weight:700; letter-spacing:.12em; text-transform:uppercase; font-size:13.5px;
+    border:1px solid #8c5b1d; padding:15px; box-shadow:0 1px 0 #6f4715, inset 0 1px 0 rgba(255,255,255,.18);
+    transition:transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+  }
+  .charge:hover{background:#a96c25}
+  .charge:active{transform:translateY(2px); box-shadow:0 0 0 #6f4715}
+  .charge:disabled{opacity:.45; cursor:not-allowed; background:var(--muted); border-color:var(--muted)}
+
+  /* settlements feed */
+  .feed{list-style:none; margin:0; padding:0}
+  .feed li{
+    display:grid; grid-template-columns:auto 1fr auto auto; gap:14px; align-items:center;
+    background:var(--panel); border:1px solid var(--hair-soft); box-shadow:inset 0 0 0 3px var(--ivory);
+    padding:14px 18px; margin-bottom:10px;
+  }
+  .feed .seal-dot{width:30px;height:30px;flex:0 0 auto}
+  .feed .seal-dot svg{width:100%;height:100%}
+  .feed .f-main{font-size:14.5px; color:var(--ink)}
+  .feed .f-main small{display:block; color:var(--muted); font-style:italic; font-size:12.5px}
+  .feed .f-tendered{font-family:'Cinzel',serif; font-size:13px; color:var(--muted); text-align:right}
+  .feed .f-collected{font-family:'Cinzel',serif; font-weight:800; font-size:16px; color:var(--teal); text-align:right; min-width:84px}
+  .feed-empty{color:var(--muted); font-style:italic; text-align:center; padding:40px 0}
+  .note-card{
+    background:var(--panel); border:1px solid var(--hair); box-shadow:inset 0 0 0 4px var(--ivory), inset 0 0 0 5px var(--hair-soft);
+    padding:22px; margin-bottom:18px;
+  }
+  .note-card h2{font-family:'Cinzel',serif; font-weight:700; font-size:13px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink); margin:0 0 6px}
+  .note-card p{margin:0; color:var(--fg)}
+  .note-card p.muted{color:var(--muted); font-style:italic; font-size:14px}
+
+  /* hollow */
+  .hollow-grid{display:grid; grid-template-columns:1.1fr .9fr; gap:18px}
+  @media (max-width:760px){.hollow-grid{grid-template-columns:1fr}}
+  .balance-big{font-family:'Cinzel',serif; font-weight:900; font-size:clamp(40px,8vw,64px); color:var(--teal); line-height:1; margin:6px 0 4px}
+  .kv{list-style:none; margin:14px 0 0; padding:0}
+  .kv li{display:flex; justify-content:space-between; gap:12px; padding:11px 0; border-bottom:1px solid var(--hair-soft); font-size:14.5px}
+  .kv .k{color:var(--muted)}
+  .kv .v{font-family:'Cinzel',serif; font-weight:700; color:var(--ink)}
+
+  /* modal */
+  .scrim{
+    position:fixed; inset:0; background:rgba(22,48,46,.55); display:none;
+    align-items:center; justify-content:center; padding:20px; z-index:50;
+  }
+  .scrim.open{display:flex}
+  .modal{
+    background:var(--ivory); border:1px solid var(--hair);
+    box-shadow:inset 0 0 0 5px var(--ivory), inset 0 0 0 6px var(--hair-soft), 0 30px 70px -30px rgba(0,0,0,.5);
+    max-width:380px; width:100%; padding:30px 28px; text-align:center; position:relative;
+  }
+  .modal .corner{position:absolute; width:40px; height:40px; opacity:.8}
+  .modal .corner svg{width:100%;height:100%;stroke:var(--teal);fill:none;stroke-width:1}
+  .modal .corner.tl{top:8px;left:8px}
+  .modal .corner.tr{top:8px;right:8px;transform:scaleX(-1)}
+  .modal .corner.bl{bottom:8px;left:8px;transform:scaleY(-1)}
+  .modal .corner.br{bottom:8px;right:8px;transform:scale(-1,-1)}
+  .modal h2{font-family:'Cinzel',serif; font-weight:700; font-size:15px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink); margin:4px 0 4px}
+  .modal .m-sub{color:var(--muted); font-style:italic; font-size:13.5px; margin:0 0 18px}
+  .tailprint{width:170px; height:170px; margin:0 auto 14px; position:relative}
+  .tailprint svg{width:100%; height:100%}
+  .tailprint .tp-ring{fill:none; stroke:var(--teal); stroke-width:1; stroke-linecap:round}
+  .tailprint .tp-seal{opacity:0; transition:opacity .35s ease}
+  .tailprint.verified .tp-seal{opacity:1}
+  .m-status{font-family:'Cinzel',serif; font-size:12.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); min-height:18px; margin:0 0 18px}
+  .m-status.done{color:var(--copper)}
+  .m-amt{font-family:'Cinzel',serif; font-weight:800; color:var(--teal); font-size:20px; margin:0 0 4px}
+  .m-amt small{font-size:12px; color:var(--muted); font-weight:400; font-family:'Spectral'}
+  .m-actions{display:flex; gap:10px; margin-top:18px}
+  .m-actions button{flex:1; font-family:'Cinzel',serif; font-size:12.5px; letter-spacing:.1em; text-transform:uppercase; padding:12px; border:1px solid var(--hair)}
+  .m-actions .secondary{background:transparent; color:var(--teal)}
+  .m-actions .secondary:hover{background:rgba(28,74,71,.06)}
+  .m-actions .primary{background:var(--copper); color:var(--ivory); border-color:#8c5b1d}
+  .m-actions .primary:hover{background:#a96c25}
+  .m-actions .primary:disabled{opacity:.4; cursor:not-allowed}
+  @media (prefers-reduced-motion:reduce){.tailprint .tp-ring{stroke-dasharray:none !important; stroke-dashoffset:0 !important}}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="chrome">
+    <a class="back" href="./index.html">&larr; Back to the pitch</a>
+    <div class="brand">
+      <span class="mk" aria-hidden="true"><svg viewBox="-50 -50 100 100"><circle r="46"></circle><circle r="38"></circle></svg></span>
+      <span class="wm">Tender</span>
+    </div>
+  </div>
+
+  <div class="strip">
+    <div class="merch">
+      <p class="lbl">Merchant of record</p>
+      <p class="val">Pemba &middot; Three-Tree Holding</p>
+      <p class="sub">Bamboo Sector Seven, Eastern Himalayan Range</p>
+    </div>
+    <div class="stat ok">
+      <p class="lbl">Hollow balance</p>
+      <p class="val num">0 stalks <small>&middot; settled, on time</small></p>
+    </div>
+    <div class="stat">
+      <p class="lbl">Next settlement</p>
+      <p class="val num" id="countdown">— : — : —</p>
+    </div>
+  </div>
+
+  <div class="tabs" role="tablist" aria-label="Canopy Register sections">
+    <button class="tab" role="tab" aria-selected="true" id="tab-register" aria-controls="p-register">Register</button>
+    <button class="tab" role="tab" aria-selected="false" id="tab-settle" aria-controls="p-settle">Settlements</button>
+    <button class="tab" role="tab" aria-selected="false" id="tab-hollow" aria-controls="p-hollow">Hollow</button>
+  </div>
+
+  <!-- REGISTER -->
+  <section class="panel active" id="p-register" role="tabpanel" aria-labelledby="tab-register">
+    <div class="register">
+      <div>
+        <div class="skus" id="skus" aria-label="Bamboo catalog"></div>
+      </div>
+      <div class="cart" aria-label="Current sale">
+        <h2>Current sale</h2>
+        <p class="reg-sub">Tap a SKU to ring it up. Tender collects in bamboo.</p>
+        <ul class="lines" id="lines"><li class="empty" id="empty-line">Nothing rung up yet. The canopy is quiet.</li></ul>
+        <div class="totals">
+          <div class="row"><span class="k">Items</span><span class="v num" id="t-count">0</span></div>
+          <div class="row grand"><span class="k">Tendered</span><span class="v num" id="t-tendered">0 stalks</span></div>
+          <div class="row collected"><span class="k">Tender will collect</span><span class="v num" id="t-collected">0 stalks</span></div>
+        </div>
+        <button class="charge" id="charge" disabled>Charge tail</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SETTLEMENTS -->
+  <section class="panel" id="p-settle" role="tabpanel" aria-labelledby="tab-settle" hidden>
+    <div class="note-card">
+      <h2>Settlement window</h2>
+      <p>All cleared charges deposit to your hollow before sundown. Bamboo rate floats nightly and is, per your agreement, not explained here.</p>
+      <p class="muted">Collected to date: 0 stalks across every charge on file. Settled on time, every time.</p>
+    </div>
+    <ul class="feed" id="feed"><li class="feed-empty" id="feed-empty">No charges settled yet today. Ring one up on the Register.</li></ul>
+  </section>
+
+  <!-- HOLLOW -->
+  <section class="panel" id="p-hollow" role="tabpanel" aria-labelledby="tab-hollow" hidden>
+    <div class="hollow-grid">
+      <div class="note-card">
+        <h2>Hollow deposit account</h2>
+        <p class="muted">Registered hollow &middot; third fork, south-facing fir</p>
+        <p class="balance-big num">0 <span style="font-size:.4em;color:var(--muted);font-weight:400;font-family:'Spectral'">stalks</span></p>
+        <p class="muted">Available now. Swept idle reserves earn a floating yield we set between visits and sweep back before anyone lifts the lid.</p>
+      </div>
+      <div class="note-card">
+        <h2>Account standing</h2>
+        <ul class="kv">
+          <li><span class="k">Lifetime collected</span><span class="v num">0 stalks</span></li>
+          <li><span class="k">On-time settlements</span><span class="v num">42 / 42</span></li>
+          <li><span class="k">Tail-prints on file</span><span class="v num">1</span></li>
+          <li><span class="k">Disputes (by scent)</span><span class="v num">0</span></li>
+          <li><span class="k">Plan</span><span class="v">Forager</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- TAIL-PRINT MODAL -->
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="m-title" aria-describedby="m-desc">
+  <div class="modal">
+    <span class="corner tl" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M4 36 V12 Q4 4 12 4 H36"/></svg></span>
+    <span class="corner tr" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M4 36 V12 Q4 4 12 4 H36"/></svg></span>
+    <span class="corner bl" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M4 36 V12 Q4 4 12 4 H36"/></svg></span>
+    <span class="corner br" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M4 36 V12 Q4 4 12 4 H36"/></svg></span>
+    <h2 id="m-title">Tail-print authorization</h2>
+    <p class="m-sub" id="m-desc">Present the bearer's tail to the reader. If the rings match, the money moves.</p>
+    <div class="tailprint" id="tailprint">
+      <svg viewBox="-90 -90 180 180" aria-hidden="true">
+        <path class="tp-ring" id="tpRing" d=""></path>
+        <g class="tp-seal" id="tpSeal">
+          <circle r="34" fill="none" stroke="#B0742B" stroke-width="1.4"></circle>
+          <circle r="27" fill="none" stroke="#B0742B" stroke-width=".7"></circle>
+          <path id="mSealArc" d="M0,-20 a20,20 0 1,1 -0.1,0" fill="none"></path>
+          <text font-family="Cinzel" font-weight="700" font-size="6.4" letter-spacing="1.4" fill="#B0742B"><textPath href="#mSealArc" startOffset="0%">· VERIFIED · RINGS MATCHED · </textPath></text>
+          <text x="0" y="6" text-anchor="middle" font-family="Cinzel" font-weight="800" font-size="14" fill="#B0742B">CR</text>
+        </g>
+      </svg>
+    </div>
+    <p class="m-status" id="m-status" aria-live="polite">Reading rings&hellip;</p>
+    <p class="m-amt num"><span id="m-tendered">0 stalks</span> tendered <small>&middot; <span id="m-collected">0 stalks</span> collected</small></p>
+    <div class="m-actions">
+      <button class="secondary" id="m-cancel">Cancel</button>
+      <button class="primary" id="m-finish" disabled>Settle to hollow</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+
+  // ---- guilloche path (hypotrochoid) for the tail-print ----
+  function hypo(R,r,d,step){
+    var pts=[],t=0,k=(R-r)/r,turns=Math.max(r,8),tmax=2*Math.PI*turns,s=step||0.06;
+    for(t=0;t<=tmax;t+=s){
+      var x=(R-r)*Math.cos(t)+d*Math.cos(k*t);
+      var y=(R-r)*Math.sin(t)-d*Math.sin(k*t);
+      pts.push(x.toFixed(1)+" "+y.toFixed(1));
+    }
+    return "M"+pts.join("L")+"Z";
+  }
+  var ring=document.getElementById("tpRing");
+  ring.setAttribute("d", hypo(70,23,40,0.05));
+
+  // ---- catalog ----
+  var CATALOG=[
+    {id:"shoots", nm:"Tender Shoots", grade:"first cut, dawn", pr:4},
+    {id:"leaves", nm:"Day-Old Leaves", grade:"value grade", pr:1},
+    {id:"heartwood", nm:"Premium Heartwood", grade:"reserve", pr:12},
+    {id:"culm", nm:"Whole Culm", grade:"bulk", pr:8},
+    {id:"sprigs", nm:"Second-Growth Sprigs", grade:"seasonal", pr:3},
+    {id:"sheath", nm:"Bract & Sheath", grade:"off-cut", pr:2}
+  ];
+  var cart={}; // id -> qty
+
+  var skusEl=document.getElementById("skus");
+  CATALOG.forEach(function(item){
+    var b=document.createElement("button");
+    b.className="sku"; b.type="button";
+    b.setAttribute("aria-label","Add "+item.nm+", "+item.pr+" stalks");
+    b.innerHTML='<span><span class="nm">'+item.nm+'</span><span class="grade">'+item.grade+'</span></span><span class="pr num">'+item.pr+' stalks</span>';
+    b.addEventListener("click",function(){ cart[item.id]=(cart[item.id]||0)+1; render(); });
+    skusEl.appendChild(b);
+  });
+
+  var linesEl=document.getElementById("lines"),
+      emptyLine=document.getElementById("empty-line"),
+      tCount=document.getElementById("t-count"),
+      tTendered=document.getElementById("t-tendered"),
+      tCollected=document.getElementById("t-collected"),
+      chargeBtn=document.getElementById("charge");
+
+  function tenderedTotal(){
+    var n=0; CATALOG.forEach(function(it){ n+= (cart[it.id]||0)*it.pr; }); return n;
+  }
+  function itemCount(){ var n=0; for(var k in cart){ n+=cart[k]; } return n; }
+
+  function render(){
+    // clear
+    linesEl.innerHTML="";
+    var ids=Object.keys(cart).filter(function(id){return cart[id]>0;});
+    if(!ids.length){
+      var li=document.createElement("li"); li.className="empty";
+      li.textContent="Nothing rung up yet. The canopy is quiet.";
+      linesEl.appendChild(li);
+    } else {
+      ids.forEach(function(id){
+        var it=CATALOG.filter(function(c){return c.id===id;})[0], q=cart[id];
+        var li=document.createElement("li");
+        li.innerHTML='<span class="l-nm">'+it.nm+'</span><span class="l-qty num">&times;'+q+'</span><span class="l-pr num">'+(it.pr*q)+' stalks</span>';
+        var rm=document.createElement("button");
+        rm.className="l-rm"; rm.type="button"; rm.setAttribute("aria-label","Remove one "+it.nm); rm.textContent="−";
+        rm.addEventListener("click",function(){ cart[id]--; if(cart[id]<=0) delete cart[id]; render(); });
+        li.appendChild(rm);
+        linesEl.appendChild(li);
+      });
+    }
+    var t=tenderedTotal(), c=itemCount();
+    tCount.textContent=c;
+    tTendered.textContent=t+" stalks";
+    tCollected.textContent="0 stalks";
+    chargeBtn.disabled = c===0;
+  }
+  render();
+
+  // ---- countdown to sundown (fixed target client-side) ----
+  var cd=document.getElementById("countdown");
+  var remaining = 3*3600 + 41*60 + 12; // a fixed, deadpan "until sundown"
+  function fmt(s){
+    var h=Math.floor(s/3600), m=Math.floor((s%3600)/60), x=s%60;
+    function p(n){return (n<10?"0":"")+n;}
+    return p(h)+" : "+p(m)+" : "+p(x);
+  }
+  cd.textContent=fmt(remaining);
+  if(!reduce){
+    setInterval(function(){ remaining=(remaining-1+60*60*24)% (60*60*24); cd.textContent=fmt(remaining); },1000);
+  }
+
+  // ---- tabs ----
+  var tabs=[["tab-register","p-register"],["tab-settle","p-settle"],["tab-hollow","p-hollow"]];
+  tabs.forEach(function(pair){
+    var t=document.getElementById(pair[0]);
+    t.addEventListener("click",function(){ selectTab(pair[0]); });
+    t.addEventListener("keydown",function(e){
+      var i=tabs.findIndex(function(p){return p[0]===pair[0];});
+      if(e.key==="ArrowRight"){ e.preventDefault(); selectTab(tabs[(i+1)%tabs.length][0],true); }
+      if(e.key==="ArrowLeft"){ e.preventDefault(); selectTab(tabs[(i-1+tabs.length)%tabs.length][0],true); }
+    });
+  });
+  function selectTab(id,focus){
+    tabs.forEach(function(pair){
+      var t=document.getElementById(pair[0]), p=document.getElementById(pair[1]);
+      var on=pair[0]===id;
+      t.setAttribute("aria-selected",on?"true":"false");
+      p.classList.toggle("active",on); p.hidden=!on;
+      if(on && focus) t.focus();
+    });
+  }
+
+  // ---- settlement feed ----
+  var feedEl=document.getElementById("feed"), feedEmpty=document.getElementById("feed-empty");
+  var ticket=4400;
+  function sealDotSVG(){
+    return '<svg viewBox="-50 -50 100 100"><circle r="46" fill="none" stroke="#B0742B" stroke-width="3"/><circle r="34" fill="none" stroke="#B0742B" stroke-width="2"/><path d="M-20 2 L-6 18 L22 -18" fill="none" stroke="#B0742B" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
+  function addSettlement(tendered,count){
+    if(feedEmpty){ feedEmpty.remove(); feedEmpty=null; }
+    ticket++;
+    var li=document.createElement("li");
+    li.innerHTML=
+      '<span class="seal-dot" aria-hidden="true">'+sealDotSVG()+'</span>'+
+      '<span class="f-main">Charge cleared &middot; '+count+' item'+(count===1?"":"s")+'<small>Ticket No. '+ticket+' &middot; tail-print verified &middot; settled to hollow</small></span>'+
+      '<span class="f-tendered num">'+tendered+' tendered</span>'+
+      '<span class="f-collected num">0 stalks</span>';
+    feedEl.insertBefore(li,feedEl.firstChild);
+  }
+
+  // ---- charge modal ----
+  var scrim=document.getElementById("scrim"),
+      tp=document.getElementById("tailprint"),
+      mStatus=document.getElementById("m-status"),
+      mFinish=document.getElementById("m-finish"),
+      mCancel=document.getElementById("m-cancel"),
+      mTendered=document.getElementById("m-tendered"),
+      mCollected=document.getElementById("m-collected");
+  var pending=null, lastFocus=null, ringLen=0;
+  ringLen = ring.getTotalLength ? ring.getTotalLength() : 1200;
+
+  chargeBtn.addEventListener("click",function(){
+    var t=tenderedTotal(), c=itemCount();
+    if(c===0) return;
+    pending={tendered:t,count:c};
+    mTendered.textContent=t+" stalks";
+    mCollected.textContent="0 stalks";
+    openModal();
+  });
+
+  function openModal(){
+    lastFocus=document.activeElement;
+    scrim.classList.add("open");
+    tp.classList.remove("verified");
+    mStatus.textContent="Reading rings…"; mStatus.classList.remove("done");
+    mFinish.disabled=true;
+    mCancel.focus();
+    // draw the ring
+    if(!reduce){
+      ring.style.transition="none";
+      ring.style.strokeDasharray=ringLen; ring.style.strokeDashoffset=ringLen;
+      // force reflow
+      void ring.getBoundingClientRect();
+      ring.style.transition="stroke-dashoffset 1.2s ease";
+      ring.style.strokeDashoffset="0";
+      setTimeout(verify,1350);
+    } else {
+      ring.style.strokeDasharray="none"; ring.style.strokeDashoffset="0";
+      verify();
+    }
+  }
+  function verify(){
+    tp.classList.add("verified");
+    mStatus.textContent="Rings matched · authorized";
+    mStatus.classList.add("done");
+    mFinish.disabled=false;
+    mFinish.focus();
+  }
+  function closeModal(){
+    scrim.classList.remove("open");
+    if(lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  mCancel.addEventListener("click",closeModal);
+  mFinish.addEventListener("click",function(){
+    if(pending){ addSettlement(pending.tendered, pending.count); }
+    cart={}; render();
+    closeModal();
+    pending=null;
+  });
+  scrim.addEventListener("click",function(e){ if(e.target===scrim) closeModal(); });
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape" && scrim.classList.contains("open")) closeModal(); });
+})();
+</script>
+</body>
+</html>
