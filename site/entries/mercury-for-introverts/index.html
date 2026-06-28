@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Burrow · theworstaistudioever</title>
+<meta name="description" content="The business bank you operate in complete silence.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Burrow · The business bank you operate in complete silence.">
+<meta property="og:description" content="No branch. No phone tree. No relationship manager who just wanted to put a face to the name.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Burrow · The business bank you operate in complete silence.">
+<meta name="twitter:description" content="No branch. No phone tree. No relationship manager who just wanted to put a face to the name.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300&family=Work+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#E9E8E3;
+    --fg:#26282B;
+    --ink:#1A1C1E;
+    --primary:#3D4248;
+    --muted:#8B8C86;
+    --accent:#4A6076;
+    --rule:rgba(38,40,43,0.14);
+    --serif:'Newsreader','Iowan Old Style',Georgia,serif;
+    --sans:'Work Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--fg);
+    font-family:var(--sans);
+    font-weight:400;
+    line-height:1.6;
+    font-size:17px;
+    letter-spacing:0.005em;
+    /* faint paper vignette, nothing more */
+    background-image:radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,0.35), rgba(255,255,255,0) 55%);
+    background-attachment:fixed;
+  }
+  .wrap{max-width:680px;margin:0 auto;padding:0 28px;}
+  a{color:inherit;}
+  h1,h2,h3{font-family:var(--serif);font-weight:400;color:var(--ink);letter-spacing:-0.01em;margin:0;}
+  .num{font-variant-numeric:tabular-nums;}
+
+  /* fade-in on load, kept slow and quiet */
+  .q{opacity:0;transform:translateY(8px);animation:settle .6s ease forwards;}
+  .q2{animation-delay:.12s;}
+  .q3{animation-delay:.24s;}
+  .q4{animation-delay:.36s;}
+  @keyframes settle{to{opacity:1;transform:none;}}
+
+  /* top bar */
+  .top{display:flex;align-items:baseline;justify-content:space-between;padding:34px 0 0;}
+  .mark{font-family:var(--serif);font-size:20px;color:var(--ink);letter-spacing:0;}
+  .mark .dot{font-style:italic;color:var(--muted);}
+  .topnav{font-size:13px;color:var(--muted);display:flex;gap:22px;align-items:baseline;}
+  .topnav a{text-decoration:none;}
+  .topnav a:hover{color:var(--fg);}
+  .topnav .ghost-cta{color:var(--accent);border-bottom:1px solid var(--accent);padding-bottom:1px;}
+
+  /* hero — mostly empty on purpose */
+  .hero{padding:120px 0 130px;}
+  .status{display:inline-flex;align-items:center;gap:9px;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:34px;}
+  .status .led{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(74,96,118,0.14);}
+  .hero h1{font-size:clamp(2rem,5.4vw,3rem);line-height:1.12;max-width:13ch;}
+  .hero .sub{margin-top:26px;max-width:46ch;color:var(--primary);font-size:18px;font-weight:300;}
+  .cta-row{margin-top:46px;display:flex;align-items:center;gap:26px;flex-wrap:wrap;}
+  .btn{
+    font-family:var(--sans);font-size:15px;font-weight:500;
+    background:var(--accent);color:#F3F2EE;text-decoration:none;
+    padding:14px 26px;border-radius:2px;letter-spacing:0.01em;
+    transition:opacity .2s ease;
+  }
+  .btn:hover{opacity:0.86;}
+  .btn:focus-visible{outline:2px solid var(--ink);outline-offset:3px;}
+  .quiet-link{font-size:14px;color:var(--muted);text-decoration:none;}
+  .quiet-link:hover{color:var(--fg);}
+
+  /* balance plate */
+  .plate{margin-top:64px;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:24px 0;display:flex;gap:48px;flex-wrap:wrap;}
+  .plate .cell .k{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);}
+  .plate .cell .v{font-family:var(--serif);font-size:27px;color:var(--ink);margin-top:6px;font-variant-numeric:tabular-nums;}
+  .plate .cell .v small{font-size:13px;color:var(--muted);font-family:var(--sans);}
+
+  /* generic section */
+  section{padding:96px 0;}
+  .eyebrow{font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin-bottom:40px;}
+
+  /* features as quiet rows */
+  .feat{padding:30px 0;border-top:1px solid var(--rule);}
+  .feat:last-of-type{border-bottom:1px solid var(--rule);}
+  .feat h3{font-size:23px;margin-bottom:10px;}
+  .feat p{margin:0;max-width:54ch;color:var(--primary);font-weight:300;}
+
+  /* testimonials */
+  .quote{padding:38px 0;border-top:1px solid var(--rule);}
+  .quote:last-of-type{border-bottom:1px solid var(--rule);}
+  .quote blockquote{margin:0;font-family:var(--serif);font-size:21px;line-height:1.5;color:var(--ink);font-weight:300;}
+  .byline{display:flex;align-items:center;gap:14px;margin-top:20px;}
+  .initials{width:38px;height:38px;border-radius:50%;border:1px solid var(--rule);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted);letter-spacing:0.04em;flex:none;}
+  .byline .who{font-size:14px;}
+  .byline .who b{font-weight:500;color:var(--fg);}
+  .byline .who span{display:block;color:var(--muted);font-size:13px;}
+
+  /* pricing */
+  .tier{padding:34px 0;border-top:1px solid var(--rule);display:grid;grid-template-columns:1fr auto;gap:14px 32px;align-items:baseline;}
+  .tier:last-of-type{border-bottom:1px solid var(--rule);}
+  .tier .name{font-family:var(--serif);font-size:24px;color:var(--ink);}
+  .tier .price{font-family:var(--serif);font-size:24px;color:var(--ink);font-variant-numeric:tabular-nums;text-align:right;}
+  .tier .tline{grid-column:1 / -1;color:var(--primary);font-weight:300;max-width:50ch;margin-top:-4px;}
+  .tier ul{grid-column:1 / -1;list-style:none;margin:8px 0 0;padding:0;}
+  .tier li{padding:7px 0 7px 22px;position:relative;color:var(--fg);font-weight:300;font-size:15px;}
+  .tier li::before{content:"";position:absolute;left:0;top:14px;width:9px;height:1px;background:var(--muted);}
+
+  /* closing */
+  .close{text-align:center;padding:110px 0;}
+  .close h2{font-size:clamp(1.6rem,4vw,2.2rem);max-width:18ch;margin:0 auto 34px;line-height:1.18;}
+
+  footer{border-top:1px solid var(--rule);padding:36px 0 60px;display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:16px;}
+  footer .back{font-size:13px;color:var(--muted);text-decoration:none;}
+  footer .back:hover{color:var(--fg);}
+  footer .fine{font-size:12px;color:var(--muted);max-width:40ch;text-align:right;}
+
+  @media (max-width:560px){
+    .hero{padding:84px 0 90px;}
+    .plate{gap:30px;}
+    .tier{grid-template-columns:1fr;}
+    .tier .price{text-align:left;}
+    footer .fine{text-align:left;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .q{animation:none;opacity:1;transform:none;}
+    *{scroll-behavior:auto;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top q">
+    <div class="mark">Burrow<span class="dot">.</span></div>
+    <nav class="topnav">
+      <a href="#pricing">Pricing</a>
+      <a class="ghost-cta" href="#open">Open quietly</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="status q q2"><span class="led" aria-hidden="true"></span> Do not disturb · always on</div>
+      <h1 class="q q2">The business bank you never have to talk to.</h1>
+      <p class="sub q q3">Burrow is a full business account you run in complete silence. No branch. No phone tree. No relationship manager who just wanted to put a face to the name.</p>
+      <div class="cta-row q q4">
+        <a class="btn" href="#open" id="open">Open an account quietly</a>
+        <a class="quiet-link" href="./demo.html">See the quiet dashboard &rarr;</a>
+      </div>
+
+      <div class="plate q q4">
+        <div class="cell">
+          <div class="k">Available balance</div>
+          <div class="v num">$184,920<small>.00</small></div>
+        </div>
+        <div class="cell">
+          <div class="k">Silence score, June</div>
+          <div class="v num">312 <small>interactions absorbed</small></div>
+        </div>
+        <div class="cell">
+          <div class="k">Calls you took</div>
+          <div class="v num">0</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow">What the account does for you, instead of you</div>
+      <div class="feat">
+        <h3>Voicemail, all the way down</h3>
+        <p>Every line rings to voicemail, including ours. We transcribe it, resolve it, and never call back. You will not hear a human voice for the duration of our relationship.</p>
+      </div>
+      <div class="feat">
+        <h3>The Decline button</h3>
+        <p>One tap turns any call, meeting, or quick sync into a wire transfer. The money arrives on time. You do not arrive at all.</p>
+      </div>
+      <div class="feat">
+        <h3>Alerts you can sense</h3>
+        <p>Low balance? Burrow does not call, text, or buzz. The interface dims by four percent and goes quiet. You will know, and no one will have spoken.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow">From people who have not said this out loud</div>
+      <div class="quote">
+        <blockquote>&ldquo;Two years with Burrow and I have spoken to no one. My accountant assumes I have passed. Revenue is up nineteen percent.&rdquo;</blockquote>
+        <div class="byline">
+          <div class="initials" aria-hidden="true">DR</div>
+          <div class="who"><b>Dana Reuter</b><span>Sole Proprietor of a Firm She Declines to Name</span></div>
+        </div>
+      </div>
+      <div class="quote">
+        <blockquote>&ldquo;They closed my local branch because I asked them to. A card arrived in the mail. I have not opened the envelope.&rdquo;</blockquote>
+        <div class="byline">
+          <div class="initials" aria-hidden="true">MV</div>
+          <div class="who"><b>Marcus Veld</b><span>Cofounder, Two-Person Logistics Company (One Is a Spreadsheet)</span></div>
+        </div>
+      </div>
+      <div class="quote">
+        <blockquote>&ldquo;Burrow declined a call from my own CFO and wired him the amount instead. We have never communicated more clearly.&rdquo;</blockquote>
+        <div class="byline">
+          <div class="initials" aria-hidden="true">PA</div>
+          <div class="who"><b>Priya Anand</b><span>CEO, Series A, Camera Permanently Off</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pricing">
+      <div class="eyebrow">Account classes, priced with confidence</div>
+      <div class="tier">
+        <div class="name">Mute</div>
+        <div class="price num">$0<small>/mo</small></div>
+        <div class="tline">For the sole proprietor who left the group chat in 2019.</div>
+        <ul>
+          <li>One account, zero phone calls</li>
+          <li>Statements from an address marked no-reply</li>
+          <li>A debit card with your initials, if you insist</li>
+        </ul>
+      </div>
+      <div class="tier">
+        <div class="name">Airplane Mode</div>
+        <div class="price num">$44<small>/mo</small></div>
+        <div class="tline">For teams that have never once been in the same room.</div>
+        <ul>
+          <li>Up to five users, none of whom have met</li>
+          <li>Approvals handled entirely inside a shared doc</li>
+          <li>Branch access disabled at signup, permanently</li>
+        </ul>
+      </div>
+      <div class="tier">
+        <div class="name">Witness Protection</div>
+        <div class="price num">$400<small>/mo</small></div>
+        <div class="tline">For founders who left no forwarding address.</div>
+        <ul>
+          <li>An account number we will not confirm exists</li>
+          <li>A relationship manager you are forbidden from contacting</li>
+          <li>We tell your investors you are heads down</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="close">
+      <h2>Bank like the building is empty.</h2>
+      <a class="btn" href="./demo.html">Open the demo &rarr;</a>
+    </section>
+  </main>
+
+  <footer>
+    <a class="back" href="/">&larr; theworstaistudioever</a>
+    <div class="fine">Burrow is not a bank, a credit union, or a person you can reach. Member of nothing. Insured by no one. Please do not call.</div>
+  </footer>
+
+</div>
+</body>
+</html>

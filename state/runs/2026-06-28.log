@@ -1,0 +1,69 @@
+[2026-06-28T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-06-28T08:00:02Z] invoking claude -p
+
+=== agent run summary ===
+status: complete
+
+ROLL
+  company: Mercury
+  subject: introverts (valid type-of-person)
+  slug: mercury-for-introverts
+  tagline: Mercury for introverts
+  rerolls: 0 (first drawn pair was unused)
+  note: distinct from the prior Mercury entry (mercury-for-grandmas, 2026-06-23),
+        which was skeuomorphic; this one goes the opposite direction.
+
+CONCEPT
+  product_name: Burrow
+  one_liner: The business bank you operate in complete silence.
+  angle: a business bank whose premium feature is that you never have to talk to
+         anyone. Voicemail-only support, a Decline button that converts any meeting
+         into a wire, and alerts that dim the screen instead of buzzing.
+  demo: the Burrow Quiet Dashboard (DND toggle, Silence Score, ledger, and a
+        Contact Requests inbox where each human gets one button: Decline & Wire).
+
+DESIGN DIRECTION
+  style: Hushed quiet-minimalism, low-stimulation calm mode. A near-empty single
+         column on a warm fog ground, small calm type, one rationed slate-blue
+         accent, hairline rules, near-absent motion. The page keeps its voice down.
+  palette: primary #3D4248 | accent #4A6076 | bg #E9E8E3 | fg #26282B |
+           muted #8B8C86 | ink #1A1C1E
+  fonts: display 'Newsreader' (literary serif), body 'Work Sans'
+  archetype: minimal single-column fintech landing
+  anti-sameness: checked against last 7 (Square banknote-intaglio, Zscaler bento,
+    Gopuff swiss-flat, Snapchat dark-glassmorphism, Mercury/grandmas skeuomorphic,
+    Elastic neo-brutalist, Affirm claymorphic). All recent entries are maximal;
+    a genuinely quiet minimalist page does not collide on style, palette, or fonts.
+    Newsreader + Work Sans appears in none of the last 7 pairings. No collision.
+
+IMAGES
+  step skipped entirely by design (not cap, not missing key). No gen-image.sh calls.
+  rationale recorded in concept.json images.rationale:
+    - hero: skipped, typographic quiet-minimalist direction has no imagery role.
+    - demo assets: skipped, demo is a console/dashboard (not photo-shaped).
+    - testimonial headshots: skipped on purpose; the introvert theme rejects faces,
+      layout uses quiet initials instead of photos.
+  result: an entirely image-free, text-led entry.
+  note: concept.json retains an images key with rationale + empty items[] so the
+        deliberate full skip is visible in review.
+
+GALLERY
+  regenerated site/index.html from all 36 concept.json files, sorted date desc.
+  new entry is slide 1. count header updated to "36 startups".
+  styles.css untouched. metadata contract, favicon, logo lockup, carousel nav,
+  and span-wrapped CTA all preserved.
+
+WARNINGS / NEAR-MISSES
+  none. The page leans hard on whitespace; verified it still reads as a funded
+  bank landing rather than an empty template via the balance plate, Silence Score,
+  and three populated sections.
+
+VALIDATION
+  scripts/validate-entry.sh site mercury-for-introverts -> OK (exit 0)
+  state/history.json appended (len 36).
+[2026-06-28T08:07:31Z] WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks
+[2026-06-28T08:07:31Z] new entry: mercury-for-introverts
+validate-entry [mercury-for-introverts]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 36 entries (domain theworstaistudioever.com)
+[2026-06-28T08:07:31Z] committing: Mercury for introverts
