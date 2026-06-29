@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Headcount HQ · the console · theworstaistudioever</title>
+<meta name="description" content="The Headcount HQ admin console for a company of one: run payroll to yourself, approve your own time off, and review your own performance.">
+<meta name="theme-color" content="#1F3B5C">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Calistoga&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap');
+
+:root{
+  --ink:#1A2740;--primary:#1F3B5C;--accent:#D98A1F;--bg:#F3EAD6;--paper:#FBF6EA;
+  --fg:#241F18;--muted:#8E8167;--line:#C8B894;--ok:#2F6B4F;--bad:#9A3B1E;
+  --display:'Calistoga','Cooper Black',Georgia,serif;
+  --body:'Hanken Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+.tnum{font-variant-numeric:tabular-nums lining-nums}
+body{font-family:var(--body);background:var(--bg);color:var(--fg);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+
+/* top chrome */
+.topbar{display:flex;align-items:center;gap:18px;padding:14px clamp(16px,3vw,28px);border-bottom:1.5px solid var(--ink);background:var(--paper);position:sticky;top:0;z-index:20}
+.back{font-weight:600;color:var(--ink);text-decoration:none;font-size:14px;white-space:nowrap}
+.back:hover{color:var(--primary)}
+.topbar .title{font-family:var(--display);font-size:20px;color:var(--ink);line-height:1}
+.topbar .badge{margin-left:auto;background:var(--accent);color:var(--ink);font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:5px 11px;border:1.5px solid var(--ink)}
+
+/* app shell */
+.shell{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 56px)}
+.side{border-right:1.5px solid var(--ink);padding:18px 14px;background:var(--paper)}
+.side .lead{font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);padding:6px 10px 12px}
+.navitem{display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:none;border:1.5px solid transparent;font-family:var(--body);font-size:15px;font-weight:600;color:var(--fg);padding:11px 12px;cursor:pointer;margin-bottom:4px}
+.navitem:hover{background:var(--bg)}
+.navitem[aria-current="true"]{background:var(--bg);border-color:var(--ink);box-shadow:3px 3px 0 rgba(26,39,64,.12)}
+.navitem .ic{width:20px;height:20px;flex:none;color:var(--primary)}
+.navitem[aria-current="true"] .ic{color:var(--accent)}
+.side .emp{margin-top:22px;border-top:1px solid var(--line);padding-top:16px;display:flex;align-items:center;gap:11px}
+.side .emp .av{width:38px;height:38px;border:1.5px solid var(--ink);background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:var(--display);color:var(--primary);font-size:16px}
+.side .emp .nm{font-weight:700;font-size:14px;color:var(--ink);line-height:1.1}
+.side .emp .ti{font-size:11.5px;color:var(--muted)}
+
+.main{padding:clamp(20px,3vw,40px);max-width:920px}
+.view{display:none}
+.view.active{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.vhead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:6px}
+.vhead h1{font-family:var(--display);font-size:clamp(24px,3vw,32px);color:var(--ink);line-height:1;letter-spacing:-.01em}
+.vsub{color:var(--muted);font-size:15px;margin-bottom:26px;max-width:62ch}
+
+.card{background:var(--paper);border:1.5px solid var(--ink);padding:22px;box-shadow:5px 5px 0 rgba(26,39,64,.1);margin-bottom:22px}
+.card h2{font-family:var(--display);font-size:19px;color:var(--ink);margin-bottom:4px}
+.card .ch-sub{font-size:13.5px;color:var(--muted);margin-bottom:18px}
+
+.btn{display:inline-block;font-family:var(--body);font-weight:700;font-size:15px;background:var(--primary);color:#FBF6EA;padding:11px 20px;border:1.5px solid var(--ink);cursor:pointer;text-decoration:none;box-shadow:3px 3px 0 var(--ink);transition:transform .12s ease,box-shadow .12s ease}
+.btn:hover:not(:disabled),.btn:focus-visible{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.accent{background:var(--accent);color:var(--ink)}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:none}
+.btn.sm{font-size:13px;padding:8px 14px;box-shadow:2px 2px 0 var(--ink)}
+
+/* people */
+.empcard{display:grid;grid-template-columns:auto 1fr auto;gap:20px;align-items:center}
+.empcard .big{width:64px;height:64px;border:1.5px solid var(--ink);background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:26px;color:var(--primary)}
+.empcard .who{font-family:var(--display);font-size:22px;color:var(--ink);line-height:1.1}
+.empcard .meta{font-size:13.5px;color:var(--muted);margin-top:4px}
+.pill{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border:1.5px solid var(--ink);background:var(--bg);color:var(--ink);margin-right:6px}
+.pill.live{background:var(--accent)}
+.miniorg{margin-top:20px;border-top:1px dashed var(--line);padding-top:18px;display:flex;align-items:center;gap:14px;font-size:13.5px;color:var(--muted)}
+.miniorg .knot{font-family:var(--display);color:var(--primary);font-size:15px;border:1.5px solid var(--ink);padding:6px 12px;background:var(--bg)}
+
+/* payroll */
+.run-table{width:100%;border-collapse:collapse;margin-bottom:8px}
+.run-table th{text-align:left;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:0 8px 10px;border-bottom:1.5px solid var(--ink)}
+.run-table td{padding:14px 8px;border-bottom:1px solid var(--line);font-size:15px}
+.run-table .amt{text-align:right;font-weight:700;color:var(--ink)}
+.with{margin:18px 0;border-top:1px solid var(--line)}
+.with .row{display:flex;justify-content:space-between;padding:9px 2px;font-size:14.5px;border-bottom:1px dotted var(--line)}
+.with .row span:first-child{color:var(--muted)}
+.with .row .v{font-weight:700;color:var(--bad)}
+.with .net{display:flex;justify-content:space-between;padding:14px 2px 2px;align-items:baseline}
+.with .net .lab{font-weight:700;color:var(--ink);font-size:15px;letter-spacing:.04em;text-transform:uppercase}
+.with .net .fig{font-family:var(--display);font-size:32px;color:var(--primary)}
+.runline{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:8px}
+.status{font-size:13.5px;font-weight:600;color:var(--muted);min-height:20px}
+.track{height:8px;background:var(--bg);border:1.5px solid var(--ink);flex:1;min-width:160px;position:relative;overflow:hidden}
+.track .fill{position:absolute;inset:0;width:0;background:var(--accent);transition:width .9s ease}
+.stub{margin-top:22px;border:1.5px dashed var(--ink);background:var(--bg);padding:20px;display:none}
+.stub.show{display:block;animation:fade .35s ease}
+.stub h3{font-family:var(--display);font-size:18px;color:var(--ink);margin-bottom:14px}
+.stub .sr{display:flex;justify-content:space-between;font-size:14px;padding:6px 0;border-bottom:1px dotted var(--line)}
+.stub .sr.tot{border-bottom:none;border-top:1.5px solid var(--ink);margin-top:6px;padding-top:12px;font-weight:800}
+
+/* time off */
+.field{margin-bottom:16px}
+.field label{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.field input,.field select,.field textarea{width:100%;font-family:var(--body);font-size:15px;padding:11px 12px;border:1.5px solid var(--ink);background:var(--bg);color:var(--fg)}
+.field input:focus,.field select:focus,.field textarea:focus{outline:3px solid var(--accent);outline-offset:1px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.queue .empty{font-size:14px;color:var(--muted);font-style:italic;padding:10px 0}
+.qitem{display:flex;align-items:center;gap:14px;flex-wrap:wrap;border:1.5px solid var(--ink);background:var(--bg);padding:14px 16px;margin-bottom:12px}
+.qitem .qmain{flex:1;min-width:180px}
+.qitem .qt{font-weight:700;color:var(--ink)}
+.qitem .qd{font-size:13px;color:var(--muted)}
+.tag{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;border:1.5px solid var(--ink)}
+.tag.pending{background:var(--paper);color:var(--muted)}
+.tag.approved{background:var(--ok);color:#fff}
+.balance{display:flex;gap:26px;margin-bottom:20px;flex-wrap:wrap}
+.balance .b .n{font-family:var(--display);font-size:28px;color:var(--primary);line-height:1}
+.balance .b .l{font-size:12.5px;color:var(--muted);font-weight:600;margin-top:4px}
+
+/* reviews */
+.slider-wrap{display:flex;align-items:center;gap:16px;margin:6px 0 4px}
+input[type=range]{flex:1;accent-color:var(--accent);height:6px}
+.score{font-family:var(--display);font-size:30px;color:var(--primary);min-width:54px;text-align:right}
+.scorenote{font-size:13.5px;color:var(--muted);margin-bottom:18px}
+.feedback{list-style:none;margin:6px 0 4px}
+.feedback li{font-size:14.5px;padding:10px 0 10px 16px;border-bottom:1px dotted var(--line);position:relative;color:var(--fg)}
+.feedback li::before{content:"";position:absolute;left:0;top:17px;width:8px;height:8px;border:2px solid var(--accent);transform:rotate(45deg)}
+.feedback li .src{color:var(--muted);font-size:12px;display:block;margin-top:2px}
+.toggle-row{display:flex;gap:0;border:1.5px solid var(--ink);margin:18px 0;width:fit-content}
+.toggle-row button{font-family:var(--body);font-weight:700;font-size:14px;padding:11px 20px;background:var(--paper);border:none;border-right:1.5px solid var(--ink);cursor:pointer;color:var(--fg)}
+.toggle-row button:last-child{border-right:none}
+.toggle-row button[aria-pressed="true"]{background:var(--accent);color:var(--ink)}
+.outcome{border-left:4px solid var(--accent);background:var(--paper);padding:14px 18px;font-size:15px;color:var(--fg);margin-top:4px}
+
+/* modal */
+.scrim{position:fixed;inset:0;background:rgba(26,39,64,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+.scrim.show{display:flex;animation:fade .2s ease}
+.modal{background:var(--paper);border:1.5px solid var(--ink);box-shadow:8px 8px 0 rgba(26,39,64,.3);max-width:420px;padding:26px}
+.modal h3{font-family:var(--display);font-size:22px;color:var(--ink);margin-bottom:10px}
+.modal p{font-size:15px;color:var(--fg);margin-bottom:20px}
+.modal .x{display:flex;justify-content:flex-end;gap:12px}
+
+@media(max-width:760px){
+  .shell{grid-template-columns:1fr}
+  .side{border-right:none;border-bottom:1.5px solid var(--ink);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .side .lead{width:100%;padding:0 4px 6px}
+  .navitem{width:auto;margin-bottom:0}
+  .side .emp{width:100%;margin-top:8px}
+  .empcard{grid-template-columns:auto 1fr}
+  .empcard .big{grid-row:span 2}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back" href="./index.html">&larr; back to the pitch</a>
+  <span class="title">Headcount&nbsp;HQ</span>
+  <span class="badge">Company of one</span>
+</div>
+
+<div class="shell">
+  <aside class="side">
+    <div class="lead">Administration</div>
+    <button class="navitem" data-view="people" aria-current="true">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg>People</button>
+    <button class="navitem" data-view="payroll">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="12" rx="1"/><circle cx="12" cy="12" r="2.5"/></svg>Run Payroll</button>
+    <button class="navitem" data-view="timeoff">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="1"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Time Off</button>
+    <button class="navitem" data-view="reviews">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg>Reviews</button>
+
+    <div class="emp">
+      <div class="av">RC</div>
+      <div><div class="nm">Renata Cho</div><div class="ti">Founder &amp; sole employee</div></div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- PEOPLE -->
+    <section class="view active" id="view-people" aria-label="People">
+      <div class="vhead"><h1>People</h1></div>
+      <p class="vsub">Your team directory. It is complete.</p>
+      <div class="card">
+        <div class="empcard">
+          <div class="big">RC</div>
+          <div>
+            <div class="who">Renata Cho</div>
+            <div class="meta">Founder &amp; sole employee · started Jan 2 · employee #1 of 1</div>
+            <div style="margin-top:10px">
+              <span class="pill live">Active</span><span class="pill">Salaried</span><span class="pill">Manager: herself</span>
+            </div>
+          </div>
+          <a class="btn sm accent" href="#" id="inviteBtn">Invite a teammate</a>
+        </div>
+        <div class="miniorg">
+          <span class="knot">Renata Cho</span>
+          <span>&rarr; reports to &rarr;</span>
+          <span class="knot">Renata Cho</span>
+          <span style="font-style:italic">the reporting line loops back. this is correct.</span>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Open seats</h2>
+        <p class="ch-sub">Roles currently staffed elsewhere on the team.</p>
+        <p style="font-size:14.5px;color:var(--muted)">CEO, payroll admin, HR, IT, the person who orders the snacks: all filled by you. No open requisitions. Headcount is at plan.</p>
+      </div>
+    </section>
+
+    <!-- PAYROLL -->
+    <section class="view" id="view-payroll" aria-label="Run Payroll">
+      <div class="vhead"><h1>Run Payroll</h1></div>
+      <p class="vsub">One employee, one pay run. The money leaves your account and returns two business days later, smaller, with a stub.</p>
+      <div class="card">
+        <h2>Pay period · this half of the month</h2>
+        <p class="ch-sub">Review the run, then pay yourself.</p>
+        <table class="run-table">
+          <thead><tr><th>Employee</th><th>Type</th><th style="text-align:right">Gross</th></tr></thead>
+          <tbody><tr>
+            <td><strong>Renata Cho</strong><br><span style="color:var(--muted);font-size:13px">employee #1</span></td>
+            <td>Salary</td>
+            <td class="amt tnum">$3,250.00</td>
+          </tr></tbody>
+        </table>
+        <div class="with">
+          <div class="row"><span>Federal income tax withheld</span><span class="v tnum">&minus;$487.50</span></div>
+          <div class="row"><span>State income tax withheld</span><span class="v tnum">&minus;$162.50</span></div>
+          <div class="row"><span>Social Security (6.2%)</span><span class="v tnum">&minus;$201.50</span></div>
+          <div class="row"><span>Medicare (1.45%)</span><span class="v tnum">&minus;$47.13</span></div>
+          <div class="net"><span class="lab">Net pay</span><span class="fig tnum">$2,418.07</span></div>
+        </div>
+        <div class="runline">
+          <button class="btn accent" id="runBtn">Run payroll</button>
+          <div class="track" aria-hidden="true"><div class="fill" id="payFill"></div></div>
+        </div>
+        <div class="status" id="payStatus" role="status" aria-live="polite">Ready to run. You will be debited, then paid.</div>
+
+        <div class="stub" id="payStub" aria-live="polite">
+          <h3>Pay stub · deposited to you</h3>
+          <div class="sr"><span>Gross pay</span><span class="tnum">$3,250.00</span></div>
+          <div class="sr"><span>Total withholdings</span><span class="tnum">&minus;$831.93</span></div>
+          <div class="sr"><span>Round trip</span><span>your account &rarr; us &rarr; your account</span></div>
+          <div class="sr tot"><span>Net deposited</span><span class="tnum">$2,418.07</span></div>
+          <p style="font-size:13px;color:var(--muted);margin-top:12px">Year-to-date net: <span class="tnum">$29,016.84</span>. A copy has been mailed to your address, which is also our address on file, which is also yours.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TIME OFF -->
+    <section class="view" id="view-timeoff" aria-label="Time Off">
+      <div class="vhead"><h1>Time Off</h1></div>
+      <p class="vsub">Submit a request. It routes to your manager, who is you, for approval.</p>
+      <div class="balance">
+        <div class="b"><div class="n tnum" id="ptoLeft">15</div><div class="l">days available</div></div>
+        <div class="b"><div class="n tnum" id="ptoPending">0</div><div class="l">awaiting your approval</div></div>
+        <div class="b"><div class="n tnum" id="ptoTaken">0</div><div class="l">approved by you</div></div>
+      </div>
+      <div class="card">
+        <h2>Request time off</h2>
+        <p class="ch-sub">Your manager typically responds the same afternoon.</p>
+        <form id="ptoForm">
+          <div class="row2">
+            <div class="field"><label for="ptoFrom">From</label><input type="date" id="ptoFrom" required></div>
+            <div class="field"><label for="ptoDays">Days</label><input type="number" id="ptoDays" min="1" max="15" value="2" required></div>
+          </div>
+          <div class="field"><label for="ptoReason">Reason (optional, your manager has seen everything)</label>
+            <input type="text" id="ptoReason" placeholder="Rest. Or a wedding. Your call, both of them."></div>
+          <button class="btn" type="submit">Submit to your manager</button>
+        </form>
+      </div>
+      <div class="card">
+        <h2>Approvals queue</h2>
+        <p class="ch-sub">Requests waiting on the manager. Currently: you.</p>
+        <div class="queue" id="queue"><div class="empty">No pending requests. The manager has cleared the queue.</div></div>
+      </div>
+    </section>
+
+    <!-- REVIEWS -->
+    <section class="view" id="view-reviews" aria-label="Reviews">
+      <div class="vhead"><h1>Performance Review</h1></div>
+      <p class="vsub">Annual cycle. You are the reviewer, the reviewee, and the entire calibration committee.</p>
+      <div class="card">
+        <h2>Self-assessment</h2>
+        <p class="ch-sub">Rate your performance this year. Be fair. You are watching.</p>
+        <div class="slider-wrap">
+          <input type="range" id="rateRange" min="1" max="5" step="1" value="4" aria-label="Self rating from 1 to 5">
+          <span class="score tnum" id="rateScore">4.0</span>
+        </div>
+        <div class="scorenote" id="rateLabel">Exceeds expectations. Set by you, this morning.</div>
+      </div>
+      <div class="card">
+        <h2>360 feedback</h2>
+        <p class="ch-sub">Anonymous input gathered from across the organization.</p>
+        <ul class="feedback">
+          <li>Reliable, shows up before everyone. <span class="src">— You, peer review</span></li>
+          <li>Could delegate more. Has no one to delegate to. <span class="src">— You, upward feedback</span></li>
+          <li>Strong vision, occasionally argues with self in the shower. <span class="src">— You, skip-level</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>Calibration outcome</h2>
+        <p class="ch-sub">The review flagged a retention risk. The talent committee (you) must decide.</p>
+        <div class="toggle-row" role="group" aria-label="Outcome">
+          <button id="optRaise" aria-pressed="true">Grant a retention raise</button>
+          <button id="optPip" aria-pressed="false">Place on a plan</button>
+        </div>
+        <div class="outcome" id="outcome">You approved a 6% raise to retain yourself. You accepted. You start Monday, same desk.</div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- invite modal -->
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <h3 id="modalTitle">The seat is taken</h3>
+    <p>Headcount supports a team of any size, provided that size is one. The only seat is filled by you, and you are not currently looking to leave. We checked.</p>
+    <div class="x">
+      <button class="btn ghost sm" id="modalClose2">Keep it at one</button>
+      <button class="btn accent sm" id="modalClose">Understood</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- nav / view switching ----
+  var items = Array.prototype.slice.call(document.querySelectorAll('.navitem'));
+  var views = {
+    people: document.getElementById('view-people'),
+    payroll: document.getElementById('view-payroll'),
+    timeoff: document.getElementById('view-timeoff'),
+    reviews: document.getElementById('view-reviews')
+  };
+  function show(name){
+    items.forEach(function(b){ b.setAttribute('aria-current', b.dataset.view === name ? 'true':'false'); });
+    Object.keys(views).forEach(function(k){ views[k].classList.toggle('active', k === name); });
+  }
+  items.forEach(function(b){ b.addEventListener('click', function(){ show(b.dataset.view); }); });
+
+  // ---- invite modal ----
+  var scrim = document.getElementById('scrim');
+  function openModal(e){ if(e)e.preventDefault(); scrim.classList.add('show'); document.getElementById('modalClose').focus(); }
+  function closeModal(){ scrim.classList.remove('show'); }
+  document.getElementById('inviteBtn').addEventListener('click', openModal);
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  document.getElementById('modalClose2').addEventListener('click', closeModal);
+  scrim.addEventListener('click', function(e){ if(e.target === scrim) closeModal(); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
+
+  // ---- payroll round trip ----
+  var runBtn = document.getElementById('runBtn');
+  var fill = document.getElementById('payFill');
+  var status = document.getElementById('payStatus');
+  var stub = document.getElementById('payStub');
+  var paid = false;
+  runBtn.addEventListener('click', function(){
+    if(runBtn.disabled) return;
+    if(paid){ // re-run resets
+      paid = false; stub.classList.remove('show'); fill.style.width='0';
+      status.textContent = 'Ready to run. You will be debited, then paid.';
+      runBtn.textContent = 'Run payroll'; return;
+    }
+    runBtn.disabled = true;
+    var steps = [
+      ['Debiting your account $3,250.00…', 33],
+      ['In transit. The money is briefly ours.', 66],
+      ['Depositing net pay back to you…', 100]
+    ];
+    function finish(){
+      status.textContent = 'Paid. Net $2,418.07 deposited. Stub generated.';
+      stub.classList.add('show');
+      runBtn.disabled = false; runBtn.textContent = 'Run it again';
+      paid = true;
+    }
+    if(reduce){ fill.style.width='100%'; finish(); return; }
+    var i = 0;
+    (function tick(){
+      if(i >= steps.length){ setTimeout(finish, 500); return; }
+      status.textContent = steps[i][0];
+      fill.style.width = steps[i][1] + '%';
+      i++; setTimeout(tick, 850);
+    })();
+  });
+
+  // ---- time off ----
+  var form = document.getElementById('ptoForm');
+  var queue = document.getElementById('queue');
+  var left = document.getElementById('ptoLeft');
+  var pend = document.getElementById('ptoPending');
+  var taken = document.getElementById('ptoTaken');
+  function fmt(d){ try{ return new Date(d+'T00:00').toLocaleDateString(undefined,{month:'short',day:'numeric'}); }catch(e){ return d; } }
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var from = document.getElementById('ptoFrom').value || 'an unspecified date';
+    var days = Math.max(1, parseInt(document.getElementById('ptoDays').value,10) || 1);
+    var reason = document.getElementById('ptoReason').value.trim();
+    var avail = parseInt(left.textContent,10);
+    if(days > avail){ alert('You only have '+avail+' days. Your manager (you) cannot approve more than you have.'); return; }
+
+    var empty = queue.querySelector('.empty'); if(empty) empty.remove();
+    pend.textContent = parseInt(pend.textContent,10) + 1;
+
+    var item = document.createElement('div');
+    item.className = 'qitem';
+    item.innerHTML =
+      '<div class="qmain"><div class="qt">'+days+' day'+(days>1?'s':'')+' off · from '+fmt(from)+'</div>'+
+      '<div class="qd">Requested by Renata Cho'+(reason?(' · '+reason.replace(/</g,'&lt;')):'')+'</div></div>'+
+      '<span class="tag pending">Pending</span>'+
+      '<button class="btn sm accent approve">Approve as manager</button>';
+    queue.prepend(item);
+
+    item.querySelector('.approve').addEventListener('click', function(){
+      pend.textContent = Math.max(0, parseInt(pend.textContent,10) - 1);
+      left.textContent = Math.max(0, parseInt(left.textContent,10) - days);
+      taken.textContent = parseInt(taken.textContent,10) + days;
+      var tag = item.querySelector('.tag'); tag.className = 'tag approved'; tag.textContent = 'Approved by you';
+      this.remove();
+      if(!queue.querySelector('.qitem')){ /* keep approved item visible */ }
+    });
+    form.reset(); document.getElementById('ptoDays').value = 2;
+  });
+
+  // ---- reviews ----
+  var range = document.getElementById('rateRange');
+  var scoreEl = document.getElementById('rateScore');
+  var labelEl = document.getElementById('rateLabel');
+  var labels = {
+    1:'Does not meet expectations. Harsh, but you know what you did.',
+    2:'Below expectations. The committee (you) is disappointed.',
+    3:'Meets expectations. A solid year of being the only one here.',
+    4:'Exceeds expectations. Set by you, this morning.',
+    5:'Outstanding. You may want to investigate your own bias.'
+  };
+  range.addEventListener('input', function(){
+    var v = parseInt(range.value,10);
+    scoreEl.textContent = v.toFixed(1);
+    labelEl.textContent = labels[v];
+  });
+
+  var optRaise = document.getElementById('optRaise');
+  var optPip = document.getElementById('optPip');
+  var outcome = document.getElementById('outcome');
+  function setOutcome(raise){
+    optRaise.setAttribute('aria-pressed', raise?'true':'false');
+    optPip.setAttribute('aria-pressed', raise?'false':'true');
+    outcome.textContent = raise
+      ? 'You approved a 6% raise to retain yourself. You accepted. You start Monday, same desk.'
+      : 'You placed yourself on a 30-day plan. You are contesting it with HR, who is also you. This may take a while.';
+  }
+  optRaise.addEventListener('click', function(){ setOutcome(true); });
+  optPip.addEventListener('click', function(){ setOutcome(false); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Headcount · theworstaistudioever</title>
+<meta name="description" content="Payroll, benefits, and HR for a company with exactly one employee, who is also the founder, the manager, and the entire org chart.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Headcount — real payroll for a company of one">
+<meta property="og:description" content="Headcount runs biweekly payroll from your account to your account, withholds the taxes, files them, and mails you a stub. You are the founder, the only employee, and the HR department.">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Headcount — real payroll for a company of one">
+<meta name="twitter:description" content="Payroll, benefits, and HR for a workforce of one. You're the founder, the only employee, and now the HR department.">
+<meta name="theme-color" content="#1F3B5C">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Calistoga&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap');
+
+:root{
+  --ink:#1A2740;
+  --primary:#1F3B5C;
+  --accent:#D98A1F;
+  --bg:#F3EAD6;
+  --paper:#FBF6EA;
+  --fg:#241F18;
+  --muted:#8E8167;
+  --line:#C8B894;
+  --display:'Calistoga','Cooper Black',Georgia,serif;
+  --body:'Hanken Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--fg);
+  font-family:var(--body);
+  font-size:18px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  /* faint printed-stock grain */
+  background-image:radial-gradient(circle at 18% 12%, rgba(255,255,255,.45), transparent 60%),
+                   radial-gradient(circle at 82% 88%, rgba(31,59,92,.05), transparent 55%);
+}
+.tnum{font-variant-numeric:tabular-nums lining-nums}
+
+/* page framed like a corporate annual report */
+.frame{
+  max-width:1180px;
+  margin:0 auto;
+  padding:0 clamp(18px,4vw,40px);
+}
+.sheet{
+  border:1.5px solid var(--ink);
+  margin:18px auto;
+  max-width:1216px;
+  background:transparent;
+}
+
+/* ---- header ---- */
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:22px 0 20px;
+  border-bottom:1px solid var(--line);
+}
+.brand{
+  font-family:var(--display);
+  font-size:30px;
+  color:var(--ink);
+  letter-spacing:-.01em;
+  line-height:1;
+}
+.brand .dot{color:var(--accent)}
+nav{display:flex;align-items:center;gap:28px;font-size:15px;font-weight:600}
+nav a{color:var(--fg);text-decoration:none}
+nav a.navlink{position:relative}
+nav a.navlink::after{content:"";position:absolute;left:0;right:100%;bottom:-5px;height:2px;background:var(--accent);transition:right .25s ease}
+nav a.navlink:hover::after,nav a.navlink:focus-visible::after{right:0}
+.btn{
+  display:inline-block;font-weight:700;font-size:15px;
+  background:var(--primary);color:#FBF6EA;
+  padding:11px 20px;border:1.5px solid var(--ink);
+  text-decoration:none;cursor:pointer;
+  box-shadow:3px 3px 0 var(--ink);
+  transition:transform .12s ease,box-shadow .12s ease;
+}
+.btn:hover,.btn:focus-visible{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.btn.lg{font-size:18px;padding:15px 28px}
+@media(max-width:680px){nav .hidemob{display:none}}
+
+/* ---- hero ---- */
+.hero{
+  display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,5vw,64px);
+  align-items:center;padding:clamp(40px,7vw,86px) 0 clamp(34px,5vw,60px);
+}
+.kicker{
+  font-size:13px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--primary);margin-bottom:22px;
+  display:inline-flex;align-items:center;gap:10px;
+}
+.kicker::before{content:"";width:30px;height:2px;background:var(--accent)}
+h1{
+  font-family:var(--display);
+  font-size:clamp(40px,6vw,68px);
+  line-height:1.02;color:var(--ink);
+  letter-spacing:-.015em;margin-bottom:24px;
+}
+.hero p.sub{font-size:clamp(17px,1.7vw,20px);max-width:33ch;color:var(--fg);margin-bottom:30px}
+.hero-cta{display:flex;align-items:center;gap:26px;flex-wrap:wrap}
+.demolink{font-weight:600;color:var(--ink);text-decoration:none;position:relative}
+.demolink::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:2px;background:var(--accent);transform:scaleX(.0);transform-origin:left;transition:transform .28s ease}
+.demolink:hover::after,.demolink:focus-visible::after{transform:scaleX(1)}
+
+/* org chart of one — signature element */
+.orgplate{
+  background:var(--paper);
+  border:1.5px solid var(--ink);
+  box-shadow:8px 8px 0 rgba(26,39,64,.12);
+  padding:26px 26px 30px;position:relative;
+}
+.orgplate .stamp{
+  position:absolute;top:-14px;right:18px;
+  background:var(--accent);color:var(--ink);
+  font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  padding:6px 12px;border:1.5px solid var(--ink);transform:rotate(-3deg);
+}
+.plate-label{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+.org{display:flex;flex-direction:column;align-items:center;position:relative;padding:8px 0 4px}
+.org svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.node{
+  position:relative;z-index:2;background:var(--bg);
+  border:1.5px solid var(--ink);padding:14px 20px;text-align:center;min-width:190px;
+}
+.node .who{font-family:var(--display);font-size:22px;color:var(--ink);line-height:1}
+.node .role{font-size:13px;color:var(--muted);font-weight:600;margin-top:5px}
+.loop-label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--primary);margin-top:54px}
+.stub{
+  margin-top:24px;border-top:1px dashed var(--line);padding-top:16px;
+  display:flex;justify-content:space-between;align-items:baseline;
+}
+.stub .lab{font-size:12px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+.stub .fig{font-size:30px;font-weight:800;color:var(--ink)}
+.stub .per{font-size:12px;color:var(--muted);font-weight:600}
+
+/* ---- ledger strip ---- */
+.ledger{
+  display:flex;flex-wrap:wrap;gap:8px 0;justify-content:space-between;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  padding:16px 0;margin-bottom:8px;
+}
+.ledger div{flex:1 1 33%;min-width:150px;padding:0 6px}
+.ledger .n{font-size:24px;font-weight:800;color:var(--primary);line-height:1}
+.ledger .l{font-size:13px;color:var(--muted);font-weight:600;margin-top:5px}
+
+/* ---- section scaffolding ---- */
+section{padding:clamp(46px,6vw,74px) 0}
+.eyebrow{font-size:13px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--primary)}
+.sechead{font-family:var(--display);font-size:clamp(26px,3.4vw,38px);color:var(--ink);letter-spacing:-.01em;margin:10px 0 0}
+
+/* features as report spreads */
+.feature{
+  display:grid;grid-template-columns:230px 1fr;gap:clamp(20px,4vw,52px);
+  padding:34px 0;border-top:1px solid var(--line);
+  align-items:start;
+}
+.feature:first-of-type{border-top:1.5px solid var(--ink)}
+.dept{font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--primary)}
+.dept .num{display:block;font-family:var(--display);font-size:46px;color:var(--accent);letter-spacing:0;margin-top:8px;line-height:1}
+.feature h3{font-family:var(--display);font-size:clamp(22px,2.6vw,29px);color:var(--ink);margin-bottom:12px;letter-spacing:-.01em;line-height:1.1}
+.feature p{font-size:17px;max-width:60ch;color:var(--fg)}
+
+/* testimonials */
+.t-wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:34px}
+.quote{
+  background:var(--paper);border:1.5px solid var(--ink);
+  padding:24px 22px 20px;display:flex;flex-direction:column;
+  box-shadow:5px 5px 0 rgba(26,39,64,.1);
+}
+.quote .mark{font-family:var(--display);font-size:48px;color:var(--accent);line-height:.6;height:26px}
+.quote blockquote{font-size:16.5px;line-height:1.5;color:var(--fg);margin:6px 0 18px;flex:1}
+.byline{display:flex;align-items:center;gap:13px;border-top:1px solid var(--line);padding-top:14px}
+.byline img{width:48px;height:48px;border:1.5px solid var(--ink);object-fit:cover;background:var(--bg)}
+.byline .nm{font-weight:700;font-size:15px;color:var(--ink);line-height:1.15}
+.byline .ti{font-size:12.5px;color:var(--muted);line-height:1.25;margin-top:3px}
+
+/* pricing */
+.price-wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:36px;border:1.5px solid var(--ink)}
+.tier{padding:30px 26px 32px;border-right:1px solid var(--line);position:relative;display:flex;flex-direction:column}
+.tier:last-child{border-right:none}
+.tier.standard{background:var(--paper)}
+.tier .badge{position:absolute;top:-1px;right:-1px;background:var(--accent);color:var(--ink);font-size:11px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;padding:5px 11px;border:1.5px solid var(--ink)}
+.tier .tname{font-family:var(--display);font-size:24px;color:var(--ink);line-height:1}
+.tier .cost{font-size:34px;font-weight:800;color:var(--primary);margin:16px 0 4px;line-height:1}
+.tier .tl{font-size:14px;color:var(--muted);font-weight:500;margin-bottom:20px;min-height:42px}
+.tier ul{list-style:none;flex:1;margin-bottom:22px}
+.tier li{font-size:15px;padding:9px 0 9px 26px;position:relative;border-top:1px dotted var(--line);color:var(--fg)}
+.tier li:first-child{border-top:none}
+.tier li::before{content:"";position:absolute;left:2px;top:15px;width:11px;height:11px;border:2px solid var(--accent);transform:rotate(45deg)}
+.tier .btn{text-align:center}
+.tier.standard .btn{background:var(--accent);color:var(--ink)}
+
+/* final cta */
+.final{background:var(--primary);color:#FBF6EA;border:1.5px solid var(--ink);padding:clamp(40px,6vw,64px) clamp(28px,5vw,56px);text-align:center;margin:8px 0 0}
+.final h2{font-family:var(--display);font-size:clamp(28px,4vw,46px);color:#FBF6EA;line-height:1.05;margin-bottom:14px;letter-spacing:-.01em}
+.final p{color:#E7D9BE;max-width:48ch;margin:0 auto 28px;font-size:18px}
+.final .btn{background:var(--accent);color:var(--ink);box-shadow:3px 3px 0 #0E1B2C}
+.final .btn:hover{box-shadow:1px 1px 0 #0E1B2C}
+
+/* footer */
+footer{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:30px 0 36px;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+footer a{color:var(--ink);text-decoration:none;font-weight:600}
+footer a:hover{color:var(--primary)}
+.fineprint{max-width:54ch}
+
+@media(max-width:860px){
+  .hero{grid-template-columns:1fr;gap:38px}
+  .t-wrap{grid-template-columns:1fr}
+  .price-wrap{grid-template-columns:1fr}
+  .tier{border-right:none;border-bottom:1px solid var(--line)}
+  .tier:last-child{border-bottom:none}
+  .feature{grid-template-columns:1fr;gap:14px}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *{transition:none!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+<div class="sheet">
+<div class="frame">
+
+  <header>
+    <div class="brand">Headcount<span class="dot">.</span></div>
+    <nav>
+      <a class="navlink hidemob" href="#features">Features</a>
+      <a class="navlink hidemob" href="#pricing">Pricing</a>
+      <a class="btn" href="#pricing">Onboard yourself</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" aria-label="Introduction">
+      <div>
+        <span class="kicker">A company of one</span>
+        <h1>Real payroll for a company of one.</h1>
+        <p class="sub">Headcount runs biweekly payroll from your checking account to your checking account, withholds the taxes, files them, and mails you a stub. You are the founder, the only employee, and as of today, the HR department.</p>
+        <div class="hero-cta">
+          <a class="btn lg" href="#pricing">Onboard yourself</a>
+          <a class="demolink" href="./demo.html">open the demo &rarr;</a>
+        </div>
+      </div>
+
+      <div class="orgplate" aria-label="Org chart of one">
+        <span class="stamp">Headcount: 1</span>
+        <div class="plate-label">Org chart · fiscal year</div>
+        <div class="org">
+          <svg viewBox="0 0 260 150" aria-hidden="true">
+            <path d="M130 56 C 130 92, 232 92, 232 56 C 232 32, 200 28, 178 30"
+                  fill="none" stroke="#1F3B5C" stroke-width="1.5" stroke-dasharray="4 4"/>
+            <path d="M178 30 l 7 -5 l -1 9 z" fill="#1F3B5C"/>
+          </svg>
+          <div class="node">
+            <div class="who">You</div>
+            <div class="role">Founder &amp; sole employee</div>
+          </div>
+          <div class="loop-label">reports to &rarr; you</div>
+        </div>
+        <div class="stub">
+          <div>
+            <div class="lab">Net pay, this period</div>
+            <div class="per">deposited 2 business days later</div>
+          </div>
+          <div class="fig tnum">$2,418.07</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="ledger" aria-label="Company at a glance">
+      <div><div class="n tnum">1</div><div class="l">employee, fully onboarded</div></div>
+      <div><div class="n tnum">26</div><div class="l">pay runs filed per year</div></div>
+      <div><div class="n">SOC&nbsp;2</div><div class="l">compliant, for the one of you</div></div>
+    </div>
+
+    <section id="features" aria-label="What Headcount does">
+      <span class="eyebrow">The platform</span>
+      <h2 class="sechead">Everything a real company runs, pointed at you.</h2>
+
+      <div class="feature">
+        <div class="dept">Payroll<span class="num">01</span></div>
+        <div>
+          <h3>Payroll that pays you</h3>
+          <p>On the 1st and the 15th, Headcount pulls your pay from your account, withholds federal and state tax, files it, and deposits the rest back two business days later with a stub attached. Net pay, year-to-date totals, the works. The money makes a round trip. You have never been this employed.</p>
+        </div>
+      </div>
+
+      <div class="feature">
+        <div class="dept">Benefits<span class="num">02</span></div>
+        <div>
+          <h3>Benefits for a workforce of one</h3>
+          <p>Enroll yourself in a 401(k), then administer it. Set your own match and approve it. Open enrollment is a calendar event you scheduled, attended alone, and ran to completion. We file the paperwork with an agency that assumes there are more of you.</p>
+        </div>
+      </div>
+
+      <div class="feature">
+        <div class="dept">People Ops<span class="num">03</span></div>
+        <div>
+          <h3>The org chart resolves to you</h3>
+          <p>Request time off and approve it as your own manager. Submit three expenses and reject one to stay disciplined. Your annual review is written by your entire team, which is you, working late, being honest about you.</p>
+        </div>
+      </div>
+    </section>
+
+    <section aria-label="Customer references">
+      <span class="eyebrow">References</span>
+      <h2 class="sechead">A staff of one, on the record.</h2>
+      <div class="t-wrap">
+        <figure class="quote">
+          <div class="mark">&ldquo;</div>
+          <blockquote>I requested two weeks off and my manager approved it by end of day. My manager is me. I have never felt this supported at a job.</blockquote>
+          <figcaption class="byline">
+            <img src="headshot-1.webp" alt="Renata Cho" width="48" height="48" loading="lazy">
+            <div><div class="nm">Renata Cho</div><div class="ti">Sole Proprietor and Acting Head of People, a Company of One</div></div>
+          </figcaption>
+        </figure>
+        <figure class="quote">
+          <div class="mark">&ldquo;</div>
+          <blockquote>My first pay stub arrived in March and I cried at the kitchen table. The money left my account and came back smaller. That is what being employed feels like, and I had been missing it.</blockquote>
+          <figcaption class="byline">
+            <img src="headshot-2.webp" alt="Desmond Pryce" width="48" height="48" loading="lazy">
+            <div><div class="nm">Desmond Pryce</div><div class="ti">Freelance Motion Designer and His Own Payroll Department</div></div>
+          </figcaption>
+        </figure>
+        <figure class="quote">
+          <div class="mark">&ldquo;</div>
+          <blockquote>My annual review flagged me as a retention risk. I wrote the review. I approved the counteroffer. I stayed for the culture, which is also me.</blockquote>
+          <figcaption class="byline">
+            <img src="headshot-3.webp" alt="Lottie Vinstra" width="48" height="48" loading="lazy">
+            <div><div class="nm">Lottie Vinstra</div><div class="ti">Independent Brand Strategist, Founder, and Sole Member of the Talent Committee</div></div>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="pricing" aria-label="Plans">
+      <span class="eyebrow">Plans</span>
+      <h2 class="sechead">Priced per company. Every company has one of you.</h2>
+      <div class="price-wrap">
+        <div class="tier">
+          <div class="tname">Sole Proprietor</div>
+          <div class="cost tnum">$0<span style="font-size:16px;font-weight:600;color:var(--muted)">/mo</span></div>
+          <div class="tl">For the freelancer who is technically a business and resents the implication.</div>
+          <ul>
+            <li>One employee on file, which is the maximum</li>
+            <li>Biweekly payroll to and from yourself</li>
+            <li>A pay stub mailed to your own address</li>
+          </ul>
+          <a class="btn" href="./demo.html">Start onboarding</a>
+        </div>
+        <div class="tier standard">
+          <div class="badge">Standard</div>
+          <div class="tname">Fully Staffed</div>
+          <div class="cost tnum">$42<span style="font-size:16px;font-weight:600;color:var(--muted)">/mo</span></div>
+          <div class="tl">For the operator running an entire company without ever delegating.</div>
+          <ul>
+            <li>Self-approved time off and expenses</li>
+            <li>A 401(k) you administer and match</li>
+            <li>An org chart with one node, reporting to itself</li>
+            <li>A year-end W-2 you mail to your own address</li>
+          </ul>
+          <a class="btn" href="./demo.html">Onboard yourself</a>
+        </div>
+        <div class="tier">
+          <div class="tname">Enterprise of One</div>
+          <div class="cost" style="font-size:24px">Sync with yourself</div>
+          <div class="tl">For the freelancer with a real headcount problem, which is that it is one.</div>
+          <ul>
+            <li>Unlimited departments, every seat filled by you</li>
+            <li>A performance-improvement plan you may accept or contest</li>
+            <li>A dedicated HR liaison contractually obligated to be you</li>
+            <li>Succession planning, also you</li>
+          </ul>
+          <a class="btn" href="./demo.html">Book time with yourself</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="final">
+      <h2>You have been doing HR in your head. We added a ledger.</h2>
+      <p>Four-minute onboarding. One employee. Payroll runs while you do the actual work.</p>
+      <a class="btn lg" href="./demo.html">open the demo &rarr;</a>
+    </div>
+  </main>
+
+  <footer>
+    <a href="/">&larr; theworstaistudioever</a>
+    <span class="fineprint">Headcount is a portfolio company of the worst AI studio ever. Not a bank, not a payroll provider, not staffed. Your headcount remains, at all times, one.</span>
+  </footer>
+
+</div>
+</div>
+</body>
+</html>
