@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Booking console · Dook.</title>
+<meta name="description" content="Offer a window. Watch a ferret reclaim it for a nap.">
+<meta name="theme-color" content="#E9E7F6">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Varela+Round&family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,600;0,6..12,700;0,6..12,800&display=swap');
+
+:root{
+  --bg:#E9E7F6;
+  --surface:#EFEDFB;
+  --ink:#322C4B;
+  --primary:#6C5CE0;
+  --accent:#FF9166;
+  --muted:#948FB8;
+  --muted-text:#5E5980;
+  --shade:rgba(120,108,176,0.34);
+  --light:rgba(255,255,255,0.92);
+  --display:'Varela Round','Baloo 2',system-ui,sans-serif;
+  --body:'Nunito Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;font-family:var(--body);color:var(--ink);background:var(--bg);font-size:16px;
+  background-image:radial-gradient(120% 80% at 12% -10%,#F3F1FF 0%,rgba(243,241,255,0) 55%),
+                   radial-gradient(110% 90% at 100% 0%,#EFE7FB 0%,rgba(239,231,251,0) 50%);
+  min-height:100vh;-webkit-font-smoothing:antialiased;
+}
+.num{font-variant-numeric:tabular-nums;}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;line-height:1.1;}
+a{color:inherit;}
+
+.clay{
+  background:var(--surface);border-radius:26px;
+  box-shadow:10px 12px 26px var(--shade),-8px -8px 20px var(--light),
+    inset 2px 2px 6px rgba(255,255,255,0.75),inset -4px -5px 10px rgba(120,108,176,0.16);
+}
+.inset{box-shadow:inset 4px 4px 9px var(--shade),inset -4px -4px 9px var(--light);}
+
+.shell{max-width:1080px;margin:0 auto;padding:20px 20px 56px;}
+
+/* top chrome */
+.chrome{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:8px 0 22px;}
+.back{display:inline-flex;align-items:center;gap:8px;font-family:var(--display);text-decoration:none;color:var(--primary);
+  padding:11px 18px;border-radius:999px;background:var(--surface);
+  box-shadow:6px 7px 15px var(--shade),-5px -5px 12px var(--light),inset 1px 1px 3px rgba(255,255,255,.7);
+  transition:transform .16s ease;}
+.back:hover{transform:translateX(-2px);}
+.chrome-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+
+.select-wrap{position:relative;}
+select{
+  appearance:none;font-family:var(--display);font-size:1rem;color:var(--ink);cursor:pointer;
+  padding:12px 40px 12px 18px;border:none;border-radius:999px;background:var(--surface);
+  box-shadow:inset 3px 3px 7px var(--shade),inset -3px -3px 7px var(--light);
+}
+.select-wrap::after{content:"";position:absolute;right:18px;top:50%;width:8px;height:8px;border-right:2px solid var(--primary);border-bottom:2px solid var(--primary);transform:translateY(-70%) rotate(45deg);pointer-events:none;}
+
+.status{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:.86rem;padding:11px 16px;border-radius:999px;
+  background:#FBE5D6;color:#a85a32;box-shadow:inset 2px 2px 5px rgba(200,140,100,.28),inset -2px -2px 5px rgba(255,255,255,.8);}
+.status .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);animation:breathe 2.6s ease-in-out infinite;}
+@keyframes breathe{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,145,102,.5);}50%{transform:scale(1.35);box-shadow:0 0 0 6px rgba(255,145,102,0);}}
+
+/* header card */
+.head{padding:24px 26px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;}
+.head .who{display:flex;align-items:center;gap:15px;}
+.head .avatar{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;color:var(--primary);
+  background:linear-gradient(145deg,#D9D2F4,#C7BDEE);
+  box-shadow:inset 3px 3px 7px rgba(255,255,255,.65),inset -4px -4px 9px rgba(120,108,176,.4);}
+.head h1{font-size:1.5rem;}
+.head .sub{color:var(--muted-text);font-size:.92rem;margin-top:3px;}
+.tallies{display:flex;gap:10px;flex-wrap:wrap;}
+.tally{padding:12px 18px;border-radius:18px;text-align:center;min-width:96px;}
+.tally .n{font-family:var(--display);font-size:1.6rem;color:var(--primary);line-height:1;}
+.tally .l{font-size:.72rem;color:var(--muted-text);font-weight:700;margin-top:6px;letter-spacing:.02em;}
+
+/* legend */
+.legend{display:flex;gap:18px;flex-wrap:wrap;align-items:center;padding:0 4px 14px;font-size:.82rem;color:var(--muted-text);}
+.legend span{display:inline-flex;align-items:center;gap:7px;}
+.sw{width:16px;height:16px;border-radius:6px;}
+.sw.awake{background:var(--accent);}
+.sw.asleep{background:#DCD8EE;}
+.sw.couch{background:#D6CEEC;background-image:repeating-linear-gradient(45deg,rgba(108,92,224,.22) 0 4px,transparent 4px 8px);}
+.sw.taken{background:#C9C3E4;}
+
+/* grid */
+.gridcard{padding:18px;}
+.grid{display:grid;grid-template-columns:74px repeat(7,1fr);gap:8px;min-width:680px;}
+.gridscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.cellhead{font-family:var(--display);font-size:.92rem;text-align:center;padding:8px 0;color:var(--ink);}
+.rowtime{display:flex;align-items:center;justify-content:flex-end;padding-right:10px;font-size:.8rem;font-weight:700;color:var(--muted-text);}
+.cell{border:none;font-family:var(--body);font-size:.74rem;font-weight:700;border-radius:14px;padding:13px 6px;min-height:50px;
+  display:flex;align-items:center;justify-content:center;text-align:center;cursor:default;color:var(--muted);
+  background:#E4E0F2;box-shadow:inset 3px 3px 6px var(--shade),inset -3px -3px 6px var(--light);transition:transform .15s ease;}
+.cell.awake{cursor:pointer;color:#7a3d1c;background:#FFE2D2;
+  box-shadow:3px 4px 9px rgba(255,145,102,.32),-3px -3px 8px var(--light),inset 1px 1px 3px rgba(255,255,255,.6);}
+.cell.awake:hover{transform:translateY(-2px);}
+.cell.awake:focus-visible{outline:3px solid var(--primary);outline-offset:2px;}
+.cell.couch{background:#DAD3EE;background-image:repeating-linear-gradient(45deg,rgba(108,92,224,.16) 0 5px,transparent 5px 10px);}
+.cell.taken{color:#6f6a8c;background:#D7D1EA;cursor:not-allowed;}
+
+/* modal */
+.scrim{position:fixed;inset:0;background:rgba(50,44,75,0.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:50;}
+.scrim.show{display:flex;}
+.modal{width:100%;max-width:430px;padding:30px 28px;animation:pop .26s cubic-bezier(.34,1.56,.64,1);}
+@keyframes pop{from{transform:scale(.9);opacity:0;}to{transform:scale(1);opacity:1;}}
+.modal h2{font-size:1.4rem;margin-bottom:4px;}
+.modal .when{color:var(--primary);font-family:var(--display);font-size:1.05rem;margin-bottom:18px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:.78rem;font-weight:800;color:var(--muted-text);letter-spacing:.04em;text-transform:uppercase;margin-bottom:7px;}
+.field input{width:100%;font-family:var(--body);font-size:1rem;color:var(--ink);border:none;border-radius:14px;padding:13px 15px;background:var(--surface);
+  box-shadow:inset 3px 3px 7px var(--shade),inset -3px -3px 7px var(--light);}
+.field input:focus{outline:2px solid var(--primary);}
+.modal-actions{display:flex;gap:12px;margin-top:22px;}
+.btn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:.5em;font-family:var(--display);font-size:1rem;
+  padding:14px 18px;border:none;border-radius:999px;cursor:pointer;color:var(--ink);background:var(--surface);
+  box-shadow:6px 7px 15px var(--shade),-5px -5px 12px var(--light),inset 1px 1px 3px rgba(255,255,255,.7);transition:transform .16s ease;}
+.btn:active{transform:translateY(1px);box-shadow:inset 5px 6px 13px var(--shade),inset -4px -4px 10px var(--light);}
+.btn-accent{background:var(--accent);color:#3a2113;box-shadow:6px 7px 15px rgba(255,145,102,.42),-5px -5px 12px var(--light),inset 1px 1px 3px rgba(255,255,255,.55);}
+.btn-accent[disabled]{opacity:.7;cursor:progress;}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(140%);z-index:60;max-width:90vw;
+  padding:16px 22px;border-radius:18px;background:var(--ink);color:#F3F1FF;font-weight:700;font-size:.95rem;
+  box-shadow:0 16px 40px rgba(50,44,75,.4);transition:transform .35s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;gap:11px;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast .x{color:var(--accent);font-size:1.2rem;}
+
+@media(max-width:620px){
+  .head{flex-direction:column;align-items:flex-start;}
+  .tallies{width:100%;}
+  .tally{flex:1;}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="chrome">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <div class="chrome-right">
+      <div class="select-wrap">
+        <select id="ferret" aria-label="Choose a ferret">
+          <option value="Biscuit">Biscuit</option>
+          <option value="Noodle">Noodle</option>
+          <option value="Steve">Steve</option>
+        </select>
+      </div>
+      <span class="status" id="status"><span class="dot"></span> <span id="statusText">asleep</span></span>
+    </div>
+  </div>
+
+  <div class="clay head">
+    <div class="who">
+      <span class="avatar" aria-hidden="true">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 8C5 5.6 6.7 4.2 8.3 5.2 9.3 4.4 11 4.1 12 4.7 13 4.1 14.7 4.4 15.7 5.2 17.3 4.2 19 5.6 19 8c0 4-2.3 8-7 8S5 12 5 8Z"/>
+          <path d="M9 9h.01M15 9h.01"/><path d="M11 12.2c.6.5 1.4.5 2 0"/>
+        </svg>
+      </span>
+      <div>
+        <h1 id="ferretName">Biscuit's availability</h1>
+        <div class="sub">this week · crepuscular windows only · all times local</div>
+      </div>
+    </div>
+    <div class="tallies">
+      <div class="inset tally"><div class="n num" id="tOffered">0</div><div class="l">windows offered</div></div>
+      <div class="inset tally"><div class="n num" id="tBooked">0</div><div class="l">meetings booked</div></div>
+      <div class="inset tally"><div class="n num">0%</div><div class="l">attendance rate</div></div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><span class="sw awake"></span> possibly awake — bookable</span>
+    <span><span class="sw asleep"></span> asleep</span>
+    <span><span class="sw couch"></span> under the couch</span>
+    <span><span class="sw taken"></span> reclaimed for a nap</span>
+  </div>
+
+  <div class="clay gridcard">
+    <div class="gridscroll">
+      <div class="grid" id="grid"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- modal -->
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="clay modal">
+    <h2 id="mTitle">Confirm your window</h2>
+    <div class="when" id="mWhen">—</div>
+    <div class="field">
+      <label for="mName">Your name</label>
+      <input id="mName" type="text" value="You (the human)" autocomplete="name">
+    </div>
+    <div class="field">
+      <label for="mTopic">What's this about?</label>
+      <input id="mTopic" type="text" value="Quick sync re: being a ferret">
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="mCancel" type="button">Never mind</button>
+      <button class="btn btn-accent" id="mConfirm" type="button">Confirm booking</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="x">✕</span> <span id="toastText"></span></div>
+
+<script>
+(function(){
+  var DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  var TIMES = ['5:00 AM','5:30 AM','6:00 AM','8:30 PM','9:00 PM','9:30 PM'];
+
+  // per-ferret awake windows (day|time) and the odd "under the couch" cell
+  var FERRETS = {
+    Biscuit: { awake:['Thu|5:00 AM','Thu|5:30 AM','Sat|9:00 PM'], couch:['Mon|6:00 AM','Fri|8:30 PM'] },
+    Noodle:  { awake:['Tue|6:00 AM','Fri|8:30 PM'],               couch:['Wed|5:00 AM','Sun|9:30 PM','Thu|9:00 PM'] },
+    Steve:   { awake:['Mon|5:30 AM','Wed|9:30 PM','Sun|5:00 AM'], couch:['Tue|5:00 AM','Sat|6:00 AM'] }
+  };
+
+  var REASONS = [
+    'Biscuit wandered off.',
+    'Slot reclaimed for a nap.',
+    'The ferret has stolen the meeting.',
+    'Ferret is now under the couch.',
+    'Window closed. Ferret blinked, then slept.',
+    'Routed to the next ferret. Also asleep.'
+  ];
+  var STATUSES = ['asleep','dooking','unreachable','under the couch'];
+
+  var grid = document.getElementById('grid');
+  var scrim = document.getElementById('scrim');
+  var toast = document.getElementById('toast');
+  var ferretSel = document.getElementById('ferret');
+  var current = 'Biscuit';
+  var taken = {};          // resolved (reclaimed) cells, per ferret
+  var offered = 0;
+  var pending = null;      // {ferret, key, btn}
+
+  function nameFor(f){ return f; }
+
+  function render(){
+    grid.innerHTML = '';
+    var data = FERRETS[current];
+    var couchSet = data.couch || [];
+    // corner
+    grid.appendChild(el('div','cellhead',''));
+    DAYS.forEach(function(d){ grid.appendChild(el('div','cellhead',d)); });
+    TIMES.forEach(function(t){
+      grid.appendChild(el('div','rowtime',t));
+      DAYS.forEach(function(d){
+        var key = d+'|'+t;
+        var c = document.createElement('button');
+        c.type='button';
+        if(taken[current] && taken[current][key]){
+          c.className='cell taken'; c.textContent='napping'; c.disabled=true;
+        } else if(data.awake.indexOf(key)>-1){
+          c.className='cell awake'; c.textContent='open';
+          c.setAttribute('aria-label','Book '+nameFor(current)+' on '+d+' at '+t);
+          c.addEventListener('click',function(){ openModal(key,d,t,c); });
+        } else if(couchSet.indexOf(key)>-1){
+          c.className='cell couch'; c.textContent='couch'; c.disabled=true;
+        } else {
+          c.className='cell'; c.textContent='asleep'; c.disabled=true;
+        }
+        grid.appendChild(c);
+      });
+    });
+  }
+
+  function el(tag,cls,txt){ var e=document.createElement(tag); e.className=cls; e.textContent=txt; return e; }
+
+  function openModal(key,d,t,cell){
+    pending = { ferret: current, key: key, cell: cell };
+    document.getElementById('mWhen').textContent = nameFor(current)+' · '+d+' at '+t;
+    document.getElementById('mConfirm').disabled = false;
+    document.getElementById('mConfirm').textContent = 'Confirm booking';
+    scrim.classList.add('show');
+    document.getElementById('mName').focus();
+  }
+  function closeModal(){ scrim.classList.remove('show'); pending=null; }
+
+  document.getElementById('mCancel').addEventListener('click', closeModal);
+  scrim.addEventListener('click', function(e){ if(e.target===scrim) closeModal(); });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape' && scrim.classList.contains('show')) closeModal(); });
+
+  document.getElementById('mConfirm').addEventListener('click', function(){
+    if(!pending) return;
+    var btn = this;
+    btn.disabled = true;
+    btn.textContent = 'Booking…';
+    var p = pending;
+    setTimeout(function(){
+      // the deadpan twist: the window is auto-reclaimed
+      taken[p.ferret] = taken[p.ferret] || {};
+      taken[p.ferret][p.key] = true;
+      offered += 1;
+      document.getElementById('tOffered').textContent = offered;
+      document.getElementById('tBooked').textContent = '0';
+      closeModal();
+      if(p.ferret === current) render();
+      showToast(REASONS[offered % REASONS.length]);
+    }, 950);
+  });
+
+  var toastTimer;
+  function showToast(msg){
+    document.getElementById('toastText').textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 3600);
+  }
+
+  ferretSel.addEventListener('change', function(){
+    current = this.value;
+    document.getElementById('ferretName').textContent = current + "'s availability";
+    render();
+  });
+
+  // ambient status cycling (paused for reduced motion)
+  if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    var si = 0;
+    setInterval(function(){
+      si = (si+1) % STATUSES.length;
+      document.getElementById('statusText').textContent = STATUSES[si];
+    }, 3200);
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>

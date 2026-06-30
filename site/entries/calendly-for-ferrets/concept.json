@@ -1,0 +1,93 @@
+{
+  "date": "2026-06-30",
+  "company": "Calendly",
+  "subject": "ferrets",
+  "tagline": "Calendly for ferrets",
+  "slug": "calendly-for-ferrets",
+  "product_name": "Dook.",
+  "one_liner": "Round-trip scheduling for an animal that does not keep a calendar.",
+  "brand_voice_notes": "Deadpan B2B scheduling-infra tone aimed, with total seriousness, at a sleeping mustelid. We talk about availability, round-robin routing, and SLAs as if the ferret is a stakeholder who simply has not synced its calendar yet. Never wink. The product is confident that the bottleneck is tooling, not the fact that the ferret is asleep 18 hours a day and cannot read.",
+  "hero": {
+    "h1": "Book time with a ferret who has no time, no calendar, and no intention of showing up.",
+    "sub": "Dook. detects the 90-second window your ferret is awake and not under the couch, then books it. Confirmations sent. Attendance not guaranteed.",
+    "primary_cta": "Find a window"
+  },
+  "features": [
+    {
+      "title": "Sleep-aware availability",
+      "blurb": "We sync to your ferret's 18-hour sleep cycle and surface the two crepuscular windows it might be conscious. Both are at 5 a.m. We book them anyway."
+    },
+    {
+      "title": "Round-robin across the business",
+      "blurb": "A group of ferrets is, by law, a 'business.' Dook. load-balances meetings across all of them so no single ferret is double-booked during the four minutes it is awake."
+    },
+    {
+      "title": "Automatic buffers",
+      "blurb": "Four-hour buffers around every event, because the ferret stole the meeting link, the pen, and one of your shoes, and is now asleep on all three."
+    }
+  ],
+  "pricing_tiers": [
+    {
+      "name": "Solo Kit",
+      "price": "$0",
+      "tagline": "One ferret. One calendar it will never open.",
+      "perks": ["1 scheduled ferret", "Crepuscular window detection", "Email confirmations the ferret cannot read"]
+    },
+    {
+      "name": "Business",
+      "price": "$48/mo",
+      "tagline": "For a full, legally-recognized business of ferrets.",
+      "perks": ["Up to 8 ferrets", "Round-robin routing", "Shared burrow calendar", "No-show analytics (always 100%)"]
+    },
+    {
+      "name": "Enterprise Weasel",
+      "price": "Let's talk",
+      "tagline": "Unlimited ferrets. Dedicated burrow. One brain cell, shared.",
+      "perks": ["Unlimited mustelids", "SSO (Single Ferret On)", "Priority window reservation", "A named contact who is also asleep"]
+    }
+  ],
+  "testimonials": [
+    {
+      "quote": "We onboarded our ferret to Dook. in March. It has accepted zero meetings and declined zero meetings. The pipeline has never been cleaner.",
+      "name": "Margaux Pell",
+      "title": "VP of Mustelid Operations, a sole proprietorship of one ferret"
+    },
+    {
+      "quote": "Before Dook. I would just wait by the cage. Now I get a calendar invite telling me to wait by the cage. Night and day.",
+      "name": "Dwight Acker",
+      "title": "Owner-Operator, two ferrets and a grudge"
+    },
+    {
+      "quote": "The round-robin means when one ferret ghosts the 1:1, it routes to the next ferret, who also ghosts it. Total coverage.",
+      "name": "Priya Venkataraman",
+      "title": "Chief of Staff to a Ferret"
+    }
+  ],
+  "demo_screen_concept": "A Calendly-style booking console for a single ferret named Biscuit. A weekly availability grid where nearly every 30-minute slot is greyed out and stamped 'asleep,' except a thin band of dawn/dusk slots marked 'possibly awake.' A live ferret-status pill at the top cycles through asleep / dooking / unreachable / under the couch. A ferret selector dropdown lets you switch between Biscuit, Noodle, and Steve (round-robin). Clicking any bookable slot opens a confirmation modal that fills in attendee details and then, after a beat, auto-cancels itself with a deadpan reason ('Biscuit wandered off', 'slot reclaimed for a nap', 'ferret has stolen the meeting'). A running tally shows windows offered, meetings booked, and attendance rate (locked at 0%).",
+  "images": {
+    "rationale": "Hero skipped: the hero is a soft clay UI 'next window' plate, typographic enough to carry itself; a photo would fight the modeled-clay surfaces. Demo skipped: the demo is a Calendly-style availability grid (document/console-shaped), no photo slot. Full budget spent on the always-applicable fallback: three deadpan corporate ferret headshots for the named testimonials, art-directed to a pale periwinkle #E9E7F6 studio backdrop so photographic portraits sit calmly inside the pastel claymorphism palette.",
+    "items": [
+      { "role": "testimonial", "file": "headshot-1.webp", "prompt": "Deadpan corporate executive headshot, studio portrait of a sable ferret in a tiny charcoal blazer, composed self-important expression, pale periwinkle #E9E7F6 backdrop, soft diffused light. No text/logos/UI.", "attempts": 1 },
+      { "role": "testimonial", "file": "headshot-2.webp", "prompt": "Deadpan corporate headshot, champagne-cream ferret in a soft-blue collared shirt, weary unimpressed owner-operator expression, pale periwinkle #E9E7F6 backdrop, soft diffused light. No text/logos/UI.", "attempts": 1 },
+      { "role": "testimonial", "file": "headshot-3.webp", "prompt": "Deadpan corporate headshot, dark-eyed white ferret in a structured plum blazer over a crisp collar, calm capable chief-of-staff expression, pale periwinkle #E9E7F6 backdrop, soft diffused light. No text/logos/UI.", "attempts": 1 }
+    ]
+  },
+  "design_direction": {
+    "style": "Claymorphism, soft daylight nursery-tech mode. The whole surface is rendered as puffy modeled clay: a pale periwinkle-cloud ground holds rounded panels (24px+ radii) that sit slightly proud of the page using dual-tone soft shadows, one cool highlight from the top-left and one violet-grey shade to the bottom-right, so every card looks gently inflated and pressable rather than flat. Nothing has a hard edge, a hairline border, or a sharp drop shadow. One soft clay-periwinkle violet carries the brand, headings, primary surfaces, and structure; one rationed clay-apricot coral is reserved strictly for the single primary CTA, the live 'awake' status affordance, and the one 'book' button, and appears almost nowhere else. Varela Round sets the wordmark and all headings in soft uppercase-friendly rounded geometry; Nunito Sans carries calm rounded body copy. Every figure that pretends to be scheduling telemetry (awake-window times, sleep-cycle percentages, buffer hours, tier prices, attendance rate) is set in Nunito Sans with tabular figures, deliberately not a console monospace, so the numbers stay as soft and friendly as the clay. Buttons depress into a soft inset (pressed-in) shadow on click; cards inflate a hair on hover; the status pill breathes. No gradients beyond the faint periwinkle ground wash and the soft inner-shadow modeling, no glassmorphism, no neon, no hard offset shadows, no bento hairlines, no skeuomorphic photo-textures, no dark mode. Reads like a well-funded scheduling-infrastructure company that has been pointed, with total seriousness, at a tube-shaped animal that is asleep right now and will be asleep when you read this.",
+    "palette": {
+      "primary": "#6C5CE0",
+      "accent": "#FF9166",
+      "bg": "#E9E7F6",
+      "fg": "#322C4B",
+      "muted": "#948FB8",
+      "ink": "#322C4B"
+    },
+    "fonts": {
+      "display": "'Varela Round', 'Baloo 2', system-ui, sans-serif",
+      "body": "'Nunito Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+    },
+    "archetype": "Scheduling / calendar-SaaS landing page rendered in soft claymorphism: a puffy periwinkle hero with a rounded Varela Round wordmark, a deadpan headline, and an inflated 'next available window' plate showing a single 5 a.m. slot and a breathing 'asleep' ferret-status pill; three feature panels as modeled clay cards with dual-tone soft shadows; three pull-quote testimonials in rounded clay cards with soft circular headshots; a three-tier pricing rack styled as plans with the middle 'Business' tier raised as standard; a single clay-apricot CTA; and a demo handoff to the Dook. booking console for a ferret named Biscuit.",
+    "motion_vocab": "Soft physical clay: buttons press into an inset shadow and spring back, cards lift and inflate ~2% on hover with the shadow softening, the awake-status pill breathes (subtle scale pulse), the booking modal scales up from the clicked slot then deflates on auto-cancel. Spring easing throughout, 180-280ms, reduced-motion respected.",
+    "hero_composition_notes": "Left column: oversized rounded Varela Round headline in plum ink on periwinkle, deadpan sub, single clay-apricot 'Find a window' CTA depressing on press. Right column: an inflated clay booking plate floating slightly proud of the page, showing 'Next available: Thu 5:02 AM' in tabular figures, a breathing coral 'awake' status dot, and a soft circular ferret avatar. Faint periwinkle ground wash behind it all, no hard edges anywhere."
+  }
+}
