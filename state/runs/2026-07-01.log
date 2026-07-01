@@ -1,0 +1,58 @@
+[2026-07-01T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-07-01T08:00:02Z] invoking claude -p
+
+=================================================
+theworstaistudioever — daily run summary 2026-07-01
+=================================================
+
+STEP 1 — ROLL
+  Company: Hinge
+  Subject: pigeons  (valid: an animal)
+  Slug:    hinge-for-pigeons
+  Tagline: Hinge for pigeons
+  Rerolls: 0 (first draw was unused)
+  PRNG:    LCG seeded from UTC date "2026-07-01"
+
+STEP 2 — CONCEPT
+  Product name: Loft
+  One-liner:    "The pairing app for pigeons who are done circling the same square and ready to commit to one ledge."
+  Angle:        Hinge's "designed to be deleted" ethos played dead straight against the fact that pigeons already mate for life. Every figure (coo-match %, nest-readiness score, homing radius in wingbeats) stated with growth-deck confidence.
+  Ran through anti-ai-slop before writing copy.
+
+STEP 3 — DESIGN DIRECTION
+  Style:   Risograph two-ink print zine, warm urban-newsprint mode (halftone dot grain, off-register overprint, flat spot inks, thick keylines, registration crosshairs, a coral "designed to be deleted" rubber stamp).
+  Palette: primary #2947C4 (riso federal blue), accent #F0426E (fluoro coral), bg #F2ECDC (newsprint), ink #181616, muted #8A8270.
+  Fonts:   'Bricolage Grotesque' (display) + 'DM Sans' (body); 'DM Mono' for tabular figures.
+  Anti-sameness: checked against the last 7 entries (Claymorphism, mid-century editorial, quiet-minimalism, art-deco banknote, bento security console, swiss-modernist flat, cinematic dark glassmorphism). The (risograph / riso blue+coral on newsprint / Bricolage+DM Sans) tuple collides with none of them.
+
+STEP 4 — IMAGES
+  Rationale: Risograph rewards bold halftone illustration, so the budget went to a hero pigeon + a 3-photo demo profile gallery (Bartholomew: head-on portrait, on-the-ledge, mid-strut). Testimonial headshots skipped intentionally so the coral accent stays rationed; the three named pigeons keep the two-ink monogram treatment.
+  Allocation: 4 of 4 images generated (hero + 3 demo). Testimonials: 0 (CSS monogram fallback, by design).
+  Per-image attempts / judge verdicts:
+    - hero.webp     (16:9 -> 1600x900, 263.5 KB) — 1 attempt — PASS. Dignified 3/4 pigeon, correct two-ink palette, clean left negative space, no text artifacts.
+    - card-1.webp   (4:5 -> 800x1000, 208.7 KB)  — 1 attempt — PASS. Head-on profile portrait.
+    - card-2.webp   (4:5 -> 800x1000, 313.6 KB)  — 1 attempt — PASS. Pigeon on a ledge with skyline + sun.
+    - card-3.webp   (4:5 -> 800x1000, 214.3 KB)  — 1 attempt — PASS. Mid-strut across a plaza.
+  Image-gen cap: used 4 of 10 for the UTC day. GEMINI_API_KEY present. No cap/skip conditions hit.
+
+STEP 5 — LANDING (index.html)
+  Ran frontend-design skill. Hero uses hero.webp inside a keylined riso frame with the rubber stamp. Off-register overprint headline, halftone body grain, ticker of deadpan stats, 3 features, 3 testimonials (monogram circles), 3 pricing tiers, demo CTA, footer back-link to /.
+
+STEP 6 — DEMO (demo.html)
+  Single-profile Hinge-style browser for Bartholomew: scroll of 3 photos + 3 answered prompts, per-item like hearts (rubber-stamp pop + toast), a "send a coo" composer modal (chips, textarea, Esc/scrim close, focus return), bottom skip/coo/like bar, skip -> end-of-flock state with reset. All data mocked client-side. Back link "back to the pitch".
+
+STEP 7 — GALLERY REBUILD
+  Rebuilt site/index.html from all 39 concept.json files, sorted date desc (slug desc for ties). Header count now "39 startups". styles.css untouched. Root metadata contract, favicon/logo lockup, carousel nav + dots + touch swipe preserved. Tie order verified (Tinder otters before lonely retirees; Palantir dogs before Okta barn owls).
+
+STEP 8 — VALIDATE & RECORD
+  validate-entry.sh site hinge-for-pigeons -> OK (exit 0).
+  Appended {2026-07-01, Hinge, pigeons, hinge-for-pigeons} to state/history.json (39 entries).
+
+WARNINGS / NEAR-MISSES
+  None. All 4 images cleared the vision judge on the first attempt; no rerolls; no style collision.
+[2026-07-01T08:14:05Z] WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks
+[2026-07-01T08:14:05Z] new entry: hinge-for-pigeons
+validate-entry [hinge-for-pigeons]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 39 entries (domain theworstaistudioever.com)
+[2026-07-01T08:14:06Z] committing: Hinge for pigeons

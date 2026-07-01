@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loft · Bartholomew's profile</title>
+<meta name="description" content="A Loft profile: browse Bartholomew, a nine-month-old rock dove with strong ledge tenure.">
+<meta name="theme-color" content="#2947C4">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#2947C4;--coral:#F0426E;--paper:#F2ECDC;--ink:#181616;--muted:#8A8270;--paper-2:#EDE5D2;
+    --display:'Bricolage Grotesque','Arial Black',system-ui,sans-serif;
+    --body:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --mono:'DM Mono','SFMono-Regular',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;background-color:var(--paper);
+    background-image:radial-gradient(var(--blue) .6px,transparent .7px);background-size:6px 6px;background-blend-mode:soft-light;
+    color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased;
+    padding-bottom:96px;
+  }
+
+  /* chrome */
+  .chrome{position:sticky;top:0;z-index:20;background:var(--paper);border-bottom:3px solid var(--blue);}
+  .chrome-in{max-width:520px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 18px;}
+  .back{font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.07em;text-decoration:none;color:var(--blue);}
+  .back:hover{color:var(--coral);}
+  .brandmini{font-family:var(--display);font-weight:800;font-size:18px;color:var(--blue);letter-spacing:-.02em;}
+
+  .stage{max-width:520px;margin:0 auto;padding:18px 18px 8px;}
+
+  /* profile header card */
+  .idcard{border:3px solid var(--blue);background:var(--paper-2);padding:20px 20px 18px;position:relative;}
+  .name-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .name-row h1{font-family:var(--display);font-weight:800;font-size:30px;color:var(--blue);letter-spacing:-.02em;margin:0;line-height:1;}
+  .age{font-family:var(--mono);font-size:14px;color:var(--muted);}
+  .verified{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--blue);border:2px solid var(--blue);padding:2px 7px;}
+  .verified svg{width:12px;height:12px;}
+  .sub-row{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;font-family:var(--mono);font-size:12.5px;color:var(--ink);}
+  .sub-row .k{color:var(--muted);}
+  /* nest readiness meter */
+  .meter{margin-top:16px;}
+  .meter-top{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px;}
+  .meter-top b{color:var(--coral);}
+  .bars{display:flex;gap:4px;}
+  .bars i{flex:1;height:14px;background:var(--paper);border:2px solid var(--blue);}
+  .bars i.on{background:var(--coral);}
+
+  /* content stack */
+  .stack{display:flex;flex-direction:column;gap:16px;margin-top:16px;}
+  .tile{border:3px solid var(--blue);background:var(--paper);position:relative;overflow:hidden;}
+  .tile.photo img{display:block;width:100%;height:auto;mix-blend-mode:multiply;}
+  .caption{position:absolute;left:0;bottom:0;background:var(--blue);color:var(--paper);font-family:var(--mono);font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;padding:6px 10px;}
+  .prompt{padding:22px 20px 20px;}
+  .prompt .q{font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--coral);margin-bottom:8px;}
+  .prompt .a{font-family:var(--display);font-weight:600;font-size:20px;line-height:1.25;color:var(--ink);letter-spacing:-.01em;}
+
+  /* like button on each tile */
+  .likebtn{position:absolute;right:12px;bottom:12px;width:48px;height:48px;border:3px solid var(--blue);background:var(--paper);
+    display:grid;place-content:center;cursor:pointer;transition:transform .08s ease;padding:0;}
+  .prompt .likebtn{bottom:14px;}
+  .likebtn svg{width:22px;height:22px;}
+  .likebtn .heart{fill:none;stroke:var(--blue);stroke-width:2;}
+  .likebtn:hover{transform:scale(1.06);}
+  .likebtn:active{transform:scale(.86);}
+  .likebtn:focus-visible{outline:3px solid var(--coral);outline-offset:2px;}
+  .likebtn.liked{background:var(--coral);}
+  .likebtn.liked .heart{fill:#fff;stroke:#fff;}
+  .likebtn.pop{animation:stamp .28s ease;}
+  @keyframes stamp{0%{transform:scale(1);}45%{transform:scale(.82) rotate(-6deg);}100%{transform:scale(1);}}
+
+  /* bottom action bar */
+  .actionbar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--paper);border-top:3px solid var(--blue);}
+  .actionbar-in{max-width:520px;margin:0 auto;display:flex;gap:14px;align-items:center;padding:14px 18px;}
+  .act{flex:1;display:flex;align-items:center;justify-content:center;gap:9px;font-family:var(--display);font-weight:700;font-size:16px;
+    padding:14px;border:3px solid var(--blue);cursor:pointer;background:var(--paper);color:var(--blue);transition:transform .08s ease,box-shadow .08s ease;box-shadow:4px 4px 0 var(--blue);}
+  .act:hover{transform:translate(1px,1px);box-shadow:3px 3px 0 var(--blue);}
+  .act:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--blue);}
+  .act:focus-visible{outline:3px solid var(--coral);outline-offset:2px;}
+  .act svg{width:20px;height:20px;}
+  .act.skip .x{stroke:var(--blue);stroke-width:2.4;}
+  .act.coo{background:var(--blue);color:var(--paper);box-shadow:4px 4px 0 var(--coral);}
+  .act.coo:hover{box-shadow:3px 3px 0 var(--coral);}
+  .act.like{background:var(--coral);color:#fff;border-color:var(--blue);box-shadow:4px 4px 0 var(--blue);}
+  .act.like .heart{fill:#fff;}
+
+  /* toast */
+  .toast{position:fixed;left:50%;bottom:104px;transform:translateX(-50%) translateY(12px);z-index:40;
+    background:var(--blue);color:var(--paper);border:3px solid var(--coral);padding:12px 18px;
+    font-family:var(--mono);font-size:13px;letter-spacing:.02em;opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease;max-width:88vw;text-align:center;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* coo composer modal */
+  .scrim{position:fixed;inset:0;z-index:50;background:rgba(24,22,22,.5);display:none;align-items:center;justify-content:center;padding:20px;}
+  .scrim.open{display:flex;}
+  .modal{width:100%;max-width:440px;background:var(--paper);border:3px solid var(--blue);box-shadow:10px 10px 0 var(--coral);}
+  .modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:3px solid var(--blue);}
+  .modal-head h2{font-family:var(--display);font-weight:800;font-size:20px;color:var(--blue);margin:0;letter-spacing:-.01em;}
+  .modal-close{border:3px solid var(--blue);background:var(--paper);width:38px;height:38px;cursor:pointer;font-family:var(--display);font-size:18px;color:var(--blue);line-height:1;}
+  .modal-close:hover{background:var(--coral);color:#fff;border-color:var(--blue);}
+  .modal-body{padding:18px;}
+  .modal-body label{display:block;font-family:var(--mono);font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:8px;}
+  .modal-body textarea{width:100%;min-height:96px;resize:vertical;border:3px solid var(--blue);background:var(--paper-2);padding:12px;
+    font-family:var(--body);font-size:15px;color:var(--ink);}
+  .modal-body textarea:focus-visible{outline:3px solid var(--coral);outline-offset:2px;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px;}
+  .chip{font-family:var(--mono);font-size:12px;border:2px solid var(--blue);background:transparent;color:var(--blue);padding:6px 10px;cursor:pointer;}
+  .chip:hover{background:var(--blue);color:var(--paper);}
+  .modal-foot{display:flex;justify-content:flex-end;gap:12px;padding:0 18px 18px;}
+  .send{font-family:var(--display);font-weight:700;font-size:15px;border:3px solid var(--blue);background:var(--coral);color:#fff;padding:11px 20px;cursor:pointer;box-shadow:4px 4px 0 var(--blue);}
+  .send:hover{transform:translate(1px,1px);box-shadow:3px 3px 0 var(--blue);}
+  .send:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--blue);}
+
+  /* end / next-bird state */
+  .endcard{display:none;border:3px dashed var(--blue);background:var(--paper-2);padding:34px 22px;text-align:center;margin-top:16px;}
+  .endcard.show{display:block;}
+  .endcard h2{font-family:var(--display);font-weight:800;font-size:22px;color:var(--blue);margin:0 0 8px;}
+  .endcard p{margin:0 0 18px;font-size:14.5px;color:var(--ink);}
+  .endcard button{font-family:var(--display);font-weight:700;border:3px solid var(--blue);background:var(--paper);color:var(--blue);padding:11px 20px;cursor:pointer;}
+  .endcard button:hover{background:var(--blue);color:var(--paper);}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important;}}
+</style>
+</head>
+<body>
+<div class="chrome">
+  <div class="chrome-in">
+    <a class="back" href="./index.html">&larr; back to the pitch</a>
+    <span class="brandmini">Loft</span>
+  </div>
+</div>
+
+<main class="stage" id="stage">
+  <section class="idcard">
+    <div class="name-row">
+      <h1>Bartholomew</h1>
+      <span class="age">9 mo</span>
+      <span class="verified" title="Coo sample authenticated">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 12.5l5 5 11-11" stroke="#2947C4" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Coo verified
+      </span>
+    </div>
+    <div class="sub-row">
+      <span><span class="k">Roost:</span> Third-floor cornice</span>
+      <span><span class="k">Homing radius:</span> 3.4 wingbeats</span>
+      <span><span class="k">Route:</span> Fountain &rarr; loading dock</span>
+    </div>
+    <div class="meter">
+      <div class="meter-top"><span>Nest-readiness</span><b id="scoreLabel">8 / 10</b></div>
+      <div class="bars" id="bars" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <div class="stack" id="stack">
+    <div class="tile photo">
+      <img src="./card-1.webp" alt="Risograph portrait of Bartholomew facing the camera" width="800" height="1000" loading="lazy">
+      <span class="caption">Main · uncropped</span>
+      <button class="likebtn" data-label="Bartholomew's main photo" aria-label="Like Bartholomew's main photo">
+        <svg viewBox="0 0 24 24"><path class="heart" d="M12 20s-7-4.35-9.5-8.5C.9 8.5 2.5 5.5 5.5 5.5c1.9 0 3.2 1.1 4 2.2.8-1.1 2.1-2.2 4-2.2 3 0 4.6 3 3 6C19 15.65 12 20 12 20z"/></svg>
+      </button>
+    </div>
+
+    <div class="tile prompt">
+      <div class="q">The ledge I call home is</div>
+      <div class="a">The one with the good gargoyle. South-facing. Gets the morning crumbs before anyone else is even up.</div>
+      <button class="likebtn" data-label="the ledge prompt" aria-label="Like the ledge prompt">
+        <svg viewBox="0 0 24 24"><path class="heart" d="M12 20s-7-4.35-9.5-8.5C.9 8.5 2.5 5.5 5.5 5.5c1.9 0 3.2 1.1 4 2.2.8-1.1 2.1-2.2 4-2.2 3 0 4.6 3 3 6C19 15.65 12 20 12 20z"/></svg>
+      </button>
+    </div>
+
+    <div class="tile photo">
+      <img src="./card-2.webp" alt="Risograph illustration of Bartholomew on a concrete ledge over the city" width="800" height="1000" loading="lazy">
+      <span class="caption">The cornice, for reference</span>
+      <button class="likebtn" data-label="Bartholomew's ledge photo" aria-label="Like Bartholomew's ledge photo">
+        <svg viewBox="0 0 24 24"><path class="heart" d="M12 20s-7-4.35-9.5-8.5C.9 8.5 2.5 5.5 5.5 5.5c1.9 0 3.2 1.1 4 2.2.8-1.1 2.1-2.2 4-2.2 3 0 4.6 3 3 6C19 15.65 12 20 12 20z"/></svg>
+      </button>
+    </div>
+
+    <div class="tile prompt">
+      <div class="q">My ideal Sunday is</div>
+      <div class="a">Fountain at nine, bakery loading dock at eleven, home before the hawk shift starts. I keep it simple.</div>
+      <button class="likebtn" data-label="the ideal Sunday prompt" aria-label="Like the ideal Sunday prompt">
+        <svg viewBox="0 0 24 24"><path class="heart" d="M12 20s-7-4.35-9.5-8.5C.9 8.5 2.5 5.5 5.5 5.5c1.9 0 3.2 1.1 4 2.2.8-1.1 2.1-2.2 4-2.2 3 0 4.6 3 3 6C19 15.65 12 20 12 20z"/></svg>
+      </button>
+    </div>
+
+    <div class="tile photo">
+      <img src="./card-3.webp" alt="Risograph illustration of Bartholomew mid-strut across a plaza" width="800" height="1000" loading="lazy">
+      <span class="caption">Strut, unposed</span>
+      <button class="likebtn" data-label="Bartholomew's strut photo" aria-label="Like Bartholomew's strut photo">
+        <svg viewBox="0 0 24 24"><path class="heart" d="M12 20s-7-4.35-9.5-8.5C.9 8.5 2.5 5.5 5.5 5.5c1.9 0 3.2 1.1 4 2.2.8-1.1 2.1-2.2 4-2.2 3 0 4.6 3 3 6C19 15.65 12 20 12 20z"/></svg>
+      </button>
+    </div>
+
+    <div class="tile prompt">
+      <div class="q">A green flag I look for is</div>
+      <div class="a">Doesn't panic when a stroller goes by. Shares. Has never once chased a laser pointer.</div>
+      <button class="likebtn" data-label="the green flag prompt" aria-label="Like the green flag prompt">
+        <svg viewBox="0 0 24 24"><path class="heart" d="M12 20s-7-4.35-9.5-8.5C.9 8.5 2.5 5.5 5.5 5.5c1.9 0 3.2 1.1 4 2.2.8-1.1 2.1-2.2 4-2.2 3 0 4.6 3 3 6C19 15.65 12 20 12 20z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="endcard" id="endcard">
+    <h2>That's the flock for now.</h2>
+    <p>You've reviewed every bird inside your homing radius. New pigeons land when they land. We can't rush them.</p>
+    <button id="resetBtn">Show me Bartholomew again</button>
+  </div>
+</main>
+
+<div class="actionbar">
+  <div class="actionbar-in">
+    <button class="act skip" id="skipBtn">
+      <svg viewBox="0 0 24 24" fill="none"><path class="x" d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>
+      Skip
+    </button>
+    <button class="act coo" id="cooBtn">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 5h16v10H9l-4 4V5z" stroke="#F2ECDC" stroke-width="2" stroke-linejoin="round"/></svg>
+      Send a coo
+    </button>
+    <button class="act like" id="likeBtn">
+      <svg viewBox="0 0 24 24"><path class="heart" d="M12 20s-7-4.35-9.5-8.5C.9 8.5 2.5 5.5 5.5 5.5c1.9 0 3.2 1.1 4 2.2.8-1.1 2.1-2.2 4-2.2 3 0 4.6 3 3 6C19 15.65 12 20 12 20z"/></svg>
+      Like
+    </button>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="scrim" id="scrim" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="cooTitle">
+    <div class="modal-head">
+      <h2 id="cooTitle">Send Bartholomew a coo</h2>
+      <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <label for="cooText">Your coo (he can only hear tone, not words, but do your best)</label>
+      <textarea id="cooText" placeholder="Nice cornice. South-facing is underrated."></textarea>
+      <div class="chips" id="chips">
+        <button class="chip" type="button">Great gargoyle.</button>
+        <button class="chip" type="button">Fountain at nine?</button>
+        <button class="chip" type="button">I also hate the hawk shift.</button>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="send" id="sendCoo">Send coo</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var likedCount = 0;
+  var toast = document.getElementById('toast');
+  var toastTimer = null;
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    if(toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2600);
+  }
+
+  // build the nest-readiness meter (8 / 10)
+  var bars = document.getElementById('bars');
+  for(var i=0;i<10;i++){
+    var b = document.createElement('i');
+    if(i<8) b.className = 'on';
+    bars.appendChild(b);
+  }
+
+  // per-tile like buttons
+  var tileLikes = document.querySelectorAll('.stack .likebtn');
+  tileLikes.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var label = btn.getAttribute('data-label');
+      btn.classList.remove('pop'); void btn.offsetWidth; btn.classList.add('pop');
+      if(btn.classList.contains('liked')){
+        btn.classList.remove('liked');
+        btn.setAttribute('aria-pressed','false');
+        likedCount--;
+        showToast('Unliked ' + label + '.');
+      } else {
+        btn.classList.add('liked');
+        btn.setAttribute('aria-pressed','true');
+        likedCount++;
+        showToast('Liked ' + label + '. Bartholomew felt that.');
+      }
+    });
+  });
+
+  // bottom bar: skip -> end state
+  var endcard = document.getElementById('endcard');
+  var stack = document.getElementById('stack');
+  document.getElementById('skipBtn').addEventListener('click', function(){
+    stack.style.display = 'none';
+    endcard.classList.add('show');
+    endcard.scrollIntoView({behavior:'smooth', block:'center'});
+    showToast('Skipped Bartholomew. He will not be told.');
+  });
+  document.getElementById('resetBtn').addEventListener('click', function(){
+    endcard.classList.remove('show');
+    stack.style.display = 'flex';
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  // bottom bar: like
+  var likeBtn = document.getElementById('likeBtn');
+  likeBtn.addEventListener('click', function(){
+    var extra = likedCount>0 ? ' (plus the ' + likedCount + ' thing' + (likedCount===1?'':'s') + ' you already liked)' : '';
+    showToast('It’s a match pending his review' + extra + '.');
+  });
+
+  // coo composer modal
+  var scrim = document.getElementById('scrim');
+  var cooText = document.getElementById('cooText');
+  var lastFocus = null;
+  function openModal(){
+    lastFocus = document.activeElement;
+    scrim.classList.add('open');
+    scrim.setAttribute('aria-hidden','false');
+    setTimeout(function(){ cooText.focus(); }, 30);
+  }
+  function closeModal(){
+    scrim.classList.remove('open');
+    scrim.setAttribute('aria-hidden','true');
+    if(lastFocus) lastFocus.focus();
+  }
+  document.getElementById('cooBtn').addEventListener('click', openModal);
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  scrim.addEventListener('click', function(e){ if(e.target===scrim) closeModal(); });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape' && scrim.classList.contains('open')) closeModal(); });
+
+  document.getElementById('chips').addEventListener('click', function(e){
+    if(e.target.classList.contains('chip')){
+      cooText.value = (cooText.value ? cooText.value.trim() + ' ' : '') + e.target.textContent;
+      cooText.focus();
+    }
+  });
+  document.getElementById('sendCoo').addEventListener('click', function(){
+    closeModal();
+    showToast('Coo sent. Delivery depends entirely on the wind.');
+    cooText.value = '';
+  });
+})();
+</script>
+</body>
+</html>

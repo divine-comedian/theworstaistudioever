@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loft · theworstaistudioever</title>
+<meta name="description" content="The pairing app for pigeons who are done circling the same square and ready to commit to one ledge.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Loft — Hinge for pigeons">
+<meta property="og:description" content="The pairing app for pigeons who are done circling the same square and ready to commit to one ledge.">
+<meta property="og:image" content="./hero.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Loft — Hinge for pigeons">
+<meta name="twitter:description" content="Pairs pigeons by homing radius, verified coo, and mutual attachment to the same statue. Built to be deleted.">
+<meta name="theme-color" content="#2947C4">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#2947C4;
+    --coral:#F0426E;
+    --paper:#F2ECDC;
+    --ink:#181616;
+    --muted:#8A8270;
+    --paper-2:#EDE5D2;
+    --display:'Bricolage Grotesque','Arial Black',system-ui,sans-serif;
+    --body:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --mono:'DM Mono','SFMono-Regular',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background-color:var(--paper);
+    /* halftone dot grain over the newsprint ground */
+    background-image:radial-gradient(var(--blue) 0.6px, transparent 0.7px);
+    background-size:6px 6px;
+    background-blend-mode:soft-light;
+    color:var(--ink);
+    font-family:var(--body);
+    font-size:17px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  a{color:inherit;}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px;}
+
+  /* registration crosshairs in the margins */
+  .reg{position:fixed;width:26px;height:26px;pointer-events:none;z-index:2;opacity:.5;mix-blend-mode:multiply;}
+  .reg::before,.reg::after{content:"";position:absolute;background:var(--blue);}
+  .reg::before{left:12px;top:0;width:2px;height:26px;}
+  .reg::after{top:12px;left:0;height:2px;width:26px;}
+  .reg.tl{top:16px;left:16px;} .reg.tr{top:16px;right:16px;} .reg.br{bottom:16px;right:16px;}
+  @media(max-width:700px){.reg{display:none;}}
+
+  /* top bar */
+  .topbar{position:relative;z-index:3;border-bottom:3px solid var(--blue);}
+  .topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:66px;}
+  .wordmark{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:-.02em;color:var(--blue);text-decoration:none;}
+  .wordmark .glyph{width:26px;height:26px;display:block;}
+  .topbar nav{display:flex;gap:26px;font-family:var(--mono);font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;}
+  .topbar nav a{text-decoration:none;color:var(--ink);}
+  .topbar nav a:hover{color:var(--coral);}
+  @media(max-width:640px){.topbar nav{display:none;}}
+
+  /* buttons */
+  .btn{display:inline-block;font-family:var(--display);font-weight:700;font-size:17px;text-decoration:none;padding:14px 26px;border:3px solid var(--blue);background:var(--coral);color:#fff;letter-spacing:-.01em;box-shadow:5px 5px 0 var(--blue);transition:transform .08s ease, box-shadow .08s ease;}
+  .btn:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--blue);}
+  .btn:active{transform:translate(5px,5px);box-shadow:0 0 0 var(--blue);}
+  .btn:focus-visible{outline:3px solid var(--ink);outline-offset:3px;}
+  .btn.ghost{background:transparent;color:var(--blue);box-shadow:5px 5px 0 var(--coral);}
+  .btn.ghost:hover{box-shadow:2px 2px 0 var(--coral);}
+
+  /* hero */
+  .hero{position:relative;padding:64px 0 40px;}
+  .hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:44px;align-items:center;}
+  .eyebrow{font-family:var(--mono);font-size:12.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--blue);margin:0 0 22px;}
+  .eyebrow b{color:var(--coral);font-weight:500;}
+  h1.head{
+    font-family:var(--display);font-weight:800;color:var(--blue);
+    font-size:clamp(38px,6.4vw,68px);line-height:.98;letter-spacing:-.025em;margin:0 0 22px;
+    /* off-register overprint: coral ghost behind the blue */
+    text-shadow:3px 3px 0 rgba(240,66,110,.55);
+  }
+  .hero p.lede{font-size:19px;max-width:33ch;margin:0 0 30px;color:var(--ink);}
+  .hero-cta{display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+  .hero-cta .fineprint{font-family:var(--mono);font-size:12px;color:var(--muted);max-width:20ch;}
+
+  .hero-art{position:relative;}
+  .hero-art .frame{border:3px solid var(--blue);background:var(--paper-2);padding:10px;box-shadow:10px 10px 0 var(--blue);}
+  .hero-art img{display:block;width:100%;height:auto;mix-blend-mode:multiply;}
+  /* rubber stamp */
+  .stamp{position:absolute;left:-26px;bottom:-26px;width:130px;height:130px;border:3px solid var(--coral);border-radius:50%;
+    display:grid;place-content:center;text-align:center;transform:rotate(-13deg);background:transparent;color:var(--coral);
+    font-family:var(--display);font-weight:800;font-size:15px;line-height:1.05;letter-spacing:.02em;text-transform:uppercase;
+    box-shadow:inset 0 0 0 3px var(--paper);opacity:.9;}
+  .stamp span{display:block;}
+  .stamp::after{content:"";position:absolute;inset:9px;border:1.5px solid var(--coral);border-radius:50%;opacity:.7;}
+  @media(max-width:860px){
+    .hero .wrap{grid-template-columns:1fr;}
+    .hero-art{order:-1;max-width:440px;}
+    .stamp{width:108px;height:108px;font-size:13px;left:auto;right:-14px;bottom:-18px;}
+  }
+
+  /* ticker / field note */
+  .ticker{border-top:3px solid var(--blue);border-bottom:3px solid var(--blue);background:var(--blue);color:var(--paper);}
+  .ticker .wrap{display:flex;flex-wrap:wrap;gap:8px 34px;padding:14px 24px;font-family:var(--mono);font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;}
+  .ticker b{color:#fff;}
+  .ticker .n{color:var(--coral);}
+
+  /* section scaffolding */
+  section.band{padding:72px 0;}
+  .kicker{font-family:var(--mono);font-size:12.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--coral);margin:0 0 10px;}
+  h2.title{font-family:var(--display);font-weight:800;color:var(--blue);font-size:clamp(28px,4vw,42px);line-height:1;letter-spacing:-.02em;margin:0 0 8px;}
+  .sectionlede{max-width:52ch;color:var(--ink);margin:0 0 40px;font-size:17px;}
+
+  /* features */
+  .features{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  .fcard{border:3px solid var(--blue);background:var(--paper-2);padding:26px 24px 30px;position:relative;}
+  .fcard .fnum{font-family:var(--mono);font-size:12.5px;color:var(--coral);letter-spacing:.1em;}
+  .fcard h3{font-family:var(--display);font-weight:700;font-size:23px;color:var(--blue);letter-spacing:-.01em;margin:14px 0 10px;line-height:1.02;}
+  .fcard p{margin:0;font-size:15.5px;color:var(--ink);}
+  @media(max-width:820px){.features{grid-template-columns:1fr;}}
+
+  /* testimonials */
+  .quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  .qcard{border:3px solid var(--blue);padding:26px 24px;background:var(--paper);display:flex;flex-direction:column;gap:18px;}
+  .qcard blockquote{margin:0;font-family:var(--display);font-weight:600;font-size:18px;line-height:1.28;color:var(--ink);letter-spacing:-.01em;}
+  .qwho{display:flex;align-items:center;gap:14px;}
+  .monogram{flex:0 0 auto;width:46px;height:46px;border:3px solid var(--coral);border-radius:50%;display:grid;place-content:center;
+    font-family:var(--display);font-weight:800;font-size:18px;color:var(--coral);background:var(--paper-2);}
+  .qname{font-family:var(--body);font-weight:700;font-size:15px;color:var(--blue);}
+  .qtitle{font-family:var(--mono);font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);line-height:1.35;}
+  @media(max-width:820px){.quotes{grid-template-columns:1fr;}}
+
+  /* pricing */
+  .pricing-band{background:var(--paper-2);border-top:3px solid var(--blue);border-bottom:3px solid var(--blue);}
+  .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  .tier{border:3px solid var(--blue);background:var(--paper);padding:28px 24px 30px;display:flex;flex-direction:column;}
+  .tier.flag{background:var(--blue);color:var(--paper);position:relative;}
+  .tier .tname{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-.01em;color:var(--blue);}
+  .tier.flag .tname{color:#fff;}
+  .tier .price{font-family:var(--mono);font-weight:500;font-size:30px;margin:12px 0 2px;color:var(--ink);}
+  .tier.flag .price{color:var(--coral);}
+  .tier .ttag{font-size:14.5px;color:var(--muted);min-height:44px;margin-bottom:16px;}
+  .tier.flag .ttag{color:rgba(242,236,220,.75);}
+  .tier ul{list-style:none;margin:0 0 22px;padding:0;display:flex;flex-direction:column;gap:11px;font-size:14.5px;}
+  .tier li{display:flex;gap:10px;align-items:flex-start;}
+  .tier li::before{content:"";flex:0 0 auto;width:9px;height:9px;margin-top:6px;background:var(--coral);}
+  .tier .badge{position:absolute;top:-3px;right:-3px;background:var(--coral);color:#fff;font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;padding:5px 9px;}
+  .tier .tbtn{margin-top:auto;text-align:center;font-family:var(--display);font-weight:700;text-decoration:none;padding:11px;border:3px solid var(--blue);color:var(--blue);background:transparent;transition:background .1s,color .1s;}
+  .tier .tbtn:hover{background:var(--blue);color:var(--paper);}
+  .tier.flag .tbtn{border-color:var(--coral);color:#fff;}
+  .tier.flag .tbtn:hover{background:var(--coral);color:#fff;}
+  @media(max-width:820px){.tiers{grid-template-columns:1fr;}}
+
+  /* demo CTA */
+  .demo-cta{padding:76px 0;text-align:center;}
+  .demo-cta h2{font-family:var(--display);font-weight:800;color:var(--blue);font-size:clamp(28px,4.4vw,44px);letter-spacing:-.02em;margin:0 0 14px;line-height:1.02;}
+  .demo-cta p{max-width:46ch;margin:0 auto 30px;color:var(--ink);}
+
+  /* footer */
+  footer.foot{border-top:3px solid var(--blue);}
+  footer.foot .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:26px 24px;flex-wrap:wrap;}
+  footer.foot a.back{font-family:var(--mono);font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;text-decoration:none;color:var(--blue);}
+  footer.foot a.back:hover{color:var(--coral);}
+  footer.foot .fnote{font-family:var(--mono);font-size:11.5px;color:var(--muted);}
+
+  @media(prefers-reduced-motion:reduce){
+    *{scroll-behavior:auto !important;transition:none !important;}
+  }
+</style>
+</head>
+<body>
+<span class="reg tl" aria-hidden="true"></span>
+<span class="reg tr" aria-hidden="true"></span>
+<span class="reg br" aria-hidden="true"></span>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="wordmark" href="#top">
+      <svg class="glyph" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M3 14c3-1 5-4 9-4 3 0 5 2 8 1-1 3-4 5-8 5-1 2-3 3-5 3 1-2 1-3 0-4-2 0-3-1-4-1z" fill="#F0426E" stroke="#2947C4" stroke-width="1.6" stroke-linejoin="round"/>
+        <circle cx="16.5" cy="10.2" r="1" fill="#2947C4"/>
+      </svg>
+      Loft
+    </a>
+    <nav>
+      <a href="#how">How it works</a>
+      <a href="#reviews">The flock</a>
+      <a href="#pricing">Pricing</a>
+      <a href="./demo.html">Demo</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-copy">
+        <p class="eyebrow">Serious pair-bonding infrastructure · <b>for pigeons</b></p>
+        <h1 class="head">The pigeon you'll share a ledge with is two overpasses away.</h1>
+        <p class="lede">Loft pairs pigeons by homing radius, verified coo, and mutual attachment to the same statue. Built to be deleted, unless you lose the nest and have to reinstall.</p>
+        <div class="hero-cta">
+          <a class="btn" href="./demo.html">Start roosting</a>
+          <span class="fineprint">No app store. We land the download on your ledge.</span>
+        </div>
+      </div>
+      <div class="hero-art">
+        <div class="frame">
+          <img src="./hero.webp" alt="A two-ink risograph portrait of a dignified city pigeon" width="1600" height="900">
+        </div>
+        <div class="stamp" aria-hidden="true"><span>Designed</span><span>to be</span><span>deleted</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="ticker" aria-hidden="true">
+    <div class="wrap">
+      <span><b>1.2M</b> birds paired</span>
+      <span><span class="n">0</span> human oversight</span>
+      <span>avg. homing radius <b>4.1 wingbeats</b></span>
+      <span>seagull exposure <span class="n">down 94%</span></span>
+      <span>median coo-match <b>81%</b></span>
+    </div>
+  </div>
+
+  <section class="band" id="how">
+    <div class="wrap">
+      <p class="kicker">How the matching works</p>
+      <h2 class="title">Three systems, one gutter.</h2>
+      <p class="sectionlede">Every pairing runs through the same pipeline a serious relationship platform would use, pointed at a bird that already mates for life and did not ask for any of this.</p>
+      <div class="features">
+        <div class="fcard">
+          <div class="fnum">01 / verification</div>
+          <h3>Coo Verification</h3>
+          <p>Every profile is authenticated by a three-second coo sample. No doves posing as pigeons, no gulls in from the coast. If the vocalization doesn't clear our reference range, the account never goes live.</p>
+        </div>
+        <div class="fcard">
+          <div class="fnum">02 / geography</div>
+          <h3>Homing Radius Matching</h3>
+          <p>We only surface birds inside your natural return-flight range, so an evening out never means abandoning the route that gets you home before dark. Distance is measured in wingbeats, not miles.</p>
+        </div>
+        <div class="fcard">
+          <div class="fnum">03 / scoring</div>
+          <h3>Nest-Readiness Score</h3>
+          <p>A 1-to-10 rating of how prepared each bird is to commit to a shared gutter, weighted on twig-gathering history, prior ledge tenure, and how they behave around a dropped bagel. Updated hourly.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="reviews" style="padding-top:0;">
+    <div class="wrap">
+      <p class="kicker">Word from the flock</p>
+      <h2 class="title">Deleted the app. Kept the bird.</h2>
+      <p class="sectionlede">Reviews collected from windowsills, statue heads, and one particularly opinionated parking structure.</p>
+      <div class="quotes">
+        <div class="qcard">
+          <blockquote>&ldquo;Circled the same fountain for four years. Matched with a hen from the parking structure two blocks down. We deleted Loft in March and split a soft pretzel.&rdquo;</blockquote>
+          <div class="qwho">
+            <div class="monogram" aria-hidden="true">G</div>
+            <div>
+              <div class="qname">Gerald</div>
+              <div class="qtitle">Feral Rock Dove, Financial District Flock</div>
+            </div>
+          </div>
+        </div>
+        <div class="qcard">
+          <blockquote>&ldquo;The coo verification caught three doves trying to pass themselves off as pigeons. That is vetting I could not have done myself from a wire.&rdquo;</blockquote>
+          <div class="qwho">
+            <div class="monogram" aria-hidden="true">M</div>
+            <div>
+              <div class="qname">Marguerite</div>
+              <div class="qtitle">Retired Racing Pigeon, Leg Band No. 4471</div>
+            </div>
+          </div>
+        </div>
+        <div class="qcard">
+          <blockquote>&ldquo;The nest-readiness score said he was a nine. He was a six. But I respected that a number existed at all.&rdquo;</blockquote>
+          <div class="qwho">
+            <div class="monogram" aria-hidden="true">T</div>
+            <div>
+              <div class="qname">Two-Toes</div>
+              <div class="qtitle">Statue Resident, Central Library Colony</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pricing-band band" id="pricing">
+    <div class="wrap">
+      <p class="kicker">Membership</p>
+      <h2 class="title">Priced per bird, per month.</h2>
+      <p class="sectionlede">Billing is handled in breadcrumbs at time of writing. Card support is on the roadmap, behind several more pressing items.</p>
+      <div class="tiers">
+        <div class="tier">
+          <div class="tname">Free Range</div>
+          <div class="price">$0</div>
+          <div class="ttag">For the pigeon still deciding which overpass counts as home.</div>
+          <ul>
+            <li>3 coos a day</li>
+            <li>See who pecked your profile, blurred</li>
+            <li>Standard flock visibility</li>
+          </ul>
+          <a class="tbtn" href="./demo.html">Start free</a>
+        </div>
+        <div class="tier flag">
+          <span class="badge">Most nested</span>
+          <div class="tname">Homebound</div>
+          <div class="price">$12/mo</div>
+          <div class="ttag">For the bird that already knows the ledge it wants.</div>
+          <ul>
+            <li>Unlimited coos</li>
+            <li>Undo one accidental peck per day</li>
+            <li>Priority placement near the breadcrumb feed</li>
+          </ul>
+          <a class="tbtn" href="./demo.html">Go Homebound</a>
+        </div>
+        <div class="tier">
+          <div class="tname">Life Pair</div>
+          <div class="price">$60/mo</div>
+          <div class="ttag">For pigeons ready to delete the app and actually mean it.</div>
+          <ul>
+            <li>Verified nest-readiness badge</li>
+            <li>One human-assisted introduction on a windowsill</li>
+            <li>We stop showing you seagulls</li>
+          </ul>
+          <a class="tbtn" href="./demo.html">Pair for life</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="demo-cta">
+    <div class="wrap">
+      <h2>See a real profile before you commit a wing.</h2>
+      <p>Browse Bartholomew, a nine-month-old rock dove with strong ledge tenure and one unresolved feeling about a nearby fountain.</p>
+      <a class="btn ghost" href="./demo.html">Open the demo &rarr;</a>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <a class="back" href="/">&larr; theworstaistudioever</a>
+    <span class="fnote">Loft is not a real company. Pigeons cannot consent to a subscription.</span>
+  </div>
+</footer>
+</body>
+</html>
