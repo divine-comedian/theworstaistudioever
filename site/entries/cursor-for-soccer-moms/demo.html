@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sideline demo · theworstaistudioever</title>
+<meta name="description" content="A live Sideline workspace: carpool.yaml, two problems, one suggestion, and an agent standing by.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #14161C;
+    --panel: #191C24;
+    --panel-2: #1E222C;
+    --line: #2A2E3A;
+    --fg: #E4E7EE;
+    --fg-2: #99A1B3;
+    --muted: #6B7280;
+    --indigo: #7B8CF0;
+    --orange: #FF8A3D;
+    --sage: #A8C892;
+    --red: #E06C6C;
+    --display: 'Space Grotesk', system-ui, sans-serif;
+    --body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--fg); font-family: var(--body);
+    height: 100dvh; display: flex; flex-direction: column; overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: rgba(123,140,240,.35); }
+  a { color: var(--indigo); text-decoration: none; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; border-radius: 4px; }
+  button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+
+  /* top chrome */
+  .titlebar {
+    display: flex; align-items: center; gap: 18px;
+    background: var(--panel-2); border-bottom: 1px solid var(--line);
+    padding: 9px 14px; font-family: var(--mono); font-size: 12px; color: var(--muted);
+    flex: 0 0 auto;
+  }
+  .titlebar .back { color: var(--fg-2); }
+  .titlebar .back:hover { color: var(--fg); }
+  .titlebar .proj { color: var(--fg); font-weight: 500; }
+  .titlebar .agent-pill { margin-left: auto; display: inline-flex; align-items: center; gap: 7px; }
+  .adot { width: 7px; height: 7px; border-radius: 50%; background: var(--orange); display: inline-block; animation: pulse 2.4s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+
+  /* main grid */
+  .ide { flex: 1; display: grid; grid-template-columns: 208px 1fr 296px; min-height: 0; }
+
+  /* sidebar */
+  .tree { background: var(--panel); border-right: 1px solid var(--line); padding: 14px 0; overflow-y: auto; }
+  .tree .hdr { font-family: var(--mono); font-size: 10.5px; letter-spacing: .09em; color: var(--muted); padding: 0 16px 10px; }
+  .tree button {
+    display: flex; align-items: center; gap: 9px; width: 100%;
+    padding: 6px 16px; font-family: var(--mono); font-size: 12.5px; color: var(--fg-2);
+    text-align: left;
+  }
+  .tree button:hover { background: var(--panel-2); color: var(--fg); }
+  .tree button.on { background: var(--panel-2); color: var(--fg); box-shadow: inset 2px 0 0 var(--indigo); }
+  .tree .fi { width: 14px; height: 14px; flex: 0 0 14px; opacity: .7; }
+  .tree .cnt { margin-left: auto; font-size: 10px; color: var(--red); }
+
+  /* editor column */
+  .edcol { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+  .tabs { display: flex; background: var(--panel); border-bottom: 1px solid var(--line); overflow-x: auto; flex: 0 0 auto; }
+  .tabs button {
+    font-family: var(--mono); font-size: 12px; color: var(--muted);
+    padding: 9px 18px; border-right: 1px solid var(--line); white-space: nowrap;
+  }
+  .tabs button.on { color: var(--fg); background: var(--bg); box-shadow: inset 0 2px 0 var(--indigo); }
+  .editor { flex: 1; overflow: auto; font-family: var(--mono); font-size: 13px; line-height: 1.8; padding: 14px 0; min-height: 0; }
+  .buf { display: none; }
+  .buf.on { display: block; }
+  .cl { display: flex; white-space: pre; }
+  .cl .ln { width: 52px; flex: 0 0 52px; text-align: right; padding-right: 18px; color: #3B4152; user-select: none; }
+  .k { color: var(--indigo); }
+  .s { color: var(--sage); }
+  .c { color: var(--muted); font-style: italic; }
+  .p { color: var(--fg-2); }
+  .bad { text-decoration: underline wavy var(--red) 1px; text-underline-offset: 4px; }
+  .warn { text-decoration: underline wavy var(--orange) 1px; text-underline-offset: 4px; }
+  .ghost { opacity: .45; }
+  .cursor-block { display: inline-block; width: 8px; height: 15px; background: var(--indigo); vertical-align: -2px; animation: blink 1.1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .cl.hl { animation: linehl 1.6s ease; }
+  @keyframes linehl { 0% { background: rgba(224,108,108,.18); } 100% { background: transparent; } }
+  .cl.accepted { animation: accept .5s ease; }
+  @keyframes accept { 0% { background: rgba(255,138,61,.16); } 100% { background: transparent; } }
+
+  .edhint {
+    flex: 0 0 auto; border-top: 1px solid var(--line); background: var(--panel);
+    padding: 8px 16px; font-family: var(--mono); font-size: 11.5px; color: var(--muted);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .keycap {
+    font-family: var(--mono); font-size: 10.5px; font-weight: 700; color: var(--fg);
+    background: var(--panel-2); border: 1px solid #3A4050; border-bottom-width: 3px;
+    border-radius: 5px; padding: 2px 9px; cursor: pointer;
+  }
+  .keycap:hover { border-color: var(--indigo); }
+  .keycap.flash { border-color: var(--orange); color: var(--orange); }
+
+  /* problems panel */
+  .problems { border-top: 1px solid var(--line); background: var(--panel); flex: 0 0 auto; }
+  .problems .hdr {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .09em; color: var(--muted);
+    padding: 8px 16px 4px;
+  }
+  .problems button {
+    display: flex; align-items: baseline; gap: 10px; width: 100%;
+    padding: 5px 16px; font-family: var(--mono); font-size: 12px; color: var(--fg-2); text-align: left;
+  }
+  .problems button:hover { background: var(--panel-2); color: var(--fg); }
+  .problems .sev { font-weight: 700; }
+  .problems .sev.e { color: var(--red); }
+  .problems .sev.w { color: var(--orange); }
+  .problems .loc { color: var(--muted); margin-left: auto; white-space: nowrap; }
+  .problems .done { color: var(--muted); font-style: italic; padding: 5px 16px 10px; font-size: 12px; display: none; }
+
+  /* agent pane */
+  .agent { background: var(--panel); border-left: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; }
+  .agent .hdr {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .09em; color: var(--muted);
+    padding: 14px 16px 10px; border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .agent .log { flex: 1; overflow-y: auto; padding: 14px 14px 6px; display: flex; flex-direction: column; gap: 10px; }
+  .msg { font-size: 12.5px; line-height: 1.55; border-radius: 9px; padding: 9px 12px; max-width: 100%; }
+  .msg.ai { background: var(--panel-2); border: 1px solid var(--line); color: var(--fg-2); }
+  .msg.sent { background: rgba(123,140,240,.12); border: 1px solid rgba(123,140,240,.3); color: var(--fg); }
+  .msg.sys { background: none; border: none; color: var(--muted); font-family: var(--mono); font-size: 11px; padding: 0 2px; }
+  .msg .t { display: block; font-family: var(--mono); font-size: 10px; color: var(--muted); margin-bottom: 3px; }
+  .agent .foot { flex: 0 0 auto; padding: 12px 14px; border-top: 1px solid var(--line); }
+  .runbtn {
+    width: 100%; font-family: var(--mono); font-size: 12.5px; font-weight: 700;
+    background: var(--orange); color: #1A1005; border-radius: 8px; padding: 10px 0;
+    transition: background .18s ease;
+  }
+  .runbtn:hover { background: #FF9B58; }
+  .runbtn:disabled { background: var(--panel-2); color: var(--muted); cursor: default; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+
+  @media (max-width: 900px) {
+    body { overflow: auto; height: auto; }
+    .ide { grid-template-columns: 1fr; }
+    .tree { display: flex; overflow-x: auto; padding: 8px; border-right: none; border-bottom: 1px solid var(--line); }
+    .tree .hdr { display: none; }
+    .tree button { width: auto; white-space: nowrap; border-radius: 6px; }
+    .tree button.on { box-shadow: inset 0 0 0 1px var(--indigo); }
+    .editor { min-height: 320px; }
+    .agent { border-left: none; border-top: 1px solid var(--line); }
+    .agent .log { max-height: 300px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="titlebar">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="proj">family-ops</span>
+  <span>season 12 · cedar ridge strikers u-9</span>
+  <span class="agent-pill"><span class="adot" aria-hidden="true"></span><span id="agentState">agent: idle</span></span>
+</div>
+
+<div class="ide">
+
+  <aside class="tree" aria-label="Files">
+    <div class="hdr">EXPLORER · FAMILY-OPS</div>
+    <button class="on" data-file="carpool" aria-pressed="true">
+      <svg class="fi" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M3 2h7l3 3v9H3z"/><path d="M10 2v3h3"/></svg>
+      carpool.yaml <span class="cnt">1</span>
+    </button>
+    <button data-file="snacks" aria-pressed="false">
+      <svg class="fi" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M3 2h7l3 3v9H3z"/><path d="M10 2v3h3"/></svg>
+      snacks.toml <span class="cnt" style="color:var(--orange)">1</span>
+    </button>
+    <button data-file="saturday" aria-pressed="false">
+      <svg class="fi" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M3 2h7l3 3v9H3z"/><path d="M10 2v3h3"/></svg>
+      saturday.md
+    </button>
+    <button data-file="brayden" aria-pressed="false">
+      <svg class="fi" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M3 2h7l3 3v9H3z"/><path d="M10 2v3h3"/></svg>
+      brayden.json
+    </button>
+  </aside>
+
+  <div class="edcol">
+    <div class="tabs" role="tablist">
+      <button class="on" data-file="carpool" role="tab" aria-selected="true">carpool.yaml</button>
+      <button data-file="snacks" role="tab" aria-selected="false">snacks.toml</button>
+      <button data-file="saturday" role="tab" aria-selected="false">saturday.md</button>
+      <button data-file="brayden" role="tab" aria-selected="false">brayden.json</button>
+    </div>
+
+    <div class="editor" id="editor">
+
+      <div class="buf on" id="buf-carpool">
+        <div class="cl"><span class="ln">1</span><span class="c"># carpool.yaml — managed by sideline. do not edit by hand.</span></div>
+        <div class="cl"><span class="ln">2</span><span class="c"># (jennifer edited by hand)</span></div>
+        <div class="cl"><span class="ln">3</span><span class="k">season</span><span class="p">:</span> <span class="s">fall</span></div>
+        <div class="cl"><span class="ln">4</span><span class="k">vehicle</span><span class="p">:</span> <span class="s">odyssey</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c"># seats 7, smells like cleats</span></div>
+        <div class="cl"><span class="ln">5</span><span class="k">assignments</span><span class="p">:</span></div>
+        <div class="cl"><span class="ln">6</span>  <span class="k">week_5</span><span class="p">:</span> <span class="s">dana</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c"># accepted · 0.97</span></div>
+        <div class="cl"><span class="ln">7</span>  <span class="k">week_6</span><span class="p">:</span> <span class="s">priya</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c"># accepted · 0.91</span></div>
+        <div class="cl" id="ghostRow"><span class="ln">8</span>  <span id="ghostSlot" class="ghost"><span class="k">week_7</span><span class="p">:</span> <span class="s">jennifers_mom</span>&nbsp;&nbsp;<span class="c"># confidence 0.93</span></span><span class="cursor-block" aria-hidden="true"></span></div>
+        <div class="cl"><span class="ln">9</span><span class="k">pickups</span><span class="p">:</span></div>
+        <div class="cl"><span class="ln">10</span>  <span class="k">brayden</span><span class="p">:</span> <span class="p">{home:</span> <span class="s">cul_de_sac</span><span class="p">, gear:</span> <span class="s">full</span><span class="p">}</span></div>
+        <div class="cl"><span class="ln">11</span>  <span class="k">sofia</span><span class="p">:</span> <span class="p">{home:</span> <span class="s">elm_ct</span><span class="p">, gear:</span> <span class="s">shin_guards_only</span><span class="p">}</span></div>
+        <div class="cl"><span class="ln">12</span>  <span class="k">maddox</span><span class="p">:</span> <span class="p">{home:</span> <span class="s">unknown</span><span class="p">, gear:</span> <span class="s">vibes</span><span class="p">}</span></div>
+        <div class="cl"><span class="ln">13</span><span class="k">returns</span><span class="p">:</span></div>
+        <div class="cl" id="line-carpool-14"><span class="ln">14</span>  <span class="k">maddox</span><span class="p">:</span> <span class="bad">null</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c"># no ride home</span></div>
+      </div>
+
+      <div class="buf" id="buf-snacks">
+        <div class="cl"><span class="ln">1</span><span class="c"># snacks.toml — the rotation is config now</span></div>
+        <div class="cl"><span class="ln">2</span><span class="p">[</span><span class="k">week_5</span><span class="p">]</span></div>
+        <div class="cl"><span class="ln">3</span><span class="k">owner</span> <span class="p">=</span> <span class="s">"dana"</span></div>
+        <div class="cl"><span class="ln">4</span><span class="k">item</span> <span class="p">=</span> <span class="s">"orange_slices"</span>&nbsp;&nbsp;<span class="c"># compliant</span></div>
+        <div class="cl"><span class="ln">5</span></div>
+        <div class="cl"><span class="ln">6</span><span class="p">[</span><span class="k">week_6</span><span class="p">]</span></div>
+        <div class="cl"><span class="ln">7</span><span class="k">owner</span> <span class="p">=</span> <span class="s">"priya"</span></div>
+        <div class="cl" id="line-snacks-8"><span class="ln">8</span><span class="k">item</span> <span class="p">=</span> <span class="warn">"rice_krispies"</span></div>
+        <div class="cl"><span class="ln">9</span><span class="k">owner</span> <span class="p">=</span> <span class="s">"jennifer"</span>&nbsp;&nbsp;<span class="c"># declared twice. sideline noticed.</span></div>
+        <div class="cl"><span class="ln">10</span><span class="k">item</span> <span class="p">=</span> <span class="warn">"rice_krispies"</span></div>
+        <div class="cl"><span class="ln">11</span></div>
+        <div class="cl"><span class="ln">12</span><span class="p">[</span><span class="k">week_7</span><span class="p">]</span></div>
+        <div class="cl"><span class="ln">13</span><span class="k">owner</span> <span class="p">=</span> <span class="s">"tbd"</span>&nbsp;&nbsp;<span class="c"># the agent is on it</span></div>
+      </div>
+
+      <div class="buf" id="buf-saturday">
+        <div class="cl"><span class="ln">1</span><span class="k"># saturday.md</span></div>
+        <div class="cl"><span class="ln">2</span></div>
+        <div class="cl"><span class="ln">3</span><span class="p">## pre-game runbook (t-minus 90 min)</span></div>
+        <div class="cl"><span class="ln">4</span></div>
+        <div class="cl"><span class="ln">5</span><span class="p">- [x] locate both cleats</span>&nbsp;&nbsp;<span class="c">(separate rooms, as forecast)</span></div>
+        <div class="cl"><span class="ln">6</span><span class="p">- [x] fill water bottle brayden will not drink from</span></div>
+        <div class="cl"><span class="ln">7</span><span class="p">- [ ] confirm week_7 driver</span>&nbsp;&nbsp;<span class="c">(blocked on jennifers_mom)</span></div>
+        <div class="cl"><span class="ln">8</span><span class="p">- [ ] fold camp chair into trunk tetris slot 2</span></div>
+        <div class="cl"><span class="ln">9</span><span class="p">- [ ] emotional preparation for the referee</span></div>
+        <div class="cl"><span class="ln">10</span></div>
+        <div class="cl"><span class="ln">11</span><span class="c">> incident postmortem, week 4: we do not discuss week 4.</span></div>
+      </div>
+
+      <div class="buf" id="buf-brayden">
+        <div class="cl"><span class="ln">1</span><span class="p">{</span></div>
+        <div class="cl"><span class="ln">2</span>  <span class="k">"name"</span><span class="p">:</span> <span class="s">"Brayden"</span><span class="p">,</span></div>
+        <div class="cl"><span class="ln">3</span>  <span class="k">"position"</span><span class="p">:</span> <span class="s">"wherever the ball is"</span><span class="p">,</span></div>
+        <div class="cl"><span class="ln">4</span>  <span class="k">"cleats"</span><span class="p">:</span> <span class="s">"velcro"</span><span class="p">,</span></div>
+        <div class="cl"><span class="ln">5</span>  <span class="k">"hydration"</span><span class="p">:</span> <span class="s">"capri_sun"</span><span class="p">,</span></div>
+        <div class="cl"><span class="ln">6</span>  <span class="k">"notes"</span><span class="p">:</span> <span class="p">[</span></div>
+        <div class="cl"><span class="ln">7</span>    <span class="s">"cries if subbed"</span><span class="p">,</span></div>
+        <div class="cl"><span class="ln">8</span>    <span class="s">"cries if not subbed"</span></div>
+        <div class="cl"><span class="ln">9</span>  <span class="p">]</span></div>
+        <div class="cl"><span class="ln">10</span><span class="p">}</span></div>
+      </div>
+
+    </div>
+
+    <div class="edhint">
+      <button class="keycap" id="tabBtn">Tab</button>
+      <span id="hintText">accepts the week_7 suggestion. there is no undo.</span>
+    </div>
+
+    <div class="problems" aria-label="Problems">
+      <div class="hdr">PROBLEMS · <span id="probCount">2</span></div>
+      <button data-goto="carpool-14" id="prob1"><span class="sev e">✕</span> maddox has no ride home <span class="loc">carpool.yaml:14</span></button>
+      <button data-goto="snacks-8" id="prob2"><span class="sev w">▲</span> rice_krispies declared twice in [week_6] <span class="loc">snacks.toml:8</span></button>
+      <div class="done" id="probDone">no problems. this has never happened before.</div>
+    </div>
+  </div>
+
+  <aside class="agent" aria-label="Agent pane">
+    <div class="hdr"><span class="adot" aria-hidden="true"></span>SIDELINE AGENT</div>
+    <div class="log" id="agentLog">
+      <div class="msg ai">week_7 has no driver and Saturday is not moving. I can reach out to Jennifer's mom. Tone: breezy, with an undercurrent.</div>
+      <div class="msg sys">escalation policy: polite, every 45 min</div>
+    </div>
+    <div class="foot">
+      <button class="runbtn" id="runAgent">run agent</button>
+    </div>
+  </aside>
+
+</div>
+
+<script>
+(function () {
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- file/tab switching ---------- */
+  var switchers = document.querySelectorAll('[data-file]');
+  function openFile(name) {
+    document.querySelectorAll('.buf').forEach(function (b) {
+      b.classList.toggle('on', b.id === 'buf-' + name);
+    });
+    switchers.forEach(function (btn) {
+      var on = btn.getAttribute('data-file') === name;
+      btn.classList.toggle('on', on);
+      if (btn.hasAttribute('role')) btn.setAttribute('aria-selected', String(on));
+      if (btn.hasAttribute('aria-pressed')) btn.setAttribute('aria-pressed', String(on));
+    });
+  }
+  switchers.forEach(function (btn) {
+    btn.addEventListener('click', function () { openFile(btn.getAttribute('data-file')); });
+  });
+
+  /* ---------- problems: jump to line ---------- */
+  document.querySelectorAll('[data-goto]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var target = btn.getAttribute('data-goto');       /* e.g. carpool-14 */
+      var file = target.split('-')[0];
+      openFile(file);
+      var row = document.getElementById('line-' + target);
+      if (!row) return;
+      row.scrollIntoView({ block: 'center', behavior: reduced ? 'auto' : 'smooth' });
+      row.classList.remove('hl');
+      void row.offsetWidth;
+      row.classList.add('hl');
+    });
+  });
+
+  /* ---------- tab-completion ---------- */
+  var ghostSlot = document.getElementById('ghostSlot');
+  var ghostRow = document.getElementById('ghostRow');
+  var tabBtn = document.getElementById('tabBtn');
+  var hintText = document.getElementById('hintText');
+  var suggestions = [
+    { html: '<span class="k">week_8</span><span class="p">:</span> <span class="s">dana</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c"># guilt-weighted 0.88</span>', hint: 'accepts week_8. dana does not know yet.' },
+    { html: '<span class="k">week_9</span><span class="p">:</span> <span class="s">the_ex_husband</span>&nbsp;<span class="c"># rockford. the model knows.</span>', hint: 'accepts week_9. the model knows.' }
+  ];
+  var si = -1;
+  var exhausted = false;
+
+  function acceptGhost() {
+    if (exhausted) return;
+    var accepted = document.createElement('div');
+    accepted.className = 'cl accepted';
+    accepted.innerHTML = '<span class="ln">' + (8 + si + 1) + '</span>  ' + ghostSlot.innerHTML;
+    ghostRow.parentNode.insertBefore(accepted, ghostRow);
+    tabBtn.classList.add('flash');
+    setTimeout(function () { tabBtn.classList.remove('flash'); }, 600);
+
+    si++;
+    if (si < suggestions.length) {
+      ghostRow.querySelector('.ln').textContent = String(8 + si + 1);
+      ghostSlot.innerHTML = suggestions[si].html;
+      hintText.textContent = suggestions[si].hint;
+    } else {
+      exhausted = true;
+      ghostRow.style.display = 'none';
+      hintText.textContent = 'no further suggestions. the season is long.';
+    }
+    renumberAfterGhost();
+  }
+
+  function renumberAfterGhost() {
+    /* keep the static lines below the ghost row numbered correctly */
+    var rows = document.querySelectorAll('#buf-carpool .cl');
+    var n = 1;
+    rows.forEach(function (r) {
+      if (r.style.display === 'none') return;
+      r.querySelector('.ln').textContent = String(n);
+      n++;
+    });
+  }
+
+  tabBtn.addEventListener('click', acceptGhost);
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Tab') return;
+    var carpoolOpen = document.getElementById('buf-carpool').classList.contains('on');
+    if (!carpoolOpen || exhausted) return;
+    e.preventDefault();
+    acceptGhost();
+  });
+
+  /* ---------- agent ---------- */
+  var runBtn = document.getElementById('runAgent');
+  var log = document.getElementById('agentLog');
+  var agentState = document.getElementById('agentState');
+  var script = [
+    { cls: 'sys', text: 'agent: negotiating', state: 'agent: negotiating', delay: 400 },
+    { cls: 'sent', time: '14:02', text: 'hi!! any chance you could take week 7? totally fine if not. no rush at all!!', delay: 1400 },
+    { cls: 'sys', text: 'waiting 45 min (compressed for demo)', delay: 1600 },
+    { cls: 'sent', time: '14:47', text: 'hi again! circling back, zero pressure. no rush at all!', delay: 1500 },
+    { cls: 'sys', text: 'incoming: jennifers_mom (agent)', delay: 1600 },
+    { cls: 'ai', text: "Jennifer's mom's agent has accepted week_7 on her behalf. Terms: goal-side photo duty transfers to your household.", delay: 1700 },
+    { cls: 'sys', text: 'week_7 resolved. neither human was consulted.', state: 'agent: resolved', delay: 1400 }
+  ];
+
+  function addMsg(step) {
+    var d = document.createElement('div');
+    d.className = 'msg ' + step.cls;
+    d.innerHTML = (step.time ? '<span class="t">sent · ' + step.time + '</span>' : '') + step.text;
+    log.appendChild(d);
+    log.scrollTop = log.scrollHeight;
+    if (step.state) agentState.textContent = step.state;
+  }
+
+  runBtn.addEventListener('click', function () {
+    runBtn.disabled = true;
+    runBtn.textContent = 'agent running…';
+    var i = 0;
+    (function next() {
+      if (i >= script.length) {
+        runBtn.textContent = 'resolved. run again next week';
+        return;
+      }
+      var step = script[i];
+      i++;
+      setTimeout(function () { addMsg(step); next(); }, reduced ? 80 : step.delay);
+    })();
+  });
+})();
+</script>
+</body>
+</html>
