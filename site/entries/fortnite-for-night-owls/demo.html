@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vigil · Spectate Match #4,417</title>
+<meta name="description" content="Live spectator HUD for Match #4,417, The Night. The dawn is advancing. Players remain, for now.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=Russo+One&display=swap');
+
+:root{
+  --bg:#0A0B1E;
+  --panel:#0E1028;
+  --muted:#1E2040;
+  --hairline:#2B2D55;
+  --fg:#EDEBFF;
+  --soft:#A9A6C9;
+  --magenta:#FF3D9A;
+  --magenta-dim:#B72C71;
+  --amber:#FFB13D;
+  --display:'Russo One','Arial Black',system-ui,sans-serif;
+  --body:'Chakra Petch','Trebuchet MS',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg);color:var(--fg);font-family:var(--body);
+  font-size:15px;line-height:1.5;min-height:100dvh;overflow-x:hidden;
+}
+::selection{background:var(--magenta);color:var(--bg)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+
+.scanlines{
+  position:fixed;inset:0;pointer-events:none;z-index:50;
+  background:repeating-linear-gradient(to bottom,rgba(255,255,255,.02) 0,rgba(255,255,255,.02) 1px,transparent 1px,transparent 3px);
+}
+
+/* chrome */
+.topbar{
+  display:flex;align-items:center;gap:18px;padding:12px 18px;
+  border-bottom:1px solid var(--hairline);background:rgba(14,16,40,.9);
+  position:sticky;top:0;z-index:40;flex-wrap:wrap;
+}
+.back{
+  color:var(--soft);text-decoration:none;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;
+}
+.back:hover{color:var(--magenta)}
+.match-id{font-family:var(--display);font-size:.95rem;letter-spacing:.1em}
+.live-pill{
+  display:inline-flex;align-items:center;gap:8px;font-size:.68rem;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--magenta);border:1px solid var(--magenta-dim);padding:4px 12px;
+}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--magenta);box-shadow:0 0 10px var(--magenta);animation:pulse 1.6s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.topbar .spacer{flex:1}
+.awake-chip{font-variant-numeric:tabular-nums;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--soft)}
+.awake-chip b{color:var(--magenta);font-size:1rem}
+
+/* layout */
+.layout{
+  display:grid;grid-template-columns:1fr 340px;gap:16px;
+  max-width:1280px;margin:0 auto;padding:16px;
+}
+@media(max-width:980px){.layout{grid-template-columns:1fr}}
+
+.card{
+  background:var(--panel);border:1px solid var(--hairline);position:relative;
+}
+.card::before,.card::after{content:"";position:absolute;width:12px;height:12px;pointer-events:none;z-index:5}
+.card::before{top:-1px;left:-1px;border-top:2px solid var(--magenta);border-left:2px solid var(--magenta)}
+.card::after{bottom:-1px;right:-1px;border-bottom:2px solid var(--magenta);border-right:2px solid var(--magenta)}
+.card-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;border-bottom:1px solid var(--hairline);
+  font-size:.68rem;letter-spacing:.24em;text-transform:uppercase;color:var(--soft);
+}
+
+/* map */
+.map-wrap{padding:14px}
+.map{
+  position:relative;width:100%;aspect-ratio:16/10;
+  background:
+    radial-gradient(ellipse at 30% 40%,rgba(255,61,154,.05),transparent 60%),
+    #090A1A;
+  border:1px solid var(--hairline);overflow:hidden;
+}
+.map-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,61,154,.06) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,61,154,.06) 1px,transparent 1px);
+  background-size:44px 44px;
+}
+.zone{
+  position:absolute;border:1px dashed rgba(169,166,201,.35);
+  padding:6px 8px;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);
+}
+.dot{
+  position:absolute;width:9px;height:9px;border-radius:50%;
+  background:var(--magenta);box-shadow:0 0 8px rgba(255,61,154,.8);
+  transform:translate(-50%,-50%);cursor:pointer;border:none;padding:0;
+  transition:opacity .6s ease;
+}
+.dot:hover{outline:1px solid var(--fg)}
+.dot.out{opacity:0;pointer-events:none}
+.dot .tip{
+  position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
+  background:var(--bg);border:1px solid var(--magenta-dim);color:var(--fg);
+  font-size:.62rem;letter-spacing:.08em;padding:3px 8px;white-space:nowrap;
+  opacity:0;pointer-events:none;transition:opacity .15s ease;font-family:var(--body);
+}
+.dot:hover .tip,.dot:focus .tip{opacity:1}
+.dawn-front{
+  position:absolute;top:0;right:0;bottom:0;width:14%;
+  background:linear-gradient(to left,rgba(255,177,61,.55),rgba(255,120,61,.22) 60%,transparent);
+  border-left:1px solid rgba(255,177,61,.7);
+  transition:width 1s linear;pointer-events:none;z-index:3;
+}
+.dawn-label{
+  position:absolute;top:8px;right:8px;z-index:4;
+  font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--amber);
+}
+.map-foot{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  padding:10px 14px 14px;font-size:.72rem;color:var(--soft);
+  font-variant-numeric:tabular-nums;flex-wrap:wrap;
+}
+.map-foot .dawn-eta{color:var(--amber)}
+
+/* sidebar */
+.sidebar{display:flex;flex-direction:column;gap:16px}
+
+/* caffeine */
+.caffeine-body{padding:14px}
+.meter{
+  height:18px;background:var(--muted);position:relative;overflow:hidden;
+  border:1px solid var(--hairline);
+}
+.meter-fill{
+  position:absolute;inset:0;transform-origin:left center;
+  background:linear-gradient(90deg,var(--magenta-dim),var(--magenta));
+  transition:transform .8s linear;
+}
+.meter-label{
+  display:flex;justify-content:space-between;margin-top:8px;
+  font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--soft);
+  font-variant-numeric:tabular-nums;
+}
+.consumables{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.consumable{
+  flex:1;min-width:88px;background:var(--bg);border:1px solid var(--hairline);
+  color:var(--fg);font-family:var(--body);font-size:.7rem;letter-spacing:.06em;
+  padding:9px 8px;cursor:pointer;text-transform:uppercase;
+  transition:border-color .15s ease,transform .15s ease;
+}
+.consumable:hover:not(:disabled){border-color:var(--magenta);transform:translateY(-1px)}
+.consumable:disabled{opacity:.35;cursor:not-allowed}
+.consumable b{display:block;font-size:.85rem;color:var(--magenta);font-variant-numeric:tabular-nums}
+
+/* excuses */
+.excuse-body{padding:14px;display:flex;flex-direction:column;gap:8px}
+.excuse{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:var(--bg);border:1px solid var(--hairline);color:var(--fg);
+  font-family:var(--body);font-size:.78rem;letter-spacing:.04em;
+  padding:10px 12px;cursor:pointer;text-align:left;
+  transition:border-color .15s ease;
+}
+.excuse:hover:not(:disabled){border-color:var(--amber)}
+.excuse:disabled{opacity:.35;cursor:not-allowed}
+.excuse .uses{font-variant-numeric:tabular-nums;color:var(--soft);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;flex:none}
+.excuse-note{font-size:.66rem;color:var(--soft);letter-spacing:.06em;margin-top:4px}
+
+/* feed */
+.feed{list-style:none;padding:10px 14px;display:flex;flex-direction:column;gap:8px;max-height:300px;overflow-y:auto}
+.feed li{
+  font-size:.78rem;color:var(--soft);border-left:2px solid var(--magenta-dim);
+  padding:4px 0 4px 10px;
+}
+.feed li.dawn{border-left-color:var(--amber)}
+.feed li.sys{border-left-color:var(--hairline);color:var(--fg)}
+.feed li b{color:var(--fg);font-weight:600}
+.feed li .t{font-variant-numeric:tabular-nums;color:var(--soft);opacity:.7;margin-right:6px;font-size:.68rem}
+.feed li{animation:slidein .3s ease}
+@keyframes slidein{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:none}}
+
+.winner{
+  position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+  background:rgba(10,11,30,.86);z-index:6;text-align:center;padding:20px;
+}
+.winner.show{display:flex}
+.winner .inner h2{font-family:var(--display);font-size:1.6rem;letter-spacing:.06em;text-transform:uppercase;color:var(--amber);margin-bottom:8px}
+.winner .inner p{color:var(--soft);font-size:.85rem}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+<div class="scanlines" aria-hidden="true"></div>
+
+<div class="topbar">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="match-id">MATCH #4,417 · THE NIGHT</span>
+  <span class="live-pill"><span class="live-dot"></span>Live</span>
+  <span class="spacer"></span>
+  <span class="awake-chip">Still awake <b id="awakeCount">61</b>/100</span>
+</div>
+
+<main class="layout">
+  <section class="card" aria-label="Match map">
+    <div class="card-head"><span>Spectator map</span><span>Sector: apartment, 1 of 1</span></div>
+    <div class="map-wrap">
+      <div class="map" id="map">
+        <div class="map-grid" aria-hidden="true"></div>
+
+        <div class="zone" style="left:4%;top:6%;width:26%;height:34%">Kitchen Snack Zone</div>
+        <div class="zone" style="left:36%;top:10%;width:22%;height:26%">The Desk</div>
+        <div class="zone" style="left:8%;top:52%;width:30%;height:36%">Couch of No Return</div>
+        <div class="zone" style="left:46%;top:48%;width:20%;height:40%">Fridge Light</div>
+        <div class="zone" style="left:70%;top:14%;width:24%;height:30%">Big Window</div>
+        <div class="zone" style="left:72%;top:58%;width:20%;height:28%">Bathroom Mirror</div>
+
+        <div class="dawn-front" id="dawnFront"></div>
+        <div class="dawn-label">☀ dawn front</div>
+
+        <div class="winner" id="winner">
+          <div class="inner">
+            <h2>Vigil Victory</h2>
+            <p id="winnerText">One player saw the sunrise. They report feeling nothing.</p>
+          </div>
+        </div>
+      </div>
+      <div class="map-foot">
+        <span>Dawn advancing at 0.4%/s · slowed by deployed excuses</span>
+        <span class="dawn-eta">Night remaining: <span id="nightPct">86</span>%</span>
+      </div>
+    </div>
+  </section>
+
+  <aside class="sidebar">
+    <section class="card" aria-label="Caffeine meter">
+      <div class="card-head"><span>Caffeine</span><span id="caffPct">72%</span></div>
+      <div class="caffeine-body">
+        <div class="meter"><div class="meter-fill" id="meterFill" style="transform:scaleX(.72)"></div></div>
+        <div class="meter-label"><span>Empty = drowsy</span><span>Drains live</span></div>
+        <div class="consumables">
+          <button class="consumable" data-boost="18" data-name="Espresso shot">Espresso<b>×2</b></button>
+          <button class="consumable" data-boost="30" data-name="Cold brew">Cold brew<b>×1</b></button>
+          <button class="consumable" data-boost="55" data-name="The Forbidden Third Energy Drink">Forbidden 3rd<b>×1</b></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" aria-label="Excuse hotbar">
+      <div class="card-head"><span>Excuse hotbar</span><span>Slows the dawn</span></div>
+      <div class="excuse-body">
+        <button class="excuse" data-delay="4" data-name="a podcast">
+          <span>Deploy: a podcast, 40 minutes in already</span><span class="uses">×2</span>
+        </button>
+        <button class="excuse" data-delay="6" data-name="a wiki rabbit hole">
+          <span>Deploy: wiki rabbit hole (Byzantine emperors)</span><span class="uses">×2</span>
+        </button>
+        <button class="excuse" data-delay="9" data-name="the group chat">
+          <span>Deploy: the group chat just got interesting</span><span class="uses">×1</span>
+        </button>
+        <p class="excuse-note">Deployed excuses are visible to all players. This is a feature.</p>
+      </div>
+    </section>
+
+    <section class="card" aria-label="Elimination feed">
+      <div class="card-head"><span>Elimination feed</span><span>Auto</span></div>
+      <ul class="feed" id="feed">
+        <li class="sys"><span class="t">03:12</span>Spectating <b>Match #4,417</b>. 61 players remain.</li>
+        <li class="dawn"><span class="t">03:09</span><b>quiltghost</b> was caught by the dawn near the Big Window</li>
+        <li><span class="t">03:07</span><b>xX_moth_Xx</b> dozed off in the Kitchen Snack Zone</li>
+      </ul>
+    </section>
+  </aside>
+</main>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var awake = 61;
+  var caffeine = 72;
+  var night = 86;           // % of night remaining
+  var dawnWidth = 14;       // % of map covered by dawn
+  var over = false;
+
+  var awakeEl = document.getElementById('awakeCount');
+  var feedEl = document.getElementById('feed');
+  var meterEl = document.getElementById('meterFill');
+  var caffPctEl = document.getElementById('caffPct');
+  var dawnEl = document.getElementById('dawnFront');
+  var nightEl = document.getElementById('nightPct');
+  var winnerEl = document.getElementById('winner');
+  var mapEl = document.getElementById('map');
+
+  var names = ['duvet_crimes','lampwarden','3amCathedral','wikihole_pilgrim','chamomile_ken','fridge_pilot','sleepless_in_gr8','owl_actual','the_lamp_stays_on','melatonin_skeptic','crumbsleuth','doomscroll_dan','tabhoarder_99','yawn_criminal','pillowfort_cfo','snoozeproof','blanket_liability','microwave_witness'];
+  var zones = ['the Kitchen Snack Zone','the Couch of No Return','the Fridge Light','the Bathroom Mirror','The Desk','the Big Window'];
+  var causes = [
+    'dozed off in {z}',
+    'was caught by the dawn near {z}',
+    'blinked too long in {z} (ruled a self-elimination)',
+    'made the fatal chamomile in {z}',
+    'lay down in {z} "just to stretch"',
+    'finished the article and had nothing left',
+    'was betrayed by a warm beverage in {z}',
+    'checked one email in {z}. Fatal.',
+    'got comfortable in {z}, which is against the meta'
+  ];
+
+  // scatter player dots
+  var dots = [];
+  for(var i=0;i<26;i++){
+    var b = document.createElement('button');
+    b.className = 'dot';
+    b.style.left = (5 + Math.random()*76) + '%';
+    b.style.top = (8 + Math.random()*82) + '%';
+    var nm = names[i % names.length];
+    b.setAttribute('aria-label', nm + ', still awake');
+    var tip = document.createElement('span');
+    tip.className = 'tip';
+    tip.textContent = nm + ' · awake';
+    b.appendChild(tip);
+    mapEl.appendChild(b);
+    dots.push(b);
+  }
+
+  function stamp(){
+    var d = new Date();
+    return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  }
+
+  function pushFeed(html, cls){
+    var li = document.createElement('li');
+    if(cls) li.className = cls;
+    li.innerHTML = '<span class="t">' + stamp() + '</span>' + html;
+    feedEl.insertBefore(li, feedEl.firstChild);
+    while(feedEl.children.length > 14) feedEl.removeChild(feedEl.lastChild);
+  }
+
+  function eliminate(byDawn){
+    if(awake <= 1) return;
+    awake--;
+    awakeEl.textContent = awake;
+    var nm = names[Math.floor(Math.random()*names.length)];
+    var cause = causes[Math.floor(Math.random()*causes.length)];
+    if(byDawn) cause = 'was caught by the dawn near {z}';
+    cause = cause.replace('{z}', zones[Math.floor(Math.random()*zones.length)]);
+    pushFeed('<b>' + nm + '</b> ' + cause, byDawn ? 'dawn' : '');
+    var alive = dots.filter(function(d){ return !d.classList.contains('out'); });
+    if(alive.length > 1){
+      alive[Math.floor(Math.random()*alive.length)].classList.add('out');
+    }
+    if(awake <= 1) endMatch();
+  }
+
+  function endMatch(){
+    over = true;
+    var nm = names[Math.floor(Math.random()*names.length)];
+    document.getElementById('winnerText').textContent =
+      nm + ' saw the sunrise. They report feeling nothing.';
+    winnerEl.classList.add('show');
+    pushFeed('<b>' + nm + '</b> is the last one awake. Match over.', 'sys');
+  }
+
+  function render(){
+    meterEl.style.transform = 'scaleX(' + (caffeine/100) + ')';
+    caffPctEl.textContent = Math.round(caffeine) + '%';
+    dawnEl.style.width = dawnWidth + '%';
+    nightEl.textContent = Math.max(0, Math.round(night));
+  }
+
+  // caffeine consumables
+  document.querySelectorAll('.consumable').forEach(function(btn){
+    var count = parseInt(btn.querySelector('b').textContent.replace('×',''), 10);
+    btn.addEventListener('click', function(){
+      if(over || count <= 0) return;
+      count--;
+      btn.querySelector('b').textContent = '×' + count;
+      if(count <= 0) btn.disabled = true;
+      caffeine = Math.min(100, caffeine + parseInt(btn.dataset.boost, 10));
+      pushFeed('You consumed <b>' + btn.dataset.name + '</b>. Your heart has opinions.', 'sys');
+      render();
+    });
+  });
+
+  // excuse hotbar
+  document.querySelectorAll('.excuse').forEach(function(btn){
+    var usesEl = btn.querySelector('.uses');
+    var uses = parseInt(usesEl.textContent.replace('×',''), 10);
+    btn.addEventListener('click', function(){
+      if(over || uses <= 0) return;
+      uses--;
+      usesEl.textContent = '×' + uses;
+      if(uses <= 0) btn.disabled = true;
+      var d = parseInt(btn.dataset.delay, 10);
+      dawnWidth = Math.max(6, dawnWidth - d);
+      night = Math.min(100, night + d * 0.6);
+      pushFeed('You deployed <b>' + btn.dataset.name + '</b>. The dawn hesitates ' + d + 's.', 'sys');
+      render();
+    });
+  });
+
+  // main clock
+  var tickMs = reduced ? 4000 : 1800;
+  setInterval(function(){
+    if(over) return;
+    caffeine = Math.max(4, caffeine - 0.7);
+    dawnWidth = Math.min(88, dawnWidth + 0.35);
+    night = Math.max(0, night - 0.22);
+    if(Math.random() < 0.34) eliminate(Math.random() < 0.35);
+    render();
+  }, tickMs);
+
+  render();
+})();
+</script>
+</body>
+</html>

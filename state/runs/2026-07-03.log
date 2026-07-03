@@ -1,0 +1,49 @@
+[2026-07-03T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-07-03T08:00:02Z] invoking claude -p
+
+RUN 2026-07-03
+
+ROLL
+- Rolled: Fortnite + night owls -> fortnite-for-night-owls
+- Rerolls: 0 (first draw was fresh; pair not in history)
+- Subject rule check: "night owls" is a relatable type of person (already in seeds, previously paired with Spotify). Valid.
+- PRNG: seed = sum(charcodes("2026-07-03")) * 2654435761 mod 2^31 = 1326240654, glibc-constant LCG.
+
+CONCEPT
+- Product: Vigil, the last-one-awake battle royale. 100 players drop in at 9 PM; the dawn advances from the east like a storm circle; last one awake wins.
+- Features: The Dawn Circle (5:58 AM ranked sunrise), Excuse Crafting (podcast / wiki rabbit hole / group chat as building materials), Sleep Debt Battle Pass (progress only 1-5 AM local).
+- Tiers: Dusk $0 / Witching Hour $18/mo / Permanent Night $1,199/yr (billed once, at 4 AM).
+
+DESIGN DIRECTION
+- Style: retro-futurist synthwave esports broadcast, deep-night mode. Signature: dawn-amber gradient physically leaks in from the right page edge as you scroll; live HUD strip (STILL AWAKE counter + real-time countdown to 5:58 AM).
+- Palette: bg #0A0B1E, primary neon magenta #FF3D9A, accent dawn-amber #FFB13D (rationed: CTA + dawn threat only), fg #EDEBFF, muted #1E2040, ink #F2EEFF.
+- Fonts: Russo One (display) / Chakra Petch (body + tabular telemetry).
+- Anti-sameness: checked last 7 (dark IDE, riso zine, claymorphism, mid-century editorial, quiet minimalism, art-deco banknote, bento security console). No collision on style, palette, or fonts. Only one other dark entry in the window (cursor-for-soccer-moms, graphite IDE); synthwave neon is clearly distinct.
+
+IMAGES
+- GEMINI_API_KEY present; no cap hit.
+- Allocation: hero SKIPPED (typographic-neon direction, CSS/SVG horizon grid); demo assets SKIPPED (demo is a map/HUD spectator overlay, not photo-shaped); 3 testimonial headshots generated (the always-applicable fallback, and the only slot that genuinely wanted photos).
+- headshot-1.webp (Dana Okafor): attempt 1, judge PASS. Tired composed woman, indigo backdrop, magenta rim light, no text artifacts.
+- headshot-2.webp (Marcus Liew): attempt 1, judge PASS. Headset around neck, deadpan, palette harmonizes.
+- headshot-3.webp (Priya Anand): attempt 1, judge PASS. Glasses with screen-glow reflection, faintly smug, on-palette.
+- All three under 10 KB after 320x320 WebP crop; raws deleted via --delete-input.
+
+BUILD
+- index.html: broadcast hero with SVG horizon grid, HUD telemetry strip (live 5:58 AM countdown, still-awake ticker), patch-notes features, headshot testimonials, battle-pass pricing, dawn-edge scroll effect, scanlines at ~2.5% opacity, prefers-reduced-motion respected throughout. Demo CTA "open the demo ->" in a live-match banner plus a hero spectate link.
+- demo.html: spectator HUD for Match #4,417. Top-down apartment map (Kitchen Snack Zone, Couch of No Return, Fridge Light, Bathroom Mirror, The Desk, Big Window), advancing dawn front, 26 player dots with hover tooltips, live elimination feed, draining caffeine meter with consumables, excuse hotbar that pushes the dawn back, win state when one player remains.
+
+GALLERY
+- Rebuilt site/index.html from all 41 concept.json files, newest first. Count updated to 41. Metadata contract, brand lockup, dot rail, swipe/keyboard nav all preserved.
+
+WARNINGS / NEAR-MISSES
+- None. Zero rerolls, zero image retries, validation clean on first run.
+
+VALIDATION
+- scripts/validate-entry.sh site fortnite-for-night-owls: OK
+- state/history.json appended (41 entries).
+[2026-07-03T08:12:47Z] WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks
+[2026-07-03T08:12:47Z] new entry: fortnite-for-night-owls
+validate-entry [fortnite-for-night-owls]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 41 entries (domain theworstaistudioever.com)
+[2026-07-03T08:12:48Z] committing: Fortnite for night owls

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vigil · theworstaistudioever</title>
+<meta name="description" content="The last-one-awake battle royale. One hundred players queue at 9 PM. The dawn closes in. One of them sees it.">
+<meta property="og:title" content="Vigil — the last one awake wins">
+<meta property="og:description" content="The last-one-awake battle royale. One hundred players queue at 9 PM. The dawn closes in. One of them sees it.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=Russo+One&display=swap');
+
+:root{
+  --bg:#0A0B1E;
+  --panel:#0E1028;
+  --muted:#1E2040;
+  --hairline:#2B2D55;
+  --fg:#EDEBFF;
+  --soft:#A9A6C9;
+  --magenta:#FF3D9A;
+  --magenta-dim:#B72C71;
+  --amber:#FFB13D;
+  --amber-deep:#E08A00;
+  --display:'Russo One','Arial Black',system-ui,sans-serif;
+  --body:'Chakra Petch','Trebuchet MS',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--fg);
+  font-family:var(--body);
+  font-size:16px;
+  line-height:1.6;
+  overflow-x:hidden;
+}
+::selection{background:var(--magenta);color:var(--bg)}
+a{color:var(--magenta)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
+
+/* scanlines */
+.scanlines{
+  position:fixed;inset:0;pointer-events:none;z-index:60;
+  background:repeating-linear-gradient(to bottom,rgba(255,255,255,.025) 0,rgba(255,255,255,.025) 1px,transparent 1px,transparent 3px);
+  mix-blend-mode:overlay;
+}
+
+/* the dawn, leaking in from the right edge */
+.dawn-edge{
+  position:fixed;top:0;right:0;bottom:0;width:120px;z-index:1;pointer-events:none;
+  background:linear-gradient(to left,rgba(255,177,61,.28),rgba(255,120,61,.08) 55%,transparent);
+  transform:scaleX(.15);transform-origin:right center;
+  transition:transform .4s linear;
+}
+
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px;position:relative;z-index:2}
+
+/* nav */
+.nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 0;border-bottom:1px solid var(--hairline);
+}
+.wordmark{
+  font-family:var(--display);font-size:1.35rem;letter-spacing:.14em;
+  color:var(--fg);text-decoration:none;
+  text-shadow:0 0 18px rgba(255,61,154,.55);
+}
+.wordmark .dot{color:var(--magenta)}
+.nav-links{display:flex;gap:28px;align-items:center;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase}
+.nav-links a{color:var(--soft);text-decoration:none;transition:color .18s ease}
+.nav-links a:hover{color:var(--fg)}
+@media(max-width:720px){.nav-links a:not(.nav-cta){display:none}}
+.nav-cta{
+  color:var(--magenta) !important;border:1px solid var(--magenta);padding:8px 18px;
+  transition:background .18s ease,color .18s ease;
+}
+.nav-cta:hover{background:var(--magenta);color:var(--bg) !important}
+
+/* hero */
+.hero{position:relative;padding:110px 0 90px;overflow:hidden}
+.horizon{
+  position:absolute;left:50%;bottom:-8%;transform:translateX(-50%);
+  width:1600px;max-width:none;height:420px;opacity:.5;pointer-events:none;
+}
+.eyebrow{
+  font-size:.78rem;letter-spacing:.28em;text-transform:uppercase;color:var(--magenta);
+  margin-bottom:22px;
+}
+.eyebrow .sep{color:var(--hairline);margin:0 10px}
+.hero h1{
+  font-family:var(--display);
+  font-size:clamp(2.6rem,7.2vw,5.4rem);
+  line-height:1.04;letter-spacing:.02em;text-transform:uppercase;
+  max-width:14ch;
+  text-shadow:0 0 34px rgba(255,61,154,.4),0 0 90px rgba(255,61,154,.18);
+  animation:bloom 8s ease-in-out infinite;
+}
+@keyframes bloom{
+  0%,100%{text-shadow:0 0 34px rgba(255,61,154,.4),0 0 90px rgba(255,61,154,.18)}
+  50%{text-shadow:0 0 46px rgba(255,61,154,.62),0 0 120px rgba(255,61,154,.28)}
+}
+.hero .sub{
+  margin-top:26px;max-width:56ch;color:var(--soft);font-size:1.06rem;
+}
+.hero-ctas{display:flex;gap:18px;margin-top:38px;flex-wrap:wrap;align-items:center}
+.btn-primary{
+  display:inline-block;font-family:var(--body);font-weight:700;
+  font-size:.95rem;letter-spacing:.12em;text-transform:uppercase;
+  background:var(--amber);color:#1A0E00;text-decoration:none;
+  padding:16px 34px;border:none;cursor:pointer;
+  box-shadow:0 0 26px rgba(255,177,61,.35);
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(255,177,61,.55)}
+.btn-ghost{
+  display:inline-block;font-size:.95rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--magenta);text-decoration:none;padding:16px 26px;border:1px solid var(--magenta);
+  transition:background .18s ease,color .18s ease;
+}
+.btn-ghost:hover{background:var(--magenta);color:var(--bg)}
+
+/* HUD strip */
+.hud{
+  margin-top:56px;display:grid;grid-template-columns:repeat(3,1fr);
+  border:1px solid var(--hairline);background:rgba(14,16,40,.75);
+}
+.hud-cell{
+  padding:18px 22px;border-right:1px solid var(--hairline);position:relative;
+}
+.hud-cell:last-child{border-right:none}
+.hud-label{font-size:.68rem;letter-spacing:.24em;text-transform:uppercase;color:var(--soft)}
+.hud-value{
+  font-size:1.5rem;font-weight:600;font-variant-numeric:tabular-nums;
+  color:var(--fg);margin-top:4px;
+}
+.hud-value .unit{font-size:.8rem;color:var(--soft);letter-spacing:.1em}
+#hud-awake{color:var(--magenta)}
+#hud-dawn{color:var(--amber)}
+@media(max-width:720px){
+  .hud{grid-template-columns:1fr}
+  .hud-cell{border-right:none;border-bottom:1px solid var(--hairline)}
+  .hud-cell:last-child{border-bottom:none}
+}
+
+/* sections */
+section{padding:96px 0;border-top:1px solid var(--hairline)}
+.sec-head{margin-bottom:56px}
+.sec-head h2{
+  font-family:var(--display);font-size:clamp(1.7rem,3.6vw,2.6rem);
+  text-transform:uppercase;letter-spacing:.03em;line-height:1.15;max-width:24ch;
+}
+.sec-head .eyebrow{margin-bottom:14px}
+
+/* panels with corner ticks */
+.panel{
+  position:relative;background:var(--panel);border:1px solid var(--hairline);
+  padding:34px 30px;
+  transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+}
+.panel::before,.panel::after{
+  content:"";position:absolute;width:14px;height:14px;pointer-events:none;
+}
+.panel::before{
+  top:-1px;left:-1px;
+  border-top:2px solid var(--magenta);border-left:2px solid var(--magenta);
+}
+.panel::after{
+  bottom:-1px;right:-1px;
+  border-bottom:2px solid var(--magenta);border-right:2px solid var(--magenta);
+}
+.panel:hover{transform:translateY(-4px);border-color:var(--magenta-dim);box-shadow:0 0 30px rgba(255,61,154,.12)}
+
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+@media(max-width:900px){.grid-3{grid-template-columns:1fr}}
+
+.patch-tag{
+  font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--soft);
+  display:block;margin-bottom:16px;font-variant-numeric:tabular-nums;
+}
+.feature h3{
+  font-family:var(--display);font-size:1.25rem;letter-spacing:.04em;
+  text-transform:uppercase;margin-bottom:14px;color:var(--fg);
+}
+.feature p{color:var(--soft);font-size:.95rem}
+
+/* live match banner (demo CTA) */
+.live{
+  display:flex;align-items:center;justify-content:space-between;gap:28px;flex-wrap:wrap;
+  border:1px solid var(--magenta-dim);background:linear-gradient(100deg,rgba(255,61,154,.10),rgba(14,16,40,.4) 60%);
+  padding:34px 36px;
+}
+.live-left{max-width:60ch}
+.live-tag{display:flex;align-items:center;gap:10px;font-size:.72rem;letter-spacing:.26em;text-transform:uppercase;color:var(--magenta);margin-bottom:10px}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--magenta);box-shadow:0 0 12px var(--magenta);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.live h3{font-family:var(--display);font-size:1.5rem;text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px}
+.live p{color:var(--soft);font-size:.95rem;font-variant-numeric:tabular-nums}
+
+/* testimonials */
+.quote-card{display:flex;flex-direction:column;gap:22px}
+.quote-card blockquote{font-size:1rem;color:var(--fg);line-height:1.65}
+.quote-card blockquote::before{content:"\201C";color:var(--magenta);margin-right:2px}
+.quote-card blockquote::after{content:"\201D";color:var(--magenta);margin-left:2px}
+.who{display:flex;align-items:center;gap:14px;margin-top:auto}
+.who img{
+  width:56px;height:56px;object-fit:cover;flex:none;
+  border:1px solid var(--magenta-dim);
+}
+.who .name{font-weight:600;font-size:.92rem;letter-spacing:.04em}
+.who .title{font-size:.78rem;color:var(--soft);letter-spacing:.03em}
+
+/* pricing */
+.tier{display:flex;flex-direction:column}
+.tier-name{font-family:var(--display);font-size:1.2rem;text-transform:uppercase;letter-spacing:.06em}
+.tier-price{
+  font-size:2.1rem;font-weight:700;font-variant-numeric:tabular-nums;margin:14px 0 4px;
+  color:var(--magenta);
+}
+.tier-tagline{color:var(--soft);font-size:.85rem;letter-spacing:.06em;margin-bottom:22px}
+.tier ul{list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:30px}
+.tier li{padding-left:22px;position:relative;color:var(--soft);font-size:.92rem}
+.tier li::before{content:"▸";position:absolute;left:0;color:var(--magenta)}
+.tier .btn-ghost,.tier .btn-primary{margin-top:auto;text-align:center}
+.tier-flag{
+  position:absolute;top:-11px;left:50%;transform:translateX(-50%);
+  background:var(--amber);color:#1A0E00;font-size:.64rem;font-weight:700;
+  letter-spacing:.22em;text-transform:uppercase;padding:4px 14px;white-space:nowrap;
+}
+.tier.featured{border-color:var(--amber-deep)}
+.tier.featured::before{border-color:var(--amber)}
+.tier.featured::after{border-color:var(--amber)}
+.tier.featured .tier-price{color:var(--amber)}
+
+/* footer */
+footer{border-top:1px solid var(--hairline);padding:56px 0;position:relative;z-index:2}
+.foot{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center}
+.foot .legal{color:var(--soft);font-size:.8rem;max-width:60ch}
+.foot a{color:var(--soft);text-decoration:none;font-size:.85rem;letter-spacing:.06em}
+.foot a:hover{color:var(--magenta)}
+
+/* reveal on scroll */
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:none}
+
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+  .reveal{opacity:1;transform:none}
+  .dawn-edge{transition:none}
+}
+</style>
+</head>
+<body>
+<div class="scanlines" aria-hidden="true"></div>
+<div class="dawn-edge" id="dawnEdge" aria-hidden="true"></div>
+
+<div class="wrap">
+  <nav class="nav" aria-label="Primary">
+    <a class="wordmark" href="#">VIGIL<span class="dot">.</span></a>
+    <div class="nav-links">
+      <a href="#patch">Patch notes</a>
+      <a href="#players">Players</a>
+      <a href="#tiers">Tiers</a>
+      <a class="nav-cta" href="#tiers">Queue</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <svg class="horizon" viewBox="0 0 1600 420" fill="none" aria-hidden="true">
+      <g stroke="#FF3D9A" stroke-opacity=".16">
+        <line x1="0" y1="120" x2="1600" y2="120"/>
+        <line x1="0" y1="150" x2="1600" y2="150"/>
+        <line x1="0" y1="190" x2="1600" y2="190"/>
+        <line x1="0" y1="245" x2="1600" y2="245"/>
+        <line x1="0" y1="320" x2="1600" y2="320"/>
+        <line x1="0" y1="418" x2="1600" y2="418"/>
+        <line x1="800" y1="120" x2="800" y2="420"/>
+        <line x1="800" y1="120" x2="1180" y2="420"/>
+        <line x1="800" y1="120" x2="1600" y2="420"/>
+        <line x1="800" y1="120" x2="2100" y2="420"/>
+        <line x1="800" y1="120" x2="420" y2="420"/>
+        <line x1="800" y1="120" x2="0" y2="420"/>
+        <line x1="800" y1="120" x2="-500" y2="420"/>
+      </g>
+      <line x1="0" y1="120" x2="1600" y2="120" stroke="#FF3D9A" stroke-opacity=".5"/>
+    </svg>
+
+    <p class="eyebrow">Season 4: The Long Night<span class="sep">|</span>Ranked queue open</p>
+    <h1>The last one awake wins.</h1>
+    <p class="sub">Vigil is a competitive battle royale for people who were going to be up anyway. One hundred players drop into the night. The dawn advances from the east. No respawns. No naps.</p>
+    <div class="hero-ctas">
+      <a class="btn-primary" href="#tiers">Queue for tonight</a>
+      <a class="btn-ghost" href="./demo.html">Spectate match #4,417</a>
+    </div>
+
+    <div class="hud" role="status" aria-label="Live match telemetry">
+      <div class="hud-cell">
+        <div class="hud-label">Still awake</div>
+        <div class="hud-value" id="hud-awake">100</div>
+      </div>
+      <div class="hud-cell">
+        <div class="hud-label">Ranked dawn in</div>
+        <div class="hud-value" id="hud-dawn">--:--:--</div>
+      </div>
+      <div class="hud-cell">
+        <div class="hud-label">Current patch</div>
+        <div class="hud-value">4.17 <span class="unit">caffeine rebalanced</span></div>
+      </div>
+    </div>
+  </header>
+</div>
+
+<div class="wrap">
+  <section id="patch">
+    <div class="sec-head reveal">
+      <p class="eyebrow">Patch notes / 4.17</p>
+      <h2>Balance changes nobody asked for.</h2>
+    </div>
+    <div class="grid-3">
+      <article class="panel feature reveal">
+        <span class="patch-tag">4.17 / core systems</span>
+        <h3>The Dawn Circle</h3>
+        <p>Our proprietary sunrise engine shrinks the playable night in real time. Players caught in daylight are rotated gently into sleep and removed from the match. Ranked dawns begin at 5:58 AM sharp and are not negotiable, because balance.</p>
+      </article>
+      <article class="panel feature reveal">
+        <span class="patch-tag">4.17 / crafting</span>
+        <h3>Excuse Crafting</h3>
+        <p>Harvest raw materials from your immediate environment: a podcast, a wiki rabbit hole, a group chat that just got interesting. Combine them into load-bearing structures that keep you up well past everything you promised yourself. Crafted excuses are visible to other players, which we consider a feature.</p>
+      </article>
+      <article class="panel feature reveal">
+        <span class="patch-tag">4.17 / progression</span>
+        <h3>Sleep Debt Battle Pass</h3>
+        <p>One hundred tiers of exclusive cosmetics for an avatar nobody sees because it is dark. Progress accrues exclusively between 1 AM and 5 AM local time. Yes, local time. We know where you are.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="spectate" aria-label="Live match">
+    <div class="live reveal">
+      <div class="live-left">
+        <div class="live-tag"><span class="live-dot"></span>Live now</div>
+        <h3>Match #4,417 · The Night</h3>
+        <p>The dawn front crossed the Big Window nine minutes ago. <span id="live-remaining">61</span> players remain. One of them is microwaving something.</p>
+      </div>
+      <a class="btn-ghost" href="./demo.html">open the demo →</a>
+    </div>
+  </section>
+
+  <section id="players">
+    <div class="sec-head reveal">
+      <p class="eyebrow">Ranked players</p>
+      <h2>The leaderboard speaks.</h2>
+    </div>
+    <div class="grid-3">
+      <article class="panel quote-card reveal">
+        <blockquote>I haven't seen a sunrise since March, and for the first time that feels like a stat.</blockquote>
+        <div class="who">
+          <img src="./headshot-1.webp" alt="Dana Okafor" width="56" height="56" loading="lazy">
+          <div>
+            <div class="name">Dana Okafor</div>
+            <div class="title">Freelance subtitle proofreader, third shift</div>
+          </div>
+        </div>
+      </article>
+      <article class="panel quote-card reveal">
+        <blockquote>The dawn circle taught my body to fear the sun in a way that finally feels competitive instead of unstructured.</blockquote>
+        <div class="who">
+          <img src="./headshot-2.webp" alt="Marcus Liew" width="56" height="56" loading="lazy">
+          <div>
+            <div class="name">Marcus Liew</div>
+            <div class="title">Semi-retired raid leader, two-time regional finalist</div>
+          </div>
+        </div>
+      </article>
+      <article class="panel quote-card reveal">
+        <blockquote>I bought Permanent Night and my smart blinds haven't opened in eleven weeks. No complaints on my end.</blockquote>
+        <div class="who">
+          <img src="./headshot-3.webp" alt="Priya Anand" width="56" height="56" loading="lazy">
+          <div>
+            <div class="name">Priya Anand</div>
+            <div class="title">Cryptocurrency forum moderator, GMT+5:30</div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="tiers">
+    <div class="sec-head reveal">
+      <p class="eyebrow">Tier select</p>
+      <h2>Choose how long the night lasts.</h2>
+    </div>
+    <div class="grid-3">
+      <article class="panel tier reveal">
+        <div class="tier-name">Dusk</div>
+        <div class="tier-price">$0</div>
+        <div class="tier-tagline">For the merely tired.</div>
+        <ul>
+          <li>Matches end at midnight</li>
+          <li>One excuse slot</li>
+          <li>Eliminated players are shown ads for mattresses</li>
+        </ul>
+        <a class="btn-ghost" href="#tiers">Select Dusk</a>
+      </article>
+      <article class="panel tier featured reveal">
+        <span class="tier-flag">Most queued</span>
+        <div class="tier-name">Witching Hour</div>
+        <div class="tier-price">$18<span style="font-size:.9rem;font-weight:400">/mo</span></div>
+        <div class="tier-tagline">For competitors.</div>
+        <ul>
+          <li>Priority queue after 2 AM</li>
+          <li>Decaf detection</li>
+          <li>Duo fill with someone in a worse timezone</li>
+        </ul>
+        <a class="btn-primary" href="#tiers">Select Witching Hour</a>
+      </article>
+      <article class="panel tier reveal">
+        <div class="tier-name">Permanent Night</div>
+        <div class="tier-price">$1,199<span style="font-size:.9rem;font-weight:400">/yr</span></div>
+        <div class="tier-tagline">Billed once, at 4 AM.</div>
+        <ul>
+          <li>Blackout-grade private lobby</li>
+          <li>Personal dawn delayed up to 40 minutes (results vary by hemisphere)</li>
+          <li>A congratulatory email your family cannot see</li>
+        </ul>
+        <a class="btn-ghost" href="#tiers">Select Permanent Night</a>
+      </article>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap foot">
+    <p class="legal">Vigil is a fictional product. Daylight is not affiliated with, nor endorsed by, Vigil. Sleep remains available in unranked.</p>
+    <a href="/">← theworstaistudioever</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Ranked dawn countdown: time until next 5:58 AM local
+  var dawnEl = document.getElementById('hud-dawn');
+  function pad(n){return String(n).padStart(2,'0')}
+  function tickDawn(){
+    var now = new Date();
+    var dawn = new Date(now);
+    dawn.setHours(5,58,0,0);
+    if(dawn <= now){ dawn.setDate(dawn.getDate()+1); }
+    var s = Math.floor((dawn - now)/1000);
+    var h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
+    dawnEl.textContent = pad(h)+':'+pad(m)+':'+pad(sec);
+  }
+  tickDawn();
+  setInterval(tickDawn, 1000);
+
+  // Still-awake counter drifts down toward the live match count
+  var awakeEl = document.getElementById('hud-awake');
+  var liveEl = document.getElementById('live-remaining');
+  var awake = 100, floor = 61;
+  if(!reduced){
+    var drift = setInterval(function(){
+      if(awake <= floor){ clearInterval(drift); return; }
+      awake -= Math.random() < 0.6 ? 1 : 2;
+      if(awake < floor) awake = floor;
+      awakeEl.textContent = awake;
+      if(liveEl) liveEl.textContent = awake;
+    }, 2600);
+  } else {
+    awakeEl.textContent = floor;
+    if(liveEl) liveEl.textContent = floor;
+  }
+
+  // The dawn leaks in as you scroll
+  var edge = document.getElementById('dawnEdge');
+  function onScroll(){
+    var doc = document.documentElement;
+    var max = doc.scrollHeight - window.innerHeight;
+    var p = max > 0 ? (window.scrollY / max) : 0;
+    edge.style.transform = 'scaleX(' + (0.15 + p * 0.85) + ')';
+  }
+  if(!reduced){
+    window.addEventListener('scroll', onScroll, {passive:true});
+    onScroll();
+  }
+
+  // Scroll reveals
+  var revealEls = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window && !reduced){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, {threshold:.15});
+    revealEls.forEach(function(el){ io.observe(el); });
+  } else {
+    revealEls.forEach(function(el){ el.classList.add('in'); });
+  }
+})();
+</script>
+</body>
+</html>
