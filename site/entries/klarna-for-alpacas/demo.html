@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fleece account · Gerald</title>
+<meta name="description" content="A live Fleece buy-now-pay-later account for one alpaca.">
+<meta name="theme-color" content="#FF4D8D">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root{
+  --bg:#FBE4EC;
+  --ink:#1A1512;
+  --accent:#FF4D8D;
+  --muted:#8C7F84;
+  --paper:#FFFFFF;
+  --good:#2E7D57;
+  --bad:#C7264E;
+  --shadow:6px 6px 0 var(--ink);
+  --shadow-sm:4px 4px 0 var(--ink);
+  --line:3px solid var(--ink);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;min-height:100vh;
+}
+.mono{font-family:'IBM Plex Mono','SFMono-Regular',Menlo,monospace;font-variant-numeric:tabular-nums}
+h1,h2,h3,.brand{font-family:'Archivo Black','Arial Black',system-ui,sans-serif;font-weight:400;letter-spacing:-0.01em;line-height:1.05}
+
+/* ---- app bar ---- */
+.appbar{border-bottom:var(--line);background:var(--bg);position:sticky;top:0;z-index:40}
+.appbar-in{max-width:1180px;margin:0 auto;padding:0 20px;height:62px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.back{color:var(--ink);text-decoration:none;font-weight:600;font-size:14px}
+.back:hover{text-decoration:underline;text-decoration-thickness:2px}
+.appbar .brand{font-size:20px}
+.appbar .brand span{color:var(--accent)}
+.acct{display:flex;align-items:center;gap:10px;font-size:13px}
+.acct .who{font-weight:600}
+.acct .dot{width:9px;height:9px;border-radius:999px;background:var(--good);border:2px solid var(--ink)}
+
+.shell{max-width:1180px;margin:0 auto;padding:26px 20px 60px}
+.pagehead{margin-bottom:22px}
+.pagehead h1{font-size:clamp(26px,4vw,38px)}
+.pagehead p{color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:13px;margin-top:6px}
+
+.grid{display:grid;grid-template-columns:1.55fr .95fr;gap:22px;align-items:start}
+.col{display:flex;flex-direction:column;gap:22px}
+.card{background:var(--paper);border:var(--line);border-radius:12px;box-shadow:var(--shadow-sm);padding:22px}
+.card h2{font-size:18px;margin-bottom:4px}
+.card .hint{color:var(--muted);font-size:12.5px;font-family:'IBM Plex Mono',monospace;margin-bottom:16px}
+
+/* ---- score gauge ---- */
+.score-card{display:grid;grid-template-columns:200px 1fr;gap:22px;align-items:center}
+.gauge{position:relative;width:200px;height:120px}
+.gauge svg{display:block;width:200px;height:120px;overflow:visible}
+.needle{transform-origin:100px 100px;transition:transform .5s cubic-bezier(.22,1,.36,1)}
+@media (prefers-reduced-motion:reduce){.needle{transition:none}}
+.gauge .readout{position:absolute;left:0;right:0;bottom:2px;text-align:center}
+.gauge .num{font-family:'IBM Plex Mono',monospace;font-size:34px;font-weight:500;line-height:1}
+.gauge .rng{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.08em}
+.score-status .label{display:inline-block;border:var(--line);border-radius:999px;padding:5px 13px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;background:#EAF6EF}
+.score-status .label.arrears{background:#FBE0E7}
+.score-status p{font-size:13.5px;color:var(--ink);margin-top:14px;max-width:34ch}
+
+/* ---- pay-in-four schedule ---- */
+.plan-item{border-top:2px dashed rgba(26,21,18,.25);padding-top:16px;margin-top:16px}
+.plan-item:first-of-type{border-top:none;padding-top:0;margin-top:0}
+.plan-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:14px}
+.plan-name{font-weight:600}
+.plan-total{font-family:'IBM Plex Mono',monospace;font-weight:500}
+.chips{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.chip{border:var(--line);border-radius:9px;padding:10px 8px;text-align:center;background:var(--bg)}
+.chip .amt{font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:15px}
+.chip .when{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-top:3px}
+.chip .st{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;margin-top:6px;display:inline-block;border-radius:999px;padding:2px 7px;border:2px solid var(--ink)}
+.chip.paid{background:#EAF6EF}
+.chip.paid .st{background:var(--good);color:#fff;border-color:var(--good)}
+.chip.due{background:#FFF4F8}
+.chip.due .st{background:var(--accent);color:var(--ink)}
+.chip.up .st{background:transparent}
+
+/* ---- finance catalog ---- */
+.catalog{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.item{border:var(--line);border-radius:10px;padding:14px 15px;display:flex;flex-direction:column;gap:4px;background:var(--bg)}
+.item .nm{font-weight:600;font-size:15px}
+.item .desc{font-size:12px;color:var(--muted);min-height:32px}
+.item .foot{display:flex;justify-content:space-between;align-items:center;margin-top:6px}
+.item .prc{font-family:'IBM Plex Mono',monospace;font-weight:500}
+
+.btn{font-family:'IBM Plex Sans',sans-serif;font-weight:600;font-size:14px;padding:9px 16px;border:var(--line);border-radius:8px;background:var(--paper);color:var(--ink);cursor:pointer;box-shadow:3px 3px 0 var(--ink);transition:transform .08s ease,box-shadow .08s ease}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+.btn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.btn.sm{padding:7px 13px;font-size:13px}
+.btn.accent{background:var(--accent);color:var(--ink)}
+.btn.danger{background:#FBE0E7;color:var(--bad);border-color:var(--bad);box-shadow:3px 3px 0 var(--bad);width:100%}
+.btn.danger:hover{box-shadow:4px 4px 0 var(--bad)}
+.btn.danger:active{box-shadow:0 0 0 var(--bad)}
+@media (prefers-reduced-motion:reduce){.btn{transition:none}.btn:hover,.btn:active{transform:none}}
+
+/* ---- herd co-sign ---- */
+.herd li{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-top:1px dashed rgba(26,21,18,.25)}
+.herd li:first-child{border-top:none}
+.herd .hname{font-size:14px;font-weight:500}
+.herd .htag{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted)}
+.herd .hscore{font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:16px;transition:color .3s ease}
+.herd .hscore.drop{color:var(--bad)}
+.cosign-note{font-size:12px;color:var(--muted);margin:14px 0 18px;line-height:1.5}
+
+/* shake */
+.shake{animation:shake .4s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@media (prefers-reduced-motion:reduce){.shake{animation:none}}
+
+/* ---- modal ---- */
+.scrim{position:fixed;inset:0;background:rgba(26,21,18,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}
+.scrim.open{display:flex}
+.modal{background:var(--paper);border:var(--line);border-radius:14px;box-shadow:var(--shadow);max-width:440px;width:100%;padding:26px}
+.modal h3{font-size:22px;margin-bottom:4px}
+.modal .msub{color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:12.5px;margin-bottom:20px}
+.modal .schedule{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.modal .prow{border:2px solid var(--ink);border-radius:8px;padding:10px 12px}
+.modal .prow .pamt{font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:16px}
+.modal .prow .pwhen{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px}
+.modal .disc{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);line-height:1.5;margin-bottom:20px}
+.modal .actions{display:flex;gap:10px}
+.modal .actions .btn{flex:1;text-align:center}
+
+@media (max-width:900px){
+  .grid{grid-template-columns:1fr}
+  .score-card{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .score-status p{max-width:none}
+  .catalog{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="appbar">
+  <div class="appbar-in">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <div class="brand">Fleece<span>.</span></div>
+    <div class="acct"><span class="dot" aria-hidden="true"></span><span class="who">Gerald</span><span class="mono" style="color:var(--muted)">· Huacaya</span></div>
+  </div>
+</header>
+
+<main class="shell" id="dash">
+  <div class="pagehead">
+    <h1>Account overview</h1>
+    <p>Full Fleece plan · account opened by owner · borrower notified: no</p>
+  </div>
+
+  <div class="grid">
+    <div class="col">
+      <!-- Fleece Score -->
+      <section class="card">
+        <h2>Fleece Score</h2>
+        <p class="hint">Proprietary. Not a credit score. Predicts nothing.</p>
+        <div class="score-card">
+          <div class="gauge">
+            <svg viewBox="0 0 200 120" role="img" aria-label="Fleece Score gauge">
+              <path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="#F0D8E0" stroke-width="14" stroke-linecap="round"/>
+              <path d="M20 100 A80 80 0 0 1 180 100" fill="none" stroke="#1A1512" stroke-width="14" stroke-linecap="round" stroke-dasharray="6 10" opacity=".18"/>
+              <g class="needle" id="needle">
+                <line x1="100" y1="100" x2="100" y2="34" stroke="#FF4D8D" stroke-width="5" stroke-linecap="round"/>
+                <circle cx="100" cy="100" r="9" fill="#1A1512"/>
+              </g>
+            </svg>
+            <div class="readout"><div class="num mono" id="scoreNum">712</div><div class="rng">300 — 850</div></div>
+          </div>
+          <div class="score-status">
+            <span class="label" id="scoreLabel">Grazing in good standing</span>
+            <p id="scoreNote">Eye contact strong. Fiber density above cohort. Cleared for pay-in-four up to $2,000.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Active plans -->
+      <section class="card" id="plansCard">
+        <h2>Active pay-in-four</h2>
+        <p class="hint">Payments autodraft from the herd account. No action required. No action possible.</p>
+        <div id="plans">
+          <div class="plan-item">
+            <div class="plan-top"><span class="plan-name">Deluxe grooming table</span><span class="plan-total mono">$600.00</span></div>
+            <div class="chips">
+              <div class="chip paid"><div class="amt">$150</div><div class="when">May 1</div><span class="st">Paid</span></div>
+              <div class="chip paid"><div class="amt">$150</div><div class="when">May 15</div><span class="st">Paid</span></div>
+              <div class="chip due"><div class="amt">$150</div><div class="when">Jun 1</div><span class="st">Due</span></div>
+              <div class="chip up"><div class="amt">$150</div><div class="when">Jun 15</div><span class="st">Upcoming</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Finance catalog -->
+      <section class="card">
+        <h2>Finance the herd</h2>
+        <p class="hint">Tap Pay in 4 to split any purchase into four interest-free payments.</p>
+        <div class="catalog" id="catalog"></div>
+      </section>
+    </div>
+
+    <div class="col">
+      <!-- Herd co-sign -->
+      <section class="card">
+        <h2>Herd co-sign</h2>
+        <p class="hint">The paddock. Nine head, one liability.</p>
+        <ul class="herd" id="herd"></ul>
+        <p class="cosign-note">Every member co-signs every balance. One missed payment moves all nine scores at once. This is a feature.</p>
+        <button class="btn danger" id="missBtn">Simulate a missed payment</button>
+      </section>
+    </div>
+  </div>
+</main>
+
+<!-- pay-in-four modal -->
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="modal">
+    <h3 id="mTitle">Split into four</h3>
+    <p class="msub" id="mSub">Grooming table · $600.00</p>
+    <div class="schedule" id="mSchedule"></div>
+    <p class="disc">0% APR. First payment today. The alpaca is the borrower of record and has not been informed. Missing a payment affects all nine co-signers.</p>
+    <div class="actions">
+      <button class="btn" id="mCancel">Not now</button>
+      <button class="btn accent" id="mConfirm">Confirm plan</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var MIN=300,MAX=850;
+  var score=712;
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var herd=[
+    {name:'Gerald',tag:'you',score:712},
+    {name:'Marjorie',tag:'Huacaya',score:698},
+    {name:'Bartholomew',tag:'Suri',score:741},
+    {name:'Denise',tag:'Huacaya',score:655},
+    {name:'The Colonel',tag:'Suri',score:770},
+    {name:'Kevin',tag:'Huacaya',score:602},
+    {name:'Priscilla',tag:'Huacaya',score:719},
+    {name:'Steven',tag:'Suri',score:684},
+    {name:'Unnamed cria',tag:'no score',score:540}
+  ];
+
+  var catalog=[
+    {nm:'Premium timothy hay',desc:'One season. Financeable in four.',price:220},
+    {nm:'Mineral lick (deluxe)',desc:'Salt block, competition grade.',price:48},
+    {nm:'Annual dental float',desc:'Teeth, filed. Vet not included.',price:340},
+    {nm:'A second alpaca',desc:'Companion. Also a new co-signer.',price:1200}
+  ];
+
+  function fmt(n){return '$'+n.toLocaleString('en-US')}
+  function statusFor(s){
+    if(s>=740)return{label:'Grazing in good standing',cls:'',note:'Eye contact strong. Fiber density above cohort. Cleared for pay-in-four up to $2,000.'};
+    if(s>=640)return{label:'Grazing in good standing',cls:'',note:'Eye contact strong. Fiber density above cohort. Cleared for pay-in-four up to $2,000.'};
+    if(s>=560)return{label:'Under review',cls:'',note:'Gait irregular. A human who has met an alpaca is reviewing the account.'};
+    return{label:'In arrears',cls:'arrears',note:'Missed payment recorded. The entire paddock has been notified by standing near each other.'};
+  }
+
+  function renderScore(){
+    var clamped=Math.max(MIN,Math.min(MAX,score));
+    var frac=(clamped-MIN)/(MAX-MIN);
+    var deg=-90+frac*180;
+    document.getElementById('needle').style.transform='rotate('+deg+'deg)';
+    document.getElementById('scoreNum').textContent=Math.round(score);
+    var st=statusFor(score);
+    var lab=document.getElementById('scoreLabel');
+    lab.textContent=st.label;lab.className='label '+st.cls;
+    document.getElementById('scoreNote').textContent=st.note;
+  }
+
+  function renderHerd(){
+    var ul=document.getElementById('herd');
+    ul.innerHTML='';
+    herd.forEach(function(h){
+      var li=document.createElement('li');
+      li.innerHTML='<span><span class="hname">'+h.name+'</span> <span class="htag">· '+h.tag+'</span></span><span class="hscore">'+Math.round(h.score)+'</span>';
+      ul.appendChild(li);
+    });
+  }
+
+  function renderCatalog(){
+    var wrap=document.getElementById('catalog');
+    wrap.innerHTML='';
+    catalog.forEach(function(it,i){
+      var d=document.createElement('div');
+      d.className='item';
+      d.innerHTML='<div class="nm">'+it.nm+'</div><div class="desc">'+it.desc+'</div>'+
+        '<div class="foot"><span class="prc">'+fmt(it.price)+'</span>'+
+        '<button class="btn sm accent" data-i="'+i+'">Pay in 4</button></div>';
+      wrap.appendChild(d);
+    });
+    wrap.querySelectorAll('button[data-i]').forEach(function(b){
+      b.addEventListener('click',function(){openModal(catalog[+b.dataset.i])});
+    });
+  }
+
+  // ---- modal ----
+  var pending=null;
+  var scrim=document.getElementById('scrim');
+  function schedDates(){
+    var labels=[],base=new Date();
+    for(var i=0;i<4;i++){
+      var d=new Date(base.getTime());
+      d.setDate(d.getDate()+i*14);
+      labels.push(d.toLocaleDateString('en-US',{month:'short',day:'numeric'}));
+    }
+    return labels;
+  }
+  function openModal(item){
+    pending=item;
+    document.getElementById('mSub').textContent=item.nm+' · '+fmt(item.price);
+    var per=item.price/4;
+    var when=schedDates();
+    var sc=document.getElementById('mSchedule');
+    sc.innerHTML='';
+    for(var i=0;i<4;i++){
+      var row=document.createElement('div');
+      row.className='prow';
+      row.innerHTML='<div class="pamt">'+fmt(Math.round(per*100)/100)+'</div><div class="pwhen">'+(i===0?'Today':when[i])+'</div>';
+      sc.appendChild(row);
+    }
+    scrim.classList.add('open');
+    document.getElementById('mConfirm').focus();
+  }
+  function closeModal(){scrim.classList.remove('open');pending=null}
+
+  function addPlan(item){
+    var per=item.price/4;
+    var when=schedDates();
+    var el=document.createElement('div');
+    el.className='plan-item';
+    var chips='';
+    var states=['due','up','up','up'];
+    var stlabel=['Due','Upcoming','Upcoming','Upcoming'];
+    for(var i=0;i<4;i++){
+      chips+='<div class="chip '+states[i]+'"><div class="amt">'+fmt(Math.round(per))+'</div><div class="when">'+(i===0?'Today':when[i])+'</div><span class="st">'+stlabel[i]+'</span></div>';
+    }
+    el.innerHTML='<div class="plan-top"><span class="plan-name">'+item.nm+'</span><span class="plan-total mono">'+fmt(item.price)+'</span></div><div class="chips">'+chips+'</div>';
+    document.getElementById('plans').appendChild(el);
+  }
+
+  document.getElementById('mConfirm').addEventListener('click',function(){
+    if(!pending)return;
+    addPlan(pending);
+    score=Math.min(MAX,score+18);
+    herd[0].score=score;
+    renderScore();renderHerd();
+    closeModal();
+  });
+  document.getElementById('mCancel').addEventListener('click',closeModal);
+  scrim.addEventListener('click',function(e){if(e.target===scrim)closeModal()});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&scrim.classList.contains('open'))closeModal()});
+
+  // ---- missed payment ----
+  document.getElementById('missBtn').addEventListener('click',function(){
+    score=Math.max(MIN,score-72);
+    herd.forEach(function(h,i){h.score=Math.max(MIN,h.score-(i===0?72:44))});
+    renderScore();renderHerd();
+    var ul=document.getElementById('herd');
+    ul.querySelectorAll('.hscore').forEach(function(s){
+      s.classList.add('drop');
+      setTimeout(function(){s.classList.remove('drop')},900);
+    });
+    if(!reduce){
+      var dash=document.getElementById('dash');
+      dash.classList.add('shake');
+      setTimeout(function(){dash.classList.remove('shake')},420);
+    }
+  });
+
+  renderScore();renderHerd();renderCatalog();
+})();
+</script>
+</body>
+</html>

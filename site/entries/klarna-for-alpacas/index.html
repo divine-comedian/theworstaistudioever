@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fleece · theworstaistudioever</title>
+<meta name="description" content="Buy now, pay in four, for animals that own nothing and want the grooming table anyway.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Fleece · theworstaistudioever">
+<meta property="og:description" content="Buy now, pay in four, for animals that own nothing and want the grooming table anyway.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Fleece · theworstaistudioever">
+<meta name="twitter:description" content="Buy now, pay in four, for animals that own nothing and want the grooming table anyway.">
+<meta name="theme-color" content="#FF4D8D">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root{
+  --bg:#FBE4EC;
+  --ink:#1A1512;
+  --accent:#FF4D8D;
+  --muted:#8C7F84;
+  --paper:#FFFFFF;
+  --shadow:6px 6px 0 var(--ink);
+  --shadow-sm:4px 4px 0 var(--ink);
+  --line:3px solid var(--ink);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  font-size:17px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:'IBM Plex Mono','SFMono-Regular',Menlo,monospace;font-variant-numeric:tabular-nums}
+h1,h2,h3,.brand,.eyebrow{font-family:'Archivo Black','Arial Black',system-ui,sans-serif;font-weight:400;letter-spacing:-0.01em;line-height:1.02}
+
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+
+/* ---- top bar ---- */
+.topbar{border-bottom:var(--line);background:var(--bg);position:sticky;top:0;z-index:50}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:68px}
+.brand{font-size:26px;letter-spacing:-0.02em}
+.brand span{color:var(--accent)}
+.topnav{display:flex;gap:22px;align-items:center}
+.topnav a{color:var(--ink);text-decoration:none;font-weight:500;font-size:15px}
+.topnav a:hover{text-decoration:underline;text-decoration-thickness:2px}
+.topnav .apply{display:inline-block}
+
+/* ---- buttons ---- */
+.btn{
+  display:inline-block;
+  font-family:'IBM Plex Sans',sans-serif;
+  font-weight:600;font-size:16px;
+  padding:14px 26px;
+  border:var(--line);
+  border-radius:9px;
+  background:var(--paper);
+  color:var(--ink);
+  text-decoration:none;
+  box-shadow:var(--shadow-sm);
+  cursor:pointer;
+  transition:transform .08s ease, box-shadow .08s ease;
+}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+.btn:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
+.btn-accent{background:var(--accent);color:var(--ink)}
+.btn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+
+/* ---- hero ---- */
+.hero{padding:64px 0 72px}
+.hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+.stamp-row{display:inline-flex;align-items:center;gap:10px;margin-bottom:22px}
+.pill{border:var(--line);background:var(--paper);border-radius:999px;padding:6px 14px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;letter-spacing:.04em;text-transform:uppercase}
+.hero h1{font-size:clamp(42px,6.4vw,76px);margin-bottom:22px}
+.hero .sub{font-size:19px;max-width:34ch;margin-bottom:30px;color:var(--ink)}
+.hero .cta-row{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-bottom:22px}
+.fineprint{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);max-width:46ch;line-height:1.55}
+
+.hero-figure{position:relative}
+.framecard{border:var(--line);border-radius:12px;box-shadow:var(--shadow);background:var(--paper);overflow:hidden}
+.framecard img{display:block;width:100%;height:auto}
+.approved-stamp{
+  position:absolute;top:-22px;right:-14px;
+  background:var(--accent);color:var(--ink);
+  border:var(--line);border-radius:999px;
+  font-family:'Archivo Black',sans-serif;font-size:14px;letter-spacing:.02em;
+  padding:14px 18px;
+  box-shadow:var(--shadow-sm);
+  transform:rotate(-7deg);
+  text-align:center;line-height:1.05;
+}
+.approved-stamp small{display:block;font-family:'IBM Plex Mono',monospace;font-weight:400;font-size:9px;letter-spacing:.12em;margin-top:3px}
+
+/* ---- section frame ---- */
+section.band{padding:72px 0;border-top:var(--line)}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:500;margin-bottom:14px}
+.band h2{font-size:clamp(30px,4.4vw,46px);max-width:20ch;margin-bottom:14px}
+.band .lede{max-width:52ch;color:var(--ink);font-size:18px}
+
+/* ---- features ---- */
+.features .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:46px}
+.fcard{background:var(--paper);border:var(--line);border-radius:12px;box-shadow:var(--shadow);padding:28px 26px 30px;transition:transform .1s ease, box-shadow .1s ease}
+.fcard:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 var(--ink)}
+.fnum{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted);letter-spacing:.1em}
+.fcard h3{font-size:23px;margin:14px 0 12px}
+.fcard p{font-size:15.5px;color:var(--ink)}
+
+/* ---- testimonials ---- */
+.quotes .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:46px}
+.qcard{background:var(--paper);border:var(--line);border-radius:12px;box-shadow:var(--shadow-sm);padding:26px 24px 24px;display:flex;flex-direction:column}
+.qcard blockquote{font-size:16px;line-height:1.55;margin-bottom:22px;flex:1}
+.qmeta{display:flex;align-items:center;gap:13px;border-top:2px solid var(--ink);padding-top:16px}
+.avatar{width:52px;height:52px;border:var(--line);border-radius:999px;overflow:hidden;flex:0 0 auto;background:var(--bg)}
+.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.avatar.initials{display:flex;align-items:center;justify-content:center;font-family:'Archivo Black',sans-serif;font-size:18px}
+.qname{font-weight:600;font-size:15px;line-height:1.2}
+.qtitle{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--muted);line-height:1.35;margin-top:3px}
+
+/* ---- pricing ---- */
+.pricing .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:46px;align-items:start}
+.tier{background:var(--paper);border:var(--line);border-radius:12px;box-shadow:var(--shadow-sm);padding:28px 26px;display:flex;flex-direction:column}
+.tier.featured{box-shadow:var(--shadow);background:#FFF4F8}
+.tier .tag{display:inline-block;align-self:flex-start;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;border:2px solid var(--ink);border-radius:999px;padding:3px 10px;margin-bottom:18px}
+.tier.featured .tag{background:var(--accent)}
+.tier h3{font-size:24px;margin-bottom:6px}
+.price{font-family:'IBM Plex Mono',monospace;font-size:34px;font-weight:500;margin:8px 0 6px;letter-spacing:-0.02em}
+.tier .tline{font-size:14.5px;color:var(--muted);min-height:44px;margin-bottom:18px}
+.perks{list-style:none;margin:0 0 24px;padding:0;flex:1}
+.perks li{font-size:14.5px;padding:9px 0 9px 26px;position:relative;border-top:1px dashed rgba(26,21,18,.28)}
+.perks li:first-child{border-top:none}
+.perks li::before{content:"+";position:absolute;left:0;top:9px;font-family:'IBM Plex Mono',monospace;color:var(--accent);font-weight:500}
+.tier .btn{width:100%;text-align:center}
+
+/* ---- demo strip ---- */
+.demo-strip{border-top:var(--line);background:var(--ink);color:var(--bg);padding:60px 0}
+.demo-strip .wrap{display:flex;align-items:center;justify-content:space-between;gap:30px;flex-wrap:wrap}
+.demo-strip h2{color:var(--bg);font-size:clamp(26px,3.6vw,38px);max-width:18ch}
+.demo-strip p{color:#E7C9D4;font-family:'IBM Plex Mono',monospace;font-size:13px;margin-top:10px;max-width:40ch}
+.demo-strip .btn{background:var(--accent);color:var(--ink);border-color:var(--bg);box-shadow:5px 5px 0 var(--accent)}
+.demo-strip .btn:hover{box-shadow:7px 7px 0 var(--accent)}
+.demo-strip .btn:active{box-shadow:0 0 0 var(--accent)}
+
+/* ---- footer ---- */
+footer{border-top:var(--line);padding:40px 0 56px;font-size:14px}
+footer .wrap{display:flex;flex-direction:column;gap:18px}
+.footrow{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+footer a.home{color:var(--ink);text-decoration:none;font-weight:600}
+footer a.home:hover{text-decoration:underline;text-decoration-thickness:2px}
+.legal{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--muted);line-height:1.6;max-width:82ch}
+
+@media (max-width:860px){
+  .hero .wrap{grid-template-columns:1fr;gap:40px}
+  .hero-figure{order:-1;max-width:420px}
+  .features .grid,.quotes .grid,.pricing .grid{grid-template-columns:1fr}
+}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .btn,.fcard{transition:none}
+  .btn:hover,.btn:active,.fcard:hover{transform:none}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand">Fleece<span>.</span></div>
+    <nav class="topnav">
+      <a href="#how">How it works</a>
+      <a href="#pricing">Pricing</a>
+      <a class="btn btn-accent apply" href="#pricing">Apply your herd</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-copy">
+      <div class="stamp-row"><span class="pill">Pay in 4 · 0% APR</span><span class="pill">Livestock-first lending</span></div>
+      <h1>Your alpaca is pre-approved.</h1>
+      <p class="sub">Fleece is buy-now-pay-later built for an animal with no income, no thumbs, and a strong opinion about the grooming table. Four interest-free payments, drafted from the herd, whether the alpaca consents or not.</p>
+      <div class="cta-row">
+        <a class="btn btn-accent" href="#pricing">Check your Fleece Score</a>
+        <a class="btn" href="./demo.html">See the account</a>
+      </div>
+      <p class="fineprint">Representative example: a $600 grooming table, split into 4 payments of $150. 0% APR. Your herd is the collateral. The alpaca is the borrower. This is legal in most states.</p>
+    </div>
+    <div class="hero-figure">
+      <div class="framecard"><img src="hero.webp" width="1600" height="900" alt="An alpaca facing the camera with a flat, deadpan expression against a blush-pink studio backdrop."></div>
+      <div class="approved-stamp">PRE-APPROVED<small>PENDING FLEECE</small></div>
+    </div>
+  </div>
+</section>
+
+<section class="band features" id="how">
+  <div class="wrap">
+    <p class="eyebrow">How it works</p>
+    <h2>Three products the alpaca did not ask for.</h2>
+    <p class="lede">Underwriting, autodraft, and shared liability, delivered to a paddock that has never once needed to be paid.</p>
+    <div class="grid">
+      <article class="fcard">
+        <span class="fnum">01 / Underwriting</span>
+        <h3>The Fleece Score</h3>
+        <p>A proprietary creditworthiness rating for a creature that has never held a job. Built from fiber density, gait, and how long the alpaca can hold eye contact before spitting. Updated hourly. Nobody has passed the review for a mortgage yet, but the model is optimistic.</p>
+      </article>
+      <article class="fcard">
+        <span class="fnum">02 / Repayment</span>
+        <h3>Pay in Four</h3>
+        <p>Split any purchase into four interest-free payments: hay on the 1st, hay on the 8th, hay on the 15th, and one payment drafted while the alpaca is asleep. Financeable items include mineral licks, dental floats, and a second alpaca.</p>
+      </article>
+      <article class="fcard">
+        <span class="fnum">03 / Liability</span>
+        <h3>Herd Co-Sign</h3>
+        <p>Every alpaca in the paddock co-signs every other alpaca's balance. One missed payment and the whole herd's Fleece Score drops together, as a unit, standing in a line, staring at you. We call this accountability. The alpacas call it nothing, because they cannot.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="band quotes">
+  <div class="wrap">
+    <p class="eyebrow">From the paddock</p>
+    <h2>Ranchers and one borrower.</h2>
+    <div class="grid">
+      <article class="qcard">
+        <blockquote>&ldquo;My alpaca financed a $600 grooming table in four payments. He has never seen the table. He does not know the table exists. His Fleece Score went up 40 points.&rdquo;</blockquote>
+        <div class="qmeta">
+          <div class="avatar initials" aria-hidden="true">DP</div>
+          <div><div class="qname">Dale Prewitt</div><div class="qtitle">Owner-Operator, Two Rivers Alpaca Concern (9 head)</div></div>
+        </div>
+      </article>
+      <article class="qcard">
+        <blockquote>&ldquo;We onboarded the entire paddock in one afternoon. Nine alpacas, one shared account, zero questions asked, because they are structurally incapable of asking questions.&rdquo;</blockquote>
+        <div class="qmeta">
+          <div class="avatar initials" aria-hidden="true">MV</div>
+          <div><div class="qname">Marisol Vantongeren</div><div class="qtitle">Herd Financial Wellness Coordinator</div></div>
+        </div>
+      </article>
+      <article class="qcard">
+        <blockquote>&ldquo;I was approved for a pay-in-four plan on a mineral lick and felt, for the first time, that a financial institution had truly seen me.&rdquo;</blockquote>
+        <div class="qmeta">
+          <div class="avatar"><img src="headshot-gerald.webp" width="320" height="320" alt="Corporate headshot of Gerald, an alpaca with a calm, neutral expression."></div>
+          <div><div class="qname">Gerald</div><div class="qtitle">Alpaca (Huacaya, 4yo, no fixed address)</div></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="band pricing" id="pricing">
+  <div class="wrap">
+    <p class="eyebrow">Plans</p>
+    <h2>Pick a plan for an animal that cannot read this.</h2>
+    <div class="grid">
+      <div class="tier">
+        <span class="tag">Entry</span>
+        <h3>Grazer</h3>
+        <div class="price">$0<span style="font-size:15px;color:var(--muted)">/mo</span></div>
+        <p class="tline">For the alpaca just getting its financial footing.</p>
+        <ul class="perks">
+          <li>Pay in four on purchases up to $40</li>
+          <li>One (1) Fleece Score refresh per day</li>
+          <li>Support answered eventually</li>
+        </ul>
+        <a class="btn" href="./demo.html">Start grazing</a>
+      </div>
+      <div class="tier featured">
+        <span class="tag">Most herds pick this</span>
+        <h3>Full Fleece</h3>
+        <div class="price">$14<span style="font-size:15px;color:var(--muted)">/mo</span></div>
+        <p class="tline">For the alpaca ready to take on real obligations.</p>
+        <ul class="perks">
+          <li>Purchase limits raised to $2,000</li>
+          <li>Soft declines delivered as a gentle hum</li>
+          <li>A dedicated account manager, shared with eleven other alpacas</li>
+        </ul>
+        <a class="btn btn-accent" href="./demo.html">Go Full Fleece</a>
+      </div>
+      <div class="tier">
+        <span class="tag">Premium</span>
+        <h3>Prize Stud</h3>
+        <div class="price">$290<span style="font-size:15px;color:var(--muted)">/mo</span></div>
+        <p class="tline">For the show alpaca and its financial future.</p>
+        <ul class="perks">
+          <li>Concierge underwriting reviewed by a human who has met an alpaca</li>
+          <li>First look at repossessed hay</li>
+          <li>A laminated card the alpaca is physically unable to use</li>
+        </ul>
+        <a class="btn" href="./demo.html">Enter the ring</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="demo-strip">
+  <div class="wrap">
+    <div>
+      <h2>Open a live Fleece account.</h2>
+      <p>Split a grooming table into four payments, watch the Fleece Score move, and co-sign a paddock that never agreed to any of this.</p>
+    </div>
+    <a class="btn" href="./demo.html">Open the demo →</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footrow">
+      <a class="home" href="/">← theworstaistudioever</a>
+      <span class="mono" style="font-size:12px;color:var(--muted)">Fleece · a portfolio company</span>
+    </div>
+    <p class="legal">Fleece is not a bank, a credit union, or a licensed lender, and alpacas are not eligible to enter binding financial agreements in any jurisdiction. The Fleece Score is not a credit score and predicts nothing. Purchases are not real. The herd is not actually collateral. No grooming tables were financed, repossessed, or delivered. Consult a veterinarian before splitting a mineral lick into four payments.</p>
+  </div>
+</footer>
+
+<script>
+// Smooth-scroll for in-page anchors, respecting reduced-motion.
+document.querySelectorAll('a[href^="#"]').forEach(function(a){
+  a.addEventListener('click',function(e){
+    var id=a.getAttribute('href');
+    if(id.length<2)return;
+    var target=document.querySelector(id);
+    if(!target)return;
+    e.preventDefault();
+    var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    target.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});
+  });
+});
+</script>
+</body>
+</html>
