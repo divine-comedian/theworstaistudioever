@@ -1,0 +1,62 @@
+[2026-07-05T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-07-05T08:00:02Z] invoking claude -p
+
+=== agent run summary (2026-07-05) ===
+ROLL
+  company: Duolingo
+  subject: geese (animal — subject rule OK)
+  slug: duolingo-for-geese
+  tagline: Duolingo for geese
+  rerolls: 0 (first draw was fresh; PRNG seeded from 2026-07-05, charsum * 1000003 LCG)
+
+CONCEPT
+  product: Skein — daily five-minute honk lessons, eleven regional flyway dialects,
+  before the fall migration. Faux flight-operations register; streak enforcement as
+  customer success.
+
+DESIGN DIRECTION
+  style: Swiss-modernist flight-operations timetable, porcelain daylight mode
+  palette: primary #113FB4 (aviation cobalt), accent #F25C05 (safety orange, rationed),
+           bg #F2F4F7, fg #101828, muted #68758A, ink #0C1633
+  fonts: Barlow Condensed (display) / Libre Franklin (body) / Space Mono (telemetry)
+  anti-sameness: checked last 7 (klarna neo-brutalist blush, fortnite synthwave dark,
+  cursor dark IDE, hinge risograph zine, calendly claymorphism, gusto mid-century
+  editorial, mercury quiet minimalism). ui-ux-pro-max's first suggestion was
+  claymorphism + Baloo 2 — rejected (collides with calendly-for-ferrets 06-30);
+  reselected the timetable direction. No tuple collision.
+
+IMAGES (3 of 10 daily cap used; counter now reads 3)
+  allocation: hero skipped (typographic direction; hero panel is an HTML departures
+  board), demo assets skipped (lesson console is not photo-shaped), full budget on
+  3 testimonial headshots — deadpan Canada-goose corporate portraits under the
+  human-named quotes (that is the joke).
+  headshot-1.webp: porcelain-grey backdrop, three-quarter view — attempt 1, PASS
+  headshot-2.webp: desaturated cobalt backdrop, head-on stare — attempt 1, PASS
+  headshot-3.webp: slate backdrop, alert civic pose — attempt 1, PASS
+  judge notes: correct subject, palette-consistent backdrops, no text artifacts,
+  no generic-render tells. All ≤12 KB after 320x320 WebP crop.
+
+BUILD
+  index.html: split hero + split-flap departures board (flyway routes, dialect
+  requirements, one flipping status chip), telemetry strip, pre-flight-check
+  features, crew-report testimonials with goose headshots, fare-class pricing,
+  demo band, footer link home. All CSS/JS inline, reduced-motion gated.
+  demo.html: Unit 4 Tarmac & Terminal lesson console — fake transmission player,
+  graded multiple choice (3 exercises), hearts decrement on misses, XP/streak on
+  hits, politeness-inverted compliance banner, grounded overlay at 0 hearts.
+
+WARNINGS / NEAR-MISSES
+  - Leftover .tmp-gallery.py from a prior run wrote raw apostrophes and had an
+    unstable same-date sort; patched (quote=True, history-index tiebreak) before
+    regenerating. Gallery diff verified: only new slide + count 42→43 + dot rail.
+  - state/runs log already existed (wrapper header); appended rather than replaced.
+
+VALIDATION
+  scripts/validate-entry.sh site duolingo-for-geese → OK
+  history.json appended (43 entries), JSON valid.
+[2026-07-05T08:13:00Z] WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks
+[2026-07-05T08:13:00Z] new entry: duolingo-for-geese
+validate-entry [duolingo-for-geese]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 43 entries (domain theworstaistudioever.com)
+[2026-07-05T08:13:00Z] committing: Duolingo for geese

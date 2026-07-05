@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skein · theworstaistudioever</title>
+<meta name="description" content="Daily five-minute honk lessons that get your flock conversational in eleven regional dialects before the fall migration.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Skein. Duolingo for geese.">
+<meta property="og:description" content="Daily five-minute honk lessons that get your flock conversational in eleven regional dialects before the fall migration.">
+<meta property="og:site_name" content="theworstaistudioever">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Libre+Franklin:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap');
+
+:root{
+  --primary:#113FB4;
+  --accent:#F25C05;
+  --bg:#F2F4F7;
+  --fg:#101828;
+  --muted:#68758A;
+  --ink:#0C1633;
+  --rule:#C9D2DE;
+  --board:#0D2B78;
+  --board-row:#123593;
+  --display:'Barlow Condensed','Arial Narrow',system-ui,sans-serif;
+  --body:'Libre Franklin',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'Space Mono',ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--primary)}
+a:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.rule{border:0;border-top:1px solid var(--rule)}
+
+/* header */
+.site-head{border-bottom:1px solid var(--rule);background:var(--bg)}
+.site-head .wrap{display:flex;align-items:baseline;justify-content:space-between;padding-top:18px;padding-bottom:18px}
+.wordmark{font-family:var(--display);font-weight:700;font-size:1.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--primary);text-decoration:none}
+.wordmark span{color:var(--accent)}
+.head-nav{display:flex;gap:24px;font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase}
+.head-nav a{color:var(--ink);text-decoration:none;border-bottom:1px solid transparent}
+.head-nav a:hover{border-bottom-color:var(--primary)}
+@media(max-width:640px){.head-nav{display:none}}
+
+/* hero */
+.hero{padding:72px 0 56px}
+.hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:start}
+@media(max-width:900px){.hero .wrap{grid-template-columns:1fr;gap:40px}}
+.hero h1{font-family:var(--display);font-weight:700;font-size:clamp(2.6rem,6vw,4.4rem);line-height:.98;letter-spacing:.01em;text-transform:uppercase;color:var(--ink);margin:14px 0 20px}
+.hero .sub{font-size:1.05rem;color:var(--fg);max-width:34em;margin-bottom:32px}
+.cta{display:inline-block;background:var(--accent);color:#fff;font-family:var(--display);font-weight:600;font-size:1.15rem;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;padding:14px 34px;border:none;cursor:pointer}
+.cta:hover{background:#D94F00}
+.cta:active{transform:translateY(1px)}
+.cta-note{display:block;margin-top:12px;font-family:var(--mono);font-size:.7rem;color:var(--muted)}
+
+/* departures board */
+.board{background:var(--board);color:#E8EDFB;padding:20px 20px 14px;font-family:var(--mono)}
+.board-head{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid rgba(232,237,251,.25);padding-bottom:10px;margin-bottom:6px}
+.board-title{font-size:.78rem;letter-spacing:.18em;text-transform:uppercase}
+.board-clock{font-size:.78rem;color:#9DB2E8}
+.board table{width:100%;border-collapse:collapse;font-size:.74rem}
+.board th{text-align:left;font-weight:400;color:#9DB2E8;letter-spacing:.1em;padding:8px 6px;border-bottom:1px solid rgba(232,237,251,.15)}
+.board td{padding:10px 6px;border-bottom:1px solid rgba(232,237,251,.12);letter-spacing:.04em;white-space:nowrap}
+.board tr.flap{opacity:0;transform:translateY(6px)}
+.board tr.flap.on{opacity:1;transform:none;transition:opacity .3s ease-out,transform .3s ease-out}
+.chip{display:inline-block;padding:2px 8px;font-size:.68rem;letter-spacing:.08em}
+.chip.ok{background:rgba(232,237,251,.14);color:#E8EDFB}
+.chip.warn{background:var(--accent);color:#fff}
+.chip.flip{animation:flip .5s ease-out}
+@keyframes flip{0%{transform:rotateX(90deg)}100%{transform:rotateX(0)}}
+@media (prefers-reduced-motion:reduce){
+  .board tr.flap{opacity:1;transform:none}
+  .chip.flip{animation:none}
+}
+@media(max-width:480px){.board{padding:14px 10px 8px}.board table{font-size:.62rem}.board td,.board th{padding:8px 4px}}
+
+/* telemetry strip */
+.telemetry{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.telemetry .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;padding-top:22px;padding-bottom:22px}
+@media(max-width:760px){.telemetry .wrap{grid-template-columns:repeat(2,1fr)}}
+.tele-item .num{font-family:var(--mono);font-size:1.35rem;font-weight:700;color:var(--primary);font-variant-numeric:tabular-nums}
+.tele-item .lbl{font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+
+/* sections */
+section.block{padding:72px 0}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:40px}
+.sec-head h2{font-family:var(--display);font-weight:700;font-size:clamp(1.9rem,4vw,2.8rem);letter-spacing:.02em;text-transform:uppercase;color:var(--ink)}
+
+/* features: pre-flight checks */
+.checks{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--rule)}
+@media(max-width:820px){.checks{grid-template-columns:1fr}}
+.check{border-bottom:1px solid var(--rule);padding:28px 24px 32px}
+.check:not(:last-child){border-right:1px solid var(--rule)}
+@media(max-width:820px){.check:not(:last-child){border-right:none}}
+.check .step{font-family:var(--mono);font-size:.72rem;color:var(--accent);letter-spacing:.14em}
+.check h3{font-family:var(--display);font-weight:600;font-size:1.5rem;letter-spacing:.03em;text-transform:uppercase;color:var(--primary);margin:10px 0 12px}
+.check p{font-size:.95rem;color:var(--fg)}
+
+/* crew reports */
+.reports{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+@media(max-width:820px){.reports{grid-template-columns:1fr}}
+.report{border-top:3px solid var(--primary);padding-top:20px}
+.report blockquote{font-size:.98rem;line-height:1.65;color:var(--fg);margin-bottom:20px}
+.report blockquote::before{content:"“";color:var(--primary)}
+.report blockquote::after{content:"”";color:var(--primary)}
+.report .who{display:flex;gap:14px;align-items:center}
+.report img{width:56px;height:56px;object-fit:cover;display:block;border:1px solid var(--rule)}
+.report .nm{font-family:var(--display);font-weight:600;font-size:1.05rem;letter-spacing:.04em;text-transform:uppercase;color:var(--ink)}
+.report .ttl{font-family:var(--mono);font-size:.64rem;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;margin-top:2px}
+
+/* fares */
+.fares{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--rule)}
+@media(max-width:820px){.fares{grid-template-columns:1fr}}
+.fare{padding:32px 28px 36px;background:#fff}
+.fare:not(:last-child){border-right:1px solid var(--rule)}
+@media(max-width:820px){.fare:not(:last-child){border-right:none;border-bottom:1px solid var(--rule)}}
+.fare.mid{background:var(--primary);color:#E8EDFB}
+.fare .fname{font-family:var(--display);font-weight:700;font-size:1.6rem;letter-spacing:.05em;text-transform:uppercase;color:var(--primary)}
+.fare.mid .fname{color:#fff}
+.fare .fprice{font-family:var(--mono);font-size:1.5rem;font-weight:700;margin:10px 0 4px;font-variant-numeric:tabular-nums}
+.fare .ftag{font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:22px}
+.fare.mid .ftag{color:#AEBFEE}
+.fare ul{list-style:none}
+.fare li{font-size:.9rem;padding:9px 0;border-top:1px solid var(--rule)}
+.fare.mid li{border-top-color:rgba(232,237,251,.25)}
+.fare-note{font-family:var(--mono);font-size:.68rem;color:var(--muted);margin-top:18px}
+
+/* demo band */
+.demo-band{background:var(--ink);color:#E8EDFB;padding:64px 0}
+.demo-band .wrap{display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap}
+.demo-band h2{font-family:var(--display);font-weight:700;font-size:clamp(1.8rem,4vw,2.6rem);letter-spacing:.02em;text-transform:uppercase}
+.demo-band p{font-family:var(--mono);font-size:.78rem;color:#9DB2E8;margin-top:8px}
+
+/* footer */
+.site-foot{border-top:1px solid var(--rule);padding:36px 0 48px}
+.site-foot .wrap{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:baseline}
+.site-foot p{font-family:var(--mono);font-size:.68rem;color:var(--muted);max-width:46em}
+.site-foot a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--rule)}
+.site-foot a:hover{color:var(--primary);border-bottom-color:var(--primary)}
+</style>
+</head>
+<body>
+
+<header class="site-head">
+  <div class="wrap">
+    <a class="wordmark" href="#">Skein<span>.</span></a>
+    <nav class="head-nav">
+      <a href="#checks">Pre-flight checks</a>
+      <a href="#reports">Crew reports</a>
+      <a href="#fares">Fare classes</a>
+      <a href="./demo.html">Demo</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">Waterfowl language operations · est. definitely</span>
+      <h1>Your flock leaves in October. Their honk isn't ready.</h1>
+      <p class="sub">Skein teaches migratory geese conversational honk in eleven regional flyway dialects, five minutes a day, so nobody lands in Ontario sounding like New Jersey.</p>
+      <a class="cta" href="./demo.html">Take the placement honk</a>
+      <span class="cta-note">Placement is final. See appeals policy (Winnipeg).</span>
+    </div>
+    <div class="board" role="img" aria-label="Departures board listing flyway routes, required dialects, and boarding statuses">
+      <div class="board-head">
+        <span class="board-title">Departures · Fall</span>
+        <span class="board-clock" id="clock">UTC --:--</span>
+      </div>
+      <table>
+        <thead>
+          <tr><th>Route</th><th>Dialect req.</th><th>Dep</th><th>Status</th></tr>
+        </thead>
+        <tbody id="board-rows">
+          <tr class="flap"><td>MISSISSIPPI FLYWAY</td><td>DELTA LOWLAND</td><td>OCT 12</td><td><span class="chip warn" id="chip-flip">BOARDING</span></td></tr>
+          <tr class="flap"><td>ATLANTIC FLYWAY</td><td>UPPER CHESAPEAKE</td><td>OCT 19</td><td><span class="chip ok">DELAYED</span></td></tr>
+          <tr class="flap"><td>CENTRAL FLYWAY</td><td>PRAIRIE POTHOLE</td><td>OCT 08</td><td><span class="chip ok">HONK CHECK</span></td></tr>
+          <tr class="flap"><td>PACIFIC FLYWAY</td><td>FRASER ESTUARY</td><td>OCT 23</td><td><span class="chip ok">ON TIME</span></td></tr>
+          <tr class="flap"><td>LAGUARDIA T-B</td><td>TERMINAL B</td><td>DAILY</td><td><span class="chip ok">OVERBOOKED</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="telemetry">
+  <div class="wrap">
+    <div class="tele-item"><div class="num">412,806</div><div class="lbl">Geese enrolled</div></div>
+    <div class="tele-item"><div class="num">11</div><div class="lbl">Flyway dialects</div></div>
+    <div class="tele-item"><div class="num">47</div><div class="lbl">Avg. streak, days</div></div>
+    <div class="tele-item"><div class="num">0</div><div class="lbl">Hiss electives taken</div></div>
+  </div>
+</div>
+
+<section class="block" id="checks">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Pre-flight checks</h2>
+      <span class="eyebrow">Completed in sequence. No exceptions on record.</span>
+    </div>
+    <div class="checks">
+      <div class="check">
+        <span class="step">CHECK 01</span>
+        <h3>Dialect placement</h3>
+        <p>A four-minute assessment honk places each goose into one of eleven flyway dialects, from Upper Chesapeake Estuary to LaGuardia Terminal B. Placement is final. Appeals are heard annually, in person, in Winnipeg.</p>
+      </div>
+      <div class="check">
+        <span class="step">CHECK 02</span>
+        <h3>Streak enforcement</h3>
+        <p>Streaks do not pause for migration. Skein's satellite relay confirms lesson completion at cruising altitude, weather permitting. Weather has never been the problem.</p>
+      </div>
+      <div class="check">
+        <span class="step">CHECK 03</span>
+        <h3>Hiss de-escalation track</h3>
+        <p>An elective module that teaches geese to express territorial rage in complete, grammatically correct sentences. Enrollment remains at zero across all markets. We are patient.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="reports" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Crew reports</h2>
+      <span class="eyebrow">Filed by ground personnel. Unedited.</span>
+    </div>
+    <div class="reports">
+      <div class="report">
+        <blockquote>My gander tested into Upper Chesapeake in six weeks. He hisses in the subjunctive now. We don't know how to feel about it.</blockquote>
+        <div class="who">
+          <img src="./headshot-1.webp" alt="Staff-directory portrait of a Canada goose" width="56" height="56" loading="lazy">
+          <div>
+            <div class="nm">Diane Krolik</div>
+            <div class="ttl">Volunteer Waterfowl Liaison, Rockford Municipal Golf Course</div>
+          </div>
+        </div>
+      </div>
+      <div class="report">
+        <blockquote>We enrolled 300 geese ahead of the fall migration. Retention has been flawless. They have not left. They show no intention of leaving.</blockquote>
+        <div class="who">
+          <img src="./headshot-2.webp" alt="ID portrait of a stern Canada goose facing the camera" width="56" height="56" loading="lazy">
+          <div>
+            <div class="nm">Marcus Ehle</div>
+            <div class="ttl">Director of Airfield Wildlife Operations, Gerald R. Ford International Airport</div>
+          </div>
+        </div>
+      </div>
+      <div class="report">
+        <blockquote>The streak reminders are relentless and the geese know it. Lesson compliance at my pond is at 96 percent. Morale is unclear.</blockquote>
+        <div class="who">
+          <img src="./headshot-3.webp" alt="Annual-report portrait of an alert Canada goose" width="56" height="56" loading="lazy">
+          <div>
+            <div class="nm">Priya Vaidyanathan</div>
+            <div class="ttl">Assistant Superintendent of Ponds, City of Naperville Park District, District 4</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="fares" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Fare classes</h2>
+      <span class="eyebrow">All fares in USD. Geese cannot hold currency. Someone will pay.</span>
+    </div>
+    <div class="fares">
+      <div class="fare">
+        <div class="fname">Gosling</div>
+        <div class="fprice">$0</div>
+        <div class="ftag">For geese who are not serious.</div>
+        <ul>
+          <li>One lesson per day</li>
+          <li>Park Basic dialect only</li>
+          <li>Ads between honks</li>
+        </ul>
+      </div>
+      <div class="fare mid">
+        <div class="fname">Migratory</div>
+        <div class="fprice">$14/goose/mo</div>
+        <div class="ftag">Billed annually. No refunds after departure.</div>
+        <ul>
+          <li>All eleven flyway dialects</li>
+          <li>Streak protection through one named storm system</li>
+          <li>Offline lessons above 3,000 feet</li>
+        </ul>
+      </div>
+      <div class="fare">
+        <div class="fname">Full Skein</div>
+        <div class="fprice">$1,120/yr</div>
+        <div class="ftag">For flocks of up to 40. The V is a team.</div>
+        <ul>
+          <li>Formation-wide progress dashboard</li>
+          <li>One dedicated dialect coach (human, remote)</li>
+          <li>Priority tarmac vocabulary updates</li>
+        </ul>
+      </div>
+    </div>
+    <p class="fare-note">Fares subject to change during peak migration. Seat selection is not available. There are no seats.</p>
+  </div>
+</section>
+
+<section class="demo-band">
+  <div class="wrap">
+    <div>
+      <h2>Sit one lesson before you commit the flock.</h2>
+      <p>Unit 4: Tarmac &amp; Terminal. Three hearts. A 47-day streak on the line.</p>
+    </div>
+    <a class="cta" href="./demo.html">open the demo →</a>
+  </div>
+</section>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <p>Skein is a certified waterfowl language operations vendor in the sense that we printed the certificate. Streak data is retained indefinitely and reviewed without sympathy.</p>
+    <p><a href="/">← theworstaistudioever</a></p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // clock (UTC, minute precision — a departure board doesn't care about seconds)
+  var clock = document.getElementById('clock');
+  function tick(){
+    var d = new Date();
+    var h = String(d.getUTCHours()).padStart(2,'0');
+    var m = String(d.getUTCMinutes()).padStart(2,'0');
+    clock.textContent = 'UTC ' + h + ':' + m;
+  }
+  tick(); setInterval(tick, 30000);
+
+  // split-flap row reveal
+  var rows = document.querySelectorAll('.board tr.flap');
+  if (reduced) {
+    rows.forEach(function(r){ r.classList.add('on'); });
+  } else {
+    rows.forEach(function(r, i){
+      setTimeout(function(){ r.classList.add('on'); }, 180 + i * 140);
+    });
+  }
+
+  // one status chip re-flips periodically between states
+  var chip = document.getElementById('chip-flip');
+  if (chip && !reduced) {
+    var states = [['BOARDING','chip warn'],['FINAL CALL','chip warn'],['BOARDING','chip warn'],['GATE HOLD','chip ok']];
+    var idx = 0;
+    setInterval(function(){
+      idx = (idx + 1) % states.length;
+      chip.textContent = states[idx][0];
+      chip.className = states[idx][1] + ' flip';
+      setTimeout(function(){ chip.classList.remove('flip'); }, 600);
+    }, 6000);
+  }
+})();
+</script>
+</body>
+</html>

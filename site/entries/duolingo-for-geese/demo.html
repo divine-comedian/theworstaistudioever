@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skein · Unit 4: Tarmac &amp; Terminal</title>
+<meta name="description" content="One lesson of Skein. Three hearts. A 47-day streak on the line.">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Libre+Franklin:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap');
+
+:root{
+  --primary:#113FB4;
+  --accent:#F25C05;
+  --bg:#F2F4F7;
+  --fg:#101828;
+  --muted:#68758A;
+  --ink:#0C1633;
+  --rule:#C9D2DE;
+  --board:#0D2B78;
+  --display:'Barlow Condensed','Arial Narrow',system-ui,sans-serif;
+  --body:'Libre Franklin',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'Space Mono',ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100dvh;display:flex;flex-direction:column}
+a:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button{font:inherit;cursor:pointer}
+
+/* top chrome */
+.console-bar{background:var(--ink);color:#E8EDFB;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.console-bar a{color:#9DB2E8;font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;text-decoration:none}
+.console-bar a:hover{color:#fff}
+.unit-label{font-family:var(--display);font-weight:600;font-size:1.05rem;letter-spacing:.1em;text-transform:uppercase}
+.hud{display:flex;gap:20px;align-items:center;font-family:var(--mono);font-size:.72rem}
+.hud .streak{color:#FFB13D;font-weight:700;font-variant-numeric:tabular-nums}
+.hearts{display:flex;gap:5px}
+.hearts svg{width:16px;height:16px;fill:var(--accent);transition:fill .2s,opacity .2s}
+.hearts svg.dead{fill:none;stroke:#5A6C9E;stroke-width:1.5;opacity:.6}
+
+/* progress */
+.progress{height:6px;background:#D8DEE8}
+.progress .fill{height:100%;width:0;background:var(--primary);transition:width .35s ease-out}
+
+/* lesson */
+.lesson{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px 120px}
+.card{width:100%;max-width:640px}
+.prompt-eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.prompt{font-family:var(--display);font-weight:700;font-size:clamp(1.6rem,4vw,2.3rem);letter-spacing:.02em;text-transform:uppercase;color:var(--ink);margin:8px 0 24px}
+
+/* transmission player */
+.player{background:var(--board);padding:18px 20px;display:flex;align-items:center;gap:18px;margin-bottom:28px}
+.play-btn{background:var(--accent);color:#fff;border:none;font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;padding:10px 16px;white-space:nowrap}
+.play-btn:hover{background:#D94F00}
+.play-btn:disabled{background:#5A6C9E;cursor:default}
+.wave{display:flex;align-items:center;gap:3px;height:40px;flex:1}
+.wave i{display:block;width:4px;background:#9DB2E8;height:calc(var(--h) * 1%);min-height:4px}
+.wave.playing i{animation:pulse .5s ease-in-out infinite alternate}
+.wave i:nth-child(3n){animation-delay:.12s}.wave i:nth-child(3n+1){animation-delay:.24s}
+@keyframes pulse{from{transform:scaleY(.4)}to{transform:scaleY(1.15)}}
+@media (prefers-reduced-motion:reduce){.wave.playing i{animation:none}}
+.player-status{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;color:#9DB2E8;text-transform:uppercase;min-width:110px;text-align:right}
+
+/* choices */
+.choices{display:grid;gap:12px}
+.choice{background:#fff;border:1px solid var(--rule);text-align:left;padding:15px 18px;font-size:.97rem;color:var(--fg);display:flex;gap:14px;align-items:baseline;transition:border-color .15s,background .15s}
+.choice:hover{border-color:var(--primary)}
+.choice .key{font-family:var(--mono);font-size:.7rem;color:var(--muted)}
+.choice[aria-checked="true"]{border-color:var(--primary);background:#E7EDFB}
+.choice.right{border-color:var(--primary);background:var(--primary);color:#fff}
+.choice.right .key{color:#AEBFEE}
+.choice.wrong{border-color:var(--accent);background:#FDE9DC}
+.choice:disabled{cursor:default}
+
+/* action bar */
+.action-bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--rule);padding:16px 20px}
+.action-inner{max-width:640px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.feedback{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);flex:1}
+.feedback.good{color:var(--primary);font-weight:700}
+.feedback.bad{color:var(--accent);font-weight:700}
+.check-btn{background:var(--accent);color:#fff;border:none;font-family:var(--display);font-weight:600;font-size:1.05rem;letter-spacing:.08em;text-transform:uppercase;padding:12px 36px}
+.check-btn:hover{background:#D94F00}
+.check-btn:disabled{background:#C6CDD9;cursor:default}
+.check-btn.next{background:var(--primary)}
+.check-btn.next:hover{background:#0D2B78}
+
+/* overlays */
+.overlay{position:fixed;inset:0;background:rgba(12,22,51,.88);display:none;align-items:center;justify-content:center;padding:24px;z-index:10}
+.overlay.show{display:flex}
+.overlay .panel{background:var(--bg);max-width:460px;width:100%;padding:40px 36px;text-align:center}
+.overlay h2{font-family:var(--display);font-weight:700;font-size:2rem;letter-spacing:.04em;text-transform:uppercase;color:var(--ink);margin-bottom:12px}
+.overlay p{font-size:.95rem;color:var(--fg);margin-bottom:8px}
+.overlay .fine{font-family:var(--mono);font-size:.66rem;color:var(--muted);margin:14px 0 24px}
+.overlay .stat{font-family:var(--mono);font-size:1.6rem;font-weight:700;color:var(--primary);font-variant-numeric:tabular-nums;margin-bottom:6px}
+</style>
+</head>
+<body>
+
+<header class="console-bar">
+  <a href="./index.html">← back to the pitch</a>
+  <span class="unit-label">Unit 4 · Tarmac &amp; Terminal</span>
+  <div class="hud">
+    <span class="streak" id="streak">STREAK 47</span>
+    <span class="hearts" id="hearts" role="img" aria-label="3 hearts remaining"></span>
+    <span id="xp">XP 0</span>
+  </div>
+</header>
+<div class="progress" aria-hidden="true"><div class="fill" id="progress-fill"></div></div>
+
+<main class="lesson">
+  <div class="card">
+    <span class="prompt-eyebrow" id="ex-count">Exercise 1 of 3</span>
+    <h1 class="prompt" id="prompt-text">Translate this honk.</h1>
+
+    <div class="player" id="player">
+      <button class="play-btn" id="play-btn">Play transmission</button>
+      <div class="wave" id="wave" aria-hidden="true"></div>
+      <span class="player-status" id="player-status">STANDING BY</span>
+    </div>
+
+    <div class="choices" id="choices" role="radiogroup" aria-label="Answer choices"></div>
+  </div>
+</main>
+
+<div class="action-bar">
+  <div class="action-inner">
+    <span class="feedback" id="feedback">Select a transcription.</span>
+    <button class="check-btn" id="check-btn" disabled>Check</button>
+  </div>
+</div>
+
+<div class="overlay" id="grounded">
+  <div class="panel">
+    <h2>Lesson grounded</h2>
+    <p>You are out of hearts. The flock has been notified.</p>
+    <p class="fine">Incident reference: SKN-0447-TB. Retained indefinitely.</p>
+    <button class="check-btn" id="restart-btn">Restart lesson</button>
+  </div>
+</div>
+
+<div class="overlay" id="complete">
+  <div class="panel">
+    <h2>Unit 4 complete</h2>
+    <div class="stat" id="final-xp">+30 XP</div>
+    <p>Streak: 47 → 48. The relay has logged your compliance.</p>
+    <p class="fine">Next lesson available in 24 hours. Or now. It is available now.</p>
+    <button class="check-btn next" id="again-btn">Run it again</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var EXERCISES = [
+    {
+      prompt: "Translate this honk.",
+      wave: [30,62,88,45,95,70,38,82,55,90,42,66,28,74,50,86,34,60,92,48],
+      choices: [
+        "Hold position. The jet bridge is mine.",
+        "Requesting immediate access to the tarmac.",
+        "The bread is insufficient and you know it.",
+        "I am telling everyone about this."
+      ],
+      correct: 1
+    },
+    {
+      prompt: "Translate this honk.",
+      wave: [80,40,95,60,30,88,52,70,44,92,36,64,84,48,76,32,90,56,68,42],
+      choices: [
+        "I have a connecting flight.",
+        "Where is the pond.",
+        "This gate is now a nesting area.",
+        "Continue. I was not talking to you."
+      ],
+      correct: 2
+    },
+    {
+      prompt: "Complete the phrase.",
+      sentence: "“___, and therefore the runway is closed.”",
+      choices: [
+        "I am molting",
+        "It is Tuesday",
+        "We are walking here",
+        "The goslings vote no"
+      ],
+      correct: 2
+    }
+  ];
+
+  var COMPLIANCE = [
+    "Incorrect. This has been noted.",
+    "Incorrect. Your streak was discussed in a meeting you were not invited to."
+  ];
+
+  var state = { ex: 0, hearts: 3, xp: 0, selected: null, phase: "pick", wrongs: 0 };
+
+  var heartsEl = document.getElementById('hearts');
+  var xpEl = document.getElementById('xp');
+  var promptEl = document.getElementById('prompt-text');
+  var exCountEl = document.getElementById('ex-count');
+  var choicesEl = document.getElementById('choices');
+  var playerEl = document.getElementById('player');
+  var waveEl = document.getElementById('wave');
+  var playBtn = document.getElementById('play-btn');
+  var playerStatus = document.getElementById('player-status');
+  var feedbackEl = document.getElementById('feedback');
+  var checkBtn = document.getElementById('check-btn');
+  var progressFill = document.getElementById('progress-fill');
+
+  var HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.9-10-9.5C.6 8.4 2.3 4.5 6 4.5c2.2 0 3.6 1.2 4.5 2.6.9-1.4 2.3-2.6 4.5-2.6 3.7 0 5.4 3.9 4 7-2.5 4.6-10 9.5-7 9.5z"/></svg>';
+
+  function renderHearts(){
+    var html = '';
+    for (var i = 0; i < 3; i++) html += HEART;
+    heartsEl.innerHTML = html;
+    var svgs = heartsEl.querySelectorAll('svg');
+    for (var j = 0; j < 3; j++) if (j >= state.hearts) svgs[j].classList.add('dead');
+    heartsEl.setAttribute('aria-label', state.hearts + ' hearts remaining');
+  }
+
+  function renderExercise(){
+    var ex = EXERCISES[state.ex];
+    state.selected = null;
+    state.phase = "pick";
+    exCountEl.textContent = 'Exercise ' + (state.ex + 1) + ' of ' + EXERCISES.length;
+    promptEl.textContent = ex.prompt;
+    progressFill.style.width = (state.ex / EXERCISES.length * 100) + '%';
+
+    if (ex.wave) {
+      playerEl.style.display = 'flex';
+      waveEl.innerHTML = ex.wave.map(function(h){ return '<i style="--h:' + h + '"></i>'; }).join('');
+      playBtn.disabled = false;
+      playBtn.textContent = 'Play transmission';
+      playerStatus.textContent = 'STANDING BY';
+    } else {
+      playerEl.style.display = 'none';
+      promptEl.textContent = ex.prompt + ' ' + ex.sentence;
+    }
+
+    choicesEl.innerHTML = '';
+    ex.choices.forEach(function(text, i){
+      var b = document.createElement('button');
+      b.className = 'choice';
+      b.setAttribute('role','radio');
+      b.setAttribute('aria-checked','false');
+      b.innerHTML = '<span class="key">' + String.fromCharCode(65 + i) + '</span><span>' + text + '</span>';
+      b.addEventListener('click', function(){ select(i); });
+      choicesEl.appendChild(b);
+    });
+
+    feedbackEl.textContent = 'Select a transcription.';
+    feedbackEl.className = 'feedback';
+    checkBtn.textContent = 'Check';
+    checkBtn.className = 'check-btn';
+    checkBtn.disabled = true;
+  }
+
+  function select(i){
+    if (state.phase !== 'pick') return;
+    state.selected = i;
+    var btns = choicesEl.querySelectorAll('.choice');
+    btns.forEach(function(b, j){ b.setAttribute('aria-checked', j === i ? 'true' : 'false'); });
+    checkBtn.disabled = false;
+  }
+
+  function grade(){
+    var ex = EXERCISES[state.ex];
+    var btns = choicesEl.querySelectorAll('.choice');
+    btns.forEach(function(b){ b.disabled = true; });
+    state.phase = 'graded';
+
+    if (state.selected === ex.correct) {
+      btns[state.selected].classList.add('right');
+      state.xp += 10;
+      xpEl.textContent = 'XP ' + state.xp;
+      feedbackEl.textContent = 'Accepted. +10 XP.';
+      feedbackEl.className = 'feedback good';
+      checkBtn.textContent = state.ex < EXERCISES.length - 1 ? 'Continue' : 'Finish';
+      checkBtn.className = 'check-btn next';
+    } else {
+      btns[state.selected].classList.add('wrong');
+      btns[ex.correct].classList.add('right');
+      state.hearts--;
+      renderHearts();
+      if (state.hearts <= 0) {
+        progressFill.style.width = (state.ex / EXERCISES.length * 100) + '%';
+        document.getElementById('grounded').classList.add('show');
+        return;
+      }
+      feedbackEl.textContent = COMPLIANCE[Math.min(state.wrongs, COMPLIANCE.length - 1)];
+      state.wrongs++;
+      feedbackEl.className = 'feedback bad';
+      checkBtn.textContent = 'Continue';
+      checkBtn.className = 'check-btn next';
+    }
+  }
+
+  function advance(){
+    if (state.ex < EXERCISES.length - 1) {
+      state.ex++;
+      renderExercise();
+    } else {
+      progressFill.style.width = '100%';
+      document.getElementById('final-xp').textContent = '+' + state.xp + ' XP';
+      document.getElementById('complete').classList.add('show');
+    }
+  }
+
+  checkBtn.addEventListener('click', function(){
+    if (state.phase === 'pick') grade();
+    else advance();
+  });
+
+  playBtn.addEventListener('click', function(){
+    playBtn.disabled = true;
+    playerStatus.textContent = 'TRANSMITTING';
+    waveEl.classList.add('playing');
+    setTimeout(function(){
+      waveEl.classList.remove('playing');
+      playerStatus.textContent = 'TRANSMISSION ENDED';
+      playBtn.disabled = false;
+      playBtn.textContent = 'Replay';
+    }, reduced ? 200 : 1700);
+  });
+
+  function reset(){
+    state = { ex: 0, hearts: 3, xp: 0, selected: null, phase: 'pick', wrongs: 0 };
+    xpEl.textContent = 'XP 0';
+    renderHearts();
+    document.getElementById('grounded').classList.remove('show');
+    document.getElementById('complete').classList.remove('show');
+    renderExercise();
+  }
+  document.getElementById('restart-btn').addEventListener('click', reset);
+  document.getElementById('again-btn').addEventListener('click', reset);
+
+  renderHearts();
+  renderExercise();
+})();
+</script>
+</body>
+</html>
