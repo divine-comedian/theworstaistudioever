@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wah — live · pabu_asleep</title>
+<meta name="description" content="A Wah broadcast in progress. The creator is asleep. Chat is contained.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Nunito:wght@400;600;700;800&display=swap');
+
+:root{
+  --ember:#E8813C;
+  --lav:#B9A3E8;
+  --bg:#1D1430;
+  --panel:rgba(255,255,255,0.07);
+  --panel-strong:rgba(255,255,255,0.11);
+  --line:rgba(255,255,255,0.13);
+  --fg:#F5EEE3;
+  --muted:#A296C2;
+  --display:'Fredoka','Trebuchet MS',system-ui,sans-serif;
+  --body:'Nunito',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:var(--body);color:var(--fg);
+  background:linear-gradient(180deg,#171026 0%,#1D1430 60%,#2A1A38 100%) fixed,#1D1430;
+  min-height:100vh;line-height:1.5;
+}
+button{font-family:var(--body);cursor:pointer}
+
+/* top chrome */
+.topbar{display:flex;align-items:center;gap:18px;padding:12px 20px;border-bottom:1px solid var(--line);background:rgba(23,16,38,.7);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);position:sticky;top:0;z-index:20}
+.back{color:var(--muted);text-decoration:none;font-size:.85rem;font-weight:700}
+.back:hover,.back:focus-visible{color:var(--fg)}
+.topbar .wordmark{font-family:var(--display);font-weight:600;font-size:1.2rem;color:var(--ember);margin-left:auto}
+.topbar .wordmark span{color:var(--lav);font-weight:400}
+
+/* layout */
+.app{display:grid;grid-template-columns:240px 1fr 320px;gap:16px;max-width:1440px;margin:0 auto;padding:16px 20px 40px}
+
+/* sidebar */
+.rail{display:flex;flex-direction:column;gap:8px}
+.rail h2{font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:8px 6px 4px}
+.chan{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:left;color:var(--fg);transition:border-color .15s ease}
+.chan:hover:not(:disabled),.chan:focus-visible{border-color:var(--lav)}
+.chan[aria-pressed="true"]{border-color:var(--ember);background:var(--panel-strong)}
+.chan:disabled{cursor:not-allowed;opacity:.6}
+.ava{width:34px;height:34px;border-radius:50%;flex:none;background:rgba(185,163,232,.15);display:flex;align-items:center;justify-content:center}
+.ava svg{width:18px;height:18px;stroke:var(--lav);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.chan .cinfo{min-width:0}
+.chan .cname{font-weight:800;font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chan .cstate{font-size:.72rem;font-weight:700;color:var(--muted)}
+.chan .cstate.live{color:var(--ember)}
+.rail .fine{font-size:.72rem;color:var(--muted);padding:10px 6px}
+
+/* player column */
+.stage{min-width:0}
+.frame{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#150E24}
+.frame img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
+.badge-live{position:absolute;top:14px;left:14px;display:inline-flex;align-items:center;gap:7px;background:var(--ember);color:#241A38;font-weight:800;font-size:.78rem;letter-spacing:.08em;border-radius:6px;padding:4px 10px}
+.dot{width:8px;height:8px;border-radius:50%;background:#241A38;animation:pulse 4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.badge-viewers{position:absolute;top:14px;right:14px;background:rgba(20,12,36,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid var(--line);font-size:.8rem;font-weight:700;font-variant-numeric:tabular-nums;border-radius:6px;padding:4px 10px}
+.under{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:16px 4px;flex-wrap:wrap}
+.stream-title{font-family:var(--display);font-weight:500;font-size:1.25rem}
+.stream-sub{color:var(--muted);font-size:.85rem;font-weight:600}
+.follow{background:var(--ember);color:#241A38;border:none;border-radius:999px;font-weight:800;font-size:.9rem;padding:10px 22px;transition:transform .15s ease}
+.follow:hover{transform:translateY(-1px)}
+.follow[aria-pressed="true"]{background:transparent;border:1px solid var(--line);color:var(--muted)}
+
+/* bits row */
+.bits{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;flex-wrap:wrap}
+.bits .label{font-weight:800;font-size:.85rem}
+.bits .balance{margin-left:auto;font-variant-numeric:tabular-nums;font-weight:800;color:var(--lav);font-size:.9rem}
+.bit-btn{background:rgba(232,129,60,.13);border:1px solid rgba(232,129,60,.4);color:var(--ember);border-radius:999px;font-weight:800;font-size:.82rem;padding:7px 16px;transition:background .15s ease}
+.bit-btn:hover,.bit-btn:focus-visible{background:rgba(232,129,60,.25)}
+.bits .ack{width:100%;font-size:.75rem;color:var(--muted);font-weight:600;min-height:1.1em}
+
+/* chat */
+.chat{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;max-height:calc(100vh - 120px);position:sticky;top:76px}
+.chat-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line)}
+.chat-head h2{font-size:.8rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.slow-chip{font-size:.68rem;font-weight:800;color:var(--lav);background:rgba(185,163,232,.13);border:1px solid rgba(185,163,232,.35);border-radius:999px;padding:3px 9px}
+.msgs{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:12px;min-height:280px}
+.msg{font-size:.85rem}
+.msg .u{font-weight:800;color:var(--lav)}
+.msg.held{opacity:.75}
+.msg .held-tag{display:inline-block;font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ember);background:rgba(232,129,60,.12);border:1px solid rgba(232,129,60,.35);border-radius:5px;padding:1px 7px;margin-left:6px;vertical-align:1px}
+.msg.sys{color:var(--muted);font-size:.76rem;font-weight:600;border-left:2px solid rgba(185,163,232,.4);padding-left:10px}
+.composer{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line)}
+.composer input{flex:1;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:10px;color:var(--fg);font-family:var(--body);font-size:.85rem;padding:10px 12px;min-width:0}
+.composer input::placeholder{color:var(--muted)}
+.composer input:focus{outline:2px solid var(--lav);outline-offset:1px}
+.send{background:var(--ember);border:none;color:#241A38;border-radius:10px;font-weight:800;font-size:.85rem;padding:0 16px}
+
+a:focus-visible,button:focus-visible{outline:2px solid var(--lav);outline-offset:2px}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+@media (max-width:1100px){.app{grid-template-columns:200px 1fr}.chat{grid-column:1/-1;position:static;max-height:420px}}
+@media (max-width:760px){.app{grid-template-columns:1fr}.rail{order:3}.chat{order:2}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="wordmark">wah<span>.</span></span>
+</header>
+
+<div class="app">
+  <nav class="rail" aria-label="Recommended channels">
+    <h2>Channels for you</h2>
+    <button class="chan" data-chan="pabu" aria-pressed="true">
+      <span class="ava" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></svg></span>
+      <span class="cinfo"><span class="cname">pabu_asleep</span><br><span class="cstate live">LIVE · asleep</span></span>
+    </button>
+    <button class="chan" data-chan="miso" aria-pressed="false">
+      <span class="ava" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></svg></span>
+      <span class="cinfo"><span class="cname">miso_briefly</span><br><span class="cstate live">LIVE · waking window</span></span>
+    </button>
+    <button class="chan" disabled title="Creator asleep. Stream unavailable. This is normal.">
+      <span class="ava" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 13A8 8 0 1 1 11 4a6.5 6.5 0 0 0 9 9z"/></svg></span>
+      <span class="cinfo"><span class="cname">turnip_official</span><br><span class="cstate">ASLEEP · offscreen</span></span>
+    </button>
+    <button class="chan" disabled title="Creator asleep. Stream unavailable. This is normal.">
+      <span class="ava" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 13A8 8 0 1 1 11 4a6.5 6.5 0 0 0 9 9z"/></svg></span>
+      <span class="cinfo"><span class="cname">rusty_zzz</span><br><span class="cstate">ASLEEP · do not raid</span></span>
+    </button>
+    <button class="chan" disabled title="Stream ended by Solo Raid Protocol. Incident report filed.">
+      <span class="ava" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18" transform="rotate(45 12 12)"/></svg></span>
+      <span class="cinfo"><span class="cname">miso_brother</span><br><span class="cstate">OFFLINE · incident #4417</span></span>
+    </button>
+    <p class="fine">All recommendations are asleep. Recommendations are working correctly.</p>
+  </nav>
+
+  <main class="stage">
+    <div class="frame">
+      <img id="player-img" src="stream-pabu.webp" alt="Live stream: a red panda asleep on a branch at dusk" width="1600" height="900">
+      <span class="badge-live"><span class="dot"></span>LIVE</span>
+      <span class="badge-viewers"><span id="viewers">8,412</span> watching</span>
+    </div>
+    <div class="under">
+      <div>
+        <h1 class="stream-title" id="stream-title">Sleeping · Day 214 of the sleeping arc</h1>
+        <p class="stream-sub" id="stream-sub">pabu_asleep · Category: Just Sleeping · No mature content, no content at all</p>
+      </div>
+      <button class="follow" id="follow" aria-pressed="false">Follow</button>
+    </div>
+    <div class="bits">
+      <span class="label">Send Bamboo Bits</span>
+      <button class="bit-btn" data-bits="10">10</button>
+      <button class="bit-btn" data-bits="50">50</button>
+      <button class="bit-btn" data-bits="200">200</button>
+      <span class="balance">Channel balance: <span id="bamboo">14,206</span> bits</span>
+      <span class="ack" id="ack" aria-live="polite"></span>
+    </div>
+  </main>
+
+  <aside class="chat" aria-label="Stream chat">
+    <div class="chat-head">
+      <h2>Chat</h2>
+      <span class="slow-chip">SLOW MODE · 90 days</span>
+    </div>
+    <div class="msgs" id="msgs">
+      <p class="msg sys">Welcome to pabu_asleep. Messages are reviewed and delivered to the creator quarterly. Q3 digest ships October 1.</p>
+      <p class="msg"><span class="u">fern_watcher</span> he moved an ear 40 minutes ago, clipping it</p>
+      <p class="msg"><span class="u">dusk_enjoyer_88</span> this is my third year in this chat</p>
+      <p class="msg"><span class="u">quietlurker</span> is he ok</p>
+      <p class="msg sys">quietlurker's question has been forwarded to a keeper. Expected response: Q4.</p>
+      <p class="msg"><span class="u">bamboo_whale</span> just sent 200 bits. he doesn't know. he never knows</p>
+      <p class="msg"><span class="u">mod_sarah</span> reminder: do not ask the creator to wake up. it does nothing and it is against TOS</p>
+    </div>
+    <form class="composer" id="composer">
+      <input id="chat-input" type="text" placeholder="Say something. It will be held." autocomplete="off" aria-label="Chat message">
+      <button class="send" type="submit">Chat</button>
+    </form>
+  </aside>
+</div>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function fmt(n){ return n.toLocaleString('en-US'); }
+
+  // channel data — only channels with local stills are switchable
+  var channels = {
+    pabu: {
+      img: 'stream-pabu.webp',
+      alt: 'Live stream: a red panda asleep on a branch at dusk',
+      title: 'Sleeping · Day 214 of the sleeping arc',
+      sub: 'pabu_asleep · Category: Just Sleeping · No mature content, no content at all',
+      viewers: 8412
+    },
+    miso: {
+      img: 'stream-miso.webp',
+      alt: 'Live stream: a red panda mid-yawn on a branch at twilight',
+      title: 'AWAKE (estimated 22 more minutes)',
+      sub: 'miso_briefly · Category: Waking Window · Chat remains contained regardless',
+      viewers: 31047
+    }
+  };
+  var current = 'pabu';
+  var viewers = channels.pabu.viewers;
+  var viewersEl = document.getElementById('viewers');
+
+  document.querySelectorAll('.chan[data-chan]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var key = btn.getAttribute('data-chan');
+      if (key === current) return;
+      current = key;
+      var c = channels[key];
+      document.querySelectorAll('.chan[data-chan]').forEach(function(b){
+        b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+      });
+      var img = document.getElementById('player-img');
+      img.src = c.img; img.alt = c.alt;
+      document.getElementById('stream-title').textContent = c.title;
+      document.getElementById('stream-sub').textContent = c.sub;
+      viewers = c.viewers;
+      viewersEl.textContent = fmt(viewers);
+    });
+  });
+
+  // viewer drift
+  if (!reduced) {
+    setInterval(function(){
+      viewers += Math.floor(Math.random()*9) - 2;
+      viewersEl.textContent = fmt(viewers);
+    }, 2400);
+  }
+
+  // follow toggle
+  var follow = document.getElementById('follow');
+  follow.addEventListener('click', function(){
+    var on = follow.getAttribute('aria-pressed') === 'true';
+    follow.setAttribute('aria-pressed', String(!on));
+    follow.textContent = on ? 'Follow' : 'Following · creator unaware';
+  });
+
+  // bamboo bits
+  var bamboo = 14206;
+  var bambooEl = document.getElementById('bamboo');
+  var ack = document.getElementById('ack');
+  var ackLines = [
+    'Your bits were received. The creator was not notified, per his settings.',
+    'Thank you. The bamboo will be delivered to the enclosure within 5 business days.',
+    'Tip acknowledged by no one. This is the intended flow.',
+    'Your generosity has been logged for the Q3 digest.'
+  ];
+  var ackTimer = null;
+  document.querySelectorAll('.bit-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      bamboo += parseInt(btn.getAttribute('data-bits'), 10);
+      bambooEl.textContent = fmt(bamboo);
+      ack.textContent = ackLines[Math.floor(Math.random()*ackLines.length)];
+      if (ackTimer) clearTimeout(ackTimer);
+      ackTimer = setTimeout(function(){ ack.textContent = ''; }, 4000);
+    });
+  });
+
+  // chat: everything typed is held for quarterly review
+  var form = document.getElementById('composer');
+  var input = document.getElementById('chat-input');
+  var msgs = document.getElementById('msgs');
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var text = input.value.trim();
+    if (!text) return;
+    var p = document.createElement('p');
+    p.className = 'msg held';
+    var u = document.createElement('span');
+    u.className = 'u';
+    u.textContent = 'you';
+    var tag = document.createElement('span');
+    tag.className = 'held-tag';
+    tag.textContent = 'held for quarterly review';
+    p.appendChild(u);
+    p.appendChild(document.createTextNode(' ' + text));
+    p.appendChild(tag);
+    msgs.appendChild(p);
+    msgs.scrollTop = msgs.scrollHeight;
+    input.value = '';
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wah · theworstaistudioever</title>
+<meta name="description" content="Live streaming infrastructure for creators who are asleep seventeen hours a day.">
+<meta property="og:title" content="Wah — Go live. Eventually.">
+<meta property="og:description" content="Live streaming infrastructure for creators who are asleep seventeen hours a day.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="stream-pabu.webp">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Nunito:wght@400;600;700;800&display=swap');
+
+:root{
+  --ember:#E8813C;
+  --ember-deep:#C9662A;
+  --lav:#B9A3E8;
+  --bg:#251A3A;
+  --bg-top:#1B1230;
+  --fg:#F5EEE3;
+  --muted:#A296C2;
+  --glass:rgba(255,255,255,0.09);
+  --glass-strong:rgba(255,255,255,0.13);
+  --line:rgba(255,255,255,0.15);
+  --radius:20px;
+  --display:'Fredoka','Trebuchet MS',system-ui,sans-serif;
+  --body:'Nunito',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--body);
+  color:var(--fg);
+  background:linear-gradient(180deg,var(--bg-top) 0%,var(--bg) 45%,#31204458 82%,var(--bg) 100%) fixed,var(--bg);
+  background-color:var(--bg);
+  line-height:1.6;
+  overflow-x:hidden;
+}
+.sky{position:fixed;inset:0;z-index:-1;background:linear-gradient(180deg,#170F2A 0%,#251A3A 55%,#3A2340 85%,#4A2838 100%)}
+.blob{position:fixed;border-radius:50%;filter:blur(90px);z-index:-1;opacity:.5;pointer-events:none}
+.blob-ember{width:52vw;height:52vw;background:radial-gradient(circle,#B4552D66,transparent 65%);bottom:-22vw;left:-10vw;animation:drift 26s ease-in-out infinite alternate}
+.blob-lav{width:44vw;height:44vw;background:radial-gradient(circle,#7A5FC455,transparent 65%);top:-16vw;right:-12vw;animation:drift 32s ease-in-out infinite alternate-reverse}
+@keyframes drift{from{transform:translate(0,0)}to{transform:translate(4vw,3vw)}}
+
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+
+/* nav */
+.nav{position:sticky;top:16px;z-index:50;margin:16px auto 0;max-width:1120px;padding:0 24px}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:999px;padding:10px 22px}
+.wordmark{font-family:var(--display);font-weight:600;font-size:1.5rem;color:var(--ember);text-decoration:none;letter-spacing:.01em}
+.wordmark span{color:var(--lav);font-weight:400}
+.nav-links{display:flex;gap:22px;align-items:center}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:.95rem;font-weight:600}
+.nav-links a:hover,.nav-links a:focus-visible{color:var(--fg)}
+.live-chip{display:inline-flex;align-items:center;gap:7px;background:rgba(232,129,60,.14);border:1px solid rgba(232,129,60,.4);color:var(--ember);border-radius:999px;padding:4px 12px;font-size:.8rem;font-weight:700;font-variant-numeric:tabular-nums}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--ember);animation:pulse 4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;padding:88px 0 72px}
+.eyebrow{font-size:.8rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--lav);margin-bottom:14px}
+h1{font-family:var(--display);font-weight:600;font-size:clamp(2.6rem,5.4vw,4.2rem);line-height:1.06;letter-spacing:-.01em;margin-bottom:20px}
+h1 .ember{color:var(--ember)}
+.hero p{color:var(--muted);font-size:1.13rem;max-width:34rem;margin-bottom:30px}
+.cta{display:inline-block;background:var(--ember);color:#241A38;font-family:var(--display);font-weight:600;font-size:1.05rem;text-decoration:none;border:none;border-radius:999px;padding:15px 32px;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease;box-shadow:0 0 32px rgba(232,129,60,.35)}
+.cta:hover,.cta:focus-visible{transform:translateY(-2px);box-shadow:0 0 44px rgba(232,129,60,.5)}
+.cta-note{display:block;margin-top:12px;font-size:.85rem;color:var(--muted)}
+
+/* player card */
+.player{background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:var(--radius);padding:14px;box-shadow:0 24px 60px rgba(0,0,0,.35)}
+.player-frame{position:relative;border-radius:12px;overflow:hidden}
+.player-frame img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
+.badge-live{position:absolute;top:12px;left:12px;display:inline-flex;align-items:center;gap:7px;background:var(--ember);color:#241A38;font-weight:800;font-size:.78rem;letter-spacing:.08em;border-radius:6px;padding:4px 10px}
+.badge-live .dot{background:#241A38}
+.badge-viewers{position:absolute;top:12px;right:12px;background:rgba(20,12,36,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid var(--line);color:var(--fg);font-size:.8rem;font-weight:700;font-variant-numeric:tabular-nums;border-radius:6px;padding:4px 10px}
+.player-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 6px 4px;flex-wrap:wrap}
+.player-title{font-weight:800;font-size:.98rem}
+.player-title small{display:block;color:var(--muted);font-weight:600;font-size:.8rem}
+.status-chip{background:rgba(185,163,232,.12);border:1px solid rgba(185,163,232,.35);color:var(--lav);border-radius:999px;padding:4px 12px;font-size:.78rem;font-weight:700;font-variant-numeric:tabular-nums}
+
+/* stats band */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding-bottom:80px}
+.stat{background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:16px;padding:18px 20px;text-align:center}
+.stat b{display:block;font-family:var(--display);font-weight:600;font-size:1.7rem;color:var(--fg);font-variant-numeric:tabular-nums}
+.stat span{font-size:.82rem;color:var(--muted);font-weight:600}
+
+/* sections */
+section{padding:0 0 90px}
+.sec-head{max-width:38rem;margin-bottom:40px}
+h2{font-family:var(--display);font-weight:600;font-size:clamp(1.8rem,3.4vw,2.5rem);line-height:1.15;margin-bottom:12px}
+.sec-head p{color:var(--muted)}
+
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.card{background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:var(--radius);padding:28px;transition:transform .2s ease,border-color .2s ease}
+.card:hover{transform:translateY(-2px);border-color:rgba(232,129,60,.4)}
+.card h3{font-family:var(--display);font-weight:500;font-size:1.25rem;margin:16px 0 10px}
+.card p{color:var(--muted);font-size:.98rem}
+.glyph{width:44px;height:44px;border-radius:12px;background:rgba(232,129,60,.14);border:1px solid rgba(232,129,60,.35);display:flex;align-items:center;justify-content:center}
+.glyph svg{width:22px;height:22px;stroke:var(--ember);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* testimonials */
+.t-card{display:flex;flex-direction:column;gap:18px}
+.t-card blockquote{font-size:1.02rem;color:var(--fg);font-weight:600}
+.t-who{display:flex;align-items:center;gap:14px}
+.t-who img,.t-initials{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid rgba(185,163,232,.45)}
+.t-initials{display:flex;align-items:center;justify-content:center;background:rgba(185,163,232,.16);color:var(--lav);font-weight:800;font-size:1rem}
+.t-name{font-weight:800;font-size:.95rem}
+.t-title{color:var(--muted);font-size:.8rem;font-weight:600}
+
+/* pricing */
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch}
+.tier{background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:var(--radius);padding:30px;display:flex;flex-direction:column}
+.tier.featured{background:var(--glass-strong);border-color:rgba(232,129,60,.5);box-shadow:0 0 40px rgba(232,129,60,.15)}
+.tier h3{font-family:var(--display);font-weight:600;font-size:1.3rem}
+.tier .price{font-family:var(--display);font-weight:600;font-size:2.2rem;margin:10px 0 4px;font-variant-numeric:tabular-nums}
+.tier .tier-tag{color:var(--muted);font-size:.9rem;margin-bottom:20px}
+.tier ul{list-style:none;display:grid;gap:10px;margin-bottom:26px}
+.tier li{color:var(--muted);font-size:.93rem;padding-left:24px;position:relative}
+.tier li::before{content:"";position:absolute;left:2px;top:.5em;width:10px;height:10px;border-radius:3px;background:rgba(185,163,232,.5)}
+.tier.featured li::before{background:var(--ember)}
+.tier-cta{margin-top:auto;text-align:center;text-decoration:none;font-weight:800;font-size:.95rem;border-radius:999px;padding:12px 20px;border:1px solid var(--line);color:var(--fg);transition:border-color .2s ease}
+.tier-cta:hover,.tier-cta:focus-visible{border-color:var(--lav)}
+.tier.featured .tier-cta{background:var(--ember);color:#241A38;border-color:transparent}
+.tier-badge{align-self:flex-start;background:rgba(232,129,60,.16);border:1px solid rgba(232,129,60,.4);color:var(--ember);font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;border-radius:999px;padding:3px 10px;margin-bottom:14px}
+
+/* demo band */
+.demo-band{background:var(--glass-strong);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid var(--line);border-radius:24px;padding:56px 48px;text-align:center}
+.demo-band h2{margin-bottom:14px}
+.demo-band p{color:var(--muted);max-width:32rem;margin:0 auto 30px}
+
+/* footer */
+footer{border-top:1px solid var(--line);padding:36px 0 48px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+footer .fine{color:var(--muted);font-size:.82rem}
+footer a{color:var(--muted);text-decoration:none;font-size:.85rem;font-weight:600}
+footer a:hover,footer a:focus-visible{color:var(--fg)}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(8px);transition:opacity .3s ease-out,transform .3s ease-out}
+.reveal.in{opacity:1;transform:none}
+
+a:focus-visible,button:focus-visible{outline:2px solid var(--lav);outline-offset:3px}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+  .reveal{opacity:1;transform:none}
+}
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr;padding-top:56px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .cards,.tiers{grid-template-columns:1fr}
+  .nav-links a.nav-hide{display:none}
+}
+</style>
+</head>
+<body>
+<div class="sky" aria-hidden="true"></div>
+<div class="blob blob-ember" aria-hidden="true"></div>
+<div class="blob blob-lav" aria-hidden="true"></div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="wordmark" href="#">wah<span>.</span></a>
+    <div class="nav-links">
+      <a class="nav-hide" href="#features">Platform</a>
+      <a class="nav-hide" href="#creators">Creators</a>
+      <a class="nav-hide" href="#pricing">Pricing</a>
+      <span class="live-chip"><span class="dot"></span><span id="nav-live">1,204</span> asleep now</span>
+    </div>
+  </div>
+</nav>
+
+<main class="wrap">
+  <section class="hero">
+    <div>
+      <p class="eyebrow">Streaming for the crepuscular creator economy</p>
+      <h1>Go live. <span class="ember">Eventually.</span></h1>
+      <p>Wah is the streaming platform built around the red panda broadcast schedule: two short windows at dawn and dusk, and seventeen hours of premium unconscious content in between.</p>
+      <a class="cta" href="#pricing">Start streaming at dusk</a>
+      <span class="cta-note">No camera setup required. Your keeper has already installed it.</span>
+    </div>
+    <div class="player reveal">
+      <div class="player-frame">
+        <img src="stream-pabu.webp" alt="A red panda asleep on a branch at dusk, currently live" width="1600" height="900">
+        <span class="badge-live"><span class="dot"></span>LIVE</span>
+        <span class="badge-viewers"><span id="hero-viewers">8,412</span> watching</span>
+      </div>
+      <div class="player-meta">
+        <div class="player-title">pabu_asleep<small>Sleeping · Day 214 of the sleeping arc</small></div>
+        <span class="status-chip">creator asleep · 6h 12m</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="stats">
+    <div class="stat reveal"><b>17.4h</b><span>average creator sleep per broadcast day</span></div>
+    <div class="stat reveal"><b>41min</b><span>average creator consciousness per stream</span></div>
+    <div class="stat reveal"><b>0</b><span>creators startled since launch</span></div>
+    <div class="stat reveal"><b>100%</b><span>of broadcasts are solo, by policy</span></div>
+  </div>
+
+  <section id="features">
+    <div class="sec-head">
+      <p class="eyebrow">Platform capabilities</p>
+      <h2>Built for creators who are unavailable</h2>
+      <p>Other platforms optimize for engagement. We optimize around the biological facts of our creator class and bill accordingly.</p>
+    </div>
+    <div class="cards">
+      <article class="card reveal">
+        <div class="glyph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></div>
+        <h3>Unconscious Uptime</h3>
+        <p>Streams stay live while the creator sleeps. The average Wah broadcast runs nine hours, of which the creator is awake for 41 minutes. Retention has never been higher, and we have stopped asking why.</p>
+      </article>
+      <article class="card reveal">
+        <div class="glyph"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/><path d="M2 2l20 20"/></svg></div>
+        <h3>Solo Raid Protocol</h3>
+        <p>Red pandas are territorial and do not collaborate. If two creators appear in the same frame, both streams end immediately and an incident report is filed. Collabs are a stress event.</p>
+      </article>
+      <article class="card reveal">
+        <div class="glyph"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.7 8.7 0 0 1-3.5-.7L3 21l1.8-4.4A8.3 8.3 0 0 1 3 11.5a8.4 8.4 0 0 1 9-8.4 8.4 8.4 0 0 1 9 8.4z"/><path d="M8 11.5h.01M12 11.5h.01M16 11.5h.01"/></svg></div>
+        <h3>Chat, Contained</h3>
+        <p>Viewers can type whatever they want. Messages are reviewed by a moderation team and released to the creator in a quarterly digest. In four years of operation, no creator has ever been startled.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="creators">
+    <div class="sec-head">
+      <p class="eyebrow">Creator outcomes</p>
+      <h2>Our partners, in their own words</h2>
+      <p>Quotes collected during the dawn availability window and lightly compressed by legal.</p>
+    </div>
+    <div class="cards">
+      <article class="card t-card reveal">
+        <blockquote>"I streamed for six hours yesterday. I was asleep for all of it. Revenue is up 300 percent."</blockquote>
+        <div class="t-who">
+          <img src="headshot-pabu.webp" alt="Corporate headshot of Pabu, a red panda" width="320" height="320">
+          <div><div class="t-name">Pabu</div><div class="t-title">Partnered Creator, Enclosure 4, Rotterdam Zoo</div></div>
+        </div>
+      </article>
+      <article class="card t-card reveal">
+        <blockquote>"Wah ended my stream the second my brother entered the frame. Correct decision. Do not reinstate him."</blockquote>
+        <div class="t-who">
+          <img src="headshot-miso.webp" alt="Corporate headshot of Miso, a red panda" width="320" height="320">
+          <div><div class="t-name">Miso</div><div class="t-title">Variety Streamer and Only Child</div></div>
+        </div>
+      </article>
+      <article class="card t-card reveal">
+        <blockquote>"We moved our entire red panda program onto Wah. Engagement metrics stopped meaning anything, which frankly has been a relief."</blockquote>
+        <div class="t-who">
+          <span class="t-initials" aria-hidden="true">DA</span>
+          <div><div class="t-name">Deborah Ankiel</div><div class="t-title">Deputy Curator of Small Mammals and Interim Head of Talent, Meadowbrook Zoological Society</div></div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="pricing">
+    <div class="sec-head">
+      <p class="eyebrow">Pricing</p>
+      <h2>Priced per creator, not per conscious hour</h2>
+      <p>Billing continues while the creator sleeps. This is disclosed here and nowhere else.</p>
+    </div>
+    <div class="tiers">
+      <article class="tier reveal">
+        <h3>Cub</h3>
+        <div class="price">$0/mo</div>
+        <p class="tier-tag">For creators still living with their mother.</p>
+        <ul>
+          <li>720p, dawn and dusk windows only</li>
+          <li>One (1) branch</li>
+          <li>Quarterly chat digest, abridged</li>
+        </ul>
+        <a class="tier-cta" href="./demo.html">Claim a branch</a>
+      </article>
+      <article class="tier featured reveal">
+        <span class="tier-badge">Most climbed</span>
+        <h3>Arboreal</h3>
+        <div class="price">$39/mo</div>
+        <p class="tier-tag">Our most climbed tier.</p>
+        <ul>
+          <li>Unlimited napping in 4K</li>
+          <li>Bamboo Bits payouts, settled in bamboo</li>
+          <li>One incident report waived per year</li>
+          <li>Priority dusk slot</li>
+        </ul>
+        <a class="tier-cta" href="./demo.html">Start streaming at dusk</a>
+      </article>
+      <article class="tier reveal">
+        <h3>Apex Loaf</h3>
+        <div class="price">$2,400/mo</div>
+        <p class="tier-tag">Enterprise-grade solitude.</p>
+        <ul>
+          <li>Dedicated enclosure success manager</li>
+          <li>Contractually guaranteed zero collabs</li>
+          <li>Full chat digest, unabridged</li>
+          <li>SLA on branch availability</li>
+        </ul>
+        <a class="tier-cta" href="./demo.html">Talk to a keeper</a>
+      </article>
+    </div>
+  </section>
+
+  <section>
+    <div class="demo-band reveal">
+      <p class="eyebrow">Live right now</p>
+      <h2>See a broadcast in progress</h2>
+      <p>The creator is asleep. The stream is live. Chat is contained. Everything is working as designed.</p>
+      <a class="cta" href="./demo.html">open the demo →</a>
+    </div>
+  </section>
+
+  <footer>
+    <div>
+      <a href="/">← theworstaistudioever</a>
+      <div class="fine">Wah is a fictional product. No red panda has consented to any of this.</div>
+    </div>
+    <div class="fine">© 2026 Wah Broadcasting, Inc. · A portfolio company nobody asked for</div>
+  </footer>
+</main>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // scroll reveal
+  var els = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window && !reduced) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, {threshold: 0.15});
+    els.forEach(function(el){ io.observe(el); });
+  } else {
+    els.forEach(function(el){ el.classList.add('in'); });
+  }
+
+  // lazily climbing viewer count
+  var viewers = 8412;
+  var heroEl = document.getElementById('hero-viewers');
+  var navEl = document.getElementById('nav-live');
+  var asleep = 1204;
+  function fmt(n){ return n.toLocaleString('en-US'); }
+  if (!reduced) {
+    setInterval(function(){
+      viewers += Math.floor(Math.random()*7) - 1; // mostly up, occasionally a viewer leaves
+      if (heroEl) heroEl.textContent = fmt(viewers);
+    }, 2600);
+    setInterval(function(){
+      if (Math.random() < 0.3) { asleep += 1; if (navEl) navEl.textContent = fmt(asleep); }
+    }, 5200);
+  }
+})();
+</script>
+</body>
+</html>
