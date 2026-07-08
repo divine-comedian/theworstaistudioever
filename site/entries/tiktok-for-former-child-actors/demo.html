@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Residual — For You · theworstaistudioever</title>
+<meta name="description" content="The Residual feed. Your peak, on a loop.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Limelight&family=Jost:wght@300;400;500;600&family=Courier+Prime:wght@400;700&display=swap');
+
+:root{
+  --gold:#E3B341;
+  --rose:#E2596B;
+  --bg:#211016;
+  --panel:#2A161E;
+  --panel-2:#311A23;
+  --fg:#F4EADB;
+  --muted:#9B8492;
+  --line:rgba(227,179,65,.28);
+  --line-soft:rgba(227,179,65,.14);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--bg);color:var(--fg);
+  font-family:'Jost',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  font-weight:300;min-height:100dvh;
+  display:flex;flex-direction:column;align-items:center;
+}
+::selection{background:var(--gold);color:var(--bg)}
+.mono{font-family:'Courier Prime',monospace}
+
+/* top chrome */
+.chrome{
+  width:100%;display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;border-bottom:1px solid var(--line-soft);
+}
+.chrome a{
+  color:var(--muted);text-decoration:none;font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;
+}
+.chrome a:hover,.chrome a:focus-visible{color:var(--gold)}
+.chrome .mark{
+  font-family:'Limelight',Georgia,serif;color:var(--gold);letter-spacing:.22em;
+  text-transform:uppercase;font-size:1rem;
+}
+.chrome .live{
+  font-family:'Courier Prime',monospace;font-size:.68rem;color:var(--muted);letter-spacing:.1em;
+}
+
+/* app frame */
+.app{
+  width:min(420px,100%);flex:1;display:flex;flex-direction:column;
+  border-left:1px solid var(--line-soft);border-right:1px solid var(--line-soft);
+  position:relative;overflow:hidden;
+}
+
+/* panes */
+.pane{display:none;flex:1;min-height:0;flex-direction:column}
+.pane.active{display:flex}
+
+/* ── FOR YOU: snap feed ───────────────────────────── */
+.feed{
+  flex:1;min-height:0;overflow-y:auto;scroll-snap-type:y mandatory;
+  overscroll-behavior:contain;scrollbar-width:none;
+}
+.feed::-webkit-scrollbar{display:none}
+.card{
+  position:relative;height:100%;scroll-snap-align:start;scroll-snap-stop:always;
+  background:var(--panel);
+}
+.card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.card .scrim{
+  position:absolute;inset:0;
+  background:linear-gradient(to bottom,rgba(21,10,14,.5),transparent 28%,transparent 52%,rgba(21,10,14,.88));
+}
+.card .top-row{position:absolute;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:center}
+.peak-badge{
+  font-family:'Courier Prime',monospace;font-size:.68rem;font-weight:700;
+  color:var(--bg);background:var(--gold);padding:3px 9px;letter-spacing:.12em;
+}
+.casting-chip{
+  font-family:'Courier Prime',monospace;font-size:.64rem;color:var(--rose);
+  border:1px solid var(--rose);padding:3px 8px;letter-spacing:.1em;
+}
+.card .meta{position:absolute;left:14px;right:76px;bottom:16px}
+.card .meta strong{display:block;color:var(--gold);font-weight:600;font-size:.92rem;margin-bottom:4px}
+.card .meta p{font-size:.85rem;line-height:1.45}
+.card .meta .sound{
+  font-family:'Courier Prime',monospace;font-size:.66rem;color:var(--muted);
+  margin-top:8px;letter-spacing:.06em;
+}
+.rail{position:absolute;right:12px;bottom:16px;display:flex;flex-direction:column;gap:16px;align-items:center}
+.rail button{
+  background:none;border:none;color:var(--fg);cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px;
+}
+.rail button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.rail svg{width:26px;height:26px;display:block;transition:transform .15s}
+.rail button:active svg{transform:scale(.88)}
+.rail .cnt{font-family:'Courier Prime',monospace;font-size:.62rem;color:var(--fg)}
+.rail .lbl{font-family:'Courier Prime',monospace;font-size:.58rem;color:var(--muted)}
+.rail .remember.on svg{color:var(--rose);fill:var(--rose)}
+
+/* comment drawer */
+.drawer{
+  position:absolute;left:0;right:0;bottom:0;z-index:30;
+  background:var(--panel-2);border-top:1px solid var(--line);
+  max-height:62%;display:flex;flex-direction:column;
+  transform:translateY(100%);transition:transform .28s ease;
+}
+.drawer.open{transform:none}
+.drawer header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 18px;border-bottom:1px solid var(--line-soft);
+}
+.drawer header h2{
+  font-family:'Courier Prime',monospace;font-size:.78rem;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--gold);
+}
+.drawer header button{
+  background:none;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;padding:2px 8px;
+}
+.drawer header button:hover{color:var(--fg)}
+.drawer ul{list-style:none;overflow-y:auto;padding:10px 18px 16px}
+.drawer li{padding:10px 0;border-bottom:1px dashed var(--line-soft)}
+.drawer li b{font-weight:500;color:var(--gold);font-size:.82rem;display:block}
+.drawer li p{font-size:.9rem;margin-top:2px}
+.drawer li span{font-family:'Courier Prime',monospace;font-size:.62rem;color:var(--muted)}
+.drawer .composer{
+  display:flex;gap:10px;padding:12px 18px;border-top:1px solid var(--line-soft);
+}
+.drawer .composer input{
+  flex:1;background:var(--bg);border:1px solid var(--line-soft);color:var(--fg);
+  font-family:'Jost',sans-serif;font-size:.9rem;padding:9px 12px;
+}
+.drawer .composer input:focus{outline:1px solid var(--gold)}
+.drawer .composer button{
+  background:var(--rose);border:none;color:var(--bg);font-weight:600;font-size:.8rem;
+  letter-spacing:.08em;text-transform:uppercase;padding:0 16px;cursor:pointer;
+}
+
+/* toast */
+.toast{
+  position:absolute;left:50%;bottom:86px;transform:translateX(-50%) translateY(8px);
+  background:var(--gold);color:var(--bg);font-family:'Courier Prime',monospace;
+  font-size:.72rem;font-weight:700;letter-spacing:.08em;padding:8px 14px;
+  opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:40;
+  white-space:nowrap;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── WHERE ARE THEY NOW ───────────────────────────── */
+.watn{flex:1;overflow-y:auto;padding:18px}
+.watn h2,.resid h2{
+  font-family:'Limelight',Georgia,serif;font-size:1.1rem;color:var(--gold);
+  letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;
+}
+.watn .sub,.resid .sub{color:var(--muted);font-size:.84rem;margin-bottom:18px}
+.person{
+  display:flex;gap:14px;align-items:center;background:var(--panel);
+  border:1px solid var(--line-soft);padding:14px;margin-bottom:12px;
+}
+.person .thumb{
+  width:52px;height:52px;flex:none;object-fit:cover;border:1px solid var(--line);
+}
+.person .thumb-init{
+  width:52px;height:52px;flex:none;display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--line);color:var(--gold);font-family:'Limelight',Georgia,serif;
+  background:var(--panel-2);
+}
+.person div{min-width:0}
+.person b{display:block;font-weight:500;font-size:.92rem;color:var(--fg)}
+.person .then{font-family:'Courier Prime',monospace;font-size:.68rem;color:var(--gold);display:block;margin:2px 0}
+.person .now{font-size:.8rem;color:var(--muted)}
+
+/* ── RESIDUALS ────────────────────────────────────── */
+.resid{flex:1;overflow-y:auto;padding:18px}
+.balance{
+  background:var(--panel);border:1px solid var(--line);padding:26px 20px;
+  text-align:center;margin-bottom:18px;
+}
+.balance .amt{font-family:'Courier Prime',monospace;font-size:2.4rem;color:var(--gold)}
+.balance .status{font-family:'Courier Prime',monospace;font-size:.68rem;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-top:4px}
+.balance button{
+  margin-top:16px;background:var(--panel-2);border:1px solid var(--line-soft);
+  color:var(--muted);font-family:'Jost',sans-serif;font-size:.8rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:10px 22px;cursor:not-allowed;
+}
+.ledger{list-style:none}
+.ledger li{
+  display:flex;justify-content:space-between;gap:12px;
+  font-family:'Courier Prime',monospace;font-size:.76rem;
+  padding:10px 2px;border-bottom:1px dashed var(--line-soft);color:var(--fg);
+}
+.ledger li span:last-child{color:var(--gold)}
+
+/* ── tab bar ──────────────────────────────────────── */
+.tabs{
+  display:flex;border-top:1px solid var(--line);background:var(--panel);
+}
+.tabs button{
+  flex:1;background:none;border:none;color:var(--muted);cursor:pointer;
+  font-family:'Courier Prime',monospace;font-size:.66rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:13px 4px max(13px, env(safe-area-inset-bottom));
+  border-top:2px solid transparent;
+}
+.tabs button.active{color:var(--gold);border-top-color:var(--gold)}
+.tabs button:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
+.tabs .badge{color:var(--rose)}
+
+@media (prefers-reduced-motion:reduce){
+  .drawer{transition:none}
+  .toast{transition:none}
+  .rail svg{transition:none}
+}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <a href="./index.html">← back to the pitch</a>
+  <span class="mark">Residual</span>
+  <span class="live">FEED: LIVE-ISH</span>
+</div>
+
+<div class="app">
+
+  <!-- FOR YOU -->
+  <section class="pane active" id="pane-foryou">
+    <div class="feed" id="feed">
+
+      <article class="card">
+        <img src="feed-dance.webp" alt="A man mid-move in a signature dance from a bygone kids show" width="720" height="1280">
+        <div class="scrim"></div>
+        <div class="top-row">
+          <span class="peak-badge">PEAKED IN 2002</span>
+          <span class="casting-chip">NOW CASTING: NOSTALGIC DAD #2</span>
+        </div>
+        <div class="meta">
+          <strong>@trey.kowalczyk</strong>
+          <p>the dance from the theme song. full speed this time.</p>
+          <p class="sound">♪ original sound · theme (network sting removed)</p>
+        </div>
+        <div class="rail">
+          <button class="remember" data-count="12408" aria-label="I remember you">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            <span class="cnt">12,408</span><span class="lbl">remember</span>
+          </button>
+          <button class="comments-btn" aria-label="Open comments">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.38 8.38 0 0 1-9 8.36 8.5 8.5 0 0 1-3.9-.94L3 20l1.08-3.24A8.38 8.38 0 0 1 3 11.5a8.5 8.5 0 1 1 18 0z"/></svg>
+            <span class="cnt">642</span><span class="lbl">comments</span>
+          </button>
+          <button class="duet-btn" aria-label="Duet with your younger self">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="12" height="12" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2"/></svg>
+            <span class="lbl">duet self</span>
+          </button>
+        </div>
+      </article>
+
+      <article class="card">
+        <img src="feed-tear.webp" alt="A woman in a parked car at night performing a single practiced tear" width="720" height="1280">
+        <div class="scrim"></div>
+        <div class="top-row">
+          <span class="peak-badge">PEAKED IN 2004</span>
+        </div>
+        <div class="meta">
+          <strong>@mackenzie.vole</strong>
+          <p>the car scene. again. by request.</p>
+          <p class="sound">♪ original sound · rain (added later)</p>
+        </div>
+        <div class="rail">
+          <button class="remember" data-count="4211" aria-label="I remember you">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            <span class="cnt">4,211</span><span class="lbl">remember</span>
+          </button>
+          <button class="comments-btn" aria-label="Open comments">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.38 8.38 0 0 1-9 8.36 8.5 8.5 0 0 1-3.9-.94L3 20l1.08-3.24A8.38 8.38 0 0 1 3 11.5a8.5 8.5 0 1 1 18 0z"/></svg>
+            <span class="cnt">318</span><span class="lbl">comments</span>
+          </button>
+          <button class="duet-btn" aria-label="Duet with your younger self">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="12" height="12" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2"/></svg>
+            <span class="lbl">duet self</span>
+          </button>
+        </div>
+      </article>
+
+      <article class="card">
+        <img src="feed-cereal.webp" alt="A man in a kitchen delivering a cereal commercial grin with a raised spoon" width="720" height="1280">
+        <div class="scrim"></div>
+        <div class="top-row">
+          <span class="peak-badge">PEAKED IN 1998</span>
+          <span class="casting-chip">TYPECAST: CEREAL BOY</span>
+        </div>
+        <div class="meta">
+          <strong>@brett.dunlap.official</strong>
+          <p>they discontinued the cereal. i did not discontinue the line.</p>
+          <p class="sound">♪ original sound · crunch (foley, licensed)</p>
+        </div>
+        <div class="rail">
+          <button class="remember" data-count="9873" aria-label="I remember you">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            <span class="cnt">9,873</span><span class="lbl">remember</span>
+          </button>
+          <button class="comments-btn" aria-label="Open comments">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.38 8.38 0 0 1-9 8.36 8.5 8.5 0 0 1-3.9-.94L3 20l1.08-3.24A8.38 8.38 0 0 1 3 11.5a8.5 8.5 0 1 1 18 0z"/></svg>
+            <span class="cnt">1,204</span><span class="lbl">comments</span>
+          </button>
+          <button class="duet-btn" aria-label="Duet with your younger self">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="12" height="12" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2"/></svg>
+            <span class="lbl">duet self</span>
+          </button>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- comment drawer -->
+    <div class="drawer" id="drawer" aria-hidden="true">
+      <header>
+        <h2>Comments</h2>
+        <button id="drawer-close" aria-label="Close comments">✕</button>
+      </header>
+      <ul id="comment-list">
+        <li><b>@kaylin.b</b><p>wait THAT kid??</p><span>2h · remembered</span></li>
+        <li><b>@rerun_enjoyer</b><p>you were on my lunchbox. i still have the lunchbox.</p><span>3h · verified owner</span></li>
+        <li><b>@stace_from_hr</b><p>my mom says hi. she says you look tired.</p><span>5h</span></li>
+        <li><b>@residual_official</b><p>This creator peaked in your viewing window. Engagement is appreciated.</p><span>pinned · corporate</span></li>
+        <li><b>@doug.hammond.4</b><p>do the line. please. do the line.</p><span>7h · 89 likes</span></li>
+        <li><b>@moth.to.flame</b><p>i thought you died in the finale?</p><span>9h · factually incorrect</span></li>
+      </ul>
+      <div class="composer">
+        <input type="text" id="comment-input" placeholder="Say you remember them…" aria-label="Write a comment">
+        <button id="comment-send">Post</button>
+      </div>
+    </div>
+
+    <div class="toast" id="toast">THEY HAVE BEEN NOTIFIED</div>
+  </section>
+
+  <!-- WHERE ARE THEY NOW -->
+  <section class="pane" id="pane-watn">
+    <div class="watn">
+      <h2>Where are they now</h2>
+      <p class="sub">Location data is approximate. Careers are not.</p>
+      <div class="person">
+        <img class="thumb" src="feed-dance.webp" alt="" width="52" height="52">
+        <div>
+          <b>Trey Kowalczyk</b>
+          <span class="then">THEN: third lead, two seasons</span>
+          <span class="now">Now: assistant regional manager, vape distribution. Remembered by 12,408.</span>
+        </div>
+      </div>
+      <div class="person">
+        <img class="thumb" src="feed-tear.webp" alt="" width="52" height="52">
+        <div>
+          <b>Mackenzie Vole</b>
+          <span class="then">THEN: 'and introducing' credit, 1997</span>
+          <span class="now">Now: notary public with a reel. Remembered by 4,211.</span>
+        </div>
+      </div>
+      <div class="person">
+        <img class="thumb" src="feed-cereal.webp" alt="" width="52" height="52">
+        <div>
+          <b>Brett Dunlap</b>
+          <span class="then">THEN: cereal boy, 41 national spots</span>
+          <span class="now">Now: motivational speaker (breakfast circuit). Remembered by 9,873.</span>
+        </div>
+      </div>
+      <div class="person">
+        <div class="thumb-init" aria-hidden="true">D</div>
+        <div>
+          <b>Dax Pemberton</b>
+          <span class="then">THEN: voice of an animated toaster</span>
+          <span class="now">Now: voice of a different toaster. Remembered by 2,977.</span>
+        </div>
+      </div>
+      <div class="person">
+        <div class="thumb-init" aria-hidden="true">P</div>
+        <div>
+          <b>Paige Okafor-Reyes</b>
+          <span class="then">THEN: twin #2 (both roles)</span>
+          <span class="now">Now: escrow officer. Twin #1 declined to join. Remembered by 6,540.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESIDUALS -->
+  <section class="pane" id="pane-resid">
+    <div class="resid">
+      <h2>Residuals</h2>
+      <p class="sub">Synced with SAG-AFTRA. Posting schedule follows the money.</p>
+      <div class="balance">
+        <div class="amt">$1.47</div>
+        <div class="status">Pending · triggers 1 post</div>
+        <button disabled aria-disabled="true">Cash out (minimum $50.00)</button>
+      </div>
+      <ul class="ledger">
+        <li><span>S2E11 rerun · Paraguay, 3:40 AM</span><span>$0.04</span></li>
+        <li><span>Airline edit · overseas carrier</span><span>$0.31</span></li>
+        <li><span>Cereal spot · retro block, cable</span><span>$0.87</span></li>
+        <li><span>Theme song · 6 seconds, podcast</span><span>$0.11</span></li>
+        <li><span>Background loop · mall food court</span><span>$0.14</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- tabs -->
+  <nav class="tabs" aria-label="App sections">
+    <button class="active" data-pane="pane-foryou">For You</button>
+    <button data-pane="pane-watn">Where Are They Now</button>
+    <button data-pane="pane-resid">Residuals <span class="badge">$1.47</span></button>
+  </nav>
+
+</div>
+
+<script>
+(function(){
+  // tabs
+  var tabs = document.querySelectorAll('.tabs button');
+  var panes = document.querySelectorAll('.pane');
+  tabs.forEach(function(t){
+    t.addEventListener('click', function(){
+      tabs.forEach(function(x){ x.classList.remove('active'); });
+      panes.forEach(function(p){ p.classList.remove('active'); });
+      t.classList.add('active');
+      document.getElementById(t.dataset.pane).classList.add('active');
+    });
+  });
+
+  // I remember you
+  var toast = document.getElementById('toast');
+  var toastTimer;
+  document.querySelectorAll('.remember').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var n = parseInt(btn.dataset.count, 10);
+      if(btn.classList.contains('on')){
+        btn.classList.remove('on');
+        n -= 1;
+      } else {
+        btn.classList.add('on');
+        n += 1;
+        toast.textContent = 'THEY HAVE BEEN NOTIFIED';
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 1800);
+      }
+      btn.dataset.count = n;
+      btn.querySelector('.cnt').textContent = n.toLocaleString('en-US');
+    });
+  });
+
+  // duet
+  document.querySelectorAll('.duet-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      toast.textContent = 'YOUNGER SELF UNAVAILABLE · RIGHTS PENDING';
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2200);
+    });
+  });
+
+  // comment drawer
+  var drawer = document.getElementById('drawer');
+  function openDrawer(){ drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); }
+  function closeDrawer(){ drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); }
+  document.querySelectorAll('.comments-btn').forEach(function(btn){
+    btn.addEventListener('click', openDrawer);
+  });
+  document.getElementById('drawer-close').addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') closeDrawer();
+  });
+
+  // fake composer
+  var input = document.getElementById('comment-input');
+  var list = document.getElementById('comment-list');
+  document.getElementById('comment-send').addEventListener('click', post);
+  input.addEventListener('keydown', function(e){ if(e.key === 'Enter') post(); });
+  function post(){
+    var text = input.value.trim();
+    if(!text) return;
+    var li = document.createElement('li');
+    var b = document.createElement('b'); b.textContent = '@you';
+    var p = document.createElement('p'); p.textContent = text;
+    var s = document.createElement('span'); s.textContent = 'now · unremembered';
+    li.appendChild(b); li.appendChild(p); li.appendChild(s);
+    list.insertBefore(li, list.firstChild);
+    input.value = '';
+  }
+})();
+</script>
+</body>
+</html>

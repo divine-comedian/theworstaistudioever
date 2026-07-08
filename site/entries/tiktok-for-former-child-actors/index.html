@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Residual · theworstaistudioever</title>
+<meta name="description" content="Short-form video for people whose IMDb page stops in 2004.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Residual · Your peak, on a loop.">
+<meta property="og:description" content="Short-form video for people whose IMDb page stops in 2004.">
+<meta property="og:site_name" content="theworstaistudioever">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Limelight&family=Jost:wght@300;400;500;600&family=Courier+Prime:wght@400;700&display=swap');
+
+:root{
+  --gold:#E3B341;
+  --rose:#E2596B;
+  --bg:#211016;
+  --panel:#2A161E;
+  --panel-2:#311A23;
+  --fg:#F4EADB;
+  --muted:#9B8492;
+  --line:rgba(227,179,65,.28);
+  --line-soft:rgba(227,179,65,.14);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--fg);
+  font-family:'Jost',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  font-weight:300;
+  line-height:1.65;
+  overflow-x:hidden;
+}
+::selection{background:var(--gold);color:var(--bg)}
+
+h1,h2,h3{font-family:'Limelight',Georgia,serif;font-weight:400;line-height:1.15}
+.mono{font-family:'Courier Prime',monospace}
+
+a{color:var(--gold)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+
+/* ── deco keyline utility ─────────────────────────── */
+.keyline{border:1px solid var(--line);position:relative}
+.keyline::after{
+  content:"";position:absolute;inset:5px;border:1px solid var(--line-soft);pointer-events:none;
+}
+
+/* ── nav ──────────────────────────────────────────── */
+nav{
+  border-bottom:1px solid var(--line-soft);
+  position:sticky;top:0;z-index:50;
+  background:rgba(33,16,22,.92);backdrop-filter:blur(6px);
+}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
+.wordmark{
+  font-family:'Limelight',Georgia,serif;
+  font-size:1.35rem;color:var(--gold);text-decoration:none;
+  letter-spacing:.22em;text-transform:uppercase;
+}
+.nav-links{display:flex;gap:28px;align-items:center;list-style:none}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:.85rem;letter-spacing:.14em;text-transform:uppercase;transition:color .2s}
+.nav-links a:hover,.nav-links a:focus-visible{color:var(--gold)}
+.btn{
+  display:inline-block;background:var(--rose);color:var(--bg);
+  font-family:'Jost',sans-serif;font-weight:600;font-size:.85rem;
+  letter-spacing:.14em;text-transform:uppercase;text-decoration:none;
+  padding:12px 26px;border:none;cursor:pointer;
+  transition:transform .15s,filter .2s;
+}
+.btn:hover{filter:brightness(1.08)}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:2px solid var(--fg);outline-offset:3px}
+.btn-ghost{
+  display:inline-block;color:var(--gold);text-decoration:none;
+  font-size:.85rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:12px 20px;border:1px solid var(--line);
+  transition:border-color .2s,color .2s;
+}
+.btn-ghost:hover,.btn-ghost:focus-visible{border-color:var(--gold);color:var(--fg)}
+.nav-links .btn{padding:9px 20px}
+
+/* ── hero ─────────────────────────────────────────── */
+.hero{position:relative;padding:88px 0 96px;overflow:hidden}
+.hero::before{
+  content:"";position:absolute;inset:-20%;pointer-events:none;
+  background:radial-gradient(ellipse 640px 480px at 30% 20%,rgba(227,179,65,.09),transparent 65%);
+  animation:spotlight 26s ease-in-out infinite alternate;
+}
+@keyframes spotlight{
+  from{transform:translate(0,0)}
+  to{transform:translate(14%,10%)}
+}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center;position:relative}
+
+/* marquee frame with bulbs */
+.marquee{padding:44px 40px 40px;background:var(--panel)}
+.bulb-rail{display:flex;justify-content:space-between;gap:6px;margin:0 2px}
+.bulb-rail.top{margin-bottom:34px}
+.bulb-rail.bottom{margin-top:34px}
+.bulb{
+  width:9px;height:9px;border-radius:50%;flex:none;
+  background:var(--gold);
+  box-shadow:0 0 7px rgba(227,179,65,.75);
+  animation:shimmer 6s ease-in-out infinite;
+}
+.bulb.dead{background:#4A3628;box-shadow:none;animation:none;opacity:.5}
+@keyframes shimmer{
+  0%,100%{opacity:1}
+  50%{opacity:.55}
+}
+.eyebrow{
+  font-family:'Courier Prime',monospace;font-size:.8rem;color:var(--rose);
+  letter-spacing:.28em;text-transform:uppercase;margin-bottom:18px;
+}
+.hero h1{
+  font-size:clamp(2.4rem,5.2vw,3.9rem);color:var(--gold);
+  text-transform:uppercase;letter-spacing:.05em;margin-bottom:22px;
+}
+.hero .sub{font-size:1.12rem;color:var(--fg);max-width:44ch;font-weight:300;margin-bottom:30px}
+.hero-ctas{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.hero-stats{display:flex;gap:12px;flex-wrap:wrap;margin-top:34px}
+.chip{
+  font-family:'Courier Prime',monospace;font-size:.78rem;color:var(--muted);
+  border:1px solid var(--line-soft);padding:6px 12px;letter-spacing:.06em;
+}
+.chip b{color:var(--gold);font-weight:700}
+
+/* phone mockup */
+.phone{
+  width:min(300px,100%);margin:0 auto;background:#150A0E;
+  border:1px solid var(--line);border-radius:34px;padding:12px;
+  box-shadow:0 30px 80px rgba(0,0,0,.55);
+}
+.phone-screen{position:relative;border-radius:24px;overflow:hidden;aspect-ratio:9/16;background:var(--panel)}
+.phone-screen img{width:100%;height:100%;object-fit:cover;display:block}
+.phone-overlay{
+  position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;
+  background:linear-gradient(to bottom,rgba(21,10,14,.45),transparent 30%,transparent 55%,rgba(21,10,14,.82));
+  padding:14px;
+}
+.peak-badge{
+  align-self:flex-start;font-family:'Courier Prime',monospace;font-size:.68rem;
+  color:var(--bg);background:var(--gold);padding:3px 9px;letter-spacing:.12em;font-weight:700;
+}
+.phone-bottom{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.phone-caption{font-size:.78rem;line-height:1.45;color:var(--fg)}
+.phone-caption strong{display:block;font-weight:600;color:var(--gold);font-size:.8rem}
+.phone-rail{display:flex;flex-direction:column;gap:12px;align-items:center;flex:none}
+.rail-item{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--fg)}
+.rail-item svg{width:24px;height:24px;display:block}
+.rail-item span{font-family:'Courier Prime',monospace;font-size:.6rem;color:var(--muted)}
+.rail-item .rose{color:var(--rose)}
+
+/* ── sunburst divider ─────────────────────────────── */
+.sunburst{display:flex;align-items:center;gap:18px;margin:0 auto;max-width:1120px;padding:0 24px}
+.sunburst .ray{flex:1;height:1px;background:linear-gradient(to right,transparent,var(--line))}
+.sunburst .ray:last-child{background:linear-gradient(to left,transparent,var(--line))}
+.sunburst svg{flex:none;color:var(--gold);opacity:.85}
+
+/* ── sections ─────────────────────────────────────── */
+section{padding:88px 0}
+.section-head{text-align:center;margin-bottom:56px}
+.section-head .eyebrow{margin-bottom:12px}
+.section-head h2{
+  font-size:clamp(1.7rem,3.4vw,2.4rem);color:var(--gold);
+  text-transform:uppercase;letter-spacing:.06em;
+}
+.section-head p{color:var(--muted);max-width:52ch;margin:14px auto 0}
+
+/* playbill acts */
+.acts{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.act{background:var(--panel);padding:38px 30px 34px}
+.act .act-no{
+  font-family:'Limelight',Georgia,serif;font-size:.95rem;color:var(--rose);
+  letter-spacing:.3em;text-transform:uppercase;display:block;margin-bottom:20px;
+  padding-bottom:16px;border-bottom:1px solid var(--line-soft);
+}
+.act h3{font-size:1.2rem;color:var(--fg);letter-spacing:.04em;margin-bottom:14px;text-transform:uppercase}
+.act p{color:var(--muted);font-size:.95rem}
+
+/* press clippings */
+.clippings{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.clipping{background:var(--panel);padding:34px 28px 30px;display:flex;flex-direction:column;gap:18px}
+.stars{color:var(--gold);font-size:.95rem;letter-spacing:.32em}
+.clipping blockquote{font-size:1.02rem;color:var(--fg);font-weight:300;font-style:italic;flex:1}
+.clipping cite{font-style:normal;display:block}
+.clipping cite b{display:block;font-weight:500;color:var(--gold);letter-spacing:.06em}
+.clipping cite span{font-family:'Courier Prime',monospace;font-size:.74rem;color:var(--muted)}
+
+/* tickets */
+.tickets{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;align-items:stretch}
+.ticket{
+  position:relative;background:var(--panel);padding:40px 30px 34px;
+  display:flex;flex-direction:column;
+}
+.ticket::before,.ticket::after{
+  content:"";position:absolute;top:50%;width:26px;height:26px;border-radius:50%;
+  background:var(--bg);transform:translateY(-50%);
+}
+.ticket::before{left:-13px}
+.ticket::after{right:-13px}
+.ticket.featured{background:var(--panel-2);border:1px solid var(--line)}
+.ticket .tier{
+  font-family:'Limelight',Georgia,serif;font-size:1.05rem;color:var(--gold);
+  text-transform:uppercase;letter-spacing:.14em;margin-bottom:6px;
+}
+.ticket .tier-tag{color:var(--muted);font-size:.88rem;font-style:italic;margin-bottom:22px}
+.ticket .price{font-family:'Courier Prime',monospace;font-size:2rem;color:var(--fg);margin-bottom:24px}
+.ticket .price small{font-size:.85rem;color:var(--muted)}
+.ticket ul{list-style:none;flex:1;margin-bottom:28px}
+.ticket li{
+  font-size:.92rem;color:var(--fg);padding:9px 0 9px 22px;position:relative;
+  border-bottom:1px dashed var(--line-soft);
+}
+.ticket li::before{content:"✦";position:absolute;left:0;color:var(--rose);font-size:.7rem;top:12px}
+.ticket .btn,.ticket .btn-ghost{text-align:center}
+
+/* box office band */
+.box-office{
+  text-align:center;background:var(--panel);
+  padding:72px 32px;position:relative;
+}
+.box-office h2{
+  font-size:clamp(1.6rem,3.2vw,2.3rem);color:var(--gold);
+  text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;
+}
+.box-office p{color:var(--muted);max-width:46ch;margin:0 auto 30px}
+.box-office .hero-ctas{justify-content:center}
+
+/* footer */
+footer{border-top:1px solid var(--line-soft);padding:38px 0 46px}
+.foot{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:center}
+.foot a{color:var(--muted);text-decoration:none;font-size:.85rem;letter-spacing:.08em}
+.foot a:hover,.foot a:focus-visible{color:var(--gold)}
+.foot .smallprint{font-family:'Courier Prime',monospace;font-size:.72rem;color:var(--muted);max-width:60ch}
+
+/* reveal on scroll */
+.reveal{opacity:0;transform:translateY(8px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:none}
+
+@media (prefers-reduced-motion:reduce){
+  .hero::before{animation:none}
+  .bulb{animation:none}
+  .reveal{opacity:1;transform:none;transition:none}
+  html{scroll-behavior:auto}
+}
+
+@media (max-width:900px){
+  .hero-grid{grid-template-columns:1fr;gap:48px}
+  .acts,.clippings,.tickets{grid-template-columns:1fr;max-width:460px;margin:0 auto}
+  .nav-links li.hide-m{display:none}
+  section{padding:64px 0}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-inner">
+    <a class="wordmark" href="#">Residual</a>
+    <ul class="nav-links">
+      <li class="hide-m"><a href="#program">Program</a></li>
+      <li class="hide-m"><a href="#notices">Notices</a></li>
+      <li class="hide-m"><a href="#tickets">Tickets</a></li>
+      <li><a class="btn" href="./demo.html">Open the demo →</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div class="marquee keyline reveal">
+      <div class="bulb-rail top" aria-hidden="true"></div>
+      <p class="eyebrow">Now showing · again</p>
+      <h1>Your peak, on&nbsp;a&nbsp;loop.</h1>
+      <p class="sub">Residual is the short-form video platform where being recognizable in 1999 is a distribution strategy. Post the scene. Post it again. The algorithm remembers you.</p>
+      <div class="hero-ctas">
+        <a class="btn" href="./demo.html">Resume posting</a>
+        <a class="btn-ghost" href="#program">Read the program</a>
+      </div>
+      <div class="hero-stats">
+        <span class="chip">TALENT ON PLATFORM <b>48,206</b></span>
+        <span class="chip">AVG PEAK YEAR <b>2001</b></span>
+        <span class="chip">MALL OPENINGS BOOKED <b>319</b></span>
+      </div>
+      <div class="bulb-rail bottom" aria-hidden="true"></div>
+    </div>
+
+    <div class="reveal">
+      <div class="phone" aria-label="Preview of the Residual feed">
+        <div class="phone-screen">
+          <img src="feed-tear.webp" alt="A woman in a parked car at night performing a single practiced tear" width="720" height="1280">
+          <div class="phone-overlay">
+            <span class="peak-badge">PEAKED IN 2004</span>
+            <div class="phone-bottom">
+              <p class="phone-caption"><strong>@mackenzie.vole</strong>the car scene. again. by request.</p>
+              <div class="phone-rail">
+                <div class="rail-item">
+                  <svg class="rose" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                  <span>4,211</span>
+                </div>
+                <div class="rail-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="7" width="12" height="12" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2"/></svg>
+                  <span>duet</span>
+                </div>
+                <div class="rail-item">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 3v13"/><path d="M7 8l5-5 5 5"/></svg>
+                  <span>share</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="sunburst" aria-hidden="true">
+  <div class="ray"></div>
+  <svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="17" cy="17" r="4"/><path d="M17 2v7M17 25v7M2 17h7M25 17h7M6.4 6.4l5 5M22.6 22.6l5 5M27.6 6.4l-5 5M11.4 22.6l-5 5"/></svg>
+  <div class="ray"></div>
+</div>
+
+<section id="program">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow">Tonight's program</p>
+      <h2>Three acts. No intermission.</h2>
+      <p>The feature set has been arranged in the order your career happened.</p>
+    </div>
+    <div class="acts">
+      <article class="act keyline reveal">
+        <span class="act-no">Act I</span>
+        <h3>Peak Detection</h3>
+        <p>We identify the eleven months your career mattered and route your videos exclusively to people who owned a television at the time. Reach that remembers.</p>
+      </article>
+      <article class="act keyline reveal">
+        <span class="act-no">Act II</span>
+        <h3>The Typecast Engine</h3>
+        <p>Every upload is auto-tagged with the one role you will never escape. Casting directors filter by it. Eventually, so will you.</p>
+      </article>
+      <article class="act keyline reveal">
+        <span class="act-no">Act III</span>
+        <h3>Residual-Linked Scheduling</h3>
+        <p>Connect your SAG-AFTRA account. When a residual check under two dollars clears, we schedule a post within the hour. Momentum is momentum.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<div class="sunburst" aria-hidden="true">
+  <div class="ray"></div>
+  <svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="17" cy="17" r="4"/><path d="M17 2v7M17 25v7M2 17h7M25 17h7M6.4 6.4l5 5M22.6 22.6l5 5M27.6 6.4l-5 5M11.4 22.6l-5 5"/></svg>
+  <div class="ray"></div>
+</div>
+
+<section id="notices">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow">Notices from the trade</p>
+      <h2>The reviews are in. Again.</h2>
+    </div>
+    <div class="clippings">
+      <article class="clipping keyline reveal">
+        <div class="stars" aria-label="Five stars">★★★★★</div>
+        <blockquote>"I booked a mall opening within six days of joining. A mall opening."</blockquote>
+        <cite><b>Trey Kowalczyk</b><span>Third lead, two-season Nickelodeon ensemble (2001-2003)</span></cite>
+      </article>
+      <article class="clipping keyline reveal">
+        <div class="stars" aria-label="Five stars">★★★★★</div>
+        <blockquote>"Someone recognized me at a Costco and the app had logged it before I reached my car."</blockquote>
+        <cite><b>Mackenzie Vole</b><span>Former 'and introducing' credit, 1997</span></cite>
+      </article>
+      <article class="clipping keyline reveal">
+        <div class="stars" aria-label="Five stars">★★★★★</div>
+        <blockquote>"My agent has not called since 2011. Residual notifies me twice a day."</blockquote>
+        <cite><b>Dax Pemberton</b><span>Voice of an animated toaster, 1994-1996</span></cite>
+      </article>
+    </div>
+  </div>
+</section>
+
+<div class="sunburst" aria-hidden="true">
+  <div class="ray"></div>
+  <svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="17" cy="17" r="4"/><path d="M17 2v7M17 25v7M2 17h7M25 17h7M6.4 6.4l5 5M22.6 22.6l5 5M27.6 6.4l-5 5M11.4 22.6l-5 5"/></svg>
+  <div class="ray"></div>
+</div>
+
+<section id="tickets">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow">Box office</p>
+      <h2>Choose your seating</h2>
+      <p>All tiers include unlimited viewings of your own material.</p>
+    </div>
+    <div class="tickets">
+      <article class="ticket reveal">
+        <h3 class="tier">General Admission</h3>
+        <p class="tier-tag">For the recently forgotten.</p>
+        <p class="price">$0</p>
+        <ul>
+          <li>Post up to 3 re-enactments per week</li>
+          <li>Standard 'I remember you' analytics</li>
+          <li>One (1) pinned clip from your peak</li>
+        </ul>
+        <a class="btn-ghost" href="./demo.html">Take a seat</a>
+      </article>
+      <article class="ticket featured reveal">
+        <h3 class="tier">Mezzanine</h3>
+        <p class="tier-tag">Visibility, within reason.</p>
+        <p class="price">$34<small>/mo</small></p>
+        <ul>
+          <li>Peak Detection with year-level precision</li>
+          <li>Duet with your younger self</li>
+          <li>Priority placement in Where Are They Now</li>
+          <li>Verified 'Was Somebody' badge</li>
+        </ul>
+        <a class="btn" href="./demo.html">Move up front</a>
+      </article>
+      <article class="ticket reveal">
+        <h3 class="tier">Above the Line</h3>
+        <p class="tier-tag">For talent between projects since 2009.</p>
+        <p class="price">$1,150<small>/mo</small></p>
+        <ul>
+          <li>A human employee watches every video</li>
+          <li>Mall-opening booking pipeline</li>
+          <li>Typecast Engine opt-out (waitlisted)</li>
+          <li>Quarterly call with someone who used to work in casting</li>
+        </ul>
+        <a class="btn-ghost" href="./demo.html">Inquire discreetly</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="box-office keyline reveal">
+      <p class="eyebrow">Final call</p>
+      <h2>The show never closed. Neither did you.</h2>
+      <p>Your best work is already filmed. Distribution is the only remaining problem, and we have solved it.</p>
+      <div class="hero-ctas">
+        <a class="btn" href="./demo.html">Open the demo →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <a href="/">← theworstaistudioever</a>
+    <p class="smallprint">Residual is a portfolio company of theworstaistudioever. Past performance is the only performance. Peak years are estimates and cannot be appealed.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // fill bulb rails; one bulb per rail position, one permanently dead
+  document.querySelectorAll('.bulb-rail').forEach(function(rail, r){
+    var n = 21;
+    for(var i = 0; i < n; i++){
+      var b = document.createElement('span');
+      b.className = 'bulb';
+      b.style.animationDelay = ((i * 7 + r * 11) % 13) * 0.42 + 's';
+      if(r === 0 && i === 14) b.classList.add('dead');
+      rail.appendChild(b);
+    }
+  });
+
+  // reveal on scroll
+  var els = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    },{threshold:.12});
+    els.forEach(function(el){ io.observe(el); });
+  } else {
+    els.forEach(function(el){ el.classList.add('in'); });
+  }
+
+  // remember-counter tick in the hero phone
+  var count = 4211;
+  var el = document.querySelector('.rail-item span');
+  if(el && !matchMedia('(prefers-reduced-motion: reduce)').matches){
+    setInterval(function(){
+      count += Math.random() < .6 ? 1 : 0;
+      el.textContent = count.toLocaleString('en-US');
+    }, 4000);
+  }
+})();
+</script>
+</body>
+</html>
