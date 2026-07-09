@@ -1,0 +1,79 @@
+[2026-07-09T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-07-09T08:00:02Z] invoking claude -p
+
+RUN 2026-07-09 — mercury-for-wolves
+
+ROLL
+  company: Mercury
+  subject: wolves
+  slug:    mercury-for-wolves
+  rerolls: 0 (first draw was fresh; PRNG seeded from 2026-07-09)
+
+CONCEPT
+  product: Denhold — "Powerful banking for ambitious packs."
+  Checking, savings, and carcass escrow; alpha-approval workflows over 1 elk;
+  balances denominated in ELK; regulatory footer states Denhold is a financial
+  technology company, not a bank (banking services by Cache Creek Trust,
+  Member Forest Deposit Insurance Corporation).
+
+DESIGN DIRECTION
+  style:    cartographic field-atlas private bank, moonlit-territory dark mode
+            (topographic contour SVG ground, map-plate panels with mono corner
+            coordinates, moon-phase glyph in the wordmark)
+  palette:  primary #AFC2B2 (moon sage), accent #E0A83C (eyeshine amber),
+            bg #0F1713 (spruce black), fg #E6EAE2, muted #6E7D72, ink #E9EDE4
+  fonts:    Marcellus (display) / Instrument Sans (body) / DM Mono (telemetry)
+  anti-sameness: checked against last 7 (art-deco marquee, bento exchange,
+            glassmorphism dusk, swiss timetable, neo-brutalist, synthwave,
+            dark IDE) — no tuple collision. Skipped the ui-ux-pro-max default
+            recommendation (exaggerated minimalism + Inter/Inter) as too close
+            to recent territory.
+
+IMAGES
+  GEMINI_API_KEY present; no cap hit.
+  Allocation: 3 of 4 budget used, all on testimonial headshots.
+    - hero: skipped — typographic/cartographic hero carries itself; a photo
+      would fight the map conceit.
+    - demo assets: skipped — demo is a banking dashboard, not photo-shaped.
+    - headshot-asena.webp     attempts: 1, judge: PASS (silver-grey wolf,
+      deadpan LinkedIn framing, spruce-green backdrop matches palette, no text)
+    - headshot-grey.webp      attempts: 1, judge: PASS (older pale wolf,
+      annual-report portrait, palette harmonizes, no text)
+    - headshot-twosocks.webp  attempts: 1, judge: PASS (young dark wolf; model
+      added a tweed suit unprompted — kept, it suits the junior-associate bit;
+      no text artifacts)
+  All three ≤16 KB after 320×320 WebP crop; raws deleted via --delete-input.
+
+BUILD
+  index.html: split hero with account-snapshot plate (animated ELK balance,
+    pulsing pending-approval row), stats rule, 3 feature plates, field-note
+    testimonials with headshots, 3 pricing tiers ($0/moon, $149/moon, Custom),
+    demo band, regulatory footer. Contours drift + reveals gated behind
+    prefers-reduced-motion.
+  demo.html: operating-account console for Lamar Canyon Pack. Interactive:
+    moon-cycle statement tabs (3 datasets), alpha-approvals queue (approve
+    posts the transaction and updates balance/badge; deny notifies by howl),
+    transaction filters (all/inflows/outflows/disputed), territory spend meter
+    with amber overspray. Vanilla JS, self-contained, no external assets
+    beyond Google Fonts.
+
+GALLERY
+  site/index.html regenerated from all 47 concept.json files; styles.css
+  untouched; count updated to "47 startups · since 2026".
+
+WARNINGS / NEAR-MISSES
+  - Sandbox rejected inline heredoc/expansion in Bash; roll and gallery
+    generation ran via temp python files under state/ (created and removed
+    within the run).
+  - Two Socks headshot deviates from prompt (suit added by the model) but
+    passed judging on brand grounds; noted here for review.
+
+VALIDATION
+  scripts/validate-entry.sh site mercury-for-wolves → OK
+  state/history.json appended (47 entries).
+[2026-07-09T08:10:40Z] WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks
+[2026-07-09T08:10:40Z] new entry: mercury-for-wolves
+validate-entry [mercury-for-wolves]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 47 entries (domain theworstaistudioever.com)
+[2026-07-09T08:10:40Z] committing: Mercury for wolves

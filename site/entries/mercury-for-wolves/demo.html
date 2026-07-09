@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Denhold · Lamar Canyon Pack · Operating account</title>
+<meta name="description" content="Denhold operating-account console for the Lamar Canyon Pack.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sage:#AFC2B2;
+  --amber:#E0A83C;
+  --bg:#0F1713;
+  --fg:#E6EAE2;
+  --muted:#6E7D72;
+  --ink:#E9EDE4;
+  --plate:#131C17;
+  --plate-2:#17211B;
+  --hair:rgba(175,194,178,.22);
+  --hair-soft:rgba(175,194,178,.10);
+  --display:'Marcellus',Georgia,serif;
+  --body:'Instrument Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'DM Mono',ui-monospace,'SF Mono',Menlo,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--bg);color:var(--fg);font-family:var(--body);
+  font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100dvh;
+}
+::selection{background:var(--amber);color:var(--bg)}
+a{color:var(--sage)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--amber);outline-offset:2px;border-radius:3px}
+button{font-family:var(--body);cursor:pointer}
+
+.app{display:grid;grid-template-columns:220px 1fr;min-height:100dvh}
+
+/* ---- sidebar ---- */
+.side{
+  border-right:1px solid var(--hair-soft);padding:20px 18px;
+  display:flex;flex-direction:column;gap:26px;background:rgba(19,28,23,.5);
+}
+.back{
+  font-size:.8rem;color:var(--muted);text-decoration:none;
+}
+.back:hover{color:var(--sage)}
+.side-brand{
+  display:flex;align-items:center;gap:9px;
+  font-family:var(--display);font-size:1.15rem;color:var(--ink);letter-spacing:.04em;
+}
+.moon{width:13px;height:13px;border-radius:50%;background:var(--sage);position:relative;overflow:hidden;flex:none}
+.moon::before{content:"";position:absolute;inset:0;border-radius:50%;background:var(--bg);transform:translateX(-30%)}
+.side-nav{list-style:none;display:flex;flex-direction:column;gap:2px}
+.side-nav a{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 10px;border-radius:5px;text-decoration:none;
+  color:var(--muted);font-size:.88rem;font-weight:500;
+}
+.side-nav a:hover{color:var(--sage);background:rgba(175,194,178,.06)}
+.side-nav a.active{color:var(--ink);background:rgba(175,194,178,.09)}
+.badge{
+  font-family:var(--mono);font-size:.66rem;background:rgba(224,168,60,.15);
+  color:var(--amber);border:1px solid rgba(224,168,60,.4);
+  border-radius:9px;padding:1px 7px;min-width:20px;text-align:center;
+}
+.side-foot{margin-top:auto;font-family:var(--mono);font-size:.62rem;color:var(--muted);opacity:.75;line-height:1.7}
+
+/* ---- main ---- */
+.main{padding:22px 30px 48px;max-width:980px}
+.crumbs{font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-bottom:14px}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;flex-wrap:wrap;margin-bottom:22px}
+h1{font-family:var(--display);font-weight:400;font-size:1.55rem;color:var(--ink)}
+.head p{color:var(--muted);font-size:.84rem}
+
+/* moon-cycle statement selector */
+.cycles{display:flex;gap:4px;border:1px solid var(--hair-soft);border-radius:7px;padding:4px;background:var(--plate)}
+.cycles button{
+  border:none;background:none;color:var(--muted);font-size:.78rem;font-weight:500;
+  padding:6px 12px;border-radius:5px;transition:color .15s,background .15s;
+}
+.cycles button:hover{color:var(--sage)}
+.cycles button[aria-selected="true"]{background:rgba(175,194,178,.12);color:var(--ink)}
+
+.grid{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-bottom:16px}
+.plate{background:var(--plate);border:1px solid var(--hair);border-radius:7px;position:relative;padding:20px 22px}
+.coords{position:absolute;top:9px;right:13px;font-family:var(--mono);font-size:.58rem;letter-spacing:.08em;color:var(--muted);opacity:.65}
+.label{font-family:var(--mono);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+
+.balance{font-family:var(--mono);font-size:2.1rem;color:var(--ink)}
+.balance-sub{font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-top:2px}
+.delta{font-family:var(--mono);font-size:.72rem;color:var(--sage);margin-top:12px}
+
+/* territory meter */
+.meter{height:8px;border-radius:4px;background:rgba(175,194,178,.12);overflow:hidden;display:flex;margin:14px 0 8px}
+.meter .used{background:var(--sage);height:100%;transition:width .8s ease}
+.meter .over{background:var(--amber);height:100%;transition:width .8s ease}
+.meter-legend{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+.meter-legend .warn{color:var(--amber)}
+
+/* approvals */
+.approvals{margin-bottom:16px}
+.approvals h2,.ledger h2{font-family:var(--display);font-weight:400;font-size:1.1rem;color:var(--ink);margin-bottom:4px}
+.sub{color:var(--muted);font-size:.8rem;margin-bottom:14px}
+.appr-row{
+  display:flex;align-items:center;gap:14px;padding:13px 14px;
+  border:1px solid rgba(224,168,60,.35);background:rgba(224,168,60,.05);
+  border-radius:6px;margin-bottom:8px;flex-wrap:wrap;
+  transition:opacity .4s ease,transform .4s ease;
+}
+.appr-row.done{opacity:0;transform:translateX(10px);pointer-events:none}
+.appr-row .dot{width:7px;height:7px;border-radius:50%;background:var(--amber);flex:none}
+@media (prefers-reduced-motion:no-preference){
+  .appr-row .dot{animation:pulse 2.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+}
+.appr-body{flex:1;min-width:220px}
+.appr-body b{display:block;font-size:.88rem;color:var(--fg);font-weight:600}
+.appr-body span{font-size:.76rem;color:var(--muted)}
+.appr-amt{font-family:var(--mono);font-size:.86rem;color:var(--amber)}
+.appr-actions{display:flex;gap:8px}
+.btn-approve,.btn-deny{
+  font-size:.8rem;font-weight:600;border-radius:5px;padding:7px 14px;border:1px solid transparent;
+}
+.btn-approve{background:var(--amber);color:#1A1206}
+.btn-approve:hover{filter:brightness(1.08)}
+.btn-deny{background:none;border-color:var(--hair);color:var(--muted)}
+.btn-deny:hover{color:var(--fg);border-color:var(--sage)}
+.appr-empty{
+  border:1px dashed var(--hair);border-radius:6px;padding:18px;
+  color:var(--muted);font-size:.84rem;text-align:center;display:none;
+}
+.appr-empty.show{display:block}
+
+/* ledger */
+.filters{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.chip{
+  border:1px solid var(--hair-soft);background:none;color:var(--muted);
+  font-size:.74rem;font-weight:500;border-radius:12px;padding:4px 12px;
+}
+.chip:hover{color:var(--sage)}
+.chip[aria-pressed="true"]{border-color:var(--sage);color:var(--ink);background:rgba(175,194,178,.08)}
+table{width:100%;border-collapse:collapse}
+th{
+  text-align:left;font-family:var(--mono);font-weight:400;font-size:.62rem;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  padding:8px 10px;border-bottom:1px solid var(--hair);
+}
+td{padding:11px 10px;border-bottom:1px solid var(--hair-soft);font-size:.86rem}
+td.amt{font-family:var(--mono);font-size:.8rem;text-align:right;color:var(--sage)}
+td.amt.neg{color:var(--muted)}
+th:last-child{text-align:right}
+.tstat{font-family:var(--mono);font-size:.64rem;letter-spacing:.06em;padding:2px 8px;border-radius:9px;border:1px solid var(--hair-soft);color:var(--muted)}
+.tstat.disputed{color:var(--amber);border-color:rgba(224,168,60,.4)}
+tr.tx-new td{background:rgba(175,194,178,.05)}
+.tx-date{font-family:var(--mono);font-size:.72rem;color:var(--muted);white-space:nowrap}
+
+/* toast */
+.toast{
+  position:fixed;bottom:22px;left:50%;transform:translate(-50%,10px);
+  background:var(--plate-2);border:1px solid var(--hair);border-radius:6px;
+  padding:11px 18px;font-size:.84rem;color:var(--fg);opacity:0;
+  transition:opacity .25s ease,transform .25s ease;pointer-events:none;z-index:50;
+  max-width:min(92vw,480px);text-align:center;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:820px){
+  .app{grid-template-columns:1fr}
+  .side{flex-direction:row;align-items:center;border-right:none;border-bottom:1px solid var(--hair-soft);gap:16px;flex-wrap:wrap}
+  .side-nav{flex-direction:row;flex-wrap:wrap}
+  .side-foot{display:none}
+  .grid{grid-template-columns:1fr}
+  .main{padding:18px 16px 40px}
+}
+@media (prefers-reduced-motion:reduce){
+  .meter .used,.meter .over,.appr-row,.toast{transition:none}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="side">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <div class="side-brand"><span class="moon" aria-hidden="true"></span>Denhold</div>
+    <nav aria-label="Console">
+      <ul class="side-nav">
+        <li><a class="active" href="#" aria-current="page">Overview</a></li>
+        <li><a href="#approvals">Approvals <span class="badge" id="apprBadge">2</span></a></li>
+        <li><a href="#ledger">Transactions</a></li>
+        <li><a href="#">Escrow</a></li>
+        <li><a href="#">Territory</a></li>
+      </ul>
+    </nav>
+    <div class="side-foot">TERRITORY NW-07<br>44°54′N 110°12′W<br>SESSION: ALPHA</div>
+  </aside>
+
+  <main class="main">
+    <p class="crumbs">Lamar Canyon Pack / Operating account</p>
+    <div class="head">
+      <div>
+        <h1>Operating account</h1>
+        <p>You are signed in as the alpha. Everything below is your fault.</p>
+      </div>
+      <div class="cycles" role="tablist" aria-label="Statement cycle">
+        <button role="tab" aria-selected="false" data-cycle="0">Waxing crescent</button>
+        <button role="tab" aria-selected="false" data-cycle="1">First quarter</button>
+        <button role="tab" aria-selected="true" data-cycle="2">Waxing gibbous</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="plate">
+        <span class="coords">PLATE 01</span>
+        <p class="label">Balance · <span id="cycleName">waxing gibbous</span></p>
+        <div class="balance" id="balance">14.2 ELK</div>
+        <div class="balance-sub" id="balanceSub">≈ 3,120 lbs on the hoof · 4 caches reconciled</div>
+        <div class="delta" id="delta">+1.5 ELK this cycle · ravens net −0.1</div>
+      </div>
+      <div class="plate">
+        <span class="coords">PLATE 02</span>
+        <p class="label">Territory spend · 40 mi² budget</p>
+        <div class="meter" role="img" aria-label="Territory budget: 31 square miles patrolled, 3 square miles overspray, 40 budgeted">
+          <div class="used" id="meterUsed" style="width:0%"></div>
+          <div class="over" id="meterOver" style="width:0%"></div>
+        </div>
+        <div class="meter-legend">
+          <span>31.2 mi² patrolled</span>
+          <span class="warn">3.1 mi² overspray</span>
+        </div>
+        <p style="font-size:.76rem;color:var(--muted);margin-top:10px">Overspray will be raised at the next moon review. Attendance is not optional.</p>
+      </div>
+    </div>
+
+    <section class="plate approvals" id="approvals">
+      <span class="coords">PLATE 03</span>
+      <h2>Awaiting your sign-off</h2>
+      <p class="sub">Withdrawals over 1.0 ELK route here. The threshold was your idea.</p>
+
+      <div class="appr-row" data-id="a1" data-amt="1.2">
+        <span class="dot" aria-hidden="true"></span>
+        <div class="appr-body">
+          <b>Cache withdrawal · south fork</b>
+          <span>Requested by Two Socks · reason: “winter prep” · third request this cycle</span>
+        </div>
+        <span class="appr-amt">−1.2 ELK</span>
+        <div class="appr-actions">
+          <button class="btn-approve">Approve</button>
+          <button class="btn-deny">Deny</button>
+        </div>
+      </div>
+
+      <div class="appr-row" data-id="a2" data-amt="2.0">
+        <span class="dot" aria-hidden="true"></span>
+        <div class="appr-body">
+          <b>Den-to-den transfer · Sawtooth Pack</b>
+          <span>Requested by Asena · settlement by moonrise · counterparty verified</span>
+        </div>
+        <span class="appr-amt">−2.0 ELK</span>
+        <div class="appr-actions">
+          <button class="btn-approve">Approve</button>
+          <button class="btn-deny">Deny</button>
+        </div>
+      </div>
+
+      <div class="appr-empty" id="apprEmpty">Queue clear. The pack is watching you anyway.</div>
+    </section>
+
+    <section class="plate ledger" id="ledger">
+      <span class="coords">PLATE 04</span>
+      <h2>Transactions</h2>
+      <p class="sub">Every entry witnessed by at least two pack members or one very honest raven.</p>
+      <div class="filters" role="group" aria-label="Filter transactions">
+        <button class="chip" aria-pressed="true" data-f="all">All</button>
+        <button class="chip" aria-pressed="false" data-f="in">Inflows</button>
+        <button class="chip" aria-pressed="false" data-f="out">Outflows</button>
+        <button class="chip" aria-pressed="false" data-f="disputed">Disputed</button>
+      </div>
+      <table>
+        <thead><tr><th>Date</th><th>Description</th><th>Status</th><th>Amount</th></tr></thead>
+        <tbody id="txBody"></tbody>
+      </table>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- data per moon cycle ----
+  var cycles = [
+    {
+      name:'waxing crescent', balance:12.8, sub:'≈ 2,815 lbs on the hoof · 6 caches reconciled',
+      delta:'+0.4 ELK this cycle · ravens net −0.3',
+      tx:[
+        {d:'CRE 02', t:'Cow elk intercept · river bend', s:'cleared', a:1.0, k:'in'},
+        {d:'CRE 04', t:'Cache deposit · ridge line', s:'cleared', a:0.6, k:'in'},
+        {d:'CRE 05', t:'Carcass charge · disputed (ravens)', s:'disputed', a:-0.3, k:'disputed'},
+        {d:'CRE 09', t:'Scent-marking run · western boundary', s:'cleared', a:-0.2, k:'out'},
+        {d:'CRE 11', t:'Cache withdrawal · south fork', s:'cleared', a:-0.7, k:'out'}
+      ]
+    },
+    {
+      name:'first quarter', balance:13.1, sub:'≈ 2,880 lbs on the hoof · 5 caches reconciled',
+      delta:'+0.3 ELK this cycle · zero raven incidents (audited)',
+      tx:[
+        {d:'FQR 01', t:'Bull elk intercept · burn scar', s:'cleared', a:1.8, k:'in'},
+        {d:'FQR 03', t:'Kill escrow release · two witnesses', s:'cleared', a:0.9, k:'in'},
+        {d:'FQR 06', t:'Den maintenance · east chamber', s:'cleared', a:-0.5, k:'out'},
+        {d:'FQR 08', t:'Territory patrol · overtime', s:'cleared', a:-0.8, k:'out'},
+        {d:'FQR 12', t:'Transfer to reserve cache', s:'cleared', a:-1.1, k:'out'}
+      ]
+    },
+    {
+      name:'waxing gibbous', balance:14.2, sub:'≈ 3,120 lbs on the hoof · 4 caches reconciled',
+      delta:'+1.5 ELK this cycle · ravens net −0.1',
+      tx:[
+        {d:'GIB 01', t:'Bull elk intercept · north meadow', s:'cleared', a:2.0, k:'in'},
+        {d:'GIB 02', t:'Kill escrow release · two witnesses', s:'cleared', a:0.7, k:'in'},
+        {d:'GIB 04', t:'Cache withdrawal · ridge line', s:'cleared', a:-0.4, k:'out'},
+        {d:'GIB 05', t:'Carcass charge · disputed (ravens)', s:'disputed', a:-0.1, k:'disputed'},
+        {d:'GIB 07', t:'Scent-marking run · overspray, southern line', s:'flagged', a:-0.7, k:'out'}
+      ]
+    }
+  ];
+  var current = 2, filter = 'all';
+
+  var $ = function(id){return document.getElementById(id)};
+  var txBody = $('txBody'), toastEl = $('toast'), toastTimer = null;
+
+  function fmt(a){return (a>0?'+':'−')+Math.abs(a).toFixed(1)+' ELK'}
+
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){toastEl.classList.remove('show')}, 3600);
+  }
+
+  function renderTx(){
+    var c = cycles[current];
+    txBody.innerHTML = '';
+    c.tx.forEach(function(t){
+      if(filter==='in' && t.a<=0) return;
+      if(filter==='out' && (t.a>0 || t.k==='disputed')) return;
+      if(filter==='disputed' && t.k!=='disputed') return;
+      var tr = document.createElement('tr');
+      if(t.fresh) tr.className = 'tx-new';
+      var statusClass = t.k==='disputed' ? 'tstat disputed' : 'tstat';
+      tr.innerHTML =
+        '<td class="tx-date">'+t.d+'</td>'+
+        '<td>'+t.t+'</td>'+
+        '<td><span class="'+statusClass+'">'+t.s+'</span></td>'+
+        '<td class="amt'+(t.a<0?' neg':'')+'">'+fmt(t.a)+'</td>';
+      txBody.appendChild(tr);
+    });
+    if(!txBody.children.length){
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td colspan="4" style="color:var(--muted);text-align:center;padding:20px">Nothing matches. In this economy, that is a good sign.</td>';
+      txBody.appendChild(tr);
+    }
+  }
+
+  function renderBalance(){
+    var c = cycles[current];
+    $('balance').textContent = c.balance.toFixed(1)+' ELK';
+    $('balanceSub').textContent = c.sub;
+    $('delta').textContent = c.delta;
+    $('cycleName').textContent = c.name;
+  }
+
+  // ---- statement cycle tabs ----
+  document.querySelectorAll('.cycles button').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.cycles button').forEach(function(b){b.setAttribute('aria-selected','false')});
+      btn.setAttribute('aria-selected','true');
+      current = parseInt(btn.getAttribute('data-cycle'),10);
+      renderBalance(); renderTx();
+    });
+  });
+
+  // ---- filters ----
+  document.querySelectorAll('.chip').forEach(function(chip){
+    chip.addEventListener('click', function(){
+      document.querySelectorAll('.chip').forEach(function(c){c.setAttribute('aria-pressed','false')});
+      chip.setAttribute('aria-pressed','true');
+      filter = chip.getAttribute('data-f');
+      renderTx();
+    });
+  });
+
+  // ---- approvals ----
+  var pending = 2;
+  function settleRow(row){
+    pending--;
+    $('apprBadge').textContent = pending;
+    row.classList.add('done');
+    setTimeout(function(){
+      row.style.display = 'none';
+      if(pending===0) $('apprEmpty').classList.add('show');
+    }, reduced ? 0 : 420);
+  }
+  document.querySelectorAll('.appr-row').forEach(function(row){
+    var amt = parseFloat(row.getAttribute('data-amt'));
+    var title = row.querySelector('.appr-body b').textContent;
+    row.querySelector('.btn-approve').addEventListener('click', function(){
+      var c = cycles[2];
+      c.balance = Math.round((c.balance - amt)*10)/10;
+      c.tx.unshift({d:'GIB 09', t:title+' · alpha approved', s:'cleared', a:-amt, k:'out', fresh:true});
+      settleRow(row);
+      if(current===2){renderBalance(); renderTx();}
+      toast('Approved. '+fmt(-amt)+' posted to the ledger. The ledger remembers.');
+    });
+    row.querySelector('.btn-deny').addEventListener('click', function(){
+      settleRow(row);
+      toast('Denied. The requester has been notified by howl.');
+    });
+  });
+
+  // ---- territory meter ----
+  function fillMeter(){
+    $('meterUsed').style.width = '78%';
+    $('meterOver').style.width = '7.75%';
+  }
+  if(reduced){ fillMeter(); } else { setTimeout(fillMeter, 250); }
+
+  renderBalance(); renderTx();
+})();
+</script>
+</body>
+</html>
