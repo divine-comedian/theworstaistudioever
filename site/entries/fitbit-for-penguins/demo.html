@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Waddle · Colony Dashboard</title>
+<meta name="description" content="Live colony fitness dashboard for Huddle 12, Cape Crozier.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E9F2F6;
+  --surface-hi:#FAFDFE;
+  --surface-lo:#EDF5F8;
+  --ink:#0E2831;
+  --primary:#14343F;
+  --coral:#FF6B4A;
+  --coral-deep:#E8502E;
+  --muted:#7A96A3;
+  --ice:#CDE3ED;
+  --ice-soft:#DCEBF2;
+  --clay:0 16px 34px -16px rgba(20,52,63,.26), inset 0 2px 0 rgba(255,255,255,.85);
+  --clay-sm:0 10px 22px -12px rgba(20,52,63,.22), inset 0 1.5px 0 rgba(255,255,255,.8);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  background:radial-gradient(800px 460px at 90% -5%, rgba(205,227,237,.6), transparent 60%),var(--bg);
+  color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;
+  padding:20px clamp(14px,3vw,36px) 60px;
+}
+h1,h2,h3{font-family:'Baloo 2','Trebuchet MS',system-ui,sans-serif;color:var(--primary)}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+a{color:inherit}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--coral);outline-offset:2px;border-radius:8px}
+
+/* top chrome */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:26px}
+.back{font-size:.85rem;text-decoration:none;color:var(--muted);font-weight:500}
+.back:hover{color:var(--primary)}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Baloo 2',system-ui,sans-serif;font-weight:800;font-size:1.25rem;color:var(--primary)}
+.brand svg{display:block}
+.live{display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);background:linear-gradient(180deg,var(--surface-hi),var(--surface-lo));padding:8px 14px;border-radius:999px;box-shadow:var(--clay-sm)}
+.live .dot{width:8px;height:8px;border-radius:50%;background:var(--coral);animation:pulse 4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+.head{display:flex;align-items:end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.head h1{font-size:clamp(1.5rem,3vw,2rem);font-weight:800}
+.head .sub{font-size:.9rem;color:var(--muted)}
+
+/* stat cards */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:26px}
+.stat{background:linear-gradient(180deg,var(--surface-hi),var(--surface-lo));border-radius:22px;box-shadow:var(--clay);padding:20px 22px}
+.stat .k{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.stat .v{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:1.55rem;color:var(--primary);margin-top:6px}
+.stat .d{font-size:.75rem;color:var(--muted);margin-top:4px}
+.stat .v .bad{color:var(--coral-deep)}
+
+/* tabs */
+.tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.tab{
+  border:0;border-radius:999px;padding:9px 20px;font-weight:600;font-size:.88rem;color:var(--primary);
+  background:linear-gradient(180deg,var(--surface-hi),var(--surface-lo));box-shadow:var(--clay-sm);
+  transition:transform .15s ease;
+}
+.tab:active{transform:scale(.97)}
+.tab[aria-selected="true"]{background:linear-gradient(180deg,#1B4250,var(--primary));color:#fff}
+
+/* table card */
+.board{background:linear-gradient(180deg,var(--surface-hi),var(--surface-lo));border-radius:26px;box-shadow:var(--clay);padding:10px 10px 4px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:760px}
+th,td{text-align:left;padding:14px 16px}
+thead th{
+  font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+  border-bottom:2px solid var(--ice);white-space:nowrap;
+}
+thead th button{
+  border:0;background:none;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;
+  display:inline-flex;align-items:center;gap:5px;font-weight:700;
+}
+thead th button:hover{color:var(--primary)}
+thead th .arr{font-size:.8em}
+tbody tr{border-bottom:1px solid rgba(205,227,237,.55);cursor:pointer;transition:background .15s}
+tbody tr:hover{background:rgba(255,255,255,.65)}
+tbody tr:last-child{border-bottom:0}
+td{font-size:.92rem}
+.bird{display:flex;align-items:center;gap:12px;font-weight:700;color:var(--primary);white-space:nowrap}
+.avatar{
+  width:40px;height:40px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
+  font-family:'Baloo 2',system-ui,sans-serif;font-weight:700;font-size:.9rem;color:#fff;
+  box-shadow:var(--clay-sm);
+}
+.bird small{display:block;font-family:'JetBrains Mono',monospace;font-weight:400;font-size:.66rem;color:var(--muted)}
+.num{font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--primary)}
+.pill{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.72rem;padding:4px 10px;border-radius:999px}
+.pill.ok{background:#DFF0E4;color:#1E5A38}
+.pill.warn{background:#FCE9D8;color:#8A4A12}
+.pill.bad{background:#FADDD5;color:#9C2E12}
+.minirings{display:flex;gap:4px}
+.minirings span{width:12px;height:12px;border-radius:50%;border:3px solid var(--ice);display:block}
+.minirings span.closed{border-color:var(--coral)}
+.nudge{
+  border:0;border-radius:999px;padding:8px 18px;font-family:'Baloo 2',system-ui,sans-serif;font-weight:700;font-size:.85rem;color:#fff;
+  background:linear-gradient(180deg,#FF7E5F,var(--coral) 55%,var(--coral-deep));
+  box-shadow:0 10px 18px -9px rgba(232,80,46,.55), inset 0 2px 0 rgba(255,255,255,.4);
+  transition:transform .14s ease;white-space:nowrap;
+}
+.nudge:active{transform:scale(.95)}
+.nudge[disabled]{opacity:.55;cursor:default;transform:none}
+.board-note{font-size:.72rem;color:var(--muted);padding:12px 16px}
+
+/* modal */
+.overlay{
+  position:fixed;inset:0;background:rgba(14,40,49,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:50;
+}
+.overlay.open{display:flex}
+.modal{
+  background:linear-gradient(180deg,var(--surface-hi),var(--surface-lo));border-radius:28px;box-shadow:var(--clay);
+  max-width:520px;width:100%;padding:32px;position:relative;
+}
+.modal .close{
+  position:absolute;top:16px;right:16px;border:0;background:linear-gradient(180deg,var(--surface-hi),var(--surface-lo));
+  box-shadow:var(--clay-sm);width:38px;height:38px;border-radius:50%;font-size:1.05rem;color:var(--primary);font-weight:700;
+}
+.modal .who{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+.modal .who .avatar{width:56px;height:56px;font-size:1.15rem}
+.modal h2{font-size:1.4rem;font-weight:800}
+.modal .who small{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted)}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+.mstat{background:rgba(255,255,255,.7);border-radius:16px;padding:14px 16px;box-shadow:var(--clay-sm)}
+.mstat .k{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.mstat .v{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:1.1rem;color:var(--primary);margin-top:4px}
+.remark{font-size:.85rem;color:#3D5862;background:rgba(255,255,255,.55);border-radius:14px;padding:12px 16px}
+.remark b{color:var(--coral-deep)}
+
+/* toast */
+.toast{
+  position:fixed;left:50%;bottom:28px;transform:translate(-50%,80px);z-index:60;
+  background:linear-gradient(180deg,#1B4250,var(--primary));color:#EAF4F8;
+  border-radius:16px;box-shadow:0 18px 36px -14px rgba(14,40,49,.5);padding:14px 22px;font-size:.9rem;
+  opacity:0;transition:transform .3s ease,opacity .3s ease;max-width:92vw;
+}
+.toast.show{transform:translate(-50%,0);opacity:1}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+@media (max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:520px){.stats{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <div class="brand">
+    <svg width="24" height="24" viewBox="0 0 30 30" aria-hidden="true"><rect x="2" y="2" width="26" height="26" rx="10" fill="#14343F"/><rect x="8" y="12" width="14" height="6" rx="3" fill="#FF6B4A"/></svg>
+    Waddle <span style="font-weight:500;color:var(--muted);font-size:.85rem">/ Colony Console</span>
+  </div>
+  <span class="live"><span class="dot" aria-hidden="true"></span> live · cape crozier</span>
+</div>
+
+<div class="head">
+  <div>
+    <h1>Huddle 12 — Colony Dashboard</h1>
+    <p class="sub">Wednesday, 10 July · wind chill -41°C · morale unmeasured, assumed fine</p>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><span class="k">Avg. huddle compliance</span><div class="v"><span class="bad" id="statCompliance">71%</span></div><div class="d">target 100% · trending wrong</div></div>
+  <div class="stat"><span class="k">Rings closed today</span><div class="v" id="statRings">3 / 24</div><div class="d">shiver rings excluded, too easy</div></div>
+  <div class="stat"><span class="k">Nudges sent today</span><div class="v" id="statNudges">47</div><div class="d">colony-wide, on your behalf</div></div>
+  <div class="stat"><span class="k">Active bands</span><div class="v">8 / 8</div><div class="d">banding is permanent</div></div>
+</div>
+
+<div class="tabs" role="tablist" aria-label="Rookery filter">
+  <button class="tab" role="tab" aria-selected="true" data-group="all">All birds</button>
+  <button class="tab" role="tab" aria-selected="false" data-group="Huddle 12">Huddle 12</button>
+  <button class="tab" role="tab" aria-selected="false" data-group="Crèche B">Crèche B</button>
+  <button class="tab" role="tab" aria-selected="false" data-group="Shoreline">Shoreline detail</button>
+</div>
+
+<div class="board">
+  <table id="board" aria-label="Colony leaderboard">
+    <thead>
+      <tr>
+        <th scope="col">Bird</th>
+        <th scope="col"><button data-sort="steps">Waddle steps <span class="arr" aria-hidden="true">↓</span></button></th>
+        <th scope="col"><button data-sort="dives">Dives <span class="arr" aria-hidden="true"></span></button></th>
+        <th scope="col"><button data-sort="compliance">Huddle compliance <span class="arr" aria-hidden="true"></span></button></th>
+        <th scope="col">Rings</th>
+        <th scope="col"><span style="font-weight:700">Action</span></th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <p class="board-note">Compliance below 80% is shared with the rookery automatically. This is a feature.</p>
+</div>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="modalName">
+  <div class="modal">
+    <button class="close" id="modalClose" aria-label="Close details">×</button>
+    <div class="who">
+      <span class="avatar" id="modalAvatar"></span>
+      <span><h2 id="modalName"></h2><small id="modalBand"></small></span>
+    </div>
+    <div class="mgrid">
+      <div class="mstat"><span class="k">Steps this week</span><div class="v" id="mSteps"></div></div>
+      <div class="mstat"><span class="k">Deepest dive</span><div class="v" id="mDive"></div></div>
+      <div class="mstat"><span class="k">Streak</span><div class="v" id="mStreak"></div></div>
+      <div class="mstat"><span class="k">Huddle compliance</span><div class="v" id="mCompliance"></div></div>
+    </div>
+    <p class="remark" id="mRemark"></p>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  var birds = [
+    {name:"Gary", band:"WDL-0012", group:"Huddle 12", steps:4211, dives:6, compliance:61, rings:1, week:24810, deep:-142, streak:14, color:"#14343F",
+     remark:"Positional data places Gary at the huddle edge for <b>61%</b> of recorded winter. The rookery has been notified, per plan."},
+    {name:"Deborah", band:"WDL-0007", group:"Shoreline", steps:11842, dives:2, compliance:88, rings:2, week:71204, deep:-38, streak:96, color:"#3D6B7A",
+     remark:"Deborah has replaced her toboggan commute with walking. Step count is excellent. Commute time is now four hours. We consider this a win."},
+    {name:"Colin", band:"WDL-0019", group:"Huddle 12", steps:302, dives:0, compliance:97, rings:0, week:1927, deep:0, streak:0, color:"#5A8494",
+     remark:"Colin is brooding an egg and has not moved in 31 days. His step goal remains unchanged. The egg does not count as an activity."},
+    {name:"Brenda", band:"WDL-0004", group:"Crèche B", steps:6540, dives:11, compliance:79, rings:2, week:41220, deep:-167, streak:41, color:"#8A5A6B",
+     remark:"Brenda's compliance dipped below 80% on Tuesday. The automatic rookery report went out before she surfaced. She knows."},
+    {name:"Nigel", band:"WDL-0023", group:"Shoreline", steps:9013, dives:19, compliance:83, rings:3, week:56873, deep:-201, streak:112, color:"#4A7A5E",
+     remark:"Nigel closed all three rings and has told everyone. Leadership is reviewing whether this is the culture we want."},
+    {name:"Susan", band:"WDL-0016", group:"Crèche B", steps:5177, dives:4, compliance:74, rings:1, week:33019, deep:-91, streak:7, color:"#7A6B4A",
+     remark:"Susan's streak reset during molt, as designed. Her appeal has been received and will not be read until spring."},
+    {name:"Kevin", band:"WDL-0031", group:"Huddle 12", steps:7726, dives:8, compliance:68, rings:2, week:49850, deep:-155, streak:23, color:"#6B4A7A",
+     remark:"Kevin logs strong steps but keeps drifting toward the warm middle. The sensors see everything, Kevin."},
+    {name:"Margaret", band:"WDL-0002", group:"Shoreline", steps:12904, dives:23, compliance:92, rings:3, week:80311, deep:-224, streak:203, color:"#2E5A4A",
+     remark:"Margaret has the longest streak in the colony and has never once checked the app. There may be a lesson here. We are not looking for it."}
+  ];
+
+  var state = { group:"all", sortKey:"steps", sortDir:-1, nudges:47 };
+  var tbody = document.querySelector('#board tbody');
+  var toastEl = document.getElementById('toast');
+  var toastTimer = null;
+
+  var nudgeLines = [
+    "sent a gentle reminder that the huddle can see their dashboard.",
+    "was informed their rings are, technically, open.",
+    "received an encouraging note comparing them to Margaret.",
+    "was reminded that warmth is a shared resource.",
+    "got a push notification. There is no way to disable them."
+  ];
+
+  function pillClass(c){ return c >= 85 ? "ok" : c >= 75 ? "warn" : "bad"; }
+
+  function initials(n){ return n.slice(0,1); }
+
+  function render(){
+    var rows = birds
+      .filter(function(b){ return state.group === "all" || b.group === state.group; })
+      .slice()
+      .sort(function(a,b){ return (a[state.sortKey] - b[state.sortKey]) * state.sortDir; });
+
+    tbody.innerHTML = "";
+    rows.forEach(function(b){
+      var tr = document.createElement('tr');
+      tr.tabIndex = 0;
+      tr.setAttribute('aria-label', b.name + ", open details");
+      var rings = "";
+      for(var i=0;i<3;i++){ rings += '<span class="' + (i < b.rings ? 'closed' : '') + '"></span>'; }
+      tr.innerHTML =
+        '<td><span class="bird"><span class="avatar" style="background:' + b.color + '">' + initials(b.name) + '</span>' +
+        '<span>' + b.name + '<small>' + b.band + ' · ' + b.group + '</small></span></span></td>' +
+        '<td class="num">' + b.steps.toLocaleString('en-US') + '</td>' +
+        '<td class="num">' + b.dives + '</td>' +
+        '<td><span class="pill ' + pillClass(b.compliance) + '">' + b.compliance + '%</span></td>' +
+        '<td><span class="minirings" aria-label="' + b.rings + ' of 3 rings closed">' + rings + '</span></td>' +
+        '<td><button class="nudge" data-name="' + b.name + '">Nudge</button></td>';
+      tr.addEventListener('click', function(e){
+        if(e.target.closest('.nudge')) return;
+        openModal(b);
+      });
+      tr.addEventListener('keydown', function(e){
+        if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openModal(b); }
+      });
+      tbody.appendChild(tr);
+    });
+
+    tbody.querySelectorAll('.nudge').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        state.nudges++;
+        document.getElementById('statNudges').textContent = state.nudges;
+        var line = nudgeLines[state.nudges % nudgeLines.length];
+        toast(btn.dataset.name + " " + line);
+        btn.disabled = true;
+        btn.textContent = "Nudged";
+      });
+    });
+
+    document.querySelectorAll('thead .arr').forEach(function(a){ a.textContent = ""; });
+    var active = document.querySelector('thead button[data-sort="' + state.sortKey + '"] .arr');
+    if(active) active.textContent = state.sortDir === -1 ? "↓" : "↑";
+  }
+
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 3800);
+  }
+
+  /* tabs */
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click', function(){
+      document.querySelectorAll('.tab').forEach(function(x){ x.setAttribute('aria-selected','false'); });
+      t.setAttribute('aria-selected','true');
+      state.group = t.dataset.group;
+      render();
+    });
+  });
+
+  /* sorting */
+  document.querySelectorAll('thead button[data-sort]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var key = btn.dataset.sort;
+      if(state.sortKey === key){ state.sortDir *= -1; } else { state.sortKey = key; state.sortDir = -1; }
+      render();
+    });
+  });
+
+  /* modal */
+  var overlay = document.getElementById('overlay');
+  var lastFocus = null;
+  function openModal(b){
+    lastFocus = document.activeElement;
+    document.getElementById('modalName').textContent = b.name;
+    document.getElementById('modalBand').textContent = b.band + " · " + b.group;
+    var av = document.getElementById('modalAvatar');
+    av.textContent = initials(b.name);
+    av.style.background = b.color;
+    document.getElementById('mSteps').textContent = b.week.toLocaleString('en-US');
+    document.getElementById('mDive').textContent = b.deep + " m";
+    document.getElementById('mStreak').textContent = b.streak + (b.streak === 1 ? " day" : " days");
+    document.getElementById('mCompliance').textContent = b.compliance + "%";
+    document.getElementById('mRemark').innerHTML = b.remark;
+    overlay.classList.add('open');
+    document.getElementById('modalClose').focus();
+  }
+  function closeModal(){
+    overlay.classList.remove('open');
+    if(lastFocus) lastFocus.focus();
+  }
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  overlay.addEventListener('click', function(e){ if(e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && overlay.classList.contains('open')) closeModal(); });
+
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Waddle · theworstaistudioever</title>
+<meta name="description" content="The flipper-worn activity band that holds your colony accountable.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Waddle · Fitbit for penguins">
+<meta property="og:description" content="The flipper-worn activity band that holds your colony accountable.">
+<meta property="og:image" content="hero.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E9F2F6;
+  --surface-hi:#FAFDFE;
+  --surface-lo:#EDF5F8;
+  --ink:#0E2831;
+  --primary:#14343F;
+  --coral:#FF6B4A;
+  --coral-deep:#E8502E;
+  --muted:#7A96A3;
+  --ice:#CDE3ED;
+  --ice-soft:#DCEBF2;
+  --radius:26px;
+  --clay-shadow:0 20px 44px -20px rgba(20,52,63,.28), 0 4px 10px -6px rgba(20,52,63,.12), inset 0 2px 0 rgba(255,255,255,.85);
+  --clay-shadow-sm:0 12px 26px -14px rgba(20,52,63,.24), inset 0 1.5px 0 rgba(255,255,255,.8);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  background:
+    radial-gradient(900px 500px at 85% -5%, rgba(205,227,237,.65), transparent 65%),
+    radial-gradient(700px 460px at -10% 40%, rgba(255,255,255,.7), transparent 60%),
+    var(--bg);
+  color:var(--ink);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,.wordmark{font-family:'Baloo 2','Trebuchet MS',system-ui,sans-serif;line-height:1.12;color:var(--primary)}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+a{color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+
+/* ---------- nav ---------- */
+nav{padding:22px 0}
+.nav-row{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.wordmark{font-size:1.7rem;font-weight:800;letter-spacing:-.01em;text-decoration:none;display:flex;align-items:center;gap:10px}
+.wordmark svg{display:block}
+.nav-links{display:flex;align-items:center;gap:22px;font-weight:500;font-size:.95rem}
+.nav-links a{text-decoration:none;color:var(--primary);opacity:.75;transition:opacity .18s}
+.nav-links a:hover{opacity:1}
+.nav-links .btn{opacity:1}
+
+/* ---------- buttons ---------- */
+.btn{
+  display:inline-block;border:0;cursor:pointer;text-decoration:none;text-align:center;
+  font-family:'Baloo 2',system-ui,sans-serif;font-weight:700;font-size:1.02rem;
+  padding:14px 28px;border-radius:999px;color:#fff;
+  background:linear-gradient(180deg,#FF7E5F,var(--coral) 55%,var(--coral-deep));
+  box-shadow:0 14px 26px -12px rgba(232,80,46,.55), inset 0 2px 0 rgba(255,255,255,.45);
+  transition:transform .16s ease, box-shadow .16s ease;
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 18px 32px -12px rgba(232,80,46,.6), inset 0 2px 0 rgba(255,255,255,.45)}
+.btn:active{transform:scale(.97)}
+.btn:focus-visible,a:focus-visible,button:focus-visible{outline:3px solid var(--coral);outline-offset:3px;border-radius:999px}
+.btn.ghost{
+  color:var(--primary);
+  background:linear-gradient(180deg,var(--surface-hi),var(--surface-lo));
+  box-shadow:var(--clay-shadow-sm);
+}
+.btn.ghost:hover{box-shadow:var(--clay-shadow)}
+
+/* ---------- hero ---------- */
+.hero{padding:56px 0 40px}
+.hero-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:48px;align-items:center}
+.eyebrow{
+  display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);background:linear-gradient(180deg,var(--surface-hi),var(--surface-lo));
+  padding:7px 14px;border-radius:999px;box-shadow:var(--clay-shadow-sm);margin-bottom:22px;
+}
+.hero h1{font-size:clamp(2.5rem,5.4vw,3.9rem);font-weight:800;letter-spacing:-.015em;margin-bottom:18px}
+.hero .sub{font-size:1.13rem;color:#3D5862;max-width:32em;margin-bottom:30px}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.hero-note{margin-top:18px;font-size:.8rem;color:var(--muted)}
+
+.vignette{position:relative}
+.vignette-frame{
+  border-radius:36px;overflow:hidden;
+  background:linear-gradient(180deg,var(--surface-hi),var(--surface-lo));
+  box-shadow:var(--clay-shadow);padding:10px;
+}
+.vignette-frame img{display:block;width:100%;height:auto;border-radius:28px}
+.chip{
+  position:absolute;display:flex;align-items:center;gap:9px;
+  background:linear-gradient(180deg,var(--surface-hi),var(--surface-lo));
+  border-radius:18px;box-shadow:var(--clay-shadow-sm);padding:10px 16px;
+}
+.chip .k{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:block}
+.chip .v{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:.95rem;color:var(--primary)}
+.chip .dot{width:9px;height:9px;border-radius:50%;background:var(--coral);flex:none;animation:breathe 5s ease-in-out infinite}
+.chip-1{top:8%;left:-7%}
+.chip-2{bottom:26%;right:-6%}
+.chip-3{bottom:-5%;left:12%}
+@keyframes breathe{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(.72);opacity:.55}}
+
+/* ---------- rings band ---------- */
+.rings-band{padding:48px 0 8px}
+.rings-card{
+  display:grid;grid-template-columns:auto 1fr;gap:40px;align-items:center;
+  background:linear-gradient(180deg,var(--surface-hi),var(--surface-lo));
+  border-radius:var(--radius);box-shadow:var(--clay-shadow);padding:38px 44px;
+}
+.rings{display:flex;gap:30px}
+.ring{position:relative;width:118px;text-align:center}
+.ring svg{display:block;margin:0 auto}
+.ring .track{stroke:var(--ice);fill:none}
+.ring .arc{fill:none;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset 1.4s cubic-bezier(.22,.9,.34,1)}
+.ring .pct{position:absolute;top:34px;left:0;right:0;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:1.02rem;color:var(--primary)}
+.ring .lbl{margin-top:10px;font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.rings-copy h2{font-size:1.65rem;font-weight:700;margin-bottom:10px}
+.rings-copy p{color:#3D5862;max-width:34em}
+.rings-copy .mono-note{margin-top:14px;font-size:.78rem;color:var(--muted)}
+
+/* ---------- sections ---------- */
+section{padding:64px 0}
+.sec-head{max-width:36em;margin-bottom:40px}
+.sec-head h2{font-size:clamp(1.7rem,3vw,2.3rem);font-weight:800;letter-spacing:-.01em;margin:14px 0 12px}
+.sec-head p{color:#3D5862}
+
+/* features */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.card{
+  background:linear-gradient(180deg,var(--surface-hi),var(--surface-lo));
+  border-radius:var(--radius);box-shadow:var(--clay-shadow);padding:32px 30px;
+  transition:transform .2s ease;
+}
+.card:hover{transform:translateY(-4px)}
+.card .icon{
+  width:58px;height:58px;border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;
+  background:linear-gradient(180deg,#fff, var(--ice-soft));box-shadow:var(--clay-shadow-sm);
+}
+.card .icon svg{stroke:var(--coral-deep)}
+.card h3{font-size:1.28rem;font-weight:700;margin-bottom:10px}
+.card p{color:#3D5862;font-size:.98rem}
+
+/* testimonials */
+.quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.quote{
+  background:linear-gradient(180deg,var(--surface-hi),var(--surface-lo));
+  border-radius:var(--radius);box-shadow:var(--clay-shadow);padding:32px 30px;
+  display:flex;flex-direction:column;gap:22px;
+}
+.quote p{font-size:1.02rem;color:var(--primary);font-weight:500}
+.quote .who{display:flex;align-items:center;gap:14px;margin-top:auto}
+.quote .who img{width:56px;height:56px;border-radius:50%;box-shadow:var(--clay-shadow-sm);display:block}
+.quote .who b{display:block;font-size:.95rem;color:var(--primary)}
+.quote .who span{display:block;font-size:.78rem;color:var(--muted);line-height:1.4}
+
+/* pricing */
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;align-items:stretch}
+.tier{
+  background:linear-gradient(180deg,var(--surface-hi),var(--surface-lo));
+  border-radius:var(--radius);box-shadow:var(--clay-shadow);padding:34px 30px;
+  display:flex;flex-direction:column;
+}
+.tier.featured{background:linear-gradient(180deg,#1B4250,var(--primary));color:#EAF4F8}
+.tier.featured h3,.tier.featured .price{color:#fff}
+.tier.featured .tier-tag{color:#A9C6D1}
+.tier.featured li{color:#D6E6EC}
+.tier h3{font-size:1.3rem;font-weight:800}
+.tier .tier-tag{font-size:.86rem;color:var(--muted);margin:2px 0 18px}
+.tier .price{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:1.7rem;color:var(--primary);margin-bottom:20px}
+.tier .price small{font-size:.8rem;color:inherit;opacity:.65;font-weight:400}
+.tier ul{list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:28px}
+.tier li{font-size:.95rem;color:#3D5862;padding-left:26px;position:relative}
+.tier li::before{
+  content:"";position:absolute;left:0;top:7px;width:12px;height:12px;border-radius:50%;
+  background:linear-gradient(180deg,#FF8E6B,var(--coral));box-shadow:inset 0 1px 0 rgba(255,255,255,.5);
+}
+.tier .btn{margin-top:auto}
+.badge{
+  align-self:flex-start;font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  background:var(--coral);color:#fff;padding:5px 12px;border-radius:999px;margin-bottom:16px;
+}
+
+/* demo band */
+.demo-band .band{
+  background:linear-gradient(180deg,#1B4250,var(--primary));
+  border-radius:34px;box-shadow:var(--clay-shadow);padding:56px 48px;text-align:center;color:#EAF4F8;
+}
+.demo-band h2{color:#fff;font-size:clamp(1.7rem,3vw,2.4rem);font-weight:800;margin-bottom:12px}
+.demo-band p{max-width:36em;margin:0 auto 30px;color:#C4DAE2}
+
+/* footer */
+footer{padding:44px 0 60px;font-size:.85rem;color:var(--muted)}
+.foot-row{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:center}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--primary)}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:none}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .reveal{opacity:1;transform:none}
+}
+@media (max-width:920px){
+  .hero-grid{grid-template-columns:1fr;gap:40px}
+  .rings-card{grid-template-columns:1fr;gap:28px;padding:32px 26px}
+  .rings{justify-content:center;flex-wrap:wrap}
+  .cards,.quotes,.tiers{grid-template-columns:1fr}
+  .chip-1{left:0}
+  .chip-2{right:0}
+}
+</style>
+</head>
+<body>
+
+<nav class="wrap">
+  <div class="nav-row">
+    <a class="wordmark" href="#top" aria-label="Waddle home">
+      <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect x="2" y="2" width="26" height="26" rx="10" fill="#14343F"/><rect x="8" y="12" width="14" height="6" rx="3" fill="#FF6B4A"/></svg>
+      Waddle
+    </a>
+    <div class="nav-links">
+      <a href="#features">Sensors</a>
+      <a href="#pricing">Pricing</a>
+      <a class="btn ghost" href="./demo.html">open the demo →</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero wrap" id="top">
+  <div class="hero-grid">
+    <div>
+      <span class="eyebrow">Flipper-worn · IP68 · Krill-proof</span>
+      <h1>Your colony is underperforming.</h1>
+      <p class="sub">Waddle is the flipper-worn activity band built for flightless seabirds. Steps, dives, huddle rotations. All of it on one dashboard, reviewed weekly, whether you asked or not.</p>
+      <div class="hero-ctas">
+        <a class="btn" href="#pricing">Band your colony</a>
+        <a class="btn ghost" href="./demo.html">open the demo →</a>
+      </div>
+      <p class="hero-note">Ships in flocks of 40. Banding is permanent. So is the data.</p>
+    </div>
+    <div class="vignette">
+      <div class="vignette-frame">
+        <img src="hero.webp" alt="An emperor penguin wearing a coral Waddle band on one flipper" width="1600" height="900">
+      </div>
+      <div class="chip chip-1"><span class="dot" aria-hidden="true"></span><span><span class="k">Waddle steps</span><span class="v">4,211</span></span></div>
+      <div class="chip chip-2"><span><span class="k">Dive depth</span><span class="v">-142 m</span></span></div>
+      <div class="chip chip-3"><span><span class="k">Huddle compliance</span><span class="v">61%</span></span></div>
+    </div>
+  </div>
+</header>
+
+<div class="rings-band wrap reveal">
+  <div class="rings-card">
+    <div class="rings" id="rings">
+      <div class="ring">
+        <svg width="96" height="96" viewBox="0 0 96 96" role="img" aria-label="Waddle ring at 82 percent">
+          <circle class="track" cx="48" cy="48" r="40" stroke-width="11"/>
+          <circle class="arc" cx="48" cy="48" r="40" stroke-width="11" stroke="#FF6B4A" data-pct="82"/>
+        </svg>
+        <span class="pct">82%</span>
+        <span class="lbl">Waddle</span>
+      </div>
+      <div class="ring">
+        <svg width="96" height="96" viewBox="0 0 96 96" role="img" aria-label="Dive ring at 64 percent">
+          <circle class="track" cx="48" cy="48" r="40" stroke-width="11"/>
+          <circle class="arc" cx="48" cy="48" r="40" stroke-width="11" stroke="#14343F" data-pct="64"/>
+        </svg>
+        <span class="pct">64%</span>
+        <span class="lbl">Dive</span>
+      </div>
+      <div class="ring">
+        <svg width="96" height="96" viewBox="0 0 96 96" role="img" aria-label="Shiver ring at 97 percent">
+          <circle class="track" cx="48" cy="48" r="40" stroke-width="11"/>
+          <circle class="arc" cx="48" cy="48" r="40" stroke-width="11" stroke="#7A96A3" data-pct="97"/>
+        </svg>
+        <span class="pct">97%</span>
+        <span class="lbl">Shiver</span>
+      </div>
+    </div>
+    <div class="rings-copy">
+      <h2>Three rings. Zero excuses.</h2>
+      <p>Close your Waddle, Dive, and Shiver rings every day. Shivering counts as light cardio, which is why the bar for it is higher. Rings reset at midnight, a concept we are introducing to the Antarctic.</p>
+      <p class="mono-note mono">avg. colony close rate: 12% · target: 100% · gap: yours to close</p>
+    </div>
+  </div>
+</div>
+
+<section id="features" class="wrap">
+  <div class="sec-head reveal">
+    <span class="eyebrow">Sensor suite</span>
+    <h2>Measurement is a form of caring.</h2>
+    <p>Every band ships with nine sensors, three of which we have identified a purpose for.</p>
+  </div>
+  <div class="cards">
+    <div class="card reveal">
+      <div class="icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 17l5-4 4 3 7-6"/><path d="M4 21h16"/></svg></div>
+      <h3>Toboggan Detection</h3>
+      <p>Sliding on your stomach is efficient, which is why it counts as zero steps. Waddle logs every toboggan as sedentary time and raises your daily step goal to compensate.</p>
+    </div>
+    <div class="card reveal">
+      <div class="icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3"/></svg></div>
+      <h3>Huddle Rotation Compliance</h3>
+      <p>Positional sensors track your place in the huddle to the centimeter. Linger in the warm middle and your entire rookery receives the report. Warmth is a shared resource. Act like it.</p>
+    </div>
+    <div class="card reveal">
+      <div class="icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v13"/><path d="M7 12l5 5 5-5"/><path d="M4 21h16"/></svg></div>
+      <h3>Dive Streaks</h3>
+      <p>Log one cold-water dive a day to keep your streak alive. Streaks pause for nothing, including molt, during which you physically cannot enter the water. Champions find a way.</p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="sec-head reveal">
+    <span class="eyebrow">Field reports</span>
+    <h2>The colony has feedback.</h2>
+    <p>Collected during exit interviews. Participation was mandatory.</p>
+  </div>
+  <div class="quotes">
+    <div class="quote reveal">
+      <p>“I spent 61% of winter at the edge of the huddle. Now there is a chart, and everyone has seen it.”</p>
+      <div class="who">
+        <img src="headshot-1.webp" alt="Gary, an Adélie penguin" width="56" height="56" loading="lazy">
+        <span><b>Gary</b><span>Edge Position Specialist, Huddle 12, Cape Crozier</span></span>
+      </div>
+    </div>
+    <div class="quote reveal">
+      <p>“Waddle flagged my toboggan commute as sedentary. I walk now. It takes four hours.”</p>
+      <div class="who">
+        <img src="headshot-2.webp" alt="Deborah, a gentoo penguin" width="56" height="56" loading="lazy">
+        <span><b>Deborah</b><span>Second-Clutch Parent of One, Boulders Beach</span></span>
+      </div>
+    </div>
+    <div class="quote reveal">
+      <p>“We banded 4,000 birds in November. Engagement is up 300%. We have not defined engagement.”</p>
+      <div class="who">
+        <img src="headshot-3.webp" alt="Dr. Lauren Pace, a researcher in a red parka" width="56" height="56" loading="lazy">
+        <span><b>Dr. Lauren Pace</b><span>Assistant Deputy Director of Colony Metrics, Ross Sea Field Station</span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing" class="wrap">
+  <div class="sec-head reveal">
+    <span class="eyebrow">Pricing</span>
+    <h2>Per flipper, per month, forever.</h2>
+    <p>All plans include the band, the guilt, and a monthly PDF nobody requested.</p>
+  </div>
+  <div class="tiers">
+    <div class="tier reveal">
+      <h3>Rookery</h3>
+      <p class="tier-tag">For colonies still in denial.</p>
+      <p class="price">$0</p>
+      <ul>
+        <li>1 shared band per 40 penguins</li>
+        <li>Weekly waddle totals, rounded down</li>
+        <li>Read-only access to your own body data</li>
+      </ul>
+      <a class="btn ghost" href="#top">Stay in denial</a>
+    </div>
+    <div class="tier featured reveal">
+      <span class="badge">Most banded</span>
+      <h3>Colony</h3>
+      <p class="tier-tag">Accountability at population scale.</p>
+      <p class="price">$14 <small>/penguin/mo</small></p>
+      <ul>
+        <li>Huddle rotation compliance reports</li>
+        <li>One molt-season streak freeze, per lifetime</li>
+        <li>Unlimited nudges, sent on your behalf</li>
+      </ul>
+      <a class="btn" href="#top">Band your colony</a>
+    </div>
+    <div class="tier reveal">
+      <h3>Emperor</h3>
+      <p class="tier-tag">For the serious brooder.</p>
+      <p class="price">$2,400 <small>/yr</small></p>
+      <ul>
+        <li>A researcher physically watches you</li>
+        <li>Dive data exported to a spreadsheet no one opens</li>
+        <li>Priority blizzard support, email only</li>
+      </ul>
+      <a class="btn ghost" href="#top">Be watched</a>
+    </div>
+  </div>
+</section>
+
+<section class="demo-band wrap">
+  <div class="band reveal">
+    <h2>See a colony in freefall.</h2>
+    <p>The live dashboard for Huddle 12, Cape Crozier. Sixty-one percent huddle compliance and dropping. Someone should nudge them. It could be you.</p>
+    <a class="btn" href="./demo.html">open the demo →</a>
+  </div>
+</section>
+
+<footer class="wrap">
+  <div class="foot-row">
+    <span>© 2026 Waddle Instruments, Inc. Not affiliated with any actual penguin.</span>
+    <a href="/">← theworstaistudioever</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var C = 2 * Math.PI * 40;
+  var arcs = document.querySelectorAll('.arc');
+  arcs.forEach(function(a){
+    a.style.strokeDasharray = C;
+    a.style.strokeDashoffset = reduce ? C * (1 - a.dataset.pct/100) : C;
+  });
+  if(!reduce){
+    var ringsSeen = false;
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(!e.isIntersecting) return;
+        if(e.target.id === 'rings' && !ringsSeen){
+          ringsSeen = true;
+          arcs.forEach(function(a){
+            requestAnimationFrame(function(){
+              a.style.strokeDashoffset = C * (1 - a.dataset.pct/100);
+            });
+          });
+        }
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      });
+    },{threshold:.18});
+    document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+    io.observe(document.getElementById('rings'));
+  } else {
+    document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); });
+  }
+})();
+</script>
+</body>
+</html>
