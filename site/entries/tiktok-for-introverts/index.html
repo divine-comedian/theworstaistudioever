@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Murmur · theworstaistudioever</title>
+<meta name="description" content="Short-form video for people who would rather not be perceived.">
+<meta property="og:title" content="Murmur — TikTok for introverts">
+<meta property="og:description" content="Short-form video for people who would rather not be perceived.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="demo-rain.webp">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Murmur — TikTok for introverts">
+<meta name="twitter:description" content="Short-form video for people who would rather not be perceived.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Karla:ital,wght@0,400;0,500;0,600;1,400&family=Red+Hat+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#E9E9F0;
+    --ink:#2B2C34;
+    --fg:#33343D;
+    --soft:#63656F;
+    --muted:#898B9A;
+    --iris:#55509F;
+    --iris-deep:#454186;
+    --sage:#7D9B77;
+    --sage-ink:#4E6B4A;
+    --hi:rgba(255,255,255,.85);
+    --lo:rgba(160,161,182,.48);
+    --raise:-7px -7px 16px var(--hi), 7px 7px 16px var(--lo);
+    --raise-sm:-4px -4px 9px var(--hi), 4px 4px 9px var(--lo);
+    --well:inset 4px 4px 9px rgba(160,161,182,.5), inset -4px -4px 9px rgba(255,255,255,.9);
+    --well-sm:inset 2px 2px 5px rgba(160,161,182,.5), inset -2px -2px 5px rgba(255,255,255,.9);
+    --r:22px;
+    --display:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --body:'Karla',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --mono:'Red Hat Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{
+    background:var(--bg);
+    color:var(--fg);
+    font-family:var(--body);
+    font-size:17px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--iris)}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--iris);outline-offset:3px;border-radius:6px}
+  .wrap{max-width:1060px;margin:0 auto;padding:0 28px}
+
+  /* header */
+  header{padding:30px 0}
+  .head-row{display:flex;align-items:center;justify-content:space-between}
+  .wordmark{
+    font-family:var(--display);font-weight:600;font-size:20px;letter-spacing:.02em;
+    color:var(--iris);text-decoration:none;
+  }
+  .head-note{font-family:var(--mono);font-size:12px;color:var(--muted)}
+  @media(max-width:560px){.head-note{display:none}}
+
+  /* hero */
+  .hero{padding:64px 0 88px}
+  .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:64px;align-items:center}
+  @media(max-width:880px){.hero-grid{grid-template-columns:1fr;gap:56px}}
+  .hero h1{
+    font-family:var(--display);font-weight:600;color:var(--ink);
+    font-size:clamp(30px,4.4vw,44px);line-height:1.18;letter-spacing:-.01em;
+    max-width:15ch;
+  }
+  .hero .sub{margin:26px 0 38px;max-width:46ch;color:var(--soft);font-size:18px}
+  .cta-row{display:flex;align-items:center;gap:26px;flex-wrap:wrap}
+  .btn{
+    display:inline-block;font-family:var(--display);font-weight:600;font-size:16px;
+    padding:16px 30px;border-radius:16px;border:0;cursor:pointer;text-decoration:none;
+    background:var(--iris);color:#fff;
+    box-shadow:var(--raise);
+    transition:box-shadow .35s ease,transform .35s ease,background .35s ease;
+  }
+  .btn:hover{background:var(--iris-deep)}
+  .btn:active{box-shadow:var(--well);transform:translateY(1px)}
+  .quiet-link{font-family:var(--display);font-weight:500;font-size:15px;color:var(--soft);text-decoration:none;border-bottom:1px solid var(--muted)}
+  .quiet-link:hover{color:var(--ink)}
+  .hero-foot{margin-top:34px;font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+
+  /* phone */
+  .phone{
+    width:min(310px,100%);margin:0 auto;
+    border-radius:38px;padding:18px;background:var(--bg);
+    box-shadow:var(--raise);
+  }
+  .screen{border-radius:26px;box-shadow:var(--well);padding:12px;background:var(--bg)}
+  .screen img{display:block;width:100%;border-radius:18px;aspect-ratio:3/4;object-fit:cover}
+  .screen-meta{padding:12px 6px 4px}
+  .views-chip{
+    display:inline-block;font-family:var(--mono);font-size:11px;color:var(--soft);
+    padding:6px 11px;border-radius:999px;box-shadow:var(--well-sm)
+  }
+  .screen-cap{margin-top:9px;font-size:14px;color:var(--soft)}
+  .noted-row{display:flex;justify-content:flex-end;padding:2px 6px 4px}
+  .noted-btn{
+    font-family:var(--display);font-weight:600;font-size:14px;color:var(--sage-ink);
+    background:var(--bg);border:0;border-radius:12px;padding:10px 18px;cursor:pointer;
+    box-shadow:var(--raise-sm);transition:box-shadow .35s ease,color .35s ease,opacity .35s ease;
+  }
+  .noted-btn.done{box-shadow:var(--well-sm);cursor:default;opacity:.75}
+
+  /* sections */
+  section{padding:74px 0}
+  .eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:.08em;color:var(--muted);margin-bottom:14px}
+  h2{
+    font-family:var(--display);font-weight:600;color:var(--ink);
+    font-size:clamp(22px,3vw,29px);line-height:1.25;letter-spacing:-.005em;
+    max-width:26ch;margin-bottom:44px;
+  }
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:30px}
+  @media(max-width:880px){.cards{grid-template-columns:1fr}}
+  .card{
+    background:var(--bg);border-radius:var(--r);padding:34px 30px;
+    box-shadow:var(--raise);
+  }
+  .card h3{font-family:var(--display);font-weight:600;font-size:18px;color:var(--ink);margin-bottom:13px}
+  .card p{font-size:15.5px;color:var(--soft)}
+  .card .stat{
+    display:inline-block;margin-bottom:20px;font-family:var(--mono);font-size:12px;color:var(--soft);
+    padding:7px 12px;border-radius:999px;box-shadow:var(--well-sm)
+  }
+
+  /* testimonials */
+  .t-card{display:flex;flex-direction:column;gap:22px}
+  .t-quote{font-size:15.5px;color:var(--fg)}
+  .t-who{display:flex;align-items:center;gap:14px}
+  .t-ava{
+    width:46px;height:46px;border-radius:50%;flex:0 0 46px;
+    display:grid;place-items:center;box-shadow:var(--well-sm);
+    font-family:var(--display);font-weight:600;font-size:14px;color:var(--muted);
+  }
+  .t-name{font-family:var(--display);font-weight:600;font-size:14.5px;color:var(--ink)}
+  .t-title{font-size:13px;color:var(--muted);line-height:1.45}
+
+  /* pricing */
+  .tier .price{font-family:var(--mono);font-size:26px;color:var(--ink);margin:4px 0 8px}
+  .tier .tier-tag{font-size:14.5px;color:var(--soft);font-style:italic;margin-bottom:22px}
+  .tier ul{list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:28px}
+  .tier li{font-size:14.5px;color:var(--soft);padding-left:22px;position:relative}
+  .tier li::before{
+    content:"";position:absolute;left:0;top:8px;width:8px;height:8px;border-radius:50%;
+    box-shadow:var(--well-sm);
+  }
+  .tier .tier-btn{
+    display:inline-block;font-family:var(--display);font-weight:600;font-size:14.5px;
+    color:var(--iris);text-decoration:none;padding:12px 22px;border-radius:13px;
+    box-shadow:var(--raise-sm);transition:box-shadow .35s ease;
+  }
+  .tier .tier-btn:active{box-shadow:var(--well-sm)}
+  .tier-flag{
+    display:inline-block;margin-bottom:18px;font-family:var(--mono);font-size:11px;
+    color:var(--soft);padding:6px 11px;border-radius:999px;box-shadow:var(--well-sm)
+  }
+
+  /* demo band */
+  .demo-band{padding:30px 0 96px}
+  .demo-panel{
+    border-radius:var(--r);padding:52px 46px;box-shadow:var(--well);
+    display:flex;align-items:center;justify-content:space-between;gap:34px;flex-wrap:wrap;
+  }
+  .demo-panel h2{margin-bottom:8px}
+  .demo-panel p{color:var(--soft);max-width:44ch}
+
+  /* footer */
+  footer{padding:44px 0 60px}
+  .foot-row{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+  .foot-legal{font-family:var(--mono);font-size:11.5px;color:var(--muted);max-width:52ch}
+  .foot-back{font-size:14px;color:var(--soft);text-decoration:none}
+  .foot-back:hover{color:var(--ink)}
+
+  /* entrances */
+  .rise{opacity:0;transform:translateY(6px);transition:opacity .7s ease,transform .7s ease}
+  .rise.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){
+    .rise{opacity:1;transform:none;transition:none}
+    .btn,.noted-btn,.tier-btn{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <div class="head-row">
+    <a class="wordmark" href="#">murmur</a>
+    <span class="head-note">platform loudness: 4% · nominal</span>
+  </div>
+</header>
+
+<main>
+  <div class="hero wrap">
+    <div class="hero-grid">
+      <div>
+        <h1>Post like nobody's watching. Nobody is.</h1>
+        <p class="sub">Murmur caps every video at three views, posts it on your behalf at 3:41 a.m., and disables comments at the infrastructure level. Your content is safe with us. From everyone.</p>
+        <div class="cta-row">
+          <a class="btn" href="#pricing">start not being seen</a>
+          <a class="quiet-link" href="./demo.html">open the demo →</a>
+        </div>
+        <p class="hero-foot">no sign-up bonus. no referral program. please don't tell anyone about us.</p>
+      </div>
+      <div class="phone" aria-label="A Murmur video that nobody will see">
+        <div class="screen">
+          <img src="demo-rain.webp" alt="A quiet video still: rain on a window at dusk" width="600" height="800">
+          <div class="screen-meta">
+            <span class="views-chip">0 of 3 permitted views used</span>
+            <p class="screen-cap">rain on my window, 41 seconds</p>
+          </div>
+        </div>
+        <div class="noted-row">
+          <button class="noted-btn" id="hero-noted" type="button">noted.</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="wrap" id="features">
+    <p class="eyebrow rise">infrastructure</p>
+    <h2 class="rise">Every feature exists to keep your reach as low as we promised.</h2>
+    <div class="cards">
+      <div class="card rise">
+        <span class="stat">cap: 3 views, CDN-enforced</span>
+        <h3>Virality Protection</h3>
+        <p>Every video is hard-capped at three views, enforced at the CDN. If a clip shows early signs of trending, our suppression model throttles it before anyone you know finds out. We have never had an outage. We would know; we watch everything so you don't have to be watched.</p>
+      </div>
+      <div class="card rise">
+        <span class="stat">publish: 03:41 local</span>
+        <h3>Scheduled Obscurity</h3>
+        <p>You film whenever you want. Murmur publishes on your behalf at 3:41 a.m. local time, the quietest minute on the internet according to our research team. Engagement drops 99.2% relative to peak hours. That is the product working.</p>
+      </div>
+      <div class="card rise">
+        <span class="stat">feedback: 1 receipt, max</span>
+        <h3>The noted. Receipt</h3>
+        <p>No likes, no comments, no duets, no stitches. A viewer may acknowledge your video exactly once with a silent noted. You will not be told who, or when, or whether. Most customers describe this as enough.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap" id="testimonials">
+    <p class="eyebrow rise">user statements, submitted in writing</p>
+    <h2 class="rise">Nobody saw their videos. Here's what they said about it.</h2>
+    <div class="cards">
+      <div class="card t-card rise">
+        <p class="t-quote">"I've posted 4,112 videos on Murmur and not one person has brought it up at work. For the first time in my life I feel safe creating."</p>
+        <div class="t-who">
+          <span class="t-ava" aria-hidden="true">DO</span>
+          <span>
+            <span class="t-name">Dana Okafor</span><br>
+            <span class="t-title">Senior Compliance Analyst &amp; Weekend Ceramicist</span>
+          </span>
+        </div>
+      </div>
+      <div class="card t-card rise">
+        <p class="t-quote">"Someone noted. my video in March. I don't know who. I don't know which video. I think about it every day. Five stars."</p>
+        <div class="t-who">
+          <span class="t-ava" aria-hidden="true">ML</span>
+          <span>
+            <span class="t-name">Marcus Leung</span><br>
+            <span class="t-title">Assistant Regional Librarian, Non-Fiction Annex</span>
+          </span>
+        </div>
+      </div>
+      <div class="card t-card rise">
+        <p class="t-quote">"On TikTok my dance video got two million views and I had to change grocery stores. On Murmur it got two, and one of them was me."</p>
+        <div class="t-who">
+          <span class="t-ava" aria-hidden="true">PR</span>
+          <span>
+            <span class="t-name">Priya Raghunathan</span><br>
+            <span class="t-title">Former Youth Group Praise Dance Captain (retired)</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap" id="pricing">
+    <p class="eyebrow rise">pricing</p>
+    <h2 class="rise">Pay us to show your content to fewer people. Or to none.</h2>
+    <div class="cards">
+      <div class="card tier rise">
+        <h3>Present</h3>
+        <p class="price">$0</p>
+        <p class="tier-tag">You're on the platform. That's already a lot.</p>
+        <ul>
+          <li>Three-view cap, standard enforcement</li>
+          <li>One noted. digest per quarter</li>
+          <li>3:41 a.m. posting window</li>
+          <li>Profile visible to search engines (we're working on it)</li>
+        </ul>
+        <a class="tier-btn" href="#">join quietly</a>
+      </div>
+      <div class="card tier rise">
+        <span class="tier-flag">most avoided</span>
+        <h3>Absent</h3>
+        <p class="price">$19/mo</p>
+        <p class="tier-tag">All of the posting, none of the exposure.</p>
+        <ul>
+          <li>View cap lowered to zero</li>
+          <li>Profile returns a 404 to mutuals</li>
+          <li>Drafts folder with 40 TB of storage</li>
+          <li>Read receipts disabled for you and about you</li>
+        </ul>
+        <a class="tier-btn" href="#">disappear a little</a>
+      </div>
+      <div class="card tier rise">
+        <h3>Witness Protection</h3>
+        <p class="price">$499/mo</p>
+        <p class="tier-tag">For creators with a real following, and a real problem with that.</p>
+        <ul>
+          <li>Content deleted during upload, not after</li>
+          <li>Decoy videos posted by a similar-looking contractor</li>
+          <li>Quarterly letter confirming nothing happened</li>
+          <li>Priority support, by mail</li>
+        </ul>
+        <a class="tier-btn" href="#">request intake</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="demo-band wrap">
+    <div class="demo-panel rise">
+      <div>
+        <h2>Try the feed. Quietly.</h2>
+        <p>Three videos, a social battery, and one noted. button that works exactly once. It's everything the product does, which is very little, on purpose.</p>
+      </div>
+      <a class="btn" href="./demo.html">open the demo →</a>
+    </div>
+  </div>
+</main>
+
+<footer class="wrap">
+  <div class="foot-row">
+    <a class="foot-back" href="/">← theworstaistudioever</a>
+    <p class="foot-legal">murmur inc. · a wholly unobserved subsidiary · videos are stored, capped, and eventually misplaced in compliance with our retention policy</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var risers = document.querySelectorAll('.rise');
+  if (reduce || !('IntersectionObserver' in window)) {
+    risers.forEach(function(el){ el.classList.add('in'); });
+  } else {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.15 });
+    risers.forEach(function(el){ io.observe(el); });
+  }
+
+  var noted = document.getElementById('hero-noted');
+  if (noted) {
+    noted.addEventListener('click', function(){
+      if (noted.classList.contains('done')) return;
+      noted.classList.add('done');
+      noted.setAttribute('aria-disabled','true');
+      noted.textContent = 'noted.';
+      noted.title = 'You have acknowledged this video. This cannot be repeated or confirmed.';
+    });
+  }
+})();
+</script>
+</body>
+</html>

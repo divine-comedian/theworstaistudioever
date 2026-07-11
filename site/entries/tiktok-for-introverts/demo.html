@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Murmur — the feed · theworstaistudioever</title>
+<meta name="description" content="The Murmur feed. Three videos, a social battery, and one noted. button that works exactly once.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Karla:ital,wght@0,400;0,500;0,600;1,400&family=Red+Hat+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#E9E9F0;
+    --ink:#2B2C34;
+    --fg:#33343D;
+    --soft:#63656F;
+    --muted:#898B9A;
+    --iris:#55509F;
+    --iris-deep:#454186;
+    --sage:#7D9B77;
+    --sage-ink:#4E6B4A;
+    --hi:rgba(255,255,255,.85);
+    --lo:rgba(160,161,182,.48);
+    --raise:-7px -7px 16px var(--hi), 7px 7px 16px var(--lo);
+    --raise-sm:-4px -4px 9px var(--hi), 4px 4px 9px var(--lo);
+    --well:inset 4px 4px 9px rgba(160,161,182,.5), inset -4px -4px 9px rgba(255,255,255,.9);
+    --well-sm:inset 2px 2px 5px rgba(160,161,182,.5), inset -2px -2px 5px rgba(255,255,255,.9);
+    --display:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --body:'Karla',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --mono:'Red Hat Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6;
+    min-height:100dvh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased;
+  }
+  a:focus-visible,button:focus-visible{outline:2px solid var(--iris);outline-offset:3px;border-radius:6px}
+
+  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 24px;flex-wrap:wrap}
+  .back{font-size:14px;color:var(--soft);text-decoration:none}
+  .back:hover{color:var(--ink)}
+  .top-right{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .wordmark{font-family:var(--display);font-weight:600;font-size:17px;color:var(--iris)}
+
+  .battery{display:flex;align-items:center;gap:10px}
+  .battery-label{font-family:var(--mono);font-size:11px;color:var(--soft)}
+  .battery-track{width:110px;height:14px;border-radius:999px;box-shadow:var(--well-sm);overflow:hidden}
+  .battery-fill{height:100%;border-radius:999px;background:var(--iris);opacity:.75;transition:width .5s ease}
+  .battery-fill.low{background:#A6607B}
+  @media (prefers-reduced-motion:no-preference){
+    .battery-fill{animation:breathe 8s ease-in-out infinite}
+    @keyframes breathe{0%,100%{opacity:.75}50%{opacity:.6}}
+  }
+
+  .dnd{display:flex;align-items:center;gap:9px;background:none;border:0;cursor:pointer;font-family:var(--mono);font-size:11px;color:var(--soft)}
+  .dnd-pill{width:38px;height:20px;border-radius:999px;box-shadow:var(--well-sm);position:relative}
+  .dnd-dot{position:absolute;top:3px;right:3px;width:14px;height:14px;border-radius:50%;background:var(--iris);opacity:.8}
+  @media(max-width:640px){.battery-label span.hide-sm{display:none}}
+
+  main{flex:1;display:grid;place-items:center;padding:12px 24px 34px}
+  .stage{width:min(340px,100%);position:relative}
+
+  .phone{border-radius:38px;padding:16px;box-shadow:var(--raise);touch-action:pan-x}
+  .screen{border-radius:26px;box-shadow:var(--well);padding:12px;position:relative}
+  .frame{border-radius:18px;overflow:hidden;aspect-ratio:3/4;position:relative}
+  .frame img{width:100%;height:100%;object-fit:cover;display:block}
+  .frame .still{width:100%;height:100%}
+  .still-ceiling{background:linear-gradient(175deg,#DFDFE9 0%,#D6D6E2 55%,#CDCDDA 100%)}
+  .views-chip{
+    position:absolute;top:10px;left:10px;font-family:var(--mono);font-size:10.5px;color:var(--soft);
+    background:var(--bg);padding:6px 10px;border-radius:999px;box-shadow:var(--raise-sm);opacity:.94
+  }
+  .meta{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding:12px 4px 2px}
+  .cap{font-size:14px;color:var(--soft);max-width:24ch}
+  .cap .by{display:block;font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:3px}
+  .noted-btn{
+    font-family:var(--display);font-weight:600;font-size:13.5px;color:var(--sage-ink);
+    background:var(--bg);border:0;border-radius:12px;padding:9px 16px;cursor:pointer;flex:0 0 auto;
+    box-shadow:var(--raise-sm);transition:box-shadow .35s ease,opacity .35s ease;
+  }
+  .noted-btn.done{box-shadow:var(--well-sm);cursor:default;opacity:.75}
+
+  .navcol{
+    position:absolute;right:-64px;top:50%;transform:translateY(-50%);
+    display:flex;flex-direction:column;gap:14px;
+  }
+  @media(max-width:520px){.navcol{position:static;transform:none;flex-direction:row;justify-content:center;margin-top:18px}}
+  .nav-btn{
+    width:46px;height:46px;border-radius:50%;border:0;cursor:pointer;background:var(--bg);
+    color:var(--soft);font-size:17px;box-shadow:var(--raise-sm);
+    transition:box-shadow .35s ease,color .35s ease;
+  }
+  .nav-btn:hover{color:var(--ink)}
+  .nav-btn:active{box-shadow:var(--well-sm)}
+  .nav-btn[disabled]{opacity:.45;cursor:default}
+
+  .hint{margin-top:16px;text-align:center;font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+  .toast{
+    position:fixed;left:50%;bottom:26px;transform:translateX(-50%);
+    font-family:var(--mono);font-size:12px;color:var(--soft);background:var(--bg);
+    padding:11px 18px;border-radius:999px;box-shadow:var(--raise-sm);
+    opacity:0;pointer-events:none;transition:opacity .4s ease;
+  }
+  .toast.show{opacity:1}
+
+  .lock{
+    position:fixed;inset:0;background:var(--bg);display:none;
+    place-items:center;text-align:center;padding:28px;z-index:10;
+  }
+  .lock.on{display:grid}
+  .lock-card{max-width:400px;border-radius:26px;padding:46px 38px;box-shadow:var(--well)}
+  .lock-card h1{font-family:var(--display);font-weight:600;font-size:24px;color:var(--ink);line-height:1.25;margin-bottom:14px}
+  .lock-card p{font-size:15px;color:var(--soft);margin-bottom:22px}
+  .lock-timer{font-family:var(--mono);font-size:24px;color:var(--ink);display:block;margin-bottom:26px}
+  .lock-btn{
+    font-family:var(--display);font-weight:600;font-size:14.5px;color:var(--iris);
+    background:var(--bg);border:0;border-radius:13px;padding:13px 24px;cursor:pointer;
+    box-shadow:var(--raise-sm);transition:box-shadow .35s ease;
+  }
+  .lock-btn:active{box-shadow:var(--well-sm)}
+  .lock-note{margin-top:16px;font-family:var(--mono);font-size:11px;color:var(--muted);min-height:16px}
+  .lock-back{display:inline-block;margin-top:22px;font-size:13.5px;color:var(--soft)}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <div class="top-right">
+    <button class="dnd" id="dnd" type="button" aria-pressed="true" title="do not disturb is structural">
+      <span>do not disturb</span>
+      <span class="dnd-pill" aria-hidden="true"><span class="dnd-dot"></span></span>
+    </button>
+    <div class="battery" aria-label="Social battery">
+      <span class="battery-label"><span class="hide-sm">social battery </span><span id="batt-num">100%</span></span>
+      <span class="battery-track"><span class="battery-fill" id="batt-fill" style="width:100%"></span></span>
+    </div>
+    <span class="wordmark">murmur</span>
+  </div>
+</div>
+
+<main>
+  <div class="stage">
+    <div class="phone" id="phone">
+      <div class="screen">
+        <div class="frame" id="frame">
+          <span class="views-chip">0 of 3 permitted views used</span>
+        </div>
+        <div class="meta">
+          <p class="cap"><span id="cap-text"></span><span class="by" id="cap-by"></span></p>
+          <button class="noted-btn" id="noted" type="button">noted.</button>
+        </div>
+      </div>
+    </div>
+    <div class="navcol">
+      <button class="nav-btn" id="prev" type="button" aria-label="Previous video">↑</button>
+      <button class="nav-btn" id="next" type="button" aria-label="Next video">↓</button>
+    </div>
+    <p class="hint">arrow keys or swipe · each swipe costs 10% of you</p>
+  </div>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="lock" id="lock" role="dialog" aria-modal="true" aria-labelledby="lock-title">
+  <div class="lock-card">
+    <h1 id="lock-title">You've seen enough today.</h1>
+    <p>Your social battery is empty. The feed will come back when you've had some time to yourself, which we've scheduled on your behalf.</p>
+    <span class="lock-timer" id="lock-timer">4:00:00</span>
+    <button class="lock-btn" id="recharge" type="button">recharge faster</button>
+    <p class="lock-note" id="lock-note"></p>
+    <br>
+    <a class="lock-back" href="./index.html">← back to the pitch</a>
+  </div>
+</div>
+
+<script>
+(function(){
+  var videos = [
+    { img:'demo-rain.webp',  alt:'Rain on a window at dusk',            cap:'rain on my window, 41 seconds',            by:'@quietdana · posted 3:41 a.m.' },
+    { img:'demo-plant.webp', alt:'A houseplant on a windowsill',        cap:"my plant. it's fine. 12 seconds",          by:'@marcus_shh · posted 3:41 a.m.' },
+    { img:'demo-cat.webp',   alt:'A cat facing away from the camera',   cap:'my cat, declining to participate, 8 seconds', by:'@pr_offline · posted 3:41 a.m.' },
+    { css:'still-ceiling',                                              cap:'the ceiling. no updates. 3 minutes',       by:'@yes_still_here · posted 3:41 a.m.' }
+  ];
+
+  var idx = 0, battery = 100;
+  var notedState = videos.map(function(){ return false; });
+
+  var frame = document.getElementById('frame');
+  var capText = document.getElementById('cap-text');
+  var capBy = document.getElementById('cap-by');
+  var notedBtn = document.getElementById('noted');
+  var battNum = document.getElementById('batt-num');
+  var battFill = document.getElementById('batt-fill');
+  var toast = document.getElementById('toast');
+  var lock = document.getElementById('lock');
+  var toastTimer = null, media = null;
+
+  function say(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2600);
+  }
+
+  function render(){
+    var v = videos[idx];
+    if (media) media.remove();
+    if (v.img) {
+      media = document.createElement('img');
+      media.src = v.img;
+      media.alt = v.alt;
+      media.width = 600; media.height = 800;
+    } else {
+      media = document.createElement('div');
+      media.className = 'still ' + v.css;
+      media.setAttribute('role','img');
+      media.setAttribute('aria-label','A plain gray ceiling');
+    }
+    frame.appendChild(media);
+    capText.textContent = v.cap;
+    capBy.textContent = v.by;
+    notedBtn.classList.toggle('done', notedState[idx]);
+    notedBtn.setAttribute('aria-disabled', String(notedState[idx]));
+  }
+
+  function drain(){
+    battery = Math.max(0, battery - 10);
+    battNum.textContent = battery + '%';
+    battFill.style.width = battery + '%';
+    battFill.classList.toggle('low', battery <= 30);
+    if (battery === 0) engageLock();
+  }
+
+  function go(step){
+    if (battery === 0) return;
+    idx = (idx + step + videos.length) % videos.length;
+    render();
+    drain();
+  }
+
+  notedBtn.addEventListener('click', function(){
+    if (notedState[idx]) { say('you already noted this. once is the whole feature.'); return; }
+    notedState[idx] = true;
+    notedBtn.classList.add('done');
+    notedBtn.setAttribute('aria-disabled','true');
+    say('noted. the creator will not be informed.');
+  });
+
+  document.getElementById('next').addEventListener('click', function(){ go(1); });
+  document.getElementById('prev').addEventListener('click', function(){ go(-1); });
+
+  document.addEventListener('keydown', function(e){
+    if (lock.classList.contains('on')) return;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { e.preventDefault(); go(1); }
+    if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+  });
+
+  var touchY = null;
+  var phone = document.getElementById('phone');
+  phone.addEventListener('touchstart', function(e){ touchY = e.changedTouches[0].clientY; }, {passive:true});
+  phone.addEventListener('touchend', function(e){
+    if (touchY === null) return;
+    var dy = e.changedTouches[0].clientY - touchY;
+    if (Math.abs(dy) > 50) go(dy < 0 ? 1 : -1);
+    touchY = null;
+  }, {passive:true});
+
+  document.getElementById('dnd').addEventListener('click', function(){
+    say('do not disturb cannot be turned off. it is the platform.');
+  });
+
+  var remaining = 4 * 60 * 60, lockInterval = null;
+  function fmt(s){
+    var h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
+    return h + ':' + String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
+  }
+  function engageLock(){
+    lock.classList.add('on');
+    document.getElementById('lock-timer').textContent = fmt(remaining);
+    lockInterval = setInterval(function(){
+      remaining = Math.max(0, remaining - 1);
+      document.getElementById('lock-timer').textContent = fmt(remaining);
+    }, 1000);
+  }
+  document.getElementById('recharge').addEventListener('click', function(){
+    document.getElementById('lock-note').textContent = "that's not how batteries work.";
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
