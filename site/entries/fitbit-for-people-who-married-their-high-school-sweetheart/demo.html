@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Steady. Console · theworstaistudioever</title>
+<meta name="description" content="The Steady shared-vitals console. One pulse, one streak, one proximity log.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500&family=Mulish:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#6B2233;
+    --accent:#C94F63;
+    --bg:#FAF3ED;
+    --card:#FFFFFF;
+    --fg:#2E2228;
+    --muted:#9C8288;
+    --ink:#241B1F;
+    --hairline:rgba(107,34,51,.24);
+    --display:'Cormorant Garamond', Georgia, serif;
+    --body:'Mulish', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --mono:'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.55}
+  a{color:var(--primary)}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+  button{font-family:var(--body);cursor:pointer}
+
+  /* top chrome */
+  .bar{
+    display:flex;align-items:center;gap:18px;justify-content:space-between;
+    padding:13px 22px;border-bottom:1px solid var(--hairline);background:var(--card);
+  }
+  .bar .back{font-size:.8rem;text-decoration:none;font-weight:600}
+  .bar .back:hover{color:var(--accent)}
+  .bar .mark{font-family:var(--display);font-weight:700;font-size:1.25rem;color:var(--primary)}
+  .bar .household{font-family:var(--mono);font-size:.68rem;color:var(--muted);letter-spacing:.1em;text-align:right}
+  @media (max-width:640px){.bar .household{display:none}}
+
+  .shell{max-width:1100px;margin:0 auto;padding:26px 22px 60px}
+  .console-head{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+  .console-head h1{font-family:var(--display);font-weight:600;font-size:1.9rem;color:var(--ink)}
+  .console-head .sync{font-family:var(--mono);font-size:.68rem;color:var(--muted);letter-spacing:.08em}
+
+  .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:20px}
+  @media (max-width:880px){.grid{grid-template-columns:1fr}}
+  .col{display:grid;gap:20px;align-content:start}
+
+  .card{background:var(--card);border:1px solid var(--hairline);border-radius:5px;padding:22px 22px 24px}
+  .card .k{
+    font-family:var(--mono);font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+  }
+  .chip{
+    font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;border:1px solid var(--hairline);
+    border-radius:3px;padding:2px 8px;color:var(--primary);text-transform:none;
+  }
+  .chip.rose{border-color:var(--accent);color:var(--accent)}
+
+  /* pulse card */
+  .pulse-num{
+    font-family:var(--mono);font-weight:500;font-size:4.4rem;line-height:1;color:var(--primary);
+    font-variant-numeric:tabular-nums;margin-top:14px;display:flex;align-items:baseline;gap:12px;
+  }
+  .pulse-num .unit{font-size:.85rem;color:var(--muted)}
+  .trace{width:100%;height:74px;margin-top:10px;display:block}
+  .trace path{fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .pulse-foot{font-size:.8rem;color:var(--muted);margin-top:8px}
+
+  /* streak card */
+  .streak-days{
+    font-family:var(--mono);font-weight:500;font-size:2.6rem;color:var(--primary);
+    font-variant-numeric:tabular-nums;margin-top:12px;
+  }
+  .streak-sub{font-size:.82rem;color:var(--muted);margin-top:2px}
+  .btn{
+    display:inline-block;border:1px solid var(--accent);background:var(--accent);color:#fff;
+    font-weight:700;font-size:.78rem;letter-spacing:.05em;border-radius:3px;padding:9px 16px;
+    transition:transform .12s ease, background .15s ease;
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn:hover{background:var(--primary);border-color:var(--primary)}
+  .btn.ghost{background:transparent;color:var(--primary);border-color:var(--primary)}
+  .btn.ghost:hover{background:var(--primary);color:var(--bg)}
+  .btn[disabled]{opacity:.5;cursor:not-allowed}
+  .streak-row{display:flex;gap:10px;align-items:center;margin-top:16px;flex-wrap:wrap}
+  .filed{font-family:var(--mono);font-size:.68rem;color:var(--accent);letter-spacing:.04em;display:none}
+  .filed.show{display:inline}
+
+  /* proximity feed */
+  .feed-filters{display:flex;gap:8px;margin-top:14px}
+  .feed-filters button{
+    font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;
+    background:transparent;border:1px solid var(--hairline);border-radius:3px;padding:5px 12px;color:var(--muted);
+  }
+  .feed-filters button.on{border-color:var(--primary);color:var(--primary);font-weight:500}
+  .feed{list-style:none;margin-top:14px;display:grid;gap:10px}
+  .evt{
+    border:1px solid var(--hairline);border-left:3px solid var(--accent);border-radius:4px;
+    padding:12px 14px;display:flex;justify-content:space-between;gap:12px;align-items:center;
+    transition:opacity .3s ease;
+  }
+  .evt .meta{font-family:var(--mono);font-size:.66rem;color:var(--muted);letter-spacing:.04em}
+  .evt .desc{font-size:.86rem;color:var(--fg);margin-top:3px}
+  .evt .noted-btn{
+    font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;
+    background:transparent;border:1px solid var(--primary);color:var(--primary);border-radius:3px;padding:6px 12px;white-space:nowrap;
+  }
+  .evt .noted-btn:hover{background:var(--primary);color:var(--bg)}
+  .evt.is-noted{border-left-color:var(--hairline);opacity:.55}
+  .evt.is-noted .noted-btn{border-color:var(--hairline);color:var(--muted);pointer-events:none}
+  .feed-empty{
+    display:none;border:1px dashed var(--hairline);border-radius:4px;padding:18px;
+    text-align:center;font-size:.84rem;color:var(--muted);margin-top:14px;
+  }
+
+  /* ledger */
+  .ledger{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;align-items:end;height:120px;margin-top:18px}
+  .ledger .bar-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+  .ledger .lbar{width:100%;max-width:34px;background:var(--primary);border-radius:2px 2px 0 0;opacity:.85}
+  .ledger .lbar.worst{background:var(--accent);opacity:1}
+  .ledger .dl{font-family:var(--mono);font-size:.62rem;color:var(--muted)}
+  .ledger-foot{font-size:.78rem;color:var(--muted);margin-top:12px}
+
+  /* individual mode */
+  .lockrow{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:14px}
+  .lockrow .txt{font-size:.86rem;color:var(--fg)}
+  .toggle{
+    width:52px;height:28px;border-radius:14px;border:1px solid var(--hairline);background:var(--bg);
+    position:relative;flex:none;
+  }
+  .toggle::after{
+    content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;
+    background:var(--muted);
+  }
+  .locknote{font-family:var(--mono);font-size:.64rem;color:var(--muted);letter-spacing:.06em;margin-top:10px}
+
+  /* modal */
+  .scrim{
+    position:fixed;inset:0;background:rgba(36,27,31,.5);display:none;
+    align-items:center;justify-content:center;padding:22px;z-index:50;
+  }
+  .scrim.open{display:flex}
+  .modal{
+    background:var(--card);border:1px solid var(--primary);border-radius:5px;max-width:430px;width:100%;
+    padding:30px 28px;
+  }
+  .modal h2{font-family:var(--display);font-weight:700;font-size:1.5rem;color:var(--primary);line-height:1.2}
+  .modal p{font-size:.88rem;margin-top:12px}
+  .modal .fine{font-family:var(--mono);font-size:.64rem;color:var(--muted);margin-top:14px;letter-spacing:.04em;line-height:1.6}
+  .modal .actions{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+
+  @media (prefers-reduced-motion: reduce){
+    .btn,.evt{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="mark">Steady.</span>
+  <span class="household">THE WHEELESS HOUSEHOLD · PAIRED 6,847 DAYS</span>
+</div>
+
+<main class="shell">
+  <div class="console-head">
+    <h1>Shared vitals</h1>
+    <span class="sync" id="sync">LAST SYNC: BOTH WRISTS · 41s AGO</span>
+  </div>
+
+  <div class="grid">
+    <div class="col">
+
+      <section class="card" aria-labelledby="pulse-k">
+        <div class="k" id="pulse-k">Couple Pulse <span class="chip rose">LIVE · MERGED</span></div>
+        <div class="pulse-num"><span id="bpm">71</span><span class="unit">bpm, both of you</span></div>
+        <svg class="trace" viewBox="0 0 600 74" preserveAspectRatio="none" aria-hidden="true">
+          <path id="trace-path" d=""/>
+        </svg>
+        <p class="pulse-foot">Elevated 21:00 to 21:40 on Tuesday. The device does not ask why. It records.</p>
+      </section>
+
+      <section class="card" aria-labelledby="feed-k">
+        <div class="k" id="feed-k">Roads Not Taken™ <span class="chip">3 EVENTS THIS WEEK</span></div>
+        <div class="feed-filters" role="group" aria-label="Filter events">
+          <button class="on" data-filter="all">All</button>
+          <button data-filter="open">Unnoted</button>
+          <button data-filter="noted">Noted</button>
+        </div>
+        <ul class="feed" id="feed">
+          <li class="evt" data-state="open">
+            <div>
+              <div class="meta">TUE 07:42 · 480 FT · COSTCO PARKING STRUCTURE</div>
+              <div class="desc">Subject: someone from AP Chemistry, 2003. Band vibrated twice. No action recommended.</div>
+            </div>
+            <button class="noted-btn">Noted</button>
+          </li>
+          <li class="evt" data-state="open">
+            <div>
+              <div class="meta">THU 12:15 · 220 FT · FOOD COURT, EASTGATE MALL</div>
+              <div class="desc">Subject: prom committee, affiliation unclear. Band vibrated twice. Your pulse did not change. Recorded anyway.</div>
+            </div>
+            <button class="noted-btn">Noted</button>
+          </li>
+          <li class="evt" data-state="open">
+            <div>
+              <div class="meta">SAT 18:03 · 495 FT · LITTLE LEAGUE FIELD 2</div>
+              <div class="desc">Subject: JV tennis, graduated a year ahead. Edge of detection range. The band still counted it.</div>
+            </div>
+            <button class="noted-btn">Noted</button>
+          </li>
+        </ul>
+        <div class="feed-empty" id="feed-empty">Nothing here. The band is still watching. That is the plan working.</div>
+      </section>
+
+    </div>
+    <div class="col">
+
+      <section class="card" aria-labelledby="streak-k">
+        <div class="k" id="streak-k">Streak <span class="chip">BACKFILLED · YEARBOOK</span></div>
+        <div class="streak-days">6,847 days</div>
+        <div class="streak-sub">Since Homecoming 2007. Verified against one photograph and a corsage receipt.</div>
+        <div class="streak-row">
+          <button class="btn" id="protect">Protect streak</button>
+          <span class="filed" id="filed">FILED. FY2026 ALLOWANCE: 0 SKIPS REMAINING.</span>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="ledger-k">
+        <div class="k" id="ledger-k">Joint sleep-debt ledger <span class="chip">HOURS OWED</span></div>
+        <div class="ledger" role="img" aria-label="Joint sleep debt by day: Monday 1.5 hours, Tuesday 2 hours, Wednesday 1 hour, Thursday 3.5 hours, Friday 2.5 hours, Saturday half an hour, Sunday 4 hours, the worst day">
+          <div class="bar-wrap"><div class="lbar" style="height:34%"></div><span class="dl">MO</span></div>
+          <div class="bar-wrap"><div class="lbar" style="height:46%"></div><span class="dl">TU</span></div>
+          <div class="bar-wrap"><div class="lbar" style="height:23%"></div><span class="dl">WE</span></div>
+          <div class="bar-wrap"><div class="lbar" style="height:80%"></div><span class="dl">TH</span></div>
+          <div class="bar-wrap"><div class="lbar" style="height:57%"></div><span class="dl">FR</span></div>
+          <div class="bar-wrap"><div class="lbar" style="height:11%"></div><span class="dl">SA</span></div>
+          <div class="bar-wrap"><div class="lbar worst" style="height:92%"></div><span class="dl">SU</span></div>
+        </div>
+        <p class="ledger-foot">Debt is shared. It was incurred separately. The ledger does not care.</p>
+      </section>
+
+      <section class="card" aria-labelledby="im-k">
+        <div class="k" id="im-k">Individual Mode <span class="chip">LOCKED</span></div>
+        <div class="lockrow">
+          <span class="txt">View your heart rate by itself, as a single person would.</span>
+          <button class="toggle" id="im-toggle" aria-label="Individual Mode, locked. Opens consent requirements."></button>
+        </div>
+        <p class="locknote">REQUIRES CO-SIGNED CONSENT · SEE FORM S-2</p>
+      </section>
+
+    </div>
+  </div>
+</main>
+
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal">
+    <h2 id="modal-title">Individual Mode requires both of you</h2>
+    <p>Unmerging a Couple Pulse is a household decision. Upload written consent bearing two signatures, dated within 30 days, witnessed by someone who attended the wedding.</p>
+    <p class="fine">PROCESSING TIME: 6 TO 8 WEEKS. DURING REVIEW, THE MERGED READING REMAINS YOUR READING. MOST APPLICANTS WITHDRAW.</p>
+    <div class="actions">
+      <button class="btn ghost" id="modal-close">Return to shared vitals</button>
+      <button class="btn" disabled title="Form S-2 is distributed by mail.">Upload Form S-2</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // --- Couple Pulse trace (looping ECG) ---
+  var trace = document.getElementById('trace-path');
+  var beat = 'l14 0 6 -10 8 16 5 -30 8 40 6 -20 5 4 h48';
+  function buildPath(offset){
+    var d = 'M' + offset + ' 40 ';
+    for (var i = 0; i < 8; i++) d += beat + ' ';
+    return d;
+  }
+  var phase = 0;
+  function drawTrace(){
+    trace.setAttribute('d', buildPath(-phase));
+    phase = (phase + 0.6) % 100;
+  }
+  drawTrace();
+  if (!reduced) setInterval(drawTrace, 50);
+
+  // --- BPM drift every 4s ---
+  var bpm = document.getElementById('bpm');
+  if (!reduced) {
+    setInterval(function(){
+      var v = 69 + Math.floor(Math.random() * 6);
+      bpm.textContent = v;
+    }, 4000);
+  }
+
+  // --- sync counter ---
+  var sync = document.getElementById('sync');
+  var ago = 41;
+  setInterval(function(){
+    ago += 5;
+    sync.textContent = 'LAST SYNC: BOTH WRISTS · ' + ago + 's AGO';
+  }, 5000);
+
+  // --- protect streak ---
+  var protect = document.getElementById('protect');
+  var filed = document.getElementById('filed');
+  protect.addEventListener('click', function(){
+    filed.classList.add('show');
+    protect.disabled = true;
+    protect.textContent = 'Protection filed';
+  });
+
+  // --- noted buttons + filters ---
+  var feed = document.getElementById('feed');
+  var empty = document.getElementById('feed-empty');
+  var current = 'all';
+  feed.addEventListener('click', function(e){
+    var b = e.target.closest('.noted-btn');
+    if (!b) return;
+    var evt = b.closest('.evt');
+    evt.dataset.state = 'noted';
+    evt.classList.add('is-noted');
+    b.textContent = 'Noted ✓';
+    applyFilter();
+  });
+  var filterBtns = document.querySelectorAll('.feed-filters button');
+  filterBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      filterBtns.forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      current = btn.dataset.filter;
+      applyFilter();
+    });
+  });
+  function applyFilter(){
+    var visible = 0;
+    feed.querySelectorAll('.evt').forEach(function(evt){
+      var show = current === 'all' || evt.dataset.state === current;
+      evt.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    empty.style.display = visible === 0 ? 'block' : 'none';
+  }
+
+  // --- individual mode modal ---
+  var scrim = document.getElementById('scrim');
+  var toggle = document.getElementById('im-toggle');
+  var closeBtn = document.getElementById('modal-close');
+  function openModal(){ scrim.classList.add('open'); closeBtn.focus(); }
+  function closeModal(){ scrim.classList.remove('open'); toggle.focus(); }
+  toggle.addEventListener('click', openModal);
+  closeBtn.addEventListener('click', closeModal);
+  scrim.addEventListener('click', function(e){ if (e.target === scrim) closeModal(); });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && scrim.classList.contains('open')) closeModal();
+  });
+})();
+</script>
+</body>
+</html>

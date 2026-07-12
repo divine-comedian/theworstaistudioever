@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Steady. · theworstaistudioever</title>
+<meta name="description" content="Continuous biometric monitoring for couples with a sample size of one.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Steady. · Fitbit for people who married their high school sweetheart">
+<meta property="og:description" content="Continuous biometric monitoring for couples with a sample size of one.">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Steady. · Fitbit for people who married their high school sweetheart">
+<meta name="twitter:description" content="Continuous biometric monitoring for couples with a sample size of one.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Mulish:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#6B2233;
+    --accent:#C94F63;
+    --bg:#FAF3ED;
+    --fg:#2E2228;
+    --muted:#9C8288;
+    --ink:#241B1F;
+    --hairline:rgba(107,34,51,.28);
+    --display:'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+    --body:'Mulish', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --mono:'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--fg);
+    font-family:var(--body);
+    font-size:16px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--primary)}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+  /* ------- nav ------- */
+  .nav{border-bottom:1px solid var(--hairline)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
+  .wordmark{
+    font-family:var(--display);font-weight:700;font-size:1.7rem;color:var(--primary);
+    text-decoration:none;letter-spacing:.01em;
+  }
+  .nav-links{display:flex;gap:26px;align-items:center;list-style:none}
+  .nav-links a{
+    text-decoration:none;font-size:.78rem;font-weight:600;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--fg);
+  }
+  .nav-links a:hover{color:var(--accent)}
+  .nav-cta{
+    background:var(--primary);color:var(--bg) !important;padding:9px 18px;border-radius:3px;
+  }
+  .nav-cta:hover{background:var(--accent);color:#fff !important}
+  @media (max-width:720px){.nav-links li.hide-m{display:none}}
+
+  /* ------- hero invitation ------- */
+  .hero{padding:72px 0 40px;text-align:center}
+  .invitation{
+    border:1px solid var(--primary);
+    outline:1px solid var(--hairline);
+    outline-offset:5px;
+    border-radius:4px;
+    padding:64px 40px 56px;
+    max-width:840px;margin:0 auto;
+    background:linear-gradient(180deg, rgba(201,79,99,.045), rgba(201,79,99,0) 42%);
+  }
+  .eyebrow{
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--muted);
+  }
+  .hero h1{
+    font-family:var(--display);font-weight:600;color:var(--ink);
+    font-size:clamp(2.4rem, 5.4vw, 4rem);line-height:1.08;
+    margin:22px auto 0;max-width:15ch;
+  }
+  .ecg{display:block;margin:30px auto 26px;width:min(320px,80%);height:44px;overflow:visible}
+  .ecg path{
+    fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+  }
+  .hero .sub{max-width:52ch;margin:0 auto;color:var(--fg);font-size:1.04rem}
+  .cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:34px}
+  .btn{
+    display:inline-block;text-decoration:none;font-weight:700;font-size:.86rem;
+    letter-spacing:.06em;padding:14px 30px;border-radius:3px;cursor:pointer;
+    transition:transform .15s ease, background .15s ease;
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{background:var(--accent);color:#fff;border:1px solid var(--accent)}
+  .btn-primary:hover{background:var(--primary);border-color:var(--primary)}
+  .btn-ghost{background:transparent;color:var(--primary);border:1px solid var(--primary)}
+  .btn-ghost:hover{background:var(--primary);color:var(--bg)}
+  .hero-note{margin-top:18px;font-family:var(--mono);font-size:.7rem;color:var(--muted);letter-spacing:.08em}
+
+  /* ------- vitals plate ------- */
+  .vitals{padding:26px 0 72px}
+  .plate{
+    border:1px solid var(--hairline);border-radius:4px;background:#fff;
+    display:grid;grid-template-columns:repeat(3,1fr);
+    max-width:840px;margin:0 auto;
+  }
+  .plate .cell{padding:26px 22px;text-align:center;border-left:1px solid var(--hairline)}
+  .plate .cell:first-child{border-left:0}
+  .cell .k{font-family:var(--mono);font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+  .cell .v{
+    font-family:var(--mono);font-size:1.7rem;font-weight:500;color:var(--primary);
+    font-variant-numeric:tabular-nums;margin-top:8px;display:flex;align-items:baseline;justify-content:center;gap:7px;
+  }
+  .cell .v .unit{font-size:.75rem;color:var(--muted)}
+  .pulse-dot{
+    width:9px;height:9px;border-radius:50%;background:var(--accent);display:inline-block;
+    align-self:center;animation:breathe 4s ease-in-out infinite;
+  }
+  @keyframes breathe{0%,100%{opacity:.35;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}
+  .cell .s{font-size:.78rem;color:var(--muted);margin-top:6px}
+  @media (max-width:720px){
+    .plate{grid-template-columns:1fr}
+    .plate .cell{border-left:0;border-top:1px solid var(--hairline)}
+    .plate .cell:first-child{border-top:0}
+  }
+
+  /* ------- section scaffolding ------- */
+  section{padding:76px 0}
+  .sec-head{text-align:center;margin-bottom:52px}
+  .sec-head h2{
+    font-family:var(--display);font-weight:600;font-size:clamp(1.9rem,3.6vw,2.6rem);
+    color:var(--ink);margin-top:14px;line-height:1.15;
+  }
+  .flourish{display:block;margin:0 auto;width:150px;height:26px}
+  .flourish path{fill:none;stroke:var(--hairline);stroke-width:1.5;stroke-linecap:round}
+
+  /* ------- vows / features ------- */
+  .vows{border-top:1px solid var(--hairline)}
+  .vow-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .vow{
+    border:1px solid var(--hairline);border-radius:4px;background:#fff;
+    padding:34px 28px;
+  }
+  .vow .num{
+    font-family:var(--display);font-style:italic;font-weight:500;
+    font-size:1.5rem;color:var(--accent);
+  }
+  .vow h3{font-family:var(--display);font-weight:700;font-size:1.45rem;color:var(--primary);margin:10px 0 12px}
+  .vow p{font-size:.94rem;color:var(--fg)}
+  @media (max-width:860px){.vow-grid{grid-template-columns:1fr}}
+
+  /* ------- guestbook / testimonials ------- */
+  .guestbook{border-top:1px solid var(--hairline)}
+  .guest-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .entry{
+    border:1px solid var(--hairline);border-radius:4px;background:#fff;padding:32px 28px;
+    display:flex;flex-direction:column;gap:18px;
+  }
+  .entry blockquote{
+    font-family:var(--display);font-style:italic;font-weight:500;
+    font-size:1.22rem;line-height:1.4;color:var(--ink);
+  }
+  .entry .who{display:flex;align-items:center;gap:13px;margin-top:auto}
+  .entry img{
+    width:56px;height:56px;border-radius:50%;object-fit:cover;
+    border:1px solid var(--hairline);box-shadow:0 0 0 3px var(--bg), 0 0 0 4px var(--hairline);
+  }
+  .entry .name{font-weight:700;font-size:.88rem;color:var(--primary)}
+  .entry .title{font-family:var(--mono);font-size:.68rem;color:var(--muted);letter-spacing:.02em;line-height:1.5}
+  @media (max-width:860px){.guest-grid{grid-template-columns:1fr}}
+
+  /* ------- registry / pricing ------- */
+  .registry{border-top:1px solid var(--hairline)}
+  .tier-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;align-items:stretch}
+  .tier{
+    border:1px solid var(--hairline);border-radius:4px;background:#fff;padding:36px 30px;
+    display:flex;flex-direction:column;
+  }
+  .tier.feat{background:var(--primary);border-color:var(--primary);color:var(--bg)}
+  .tier h3{font-family:var(--display);font-weight:700;font-size:1.6rem;color:var(--primary)}
+  .tier.feat h3{color:var(--bg)}
+  .tier .price{
+    font-family:var(--mono);font-size:1.9rem;font-weight:500;color:var(--ink);
+    margin:12px 0 4px;font-variant-numeric:tabular-nums;
+  }
+  .tier.feat .price{color:#fff}
+  .tier .tl{font-size:.88rem;color:var(--muted);font-style:italic;font-family:var(--display);font-size:1.05rem}
+  .tier.feat .tl{color:rgba(250,243,237,.75)}
+  .tier ul{list-style:none;margin:22px 0 28px;display:grid;gap:11px}
+  .tier li{font-size:.88rem;padding-left:20px;position:relative}
+  .tier li::before{
+    content:"";position:absolute;left:0;top:.55em;width:10px;height:2px;background:var(--accent);
+  }
+  .tier .btn{margin-top:auto;text-align:center}
+  .tier.feat .btn-ghost{color:var(--bg);border-color:rgba(250,243,237,.6)}
+  .tier.feat .btn-ghost:hover{background:var(--bg);color:var(--primary)}
+  .registry-note{
+    text-align:center;margin-top:26px;font-family:var(--mono);font-size:.7rem;color:var(--muted);letter-spacing:.06em;
+  }
+  @media (max-width:860px){.tier-grid{grid-template-columns:1fr}}
+
+  /* ------- demo band ------- */
+  .demo-band{background:var(--primary);text-align:center;color:var(--bg)}
+  .demo-band .eyebrow{color:rgba(250,243,237,.6)}
+  .demo-band h2{
+    font-family:var(--display);font-weight:600;font-size:clamp(1.9rem,3.6vw,2.6rem);
+    color:var(--bg);margin:16px auto 12px;max-width:22ch;line-height:1.15;
+  }
+  .demo-band p{max-width:46ch;margin:0 auto;color:rgba(250,243,237,.82);font-size:.98rem}
+  .demo-band .btn{margin-top:30px;font-size:.95rem;padding:16px 38px}
+
+  /* ------- footer ------- */
+  footer{border-top:1px solid var(--hairline);padding:38px 0 46px}
+  .foot{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:flex-start}
+  .foot .legal{font-size:.76rem;color:var(--muted);max-width:52ch}
+  .foot .legal p+p{margin-top:6px}
+  .foot a{font-size:.8rem}
+
+  /* ------- reveal motion ------- */
+  .reveal{opacity:0;transform:translateY(6px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    .reveal{opacity:1;transform:none;transition:none}
+    .pulse-dot{animation:none}
+    .ecg path{stroke-dashoffset:0 !important;transition:none !important}
+    .btn{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap nav-inner">
+    <a class="wordmark" href="#">Steady.</a>
+    <ul class="nav-links">
+      <li class="hide-m"><a href="#vows">The Vows</a></li>
+      <li class="hide-m"><a href="#guestbook">Guestbook</a></li>
+      <li class="hide-m"><a href="#registry">Registry</a></li>
+      <li><a class="nav-cta" href="./demo.html">Open the demo</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="invitation">
+      <p class="eyebrow">Est. Homecoming · Paired Wearable · Two Bands, One Chart</p>
+      <h1>You chose each other at seventeen. Verify it daily.</h1>
+      <svg class="ecg" viewBox="0 0 320 44" aria-hidden="true">
+        <path id="ecg-path" d="M0 22 H96 l10 0 6 -9 7 15 5 -26 7 34 6 -18 5 4 h12 l6 -9 7 15 5 -26 7 34 6 -18 5 4 H320"/>
+      </svg>
+      <p class="sub">Steady is the first wearable designed for people who married their high school sweetheart. Two bands, one merged heart rate, and a streak counter that goes back to homecoming.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#registry">Pair both bands</a>
+        <a class="btn btn-ghost" href="./demo.html">Open the demo →</a>
+      </div>
+      <p class="hero-note">REQUIRES TWO WRISTS · ONE HOUSEHOLD · NO PRIOR RELATIONSHIPS ON FILE</p>
+    </div>
+  </div>
+</header>
+
+<div class="vitals">
+  <div class="wrap">
+    <div class="plate reveal" role="group" aria-label="Sample merged vitals">
+      <div class="cell">
+        <div class="k">Couple Pulse</div>
+        <div class="v"><span class="pulse-dot" aria-hidden="true"></span>71<span class="unit">bpm, merged</span></div>
+        <div class="s">One reading. Two people. As designed.</div>
+      </div>
+      <div class="cell">
+        <div class="k">Streak</div>
+        <div class="v"><span id="streak">6,847</span><span class="unit">days</span></div>
+        <div class="s">Since Homecoming 2007. Backfilled from a yearbook.</div>
+      </div>
+      <div class="cell">
+        <div class="k">Roads Not Taken</div>
+        <div class="v">0<span class="unit">today</span></div>
+        <div class="s">Last event: 3 days ago, near a Costco.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="vows" id="vows">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="eyebrow">The Vows</p>
+      <h2>Three commitments. Ours, not yours. You already made yours.</h2>
+    </div>
+    <div class="vow-grid">
+      <article class="vow reveal">
+        <div class="num">I.</div>
+        <h3>One Baseline</h3>
+        <p>Separate heart rates imply separate people. Steady merges your cardiac data into a single Couple Pulse, sampled every four seconds. Individual readings remain available on request, in writing, co-signed.</p>
+      </article>
+      <article class="vow reveal">
+        <div class="num">II.</div>
+        <h3>Retroactive Streaks</h3>
+        <p>Upload one yearbook photo and our dating team backfills your activity streak to your first slow dance. The current record is 11,942 consecutive days. Those users receive nothing. But they know.</p>
+      </article>
+      <article class="vow reveal">
+        <div class="num">III.</div>
+        <h3>Roads Not Taken™</h3>
+        <p>The band vibrates twice when you pass within 500 feet of anyone you almost dated between 1996 and 2008. No action is recommended. It just vibrates.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="guestbook" id="guestbook">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="eyebrow">The Guestbook</p>
+      <h2>Signed by couples who never had to try the apps</h2>
+    </div>
+    <div class="guest-grid">
+      <article class="entry reveal">
+        <blockquote>&ldquo;Our Couple Pulse dropped nine points during his fantasy draft. We discussed it calmly, and now we don&rsquo;t discuss it.&rdquo;</blockquote>
+        <div class="who">
+          <img src="./headshot-1.webp" alt="Dana Wheeless" width="56" height="56" loading="lazy">
+          <div>
+            <div class="name">Dana Wheeless</div>
+            <div class="title">Married 21 years to her lab partner, Class of '05</div>
+          </div>
+        </div>
+      </article>
+      <article class="entry reveal">
+        <blockquote>&ldquo;The band vibrated twice outside a Costco and I never found out who it was. I think about it a normal amount.&rdquo;</blockquote>
+        <div class="who">
+          <img src="./headshot-2.webp" alt="Marcus Tefft" width="56" height="56" loading="lazy">
+          <div>
+            <div class="name">Marcus Tefft</div>
+            <div class="title">Regional claims adjuster, married the girl from homeroom 114</div>
+          </div>
+        </div>
+      </article>
+      <article class="entry reveal">
+        <blockquote>&ldquo;We backdated our streak to the 1997 winter formal. Our children treat us differently now. Better.&rdquo;</blockquote>
+        <div class="who">
+          <img src="./headshot-3.webp" alt="Lorrie Anne Baxter" width="56" height="56" loading="lazy">
+          <div>
+            <div class="name">Lorrie Anne Baxter</div>
+            <div class="title">Co-chair, Class of '99 reunion committee, 27 years running</div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="registry" id="registry">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="eyebrow">The Registry</p>
+      <h2>Priced for the long term, because that is the only term you know</h2>
+    </div>
+    <div class="tier-grid">
+      <article class="tier reveal">
+        <h3>Going Steady</h3>
+        <div class="price">$12<span style="font-size:.8rem">/mo</span></div>
+        <p class="tl">For couples who still think in shared-locker terms.</p>
+        <ul>
+          <li>Merged Couple Pulse</li>
+          <li>Streak insurance: one skipped evening walk per fiscal year</li>
+          <li>Anniversary detection</li>
+        </ul>
+        <a class="btn btn-ghost" href="#">Choose Going Steady</a>
+      </article>
+      <article class="tier feat reveal">
+        <h3>The Long Haul</h3>
+        <div class="price">$39<span style="font-size:.8rem">/mo</span></div>
+        <p class="tl">You survived one semester of long distance. This is nothing.</p>
+        <ul>
+          <li>Roads Not Taken™ proximity alerts</li>
+          <li>Joint sleep-debt ledger</li>
+          <li>Reunion Mode: suppresses all metrics for one weekend per decade</li>
+        </ul>
+        <a class="btn btn-ghost" href="#">Choose The Long Haul</a>
+      </article>
+      <article class="tier reveal">
+        <h3>Till Death</h3>
+        <div class="price">$8,400</div>
+        <p class="tl">One payment. Like your vows.</p>
+        <ul>
+          <li>Lifetime hardware replacement</li>
+          <li>Streak transfer to next of kin</li>
+          <li>A plaque</li>
+        </ul>
+        <a class="btn btn-ghost" href="#">Choose Till Death</a>
+      </article>
+    </div>
+    <p class="registry-note">ALL PLANS BILL ONE CARD. WE ASSUME YOU SHARE ONE.</p>
+  </div>
+</section>
+
+<section class="demo-band">
+  <div class="wrap reveal">
+    <p class="eyebrow">The Device, Live</p>
+    <h2>See one marriage, fully instrumented</h2>
+    <p>A working view of the shared-vitals dashboard: one pulse, one streak, and a proximity log we legally cannot explain further.</p>
+    <a class="btn btn-primary" href="./demo.html">Open the demo →</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <div class="legal">
+      <p>Steady is a wellness product. It does not diagnose, treat, or counsel. It vibrates.</p>
+      <p>Steady Devices, Inc. is not a licensed marriage therapist in any state. Streak data is final.</p>
+    </div>
+    <a href="/">← theworstaistudioever</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ECG draw-on-load
+  var p = document.getElementById('ecg-path');
+  if (p && !reduced) {
+    var len = p.getTotalLength();
+    p.style.strokeDasharray = len;
+    p.style.strokeDashoffset = len;
+    p.style.transition = 'stroke-dashoffset 2.2s ease-out .2s';
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ p.style.strokeDashoffset = '0'; }); });
+  }
+
+  // Scroll reveals
+  var els = document.querySelectorAll('.reveal');
+  if (reduced || !('IntersectionObserver' in window)) {
+    els.forEach(function(el){ el.classList.add('in'); });
+  } else {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.15 });
+    els.forEach(function(el){ io.observe(el); });
+  }
+
+  // Streak settles upward once
+  var streak = document.getElementById('streak');
+  if (streak && !reduced) {
+    var target = 6847, start = 6790, cur = start;
+    var t = setInterval(function(){
+      cur += 3;
+      if (cur >= target) { cur = target; clearInterval(t); }
+      streak.textContent = cur.toLocaleString('en-US');
+    }, 40);
+  }
+})();
+</script>
+</body>
+</html>
