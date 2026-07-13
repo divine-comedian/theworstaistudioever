@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fall Shearing Sprint · Paddock</title>
+<meta name="description" content="A live page from the Paddock workspace. Table view, board view, and a slash menu that only knows about grass.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800;900&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#24431C;
+  --accent:#C42B6E;
+  --bg:#EDEFE2;
+  --fg:#1C2417;
+  --muted:#717A63;
+  --ink:#161F0F;
+  --hairline:rgba(36,67,28,.22);
+  --panel:#F6F7EE;
+  --display:'Archivo','Helvetica Neue',Arial,sans-serif;
+  --body:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'Space Mono','Courier New',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+::selection{background:var(--accent);color:#fff}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.topbar{display:flex;align-items:center;gap:16px;border-bottom:2px solid var(--primary);padding:12px 18px;background:var(--bg);position:sticky;top:0;z-index:20}
+.back{font-family:var(--mono);font-size:12px;text-decoration:none;color:var(--muted)}
+.back:hover{color:var(--accent)}
+.crumbs{font-family:var(--mono);font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crumbs b{color:var(--primary);font-weight:700}
+.sync{margin-left:auto;display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);white-space:nowrap}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:blink 3s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.sync-dot{animation:none}}
+
+.app{display:grid;grid-template-columns:236px 1fr;min-height:calc(100vh - 51px)}
+@media(max-width:760px){.app{grid-template-columns:1fr}.side{display:none}}
+
+/* sidebar */
+.side{border-right:1px solid var(--hairline);padding:16px 10px;background:var(--panel)}
+.ws-name{display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:900;font-size:14px;color:var(--primary);padding:0 8px 14px}
+.ws-glyph{width:14px;height:14px;background:var(--primary);position:relative;flex:none}
+.ws-glyph::after{content:"";position:absolute;inset:3px;background:var(--panel)}
+.side-h{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);padding:10px 8px 6px}
+.tree{list-style:none;font-size:13px}
+.tree button.node{display:flex;width:100%;text-align:left;gap:6px;align-items:baseline;padding:5px 8px;border-radius:2px}
+.tree button.node:hover{background:rgba(36,67,28,.08)}
+.tree .car{font-family:var(--mono);font-size:9px;color:var(--muted);width:10px;flex:none;transition:none}
+.tree li.active > button.node{background:var(--primary);color:var(--bg)}
+.tree li.active > button.node .car{color:var(--bg)}
+.tree ul{list-style:none;padding-left:20px}
+.tree ul li{padding:4px 8px;font-size:12.5px;color:var(--muted)}
+.tree .cnt{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--accent)}
+.tree li.closed > ul{display:none}
+.side-foot{margin-top:22px;padding:10px 8px;border-top:1px solid var(--hairline);font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.7}
+
+/* main */
+.main{padding:26px 30px 60px;max-width:960px}
+@media(max-width:760px){.main{padding:18px 16px 60px}}
+.page-eyebrow{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:8px}
+h1{font-family:var(--display);font-weight:900;font-size:clamp(26px,4vw,38px);letter-spacing:-.02em;text-transform:uppercase;color:var(--ink)}
+.props{display:flex;gap:0;margin:14px 0 22px;border-top:1px solid var(--hairline);border-bottom:1px solid var(--hairline);flex-wrap:wrap}
+.prop{font-family:var(--mono);font-size:11px;color:var(--muted);padding:8px 16px 8px 0;margin-right:16px;border-right:1px solid var(--hairline)}
+.prop:last-child{border-right:0}
+.prop b{color:var(--primary);font-weight:700;font-variant-numeric:tabular-nums}
+
+.views{display:flex;gap:0;border-bottom:2px solid var(--primary);margin-bottom:0}
+.view-tab{font-family:var(--display);font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.04em;padding:9px 18px;color:var(--muted);border:1px solid transparent;border-bottom:0}
+.view-tab[aria-selected="true"]{color:var(--bg);background:var(--primary)}
+.view-tab:hover:not([aria-selected="true"]){color:var(--primary)}
+.views .spacer{margin-left:auto;font-family:var(--mono);font-size:10.5px;color:var(--muted);align-self:center;padding-right:4px}
+
+/* table view */
+table{width:100%;border-collapse:collapse;background:var(--panel)}
+th{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);text-align:left;padding:9px 12px;border-bottom:1px solid var(--hairline);border-right:1px solid var(--hairline);font-weight:400}
+td{padding:9px 12px;border-bottom:1px solid var(--hairline);border-right:1px solid var(--hairline);vertical-align:middle}
+th:last-child,td:last-child{border-right:0}
+tr.done td:nth-child(2){text-decoration:line-through;color:var(--muted)}
+.ck{width:16px;height:16px;border:2px solid var(--primary);border-radius:2px;display:block;position:relative;flex:none}
+.ck[aria-checked="true"]{background:var(--primary)}
+.ck[aria-checked="true"]::after{content:"";position:absolute;left:3px;top:0;width:5px;height:9px;border:solid var(--bg);border-width:0 2px 2px 0;transform:rotate(40deg)}
+td.mono{font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums;color:var(--primary)}
+.assignee{display:flex;align-items:center;gap:8px}
+.assignee img{width:24px;height:24px;object-fit:cover;border:1px solid var(--primary);border-radius:2px;display:block}
+.assignee .initials{width:24px;height:24px;border:1px solid var(--hairline);border-radius:2px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:9px;color:var(--muted);flex:none}
+.status{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;border:1px solid var(--hairline);padding:3px 9px;border-radius:2px;color:var(--fg);white-space:nowrap}
+.status:hover{border-color:var(--primary)}
+.status.s-spit{border-color:var(--accent);color:var(--accent)}
+.status.s-done{background:var(--primary);color:var(--bg);border-color:var(--primary)}
+.hint{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:10px}
+
+/* board view */
+.board{display:grid;grid-template-columns:repeat(5,minmax(150px,1fr));gap:12px;align-items:start;overflow-x:auto;padding-top:16px}
+.col-h{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding-bottom:8px;border-bottom:2px solid var(--primary);margin-bottom:10px;display:flex;justify-content:space-between}
+.col-h .n{color:var(--accent)}
+.card{background:var(--panel);border:1px solid var(--hairline);border-radius:2px;padding:10px 12px;margin-bottom:10px}
+.card b{font-size:13px;font-weight:600;display:block;color:var(--ink)}
+.card .meta{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:6px;display:block}
+.col.drop-ok{outline:2px dashed var(--accent);outline-offset:4px}
+.empty-col{font-family:var(--mono);font-size:10px;color:var(--muted);padding:8px 0}
+
+/* slash block area */
+.blocks{margin-top:34px;border-top:1px solid var(--hairline);padding-top:18px}
+.blocks-h{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:12px}
+.block-line{font-size:14px;padding:7px 0;border-bottom:1px dashed var(--hairline);color:var(--fg)}
+.block-line .bl-kind{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-right:10px}
+.slash-row{position:relative;margin-top:6px}
+#slashInput{width:100%;background:transparent;border:0;border-bottom:1px dashed var(--hairline);font-family:var(--body);font-size:14px;color:var(--fg);padding:9px 0;outline:none}
+#slashInput:focus{border-bottom-color:var(--primary)}
+#slashInput::placeholder{color:var(--muted)}
+.slash-menu{position:absolute;left:0;top:100%;margin-top:6px;background:var(--panel);border:2px solid var(--primary);border-radius:2px;min-width:300px;z-index:30;display:none}
+.slash-menu.open{display:block}
+.slash-menu .sm-h{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:9px 12px 5px;border-bottom:1px solid var(--hairline)}
+.slash-menu button{display:flex;width:100%;text-align:left;gap:10px;align-items:baseline;padding:9px 12px;font-size:13px}
+.slash-menu button:hover{background:rgba(36,67,28,.08)}
+.slash-menu button .k{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;color:var(--accent);width:82px;flex:none}
+.slash-menu button .d{color:var(--muted);font-size:11.5px;margin-left:auto;text-align:right}
+
+/* toast */
+.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,8px);background:var(--primary);color:var(--bg);font-family:var(--mono);font-size:11.5px;padding:10px 18px;border-radius:2px;opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease;z-index:50}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="crumbs">Larkspur Fiber Co. / Pasture Rotation Q3 / <b>Fall Shearing Sprint</b></span>
+  <span class="sync"><span class="sync-dot"></span><span id="syncLabel">synced</span></span>
+</div>
+
+<div class="app">
+  <aside class="side">
+    <div class="ws-name"><span class="ws-glyph"></span>Paddock</div>
+    <p class="side-h">Workspace</p>
+    <ul class="tree" id="tree">
+      <li><button class="node" data-toggle><span class="car">▸</span>Pasture Rotation Q3</button>
+        <ul><li>East paddock</li><li>West flank</li><li>Dirt patch (main)</li></ul>
+      </li>
+      <li class="active"><button class="node" data-toggle><span class="car">▾</span>Fall Shearing Sprint</button>
+        <ul></ul>
+      </li>
+      <li class="closed"><button class="node" data-toggle><span class="car">▸</span>Hum Meeting Notes</button>
+        <ul><li>2026-07-11 (misheard)</li><li>2026-07-04 (misheard)</li><li>2026-06-27 (blank)</li></ul>
+      </li>
+      <li class="closed"><button class="node" data-toggle><span class="car">▸</span>Fleece OKRs '26</button>
+        <ul><li>O1: Remain soft</li><li>O2: 19 microns or bust</li></ul>
+      </li>
+      <li class="closed"><button class="node" data-toggle><span class="car">▸</span>Spit requests<span class="cnt">9</span></button>
+        <ul><li>#41 re: fence line</li><li>#40 re: Consuelo</li><li>#39 re: Consuelo</li></ul>
+      </li>
+    </ul>
+    <div class="side-foot">herd literacy: 0%<br>docs unread: all<br>uptime: 99.9%</div>
+  </aside>
+
+  <main class="main">
+    <p class="page-eyebrow">Database · 6 records · last opened by a human</p>
+    <h1>Fall Shearing Sprint</h1>
+    <div class="props">
+      <span class="prop">Sprint ends <b>2026-09-30</b></span>
+      <span class="prop">Target grade <b>≤ 22.0 µm</b></span>
+      <span class="prop">Blocked by <b>weather, mood</b></span>
+    </div>
+
+    <div class="views" role="tablist" aria-label="Views">
+      <button class="view-tab" role="tab" id="tabTable" aria-selected="true" aria-controls="viewTable">Table</button>
+      <button class="view-tab" role="tab" id="tabBoard" aria-selected="false" aria-controls="viewBoard">Board</button>
+      <span class="spacer" id="doneCount"></span>
+    </div>
+
+    <section id="viewTable" role="tabpanel" aria-labelledby="tabTable">
+      <table>
+        <thead>
+          <tr><th style="width:36px"></th><th>Task</th><th>Assignee</th><th>Microns</th><th>Status</th></tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <p class="hint">Click a status to advance it through the approved lifecycle. Checkboxes are legally binding.</p>
+    </section>
+
+    <section id="viewBoard" role="tabpanel" aria-labelledby="tabBoard" hidden>
+      <div class="board" id="board"></div>
+    </section>
+
+    <div class="blocks">
+      <p class="blocks-h">Page body</p>
+      <div id="blockList">
+        <p class="block-line"><span class="bl-kind">Hum embed</span>Transcript 2026-07-11: "the fence is [inaudible] and I respect that."</p>
+        <p class="block-line"><span class="bl-kind">Callout</span>Reminder: the east paddock restructure stands. It's in the minutes.</p>
+      </div>
+      <div class="slash-row">
+        <input id="slashInput" type="text" placeholder="Type / to insert a block. All blocks are about grass." autocomplete="off" aria-label="New block">
+        <div class="slash-menu" id="slashMenu" role="menu" aria-label="Insert block">
+          <p class="sm-h">Basic blocks (grass)</p>
+          <button role="menuitem" data-kind="Grass heading" data-body="Grass, an overview."><span class="k">Grass H1</span>Grass heading<span class="d">large, about grass</span></button>
+          <button role="menuitem" data-kind="Hay toggle" data-body="Hay (click to reveal more hay)."><span class="k">Toggle</span>Hay toggle list<span class="d">collapsible hay</span></button>
+          <button role="menuitem" data-kind="Cud table" data-body="Cud inventory: 1 cud, heavily reused."><span class="k">Table</span>Cud table<span class="d">1 column, chewed</span></button>
+          <button role="menuitem" data-kind="Hum embed" data-body="Transcript pending. Accuracy expectations: managed."><span class="k">Embed</span>Hum transcript<span class="d">4% accuracy</span></button>
+          <button role="menuitem" data-kind="Divider" data-body="A dirt patch, rendered horizontally."><span class="k">Divider</span>Dirt patch divider<span class="d">non-load-bearing</span></button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  var STATUSES = ["Backlog","In progress","In review","Spit request","Done"];
+  var HEADSHOTS = {"Consuelo":"./headshot-1.webp","Snowmass P.S.":"./headshot-2.webp","M. Ledger":"./headshot-3.webp"};
+
+  var tasks = [
+    {id:1, name:"Shear west flank",        who:"Consuelo",      um:"19.4", status:2, done:false},
+    {id:2, name:"Approve blanket grade",   who:"Snowmass P.S.", um:"22.1", status:3, done:false},
+    {id:3, name:"Re-graze sector 4",       who:"Unassigned",    um:"—",    status:0, done:false},
+    {id:4, name:"File hum minutes",        who:"M. Ledger",     um:"26.8", status:4, done:true},
+    {id:5, name:"Renegotiate fence line",  who:"Consuelo",      um:"—",    status:1, done:false},
+    {id:6, name:"Audit dirt patch usage",  who:"Snowmass P.S.", um:"21.0", status:2, done:false}
+  ];
+
+  var rowsEl = document.getElementById('rows');
+  var boardEl = document.getElementById('board');
+  var toastEl = document.getElementById('toast');
+  var syncLabel = document.getElementById('syncLabel');
+  var doneCount = document.getElementById('doneCount');
+  var toastTimer, syncTimer;
+
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 2600);
+  }
+  function fakeSync(){
+    syncLabel.textContent = 'syncing…';
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(function(){ syncLabel.textContent = 'synced'; }, 700);
+  }
+  function statusClass(i){
+    if (STATUSES[i] === 'Spit request') return 'status s-spit';
+    if (STATUSES[i] === 'Done') return 'status s-done';
+    return 'status';
+  }
+  function counts(){
+    var d = tasks.filter(function(t){ return t.done; }).length;
+    doneCount.textContent = d + '/' + tasks.length + ' done · 0 read';
+  }
+  function avatarInto(holder, who){
+    if (HEADSHOTS[who]) {
+      var img = document.createElement('img');
+      img.src = HEADSHOTS[who];
+      img.alt = '';
+      img.width = 24; img.height = 24;
+      holder.insertBefore(img, holder.firstChild);
+      return;
+    }
+    var ini = document.createElement('span');
+    ini.className = 'initials';
+    ini.textContent = who.split(/\s+/).map(function(w){ return w[0]; }).join('').slice(0,2).toUpperCase();
+    holder.insertBefore(ini, holder.firstChild);
+  }
+
+  function renderTable(){
+    rowsEl.innerHTML = '';
+    tasks.forEach(function(t){
+      var tr = document.createElement('tr');
+      if (t.done) tr.className = 'done';
+      tr.innerHTML =
+        '<td><button class="ck" role="checkbox" aria-checked="' + t.done + '" aria-label="Mark ' + t.name + ' done" data-ck="' + t.id + '"></button></td>' +
+        '<td>' + t.name + '</td>' +
+        '<td><span class="assignee">' + t.who + '</span></td>' +
+        '<td class="mono">' + t.um + '</td>' +
+        '<td><button class="' + statusClass(t.status) + '" data-st="' + t.id + '">' + STATUSES[t.status] + '</button></td>';
+      avatarInto(tr.querySelector('.assignee'), t.who);
+      rowsEl.appendChild(tr);
+    });
+    counts();
+  }
+
+  function renderBoard(){
+    boardEl.innerHTML = '';
+    STATUSES.forEach(function(s, idx){
+      var col = document.createElement('div');
+      col.className = 'col';
+      var inCol = tasks.filter(function(t){ return t.status === idx; });
+      var html = '<div class="col-h"><span>' + s + '</span><span class="n">' + inCol.length + '</span></div>';
+      if (!inCol.length) html += '<p class="empty-col">Nothing here. The herd approves.</p>';
+      inCol.forEach(function(t){
+        html += '<div class="card"><b>' + t.name + '</b><span class="meta">' + t.who + ' · ' + t.um + ' µm</span></div>';
+      });
+      col.innerHTML = html;
+      boardEl.appendChild(col);
+    });
+  }
+
+  document.addEventListener('click', function(e){
+    var ck = e.target.closest('[data-ck]');
+    if (ck) {
+      var t = tasks.find(function(x){ return x.id === +ck.getAttribute('data-ck'); });
+      t.done = !t.done;
+      if (t.done) { t.status = STATUSES.length - 1; toast('Marked done. No alpaca was consulted.'); }
+      else { t.status = 0; toast('Reopened. The work, like the herd, persists.'); }
+      renderTable(); renderBoard(); fakeSync();
+      return;
+    }
+    var st = e.target.closest('[data-st]');
+    if (st) {
+      var task = tasks.find(function(x){ return x.id === +st.getAttribute('data-st'); });
+      task.status = (task.status + 1) % STATUSES.length;
+      task.done = STATUSES[task.status] === 'Done';
+      if (STATUSES[task.status] === 'Spit request') toast('Escalated to spit request. Approvers notified. Spitting unaffected.');
+      renderTable(); renderBoard(); fakeSync();
+    }
+  });
+
+  /* view tabs */
+  var tabTable = document.getElementById('tabTable');
+  var tabBoard = document.getElementById('tabBoard');
+  var viewTable = document.getElementById('viewTable');
+  var viewBoard = document.getElementById('viewBoard');
+  function selectTab(which){
+    var isTable = which === 'table';
+    tabTable.setAttribute('aria-selected', isTable);
+    tabBoard.setAttribute('aria-selected', !isTable);
+    viewTable.hidden = !isTable;
+    viewBoard.hidden = isTable;
+  }
+  tabTable.addEventListener('click', function(){ selectTab('table'); });
+  tabBoard.addEventListener('click', function(){ selectTab('board'); });
+
+  /* sidebar tree */
+  document.getElementById('tree').addEventListener('click', function(e){
+    var btn = e.target.closest('[data-toggle]');
+    if (!btn) return;
+    var li = btn.parentElement;
+    li.classList.toggle('closed');
+    btn.querySelector('.car').textContent = li.classList.contains('closed') ? '▸' : '▾';
+  });
+
+  /* slash menu */
+  var input = document.getElementById('slashInput');
+  var menu = document.getElementById('slashMenu');
+  var blockList = document.getElementById('blockList');
+  function openMenu(open){ menu.classList.toggle('open', open); }
+  input.addEventListener('input', function(){ openMenu(input.value.trim().indexOf('/') === 0); });
+  input.addEventListener('keydown', function(e){ if (e.key === 'Escape') { openMenu(false); input.value = ''; } });
+  document.addEventListener('click', function(e){
+    if (!e.target.closest('.slash-row')) openMenu(false);
+    var item = e.target.closest('.slash-menu [data-kind]');
+    if (item) {
+      var p = document.createElement('p');
+      p.className = 'block-line';
+      p.innerHTML = '<span class="bl-kind"></span>';
+      p.querySelector('.bl-kind').textContent = item.getAttribute('data-kind');
+      p.appendChild(document.createTextNode(item.getAttribute('data-body')));
+      blockList.appendChild(p);
+      input.value = '';
+      openMenu(false);
+      fakeSync();
+      toast('Block inserted. It is about grass.');
+    }
+  });
+
+  renderTable();
+  renderBoard();
+})();
+</script>
+</body>
+</html>
