@@ -1,0 +1,96 @@
+[2026-07-14T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-07-14T08:00:02Z] invoking claude -p
+
+--- agent run summary -------------------------------------------------
+ROLL
+  company : Steam
+  subject : left-handed people   (valid: a type of person)
+  slug    : steam-for-left-handed-people
+  tagline : Steam for left-handed people
+  rerolls : 1  (Duolingo / geese -> already in history, redrawn)
+  PRNG    : LCG seeded from sum(charcodes("2026-07-14")) * 1000003 mod 2^31
+
+CONCEPT
+  product : Verso  ("verso" = the left-hand page of an open book)
+  premise : a games storefront that mirrors all 41,208 titles along the
+            vertical axis, subtitles included, and calls that fidelity.
+
+DESIGN DIRECTION  (anti-sameness check passed)
+  style   : Skeuomorphic hardware-chassis storefront, molded-plastic
+            daylight mode. Mirrored layout: nav on the right, hero copy
+            right-aligned, features and pricing flow right-to-left, every
+            directional arrow points left. Body text stays LTR, which is
+            the joke: Verso flipped everything it could reach, then stopped.
+  palette : custom "molded plastic chassis"
+            primary #2B2F36 / accent #C43A26 / bg #DCD6C8
+            fg #23272D / muted #7D7869 / ink #191C21
+  fonts   : Russo One (display) + Chakra Petch (body) + Share Tech Mono (data)
+  checked against last 7 entries (2026-07-07 .. 2026-07-13):
+    swiss-modernist, editorial, neumorphic, claymorphic, cartographic,
+    art-deco, bento-grid  -> no collision on style, palette, or font pair.
+    Also avoided glassmorphism (#8, 07-06) and the 3 dark grounds in the
+    window by going light/plastic.
+
+IMAGES  (4 of 4 budget used, all passed the vision judge on attempt 1)
+  rationale:
+    hero        SKIPPED. The hero's focal object is an inset screen showing
+                the mirrored client behind a debossed plastic bezel, which is
+                CSS-drawn. A photo would fight the molded chassis and just
+                duplicate the demo.
+    demo        1 image. The store detail panel is photo-shaped (game key art
+                is album-art-shaped), so the featured title carries real art.
+    testimonial 3 images. Deadpan corporate ID-badge headshots of the three
+                attested users.
+  keyart.webp      960x540  37.8 KB  attempts 1  PASS (knight faces left,
+                   vermilion horizon break, no text artifacts)
+  headshot-1.webp  320x320   7.7 KB  attempts 1  PASS
+  headshot-2.webp  320x320   8.9 KB  attempts 1  PASS
+  headshot-3.webp  320x320   8.3 KB  attempts 1  PASS
+  All <= 500 KB. In the demo the key art is genuinely mirrored via
+  scaleX(-1) whenever the MIRROR toggle is engaged, which it is by default.
+
+WARNINGS / NEAR-MISSES
+  1. validate-entry.sh initially FAILED:
+       "demo.html references missing image: ' + g.art + '"
+     The validator greps the raw HTML for <img ... src="...">, and my card
+     renderer built that markup by string concatenation, so the literal
+     source text matched the grep. Fixed properly rather than worked around:
+     the modal now carries a real static <img src="keyart.webp"> (so the
+     validator genuinely verifies the file exists), and card art is attached
+     after render with setAttribute. Re-validated: OK.
+  2. Caught during visual verification, NOT by the validator: the landing
+     page's scroll-reveal used .rise{opacity:0} revealed only by
+     IntersectionObserver. Any render that never scrolls (screenshots,
+     crawlers, a JS error) showed a blank page below the fold. Fixed with a
+     js-gate: an inline head script adds .js to <html>, and only .js .rise
+     hides itself. No-JS and JS-failure now render fully visible content.
+     Confirmed by re-shooting the page with a scripted scroll pass.
+
+VALIDATION
+  scripts/validate-entry.sh site steam-for-left-handed-people -> OK
+  gallery rebuilt from all concept.json: 52 slides, newest first.
+-----------------------------------------------------------------------
+All checks green. Today's entry shipped.
+
+**Steam for left-handed people** → **Verso**, a games storefront that mirrors all 41,208 titles along the vertical axis, subtitles included, and classifies the resulting backwards text as fidelity. One reroll (Duolingo/geese was already in history).
+
+The design gimmick is the mirror itself: nav on the right, hero copy right-aligned, features numbered 01 on the *right* and flowing leftward, every arrow pointing left. Body text stays readable, which is the joke. Verso flipped everything it could reach and stopped. Skeuomorphic molded-plastic chassis with screw heads and buttons that physically depress, in Russo One / Chakra Petch / Share Tech Mono. No collision with the last 7 entries on style, palette, or fonts.
+
+All 4 images passed the vision judge on the first attempt. The demo's key art genuinely flips via `scaleX(-1)` when the MIRROR toggle is engaged, which it is by default.
+
+Two things worth flagging, both fixed rather than worked around:
+
+1. **Validator failure.** `validate-entry.sh` greps raw HTML for `<img src="...">`, and my card renderer built that markup by string concatenation, so the literal source text `' + g.art + '` matched the grep. I gave the modal a real static `<img src="keyart.webp">` so the validator actually verifies the file, and attached card art via `setAttribute` after render.
+
+2. **A bug the validator would never have caught.** The landing page's scroll-reveal started at `opacity:0` and depended on IntersectionObserver. Any render that never scrolls — screenshots, crawlers, a JS error — showed a blank page below the fold. I only found it because the screenshot came back empty. Fixed with a js-gate: content is visible by default and only hides itself once JS confirms it's running. Re-verified with a scripted scroll pass.
+
+Working tree only. No git commands run, and the machine fixtures were left for the wrapper.
+
+```
+RUN_COMPLETE: steam-for-left-handed-people
+```
+[2026-07-14T08:15:54Z] new entry: steam-for-left-handed-people
+validate-entry [steam-for-left-handed-people]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 52 entries (domain theworstaistudioever.com)
+[2026-07-14T08:15:54Z] committing: Steam for left-handed people

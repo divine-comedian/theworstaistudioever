@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verso · theworstaistudioever</title>
+<meta name="description" content="A games library mirrored along the vertical axis, so the action finally happens on the correct side of the screen.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Verso · theworstaistudioever">
+<meta property="og:description" content="A games library mirrored along the vertical axis, so the action finally happens on the correct side of the screen.">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Verso · theworstaistudioever">
+<meta name="twitter:description" content="A games library mirrored along the vertical axis, so the action finally happens on the correct side of the screen.">
+<meta name="theme-color" content="#DCD6C8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Chakra+Petch:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script>document.documentElement.className += " js";</script>
+<style>
+  :root{
+    --bg:#DCD6C8;
+    --ink:#191C21;
+    --fg:#23272D;
+    --primary:#2B2F36;
+    --accent:#C43A26;
+    --accent-lit:#D4472C;
+    --accent-deep:#8E2A1B;
+    --muted:#7D7869;
+    --muted-strong:#5F5B4E;
+
+    --plastic-hi:#E9E4D9;
+    --plastic-lo:#D3CDBE;
+    --bevel:#C2BBA9;
+    --seam:#B5AE9C;
+
+    --screen:#22262C;
+    --screen-deep:#171A1F;
+
+    --display:'Russo One','Trebuchet MS',system-ui,sans-serif;
+    --body:'Chakra Petch',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --mono:'Share Tech Mono',ui-monospace,Menlo,Consolas,monospace;
+
+    --r:12px;
+    --pad:clamp(20px,4vw,40px);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+
+  body{
+    background:var(--bg);
+    color:var(--fg);
+    font-family:var(--body);
+    font-size:17px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  .wrap{max-width:1180px;margin:0 auto;padding:0 var(--pad)}
+
+  /* ---- molded plastic chassis ---- */
+  .chassis{
+    position:relative;
+    background:linear-gradient(180deg,var(--plastic-hi) 0%,var(--plastic-lo) 100%);
+    border-radius:var(--r);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.8),
+      inset 0 -1px 0 rgba(25,28,33,.07),
+      0 2px 0 var(--bevel),
+      0 8px 18px rgba(25,28,33,.10);
+  }
+  /* four phillips screws, used only on the hero chassis */
+  .screwed::before,.screwed::after,
+  .screwed > .screw-b::before,.screwed > .screw-b::after{
+    content:"";position:absolute;width:9px;height:9px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#CFC8B7,#9C9482 70%);
+    box-shadow:inset 0 1px 1px rgba(255,255,255,.5),0 1px 1px rgba(25,28,33,.25);
+  }
+  .screwed::before{top:13px;left:13px}
+  .screwed::after{top:13px;right:13px}
+  .screwed > .screw-b::before{bottom:13px;left:13px}
+  .screwed > .screw-b::after{bottom:13px;right:13px}
+
+  /* ---- header: mirrored. brand right, nav left. ---- */
+  .site-head{
+    display:flex;flex-direction:row-reverse;align-items:center;justify-content:space-between;
+    gap:20px;padding:22px var(--pad);max-width:1180px;margin:0 auto;
+  }
+  .badge{
+    display:inline-flex;align-items:center;gap:9px;
+    font-family:var(--display);font-size:19px;letter-spacing:.06em;
+    color:var(--primary);text-decoration:none;
+    background:linear-gradient(180deg,var(--plastic-hi),var(--plastic-lo));
+    border-radius:8px;padding:9px 16px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 2px 0 var(--bevel),0 4px 8px rgba(25,28,33,.10);
+  }
+  .badge .lamp{
+    width:8px;height:8px;border-radius:50%;background:var(--accent);
+    box-shadow:0 0 0 2px rgba(196,58,38,.18);
+    animation:lamp 3s ease-in-out infinite;
+  }
+  @keyframes lamp{0%,100%{opacity:1}50%{opacity:.32}}
+
+  .site-nav{display:flex;flex-direction:row-reverse;gap:26px;align-items:center}
+  .site-nav a{
+    color:var(--muted-strong);text-decoration:none;font-weight:600;font-size:14px;
+    letter-spacing:.09em;text-transform:uppercase;
+  }
+  .site-nav a:hover{color:var(--primary)}
+
+  /* ---- hero ---- */
+  .hero{padding:34px 0 76px}
+  .hero-chassis{padding:clamp(24px,3.4vw,40px)}
+  .hero-grid{
+    display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(24px,4vw,52px);align-items:center;
+  }
+  .hero-copy{text-align:right}
+  .eyebrow{
+    font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--muted-strong);margin-bottom:16px;
+  }
+  h1{
+    font-family:var(--display);
+    font-size:clamp(38px,5.6vw,68px);
+    line-height:1.02;letter-spacing:.005em;
+    color:var(--primary);margin-bottom:20px;
+  }
+  .hero-sub{
+    color:var(--fg);font-size:clamp(15px,1.25vw,17px);line-height:1.62;
+    margin-left:auto;max-width:44ch;
+  }
+  .hero-cta-row{
+    display:flex;flex-direction:row-reverse;align-items:center;gap:18px;
+    margin-top:28px;flex-wrap:wrap;
+  }
+
+  /* ---- chunky physical button ---- */
+  .btn{
+    display:inline-block;font-family:var(--body);font-weight:700;font-size:15px;
+    letter-spacing:.05em;text-transform:uppercase;text-decoration:none;cursor:pointer;
+    padding:14px 26px;border:0;border-radius:9px;
+    background:linear-gradient(180deg,var(--accent-lit),var(--accent));
+    color:#fff;
+    box-shadow:0 3px 0 var(--accent-deep),inset 0 1px 0 rgba(255,255,255,.28),0 5px 10px rgba(25,28,33,.16);
+    transition:transform .09s ease,box-shadow .09s ease;
+  }
+  .btn:active{
+    transform:translateY(2px);
+    box-shadow:0 1px 0 var(--accent-deep),inset 0 1px 0 rgba(255,255,255,.28),0 2px 5px rgba(25,28,33,.14);
+  }
+  .btn-ghost{
+    display:inline-block;font-weight:600;font-size:14px;letter-spacing:.04em;
+    color:var(--muted-strong);text-decoration:none;border-bottom:1px solid var(--seam);
+    padding-bottom:2px;
+  }
+  .btn-ghost:hover{color:var(--primary);border-color:var(--primary)}
+
+  a:focus-visible,button:focus-visible{
+    outline:3px solid var(--primary);outline-offset:3px;border-radius:4px;
+  }
+
+  /* ---- inset screen ---- */
+  .bezel{
+    background:linear-gradient(180deg,var(--bevel),#D6D0C1);
+    border-radius:14px;padding:13px;
+    box-shadow:inset 0 2px 5px rgba(25,28,33,.22),0 1px 0 rgba(255,255,255,.55);
+  }
+  .screen{
+    position:relative;border-radius:6px;overflow:hidden;
+    background:var(--screen);
+    box-shadow:inset 0 0 34px rgba(0,0,0,.55),inset 0 0 0 1px rgba(0,0,0,.5);
+    aspect-ratio:4/3;
+    display:flex;flex-direction:row-reverse; /* nav rail on the RIGHT */
+  }
+  .screen::after{ /* scanline wash */
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px);
+  }
+  .rail{
+    width:34px;flex:none;background:var(--screen-deep);
+    border-left:1px solid rgba(255,255,255,.06);
+    display:flex;flex-direction:column;align-items:center;gap:9px;padding:11px 0;
+  }
+  .rail i{width:16px;height:4px;border-radius:2px;background:rgba(224,220,208,.24);display:block}
+  .rail i.on{background:var(--accent)}
+  .panes{flex:1;padding:12px;display:flex;flex-direction:column;gap:9px;min-width:0}
+  .pane-top{display:flex;flex-direction:row-reverse;gap:7px;align-items:center}
+  .pane-top span{height:7px;border-radius:3px;background:rgba(224,220,208,.16);display:block}
+  .pane-top span:nth-child(1){width:38px;background:rgba(224,220,208,.32)}
+  .pane-top span:nth-child(2){width:22px}
+  .pane-top span:nth-child(3){width:52px}
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;flex:1}
+  .tile{
+    border-radius:3px;background:linear-gradient(160deg,rgba(224,220,208,.16),rgba(224,220,208,.06));
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.05);
+  }
+  .tile.hot{background:linear-gradient(160deg,rgba(196,58,38,.85),rgba(196,58,38,.42))}
+
+  /* ---- spec strip ---- */
+  .specs{
+    display:flex;flex-direction:row-reverse;gap:10px;margin-top:14px;flex-wrap:wrap;
+  }
+  .well{
+    background:linear-gradient(180deg,#CFC8B7,#DAD4C5);
+    border-radius:5px;padding:7px 11px;
+    box-shadow:inset 0 1px 3px rgba(25,28,33,.20),0 1px 0 rgba(255,255,255,.5);
+    font-family:var(--mono);font-size:12px;color:var(--primary);
+    font-variant-numeric:tabular-nums;white-space:nowrap;
+  }
+  .well b{color:var(--muted-strong);font-weight:400}
+
+  /* ---- section furniture ---- */
+  section{padding:62px 0}
+  .sec-head{text-align:right;margin-bottom:34px}
+  .sec-head h2{
+    font-family:var(--display);font-size:clamp(24px,3vw,34px);color:var(--primary);
+    letter-spacing:.01em;line-height:1.16;
+  }
+  .sec-head p{color:var(--muted-strong);font-size:15px;margin-top:8px;margin-left:auto;max-width:52ch}
+
+  .seam{height:1px;background:var(--seam);box-shadow:0 1px 0 rgba(255,255,255,.6);opacity:.75}
+
+  /* ---- features: flow right to left ---- */
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;direction:rtl}
+  .grid3 > *{direction:ltr}
+
+  .feat{padding:26px 24px}
+  .feat .num{
+    font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--accent);
+    display:block;margin-bottom:12px;
+  }
+  .feat h3{
+    font-family:var(--display);font-size:19px;color:var(--primary);
+    letter-spacing:.02em;margin-bottom:10px;
+  }
+  .feat p{font-size:15px;line-height:1.62;color:var(--fg)}
+
+  /* ---- testimonials ---- */
+  .quote{padding:24px;display:flex;flex-direction:column;gap:16px}
+  .quote blockquote{font-size:15.5px;line-height:1.62;color:var(--fg)}
+  .who{display:flex;align-items:center;gap:13px;margin-top:auto}
+  .who img{
+    width:48px;height:48px;border-radius:7px;flex:none;object-fit:cover;
+    box-shadow:inset 0 0 0 1px rgba(25,28,33,.15),0 1px 0 rgba(255,255,255,.6);
+  }
+  .who .nm{font-weight:700;font-size:14px;color:var(--primary);line-height:1.3}
+  .who .tt{font-family:var(--mono);font-size:11px;color:var(--muted-strong);line-height:1.4;margin-top:3px}
+
+  /* ---- pricing ---- */
+  .tier{padding:26px 24px;display:flex;flex-direction:column}
+  .tier .nm{font-family:var(--display);font-size:20px;color:var(--primary);letter-spacing:.02em}
+  .tier .pr{
+    font-family:var(--mono);font-size:22px;color:var(--primary);margin-top:10px;
+    font-variant-numeric:tabular-nums;
+  }
+  .tier .tl{color:var(--muted-strong);font-size:14px;margin-top:8px;min-height:42px}
+  .tier ul{list-style:none;margin:18px 0 22px;display:flex;flex-direction:column;gap:9px}
+  .tier li{
+    font-size:14.5px;line-height:1.5;color:var(--fg);
+    padding-left:18px;position:relative;
+  }
+  .tier li::before{
+    content:"";position:absolute;left:0;top:8px;width:7px;height:7px;border-radius:2px;
+    background:var(--seam);
+  }
+  .tier.pick{box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 2px 0 var(--accent-deep),0 8px 18px rgba(25,28,33,.14),0 0 0 2px var(--accent)}
+  .tier .flag{
+    font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--accent);margin-bottom:10px;
+  }
+  .tier .btn{margin-top:auto;text-align:center}
+
+  /* ---- attestation band ---- */
+  .band{
+    margin:70px 0 0;padding:44px var(--pad);border-radius:var(--r);
+    background:linear-gradient(180deg,var(--accent-lit),var(--accent));
+    box-shadow:0 3px 0 var(--accent-deep),inset 0 1px 0 rgba(255,255,255,.22),0 10px 22px rgba(25,28,33,.16);
+    display:flex;flex-direction:row-reverse;align-items:center;justify-content:space-between;
+    gap:24px;flex-wrap:wrap;text-align:right;
+  }
+  .band h2{font-family:var(--display);font-size:clamp(22px,2.6vw,30px);color:#fff;line-height:1.2}
+  .band p{color:rgba(255,255,255,.86);font-size:15px;margin-top:7px;max-width:46ch;margin-left:auto}
+  .btn-inv{
+    background:linear-gradient(180deg,#F0EBE0,#DCD6C8);color:var(--primary);
+    box-shadow:0 3px 0 #A69E8B,inset 0 1px 0 rgba(255,255,255,.9),0 5px 10px rgba(25,28,33,.18);
+  }
+  .btn-inv:active{box-shadow:0 1px 0 #A69E8B,inset 0 1px 0 rgba(255,255,255,.9)}
+
+  /* ---- footer ---- */
+  footer{padding:40px 0 56px}
+  .foot{
+    display:flex;flex-direction:row-reverse;justify-content:space-between;align-items:center;
+    gap:16px;flex-wrap:wrap;
+  }
+  .foot .fine{font-family:var(--mono);font-size:11.5px;color:var(--muted-strong);text-align:right;max-width:58ch}
+  .foot a{color:var(--muted-strong);text-decoration:none;font-size:13.5px;font-weight:600}
+  .foot a:hover{color:var(--primary)}
+
+  /* ---- scroll reveal. only hides itself once JS is confirmed to be running. ---- */
+  .js .rise{opacity:0;transform:translateY(6px);transition:opacity .5s ease,transform .5s ease}
+  .js .rise.in{opacity:1;transform:none}
+
+  @media (max-width:900px){
+    .hero-grid{grid-template-columns:1fr}
+    .hero-copy{order:-1}
+    .grid3{grid-template-columns:1fr;direction:ltr}
+    .hero-sub,.sec-head p,.band p{max-width:none}
+  }
+  @media (max-width:560px){
+    .site-nav{display:none}
+    .hero-copy,.sec-head,.band,.foot .fine{text-align:left}
+    .hero-sub,.sec-head p,.band p{margin-left:0}
+    .hero-cta-row,.specs,.band,.foot{flex-direction:row}
+    .band{flex-direction:column;align-items:flex-start}
+    .specs{flex-wrap:wrap}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+    .js .rise{opacity:1;transform:none}
+  }
+</style>
+</head>
+<body>
+
+<header class="site-head">
+  <a class="badge" href="./"><span class="lamp" aria-hidden="true"></span>VERSO</a>
+  <nav class="site-nav">
+    <a href="#pricing">Pricing</a>
+    <a href="#attested">Attested</a>
+    <a href="#system">System</a>
+  </nav>
+</header>
+
+<main class="wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="chassis screwed hero-chassis">
+      <span class="screw-b" aria-hidden="true"></span>
+      <div class="hero-grid">
+
+        <div class="bezel">
+          <div class="screen" role="img" aria-label="The Verso client with its navigation rail on the right-hand side and a grid of mirrored games.">
+            <div class="rail">
+              <i class="on"></i><i></i><i></i><i></i>
+            </div>
+            <div class="panes">
+              <div class="pane-top"><span></span><span></span><span></span></div>
+              <div class="tiles">
+                <div class="tile"></div><div class="tile hot"></div><div class="tile"></div>
+                <div class="tile"></div><div class="tile"></div><div class="tile"></div>
+                <div class="tile"></div><div class="tile"></div><div class="tile"></div>
+              </div>
+            </div>
+          </div>
+          <div class="specs">
+            <div class="well"><b>catalogue</b> 41,208</div>
+            <div class="well"><b>mirrored</b> 99.4%</div>
+            <div class="well"><b>attestation</b> 40.0s</div>
+          </div>
+        </div>
+
+        <div class="hero-copy">
+          <div class="eyebrow">Handedness infrastructure</div>
+          <h1>The catalogue, flipped.</h1>
+          <p class="hero-sub">Verso mirrors all 41,208 titles along the vertical axis in real time, so left-handed players see the action on the correct side of the screen. The subtitles are mirrored as well. We have reviewed this and classified it as fidelity.</p>
+          <div class="hero-cta-row">
+            <a class="btn" href="#attested">Verify your hand</a>
+            <a class="btn-ghost" href="./demo.html">open the demo &#8592;</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="seam"></div>
+
+  <!-- FEATURES -->
+  <section id="system">
+    <div class="sec-head rise">
+      <h2>Three systems, read right to left.</h2>
+      <p>Verso is a storefront, a driver, and a webcam. Each one has been turned around.</p>
+    </div>
+    <div class="grid3">
+      <article class="chassis feat rise">
+        <span class="num">01</span>
+        <h3>Axis Inversion</h3>
+        <p>Every title in the catalogue renders flipped at the driver level. Menus, road signs, subtitles, and the end credits all come out backwards. Three engineers filed this as a defect. It has been reclassified as authenticity and closed.</p>
+      </article>
+      <article class="chassis feat rise">
+        <span class="num">02</span>
+        <h3>Dominance Attestation</h3>
+        <p>A 40-second webcam ritual establishes which hand you actually favour before checkout. Right-handed accounts retain full browsing rights. They may wishlist. They may not purchase. There is no appeals process, because there is nothing to appeal.</p>
+      </article>
+      <article class="chassis feat rise">
+        <span class="num">03</span>
+        <h3>Keybind Reflection</h3>
+        <p>WASD is reflected across the keyboard's center line and lands on OKL semicolon. No player has completed a tutorial since March. On paper the ergonomics are flawless, and we have the paper.</p>
+      </article>
+    </div>
+  </section>
+
+  <div class="seam"></div>
+
+  <!-- TESTIMONIALS -->
+  <section id="attested">
+    <div class="sec-head rise">
+      <h2>Attested users.</h2>
+      <p>Each of the following has passed Dominance Attestation at least once.</p>
+    </div>
+    <div class="grid3">
+      <article class="chassis quote rise">
+        <blockquote>&ldquo;I beat a boss for the first time in nine years. It was the wrong boss, in a level I had already cleared, but it was on the correct side of the screen and I felt seen.&rdquo;</blockquote>
+        <div class="who">
+          <img src="headshot-1.webp" alt="Gareth Umlauf" width="320" height="320" loading="lazy">
+          <div>
+            <div class="nm">Gareth Umlauf</div>
+            <div class="tt">Left-Handed Since Birth, Attested Tier II</div>
+          </div>
+        </div>
+      </article>
+      <article class="chassis quote rise">
+        <blockquote>&ldquo;The attestation flagged me as ambidextrous and froze my library for eleven days. Support was warm about it. They sent a mirror.&rdquo;</blockquote>
+        <div class="who">
+          <img src="headshot-2.webp" alt="Marguerite Oyelaran" width="320" height="320" loading="lazy">
+          <div>
+            <div class="nm">Marguerite Oyelaran</div>
+            <div class="tt">Regional Coordinator of Ergonomic Compliance, Second Shift</div>
+          </div>
+        </div>
+      </article>
+      <article class="chassis quote rise">
+        <blockquote>&ldquo;Every subtitle in my library is backwards, so I have started reading in a mirror. My comprehension is up. My marriage is not.&rdquo;</blockquote>
+        <div class="who">
+          <img src="headshot-3.webp" alt="Dev Rasmussen" width="320" height="320" loading="lazy">
+          <div>
+            <div class="nm">Dev Rasmussen</div>
+            <div class="tt">Retired Competitive Mirror-Mode Speedrunner</div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <div class="seam"></div>
+
+  <!-- PRICING -->
+  <section id="pricing">
+    <div class="sec-head rise">
+      <h2>Hardware tiers.</h2>
+      <p>Prices are held in the same orientation as the catalogue.</p>
+    </div>
+    <div class="grid3">
+      <article class="chassis tier rise">
+        <div class="nm">Portside</div>
+        <div class="pr">$14 / month</div>
+        <div class="tl">For the casually left-handed.</div>
+        <ul>
+          <li>The mirrored catalogue, all 41,208 titles</li>
+          <li>One handedness attestation per calendar year</li>
+          <li>Community forums, read right to left</li>
+        </ul>
+        <a class="btn" href="#attested">Select Portside</a>
+      </article>
+      <article class="chassis tier pick rise">
+        <div class="flag">Most selected</div>
+        <div class="nm">Cack-Handed</div>
+        <div class="pr">$49 / month</div>
+        <div class="tl">Our most popular tier. We have not audited why.</div>
+        <ul>
+          <li>Everything in Portside</li>
+          <li>Priority placement in the asset reversal queue</li>
+          <li>Mirrored achievements, which do not sync anywhere</li>
+          <li>One physical mirror, shipped quarterly, unrequested</li>
+        </ul>
+        <a class="btn" href="#attested">Select Cack-Handed</a>
+      </article>
+      <article class="chassis tier rise">
+        <div class="nm">Sinister</div>
+        <div class="pr">$2,400 / year</div>
+        <div class="tl">Billed left to right. For households with more than one.</div>
+        <ul>
+          <li>Up to six confirmed left hands per residence</li>
+          <li>A dedicated handedness auditor, on retainer</li>
+          <li>Right-handed relatives receive read-only guest passes</li>
+          <li>Quarterly review of your household's dominant side</li>
+        </ul>
+        <a class="btn" href="#attested">Select Sinister</a>
+      </article>
+    </div>
+
+    <div class="band rise">
+      <div>
+        <h2>Show us the hand.</h2>
+        <p>Attestation takes 40 seconds and returns a verdict of INCONCLUSIVE. You may run it as many times as you like.</p>
+      </div>
+      <a class="btn btn-inv" href="./demo.html">open the demo &#8592;</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  <div class="seam" style="margin-bottom:28px"></div>
+  <div class="foot">
+    <p class="fine">Verso reverses games. Verso does not reverse outcomes, subtitles, save files, or the direction of your life. Handedness verdicts are final and, as stated, inconclusive.</p>
+    <a href="/">&#8592; theworstaistudioever</a>
+  </div>
+</footer>
+
+<script>
+  // Panels rise once, on entry. Nothing else moves.
+  (function () {
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var items = document.querySelectorAll('.rise');
+    if (reduce || !('IntersectionObserver' in window)) {
+      items.forEach(function (el) { el.classList.add('in'); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { rootMargin: '0px 0px -8% 0px' });
+    items.forEach(function (el) { io.observe(el); });
+  })();
+
+  // Anchor links glide. Reduced motion gets a jump.
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (ev) {
+      var t = document.querySelector(a.getAttribute('href'));
+      if (!t) return;
+      ev.preventDefault();
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      t.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    });
+  });
+</script>
+</body>
+</html>
