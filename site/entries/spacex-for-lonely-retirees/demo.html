@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flight Ops Console · Perigee</title>
+<meta name="description" content="The Perigee flight-operations console: a fleet of retiree missions, live telemetry, and one GO/NO-GO poll standing between a man and his grandson.">
+<meta name="theme-color" content="#1C3D5A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=B612+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#1C3D5A;--accent:#E8531F;--bg:#E8EAE3;--fg:#212A30;--muted:#6C7A82;--ink:#16222B;
+    --plate:#EFF1EB;--hair:rgba(28,61,90,.28);--hair-soft:rgba(28,61,90,.14);
+    --go:#2F7A4F;--display:'Space Grotesk','Helvetica Neue',Arial,sans-serif;
+    --body:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --mono:'B612 Mono',ui-monospace,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;
+    background-image:linear-gradient(var(--hair-soft) 1px,transparent 1px),linear-gradient(90deg,var(--hair-soft) 1px,transparent 1px);
+    background-size:56px 56px;-webkit-font-smoothing:antialiased}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+  /* top chrome */
+  .top{position:sticky;top:0;z-index:20;background:var(--primary);color:#fff;border-bottom:1px solid var(--ink)}
+  .top-in{display:flex;align-items:center;gap:20px;padding:11px 20px;flex-wrap:wrap}
+  .back{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#fff;text-decoration:none;opacity:.85}
+  .back:hover{opacity:1}
+  .top .title{font-family:var(--display);font-weight:700;letter-spacing:.1em;font-size:14px;display:flex;align-items:center;gap:10px}
+  .lamp{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px rgba(232,83,31,.25);animation:pulse 3s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .clock{font-family:var(--mono);font-size:12px;letter-spacing:.06em;margin-left:auto;opacity:.9}
+
+  /* go/no-go poll bar */
+  .poll{background:var(--plate);border-bottom:1px solid var(--hair);padding:10px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .poll .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .station{font-family:var(--mono);font-size:11px;letter-spacing:.05em;border:1px solid var(--hair);border-radius:4px;
+    padding:6px 11px;cursor:pointer;background:#fff;color:var(--primary);display:flex;gap:8px;align-items:center}
+  .station .dot{width:8px;height:8px;border-radius:50%}
+  .station.go .dot{background:var(--go)} .station.nogo .dot{background:var(--accent)}
+  .station.nogo{color:var(--accent);border-color:var(--accent)}
+  .verdict{margin-left:auto;font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:.1em;padding:6px 14px;border-radius:4px}
+  .verdict.go{background:var(--go);color:#fff} .verdict.hold{background:var(--accent);color:#fff}
+
+  .shell{display:grid;grid-template-columns:210px 1fr;min-height:calc(100vh - 96px)}
+  /* rail */
+  .rail{border-right:1px solid var(--hair);padding:20px 16px;background:rgba(239,241,235,.5)}
+  .rail h4{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
+  .filt{display:block;width:100%;text-align:left;font-family:var(--mono);font-size:12px;letter-spacing:.03em;
+    border:1px solid transparent;border-radius:5px;padding:9px 11px;margin-bottom:6px;cursor:pointer;background:none;color:var(--primary);
+    display:flex;justify-content:space-between;align-items:center}
+  .filt:hover{background:#fff;border-color:var(--hair-soft)}
+  .filt.active{background:var(--primary);color:#fff}
+  .filt .n{font-size:11px;opacity:.7}
+  .rail .note{margin-top:22px;font-size:11px;line-height:1.5;color:var(--muted);font-family:var(--mono)}
+
+  /* board */
+  .board{padding:22px 24px}
+  .board-head{display:flex;align-items:baseline;gap:12px;margin-bottom:18px}
+  .board-head h1{font-family:var(--display);font-weight:600;font-size:1.3rem;color:var(--ink);margin:0}
+  .board-head .cnt{font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+
+  .card{background:var(--plate);border:1px solid var(--hair);border-radius:6px;padding:0;overflow:hidden;cursor:pointer;transition:box-shadow .15s ease,transform .12s ease}
+  .card:hover{box-shadow:0 3px 0 var(--hair-soft);transform:translateY(-1px)}
+  .card.held{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+  .card-top{display:flex;justify-content:space-between;align-items:center;padding:13px 15px;border-bottom:1px solid var(--hair-soft)}
+  .sign{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--primary)}
+  .pill{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:4px 8px;border-radius:3px;border:1px solid var(--hair)}
+  .pill.pad{color:var(--muted)} .pill.ascent{color:var(--primary);border-color:var(--primary)}
+  .pill.station{color:var(--go);border-color:var(--go)}
+  .pill.held{color:var(--accent);border-color:var(--accent);background:rgba(232,83,31,.08)}
+  .card-body{padding:14px 15px}
+  .nm{font-weight:600;color:var(--ink);font-size:1.02rem}
+  .rows{margin:12px 0 4px}
+  .row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed var(--hair-soft);font-size:12px}
+  .row:last-child{border-bottom:0}
+  .row .k{font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+  .row .v{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--fg)}
+  .row .v.warn{color:var(--accent)}
+  .card-foot{display:flex;justify-content:space-between;align-items:center;padding:12px 15px;border-top:1px solid var(--hair-soft);background:rgba(28,61,90,.03)}
+  .cd{font-family:var(--mono);font-size:12px}
+  .cd .t{font-weight:700;color:var(--primary)} .cd.held .t{color:var(--accent)}
+  .cd .cl{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .hold-btn{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--primary);
+    background:none;color:var(--primary);border-radius:4px;padding:7px 11px;cursor:pointer}
+  .hold-btn:hover{background:var(--primary);color:#fff}
+  .card.held .hold-btn{border-color:var(--accent);color:var(--accent)}
+  .card.held .hold-btn:hover{background:var(--accent);color:#fff}
+
+  /* modal */
+  .scrim{position:fixed;inset:0;background:rgba(22,34,43,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+  .scrim.open{display:flex}
+  .modal{background:var(--bg);border:1px solid var(--primary);border-radius:8px;max-width:520px;width:100%;max-height:88vh;overflow:auto}
+  .modal-top{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--hair);background:var(--primary);color:#fff}
+  .modal-top .sign{color:#fff}
+  .x{background:none;border:0;color:#fff;font-size:22px;line-height:1;cursor:pointer;padding:0 4px}
+  .modal-body{padding:20px}
+  .modal-body h3{font-family:var(--display);margin:0 0 4px;color:var(--ink)}
+  .modal-body .sub{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+  .telblock{border:1px solid var(--hair);border-radius:6px;overflow:hidden;margin-bottom:16px;background:var(--plate)}
+  .telblock .row{padding:9px 14px}
+  .log{font-family:var(--mono);font-size:12px;line-height:1.7;background:var(--plate);border:1px solid var(--hair);border-radius:6px;padding:12px 14px}
+  .log .ts{color:var(--muted)} .log .scrub{color:var(--accent)}
+
+  @media(max-width:720px){.shell{grid-template-columns:1fr}.rail{border-right:0;border-bottom:1px solid var(--hair);display:flex;flex-wrap:wrap;gap:6px;align-items:center}.rail h4{width:100%}.filt{width:auto;margin:0}.rail .note{display:none}}
+  @media(prefers-reduced-motion:reduce){.lamp{animation:none}.card{transition:none}}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="top-in">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <span class="title"><span class="lamp" aria-hidden="true"></span>PERIGEE · FLIGHT OPS</span>
+    <span class="clock mono" id="clock">MET 000:00:00</span>
+  </div>
+</div>
+
+<div class="poll" id="poll">
+  <span class="lbl">Fleet GO / NO-GO poll</span>
+  <button class="station go" data-st="Guidance"><span class="dot"></span>Guidance</button>
+  <button class="station go" data-st="Medical"><span class="dot"></span>Medical</button>
+  <button class="station go" data-st="Family Liaison"><span class="dot"></span>Family Liaison</button>
+  <button class="station nogo" data-st="Range"><span class="dot"></span>Range</button>
+  <span class="verdict hold" id="verdict">NO-GO</span>
+</div>
+
+<div class="shell">
+  <aside class="rail">
+    <h4>Fleet filter</h4>
+    <button class="filt active" data-f="all">All missions <span class="n" data-c="all"></span></button>
+    <button class="filt" data-f="pad">On pad <span class="n" data-c="pad"></span></button>
+    <button class="filt" data-f="ascent">Ascent <span class="n" data-c="ascent"></span></button>
+    <button class="filt" data-f="station">On station <span class="n" data-c="station"></span></button>
+    <p class="note">Range is NO-GO until the poll clears. Held missions do not count against the window.</p>
+  </aside>
+
+  <main class="board">
+    <div class="board-head">
+      <h1 id="boardTitle">All missions</h1>
+      <span class="cnt" id="boardCnt"></span>
+    </div>
+    <div class="grid" id="grid"></div>
+  </main>
+</div>
+
+<div class="scrim" id="scrim">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mSign">
+    <div class="modal-top">
+      <span class="sign mono" id="mSign"></span>
+      <button class="x" id="mClose" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body" id="mBody"></div>
+  </div>
+</div>
+
+<script>
+  var MISSIONS = [
+    {sign:"LEO-118", nm:"Harold Vessey, 74", phase:"ascent", steps:"3,401", meds:"2 of 3", medsWarn:true, last:"11 d", win:134, held:false, note:"Contact window to son opens on a priority uplink. Flight director advises against.", log:[["+00:41:12","Ascent nominal, HR 78"],["+01:02:55","Requested unscheduled call to son"],["+01:03:01","SCRUBBED by Family Liaison",1],["+02:10:44","Re-attempt queued"]]},
+    {sign:"SUB-204", nm:"Walter Kominski, 79", phase:"pad", steps:"1,890", meds:"3 of 3", last:"38 d", win:null, held:false, note:"Fourteenth pad cycle. Awaiting a GO that has not come.", log:[["+00:00:00","On pad, awaiting poll"],["+00:00:00","Range holds GO",1]]},
+    {sign:"TCI-12", nm:"Diane Pruett, 71", phase:"station", steps:"6,220", meds:"3 of 3", last:"0 d", win:null, held:false, note:"On station 214 days. Cannot get away from crewmates. This is nominal.", log:[["+214d","Standing contact with Berth 11"],["+214d","Requested de-orbit"],["+214d","No vehicle on manifest",1]]},
+    {sign:"LEO-119", nm:"Marlene Fitch, 68", phase:"ascent", steps:"4,905", meds:"3 of 3", last:"4 d", win:58, held:false, note:"Approaching contact apoapsis. Daughter marked likely-to-answer.", log:[["+00:22:10","Ascent nominal"],["+00:48:03","Window optimization complete"]]},
+    {sign:"SUB-207", nm:"Roy Delacroix, 76", phase:"pad", steps:"902", meds:"1 of 3", medsWarn:true, last:"52 d", win:null, held:false, note:"Medical flags meds compliance. Still cleared for the parabola.", log:[["+00:00:00","Pre-launch medical review"],["+00:00:00","Meds compliance NO-GO",1]]},
+    {sign:"TCI-14", nm:"Estelle Bunn, 73", phase:"station", steps:"5,730", meds:"3 of 3", last:"0 d", win:null, held:false, note:"On station. Hosts the Tuesday crewmate mixer nobody may leave.", log:[["+96d","Nominal"],["+96d","Mixer attendance mandatory"]]},
+    {sign:"LEO-131", nm:"Gus Petrakis, 81", phase:"ascent", steps:"2,140", meds:"2 of 3", medsWarn:true, last:"19 d", win:212, held:true, note:"HELD by Guidance. Grandson's phone is going to voicemail.", log:[["+00:15:00","Ascent"],["+00:31:40","HOLD — target not answering",1]]},
+    {sign:"SUB-209", nm:"Cordelia Nix, 70", phase:"pad", steps:"3,010", meds:"3 of 3", last:"6 d", win:null, held:false, note:"On pad. Declined the habitat. Prefers the parabola.", log:[["+00:00:00","On pad"],["+00:00:00","Awaiting range clear"]]},
+    {sign:"TCI-09", nm:"Alvin Sturges, 77", phase:"station", steps:"4,410", meds:"3 of 3", last:"1 d", win:null, held:false, note:"On station. Assigned three crewmates he did not request.", log:[["+180d","Nominal"],["+180d","Crewmate reassignment denied",1]]}
+  ];
+  var PHASE_LABEL={pad:"On pad",ascent:"Ascent",station:"On station"};
+  var PHASE_TITLE={all:"All missions",pad:"On pad",ascent:"Ascent",station:"On station"};
+
+  function fmt(s){var m=Math.floor(s/60),ss=s%60;return String(m).padStart(2,"0")+":"+String(ss).padStart(2,"0");}
+  var grid=document.getElementById("grid"), current="all";
+
+  function phasePill(m){
+    if(m.held) return '<span class="pill held">Held</span>';
+    return '<span class="pill '+m.phase+'">'+PHASE_LABEL[m.phase]+'</span>';
+  }
+  function windowCell(m){
+    if(m.phase==="pad") return '<div class="cd"><div class="cl">Status</div><div class="t">AWAITING GO</div></div>';
+    if(m.phase==="station") return '<div class="cd"><div class="cl">Contact</div><div class="t">STANDING</div></div>';
+    return '<div class="cd'+(m.held?' held':'')+'"><div class="cl">'+(m.held?'On hold':'Next window')+'</div><div class="t" data-cd="'+m.sign+'">'+(m.held?'——:——':fmt(m.win))+'</div></div>';
+  }
+  function render(){
+    var list=MISSIONS.filter(function(m){return current==="all"||m.phase===current;});
+    grid.innerHTML=list.map(function(m,i){
+      var idx=MISSIONS.indexOf(m);
+      return '<article class="card'+(m.held?' held':'')+'" data-i="'+idx+'">'+
+        '<div class="card-top"><span class="sign">'+m.sign+'</span>'+phasePill(m)+'</div>'+
+        '<div class="card-body"><div class="nm">'+m.nm+'</div>'+
+          '<div class="rows">'+
+            '<div class="row"><span class="k">Steps today</span><span class="v">'+m.steps+'</span></div>'+
+            '<div class="row"><span class="k">Meds</span><span class="v'+(m.medsWarn?' warn':'')+'">'+m.meds+'</span></div>'+
+            '<div class="row"><span class="k">Last family contact</span><span class="v'+(parseInt(m.last)>=14?' warn':'')+'">'+m.last+'</span></div>'+
+          '</div></div>'+
+        '<div class="card-foot">'+windowCell(m)+
+          '<button class="hold-btn" data-hold="'+idx+'">'+(m.held?'Resume':'Hold')+'</button></div>'+
+      '</article>';
+    }).join("");
+    document.getElementById("boardTitle").textContent=PHASE_TITLE[current];
+    document.getElementById("boardCnt").textContent=list.length+" mission"+(list.length===1?"":"s")+" in view";
+  }
+  function counts(){
+    ["all","pad","ascent","station"].forEach(function(f){
+      var n=f==="all"?MISSIONS.length:MISSIONS.filter(function(m){return m.phase===f;}).length;
+      var el=document.querySelector('[data-c="'+f+'"]'); if(el) el.textContent=n;
+    });
+  }
+
+  // filters
+  document.querySelectorAll(".filt").forEach(function(b){
+    b.addEventListener("click",function(){
+      document.querySelectorAll(".filt").forEach(function(x){x.classList.remove("active");});
+      b.classList.add("active"); current=b.dataset.f; render();
+    });
+  });
+
+  // hold / resume + open modal (delegated)
+  grid.addEventListener("click",function(e){
+    var hb=e.target.closest("[data-hold]");
+    if(hb){ e.stopPropagation(); var m=MISSIONS[+hb.dataset.hold]; if(m.phase==="ascent"){m.held=!m.held;} render(); return; }
+    var card=e.target.closest(".card"); if(card){ openModal(+card.dataset.i); }
+  });
+
+  // GO/NO-GO poll
+  var poll=document.getElementById("poll"), verdict=document.getElementById("verdict");
+  poll.querySelectorAll(".station").forEach(function(s){
+    s.addEventListener("click",function(){
+      s.classList.toggle("go"); s.classList.toggle("nogo"); updateVerdict();
+    });
+  });
+  function updateVerdict(){
+    var allGo=[].every.call(poll.querySelectorAll(".station"),function(s){return s.classList.contains("go");});
+    verdict.textContent=allGo?"GO":"NO-GO";
+    verdict.className="verdict "+(allGo?"go":"hold");
+  }
+
+  // modal
+  var scrim=document.getElementById("scrim"), mBody=document.getElementById("mBody"), mSign=document.getElementById("mSign");
+  function openModal(i){
+    var m=MISSIONS[i];
+    mSign.textContent=m.sign+" · "+PHASE_LABEL[m.phase]+(m.held?" · HELD":"");
+    mBody.innerHTML='<h3>'+m.nm+'</h3><div class="sub">'+m.note+'</div>'+
+      '<div class="telblock">'+
+        '<div class="row"><span class="k">Phase</span><span class="v">'+PHASE_LABEL[m.phase]+'</span></div>'+
+        '<div class="row"><span class="k">Steps today</span><span class="v">'+m.steps+'</span></div>'+
+        '<div class="row"><span class="k">Meds</span><span class="v'+(m.medsWarn?' warn':'')+'">'+m.meds+'</span></div>'+
+        '<div class="row"><span class="k">Last family contact</span><span class="v'+(parseInt(m.last)>=14?' warn':'')+'">'+m.last+'</span></div>'+
+        '<div class="row"><span class="k">Next window</span><span class="v">'+(m.phase==="ascent"?(m.held?"HELD":fmt(m.win)):"—")+'</span></div>'+
+      '</div>'+
+      '<div class="log">'+m.log.map(function(l){return '<div><span class="ts">'+l[0]+'</span> '+(l[2]?'<span class="scrub">'+l[1]+'</span>':l[1])+'</div>';}).join("")+'</div>';
+    scrim.classList.add("open");
+  }
+  function closeModal(){scrim.classList.remove("open");}
+  document.getElementById("mClose").addEventListener("click",closeModal);
+  scrim.addEventListener("click",function(e){if(e.target===scrim)closeModal();});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeModal();});
+
+  // ticking countdowns + MET clock
+  var met=0;
+  setInterval(function(){
+    met++;
+    var h=Math.floor(met/3600),mm=Math.floor((met%3600)/60),ss=met%60;
+    document.getElementById("clock").textContent="MET "+String(h).padStart(3,"0")+":"+String(mm).padStart(2,"0")+":"+String(ss).padStart(2,"0");
+    MISSIONS.forEach(function(m){
+      if(m.phase==="ascent"&&!m.held&&m.win>0){m.win--;}
+      var el=document.querySelector('[data-cd="'+m.sign+'"]');
+      if(el&&!m.held&&m.phase==="ascent") el.textContent=fmt(m.win);
+    });
+  },1000);
+
+  counts(); render(); updateVerdict();
+</script>
+</body>
+</html>

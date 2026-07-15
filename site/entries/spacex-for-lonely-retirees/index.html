@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Perigee · theworstaistudioever</title>
+<meta name="description" content="Retiree loneliness is, at its core, a trajectory problem. Perigee launches them toward each other.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Perigee · theworstaistudioever">
+<meta property="og:description" content="Retiree loneliness is, at its core, a trajectory problem. Perigee launches them toward each other.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Perigee · theworstaistudioever">
+<meta name="twitter:description" content="Retiree loneliness is, at its core, a trajectory problem. Perigee launches them toward each other.">
+<meta name="theme-color" content="#1C3D5A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=B612+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#1C3D5A;
+    --accent:#E8531F;
+    --bg:#E8EAE3;
+    --fg:#212A30;
+    --muted:#6C7A82;
+    --ink:#16222B;
+    --plate:#EFF1EB;
+    --hair:rgba(28,61,90,.28);
+    --hair-soft:rgba(28,61,90,.14);
+    --display:'Space Grotesk','Helvetica Neue',Arial,sans-serif;
+    --body:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --mono:'B612 Mono',ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);
+    font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;
+    background-image:
+      linear-gradient(var(--hair-soft) 1px,transparent 1px),
+      linear-gradient(90deg,var(--hair-soft) 1px,transparent 1px);
+    background-size:64px 64px;background-position:-1px -1px;
+  }
+  a{color:inherit}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 28px}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:.02em}
+  .eyebrow{
+    font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--primary);display:inline-flex;align-items:center;gap:9px;
+  }
+  .eyebrow::before{content:"";width:22px;height:1px;background:var(--primary);display:inline-block}
+
+  /* ---- nav ---- */
+  .nav{
+    position:sticky;top:0;z-index:40;background:rgba(232,234,227,.86);
+    backdrop-filter:saturate(120%) blur(2px);border-bottom:1px solid var(--hair);
+  }
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:62px}
+  .brand{display:flex;align-items:center;gap:11px;font-family:var(--display);
+    font-weight:700;letter-spacing:.14em;font-size:17px;color:var(--ink);text-decoration:none}
+  .lamp{width:10px;height:10px;border-radius:50%;background:var(--accent);
+    box-shadow:0 0 0 3px rgba(232,83,31,.18);animation:pulse 3s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .nav-links{display:flex;align-items:center;gap:26px;font-family:var(--mono);
+    font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+  .nav-links a{color:var(--muted);text-decoration:none}
+  .nav-links a:hover{color:var(--primary)}
+  .nav-cta{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+    text-decoration:none;color:#fff;background:var(--primary);padding:9px 15px;border-radius:4px}
+  .nav-cta:hover{background:var(--ink)}
+  @media(max-width:760px){.nav-links{display:none}}
+
+  /* ---- hero ---- */
+  .hero{padding:70px 0 30px}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:52px;align-items:center}
+  h1{font-family:var(--display);font-weight:700;color:var(--ink);
+    font-size:clamp(2.3rem,5vw,3.55rem);line-height:1.03;letter-spacing:-.015em;margin:20px 0 0}
+  .lede{font-size:1.16rem;color:var(--fg);max-width:33ch;margin:22px 0 30px}
+  .cta-row{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+  .btn{font-family:var(--mono);font-size:13px;letter-spacing:.09em;text-transform:uppercase;
+    text-decoration:none;display:inline-flex;align-items:center;gap:9px;padding:14px 22px;
+    border-radius:4px;transition:transform .12s ease,background .18s ease}
+  .btn-primary{background:var(--accent);color:#fff;box-shadow:0 1px 0 rgba(0,0,0,.15)}
+  .btn-primary:hover{background:#d0410f}
+  .btn-primary:active{transform:translateY(1px)}
+  .btn-ghost{color:var(--primary);border:1px solid var(--hair)}
+  .btn-ghost:hover{border-color:var(--primary)}
+  .telemetry{display:flex;gap:0;margin-top:38px;border:1px solid var(--hair);border-radius:5px;
+    overflow:hidden;background:var(--plate);max-width:520px}
+  .tcell{flex:1;padding:12px 16px;border-right:1px solid var(--hair-soft)}
+  .tcell:last-child{border-right:0}
+  .tcell .k{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .tcell .v{font-family:var(--mono);font-size:19px;font-weight:700;color:var(--primary);margin-top:3px;font-variant-numeric:tabular-nums}
+
+  /* ---- blueprint plate (signature) ---- */
+  .plate{position:relative;background:var(--plate);border:1px solid var(--hair);border-radius:6px;
+    padding:16px}
+  .plate::before{content:"P/N PRG-001 · REV A";position:absolute;top:9px;right:14px;
+    font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--muted)}
+  .plate-cap{position:absolute;bottom:11px;left:16px;font-family:var(--mono);
+    font-size:10px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+  .plate svg{display:block;width:100%;height:auto}
+  .traj{stroke:var(--accent);stroke-width:2;fill:none;stroke-dasharray:5 4}
+  .draw{stroke-dasharray:520;stroke-dashoffset:520;animation:draw 2.1s ease forwards .3s}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  .bp-line{stroke:var(--primary);fill:none}
+  .bp-dim{stroke:var(--muted);stroke-width:1}
+  .bp-lbl{font-family:var(--mono);font-size:10.5px;fill:var(--primary);letter-spacing:.04em}
+  .bp-lbl.sm{fill:var(--muted);font-size:9.5px}
+
+  /* ---- sections ---- */
+  section{padding:66px 0;border-top:1px solid var(--hair)}
+  .sec-head{max-width:640px;margin-bottom:40px}
+  .sec-head h2{font-family:var(--display);font-weight:600;color:var(--ink);
+    font-size:clamp(1.7rem,3.4vw,2.35rem);line-height:1.08;letter-spacing:-.01em;margin:14px 0 0}
+  .sec-head p{color:var(--muted);margin:12px 0 0;max-width:52ch}
+
+  /* ---- features ---- */
+  .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .feat{background:var(--plate);border:1px solid var(--hair);border-radius:6px;padding:22px 22px 26px;
+    position:relative}
+  .feat .sys{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--accent)}
+  .feat h3{font-family:var(--display);font-weight:600;font-size:1.18rem;color:var(--ink);
+    margin:16px 0 10px;line-height:1.15}
+  .feat p{margin:0;color:var(--fg);font-size:.97rem;line-height:1.58}
+  .feat::after{content:"";position:absolute;left:22px;right:22px;top:52px;height:1px;background:var(--hair-soft)}
+
+  /* ---- crew logs ---- */
+  .crew-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .crew{background:var(--plate);border:1px solid var(--hair);border-radius:6px;overflow:hidden;display:flex;flex-direction:column}
+  .crew blockquote{margin:0;padding:24px 22px 18px;font-size:1rem;line-height:1.5;color:var(--fg);flex:1}
+  .crew figure{margin:0;display:flex;align-items:center;gap:13px;padding:16px 22px;border-top:1px solid var(--hair-soft);background:rgba(28,61,90,.03)}
+  .crew img{width:52px;height:52px;border-radius:5px;object-fit:cover;border:1px solid var(--hair);filter:grayscale(.15)}
+  .crew figcaption .nm{font-weight:600;color:var(--ink);font-size:.95rem}
+  .crew figcaption .tt{font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:var(--muted);text-transform:uppercase;margin-top:3px}
+
+  /* ---- pricing ---- */
+  .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch}
+  .tier{background:var(--plate);border:1px solid var(--hair);border-radius:6px;padding:26px 24px;display:flex;flex-direction:column}
+  .tier.feature{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+  .tier .cls{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .tier .amt{font-family:var(--display);font-weight:700;font-size:2rem;color:var(--ink);margin:12px 0 2px;font-variant-numeric:tabular-nums}
+  .tier .sub{color:var(--muted);font-size:.9rem;min-height:2.6em;margin-bottom:14px}
+  .tier ul{list-style:none;margin:0 0 20px;padding:0;flex:1}
+  .tier li{position:relative;padding-left:22px;margin:11px 0;font-size:.93rem;line-height:1.45}
+  .tier li::before{content:"+";position:absolute;left:0;top:0;font-family:var(--mono);color:var(--accent);font-weight:700}
+  .tier .pick{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+    text-align:center;text-decoration:none;padding:12px;border-radius:4px;border:1px solid var(--primary);color:var(--primary)}
+  .tier.feature .pick{background:var(--accent);border-color:var(--accent);color:#fff}
+  .tier .pick:hover{background:var(--primary);color:#fff}
+  .tier.feature .pick:hover{background:#d0410f}
+
+  /* ---- cta band ---- */
+  .band{border-top:1px solid var(--hair);background:var(--primary);color:#fff;position:relative;overflow:hidden}
+  .hazard{height:10px;background:repeating-linear-gradient(45deg,var(--accent) 0 16px,#1C3D5A 16px 32px)}
+  .band-in{padding:64px 0;display:flex;align-items:center;justify-content:space-between;gap:30px;flex-wrap:wrap}
+  .band h2{font-family:var(--display);font-weight:600;font-size:clamp(1.6rem,3.4vw,2.3rem);margin:0;max-width:18ch;line-height:1.1;letter-spacing:-.01em}
+  .band .btn-primary{box-shadow:none}
+
+  /* ---- footer ---- */
+  footer{border-top:1px solid var(--hair);padding:44px 0 56px;font-size:.9rem;color:var(--muted)}
+  .foot-top{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:baseline}
+  footer a.back{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--primary);text-decoration:none}
+  footer a.back:hover{color:var(--ink)}
+  footer a.demo{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);text-decoration:none}
+  .fineprint{margin-top:22px;max-width:70ch;font-size:.82rem;line-height:1.6;color:var(--muted)}
+
+  .reveal{opacity:0;transform:translateY(10px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  @media(max-width:900px){
+    .hero-grid{grid-template-columns:1fr;gap:36px}
+    .feat-grid,.crew-grid,.price-grid{grid-template-columns:1fr}
+  }
+  @media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .lamp,.draw{animation:none}
+    .draw{stroke-dashoffset:0}
+    .reveal{opacity:1;transform:none;transition:none}
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="./index.html"><span class="lamp" aria-hidden="true"></span>PERIGEE</a>
+    <div class="nav-links">
+      <a href="#systems">Systems</a>
+      <a href="#crew">Crew logs</a>
+      <a href="#classes">Launch classes</a>
+    </div>
+    <a class="nav-cta" href="#classes">Reserve a window</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">Flight system · P/N PRG-001</span>
+      <h1>Your father is not lonely. He is between launch windows.</h1>
+      <p class="lede">Perigee runs each retiree as a crewed mission. Flight plan, live telemetry, a certified flight director, and a berth aboard a companionship habitat at 420 km for the ones cleared to stay up there.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#classes">Reserve a launch window</a>
+        <a class="btn btn-ghost" href="#systems">Read the flight plan</a>
+      </div>
+      <div class="telemetry" role="group" aria-label="Program telemetry">
+        <div class="tcell"><div class="k">T-minus</div><div class="v">02:14:09</div></div>
+        <div class="tcell"><div class="k">Apoapsis</div><div class="v">420 km</div></div>
+        <div class="tcell"><div class="k">Crew aloft</div><div class="v">39</div></div>
+      </div>
+    </div>
+
+    <div class="plate reveal">
+      <svg viewBox="0 0 460 400" role="img" aria-label="Blueprint of a launch trajectory rising from Earth to a companionship habitat at apoapsis, with dimension callouts.">
+        <!-- faint grid -->
+        <g stroke="var(--hair-soft)" stroke-width="1">
+          <line x1="0" y1="80" x2="460" y2="80"/><line x1="0" y1="160" x2="460" y2="160"/>
+          <line x1="0" y1="240" x2="460" y2="240"/><line x1="0" y1="320" x2="460" y2="320"/>
+          <line x1="115" y1="0" x2="115" y2="400"/><line x1="230" y1="0" x2="230" y2="400"/><line x1="345" y1="0" x2="345" y2="400"/>
+        </g>
+        <!-- earth limb -->
+        <path class="bp-line" stroke-width="2" d="M -40 372 Q 230 300 500 372"/>
+        <path fill="rgba(28,61,90,.06)" d="M -40 372 Q 230 300 500 372 L 500 400 L -40 400 Z"/>
+        <!-- launch pad marker -->
+        <circle cx="86" cy="342" r="4" fill="var(--primary)"/>
+        <line class="bp-dim" x1="86" y1="342" x2="86" y2="300"/>
+        <text class="bp-lbl sm" x="58" y="292">PAD 01</text>
+        <!-- trajectory arc -->
+        <path class="traj draw" d="M 86 342 C 150 250 200 120 250 96"/>
+        <!-- habitat glyph at apoapsis -->
+        <g transform="translate(250,96)">
+          <rect x="-22" y="-13" width="44" height="26" rx="4" fill="var(--plate)" stroke="var(--primary)" stroke-width="2"/>
+          <line class="bp-line" stroke-width="2" x1="-22" y1="0" x2="-40" y2="0"/>
+          <rect x="-52" y="-8" width="12" height="16" fill="none" stroke="var(--primary)" stroke-width="1.5"/>
+          <line class="bp-line" stroke-width="2" x1="22" y1="0" x2="40" y2="0"/>
+          <rect x="40" y="-8" width="12" height="16" fill="none" stroke="var(--primary)" stroke-width="1.5"/>
+          <circle cx="0" cy="0" r="2.5" fill="var(--accent)"/>
+        </g>
+        <text class="bp-lbl" x="250" y="52" text-anchor="middle">SUNDOWNER STATION</text>
+        <!-- apoapsis dimension -->
+        <line class="bp-dim" x1="352" y1="96" x2="352" y2="342" stroke-dasharray="3 3"/>
+        <path class="bp-dim" d="M 348 100 l 4 -6 l 4 6" fill="none"/>
+        <path class="bp-dim" d="M 348 338 l 4 6 l 4 -6" fill="none"/>
+        <text class="bp-lbl" x="360" y="215">APOAPSIS</text>
+        <text class="bp-lbl sm" x="360" y="230">420 km</text>
+        <!-- contact window bracket -->
+        <line class="bp-dim" x1="86" y1="366" x2="250" y2="366"/>
+        <line class="bp-dim" x1="86" y1="360" x2="86" y2="372"/>
+        <line class="bp-dim" x1="250" y1="360" x2="250" y2="372"/>
+        <text class="bp-lbl sm" x="168" y="388" text-anchor="middle">CONTACT WINDOW · 90 s</text>
+        <!-- delta-v callout -->
+        <line class="bp-dim" x1="168" y1="190" x2="118" y2="150" stroke-dasharray="3 3"/>
+        <circle cx="168" cy="190" r="2.5" fill="var(--primary)"/>
+        <text class="bp-lbl sm" x="40" y="146">Δv BUDGET 9.4 km/s</text>
+      </svg>
+      <span class="plate-cap">Fig. 1 — nominal companionship ascent</span>
+    </div>
+  </div>
+</header>
+
+<section id="systems">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Onboard systems · Rev C</span>
+      <h2>Everything a retiree needs, expressed in the wrong units.</h2>
+      <p>Three flight systems, none of which addresses the actual problem, each certified anyway.</p>
+    </div>
+    <div class="feat-grid">
+      <article class="feat reveal">
+        <span class="sys">SYS-01 · Guidance</span>
+        <h3>Contact Window Optimization</h3>
+        <p>Our guidance computer models when your daughter is statistically most likely to answer and opens a 90-second window. Burn it or hold for the next one, currently 47 days out.</p>
+      </article>
+      <article class="feat reveal">
+        <span class="sys">SYS-02 · Flight rules</span>
+        <h3>Mandatory GO / NO-GO Poll</h3>
+        <p>Before any call home, your assigned flight director reads a 22-item pre-call checklist and polls the room. A single NO-GO and the call is scrubbed. This is a safety feature.</p>
+      </article>
+      <article class="feat reveal">
+        <span class="sys">SYS-03 · Habitat</span>
+        <h3>Sundowner Station</h3>
+        <p>Retirees cleared for Trans-Colony Injection relocate to a pressurized module at 420 km with 39 age-matched crewmates and no scheduled de-orbit. Loneliness, solved by relocation.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="crew">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Crew logs</span>
+      <h2>Flight-tested on retirees who had nowhere else to be.</h2>
+    </div>
+    <div class="crew-grid">
+      <div class="crew reveal">
+        <blockquote>“My flight director scrubbed three of my calls to my son. He says the telemetry on the fourth one looks strong.”</blockquote>
+        <figure>
+          <img src="headshot-harold.webp" alt="Crew portrait of Harold Vessey">
+          <figcaption><div class="nm">Harold Vessey, 74</div><div class="tt">Payload · Mission LEO-118</div></figcaption>
+        </figure>
+      </div>
+      <div class="crew reveal">
+        <blockquote>“I have not been this close to other people since basic. We are 420 kilometers up and I cannot get away from a single one of them.”</blockquote>
+        <figure>
+          <img src="headshot-diane.webp" alt="Crew portrait of Diane Pruett">
+          <figcaption><div class="nm">Diane Pruett, 71</div><div class="tt">Berth 12 · Sundowner Station</div></figcaption>
+        </figure>
+      </div>
+      <div class="crew reveal">
+        <blockquote>“They told me the loneliness was a fuel problem. Fourteen launches later I have come to feel that was not the problem.”</blockquote>
+        <figure>
+          <img src="headshot-walter.webp" alt="Crew portrait of Walter Kominski">
+          <figcaption><div class="nm">Walter Kominski, 79</div><div class="tt">Suborbital tier · still on the pad</div></figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="classes">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Launch classes</span>
+      <h2>Pick an altitude.</h2>
+      <p>Every class ends with the same physics. The difference is how far up you are when it does.</p>
+    </div>
+    <div class="price-grid">
+      <div class="tier reveal">
+        <span class="cls">Suborbital</span>
+        <div class="amt">$49<span style="font-size:1rem;font-weight:500;color:var(--muted)">/mo</span></div>
+        <div class="sub">You go up. You come back down. Nothing about the house changes.</div>
+        <ul>
+          <li>One parabolic contact window per month</li>
+          <li>Ground-based flight director, shared across 40 retirees</li>
+          <li>Guaranteed return to the same empty living room</li>
+        </ul>
+        <a class="pick" href="#">Stay grounded</a>
+      </div>
+      <div class="tier feature reveal">
+        <span class="cls">Low Earth Orbit</span>
+        <div class="amt">$1,200<span style="font-size:1rem;font-weight:500;color:var(--muted)">/mo</span></div>
+        <div class="sub">Sustained altitude. Sustained supervision.</div>
+        <ul>
+          <li>Weekly contact windows on a priority uplink</li>
+          <li>A flight director assigned to your loneliness specifically</li>
+          <li>Full telemetry shared with next of kin whether they asked or not</li>
+        </ul>
+        <a class="pick" href="#">Achieve orbit</a>
+      </div>
+      <div class="tier reveal">
+        <span class="cls">Trans-Colony Injection</span>
+        <div class="amt">$2.4M<span style="font-size:1rem;font-weight:500;color:var(--muted)"> one-way</span></div>
+        <div class="sub">The last address you will ever need to update.</div>
+        <ul>
+          <li>Permanent berth aboard Sundowner Station</li>
+          <li>39 pre-screened crewmates your exact age</li>
+          <li>No de-orbit vehicle on the manifest, by design</li>
+        </ul>
+        <a class="pick" href="#">Commit to the burn</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="band">
+  <div class="hazard" aria-hidden="true"></div>
+  <div class="wrap band-in">
+    <h2>Loneliness is a trajectory problem. We have the trajectory.</h2>
+    <a class="btn btn-primary" href="./demo.html">Open the flight-ops console →</a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <a class="back" href="/">← theworstaistudioever</a>
+      <a class="demo" href="./demo.html">Open the demo →</a>
+    </div>
+    <p class="fineprint">Perigee is a flight-operations company, not a mental-health provider, an assisted-living facility, or a family. Telemetry is provided for situational awareness and should not be mistaken for a relationship. No retiree has returned from Sundowner Station, which is consistent with the flight plan.</p>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, {threshold:.12});
+    document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  })();
+</script>
+</body>
+</html>
