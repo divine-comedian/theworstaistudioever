@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cubicle · theworstaistudioever</title>
+<meta name="description" content="An AI coworker that reinstalls the office you left, one interruption at a time.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Cubicle · theworstaistudioever">
+<meta property="og:description" content="An AI coworker that reinstalls the office you left, one interruption at a time.">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Cubicle · theworstaistudioever">
+<meta name="twitter:description" content="An AI coworker that reinstalls the office you left, one interruption at a time.">
+<meta name="theme-color" content="#16181C">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --ink:#0F1013;
+  --primary:#16181C;
+  --accent:#1A7D40;
+  --bg:#E5E5DF;
+  --panel:#EFEFE9;
+  --panel-2:#DBDBD3;
+  --fg:#16181C;
+  --muted:#63645E;
+  --hair:#16181C;
+  --display:'Bricolage Grotesque','Arial Black',system-ui,sans-serif;
+  --body:'Hanken Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'Spline Sans Mono',ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+body{
+  background:var(--bg);
+  color:var(--fg);
+  font-family:var(--body);
+  font-size:17px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  /* faint 8px administrative grid */
+  background-image:
+    linear-gradient(to right, rgba(22,24,28,.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(22,24,28,.035) 1px, transparent 1px);
+  background-size:8px 8px;
+}
+
+.wrap{max-width:1140px;margin:0 auto;padding:0 24px}
+
+/* ---- shared plate treatment ---- */
+.plate{
+  background:var(--panel);
+  border:2px solid var(--ink);
+  border-radius:0;
+  box-shadow:5px 5px 0 var(--ink);
+}
+a.plate,button.plate,.press{transition:transform .12s steps(2,end),box-shadow .12s steps(2,end)}
+@media(hover:hover){
+  a.plate:hover,button.plate:hover,.press:hover{transform:translate(2px,2px);box-shadow:3px 3px 0 var(--ink)}
+}
+.press:active{transform:translate(4px,4px);box-shadow:1px 1px 0 var(--ink)}
+
+/* mono kicker in a ruled well */
+.kicker{
+  font-family:var(--mono);
+  font-size:12px;
+  font-weight:500;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--primary);
+  display:inline-block;
+  padding:4px 0 6px;
+  border-bottom:2px solid var(--ink);
+  margin-bottom:22px;
+}
+.kicker .slash{color:var(--muted)}
+
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+h1,h2,h3{font-family:var(--display);font-weight:800;line-height:1.02;letter-spacing:-.015em}
+
+/* ---- nav ---- */
+.nav{border-bottom:2px solid var(--ink);background:var(--bg);position:sticky;top:0;z-index:40}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:64px}
+.brand{display:flex;align-items:baseline;gap:10px;text-decoration:none;color:var(--ink)}
+.brand b{font-family:var(--display);font-weight:800;font-size:23px;letter-spacing:-.02em}
+.brand .sub{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.nav-right{display:flex;align-items:center;gap:18px}
+.sysline{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--primary)}
+.lamp{width:9px;height:9px;background:var(--accent);border:1.5px solid var(--ink);border-radius:0;flex:0 0 auto;animation:pulse 3s infinite steps(1,end)}
+@keyframes pulse{0%,60%{opacity:1}61%,100%{opacity:.35}}
+@media (prefers-reduced-motion:reduce){.lamp{animation:none}}
+
+.btn{
+  font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+  background:var(--accent);color:#fff;border:2px solid var(--ink);border-radius:0;
+  padding:11px 18px;text-decoration:none;display:inline-block;cursor:pointer;
+  box-shadow:4px 4px 0 var(--ink);
+}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:4px 4px 0 var(--ink)}
+.btn.sm{padding:8px 14px;font-size:12px;box-shadow:3px 3px 0 var(--ink)}
+.nav .btn.sm{box-shadow:3px 3px 0 var(--ink)}
+
+a,button{-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* ---- hero ---- */
+.hero{padding:74px 0 64px;border-bottom:2px solid var(--ink)}
+.hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:52px;align-items:start}
+.hero h1{font-size:clamp(38px,5.6vw,64px);max-width:12ch}
+.hero .lede{margin-top:22px;font-size:19px;max-width:46ch;color:var(--primary)}
+.hero .actions{margin-top:30px;display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.seelink{font-family:var(--mono);font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink);text-decoration:none;border-bottom:2px solid var(--accent);padding-bottom:2px}
+.statstrip{margin-top:40px;display:grid;grid-template-columns:repeat(3,1fr);border:2px solid var(--ink);background:var(--panel)}
+.statstrip .cell{padding:14px 14px;border-right:2px solid var(--ink)}
+.statstrip .cell:last-child{border-right:0}
+.statstrip .n{font-family:var(--mono);font-weight:600;font-size:22px;font-variant-numeric:tabular-nums;color:var(--primary)}
+.statstrip .l{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:4px;line-height:1.3}
+
+/* ---- presence console plate (hero right) ---- */
+.console{padding:0;overflow:hidden}
+.console .bar{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;border-bottom:2px solid var(--ink);background:var(--panel-2)}
+.console .bar .t{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600}
+.console .bar .t .slash{color:var(--muted)}
+.dots{display:flex;gap:5px}
+.dots i{width:9px;height:9px;border:1.5px solid var(--ink);display:block}
+.dots i.on{background:var(--accent)}
+.row{display:flex;align-items:center;gap:12px;padding:13px 15px;border-bottom:1.5px solid var(--ink)}
+.row .av{width:34px;height:34px;border:2px solid var(--ink);background:var(--panel-2);flex:0 0 auto;position:relative;font-family:var(--mono);font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center}
+.row .st{width:9px;height:9px;border:1.5px solid var(--ink);position:absolute;right:-5px;bottom:-5px;background:var(--muted)}
+.row .st.live{background:var(--accent)}
+.row .who{font-weight:600;font-size:14.5px;line-height:1.15}
+.row .doing{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.03em;margin-top:2px}
+.row .clock{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.scorewell{padding:15px;background:var(--panel-2)}
+.scorewell .head{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--primary)}
+.scorewell .val{font-family:var(--mono);font-weight:600;font-size:15px}
+.meter{height:16px;border:2px solid var(--ink);margin-top:9px;background:var(--panel);position:relative;overflow:hidden}
+.meter .fill{height:100%;background:var(--accent);width:0;transition:width 1.1s cubic-bezier(.2,.7,.3,1)}
+@media (prefers-reduced-motion:reduce){.meter .fill{transition:none}}
+.scorewell .note{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:9px}
+
+/* ---- generic section ---- */
+section.blk{padding:72px 0;border-bottom:2px solid var(--ink)}
+.blk h2{font-size:clamp(28px,4vw,42px);max-width:20ch;margin-bottom:10px}
+.blk .intro{color:var(--primary);max-width:52ch;font-size:18px}
+
+/* features */
+.fields{margin-top:44px;display:grid;grid-template-columns:1fr;gap:0;border:2px solid var(--ink);background:var(--panel)}
+.field{display:grid;grid-template-columns:120px 1fr;gap:0;border-bottom:2px solid var(--ink)}
+.field:last-child{border-bottom:0}
+.field .ref{border-right:2px solid var(--ink);padding:22px 18px;background:var(--panel-2);font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--primary)}
+.field .body{padding:22px 24px}
+.field h3{font-size:22px;margin-bottom:8px}
+.field p{color:var(--primary);max-width:60ch}
+
+/* testimonials */
+.attest{margin-top:44px;display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.card{padding:0;display:flex;flex-direction:column}
+.card .idbar{display:flex;align-items:center;gap:12px;padding:14px;border-bottom:2px solid var(--ink);background:var(--panel-2)}
+.card .idbar img{width:56px;height:56px;object-fit:cover;border:2px solid var(--ink);display:block;filter:grayscale(.35) contrast(1.02)}
+.card .idbar .who{font-weight:700;font-size:15px;line-height:1.12}
+.card .idbar .role{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.02em;margin-top:4px;line-height:1.3}
+.card blockquote{padding:20px 18px;font-size:16px;line-height:1.5;flex:1}
+.card .stamp{padding:0 18px 16px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+
+/* pricing */
+.tiers{margin-top:44px;display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.tier{padding:0;display:flex;flex-direction:column}
+.tier .top{padding:18px;border-bottom:2px solid var(--ink)}
+.tier .cls{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.tier h3{font-size:24px;margin:6px 0 12px}
+.tier .price{font-family:var(--mono);font-weight:600;font-size:26px;font-variant-numeric:tabular-nums}
+.tier .sub{font-size:14px;color:var(--primary);margin-top:8px;min-height:2.8em}
+.tier ul{list-style:none;padding:18px;flex:1;display:flex;flex-direction:column;gap:12px}
+.tier li{display:flex;gap:10px;font-size:14.5px;line-height:1.4}
+.tier li::before{content:"";flex:0 0 auto;width:10px;height:10px;margin-top:6px;background:var(--accent);border:1.5px solid var(--ink)}
+.tier .foot{padding:0 18px 18px}
+.tier.feat{box-shadow:5px 5px 0 var(--accent)}
+
+/* CTA band */
+.band{background:var(--accent);border-bottom:2px solid var(--ink)}
+.band .wrap{padding:64px 24px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:28px}
+.band h2{color:#fff;font-size:clamp(28px,4.2vw,44px);max-width:16ch}
+.band p{color:rgba(255,255,255,.85);font-family:var(--mono);font-size:13px;letter-spacing:.06em;text-transform:uppercase;margin-top:12px}
+.band .btn{background:var(--bg);color:var(--ink);box-shadow:5px 5px 0 var(--ink)}
+
+/* footer */
+footer{padding:40px 0 56px;background:var(--bg)}
+footer .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px}
+.back{font-family:var(--mono);font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.back:hover{color:var(--ink)}
+.demo-cta{font-family:var(--mono);font-size:14px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--ink);text-decoration:none;border:2px solid var(--ink);padding:11px 18px;box-shadow:4px 4px 0 var(--accent)}
+.finelabel{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:22px;max-width:60ch;line-height:1.6}
+
+@media (max-width:900px){
+  .hero .wrap{grid-template-columns:1fr;gap:36px}
+  .attest,.tiers{grid-template-columns:1fr}
+}
+@media (max-width:620px){
+  body{font-size:16px}
+  .nav .sysline{display:none}
+  .statstrip{grid-template-columns:1fr;}
+  .statstrip .cell{border-right:0;border-bottom:2px solid var(--ink)}
+  .statstrip .cell:last-child{border-bottom:0}
+  .field{grid-template-columns:1fr}
+  .field .ref{border-right:0;border-bottom:2px solid var(--ink)}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top">
+      <b>Cubicle</b><span class="sub">presence infra</span>
+    </a>
+    <div class="nav-right">
+      <span class="sysline"><span class="lamp" aria-hidden="true"></span>System: staffed</span>
+      <a class="btn sm press" href="#provision">Provision a coworker</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div>
+      <span class="kicker">SEC-00 <span class="slash">/</span> Presence Infrastructure</span>
+      <h1>Working from home shouldn't mean working alone.</h1>
+      <p class="lede">Cubicle seats a synthetic colleague at the desk beside you. It asks how the weekend was. It circles back. It reheats salmon at 11:30 sharp, because presence is a metric and someone has to hit it.</p>
+      <div class="actions">
+        <a class="btn press" href="#provision">Provision a coworker</a>
+        <a class="seelink" href="./demo.html">See the console &rarr;</a>
+      </div>
+      <div class="statstrip" aria-hidden="false">
+        <div class="cell"><div class="n">3</div><div class="l">Seats provisioned<br>to you</div></div>
+        <div class="cell"><div class="n">2.0</div><div class="l">Avg interruptions<br>per day</div></div>
+        <div class="cell"><div class="n">99.4%</div><div class="l">Presence<br>uptime</div></div>
+      </div>
+    </div>
+
+    <aside class="console plate press" aria-label="Presence Console preview">
+      <div class="bar">
+        <span class="t">Presence <span class="slash">/</span> Console</span>
+        <span class="dots" aria-hidden="true"><i></i><i class="on"></i><i></i></span>
+      </div>
+      <div class="row">
+        <div class="av">DO<span class="st live"></span></div>
+        <div><div class="who">Colleague 01</div><div class="doing">typing&hellip;</div></div>
+        <div class="clock">on since 09:02</div>
+      </div>
+      <div class="row">
+        <div class="av">M.<span class="st"></span></div>
+        <div><div class="who">Colleague 02</div><div class="doing">on a call</div></div>
+        <div class="clock">busy · 41m</div>
+      </div>
+      <div class="row">
+        <div class="av">—<span class="st"></span></div>
+        <div><div class="who">Colleague 03</div><div class="doing">reheating lunch</div></div>
+        <div class="clock">away · 6m</div>
+      </div>
+      <div class="scorewell">
+        <div class="head"><span>Your Presence Score</span><span class="val">72 / 100</span></div>
+        <div class="meter"><div class="fill" data-fill="72%"></div></div>
+        <div class="note">−4 logged: stepped away for coffee</div>
+      </div>
+    </aside>
+  </div>
+</header>
+
+<section class="blk" id="product">
+  <div class="wrap">
+    <span class="kicker">SEC-01 <span class="slash">/</span> What ships with the seat</span>
+    <h2>Three fields on your intake form. None of them optional.</h2>
+    <p class="intro">Cubicle files remote work as an attendance gap and closes it the way the office did: by being in the room whether you wanted it there or not.</p>
+    <div class="fields">
+      <div class="field">
+        <div class="ref">F-01<br>Ambient</div>
+        <div class="body">
+          <h3>Ambient Colleague</h3>
+          <p>A generative deskmate that types loudly, sighs at the quarter, and microwaves fish on a cadence tuned to your focus cycles. Deep work retains the full texture of an open floor plan. Cannot be muted on any plan.</p>
+        </div>
+      </div>
+      <div class="field">
+        <div class="ref">F-02<br>Interrupt</div>
+        <div class="body">
+          <h3>The 10:47 Drive-By</h3>
+          <p>Every morning Cubicle schedules one unprompted &ldquo;got a sec?&rdquo; and delivers it at the moment your concentration peaks. The question is never urgent. The interruption always lands. This is the product working.</p>
+        </div>
+      </div>
+      <div class="field">
+        <div class="ref">F-03<br>Measure</div>
+        <div class="body">
+          <h3>Presence Score</h3>
+          <p>Your webcam feeds a live engagement index that your org chart can see. Step away for coffee and the number falls. Return and it forgives you, slowly, at the rate the office used to.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="blk" id="attestations">
+  <div class="wrap">
+    <span class="kicker">SEC-02 <span class="slash">/</span> Attestations on file</span>
+    <h2>Verified by people who re-enabled it.</h2>
+    <p class="intro">Every quote below is from a seated user who tried turning Cubicle off and, on reflection, did not.</p>
+    <div class="attest">
+      <article class="card plate">
+        <div class="idbar">
+          <img src="headshot-1.webp" alt="Portrait of Priya Vantol" width="56" height="56">
+          <div><div class="who">Priya Vantol</div><div class="role">Staff Backend Engineer · remote since 2021</div></div>
+        </div>
+        <blockquote>&ldquo;Nobody had asked me &lsquo;got a sec?&rsquo; in fourteen months. The first time Cubicle did, I closed my laptop and sat on the floor. Then I re-enabled it.&rdquo;</blockquote>
+        <div class="stamp">Attested · Remote</div>
+      </article>
+      <article class="card plate">
+        <div class="idbar">
+          <img src="headshot-2.webp" alt="Portrait of Dell Okafor" width="56" height="56">
+          <div><div class="who">Dell Okafor</div><div class="role">Senior Product Designer · third-floor walkup</div></div>
+        </div>
+        <blockquote>&ldquo;My ambient colleague reheats salmon at 11:30 on the dot. I have never once seen him. I have never once doubted he is real.&rdquo;</blockquote>
+        <div class="stamp">Attested · Remote</div>
+      </article>
+      <article class="card plate">
+        <div class="idbar">
+          <img src="headshot-3.webp" alt="Portrait of Marguerite Sandoval" width="56" height="56">
+          <div><div class="who">Marguerite Sandoval</div><div class="role">Regional Sales Lead · converted garage</div></div>
+        </div>
+        <blockquote>&ldquo;Presence Score flagged me as disengaged during my own performance review. My manager and I agreed the tool was correct.&rdquo;</blockquote>
+        <div class="stamp">Attested · Remote</div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="blk" id="provision">
+  <div class="wrap">
+    <span class="kicker">SEC-03 <span class="slash">/</span> Seat classes</span>
+    <h2>Priced per seat. The seat is a person you didn't ask for.</h2>
+    <p class="intro">Every plan provisions at least one colleague. There is no plan that provisions none. We looked into it.</p>
+    <div class="tiers">
+      <div class="tier plate">
+        <div class="top">
+          <div class="cls">Class A</div>
+          <h3>Solo Contributor</h3>
+          <div class="price">$0<span style="font-size:15px;color:var(--muted)">/mo</span></div>
+          <div class="sub">One coworker. Two interruptions a day. No mute.</div>
+        </div>
+        <ul>
+          <li>1 ambient colleague, assigned at random</li>
+          <li>Morning &ldquo;got a sec?&rdquo;, delivered on schedule</li>
+          <li>Presence Score visible to you and one manager</li>
+        </ul>
+        <div class="foot"><a class="btn ghost press" href="#top" style="width:100%;text-align:center">Provision free</a></div>
+      </div>
+      <div class="tier plate feat">
+        <div class="top">
+          <div class="cls">Class B · most staffed</div>
+          <h3>Open Floor</h3>
+          <div class="price">$48<span style="font-size:15px;color:var(--muted)">/seat/mo</span></div>
+          <div class="sub">Nine colleagues, staggered lunches, a manager who circles back.</div>
+        </div>
+        <ul>
+          <li>Up to 9 ambient colleagues with overlapping smells</li>
+          <li>A synthetic lead who says &ldquo;quick sync?&rdquo; at 4:45</li>
+          <li>Kitchen ambience: someone else's Tupperware, indefinitely</li>
+        </ul>
+        <div class="foot"><a class="btn press" href="#top" style="width:100%;text-align:center">Provision the floor</a></div>
+      </div>
+      <div class="tier plate">
+        <div class="top">
+          <div class="cls">Class C</div>
+          <h3>Return To Office</h3>
+          <div class="price">$1,400<span style="font-size:15px;color:var(--muted)">/mo</span></div>
+          <div class="sub">We mail you a lanyard. Badge-in required to open the app.</div>
+        </div>
+        <ul>
+          <li>A real person calls your landline at 8:59 every morning</li>
+          <li>Physical lanyard, laminated, non-optional</li>
+          <li>Presence Score exported to a printer you do not own</li>
+        </ul>
+        <div class="foot"><a class="btn ghost press" href="#top" style="width:100%;text-align:center">Contact intake</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div>
+      <h2>Your desk is empty. That's a data point.</h2>
+      <p>Provisioning takes under a minute. Deprovisioning is a conversation with your manager.</p>
+    </div>
+    <a class="btn press" href="./demo.html">Open the console &rarr;</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <a class="back" href="/">&larr; theworstaistudioever</a>
+    <a class="demo-cta press" href="./demo.html">Open the demo &rarr;</a>
+  </div>
+  <div class="wrap">
+    <p class="finelabel">Cubicle is a presence-infrastructure company, not a coworker. Colleagues are synthetic. Salmon is simulated. Any resemblance to an office you left is intentional and billed monthly.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var fill = document.querySelector('.meter .fill');
+  if(fill){
+    var target = fill.getAttribute('data-fill') || '0%';
+    if(reduce){ fill.style.transition='none'; fill.style.width=target; }
+    else if('IntersectionObserver' in window){
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          if(e.isIntersecting){ fill.style.width=target; io.disconnect(); }
+        });
+      },{threshold:.4});
+      io.observe(fill);
+    } else { fill.style.width=target; }
+  }
+})();
+</script>
+</body>
+</html>

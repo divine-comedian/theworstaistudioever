@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Presence Console · Cubicle</title>
+<meta name="description" content="The Cubicle Presence Console: keep your score up, answer the drive-by, and never once be alone.">
+<meta name="theme-color" content="#16181C">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --ink:#0F1013;--primary:#16181C;--accent:#1A7D40;--warn:#B4472B;
+  --bg:#E5E5DF;--panel:#EFEFE9;--panel-2:#DBDBD3;--fg:#16181C;--muted:#63645E;
+  --display:'Bricolage Grotesque','Arial Black',system-ui,sans-serif;
+  --body:'Hanken Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'Spline Sans Mono',ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;min-height:100dvh;
+  background-image:
+    linear-gradient(to right, rgba(22,24,28,.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(22,24,28,.035) 1px, transparent 1px);
+  background-size:8px 8px;}
+h1,h2,h3{font-family:var(--display);font-weight:800;letter-spacing:-.015em;line-height:1.05}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:.02em}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* top chrome */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;height:56px;padding:0 18px;
+  border-bottom:2px solid var(--ink);background:var(--bg);position:sticky;top:0;z-index:20}
+.back{font-family:var(--mono);font-size:12px;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;color:var(--muted)}
+.back:hover{color:var(--ink)}
+.title{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:600}
+.title .slash{color:var(--muted)}
+.session{font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+.app{max-width:1180px;margin:0 auto;padding:20px 18px 60px;
+  display:grid;grid-template-columns:264px 1fr 300px;gap:18px;align-items:start}
+
+.panel{border:2px solid var(--ink);background:var(--panel);box-shadow:5px 5px 0 var(--ink)}
+.phead{padding:11px 14px;border-bottom:2px solid var(--ink);background:var(--panel-2);
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;
+  display:flex;align-items:center;justify-content:space-between}
+.phead .slash{color:var(--muted)}
+.count{font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+/* colleagues */
+.crow{display:flex;align-items:center;gap:11px;padding:12px 14px;border-bottom:1.5px solid var(--ink)}
+.crow:last-child{border-bottom:0}
+.av{width:34px;height:34px;border:2px solid var(--ink);background:var(--panel-2);flex:0 0 auto;position:relative;
+  font-family:var(--mono);font-weight:600;font-size:12px;display:flex;align-items:center;justify-content:center}
+.st{width:9px;height:9px;border:1.5px solid var(--ink);position:absolute;right:-5px;bottom:-5px;background:var(--muted)}
+.st.live{background:var(--accent);animation:blink 3s infinite steps(1,end)}
+@keyframes blink{0%,62%{opacity:1}63%,100%{opacity:.4}}
+@media (prefers-reduced-motion:reduce){.st.live{animation:none}}
+.who{font-weight:600;font-size:14px;line-height:1.15}
+.doing{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:2px}
+.nudge{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;
+  background:transparent;border:2px solid var(--ink);color:var(--ink);padding:5px 8px;cursor:pointer;
+  box-shadow:2px 2px 0 var(--ink)}
+.nudge:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
+
+/* inbox */
+.inbox{min-height:280px}
+.card{border:2px solid var(--ink);margin:14px;background:var(--panel-2);box-shadow:4px 4px 0 var(--ink)}
+.card .from{padding:10px 13px;border-bottom:2px solid var(--ink);display:flex;align-items:center;gap:9px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+.card .from .live{width:8px;height:8px;background:var(--accent);border:1.5px solid var(--ink)}
+.card .q{padding:15px 14px 6px;font-size:16px;font-weight:600}
+.card .meta{padding:0 14px 12px;font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.card .acts{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:2px solid var(--ink)}
+.card .acts button{font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;font-weight:600;
+  padding:11px 6px;border:0;border-right:2px solid var(--ink);background:var(--panel);cursor:pointer;color:var(--ink)}
+.card .acts button:last-child{border-right:0}
+.card .acts button.ans{background:var(--accent);color:#fff}
+.card .acts button:active{filter:brightness(.92)}
+.empty{padding:40px 22px;text-align:center}
+.empty h3{font-size:20px;margin-bottom:8px}
+.empty p{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+
+/* presence */
+.pcol .big{padding:16px 14px;text-align:left;border-bottom:2px solid var(--ink);background:var(--panel-2)}
+.pcol .score{font-family:var(--mono);font-weight:600;font-size:52px;font-variant-numeric:tabular-nums;line-height:1}
+.pcol .score small{font-size:20px;color:var(--muted)}
+.pcol .state{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-top:6px;color:var(--accent)}
+.pcol .state.risk{color:var(--warn)}
+.meter{height:16px;border:2px solid var(--ink);margin:12px 14px 6px;background:var(--panel);overflow:hidden}
+.meter .fill{height:100%;background:var(--accent);width:72%;transition:width .5s ease}
+.meter .fill.risk{background:var(--warn)}
+@media (prefers-reduced-motion:reduce){.meter .fill{transition:none}}
+.debt{padding:8px 14px 14px;font-family:var(--mono);font-size:11px;color:var(--muted);display:flex;justify-content:space-between}
+.debt b{color:var(--warn)}
+.camwrap{padding:14px;border-top:2px solid var(--ink)}
+.cam{width:100%;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;
+  border:2px solid var(--ink);background:var(--panel);color:var(--ink);padding:12px;cursor:pointer;box-shadow:4px 4px 0 var(--ink);
+  display:flex;align-items:center;justify-content:center;gap:9px}
+.cam.on{background:var(--accent);color:#fff}
+.cam:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--ink)}
+.cam .led{width:10px;height:10px;border:1.5px solid rgba(255,255,255,.6);background:var(--muted)}
+.cam.on .led{background:#fff;border-color:#fff}
+.camnote{font-family:var(--mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-top:10px;text-align:center}
+
+.ledger{border-top:2px solid var(--ink)}
+.ledger .phead{border-bottom:2px solid var(--ink);box-shadow:none}
+.log{list-style:none;max-height:210px;overflow:auto}
+.log li{padding:9px 14px;border-bottom:1.5px solid rgba(22,24,28,.25);font-family:var(--mono);font-size:11px;
+  display:flex;justify-content:space-between;gap:10px;color:var(--primary)}
+.log li:last-child{border-bottom:0}
+.log li .d{color:var(--muted);flex:0 0 auto}
+.log li.up .v{color:var(--accent)}
+.log li.down .v{color:var(--warn)}
+
+@media (max-width:940px){.app{grid-template-columns:1fr}.pcol .big{text-align:center}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back" href="./index.html">&larr; back to the pitch</a>
+  <span class="title">Presence <span class="slash">/</span> Console</span>
+  <span class="session mono" id="session">SESSION 00:00:00</span>
+</div>
+
+<main class="app">
+  <!-- COLLEAGUES -->
+  <section class="panel" aria-label="Colleagues">
+    <div class="phead"><span>Colleagues <span class="slash">/</span> seated</span><span class="count" id="ccount">3 on</span></div>
+    <div class="crow">
+      <div class="av">DO<span class="st live"></span></div>
+      <div><div class="who">Colleague 01</div><div class="doing">typing&hellip;</div></div>
+      <button class="nudge" data-name="Colleague 01" data-q="Got a sec? Quick one, promise.">Nudge</button>
+    </div>
+    <div class="crow">
+      <div class="av">M.<span class="st live"></span></div>
+      <div><div class="who">Colleague 02</div><div class="doing">on a call</div></div>
+      <button class="nudge" data-name="Colleague 02" data-q="Circling back on that thing from earlier.">Nudge</button>
+    </div>
+    <div class="crow">
+      <div class="av">—<span class="st"></span></div>
+      <div><div class="who">Colleague 03</div><div class="doing">reheating lunch</div></div>
+      <button class="nudge" data-name="Colleague 03" data-q="Is it salmon o'clock? It's salmon o'clock.">Nudge</button>
+    </div>
+  </section>
+
+  <!-- INBOX -->
+  <section class="panel inbox" aria-label="Interruption inbox">
+    <div class="phead"><span>Interruption Inbox</span><span class="count" id="icount">2 pending</span></div>
+    <div id="cards"></div>
+  </section>
+
+  <!-- PRESENCE -->
+  <section class="pcol" aria-label="Presence">
+    <div class="panel">
+      <div class="phead"><span>Presence Score</span><span class="count">live</span></div>
+      <div class="big">
+        <div class="score"><span id="score">72</span><small>/100</small></div>
+        <div class="state" id="state">Adequate</div>
+      </div>
+      <div class="meter"><div class="fill" id="fill" style="width:72%"></div></div>
+      <div class="debt"><span>Presence debt</span><span><b id="debt">0</b> pts</span></div>
+      <div class="camwrap">
+        <button class="cam" id="cam" aria-pressed="false"><span class="led"></span><span id="camlabel">Camera off</span></button>
+        <div class="camnote" id="camnote">Turn the camera on and the org chart relaxes.</div>
+      </div>
+    </div>
+    <div class="panel ledger" style="margin-top:18px">
+      <div class="phead"><span>Attendance ledger</span><span class="count" id="logcount">1 entry</span></div>
+      <ul class="log" id="log">
+        <li class="down"><span>−4 · stepped away for coffee</span><span class="d">09:02</span></li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<script>
+(function(){
+  var score=72, debt=0, cam=false, timer=null, sec=0;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  var $ = function(id){return document.getElementById(id);};
+  var scoreEl=$('score'), stateEl=$('state'), fill=$('fill'), debtEl=$('debt'),
+      cardsEl=$('cards'), icount=$('icount'), log=$('log'), logcount=$('logcount');
+
+  function pad(n){return (n<10?'0':'')+n;}
+  function clock(){var s=sec%60,m=Math.floor(sec/60)%60,h=Math.floor(sec/3600);
+    return pad(h)+':'+pad(m)+':'+pad(s);}
+  // fake session clock, offset so ledger 09:02 reads plausibly
+  var baseH=9, baseM=2, baseS=0;
+  function stamp(){var t=baseS+sec, s=t%60, m=(baseM+Math.floor(t/60))%60, h=(baseH+Math.floor((baseM*60+t)/3600))%24;
+    return pad(h)+':'+pad(m)+':'+pad(s);}
+
+  function render(){
+    score=Math.max(0,Math.min(100,Math.round(score)));
+    scoreEl.textContent=score;
+    fill.style.width=score+'%';
+    debtEl.textContent=debt;
+    var st, risk=false;
+    if(score>=85){st='Staffed';}
+    else if(score>=65){st='Adequate';}
+    else if(score>=45){st='At risk';risk=true;}
+    else{st='Unseated';risk=true;}
+    stateEl.textContent=st;
+    stateEl.classList.toggle('risk',risk);
+    fill.classList.toggle('risk',risk);
+  }
+
+  function addLog(text,dir){
+    var li=document.createElement('li');
+    li.className = dir||'';
+    li.innerHTML='<span class="v">'+text+'</span><span class="d">'+stamp()+'</span>';
+    log.insertBefore(li, log.firstChild);
+    var n=log.children.length;
+    logcount.textContent=n+(n===1?' entry':' entries');
+  }
+
+  // ---- inbox ----
+  var seed=[
+    {name:'Colleague 01', q:'Got a sec? Nothing urgent. Just wanted to run something by you.', meta:'Delivered 10:47 · flagged your focus peak'},
+    {name:'Colleague 02', q:'Quick sync? Won’t take more than a bit. Or a while.', meta:'Delivered 10:51 · marked low-priority, sent anyway'}
+  ];
+
+  function updateICount(){
+    var n=cardsEl.querySelectorAll('.card').length;
+    icount.textContent = n+(n===1?' pending':' pending');
+    if(n===0){
+      var d=document.createElement('div');
+      d.className='empty';
+      d.id='emptyState';
+      d.innerHTML='<h3>Inbox clear.</h3><p>This will not last.</p>';
+      cardsEl.appendChild(d);
+    }
+  }
+  function clearEmpty(){var e=$('emptyState'); if(e) e.remove();}
+
+  function makeCard(item){
+    clearEmpty();
+    var c=document.createElement('div'); c.className='card';
+    c.innerHTML =
+      '<div class="from"><span class="live"></span>'+item.name+' · got a sec?</div>'+
+      '<div class="q">'+item.q+'</div>'+
+      '<div class="meta">'+(item.meta||'Delivered just now · unprompted')+'</div>'+
+      '<div class="acts">'+
+        '<button class="ans">Answer</button>'+
+        '<button class="snz">Snooze +4</button>'+
+        '<button class="dec">Decline</button>'+
+      '</div>';
+    c.querySelector('.ans').addEventListener('click',function(){
+      score+=3; addLog('answered a drive-by (+3)','up'); remove(c);
+    });
+    c.querySelector('.snz').addEventListener('click',function(){
+      debt+=4; score-=2; addLog('snoozed · +4 presence debt','down'); remove(c);
+    });
+    c.querySelector('.dec').addEventListener('click',function(){
+      score-=6; addLog('declined · logged (−6)','down'); remove(c);
+    });
+    cardsEl.appendChild(c);
+    updateICount();
+  }
+  function remove(c){
+    c.style.transition = reduce?'none':'transform .18s ease, opacity .18s ease';
+    c.style.transform='translateX(8px)'; c.style.opacity='0';
+    setTimeout(function(){ c.remove(); updateICount(); render(); }, reduce?0:180);
+    render();
+  }
+
+  seed.forEach(makeCard);
+  updateICount();
+
+  // ---- nudges ----
+  Array.prototype.forEach.call(document.querySelectorAll('.nudge'),function(b){
+    b.addEventListener('click',function(){
+      makeCard({name:b.getAttribute('data-name'), q:b.getAttribute('data-q'), meta:'Nudged manually · you asked for this'});
+      addLog(b.getAttribute('data-name')+' nudged you','down');
+    });
+  });
+
+  // ---- camera ----
+  var camBtn=$('cam'), camLabel=$('camlabel'), camNote=$('camnote'), driftedDown=false;
+  camBtn.addEventListener('click',function(){
+    cam=!cam;
+    camBtn.classList.toggle('on',cam);
+    camBtn.setAttribute('aria-pressed',cam?'true':'false');
+    camLabel.textContent = cam?'Camera on':'Camera off';
+    camNote.textContent = cam?'The org chart can see you. It approves, conditionally.':'Turn the camera on and the org chart relaxes.';
+    if(cam){ addLog('camera on · presence rising','up'); driftedDown=false; }
+    else{ addLog('camera off · presence at risk','down'); }
+  });
+
+  // ---- ticking loop ----
+  function tick(){
+    sec++;
+    $('session').textContent='SESSION '+clock();
+    if(cam){ if(score<98){ score+=1; render(); } }
+    else{
+      if(score>40){ score-=(sec%2===0?1:0); render(); }
+      if(score<55 && !driftedDown){ driftedDown=true; addLog('drifting · nobody can see you','down'); }
+    }
+  }
+  timer=setInterval(tick,1000);
+
+  render();
+})();
+</script>
+</body>
+</html>

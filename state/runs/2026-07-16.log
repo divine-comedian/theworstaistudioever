@@ -1,0 +1,85 @@
+[2026-07-16T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-07-16T08:00:02Z] invoking claude -p
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/github/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/github/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.openclaw/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.openclaw/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.claude/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.claude/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/aurevon-status/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/aurevon-status/**) instead (Edit rules cover all file-editing tools).
+
+============================================
+theworstaistudioever — daily run 2026-07-16
+============================================
+
+ROLL
+  company : ChatGPT
+  subject : remote workers   (type-of-person subject; valid)
+  slug    : chatgpt-for-remote-workers
+  tagline : ChatGPT for remote workers
+  rerolls : 0   (first draw was unused)
+  PRNG    : LCG seeded from UTC date string "2026-07-16"
+
+CONCEPT
+  product   : Cubicle — "presence infrastructure"
+  one-liner : An AI coworker that reinstalls the office you left, one interruption at a time.
+  angle     : deadpan HR-tech that files remote-work loneliness as an attendance gap and
+              "fixes" it with a synthetic colleague (ambient fish-reheater, scheduled
+              "got a sec?" drive-bys, a webcam-fed Presence Score visible to the org chart).
+  copy run through anti-ai-slop.
+
+DESIGN DIRECTION
+  style   : Brutalist corporate-groupware intranet, fluorescent daylight mode
+            (form-field plates, 2px near-black borders, 0 radius, hard 4-5px offset shadows,
+             8px admin grid, mono kicker labels in ruled wells; green rationed to CTA +
+             status lamp + AVAILABLE + Presence Score fill).
+  palette : "Fluorescent Concrete" — primary #16181C, accent #1A7D40 (presence green),
+            bg #E5E5DF, fg #16181C, muted #63645E, ink #0F1013
+  fonts   : display Bricolage Grotesque / body Hanken Grotesk / figures Spline Sans Mono
+  archetype: B2B productivity-SaaS landing staged as an internal HR presence portal.
+
+  Anti-sameness check vs last 7 (spacex retro-futurist aerospace, steam skeuomorphic chassis,
+  notion swiss-modernist bulletin, fitbit editorial serif brochure, tiktok neumorphic,
+  fitbit-penguins claymorphic, mercury cartographic dark): PASS. No brutalist style, no
+  Bricolage/Hanken pairing, and presence-green as the rationed accent all previously unused.
+
+IMAGES  (cap: 0/10 used at start; 3 API calls made)
+  Allocation rationale: brutalist typographic hero skipped (text-and-rule driven, no imagery
+  earns a slot); demo is a Presence Console dashboard, not photo-shaped, so no demo assets;
+  budget spent on the always-applicable fallback — 3 deadpan corporate ID-badge testimonial
+  headshots, flat and desaturated to read as employee attendance photos in the ruled ID plates.
+    headshot-1.webp  role=testimonial (Priya Vantol)        attempts=1  judge=PASS
+    headshot-2.webp  role=testimonial (Dell Okafor)         attempts=1  judge=PASS
+    headshot-3.webp  role=testimonial (Marguerite Sandoval) attempts=1  judge=PASS
+  All three: correct subject, deadpan badge-photo flatness, cool concrete-gray backdrops
+  harmonizing with Fluorescent Concrete, no text/logo/UI artifacts (the plain dark lanyard
+  strap on headshot-2 is text-free and on-theme). Each cropped to 320x320 WebP, <10 KB.
+
+BUILD
+  index.html : brutalist landing — sticky nav w/ status lamp + "Provision a coworker" CTA,
+               split hero (claim left + stamped Presence Console plate right w/ green availability
+               dot + Presence Score meter that fills on scroll), 3 numbered form-field features,
+               3 testimonial ID plates w/ headshots, 3 seat-class pricing tiers, green CTA band,
+               footer w/ "<- theworstaistudioever" to / and a prominent "Open the demo ->".
+  demo.html  : interactive Presence Console — colleague status rail w/ Nudge buttons,
+               Interruption Inbox (Answer/Snooze +4/Decline with ledger logging + empty state),
+               Presence Score meter + Toggle Camera control that ticks the score up/down live,
+               presence-debt counter, attendance ledger, session clock. Vanilla JS, reduced-motion
+               honored, no external frameworks, no images.
+  frontend-design skill used for both; all copy run through anti-ai-slop.
+
+GALLERY
+  Regenerated site/index.html from all 54 concept.json files (date desc, slug asc for ties).
+  Existing 53 slides reproduced byte-identical (diff = additions only); header count now
+  "54 startups - since 2026". styles.css untouched. New slide gradient derived from palette.
+
+WARNINGS / NEAR-MISSES
+  - none. Image cap not approached (3/10). No rerolls. No dropped images.
+
+VALIDATION
+  scripts/validate-entry.sh site chatgpt-for-remote-workers -> OK (exit 0).
+  history.json appended (54 entries) and re-parsed as valid JSON.
+[2026-07-16T08:12:24Z] WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks
+[2026-07-16T08:12:24Z] new entry: chatgpt-for-remote-workers
+validate-entry [chatgpt-for-remote-workers]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 54 entries (domain theworstaistudioever.com)
+[2026-07-16T08:12:25Z] committing: ChatGPT for remote workers
