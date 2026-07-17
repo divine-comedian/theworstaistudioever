@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loot Console · Haul</title>
+<meta name="description" content="Tonight's haul, graded by rarity. Roll need or greed on the 4th &amp; Alder bulk drop.">
+<meta name="theme-color" content="#16130F">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#16130F;--bg-2:#1E1A14;--plate:#211C15;--gold:#C9A227;--gold-dim:#8E7838;
+    --fg:#D9CDB0;--ink:#EDE3CC;--muted:#7A6B52;--line:#3A311F;
+    --r-common:#9D9D9D;--r-uncommon:#3FBF3F;--r-rare:#3B8BEA;--r-epic:#A335EE;--r-legendary:#FF8000;
+    --epic:#A335EE;
+    --font-display:'Cinzel',Georgia,serif;--font-body:'Spectral',Georgia,serif;
+    --font-mono:'Spline Sans Mono',ui-monospace,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font-body);
+    font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(1000px 600px at 88% -10%,rgba(163,53,238,.08),transparent 60%);
+    background-attachment:fixed}
+  .mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums;letter-spacing:.03em}
+  a{color:inherit}
+  :focus-visible{outline:2px solid var(--epic);outline-offset:2px;border-radius:4px}
+
+  /* chrome */
+  .chrome{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:1.2rem;
+    padding:.8rem clamp(1rem,4vw,2.2rem);background:rgba(22,19,15,.92);
+    backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+  .back{font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;color:var(--gold);
+    text-decoration:none;white-space:nowrap}
+  .back:hover{color:var(--ink)}
+  .title{font-family:var(--font-display);font-weight:900;color:var(--ink);font-size:1.05rem;
+    letter-spacing:.03em}
+  .title small{font-family:var(--font-mono);font-weight:400;color:var(--muted);font-size:.62rem;
+    letter-spacing:.18em;display:block;text-transform:uppercase}
+  .status{margin-left:auto;display:flex;gap:1.4rem;font-family:var(--font-mono);font-size:11px;
+    letter-spacing:.05em;color:var(--muted)}
+  .status b{color:var(--gold);font-weight:500}
+  .status .live{color:var(--r-legendary)}
+  @media(max-width:720px){.status{display:none}}
+
+  .app{display:grid;grid-template-columns:236px 1fr;gap:0;min-height:calc(100vh - 55px)}
+  @media(max-width:820px){.app{grid-template-columns:1fr}}
+
+  /* quest log sidebar */
+  .quests{border-right:1px solid var(--line);padding:1.4rem 1.2rem;background:var(--bg-2)}
+  .quests h2{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--muted);margin:0 0 1rem;font-weight:400}
+  .quest{border:1px solid var(--line);border-left:2px solid var(--gold);border-radius:5px;
+    padding:.75rem .8rem;margin-bottom:.7rem;background:var(--plate)}
+  .quest.active{border-left-color:var(--r-epic);box-shadow:0 0 0 1px rgba(163,53,238,.25)}
+  .quest .qn{font-family:var(--font-display);color:var(--ink);font-size:.98rem;font-weight:600}
+  .quest .qm{font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:.05em;
+    margin-top:.3rem;text-transform:uppercase}
+  .quest .prog{height:5px;border-radius:99px;background:#100D09;margin-top:.6rem;overflow:hidden}
+  .quest .prog i{display:block;height:100%;background:linear-gradient(90deg,var(--gold-dim),var(--gold))}
+  .diver{margin-top:1.6rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+  .diver .lv{font-family:var(--font-mono);font-size:11px;color:var(--gold);letter-spacing:.08em}
+  .diver .nm{font-family:var(--font-display);color:var(--ink);font-weight:600;margin:.15rem 0 .5rem}
+  .xp-track{height:7px;border-radius:99px;background:#100D09;border:1px solid var(--line);overflow:hidden}
+  .xp-track i{display:block;height:100%;width:70%;background:linear-gradient(90deg,var(--gold-dim),var(--gold))}
+  .xp-cap{font-family:var(--font-mono);font-size:10px;color:var(--muted);margin-top:.35rem}
+
+  /* main */
+  .main{padding:1.5rem clamp(1rem,3vw,2rem)}
+  .tabs{display:flex;gap:.4rem;border-bottom:1px solid var(--line);margin-bottom:1.3rem}
+  .tab{font-family:var(--font-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+    background:none;border:0;color:var(--muted);padding:.7rem 1rem;cursor:pointer;position:relative}
+  .tab[aria-selected="true"]{color:var(--ink)}
+  .tab[aria-selected="true"]::after{content:"";position:absolute;left:.6rem;right:.6rem;bottom:-1px;
+    height:2px;background:var(--epic)}
+  .tab:hover{color:var(--fg)}
+
+  .toolbar{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-bottom:1.3rem}
+  .chip{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+    background:var(--plate);border:1px solid var(--line);color:var(--fg);border-radius:99px;
+    padding:.4rem .85rem;cursor:pointer;transition:border-color .2s,color .2s;display:inline-flex;
+    align-items:center;gap:.4rem}
+  .chip:hover{border-color:var(--gold-dim)}
+  .chip[aria-pressed="true"]{border-color:var(--c,var(--gold));color:var(--ink)}
+  .chip .sw{width:8px;height:8px;border-radius:2px;background:var(--c,var(--gold))}
+  .count{margin-left:auto;font-family:var(--font-mono);font-size:11px;color:var(--muted);letter-spacing:.05em}
+
+  /* inventory grid */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:.7rem;
+    max-width:640px}
+  .slot{position:relative;aspect-ratio:1;border-radius:6px;background:#100D09;
+    border:2px solid var(--rr);cursor:pointer;display:grid;place-items:center;
+    box-shadow:inset 0 0 18px rgba(0,0,0,.6);transition:transform .12s ease}
+  .slot:hover,.slot:focus-visible{transform:translateY(-2px)}
+  .slot.epic-glow{box-shadow:inset 0 0 18px rgba(0,0,0,.6),0 0 14px -2px var(--rr);animation:rune 3s ease-in-out infinite}
+  @keyframes rune{0%,100%{box-shadow:inset 0 0 18px rgba(0,0,0,.6),0 0 8px -3px var(--rr)}50%{box-shadow:inset 0 0 18px rgba(0,0,0,.6),0 0 18px 0 var(--rr)}}
+  @media(prefers-reduced-motion:reduce){.slot.epic-glow{animation:none}.slot:hover{transform:none}}
+  .slot svg{width:38px;height:38px;stroke:var(--rr);opacity:.9}
+  .slot .stack{position:absolute;right:3px;bottom:2px;font-family:var(--font-mono);font-size:10px;
+    color:var(--ink);text-shadow:0 1px 2px #000}
+
+  /* tooltip */
+  #tip{position:fixed;z-index:60;max-width:260px;pointer-events:none;opacity:0;
+    transform:translateY(4px);transition:opacity .12s ease,transform .12s ease;
+    background:#0D0B07;border:1px solid var(--tc,var(--line));border-radius:6px;padding:.75rem .85rem;
+    box-shadow:0 18px 44px -18px #000}
+  #tip.show{opacity:1;transform:none}
+  #tip .tn{font-family:var(--font-display);font-weight:600;font-size:1rem;color:var(--tc);line-height:1.2}
+  #tip .tb{font-size:.85rem;color:var(--fg);margin-top:.15rem}
+  #tip .tt{font-size:.85rem;color:var(--muted)}
+  #tip ul{list-style:none;margin:.6rem 0 0;padding:0;font-family:var(--font-mono);font-size:11.5px;color:#8fd08f}
+  #tip li{padding:.08rem 0}
+  #tip .fl{margin-top:.55rem;font-style:italic;color:var(--gold);font-size:.85rem;line-height:1.4}
+  #tip .cv{margin-top:.55rem;padding-top:.5rem;border-top:1px solid var(--line);
+    font-family:var(--font-mono);font-size:10.5px;color:var(--muted);letter-spacing:.06em;
+    display:flex;justify-content:space-between}
+  #tip .cv b{color:var(--tc);font-weight:500}
+
+  /* roster */
+  .roster{max-width:720px;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+  .rrow{display:grid;grid-template-columns:1.4fr 1fr 1fr auto;gap:1rem;align-items:center;
+    padding:.7rem 1rem;border-bottom:1px solid var(--line);font-size:.92rem}
+  .rrow:last-child{border-bottom:0}
+  .rrow.head{background:var(--bg-2);font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted)}
+  .rrow .rn{font-family:var(--font-display);color:var(--ink);font-weight:600}
+  .role{font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;color:var(--fg)}
+  .st{font-family:var(--font-mono);font-size:11px;letter-spacing:.05em}
+  .st.ready{color:var(--r-uncommon)}.st.pull{color:var(--r-legendary)}.st.afk{color:var(--muted)}
+  .hidden{display:none !important}
+
+  /* modal */
+  .scrim{position:fixed;inset:0;background:rgba(8,6,4,.72);display:none;place-items:center;z-index:80;
+    padding:1rem}
+  .scrim.open{display:grid}
+  .modal{width:min(420px,94vw);background:var(--plate);border:1px solid var(--line);border-radius:9px;
+    padding:1.6rem;box-shadow:0 40px 90px -30px #000}
+  .modal h3{font-family:var(--font-display);margin:0 0 .2rem;color:var(--ink);font-size:1.2rem}
+  .modal .msub{font-family:var(--font-mono);font-size:11px;color:var(--muted);letter-spacing:.08em;
+    text-transform:uppercase;margin-bottom:1.2rem}
+  .rollbtns{display:flex;gap:.7rem;margin-bottom:1rem}
+  .rbtn{flex:1;font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;
+    padding:.75rem;border-radius:6px;cursor:pointer;border:1px solid var(--line);background:#100D09;color:var(--ink)}
+  .rbtn.need{border-color:var(--r-epic)}.rbtn.greed{border-color:var(--gold-dim)}
+  .rbtn:hover{background:#161009}
+  .results{list-style:none;margin:.4rem 0 1.2rem;padding:0;min-height:96px}
+  .results li{display:flex;justify-content:space-between;padding:.4rem .1rem;border-bottom:1px solid var(--line);
+    font-family:var(--font-mono);font-size:12.5px}
+  .results li .who{color:var(--fg)}.results li .tag{color:var(--muted);font-size:10px}
+  .results li .rn{color:var(--gold)}
+  .results li.win{color:var(--ink)}.results li.win .rn{color:var(--r-epic);font-weight:600}
+  .verdict{font-family:var(--font-mono);font-size:12px;color:var(--muted);letter-spacing:.05em;
+    min-height:1.4em;margin-bottom:1.1rem}
+  .verdict b{color:var(--r-epic)}
+  .mclose{width:100%;font-family:var(--font-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+    padding:.7rem;border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
+  .mclose:hover{color:var(--ink);border-color:var(--gold-dim)}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <a class="back" href="./index.html">&larr; back to the pitch</a>
+  <div class="title">Loot Console<small>Haul &middot; Midtown-3</small></div>
+  <div class="status mono">
+    <span>RAID <b>4TH &amp; ALDER</b></span>
+    <span>QUEUE <b>40/40</b></span>
+    <span class="live">&#9679; WORLD BOSS UP</span>
+  </div>
+</div>
+
+<div class="app">
+  <aside class="quests">
+    <h2>Quest Log</h2>
+    <div class="quest active">
+      <div class="qn">4th &amp; Alder Bulk Drop</div>
+      <div class="qm">Raid &middot; 40 divers &middot; wipe risk high</div>
+      <div class="prog"><i style="width:64%"></i></div>
+    </div>
+    <div class="quest">
+      <div class="qn">Clear the Alley Behind Vons</div>
+      <div class="qm">Daily &middot; 3 / 5 bins looted</div>
+      <div class="prog"><i style="width:60%"></i></div>
+    </div>
+    <div class="quest">
+      <div class="qn">Appease the Property Manager</div>
+      <div class="qm">World boss &middot; no known strategy</div>
+      <div class="prog"><i style="width:8%"></i></div>
+    </div>
+    <div class="diver">
+      <div class="lv mono">LEVEL 34</div>
+      <div class="nm">Ash "Curbside" Delgado</div>
+      <div class="xp-track"><i></i></div>
+      <div class="xp-cap mono">8,420 / 12,000 XP TO 35</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-view="inv">Inventory</button>
+      <button class="tab" role="tab" aria-selected="false" data-view="roster">Raid Roster</button>
+    </div>
+
+    <section id="view-inv">
+      <div class="toolbar" id="filters"></div>
+      <div class="grid" id="grid"></div>
+    </section>
+
+    <section id="view-roster" class="hidden">
+      <div class="roster" id="roster"></div>
+    </section>
+  </main>
+</div>
+
+<div id="tip" role="tooltip"></div>
+
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="mtitle">
+  <div class="modal">
+    <h3 id="mtitle">Roll for loot</h3>
+    <div class="msub" id="msub">&nbsp;</div>
+    <div class="rollbtns">
+      <button class="rbtn need" id="needBtn">Need</button>
+      <button class="rbtn greed" id="greedBtn">Greed</button>
+    </div>
+    <ul class="results" id="results"></ul>
+    <div class="verdict mono" id="verdict">&nbsp;</div>
+    <button class="mclose" id="mclose">Close</button>
+  </div>
+</div>
+
+<script>
+  var reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  var RAR = {
+    common:{c:'#9D9D9D',label:'Common'}, uncommon:{c:'#3FBF3F',label:'Uncommon'},
+    rare:{c:'#3B8BEA',label:'Rare'}, epic:{c:'#A335EE',label:'Epic'}, legendary:{c:'#FF8000',label:'Legendary'}
+  };
+  var ICON = {
+    lamp:'<path d="M8 3h8l3 8H5z"/><path d="M12 11v7"/><path d="M8 21h8"/>',
+    chair:'<path d="M6 3v18"/><path d="M18 3v18"/><path d="M6 12h12"/><path d="M4 21h16"/>',
+    box:'<path d="M4 8l8-4 8 4-8 4z"/><path d="M4 8v8l8 4 8-4V8"/><path d="M12 12v8"/>',
+    fryer:'<path d="M6 4h12v5H6z"/><path d="M5 9h14l-1 11H6z"/><path d="M10 13h4"/>',
+    shelf:'<path d="M4 8h16v11H4z"/><path d="M4 8l2-3h12l2 3"/><path d="M9 12h6"/>',
+    fan:'<path d="M12 12a5 5 0 015-5c0 3-2 5-5 5a5 5 0 01-5 5c0-3 2-5 5-5z"/><circle cx="12" cy="12" r="1.4"/>',
+    chairfancy:'<path d="M7 10V5a2 2 0 012-2h6a2 2 0 012 2v5"/><path d="M6 10h12v5H6z"/><path d="M8 15v5M16 15v5"/>',
+    machine:'<path d="M5 4h14v9H5z"/><path d="M8 13l-1 7h10l-1-7"/><path d="M9 8h6"/>',
+    crate:'<path d="M4 6h16v14H4z"/><path d="M4 11h16M12 6v14"/>',
+    aeron:'<path d="M6 3c0 6 2 9 6 9s6-3 6-9"/><path d="M8 12l-2 9M16 12l2 9"/><path d="M9 21h6"/>'
+  };
+
+  var ITEMS = [
+    {n:'Bent Desk Lamp',r:'common',ic:'lamp',bind:'',type:'Reclaimed Lighting',stats:['+1 Ambience','Flickers on hover'],fl:'The bend is structural now. Do not fight it.',cv:4,stack:2},
+    {n:'Single Dining Chair',r:'common',ic:'chair',bind:'',type:'Reclaimed Seating',stats:['+1 Seating','Set of one'],fl:'Its four siblings are on other servers.',cv:6},
+    {n:'Box of Assorted Cables',r:'common',ic:'box',bind:'',type:'Junk',stats:['+9 Cables','-2 Sanity'],fl:'One of them charges something. Not this.',cv:2,stack:'x9'},
+    {n:'Air Fryer (Works)',r:'uncommon',ic:'fryer',bind:'',type:'Reclaimed Appliance',stats:['+5 Dinner','Basket included'],fl:'Left out because they upgraded, not because it broke.',cv:24},
+    {n:'Cast-Iron Skillet',r:'uncommon',ic:'box',bind:'Bind on Pickup',type:'Cookware',stats:['+7 Sear','Seasoned by strangers'],fl:'Heavier than it looks. Everything good is.',cv:30},
+    {n:'Standing Fan',r:'rare',ic:'fan',bind:'',type:'Reclaimed Appliance',stats:['+6 Airflow','3 speeds, 2 work'],fl:'Oscillation intact. That is the whole game.',cv:38},
+    {n:'Warped Billy Shelf',r:'rare',ic:'shelf',bind:'Bind on Pickup',type:'Reclaimed Furniture',stats:['+3 Curb Appeal','+12 Storage','Durability 41/100'],fl:'Someone gave up on the assembly instructions and, eventually, the shelf.',cv:60},
+    {n:'Mid-Century End Table',r:'rare',ic:'chairfancy',bind:'Bind on Pickup',type:'Reclaimed Furniture',stats:['+8 Curb Appeal','Tapered legs'],fl:'Priced at zero. Valued at an argument with your roommate.',cv:75},
+    {n:'Working Espresso Machine',r:'epic',ic:'machine',bind:'Bind on Pickup',type:'Reclaimed Appliance',stats:['+14 Morning','Descale before use','Portafilter present'],fl:'Retails for four hundred. Discarded for a slightly newer one.',cv:180},
+    {n:'Eames Knockoff Lounge',r:'epic',ic:'chairfancy',bind:'Bind on Pickup',type:'Reclaimed Furniture',stats:['+20 Curb Appeal','+6 Recline','Real veneer, fake pedigree'],fl:'The engine cannot tell it is a knockoff. Neither can your guests.',cv:220},
+    {n:'Vinyl Crate, Unsorted',r:'epic',ic:'crate',bind:'',type:'Media Cache',stats:['+40 Records','1 of them is worth the rest'],fl:'Somebody\'s whole decade, left at the curb in one box.',cv:200,stack:'x40'},
+    {n:'Untouched Herman Miller Aeron',r:'legendary',ic:'aeron',bind:'Bind on Pickup',type:'Reclaimed Furniture',stats:['+35 Posture','+15 Curb Appeal','Size B, fully functional'],fl:'A world drop. The office downsized and the chair did not fit in the car.',cv:900}
+  ];
+
+  var grid=document.getElementById('grid');
+  var filters=document.getElementById('filters');
+  var tip=document.getElementById('tip');
+  var activeFilter='all';
+
+  var chips=[['all','All','var(--gold)']].concat(Object.keys(RAR).map(function(k){return [k,RAR[k].label,RAR[k].c]}));
+  filters.innerHTML = chips.map(function(c){
+    var sw = c[0]==='all' ? '' : '<span class="sw"></span>';
+    return '<button class="chip" data-f="'+c[0]+'" aria-pressed="'+(c[0]==='all')+'" style="--c:'+c[2]+'">'+sw+c[1]+'</button>';
+  }).join('') + '<span class="count" id="count"></span>';
+
+  function renderGrid(){
+    var list = ITEMS.filter(function(it){return activeFilter==='all'||it.r===activeFilter});
+    grid.innerHTML = list.map(function(it){
+      var idx = ITEMS.indexOf(it);
+      var glow = (it.r==='epic'||it.r==='legendary') ? ' epic-glow' : '';
+      var stack = it.stack ? '<span class="stack">'+it.stack+'</span>' : '';
+      return '<button class="slot'+glow+'" data-i="'+idx+'" style="--rr:'+RAR[it.r].c+'" '+
+        'aria-label="'+it.n+', '+RAR[it.r].label+'">'+
+        '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">'+ICON[it.ic]+'</svg>'+stack+'</button>';
+    }).join('');
+    document.getElementById('count').textContent = list.length+' / '+ITEMS.length+' ITEMS';
+  }
+  renderGrid();
+
+  filters.addEventListener('click',function(e){
+    var b=e.target.closest('.chip'); if(!b) return;
+    activeFilter=b.dataset.f;
+    filters.querySelectorAll('.chip').forEach(function(c){c.setAttribute('aria-pressed',c===b)});
+    renderGrid();
+  });
+
+  // tooltip
+  function showTip(it,x,y){
+    var col=RAR[it.r].c;
+    tip.style.setProperty('--tc',col);
+    tip.style.borderColor=col;
+    tip.innerHTML='<div class="tn">'+it.n+'</div>'+
+      (it.bind?'<div class="tb">'+it.bind+'</div>':'')+
+      '<div class="tt">'+it.type+'</div>'+
+      '<ul>'+it.stats.map(function(s){return '<li>'+s+'</li>'}).join('')+'</ul>'+
+      '<div class="fl">"'+it.fl+'"</div>'+
+      '<div class="cv"><span>APPRAISED <b>'+RAR[it.r].label.toUpperCase()+'</b></span><span>CURB VALUE '+it.cv+'</span></div>';
+    var pad=14, w=tip.offsetWidth, h=tip.offsetHeight;
+    var px=Math.min(x+pad, window.innerWidth-w-8);
+    var py=Math.min(y+pad, window.innerHeight-h-8);
+    tip.style.left=px+'px'; tip.style.top=py+'px';
+    tip.classList.add('show');
+  }
+  function hideTip(){tip.classList.remove('show')}
+
+  grid.addEventListener('mouseover',function(e){
+    var s=e.target.closest('.slot'); if(!s) return;
+    showTip(ITEMS[+s.dataset.i], e.clientX, e.clientY);
+  });
+  grid.addEventListener('mousemove',function(e){
+    var s=e.target.closest('.slot'); if(!s||!tip.classList.contains('show')) return;
+    var w=tip.offsetWidth,h=tip.offsetHeight;
+    tip.style.left=Math.min(e.clientX+14,window.innerWidth-w-8)+'px';
+    tip.style.top=Math.min(e.clientY+14,window.innerHeight-h-8)+'px';
+  });
+  grid.addEventListener('mouseout',function(e){ if(e.target.closest('.slot')) hideTip(); });
+
+  // click slot -> roll modal
+  grid.addEventListener('click',function(e){
+    var s=e.target.closest('.slot'); if(!s) return;
+    openRoll(ITEMS[+s.dataset.i]);
+  });
+
+  // roster
+  var PARTY=[
+    ['Ash "Curbside" Delgado','Raid Lead','pull','Pulling lid'],
+    ['Dale Prewitt','Off-Tank','ready','Lid secured'],
+    ['Marisol Tang','Furniture DPS','ready','On the credenza'],
+    ['Gunnar Aoki','Off-Tank','ready','Gloves on'],
+    ['Priya Venkatesh','Healer','ready','Tetanus watch'],
+    ['Corbin Yoo','Scout','pull','Two alleys ahead'],
+    ['Renata Boll','Appraiser','ready','Grading in bulk'],
+    ['Theo Marchetti','DPS','afk','Went for a truck'],
+    ['June Okafor','Loot Master','ready','Holding rolls'],
+    ['Sam Peltier','DPS','afk','Ghosted the raid']
+  ];
+  var STLABEL={ready:'READY',pull:'PULLING',afk:'AFK'};
+  document.getElementById('roster').innerHTML =
+    '<div class="rrow head"><span>Diver</span><span>Role</span><span>Status</span><span>Note</span></div>'+
+    PARTY.map(function(p){
+      return '<div class="rrow"><span class="rn">'+p[0]+'</span><span class="role">'+p[1]+
+        '</span><span class="st '+p[2]+'">'+STLABEL[p[2]]+'</span><span class="st" style="color:var(--muted)">'+p[3]+'</span></div>';
+    }).join('');
+
+  // tabs
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click',function(){
+      document.querySelectorAll('.tab').forEach(function(x){x.setAttribute('aria-selected',x===t)});
+      var inv=t.dataset.view==='inv';
+      document.getElementById('view-inv').classList.toggle('hidden',!inv);
+      document.getElementById('view-roster').classList.toggle('hidden',inv);
+      hideTip();
+    });
+  });
+
+  // roll modal
+  var scrim=document.getElementById('scrim'), results=document.getElementById('results'),
+      verdict=document.getElementById('verdict'), msub=document.getElementById('msub'),
+      mtitle=document.getElementById('mtitle');
+  var rollers=['Ash (you)','Dale Prewitt','Marisol Tang','Gunnar Aoki'];
+  var curItem=null;
+
+  function openRoll(it){
+    curItem=it;
+    mtitle.textContent='Roll for '+it.n;
+    msub.innerHTML='Appraised '+RAR[it.r].label+' &middot; curb value '+it.cv;
+    results.innerHTML=''; verdict.innerHTML='&nbsp;';
+    document.getElementById('needBtn').disabled=false;
+    document.getElementById('greedBtn').disabled=false;
+    scrim.classList.add('open');
+    document.getElementById('needBtn').focus();
+  }
+  function closeRoll(){scrim.classList.remove('open')}
+
+  function d100(){return 1+Math.floor(Math.random()*100)}
+
+  function doRoll(kind){
+    document.getElementById('needBtn').disabled=true;
+    document.getElementById('greedBtn').disabled=true;
+    var rolls=rollers.map(function(name,i){
+      // "you" rolled the chosen kind; others roll a random kind
+      var k = i===0 ? kind : (Math.random()<0.5?'Need':'Greed');
+      return {name:name, kind:k, val:d100()};
+    });
+    // Need beats Greed; highest roll within the higher priority wins
+    var needs=rolls.filter(function(r){return r.kind==='Need'});
+    var pool = needs.length? needs : rolls;
+    var win = pool.reduce(function(a,b){return b.val>a.val?b:a});
+
+    results.innerHTML='';
+    verdict.innerHTML='&nbsp;';
+    rolls.forEach(function(r,i){
+      var li=document.createElement('li');
+      if(r===win) li.className='win';
+      li.innerHTML='<span class="who">'+r.name+' <span class="tag">'+r.kind.toUpperCase()+'</span></span><span class="rn">&mdash;</span>';
+      results.appendChild(li);
+      var rn=li.querySelector('.rn');
+      if(reduce){ rn.textContent=r.val; }
+      else{
+        var t=0, iv=setInterval(function(){ rn.textContent=d100(); if(++t>7){clearInterval(iv);rn.textContent=r.val;} },55+i*8);
+      }
+    });
+    var delay = reduce?0:640;
+    setTimeout(function(){
+      if(win.name==='Ash (you)') verdict.innerHTML='You win the '+curItem.n+'. <b>Loot is yours.</b>';
+      else verdict.innerHTML='<b>'+win.name+'</b> wins the '+curItem.n+'. Mailed to their bank.';
+    },delay);
+  }
+
+  document.getElementById('needBtn').addEventListener('click',function(){doRoll('Need')});
+  document.getElementById('greedBtn').addEventListener('click',function(){doRoll('Greed')});
+  document.getElementById('mclose').addEventListener('click',closeRoll);
+  scrim.addEventListener('click',function(e){if(e.target===scrim)closeRoll()});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeRoll()});
+</script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+[2026-07-17T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-07-17T08:00:02Z] invoking claude -p
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/github/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/github/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.openclaw/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.openclaw/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.claude/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.claude/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/aurevon-status/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/aurevon-status/**) instead (Edit rules cover all file-editing tools).
+
+--- AGENT RUN SUMMARY (2026-07-17) ---
+ROLL: World of Warcraft x dumpster divers -> world-of-warcraft-for-dumpster-divers
+  PRNG: LCG seeded from date string 2026-07-17. Rerolls: 1 (first pair was already in history; second pair landed clean).
+  Subject check: "dumpster divers" is a relatable type of person -> valid, kept.
+
+CONCEPT: Product "Haul" -- a persistent-world loot MMO that reframes curbside dumpster diving as endgame raiding. Garbage graded on the WoW item-rarity ladder; property managers as world bosses; 40-diver raids on bulk-trash night; live threat table with wipe timers. anti-ai-slop applied to all copy.
+
+DESIGN DIRECTION:
+  Style: Fantasy RPG questlog / illuminated MMO game-UI (dark tavern-stone, engraved antique-gold filigree plates, WoW rarity ladder as the only chromatic system, epic-purple rationed as the CTA/loot accent).
+  Palette: bg #16130F, primary/gold #C9A227, accent/epic-purple #A335EE, fg #D9CDB0, ink #EDE3CC, muted #7A6B52.
+  Fonts: Cinzel (display) / Spectral (body), Spline Sans Mono for telemetry figures.
+  Anti-sameness: last 7 styles were brutalist, retro-futurist, skeuomorphic, swiss-modernist, editorial, neumorphic, claymorphic -- none is a fantasy game-UI. Fonts Cinzel/Spectral unused in last 7 (skill suggested Russo One/Chakra Petch, which collide with 07-14 steam entry, so diverged). Tuple is unique vs last 7.
+
+IMAGES: 3 API calls, all this run (imagegen count 3/10 today).
+  Allocation rationale: typographic engraved fantasy game-UI hero -> SKIPPED (wordmark plate + filigree carry it). Demo is an icon/rarity-slot loot console -> SKIPPED (item icons, not photo-shaped). Budget on the always-applicable fallback: 3 deadpan testimonial headshots (dim guild-hall portraits matching the dark charcoal + antique-gold palette).
+  headshot-1.webp (Dale Prewitt): 1 attempt, judge PASS -- weathered work-jacket man, gold rim light, dark bg, no text/UI artifacts.
+  headshot-2.webp (Marisol Tang): 1 attempt, judge PASS -- flannel woman, correct subject/palette, clean.
+  headshot-3.webp (Gunnar Aoki): 1 attempt, judge PASS -- beanie + gloves man, correct, clean.
+  All 3 cropped to 320x320 WebP, ~11-13 KB each (well under 500 KB).
+
+BUILD: index.html (fantasy questlog landing: hero loot-slot plate + XP bar, server/patch strip, 3 systems, 3 field-report testimonials with headshots, 3 rarity-tiered charters, finale CTA, footer back-link). demo.html (interactive Loot Console: rarity-filtered inventory grid with live item tooltips, Inventory/Raid Roster tabs, need-or-greed d100 roll modal). frontend-design skill used; all copy through anti-ai-slop. Reduced-motion gated throughout.
+
+GALLERY: regenerated site/index.html from all 55 concept.json files, newest-first (date desc, slug asc for ties). Count -> 55 startups. styles.css untouched; favicon/logo/metadata contract preserved.
+
+WARNINGS / NEAR-MISSES:
+  - ui-ux-pro-max suggested Russo One/Chakra Petch fonts; that pairing is the 07-14 entry, so I diverged to Cinzel/Spectral to satisfy the last-7 anti-sameness rule.
+  - No broken images: every referenced <img> resolves; no hotlinks.
+
+VALIDATION: scripts/validate-entry.sh site world-of-warcraft-for-dumpster-divers -> OK.
+HISTORY: appended {2026-07-17, World of Warcraft, dumpster divers, world-of-warcraft-for-dumpster-divers} (55 entries total).
+All 9 steps are done. Today's shipment:
+
+- **Rolled:** World of Warcraft × dumpster divers (`world-of-warcraft-for-dumpster-divers`), 1 reroll.
+- **Concept:** *Haul* — a persistent-world loot MMO that reframes curbside dumpster diving as endgame raiding. Garbage graded on the WoW rarity ladder, property managers as world bosses, 40-diver raids on bulk-trash night.
+- **Design:** Fantasy RPG questlog / illuminated MMO game-UI — dark tavern-stone, engraved antique-gold filigree, the WoW item-rarity ladder as the only chromatic system, epic-purple rationed for CTAs. Fonts Cinzel/Spectral (diverged from the skill's Russo One/Chakra Petch, which collide with the 07-14 entry). Tuple is unique vs the last 7 (which were brutalist, retro-futurist, skeuomorphic, swiss-modernist, editorial, neumorphic, claymorphic).
+- **Images:** 3 API calls (3/10 today). Hero skipped (typographic), demo skipped (icon-based); budget on 3 testimonial headshots — all 1 attempt, all passed vision judging, cropped to 320×320 WebP (~11–13 KB).
+- **Built:** landing page (loot-slot hero, XP bar, patch/server strip, 3 systems, 3 headshot testimonials, 3 rarity-tiered charters) and an interactive Loot Console demo (rarity-filtered inventory grid with live tooltips, Inventory/Raid Roster tabs, need-or-greed d100 roll modal). Reduced-motion gated throughout.
+- **Gallery:** regenerated from all 55 concept.json files, newest-first; count updated to 55; `styles.css` and metadata contract untouched.
+- **Validation:** passed. History appended. Run summary logged.
+
+```
+RUN_COMPLETE: world-of-warcraft-for-dumpster-divers
+```
+[2026-07-17T08:15:47Z] new entry: world-of-warcraft-for-dumpster-divers
+validate-entry [world-of-warcraft-for-dumpster-divers]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 55 entries (domain theworstaistudioever.com)
+[2026-07-17T08:15:47Z] committing: World of Warcraft for dumpster divers

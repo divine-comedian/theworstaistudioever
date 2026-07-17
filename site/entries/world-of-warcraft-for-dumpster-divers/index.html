@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Haul · theworstaistudioever</title>
+<meta name="description" content="A persistent-world loot MMO where the raids are municipal and the loot is whatever the fourth floor left at the curb.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Haul · theworstaistudioever">
+<meta property="og:description" content="A persistent-world loot MMO where the raids are municipal and the loot is whatever the fourth floor left at the curb.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Haul · theworstaistudioever">
+<meta name="twitter:description" content="A persistent-world loot MMO where the raids are municipal and the loot is whatever the fourth floor left at the curb.">
+<meta name="theme-color" content="#16130F">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#16130F;
+    --bg-2:#1E1A14;
+    --plate:#211C15;
+    --gold:#C9A227;
+    --gold-dim:#8E7838;
+    --fg:#D9CDB0;
+    --ink:#EDE3CC;
+    --muted:#7A6B52;
+    --line:#3A311F;
+    /* rarity ladder: the only chromatic system, used solely to grade loot */
+    --r-common:#9D9D9D;
+    --r-uncommon:#3FBF3F;
+    --r-rare:#3B8BEA;
+    --r-epic:#A335EE;
+    --r-legendary:#FF8000;
+    --epic:#A335EE;
+    --font-display:'Cinzel',Georgia,'Times New Roman',serif;
+    --font-body:'Spectral',Georgia,'Times New Roman',serif;
+    --font-mono:'Spline Sans Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{
+    margin:0;background:var(--bg);color:var(--fg);
+    font-family:var(--font-body);font-size:17px;line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    background-image:
+      radial-gradient(1100px 620px at 82% -8%, rgba(163,53,238,.10), transparent 60%),
+      radial-gradient(900px 700px at -6% 8%, rgba(201,162,39,.07), transparent 55%);
+    background-attachment:fixed;
+  }
+  ::selection{background:rgba(163,53,238,.35);color:#fff}
+  a{color:inherit}
+  .wrap{width:min(1120px,92vw);margin:0 auto}
+  .mono{font-family:var(--font-mono);letter-spacing:.04em;font-variant-numeric:tabular-nums}
+
+  /* engraved filigree plate */
+  .plate{
+    position:relative;background:
+      linear-gradient(180deg, rgba(255,255,255,.015), transparent 40%),
+      var(--plate);
+    border:1px solid var(--line);border-radius:7px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.03), inset 0 0 34px rgba(0,0,0,.4);
+  }
+  .plate::before,.plate::after{
+    content:"";position:absolute;width:16px;height:16px;pointer-events:none;
+    border:1.5px solid var(--gold);opacity:.55;
+  }
+  .plate::before{top:7px;left:7px;border-right:0;border-bottom:0}
+  .plate::after{bottom:7px;right:7px;border-left:0;border-top:0}
+
+  .kicker{
+    font-family:var(--font-mono);font-size:12px;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--gold);
+  }
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:.6rem;
+    font-family:var(--font-mono);font-size:11.5px;letter-spacing:.26em;
+    text-transform:uppercase;color:var(--muted);margin:0 0 1.1rem;
+  }
+  .eyebrow::before{content:"";width:26px;height:1px;background:var(--gold-dim)}
+  h1,h2,h3{font-family:var(--font-display);color:var(--ink);margin:0;line-height:1.08;font-weight:700}
+
+  /* ---- top bar ---- */
+  .bar{position:sticky;top:0;z-index:40;backdrop-filter:blur(6px);
+    background:linear-gradient(180deg, rgba(22,19,15,.92), rgba(22,19,15,.72));
+    border-bottom:1px solid var(--line)}
+  .bar-in{display:flex;align-items:center;gap:1.4rem;padding:.85rem 0}
+  .brand{display:flex;align-items:baseline;gap:.55rem;font-family:var(--font-display);
+    font-weight:900;font-size:1.42rem;color:var(--gold);letter-spacing:.02em;text-decoration:none}
+  .brand .bracket{color:var(--gold-dim);font-weight:400}
+  .bar nav{margin-left:auto;display:flex;gap:1.5rem;align-items:center}
+  .bar nav a{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+  .bar nav a:hover{color:var(--ink)}
+  .btn{
+    display:inline-flex;align-items:center;gap:.5rem;font-family:var(--font-mono);
+    font-size:13px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;
+    padding:.7rem 1.15rem;border-radius:6px;cursor:pointer;border:1px solid transparent;
+    transition:transform .12s ease, box-shadow .25s ease, background .2s;
+  }
+  .btn-epic{background:var(--epic);color:#fff;
+    box-shadow:0 0 0 1px rgba(163,53,238,.5), 0 8px 26px -12px rgba(163,53,238,.9)}
+  .btn-epic:hover{box-shadow:0 0 0 1px rgba(163,53,238,.8), 0 0 26px -4px rgba(163,53,238,.75)}
+  .btn-epic:active{transform:translateY(1px)}
+  .btn-ghost{border-color:var(--line);color:var(--ink);background:transparent}
+  .btn-ghost:hover{border-color:var(--gold-dim);color:var(--gold)}
+  .bar .btn{padding:.55rem .95rem}
+  @media(max-width:820px){.bar nav .navlink{display:none}}
+
+  /* ---- hero ---- */
+  .hero{padding:4.6rem 0 3.2rem}
+  .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:3rem;align-items:center}
+  .hero h1{font-size:clamp(2.5rem,6vw,4.3rem);font-weight:900;letter-spacing:.005em}
+  .hero .sub{font-size:1.16rem;color:var(--fg);max-width:36ch;margin:1.4rem 0 2rem}
+  .hero .sub b{color:var(--ink);font-weight:600}
+  .hero-cta{display:flex;flex-wrap:wrap;gap:.9rem;align-items:center}
+  .hero .kicker{display:block;margin-bottom:1.2rem}
+
+  /* character-sheet loot slot */
+  .sheet{padding:1.35rem}
+  .sheet-top{display:flex;gap:1rem;align-items:flex-start}
+  .slot{
+    flex:0 0 74px;height:74px;border-radius:6px;background:#100D09;
+    border:2px solid var(--r-rare);display:grid;place-items:center;
+    box-shadow:0 0 18px -4px rgba(59,139,234,.55), inset 0 0 22px rgba(0,0,0,.6);
+  }
+  .slot svg{width:40px;height:40px}
+  .tip-name{font-family:var(--font-display);font-weight:600;font-size:1.08rem;color:var(--r-rare);line-height:1.2}
+  .tip-line{font-size:.94rem;color:var(--fg);margin-top:.15rem}
+  .tip-stats{list-style:none;padding:0;margin:.9rem 0 0;font-family:var(--font-mono);font-size:12.5px}
+  .tip-stats li{padding:.12rem 0;color:#7FC6F2}
+  .tip-flavor{margin:.9rem 0 0;font-style:italic;color:var(--gold);font-size:.96rem;line-height:1.45}
+  .appraise{margin-top:1.1rem;padding-top:.85rem;border-top:1px solid var(--line);
+    font-family:var(--font-mono);font-size:11.5px;letter-spacing:.08em;color:var(--muted);
+    display:flex;justify-content:space-between;gap:1rem}
+  .appraise b{color:var(--r-rare);font-weight:600}
+  .xp{margin-top:1.15rem}
+  .xp-meta{display:flex;justify-content:space-between;font-family:var(--font-mono);
+    font-size:11px;letter-spacing:.06em;color:var(--muted);margin-bottom:.4rem}
+  .xp-track{height:9px;border-radius:99px;background:#100D09;border:1px solid var(--line);overflow:hidden}
+  .xp-fill{height:100%;width:0;border-radius:99px;
+    background:linear-gradient(90deg,var(--gold-dim),var(--gold));
+    transition:width 1.2s cubic-bezier(.2,.7,.2,1)}
+
+  /* ---- patch / server strip ---- */
+  .strip{border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    background:var(--bg-2);overflow:hidden}
+  .strip-in{display:flex;gap:2.6rem;padding:.7rem 0;font-family:var(--font-mono);
+    font-size:12px;letter-spacing:.1em;color:var(--muted);white-space:nowrap}
+  .strip-in span{display:inline-flex;align-items:center;gap:.55rem}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--r-uncommon);
+    box-shadow:0 0 8px var(--r-uncommon)}
+  .dot.up{background:var(--r-legendary);box-shadow:0 0 8px var(--r-legendary);
+    animation:pulse 3s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:.55}50%{opacity:1}}
+  @media(prefers-reduced-motion:reduce){.dot.up{animation:none}}
+
+  /* ---- sections ---- */
+  section.band{padding:5rem 0}
+  .sec-head{max-width:60ch;margin-bottom:2.6rem}
+  .sec-head h2{font-size:clamp(1.7rem,3.6vw,2.5rem)}
+  .sec-head p{color:var(--muted);margin:.9rem 0 0;font-size:1.05rem}
+
+  /* features */
+  .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem}
+  .feat{padding:1.7rem 1.5rem 1.5rem;display:flex;flex-direction:column}
+  .feat .rune{width:30px;height:30px;color:var(--gold);margin-bottom:1.1rem}
+  .feat h3{font-size:1.28rem;color:var(--ink);font-weight:700}
+  .feat p{margin:.75rem 0 1.3rem;font-size:1rem;color:var(--fg)}
+  .feat .stat{margin-top:auto;font-family:var(--font-mono);font-size:10.5px;
+    letter-spacing:.1em;color:var(--gold-dim);border-top:1px solid var(--line);padding-top:.85rem}
+
+  /* testimonials */
+  .quote-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem}
+  .card{padding:1.7rem 1.55rem;display:flex;flex-direction:column}
+  .card blockquote{margin:0;font-size:1.05rem;line-height:1.55;color:var(--ink);
+    font-style:italic;font-weight:400}
+  .card .who{display:flex;align-items:center;gap:.85rem;margin-top:1.5rem;padding-top:1.2rem;
+    border-top:1px solid var(--line)}
+  .card .who img{width:52px;height:52px;border-radius:50%;object-fit:cover;
+    border:2px solid var(--gold-dim);box-shadow:0 0 0 1px #100D09}
+  .card .who .n{font-family:var(--font-display);font-weight:600;color:var(--gold);font-size:1rem}
+  .card .who .t{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.06em;
+    color:var(--muted);text-transform:uppercase;margin-top:.15rem;line-height:1.4}
+
+  /* pricing */
+  .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;align-items:stretch}
+  .tier{padding:1.8rem 1.6rem;display:flex;flex-direction:column;border-top:3px solid var(--rar)}
+  .tier .rarity{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--rar)}
+  .tier h3{font-size:1.3rem;margin:.5rem 0 .1rem;color:var(--ink);font-weight:700}
+  .tier .price{font-family:var(--font-mono);font-size:2rem;color:var(--gold);
+    font-weight:600;margin:.7rem 0 .2rem;font-variant-numeric:tabular-nums}
+  .tier .tl{color:var(--muted);font-size:.96rem;min-height:2.9em}
+  .tier ul{list-style:none;padding:0;margin:1.2rem 0 1.7rem;flex:1}
+  .tier li{position:relative;padding:.34rem 0 .34rem 1.55rem;font-size:.97rem;color:var(--fg);
+    border-bottom:1px solid rgba(58,49,31,.5)}
+  .tier li svg{position:absolute;left:0;top:.62rem;width:14px;height:14px;color:var(--rar)}
+  .tier.featured{outline:1px solid rgba(163,53,238,.4);
+    box-shadow:0 0 0 1px rgba(163,53,238,.25), 0 26px 60px -34px rgba(163,53,238,.7)}
+  .tier .btn{justify-content:center;width:100%}
+  .flag{font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--epic);margin-bottom:.4rem;min-height:1.2em}
+
+  /* final CTA */
+  .finale{padding:5.5rem 0;text-align:center}
+  .finale .plate{padding:3.4rem 2rem}
+  .finale h2{font-size:clamp(1.8rem,4vw,2.8rem);max-width:20ch;margin:0 auto 1rem}
+  .finale p{color:var(--muted);max-width:44ch;margin:0 auto 2rem;font-family:var(--font-mono);
+    font-size:12.5px;letter-spacing:.06em}
+
+  /* footer */
+  footer{border-top:1px solid var(--line);padding:2.6rem 0 3.4rem}
+  .foot-in{display:flex;flex-wrap:wrap;gap:1.2rem;justify-content:space-between;align-items:center}
+  .back{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.08em;color:var(--gold);
+    text-decoration:none}
+  .back:hover{color:var(--ink)}
+  .disclaimer{color:var(--muted);font-size:.9rem;max-width:52ch;font-style:italic}
+
+  /* reveal */
+  .rise{opacity:0;transform:translateY(6px)}
+  .rise.in{opacity:1;transform:none;transition:opacity .6s ease, transform .6s cubic-bezier(.2,.7,.2,1)}
+  @media(prefers-reduced-motion:reduce){.rise{opacity:1;transform:none}.xp-fill{transition:none}}
+
+  :focus-visible{outline:2px solid var(--epic);outline-offset:3px;border-radius:4px}
+
+  @media(max-width:900px){
+    .hero-grid{grid-template-columns:1fr;gap:2.2rem}
+    .feat-grid,.quote-grid,.price-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap bar-in">
+    <a class="brand" href="#top"><span class="bracket">&#10214;</span>Haul<span class="bracket">&#10215;</span></a>
+    <nav>
+      <a class="navlink" href="#systems">Systems</a>
+      <a class="navlink" href="#reports">Field Reports</a>
+      <a class="navlink" href="#charters">Charters</a>
+      <a class="btn btn-epic" href="./demo.html">Open the loot console</a>
+    </nav>
+  </div>
+</header>
+
+<a id="top"></a>
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="kicker">Patch 3.4 &middot; Raid Tier: Municipal</span>
+      <h1>The dumpsters respawn at midnight.</h1>
+      <p class="sub">Haul runs your block as a persistent-world loot game. Real curbs, live raids, and an appraisal engine that grades a warped Billy shelf as <b>Rare</b> and a mattress as <b>Bind-on-Pickup</b>. Queue up, pull the bin, roll need or greed with forty strangers on your street.</p>
+      <div class="hero-cta">
+        <a class="btn btn-epic" href="./demo.html">Create your diver</a>
+        <a class="btn btn-ghost" href="./demo.html">Open the loot console &rarr;</a>
+      </div>
+    </div>
+
+    <div class="plate sheet rise">
+      <div class="sheet-top">
+        <div class="slot" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#7FC6F2" stroke-width="1.5" stroke-linejoin="round">
+            <path d="M4 8h16v11H4z"/><path d="M4 8l2-3h12l2 3"/><path d="M9 12h6"/>
+          </svg>
+        </div>
+        <div>
+          <div class="tip-name">Warped Billy Shelf</div>
+          <div class="tip-line">Bind on Pickup</div>
+          <div class="tip-line" style="color:var(--muted)">Reclaimed Furniture</div>
+        </div>
+      </div>
+      <ul class="tip-stats">
+        <li>+3 Curb Appeal</li>
+        <li>+12 Storage</li>
+        <li>Durability 41 / 100</li>
+      </ul>
+      <p class="tip-flavor">"Someone on the fourth floor gave up on the assembly instructions and, eventually, the shelf."</p>
+      <div class="appraise mono"><span>APPRAISED &middot; <b>RARE</b></span><span>EST. CURB VALUE 60</span></div>
+      <div class="xp">
+        <div class="xp-meta mono"><span>LEVEL 34</span><span>8,420 / 12,000 XP</span></div>
+        <div class="xp-track"><div class="xp-fill" id="xp"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="strip">
+  <div class="wrap strip-in mono">
+    <span><span class="dot"></span>SERVER: MIDTOWN-3 &middot; ONLINE</span>
+    <span>RAID QUEUE: 4TH &amp; ALDER &middot; 40 / 40</span>
+    <span><span class="dot up"></span>WORLD BOSS: PROPERTY MANAGER &middot; UP</span>
+    <span>WEATHER: LIGHT DRIZZLE, +5% SLIP RISK</span>
+    <span>NEXT RESET: 00:00 LOCAL</span>
+  </div>
+</div>
+
+<section class="band" id="systems">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Core Systems</div>
+      <h2>Three systems doing the wrong job with total conviction.</h2>
+      <p>Everything below shipped. None of it should exist. The roadmap does not distinguish between those two states.</p>
+    </div>
+    <div class="feat-grid">
+      <article class="feat plate rise">
+        <svg class="rune" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z"/></svg>
+        <h3>Loot Appraisal Engine</h3>
+        <p>A vision model grades every object at the curb on the standard rarity scale. A cracked rice cooker pings Uncommon. An untouched Eames knockoff pings Epic. A mattress is Bind-on-Pickup and cannot be traded, mailed, or explained to your partner.</p>
+        <div class="stat">CLASSIFIER &middot; 5 TIERS &middot; GRAY &rarr; ORANGE &middot; ~40ms / OBJECT</div>
+      </article>
+      <article class="feat plate rise">
+        <svg class="rune" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 20a5 5 0 0110 0M17 20a4 4 0 018 0M8 8a3 3 0 106 0 3 3 0 10-6 0M18 9a2.5 2.5 0 105 0 2.5 2.5 0 10-5 0"/></svg>
+        <h3>40-Diver Raid Scheduling</h3>
+        <p>Bulk-trash night is endgame content. Assemble a raid, assign roles, and pull on a shared timer. The tank holds the lid. Healers handle tetanus risk. If someone ninjas the credenza, that is a guild matter, not a Haul matter.</p>
+        <div class="stat">RAID SIZE 40 &middot; ROLES TANK / HEAL / DPS &middot; SHARED PULL TIMER</div>
+      </article>
+      <article class="feat plate rise">
+        <svg class="rune" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M12 8a4 4 0 100 8 4 4 0 100-8z"/><path d="M12 11.5v1M11.5 12h1"/></svg>
+        <h3>Live Threat Table</h3>
+        <p>A real-time map of contested bins. When a property manager pulls aggro, or a rival guild flags your alley, everyone in range gets pinged and a wipe timer starts. You have roughly ninety seconds before the porch light comes on.</p>
+        <div class="stat">REFRESH 1s &middot; WIPE TIMER ~90s &middot; WORLD BOSS: PROPERTY MGR</div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="reports" style="padding-top:1rem">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Field Reports</div>
+      <h2>Divers who logged real hours on live servers.</h2>
+    </div>
+    <div class="quote-grid">
+      <figure class="card plate rise">
+        <blockquote>Pulled a mid-century credenza off a fourth-floor drop before the property manager finished his coffee. My guild cut me for ninjaing it. Worth every point of reputation.</blockquote>
+        <figcaption class="who">
+          <img src="./headshot-1.webp" alt="Portrait of Dale Prewitt" width="52" height="52">
+          <div><div class="n">Dale Prewitt</div><div class="t">Raid Lead, Thursday-Night Salvage Cohort, Battle Creek</div></div>
+        </figcaption>
+      </figure>
+      <figure class="card plate rise">
+        <blockquote>I main furniture. Been Best-in-Slot on load-bearing since Season 2. The appraisal engine is the first system that has ever actually seen my build.</blockquote>
+        <figcaption class="who">
+          <img src="./headshot-2.webp" alt="Portrait of Marisol Tang" width="52" height="52">
+          <div><div class="n">Marisol Tang</div><div class="t">BiS Furniture Main, 3,200 Hauls Logged</div></div>
+        </figcaption>
+      </figure>
+      <figure class="card plate rise">
+        <blockquote>Wipe timer saved the whole party. Manager pulled and we were already three alleys out with the loot mailed. That is what forty dollars a year is for.</blockquote>
+        <figcaption class="who">
+          <img src="./headshot-3.webp" alt="Portrait of Gunnar Aoki" width="52" height="52">
+          <div><div class="n">Gunnar Aoki</div><div class="t">Off-Tank on Lid Duty, Precinct 7 Dive Collective</div></div>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="charters">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Guild Charters</div>
+      <h2>Priced by rarity, like everything else here.</h2>
+      <p>The rarity ladder does not stop at the loot. It goes all the way up to what you pay for the privilege of finding it.</p>
+    </div>
+    <div class="price-grid">
+      <div class="tier plate rise" style="--rar:var(--r-common)">
+        <div class="flag">&nbsp;</div>
+        <div class="rarity">Common</div>
+        <h3>Free Trial &middot; Levels 1 to 19</h3>
+        <div class="price">$0</div>
+        <div class="tl">Standard curb access. Solo only. Loot capped at Uncommon.</div>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l6 6L20 6"/></svg>Solo dives, no guild</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l6 6L20 6"/></svg>Rarity appraisal up to Uncommon</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l6 6L20 6"/></svg>One trash bag of bank space</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l6 6L20 6"/></svg>Ads between hauls</li>
+        </ul>
+        <a class="btn btn-ghost" href="./demo.html">Roll a level 1</a>
+      </div>
+
+      <div class="tier plate featured rise" style="--rar:var(--r-epic)">
+        <div class="flag">Most Rolled</div>
+        <div class="rarity">Epic</div>
+        <h3>Season Pass</h3>
+        <div class="price">$14<span style="font-size:1rem;color:var(--muted)">/mo</span></div>
+        <div class="tl">The main-character tier. Raids, guild, and the full rarity spectrum.</div>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l6 6L20 6"/></svg>40-diver raid access</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l6 6L20 6"/></svg>Epic and Legendary appraisal unlocked</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l6 6L20 6"/></svg>Threat table and wipe alerts</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l6 6L20 6"/></svg>Transmog: make the shelf photograph like new</li>
+        </ul>
+        <a class="btn btn-epic" href="./demo.html">Start the season</a>
+      </div>
+
+      <div class="tier plate rise" style="--rar:var(--r-legendary)">
+        <div class="flag">&nbsp;</div>
+        <div class="rarity">Legendary</div>
+        <h3>Founding Guildmaster</h3>
+        <div class="price">$2,400<span style="font-size:1rem;color:var(--muted)">/yr</span></div>
+        <div class="tl">You own a spawn point. We do not recommend telling people this.</div>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l6 6L20 6"/></svg>Claim a city block as guild territory</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l6 6L20 6"/></svg>Set the loot rules for everyone on it</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l6 6L20 6"/></svg>A physical guild tabard, mailed</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l6 6L20 6"/></svg>Priority appraisal on move-out weekend</li>
+        </ul>
+        <a class="btn btn-ghost" href="./demo.html">Charter a guild</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="finale">
+  <div class="wrap">
+    <div class="plate rise">
+      <h2>Bulk-trash night is Thursday. The queue is already forming.</h2>
+      <p>NO DOWNLOAD &middot; NO CREDIT CARD &middot; NO REASONABLE EXPLANATION</p>
+      <a class="btn btn-epic" href="./demo.html">Open the loot console &rarr;</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-in">
+    <a class="back" href="/">&larr; theworstaistudioever</a>
+    <p class="disclaimer">Haul is a persistent-world loot game. Loot is whatever your neighbors discarded. Tetanus is not covered under the Season Pass.</p>
+  </div>
+</footer>
+
+<script>
+  // XP bar fills once, in view
+  var xp=document.getElementById('xp');
+  var reduce=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  function fillXp(){ if(xp) xp.style.width = reduce ? '70%' : '70%'; }
+  // reveal on scroll
+  if('IntersectionObserver' in window && !reduce){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+    },{threshold:.15});
+    document.querySelectorAll('.rise').forEach(function(el){io.observe(el)});
+    var xpo=new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ fillXp(); xpo.disconnect(); } });
+    },{threshold:.4});
+    if(xp) xpo.observe(xp);
+  } else {
+    document.querySelectorAll('.rise').forEach(function(el){el.classList.add('in')});
+    fillXp();
+  }
+</script>
+</body>
+</html>
