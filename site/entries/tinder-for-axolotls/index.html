@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gill. · theworstaistudioever</title>
+<meta name="description" content="Swipe-based matchmaking for a critically endangered salamander with a total addressable market of 812.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Gill. · theworstaistudioever">
+<meta property="og:description" content="Swipe-based matchmaking for a critically endangered salamander with a total addressable market of 812.">
+<meta property="og:image" content="./hero.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Gill. · theworstaistudioever">
+<meta name="twitter:description" content="Swipe-based matchmaking for a critically endangered salamander with a total addressable market of 812.">
+<meta name="theme-color" content="#071A1E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=Figtree:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root{
+  --bg:#071A1E;
+  --bg-deep:#041215;
+  --aqua:#7FDCCB;
+  --pink:#FF8FB1;
+  --fg:#EAF6F4;
+  --muted:#7D9BA0;
+  --glass:rgba(255,255,255,.055);
+  --glass-hi:rgba(255,255,255,.16);
+  --glass-line:rgba(127,220,203,.16);
+  --display:'Sora','Helvetica Neue',Arial,sans-serif;
+  --body:'Figtree',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --r:18px;
+  --shell:1180px;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--fg);
+  font-family:var(--body);
+  font-size:17px;
+  line-height:1.6;
+  font-weight:300;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---- tank: the whole page sits inside glass ---- */
+.tank-seam{position:fixed;top:0;bottom:0;width:1px;background:linear-gradient(180deg,transparent,var(--glass-line) 18%,var(--glass-line) 82%,transparent);z-index:6;pointer-events:none}
+.tank-seam.l{left:14px}
+.tank-seam.r{right:14px}
+
+.caustic{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.caustic i{
+  position:absolute;display:block;border-radius:50%;
+  background:radial-gradient(circle at 50% 40%,rgba(127,220,203,.16),rgba(127,220,203,.05) 45%,transparent 70%);
+  filter:blur(46px);
+}
+.caustic i:nth-child(1){width:74vw;height:74vw;top:-32vw;left:-12vw;animation:drift 22s ease-in-out infinite alternate}
+.caustic i:nth-child(2){width:56vw;height:56vw;top:38vh;right:-18vw;animation:drift2 27s ease-in-out infinite alternate}
+@keyframes drift{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(6vw,4vh,0) scale(1.12)}}
+@keyframes drift2{from{transform:translate3d(0,0,0) scale(1.05)}to{transform:translate3d(-5vw,-5vh,0) scale(.94)}}
+
+.wrap{max-width:var(--shell);margin:0 auto;padding:0 32px;position:relative;z-index:2}
+
+/* ---- glass primitive ---- */
+.glass{
+  background:var(--glass);
+  border:1px solid rgba(255,255,255,.09);
+  border-top-color:var(--glass-hi);
+  border-radius:var(--r);
+  backdrop-filter:blur(18px) saturate(130%);
+  -webkit-backdrop-filter:blur(18px) saturate(130%);
+  box-shadow:0 18px 50px rgba(0,0,0,.34);
+}
+
+/* ---- telemetry wells ---- */
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.well{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--aqua);
+  background:rgba(0,0,0,.28);
+  border:1px solid var(--glass-line);
+  border-radius:7px;padding:6px 11px;
+  font-variant-numeric:tabular-nums;
+}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--pink);box-shadow:0 0 0 0 rgba(255,143,177,.6);animation:pulse 3s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,143,177,.5)}50%{box-shadow:0 0 0 6px rgba(255,143,177,0)}}
+
+/* ---- nav ---- */
+.nav{position:sticky;top:0;z-index:20;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:rgba(7,26,30,.72);border-bottom:1px solid rgba(255,255,255,.06)}
+.nav-in{max-width:var(--shell);margin:0 auto;padding:14px 32px;display:flex;align-items:center;gap:20px}
+.brand{font-family:var(--display);font-weight:700;font-size:21px;letter-spacing:-.02em;color:var(--fg);text-decoration:none}
+.nav-spacer{flex:1}
+.nav .well{display:none}
+@media(min-width:900px){.nav .well{display:inline-flex}}
+
+/* ---- buttons ---- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  font-family:var(--body);font-weight:600;font-size:15px;
+  padding:13px 22px;border-radius:12px;border:1px solid transparent;
+  text-decoration:none;cursor:pointer;
+  transition:transform .18s ease,box-shadow .18s ease,background .18s ease;
+}
+.btn-primary{background:var(--pink);color:#0A171A;box-shadow:0 6px 22px rgba(255,143,177,.22)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 32px rgba(255,143,177,.36)}
+.btn-ghost{background:rgba(255,255,255,.05);color:var(--fg);border-color:rgba(255,255,255,.14);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.btn-ghost:hover{transform:translateY(-1px);background:rgba(255,255,255,.09)}
+.btn-sm{padding:9px 16px;font-size:14px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--aqua);outline-offset:3px;border-radius:10px}
+
+/* ---- hero ---- */
+.hero{position:relative;padding:80px 0 96px;overflow:hidden}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.hero-bg img{width:100%;height:100%;object-fit:cover;opacity:.5}
+.hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,26,30,.72),rgba(7,26,30,.9) 62%,var(--bg))}
+.hero-grid{position:relative;z-index:2;display:grid;gap:52px;align-items:center}
+@media(min-width:960px){.hero-grid{grid-template-columns:1.05fr .95fr;gap:60px}.hero{padding:104px 0 120px}}
+
+h1{
+  font-family:var(--display);font-weight:700;
+  font-size:clamp(2.5rem,6.4vw,4.15rem);
+  line-height:1.03;letter-spacing:-.035em;
+  margin:22px 0 0;color:var(--fg);
+  text-wrap:balance;
+}
+h1 em{font-style:normal;color:var(--aqua)}
+.hero-sub{color:var(--muted);font-size:1.06rem;line-height:1.62;margin:22px 0 0;max-width:52ch}
+.hero-cta{display:flex;flex-wrap:wrap;gap:13px;margin-top:34px}
+.hero-note{margin-top:20px;font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;color:var(--muted)}
+
+/* ---- candidate card (hero signature) ---- */
+.cand{
+  position:relative;padding:14px;transform:rotate(-2.6deg);
+  transition:transform .5s cubic-bezier(.16,1,.3,1);
+  max-width:400px;margin:0 auto;
+}
+.cand:hover{transform:rotate(0deg) translateY(-5px)}
+.cand-photo{position:relative;border-radius:12px;overflow:hidden;aspect-ratio:1/1;background:var(--bg-deep)}
+.cand-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.cand-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 44%,rgba(4,18,21,.88))}
+.cand-id{position:absolute;left:14px;bottom:12px;z-index:2}
+.cand-name{font-family:var(--display);font-weight:600;font-size:1.32rem;letter-spacing:-.02em;line-height:1.15}
+.cand-meta{font-family:var(--mono);font-size:11px;color:var(--aqua);letter-spacing:.07em;margin-top:3px}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+.chip{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.07);
+  border-radius:6px;padding:5px 9px;font-variant-numeric:tabular-nums;
+}
+.chip b{color:var(--fg);font-weight:500}
+.coi{margin-top:14px}
+.coi-head{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.coi-head b{color:var(--pink);font-weight:500}
+.coi-bar{height:5px;border-radius:3px;background:rgba(255,255,255,.09);margin-top:7px;overflow:hidden}
+.coi-fill{height:100%;width:62%;border-radius:3px;background:linear-gradient(90deg,var(--aqua),var(--pink))}
+.coi-note{font-family:var(--mono);font-size:10px;color:var(--pink);letter-spacing:.05em;margin-top:7px}
+
+/* ---- sections ---- */
+.sec{padding:88px 0;position:relative}
+.sec-head{max-width:60ch;margin-bottom:44px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--aqua);display:block;margin-bottom:16px}
+h2{font-family:var(--display);font-weight:600;font-size:clamp(1.85rem,3.6vw,2.6rem);line-height:1.12;letter-spacing:-.03em;margin:0;text-wrap:balance}
+.sec-sub{color:var(--muted);margin:16px 0 0;font-size:1.02rem}
+
+.reveal{opacity:0;transform:translateY(8px);transition:opacity .6s ease,transform .6s cubic-bezier(.16,1,.3,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* ---- features ---- */
+.feat-grid{display:grid;gap:20px}
+@media(min-width:860px){.feat-grid{grid-template-columns:repeat(3,1fr)}}
+.feat{padding:28px 26px 30px;display:flex;flex-direction:column;gap:13px}
+.feat h3{font-family:var(--display);font-weight:600;font-size:1.18rem;letter-spacing:-.02em;line-height:1.25;margin:0}
+.feat p{margin:0;color:var(--muted);font-size:.97rem;line-height:1.62}
+.feat-ico{width:34px;height:34px;color:var(--aqua)}
+.feat-ico svg{width:100%;height:100%;display:block}
+
+/* ---- testimonials ---- */
+.quotes{display:grid;gap:20px}
+@media(min-width:860px){.quotes{grid-template-columns:repeat(3,1fr)}}
+.quote{padding:26px;display:flex;flex-direction:column;gap:20px}
+.quote blockquote{margin:0;font-family:var(--display);font-weight:300;font-size:1.09rem;line-height:1.48;letter-spacing:-.015em;color:var(--fg)}
+.who{display:flex;align-items:center;gap:12px;margin-top:auto}
+.who img{width:46px;height:46px;border-radius:50%;object-fit:cover;flex:none;border:1px solid var(--glass-line)}
+.who-name{font-weight:600;font-size:.94rem;letter-spacing:-.01em}
+.who-title{font-family:var(--mono);font-size:10px;letter-spacing:.05em;color:var(--muted);line-height:1.45;margin-top:2px}
+
+/* ---- pricing ---- */
+.tiers{display:grid;gap:20px;align-items:start}
+@media(min-width:860px){.tiers{grid-template-columns:repeat(3,1fr)}}
+.tier{padding:30px 26px;display:flex;flex-direction:column;gap:18px;height:100%}
+.tier-name{font-family:var(--display);font-weight:600;font-size:1.22rem;letter-spacing:-.02em}
+.tier-price{font-family:var(--mono);font-size:2.05rem;font-weight:500;letter-spacing:-.03em;color:var(--aqua);line-height:1;font-variant-numeric:tabular-nums}
+.tier-tag{color:var(--muted);font-size:.93rem;line-height:1.55;min-height:3em}
+.perks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:11px}
+.perks li{position:relative;padding-left:22px;font-size:.93rem;color:var(--fg);line-height:1.5}
+.perks li::before{content:"";position:absolute;left:0;top:8px;width:9px;height:1px;background:var(--aqua)}
+.tier-feat{border-color:rgba(255,143,177,.34)}
+.tier-feat .tier-price{color:var(--pink)}
+
+/* ---- cta band ---- */
+.band{padding:52px 40px;text-align:center;border-color:rgba(255,143,177,.26)}
+.band h2{max-width:20ch;margin:0 auto}
+.band p{color:var(--muted);max-width:50ch;margin:16px auto 28px}
+
+/* ---- footer ---- */
+.foot{border-top:1px solid rgba(255,255,255,.07);margin-top:20px;padding:34px 0 46px}
+.foot-in{max-width:var(--shell);margin:0 auto;padding:0 32px;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+.foot a{color:var(--muted);text-decoration:none;font-size:.9rem;transition:color .18s ease}
+.foot a:hover{color:var(--aqua)}
+.foot small{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.04em;line-height:1.6}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<div class="caustic" aria-hidden="true"><i></i><i></i></div>
+<div class="tank-seam l" aria-hidden="true"></div>
+<div class="tank-seam r" aria-hidden="true"></div>
+
+<nav class="nav">
+  <div class="nav-in">
+    <a class="brand" href="#top">Gill.</a>
+    <div class="nav-spacer"></div>
+    <span class="well"><span class="dot"></span>Tank 11 · 22.4&deg;C</span>
+    <a class="btn btn-ghost btn-sm" href="./demo.html">Open the demo</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="hero-bg" aria-hidden="true"><img src="hero.webp" alt="" width="1600" height="900"></div>
+  <div class="wrap hero-grid">
+    <div>
+      <span class="well"><span class="dot"></span>Pop. 812 · 40 wild</span>
+      <h1>Meet every axolotl your genome <em>hasn't already met.</em></h1>
+      <p class="hero-sub">Gill. ranks the remaining candidates by genetic distance, gill plumage, and limb count at time of photograph. Introductions are supervised. Chemistry is not something we can measure and we have stopped pretending otherwise.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#pricing">Request a tank introduction</a>
+        <a class="btn btn-ghost" href="./demo.html">See the candidate stack &rarr;</a>
+      </div>
+      <p class="hero-note">Series A led by a foundation that believed us. Studbook synced nightly.</p>
+    </div>
+
+    <div class="cand glass">
+      <div class="cand-photo">
+        <img src="cand-2.webp" alt="Bartholomew, a leucistic axolotl photographed through tank glass" width="640" height="640" loading="lazy">
+        <div class="cand-id">
+          <div class="cand-name">Bartholomew, 6</div>
+          <div class="cand-meta">LEUCISTIC · TANK 04 · CAPTIVE-BRED</div>
+        </div>
+      </div>
+      <div class="chips">
+        <span class="chip">GEN. DISTANCE <b>71</b>/100</span>
+        <span class="chip">GILL PLUMAGE <b>A&minus;</b></span>
+        <span class="chip">LIMBS <b>4</b>/4</span>
+      </div>
+      <div class="coi">
+        <div class="coi-head"><span>Coefficient of inbreeding</span><b>0.0810</b></div>
+        <div class="coi-bar"><div class="coi-fill"></div></div>
+        <div class="coi-note">Above 0.0625. Proceed with documentation.</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<section class="sec wrap" id="features">
+  <div class="sec-head reveal">
+    <span class="eyebrow">What the product does</span>
+    <h2>Three systems, all of them measuring the wrong thing confidently.</h2>
+    <p class="sec-sub">Built with the studbook, not around it.</p>
+  </div>
+  <div class="feat-grid">
+
+    <article class="feat glass reveal">
+      <div class="feat-ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+          <path d="M7 3v4c0 5 10 5 10 10v4M17 3v4c0 5-10 5-10 10v4"/><path d="M8.5 8h7M8.5 16h7"/>
+        </svg>
+      </div>
+      <h3>Coefficient of inbreeding, surfaced live</h3>
+      <p>Every profile shows how related the two of you already are. Under 0.0625 we call it a match. Over it we call it a match with a footnote, and surface it anyway, because the alternative is an empty feed.</p>
+    </article>
+
+    <article class="feat glass reveal">
+      <div class="feat-ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 21s-7-4.6-7-10a7 7 0 0 1 14 0c0 5.4-7 10-7 10z"/><path d="M12 6v5l3 2"/>
+        </svg>
+      </div>
+      <h3>Limb-count verification</h3>
+      <p>Photographs are timestamped against a monthly limb census. A candidate who lists four limbs and arrives with three is not dishonest, only regenerating. Both numbers appear on the card.</p>
+    </article>
+
+    <article class="feat glass reveal">
+      <div class="feat-ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1.1" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1.1" fill="currentColor" stroke="none"/><path d="M8.5 15h7"/>
+        </svg>
+      </div>
+      <h3>Expression-neutral signal reading</h3>
+      <p>The axolotl face does not move. It has never moved. We stopped inferring interest from it in 2024 and now infer interest from time spent near the filter intake, which correlates at 0.31.</p>
+    </article>
+
+  </div>
+</section>
+
+<section class="sec wrap" id="residents">
+  <div class="sec-head reveal">
+    <span class="eyebrow">Residents</span>
+    <h2>Statements collected during the quarterly census.</h2>
+  </div>
+  <div class="quotes">
+
+    <figure class="quote glass reveal">
+      <blockquote>&ldquo;I matched with a male from a different lake system. We have not spoken. The eggs are fine.&rdquo;</blockquote>
+      <figcaption class="who">
+        <img src="cand-1.webp" alt="X&oacute;chitl, a wild-type axolotl" width="640" height="640" loading="lazy">
+        <div>
+          <div class="who-name">X&oacute;chitl</div>
+          <div class="who-title">Wild-type female, 4 years<br>Tank 11, Recovery Cohort B</div>
+        </div>
+      </figcaption>
+    </figure>
+
+    <figure class="quote glass reveal">
+      <blockquote>&ldquo;Gill. told me my coefficient with the candidate was 0.31. I proceeded. Gill. logged that I proceeded.&rdquo;</blockquote>
+      <figcaption class="who">
+        <img src="cand-2.webp" alt="Bartholomew, a leucistic axolotl" width="640" height="640" loading="lazy">
+        <div>
+          <div class="who-name">Bartholomew</div>
+          <div class="who-title">Leucistic male<br>On indefinite loan from a community college</div>
+        </div>
+      </figcaption>
+    </figure>
+
+    <figure class="quote glass reveal">
+      <blockquote>&ldquo;I lost a forelimb in March and my introduction rate went up.&rdquo;</blockquote>
+      <figcaption class="who">
+        <img src="cand-3.webp" alt="Prudence, a melanoid wild-type axolotl" width="640" height="640" loading="lazy">
+        <div>
+          <div class="who-name">Prudence</div>
+          <div class="who-title">Wild-type female, unranked<br>Relocated from Lake Xochimilco</div>
+        </div>
+      </figcaption>
+    </figure>
+
+  </div>
+</section>
+
+<section class="sec wrap" id="pricing">
+  <div class="sec-head reveal">
+    <span class="eyebrow">Husbandry tiers</span>
+    <h2>Priced per animal, billed to whoever owns the tank.</h2>
+    <p class="sec-sub">All tiers include water-quality telemetry. None include a guarantee.</p>
+  </div>
+  <div class="tiers">
+
+    <article class="tier glass reveal">
+      <div class="tier-name">Larval</div>
+      <div class="tier-price">$0</div>
+      <p class="tier-tag">for the axolotl still deciding whether to become anything</p>
+      <ul class="perks">
+        <li>Three introductions per week</li>
+        <li>Automatic gill plumage rating</li>
+        <li>Genetic report withheld</li>
+      </ul>
+      <a class="btn btn-ghost" href="./demo.html">Start browsing</a>
+    </article>
+
+    <article class="tier glass tier-feat reveal">
+      <div class="tier-name">Neotenic</div>
+      <div class="tier-price">$89<span style="font-size:.95rem;color:var(--muted)">/mo</span></div>
+      <p class="tier-tag">for the axolotl who is not going to metamorphose and has made peace with it</p>
+      <ul class="perks">
+        <li>Unrestricted introductions</li>
+        <li>Full coefficient of inbreeding, both directions</li>
+        <li>One limb re-verification per quarter</li>
+        <li>Priority placement near the filter intake</li>
+      </ul>
+      <a class="btn btn-primary" href="./demo.html">Request a tank introduction</a>
+    </article>
+
+    <article class="tier glass reveal">
+      <div class="tier-name">Founder Stock</div>
+      <div class="tier-price">$14,000<span style="font-size:.95rem;color:var(--muted)">/yr</span></div>
+      <p class="tier-tag">for the axolotl who is the gene pool</p>
+      <ul class="perks">
+        <li>Genome licensed to three partner institutions</li>
+        <li>A conservation biologist attends the introduction in person</li>
+        <li>Spermatophore placement professionally staged</li>
+        <li>Quarterly board update on your offspring</li>
+      </ul>
+      <a class="btn btn-ghost" href="./demo.html">Contact the registrar</a>
+    </article>
+
+  </div>
+</section>
+
+<section class="sec wrap">
+  <div class="band glass reveal">
+    <h2>812 candidates. One tank at a time.</h2>
+    <p>The stack is loaded and the biologist is on shift until six.</p>
+    <a class="btn btn-primary" href="./demo.html">Open the demo &rarr;</a>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="foot-in">
+    <a href="/">&larr; theworstaistudioever</a>
+    <small>Gill. is not a licensed breeding program. Introductions are supervised by staff who are, on request.</small>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var nodes = document.querySelectorAll('.reveal');
+  if (reduce || !('IntersectionObserver' in window)) {
+    nodes.forEach(function(n){ n.classList.add('in'); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+  nodes.forEach(function(n, i){ n.style.transitionDelay = (Math.min(i % 3, 2) * 60) + 'ms'; io.observe(n); });
+})();
+</script>
+
+</body>
+</html>

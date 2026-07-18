@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Candidate stack · Gill.</title>
+<meta name="description" content="The Gill. candidate stack. Tank 11, supervised introductions, 812 candidates remaining.">
+<meta name="theme-color" content="#071A1E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=Figtree:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root{
+  --bg:#071A1E;--bg-deep:#041215;
+  --aqua:#7FDCCB;--pink:#FF8FB1;
+  --fg:#EAF6F4;--muted:#7D9BA0;
+  --glass:rgba(255,255,255,.055);
+  --glass-hi:rgba(255,255,255,.16);
+  --glass-line:rgba(127,220,203,.16);
+  --display:'Sora','Helvetica Neue',Arial,sans-serif;
+  --body:'Figtree',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--fg);
+  font-family:var(--body);font-size:16px;font-weight:300;line-height:1.55;
+  min-height:100vh;min-height:100dvh;overflow-x:hidden;-webkit-font-smoothing:antialiased;
+}
+.caustic{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.caustic i{position:absolute;border-radius:50%;filter:blur(46px);
+  background:radial-gradient(circle at 50% 40%,rgba(127,220,203,.15),rgba(127,220,203,.04) 45%,transparent 70%)}
+.caustic i:nth-child(1){width:70vw;height:70vw;top:-30vw;left:-14vw;animation:drift 22s ease-in-out infinite alternate}
+.caustic i:nth-child(2){width:52vw;height:52vw;bottom:-18vw;right:-16vw;animation:drift2 27s ease-in-out infinite alternate}
+@keyframes drift{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(6vw,4vh,0) scale(1.12)}}
+@keyframes drift2{from{transform:translate3d(0,0,0) scale(1.05)}to{transform:translate3d(-5vw,-4vh,0) scale(.94)}}
+
+.glass{background:var(--glass);border:1px solid rgba(255,255,255,.09);border-top-color:var(--glass-hi);
+  border-radius:18px;backdrop-filter:blur(18px) saturate(130%);-webkit-backdrop-filter:blur(18px) saturate(130%);
+  box-shadow:0 18px 50px rgba(0,0,0,.34)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* chrome */
+.chrome{position:sticky;top:0;z-index:30;background:rgba(7,26,30,.74);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.06)}
+.chrome-in{max-width:1120px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:14px}
+.back{color:var(--muted);text-decoration:none;font-size:.88rem;transition:color .18s ease;white-space:nowrap}
+.back:hover{color:var(--aqua)}
+.chrome-brand{font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:-.02em}
+.sp{flex:1}
+.well{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--aqua);background:rgba(0,0,0,.28);border:1px solid var(--glass-line);
+  border-radius:7px;padding:6px 10px;font-variant-numeric:tabular-nums}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--pink);animation:pulse 3s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,143,177,.5)}50%{box-shadow:0 0 0 6px rgba(255,143,177,0)}}
+.hide-sm{display:none}
+@media(min-width:760px){.hide-sm{display:inline-flex}}
+
+/* layout */
+.shell{position:relative;z-index:2;max-width:1120px;margin:0 auto;padding:26px 20px 48px;
+  display:grid;gap:24px;align-items:start}
+@media(min-width:940px){.shell{grid-template-columns:minmax(0,1fr) 330px;gap:28px}}
+
+.stage{display:flex;flex-direction:column;align-items:center;gap:20px}
+.stack-head{width:100%;max-width:420px;display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.stack-title{font-family:var(--display);font-weight:600;font-size:1.05rem;letter-spacing:-.02em}
+.remaining{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-variant-numeric:tabular-nums}
+.remaining b{color:var(--aqua);font-weight:500}
+
+/* stack */
+.stack{position:relative;width:100%;max-width:420px;height:560px;touch-action:pan-y}
+.card{position:absolute;inset:0;padding:12px;display:flex;flex-direction:column;cursor:grab;
+  will-change:transform,opacity;user-select:none;-webkit-user-select:none}
+.card:active{cursor:grabbing}
+.card.anim{transition:transform .42s cubic-bezier(.16,1,.3,1),opacity .42s ease}
+.card.gone{pointer-events:none}
+.photo{position:relative;border-radius:12px;overflow:hidden;aspect-ratio:1/1;background:var(--bg-deep);flex:none}
+.photo img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 46%,rgba(4,18,21,.9))}
+.who{position:absolute;left:14px;right:14px;bottom:12px;z-index:2}
+.who-name{font-family:var(--display);font-weight:600;font-size:1.35rem;letter-spacing:-.02em;line-height:1.15}
+.who-meta{font-family:var(--mono);font-size:10.5px;color:var(--aqua);letter-spacing:.07em;margin-top:3px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.chip{font-family:var(--mono);font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);
+  background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:5px 8px;font-variant-numeric:tabular-nums}
+.chip b{color:var(--fg);font-weight:500}
+.chip.warn{border-color:rgba(255,143,177,.34)}
+.chip.warn b{color:var(--pink)}
+.coi{margin-top:12px}
+.coi-head{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted)}
+.coi-head b{font-weight:500;color:var(--aqua)}
+.coi-head b.over{color:var(--pink)}
+.coi-bar{height:5px;border-radius:3px;background:rgba(255,255,255,.09);margin-top:6px;overflow:hidden}
+.coi-fill{height:100%;border-radius:3px;background:var(--aqua);transition:width .4s ease}
+.coi-fill.over{background:linear-gradient(90deg,var(--aqua),var(--pink))}
+.coi-note{font-family:var(--mono);font-size:9.5px;letter-spacing:.04em;margin-top:6px;color:var(--muted);min-height:1.3em}
+.coi-note.over{color:var(--pink)}
+
+/* swipe verdict stamps */
+.stamp{position:absolute;top:26px;font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+  padding:8px 12px;border-radius:8px;border:1px solid currentColor;opacity:0;transition:opacity .12s ease;z-index:3;background:rgba(4,18,21,.6)}
+.stamp.yes{right:26px;color:var(--pink);transform:rotate(9deg)}
+.stamp.no{left:26px;color:var(--muted);transform:rotate(-9deg)}
+
+/* controls */
+.controls{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap}
+.ctrl{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 18px;
+  border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:var(--fg);
+  font-family:var(--body);font-size:.92rem;font-weight:500;cursor:pointer;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  transition:transform .18s ease,background .18s ease,box-shadow .18s ease}
+.ctrl:hover{transform:translateY(-1px);background:rgba(255,255,255,.09)}
+.ctrl:active{transform:translateY(0)}
+.ctrl-yes{background:var(--pink);color:#0A171A;border-color:transparent;font-weight:600;box-shadow:0 6px 20px rgba(255,143,177,.2)}
+.ctrl-yes:hover{background:var(--pink);box-shadow:0 10px 28px rgba(255,143,177,.34)}
+.ctrl svg{width:17px;height:17px}
+button:focus-visible,a:focus-visible{outline:2px solid var(--aqua);outline-offset:3px}
+.hint{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--muted);text-align:center}
+
+/* side panel */
+.side{display:flex;flex-direction:column;gap:18px;position:sticky;top:82px}
+.panel{padding:20px}
+.panel h2{font-family:var(--display);font-weight:600;font-size:.95rem;letter-spacing:-.01em;margin:0 0 14px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px}
+.panel h2 span{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:400}
+.rows{display:flex;flex-direction:column;gap:9px}
+.row{display:flex;justify-content:space-between;gap:12px;font-family:var(--mono);font-size:11px;
+  letter-spacing:.04em;color:var(--muted);font-variant-numeric:tabular-nums;
+  padding-bottom:9px;border-bottom:1px solid rgba(255,255,255,.055)}
+.row:last-child{border-bottom:0;padding-bottom:0}
+.row b{color:var(--fg);font-weight:500;text-align:right}
+.row b.pink{color:var(--pink)}
+.log{display:flex;flex-direction:column;gap:8px;max-height:260px;overflow-y:auto}
+.log-item{font-family:var(--mono);font-size:10.5px;line-height:1.5;letter-spacing:.02em;color:var(--muted);
+  padding-left:12px;position:relative}
+.log-item::before{content:"";position:absolute;left:0;top:7px;width:5px;height:1px;background:var(--aqua)}
+.log-item.pink::before{background:var(--pink)}
+.log-item b{color:var(--fg);font-weight:500}
+.log-empty{font-family:var(--mono);font-size:10.5px;color:var(--muted);line-height:1.6}
+
+/* empty state */
+.empty{width:100%;max-width:420px;padding:44px 28px;text-align:center}
+.empty h3{font-family:var(--display);font-weight:600;font-size:1.2rem;letter-spacing:-.02em;margin:0 0 10px}
+.empty p{color:var(--muted);font-size:.94rem;margin:0 0 22px}
+
+/* modal */
+.scrim{position:fixed;inset:0;z-index:60;background:rgba(4,18,21,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .24s ease}
+.scrim.open{opacity:1;pointer-events:auto}
+.modal{max-width:400px;width:100%;padding:30px 28px;text-align:center;transform:scale(.96);transition:transform .28s cubic-bezier(.16,1,.3,1)}
+.scrim.open .modal{transform:scale(1)}
+.modal .well{margin-bottom:18px}
+.modal h3{font-family:var(--display);font-weight:600;font-size:1.28rem;letter-spacing:-.025em;margin:0 0 10px;line-height:1.25}
+.modal p{color:var(--muted);font-size:.94rem;margin:0 0 8px}
+.modal .fine{font-family:var(--mono);font-size:10px;letter-spacing:.04em;margin:14px 0 22px;color:var(--muted)}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="caustic" aria-hidden="true"><i></i><i></i></div>
+
+<header class="chrome">
+  <div class="chrome-in">
+    <a class="back" href="./index.html">&larr; back to the pitch</a>
+    <span class="chrome-brand">Gill.</span>
+    <span class="sp"></span>
+    <span class="well hide-sm"><span class="dot"></span>Tank 11 · 22.4&deg;C</span>
+    <span class="well">Cohort B</span>
+  </div>
+</header>
+
+<div class="shell">
+
+  <section class="stage">
+    <div class="stack-head">
+      <div class="stack-title">Candidate stack</div>
+      <div class="remaining">Remaining <b id="remaining">812</b></div>
+    </div>
+
+    <div class="stack" id="stack" aria-live="polite"></div>
+
+    <div class="controls">
+      <button class="ctrl" id="btn-pass" type="button" aria-label="Pass on this candidate">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        Pass
+      </button>
+      <button class="ctrl" id="btn-defer" type="button" aria-label="Defer this candidate to the biologist">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5l3 2"/><circle cx="12" cy="12" r="9"/></svg>
+        Defer to the biologist
+      </button>
+      <button class="ctrl ctrl-yes" id="btn-yes" type="button" aria-label="Request an introduction with this candidate">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4M14 6l6 6-6 6"/></svg>
+        Request introduction
+      </button>
+    </div>
+    <p class="hint">Drag the card, or use the arrow keys. Nothing here is reversible.</p>
+  </section>
+
+  <aside class="side">
+    <div class="panel glass">
+      <h2>Tank telemetry <span>Live</span></h2>
+      <div class="rows">
+        <div class="row"><span>Water temp</span><b>22.4 &deg;C</b></div>
+        <div class="row"><span>Ammonia</span><b>0.00 ppm</b></div>
+        <div class="row"><span>Studbook synced</span><b>04:12</b></div>
+        <div class="row"><span>Introductions queued</span><b id="queued">0</b></div>
+        <div class="row"><span>Biologist on shift</span><b class="pink">Until 18:00</b></div>
+      </div>
+    </div>
+
+    <div class="panel glass">
+      <h2>Session log <span id="log-count">0 entries</span></h2>
+      <div class="log" id="log">
+        <p class="log-empty">No decisions recorded. The studbook is watching this panel, not you.</p>
+      </div>
+    </div>
+  </aside>
+
+</div>
+
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1">
+  <div class="modal glass">
+    <span class="well"><span class="dot"></span>Queued</span>
+    <h3 id="modal-title">Introduction queued. Tank 11.</h3>
+    <p id="modal-body">A staff member will be present.</p>
+    <p class="fine" id="modal-fine">COI 0.0810 · logged to the studbook · reversal requires a form</p>
+    <button class="ctrl ctrl-yes" id="modal-close" type="button" style="width:100%">Back to the stack</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var CANDIDATES = [
+    { name:'Xóchitl', age:4, morph:'Wild-type', tank:'Tank 11', origin:'Recovery Cohort B',
+      img:'cand-1.webp', alt:'Xóchitl, a wild-type axolotl photographed through tank glass',
+      dist:82, plumage:'A', limbs:4, limbNote:'', coi:0.0412 },
+    { name:'Bartholomew', age:6, morph:'Leucistic', tank:'Tank 04', origin:'Captive-bred',
+      img:'cand-2.webp', alt:'Bartholomew, a leucistic axolotl photographed through tank glass',
+      dist:71, plumage:'A−', limbs:4, limbNote:'', coi:0.0810 },
+    { name:'Prudence', age:3, morph:'Melanoid', tank:'Tank 07', origin:'Relocated, Lake Xochimilco',
+      img:'cand-3.webp', alt:'Prudence, a melanoid wild-type axolotl photographed through tank glass',
+      dist:94, plumage:'B+', limbs:3, limbNote:'regenerating, est. 9 weeks', coi:0.0188 },
+    { name:'Teodora', age:5, morph:'Wild-type', tank:'Tank 11', origin:'Recovery Cohort B',
+      img:'cand-1.webp', alt:'Teodora, a wild-type axolotl photographed through tank glass',
+      dist:38, plumage:'B', limbs:4, limbNote:'', coi:0.1250 },
+    { name:'Ansel', age:2, morph:'Leucistic', tank:'Tank 04', origin:'Captive-bred',
+      img:'cand-2.webp', alt:'Ansel, a leucistic axolotl photographed through tank glass',
+      dist:66, plumage:'A−', limbs:4, limbNote:'', coi:0.0596 },
+    { name:'Marguerite', age:7, morph:'Melanoid', tank:'Tank 07', origin:'On loan, municipal aquarium',
+      img:'cand-3.webp', alt:'Marguerite, a melanoid wild-type axolotl photographed through tank glass',
+      dist:57, plumage:'C+', limbs:2, limbNote:'two regenerating, est. 14 weeks', coi:0.0934 },
+  ];
+
+  var THRESHOLD = 0.0625;
+  var stack = document.getElementById('stack');
+  var remainingEl = document.getElementById('remaining');
+  var queuedEl = document.getElementById('queued');
+  var logEl = document.getElementById('log');
+  var logCountEl = document.getElementById('log-count');
+  var scrim = document.getElementById('scrim');
+
+  var idx = 0, remaining = 812, queued = 0, entries = [], busy = false;
+
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){
+    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]; }); }
+
+  function buildCard(c){
+    var over = c.coi > THRESHOLD;
+    var pct = Math.min(100, Math.round((c.coi / 0.15) * 100));
+    var el = document.createElement('article');
+    el.className = 'card glass';
+    el.innerHTML =
+      '<div class="stamp yes">Introduce</div>' +
+      '<div class="stamp no">Pass</div>' +
+      '<div class="photo">' +
+        '<div class="who"><div class="who-name">' + esc(c.name) + ', ' + c.age + '</div>' +
+        '<div class="who-meta">' + esc(c.morph.toUpperCase()) + ' · ' + esc(c.tank.toUpperCase()) + ' · ' + esc(c.origin.toUpperCase()) + '</div></div></div>' +
+      '<div class="chips">' +
+        '<span class="chip">GEN. DISTANCE <b>' + c.dist + '</b>/100</span>' +
+        '<span class="chip">GILL PLUMAGE <b>' + esc(c.plumage) + '</b></span>' +
+        '<span class="chip' + (c.limbs < 4 ? ' warn' : '') + '">LIMBS <b>' + c.limbs + '</b>/4</span>' +
+      '</div>' +
+      (c.limbNote ? '<div class="coi-note">' + esc(c.limbNote) + '</div>' : '') +
+      '<div class="coi">' +
+        '<div class="coi-head"><span>Coefficient of inbreeding</span><b class="' + (over ? 'over' : '') + '">' + c.coi.toFixed(4) + '</b></div>' +
+        '<div class="coi-bar"><div class="coi-fill ' + (over ? 'over' : '') + '" style="width:' + pct + '%"></div></div>' +
+        '<div class="coi-note ' + (over ? 'over' : '') + '">' + (over ? 'Above 0.0625. Proceed with documentation.' : 'Within tolerance. No footnote required.') + '</div>' +
+      '</div>';
+    // image is attached as a node so the markup above stays free of literal asset paths
+    var img = new Image(640, 640);
+    img.src = c.img;
+    img.alt = c.alt;
+    el.querySelector('.photo').insertBefore(img, el.querySelector('.who'));
+    return el;
+  }
+
+  function render(){
+    stack.innerHTML = '';
+    if (idx >= CANDIDATES.length) {
+      var e = document.createElement('div');
+      e.className = 'empty glass';
+      e.innerHTML = '<h3>That is everyone in Cohort B.</h3>' +
+        '<p>The remaining 806 are in tanks we have not photographed. Growth is aware.</p>' +
+        '<button class="ctrl" id="btn-reset" type="button">Reload the cohort</button>';
+      stack.appendChild(e);
+      document.getElementById('btn-reset').addEventListener('click', function(){
+        idx = 0; render();
+        log('Cohort B reloaded. The same six animals.', false);
+      });
+      return;
+    }
+    // render next card behind, then current on top
+    var next = CANDIDATES[idx + 1];
+    if (next) {
+      var b = buildCard(next);
+      b.style.transform = 'scale(.955) translateY(10px)';
+      b.style.opacity = '.55';
+      b.style.pointerEvents = 'none';
+      stack.appendChild(b);
+    }
+    var card = buildCard(CANDIDATES[idx]);
+    stack.appendChild(card);
+    attachDrag(card);
+  }
+
+  function log(text, pink){
+    entries.unshift({ text: text, pink: !!pink });
+    logCountEl.textContent = entries.length + (entries.length === 1 ? ' entry' : ' entries');
+    logEl.innerHTML = entries.map(function(e){
+      return '<div class="log-item' + (e.pink ? ' pink' : '') + '">' + e.text + '</div>';
+    }).join('');
+  }
+
+  function decide(kind){
+    if (busy || idx >= CANDIDATES.length) return;
+    var c = CANDIDATES[idx];
+    var card = stack.lastElementChild;
+    if (!card || !card.classList.contains('card')) return;
+    busy = true;
+
+    var dir = (kind === 'pass') ? -1 : 1;
+    var fly = (kind === 'defer') ? 0 : dir;
+
+    card.classList.add('anim','gone');
+    if (kind === 'defer') {
+      card.style.transform = 'translateY(-120%) scale(.9)';
+    } else {
+      card.style.transform = 'translateX(' + (fly * 130) + '%) rotate(' + (fly * 16) + 'deg)';
+    }
+    card.style.opacity = '0';
+
+    if (kind === 'yes') {
+      queued++; queuedEl.textContent = queued;
+      log('<b>' + esc(c.name) + '</b> — introduction queued, ' + esc(c.tank) + '. COI ' + c.coi.toFixed(4) + '.', true);
+      openModal(c);
+    } else if (kind === 'pass') {
+      log('<b>' + esc(c.name) + '</b> — passed. Logged as declined, not as unavailable.', false);
+    } else {
+      log('<b>' + esc(c.name) + '</b> — deferred to the biologist. She has 41 of these.', false);
+    }
+
+    remaining = Math.max(0, remaining - 1);
+    remainingEl.textContent = remaining;
+
+    var wait = REDUCE ? 0 : 420;
+    window.setTimeout(function(){ idx++; render(); busy = false; }, wait);
+  }
+
+  function attachDrag(card){
+    var startX = 0, startY = 0, dx = 0, dy = 0, dragging = false;
+    var yes = card.querySelector('.stamp.yes');
+    var no = card.querySelector('.stamp.no');
+
+    card.addEventListener('pointerdown', function(e){
+      if (busy) return;
+      dragging = true; startX = e.clientX; startY = e.clientY; dx = 0; dy = 0;
+      card.classList.remove('anim');
+      card.setPointerCapture(e.pointerId);
+    });
+
+    card.addEventListener('pointermove', function(e){
+      if (!dragging) return;
+      dx = e.clientX - startX; dy = e.clientY - startY;
+      card.style.transform = 'translate(' + dx + 'px,' + (dy * 0.25) + 'px) rotate(' + (dx * 0.05) + 'deg)';
+      yes.style.opacity = dx > 30 ? Math.min(1, (dx - 30) / 70) : 0;
+      no.style.opacity = dx < -30 ? Math.min(1, (-dx - 30) / 70) : 0;
+    });
+
+    function release(){
+      if (!dragging) return;
+      dragging = false;
+      yes.style.opacity = 0; no.style.opacity = 0;
+      if (dx > 110) { decide('yes'); }
+      else if (dx < -110) { decide('pass'); }
+      else {
+        card.classList.add('anim');
+        card.style.transform = '';
+      }
+    }
+    card.addEventListener('pointerup', release);
+    card.addEventListener('pointercancel', release);
+  }
+
+  function openModal(c){
+    document.getElementById('modal-body').textContent = 'A staff member will be present. ' + c.name + ' has not been notified, because there is no mechanism for that.';
+    document.getElementById('modal-fine').textContent = 'COI ' + c.coi.toFixed(4) + ' · logged to the studbook · reversal requires a form';
+    scrim.classList.add('open');
+    document.getElementById('modal-close').focus();
+  }
+  function closeModal(){ scrim.classList.remove('open'); }
+
+  document.getElementById('btn-yes').addEventListener('click', function(){ decide('yes'); });
+  document.getElementById('btn-pass').addEventListener('click', function(){ decide('pass'); });
+  document.getElementById('btn-defer').addEventListener('click', function(){ decide('defer'); });
+  document.getElementById('modal-close').addEventListener('click', closeModal);
+  scrim.addEventListener('click', function(e){ if (e.target === scrim) closeModal(); });
+
+  document.addEventListener('keydown', function(e){
+    if (scrim.classList.contains('open')) {
+      if (e.key === 'Escape') closeModal();
+      return;
+    }
+    if (e.key === 'ArrowRight') { e.preventDefault(); decide('yes'); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); decide('pass'); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); decide('defer'); }
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
