@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cap table · Nan</title>
+<meta name="description" content="The Nan cap table. Eleven holders, one founder, four-year vesting with a one-year cliff.">
+<meta name="theme-color" content="#F1ECF7">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F1ECF7;--slab:#FAF7FD;--slab-2:#E7DFF2;--plum:#6B4E8C;--ink:#3B2E4A;
+    --muted:#8A7C9C;--coral:#C9503A;--well:#E4DAF0;
+    --clay:8px 10px 20px rgba(59,46,74,.12), -6px -6px 15px rgba(255,255,255,.92);
+    --clay-lift:12px 15px 28px rgba(59,46,74,.16), -8px -8px 18px rgba(255,255,255,.95);
+    --clay-press:3px 4px 9px rgba(59,46,74,.15), -2px -2px 6px rgba(255,255,255,.85);
+    --inset:inset 5px 6px 12px rgba(59,46,74,.14), inset -4px -4px 10px rgba(255,255,255,.85);
+    --display:'Fredoka','Trebuchet MS',system-ui,sans-serif;
+    --body:'Nunito',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --mono:'DM Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .app{max-width:1180px;margin:0 auto;padding:22px 22px 64px}
+
+  .chrome{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:26px}
+  .back{
+    font-size:14px;font-weight:700;color:var(--plum);text-decoration:none;
+    background:var(--slab);padding:10px 18px;border-radius:14px;box-shadow:var(--clay);
+    transition:transform .2s ease,box-shadow .2s ease;display:inline-block;
+  }
+  .back:hover{transform:translateY(-2px);box-shadow:var(--clay-lift)}
+  .back:active{transform:scale(.96);box-shadow:var(--clay-press)}
+  .status{
+    display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:11.5px;
+    letter-spacing:.13em;text-transform:uppercase;color:var(--muted);
+    background:var(--slab);padding:9px 16px;border-radius:999px;box-shadow:var(--clay-press);
+  }
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--coral);animation:pulse 3s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.82)}}
+
+  h1{font-family:var(--display);font-weight:600;font-size:30px;color:var(--plum);margin:0 0 6px;letter-spacing:-.015em}
+  .sub{margin:0 0 26px;color:var(--muted);font-size:15px}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:26px}
+  .stat{background:var(--slab);border-radius:22px;box-shadow:var(--clay);padding:18px 20px}
+  .stat .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .stat .v{font-family:var(--mono);font-size:24px;font-variant-numeric:tabular-nums;margin-top:6px;letter-spacing:-.02em}
+  .stat .v.warn{color:var(--coral)}
+
+  .panel{background:var(--slab);border-radius:28px;box-shadow:var(--clay);padding:24px;margin-bottom:22px}
+  .panel-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+  .panel-head h2{font-family:var(--display);font-weight:600;font-size:20px;color:var(--plum);margin:0}
+
+  .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .seg{display:flex;gap:5px;background:var(--well);border-radius:16px;box-shadow:var(--inset);padding:5px}
+  .seg button{
+    font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+    border:0;background:transparent;color:var(--muted);padding:8px 13px;border-radius:12px;
+    cursor:pointer;font-weight:500;transition:all .18s ease;
+  }
+  .seg button[aria-pressed="true"]{background:var(--slab);color:var(--plum);box-shadow:var(--clay-press)}
+  .seg button:hover{color:var(--plum)}
+  .btn{
+    font-family:var(--body);font-weight:700;font-size:14px;padding:11px 20px;border-radius:15px;
+    border:0;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease;text-decoration:none;display:inline-block;
+  }
+  .btn-primary{background:var(--coral);color:#FFF6F3;box-shadow:var(--clay)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:var(--clay-lift)}
+  .btn-primary:active{transform:scale(.96);box-shadow:var(--clay-press)}
+  .btn-ghost{background:var(--slab-2);color:var(--plum);box-shadow:var(--clay-press)}
+  .btn-ghost:hover{transform:translateY(-2px);box-shadow:var(--clay)}
+  .btn-ghost:active{transform:scale(.96)}
+
+  .search{
+    font-family:var(--body);font-size:14px;border:0;background:var(--well);box-shadow:var(--inset);
+    padding:11px 16px;border-radius:15px;color:var(--ink);width:190px;
+  }
+  .search::placeholder{color:var(--muted)}
+  .search:focus{outline:2px solid var(--plum);outline-offset:2px}
+
+  /* ledger */
+  .ledger{background:var(--well);border-radius:20px;box-shadow:var(--inset);padding:8px 16px 14px}
+  .lhead,.lrow{display:grid;grid-template-columns:2.1fr 1.3fr .9fr 1.5fr 1fr;gap:14px;align-items:center}
+  .lhead{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);padding:12px 0 10px;
+  }
+  .lhead button{
+    font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;
+    background:none;border:0;padding:0;cursor:pointer;display:inline-flex;gap:5px;align-items:center;
+  }
+  .lhead button:hover{color:var(--plum)}
+  .lhead .r{text-align:right;justify-content:flex-end}
+  .lrow{padding:12px 0;border-top:1px solid rgba(59,46,74,.09);animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .holder{display:flex;align-items:center;gap:12px;min-width:0}
+  .av{
+    width:40px;height:40px;border-radius:14px;flex:none;background:var(--slab);box-shadow:var(--clay-press);
+    display:grid;place-items:center;font-family:var(--mono);font-size:13px;color:var(--plum);font-weight:500;
+  }
+  .holder .nm{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .holder .rel{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+  .chip{
+    font-family:var(--mono);font-size:10px;letter-spacing:.07em;text-transform:uppercase;
+    padding:5px 10px;border-radius:999px;background:var(--slab);color:var(--muted);
+    box-shadow:var(--clay-press);white-space:nowrap;display:inline-block;
+  }
+  .chip.pref{color:var(--plum)}
+  .chip.founder{color:var(--coral)}
+  .num{font-family:var(--mono);font-size:14px;font-variant-numeric:tabular-nums;text-align:right}
+  .num.drop{color:var(--coral)}
+  .num small{display:block;font-size:10px;color:var(--muted);letter-spacing:.05em}
+  .vestcell{min-width:0}
+  .bar{height:8px;border-radius:99px;background:rgba(59,46,74,.11);position:relative;overflow:hidden}
+  .bar i{display:block;height:100%;border-radius:99px;background:var(--plum);transition:width .5s cubic-bezier(.34,1.2,.64,1)}
+  .bar .cliff{position:absolute;top:-3px;bottom:-3px;left:25%;width:2px;background:rgba(59,46,74,.3)}
+  .vlabel{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+  .vlabel.pre{color:var(--coral)}
+  .contact{font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums;text-align:right}
+  .contact.stale{color:var(--coral)}
+  .contact small{display:block;font-size:10px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+  .empty{padding:38px 0;text-align:center;color:var(--muted);font-size:15px}
+
+  /* dilution */
+  .dil{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:center}
+  .dil .note{font-size:14.5px;color:var(--muted);margin:12px 0 0;line-height:1.6}
+  input[type=range]{
+    -webkit-appearance:none;appearance:none;width:100%;height:14px;border-radius:99px;
+    background:var(--well);box-shadow:var(--inset);margin:18px 0 8px;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:var(--coral);
+    box-shadow:var(--clay);cursor:pointer;border:0;
+  }
+  input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;background:var(--coral);box-shadow:var(--clay);cursor:pointer;border:0}
+  input[type=range]:focus{outline:2px solid var(--plum);outline-offset:3px}
+  .dilv{font-family:var(--mono);font-size:34px;font-variant-numeric:tabular-nums;letter-spacing:-.02em;color:var(--plum)}
+  .dilk{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .flags{background:var(--well);border-radius:18px;box-shadow:var(--inset);padding:16px 18px;min-height:132px}
+  .flags .fh{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+  .flags ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+  .flags li{display:flex;justify-content:space-between;gap:12px;font-size:14px}
+  .flags li .fn{font-weight:700}
+  .flags li .fv{font-family:var(--mono);font-size:13px;color:var(--coral);font-variant-numeric:tabular-nums}
+  .flags .ok{color:var(--muted);font-size:14px}
+
+  /* modal */
+  .scrim{
+    position:fixed;inset:0;background:rgba(59,46,74,.45);display:none;
+    align-items:center;justify-content:center;padding:22px;z-index:50;
+  }
+  .scrim.open{display:flex;animation:fade .2s ease}
+  .modal{
+    background:var(--slab);border-radius:30px;box-shadow:var(--clay-lift);padding:30px;
+    width:100%;max-width:430px;animation:pop .28s cubic-bezier(.34,1.4,.64,1);
+  }
+  @keyframes pop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+  .modal h3{font-family:var(--display);font-weight:600;font-size:22px;color:var(--plum);margin:0 0 6px}
+  .modal p.mh{margin:0 0 22px;font-size:14.5px;color:var(--muted)}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+  .field input,.field select{
+    width:100%;font-family:var(--body);font-size:15px;border:0;background:var(--well);
+    box-shadow:var(--inset);padding:12px 15px;border-radius:15px;color:var(--ink);
+  }
+  .field input:focus,.field select:focus{outline:2px solid var(--plum);outline-offset:2px}
+  .field .hint{font-size:12.5px;color:var(--muted);margin-top:6px}
+  .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:24px}
+
+  .toast{
+    position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);
+    background:var(--ink);color:#F7F2FB;font-size:14px;font-weight:600;
+    padding:13px 22px;border-radius:16px;box-shadow:0 10px 26px rgba(59,46,74,.3);
+    opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease;z-index:60;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  a:focus-visible,button:focus-visible{outline:3px solid var(--plum);outline-offset:3px;border-radius:8px}
+
+  @media(max-width:940px){
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .dil{grid-template-columns:1fr}
+    .lhead{display:none}
+    .lrow{grid-template-columns:1fr 1fr;gap:10px;padding:16px 0}
+    .lrow .holder{grid-column:1/-1}
+    .lrow .vestcell{grid-column:1/-1}
+    .num,.contact{text-align:left}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="chrome">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <span class="status"><span class="dot"></span>Odom Family Holdings · Ledger synced</span>
+  </div>
+
+  <h1>Cap table</h1>
+  <p class="sub">Eleven holders. Four-year vesting, one-year cliff. Last reconciled after Easter.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="k">Holders</div><div class="v" id="s-holders">12</div></div>
+    <div class="stat"><div class="k">Founder retained</div><div class="v" id="s-founder">51.0%</div></div>
+    <div class="stat"><div class="k">Unvested pool</div><div class="v" id="s-pool">18.4%</div></div>
+    <div class="stat"><div class="k">Breaks in service</div><div class="v warn" id="s-breaks">3</div></div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head">
+      <h2>Holders of record</h2>
+      <div class="controls">
+        <input class="search" id="q" type="search" placeholder="Find a holder" aria-label="Find a holder">
+        <div class="seg" role="group" aria-label="Filter by share class">
+          <button data-class="all" aria-pressed="true">All</button>
+          <button data-class="Common" aria-pressed="false">Common</button>
+          <button data-class="Preferred" aria-pressed="false">Preferred</button>
+          <button data-class="Founder" aria-pressed="false">Founder</button>
+        </div>
+        <button class="btn btn-primary" id="issue">Issue shares</button>
+      </div>
+    </div>
+
+    <div class="ledger">
+      <div class="lhead">
+        <button data-sort="name">Holder</button>
+        <span>Class</span>
+        <button data-sort="pct" class="r">Fully diluted ▾</button>
+        <span>Vesting</span>
+        <button data-sort="contact" class="r">Last contact</button>
+      </div>
+      <div id="rows"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h2>Model a new grandchild</h2></div>
+    <div class="dil">
+      <div>
+        <div class="dilk">New holder stake</div>
+        <div class="dilv" id="dilv">0.0%</div>
+        <input type="range" id="dil" min="0" max="150" value="0" aria-label="New holder stake percentage">
+        <p class="note">A birth is treated as a priced round. Every existing holder is diluted pro rata. The eldest carries an anti-dilution floor of 6.0%; anyone who drops below their own floor is flagged for a call before the announcement goes out.</p>
+      </div>
+      <div class="flags">
+        <div class="fh">Below floor</div>
+        <div id="flaglist"><p class="ok">No holder is currently below their floor. The ledger holds.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="mt">
+  <div class="modal">
+    <h3 id="mt">Issue shares</h3>
+    <p class="mh">The new holder is added to the ledger immediately. Everyone else is diluted on save.</p>
+    <div class="field">
+      <label for="f-name">Holder name</label>
+      <input id="f-name" type="text" placeholder="Odom, ">
+    </div>
+    <div class="field">
+      <label for="f-rel">Relation</label>
+      <input id="f-rel" type="text" placeholder="Grandchild">
+    </div>
+    <div class="field">
+      <label for="f-class">Share class</label>
+      <select id="f-class"><option>Common</option><option>Preferred</option></select>
+      <p class="hint">Preferred requires a stated reason on file.</p>
+    </div>
+    <div class="field">
+      <label for="f-shares">Shares</label>
+      <input id="f-shares" type="number" value="40000" min="1000" step="1000">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="cancel">Cancel</button>
+      <button class="btn btn-primary" id="save">Issue</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  var holders = [
+    { name:'Odom, Marguerite', rel:'Founder',    cls:'Founder',   shares:510000, vest:100, days:0,   floor:40 },
+    { name:'Odom, Beatrice',   rel:'Grandchild', cls:'Preferred', shares:96000,  vest:100, days:6,   floor:6 },
+    { name:'Aughtry, Denise',  rel:'Grandchild', cls:'Common',    shares:44000,  vest:19,  days:214, floor:2 },
+    { name:'Pesh, Raymond',    rel:'Middle son', cls:'Common',    shares:19000,  vest:44,  days:341, floor:1.5 },
+    { name:'Odom, Colton',     rel:'Grandchild', cls:'Common',    shares:52000,  vest:81,  days:12,  floor:2 },
+    { name:'Aughtry, Marcus',  rel:'Grandchild', cls:'Preferred', shares:71000,  vest:94,  days:3,   floor:4 },
+    { name:'Odom, Priya',      rel:'Grandchild', cls:'Common',    shares:48000,  vest:63,  days:29,  floor:2 },
+    { name:'Pesh, Tanner',     rel:'Grandchild', cls:'Common',    shares:31000,  vest:12,  days:402, floor:1.5 },
+    { name:'Odom, Hazel',      rel:'Grandchild', cls:'Common',    shares:40000,  vest:50,  days:41,  floor:2 },
+    { name:'Aughtry, June',    rel:'Grandchild', cls:'Common',    shares:36000,  vest:37,  days:88,  floor:1.5 },
+    { name:'Odom, Wesley',     rel:'Grandchild', cls:'Common',    shares:28000,  vest:6,   days:511, floor:1 },
+    { name:'Pesh, Lorna',      rel:'Grandchild', cls:'Common',    shares:25000,  vest:25,  days:63,  floor:1 }
+  ];
+
+  var filter = 'all', sortKey = 'pct', sortDir = -1, query = '', dilution = 0;
+  var rowsEl = document.getElementById('rows');
+  var toastEl = document.getElementById('toast');
+
+  function initials(n){
+    var p = n.split(',');
+    var last = p[0].trim(), first = (p[1] || '').trim();
+    return ((first[0] || '') + (last[0] || '')).toUpperCase();
+  }
+  function total(){ return holders.reduce(function(a,h){ return a + h.shares; }, 0); }
+  function pctOf(h){ return (h.shares / total()) * 100 * (1 - dilution / 100); }
+
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastEl._t);
+    toastEl._t = setTimeout(function(){ toastEl.classList.remove('show'); }, 3400);
+  }
+
+  function contactLabel(d){
+    if (d === 0) return 'today';
+    if (d < 60) return d + 'd';
+    return Math.round(d / 30) + 'mo';
+  }
+
+  function render(){
+    var list = holders.filter(function(h){
+      if (filter !== 'all' && h.cls !== filter) return false;
+      if (query && h.name.toLowerCase().indexOf(query) === -1 && h.rel.toLowerCase().indexOf(query) === -1) return false;
+      return true;
+    });
+
+    list.sort(function(a,b){
+      var v;
+      if (sortKey === 'name') v = a.name.localeCompare(b.name);
+      else if (sortKey === 'contact') v = a.days - b.days;
+      else v = a.shares - b.shares;
+      return v * sortDir;
+    });
+
+    if (!list.length){
+      rowsEl.innerHTML = '<p class="empty">No holder matches that. Try a surname, or issue to someone new.</p>';
+    } else {
+      rowsEl.innerHTML = list.map(function(h){
+        var pct = pctOf(h);
+        var below = pct < h.floor;
+        var stale = h.days > 180;
+        var chipCls = h.cls === 'Founder' ? 'founder' : (h.cls === 'Preferred' ? 'pref' : '');
+        var vlabel = h.vest < 25
+          ? 'pre-cliff · ' + h.vest + '%'
+          : h.vest + '% vested';
+        return '<div class="lrow">' +
+          '<div class="holder"><div class="av">' + initials(h.name) + '</div>' +
+            '<div><div class="nm">' + h.name + '</div><div class="rel">' + h.rel + '</div></div></div>' +
+          '<div><span class="chip ' + chipCls + '">' + h.cls + '</span></div>' +
+          '<div class="num' + (below ? ' drop' : '') + '">' + pct.toFixed(1) + '%' +
+            '<small>' + h.shares.toLocaleString('en-US') + ' sh</small></div>' +
+          '<div class="vestcell"><div class="bar"><i style="width:' + h.vest + '%"></i><span class="cliff"></span></div>' +
+            '<div class="vlabel' + (h.vest < 25 ? ' pre' : '') + '">' + vlabel + '</div></div>' +
+          '<div class="contact' + (stale ? ' stale' : '') + '">' + contactLabel(h.days) +
+            '<small>' + (stale ? 'break in service' : 'in good standing') + '</small></div>' +
+        '</div>';
+      }).join('');
+    }
+
+    var founder = holders[0] ? pctOf(holders[0]) : 0;
+    var pool = holders.reduce(function(a,h){ return a + pctOf(h) * (100 - h.vest) / 100; }, 0);
+    var breaks = holders.filter(function(h){ return h.days > 180; }).length;
+    document.getElementById('s-holders').textContent = holders.length;
+    document.getElementById('s-founder').textContent = founder.toFixed(1) + '%';
+    document.getElementById('s-pool').textContent = pool.toFixed(1) + '%';
+    document.getElementById('s-breaks').textContent = breaks;
+
+    var flagged = holders.filter(function(h){ return pctOf(h) < h.floor; });
+    var fl = document.getElementById('flaglist');
+    if (!flagged.length){
+      fl.innerHTML = '<p class="ok">No holder is currently below their floor. The ledger holds.</p>';
+    } else {
+      fl.innerHTML = '<ul>' + flagged.map(function(h){
+        return '<li><span class="fn">' + h.name + '</span><span class="fv">' +
+          pctOf(h).toFixed(1) + '% · floor ' + h.floor.toFixed(1) + '%</span></li>';
+      }).join('') + '</ul>';
+    }
+  }
+
+  document.querySelectorAll('.seg button').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('.seg button').forEach(function(x){ x.setAttribute('aria-pressed','false'); });
+      b.setAttribute('aria-pressed','true');
+      filter = b.dataset.class;
+      render();
+    });
+  });
+
+  document.querySelectorAll('.lhead button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.dataset.sort;
+      if (sortKey === k) sortDir = -sortDir;
+      else { sortKey = k; sortDir = (k === 'name' ? 1 : -1); }
+      document.querySelectorAll('.lhead button').forEach(function(x){
+        x.textContent = x.textContent.replace(/ [▾▴]$/, '');
+      });
+      b.textContent = b.textContent + (sortDir === -1 ? ' ▾' : ' ▴');
+      render();
+    });
+  });
+
+  document.getElementById('q').addEventListener('input', function(e){
+    query = e.target.value.trim().toLowerCase();
+    render();
+  });
+
+  var dilEl = document.getElementById('dil');
+  dilEl.addEventListener('input', function(){
+    dilution = dilEl.value / 10;
+    document.getElementById('dilv').textContent = dilution.toFixed(1) + '%';
+    render();
+  });
+
+  var scrim = document.getElementById('scrim');
+  function openModal(){ scrim.classList.add('open'); document.getElementById('f-name').focus(); }
+  function closeModal(){ scrim.classList.remove('open'); }
+  document.getElementById('issue').addEventListener('click', openModal);
+  document.getElementById('cancel').addEventListener('click', closeModal);
+  scrim.addEventListener('click', function(e){ if (e.target === scrim) closeModal(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
+
+  document.getElementById('save').addEventListener('click', function(){
+    var name = document.getElementById('f-name').value.trim();
+    var rel = document.getElementById('f-rel').value.trim() || 'Grandchild';
+    var cls = document.getElementById('f-class').value;
+    var shares = parseInt(document.getElementById('f-shares').value, 10) || 40000;
+    if (!name){
+      document.getElementById('f-name').focus();
+      toast('A holder needs a name before shares can be issued.');
+      return;
+    }
+    holders.push({ name:name, rel:rel, cls:cls, shares:shares, vest:0, days:0, floor:1 });
+    closeModal();
+    document.getElementById('f-name').value = '';
+    document.getElementById('f-rel').value = '';
+    render();
+    toast(name + ' added. Everyone else has been diluted.');
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nan · theworstaistudioever</title>
+<meta name="description" content="Cap table management for the family unit. Issue, vest, and dilute your grandchildren's stake in you.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Nan · theworstaistudioever">
+<meta property="og:description" content="Cap table management for the family unit. Issue, vest, and dilute your grandchildren's stake in you.">
+<meta property="og:image" content="./hero.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Nan · theworstaistudioever">
+<meta name="twitter:description" content="Cap table management for the family unit. Issue, vest, and dilute your grandchildren's stake in you.">
+<meta name="theme-color" content="#F1ECF7">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F1ECF7;
+    --slab:#FAF7FD;
+    --slab-2:#E7DFF2;
+    --plum:#6B4E8C;
+    --ink:#3B2E4A;
+    --muted:#8A7C9C;
+    --coral:#C9503A;
+    --well:#E4DAF0;
+    --radius:28px;
+    --radius-sm:16px;
+    --clay:10px 12px 24px rgba(59,46,74,.13), -8px -8px 18px rgba(255,255,255,.92);
+    --clay-lift:14px 18px 34px rgba(59,46,74,.17), -10px -10px 22px rgba(255,255,255,.95);
+    --clay-press:4px 5px 12px rgba(59,46,74,.16), -3px -3px 8px rgba(255,255,255,.85);
+    --inset:inset 5px 6px 12px rgba(59,46,74,.14), inset -4px -4px 10px rgba(255,255,255,.85);
+    --display:'Fredoka','Trebuchet MS',system-ui,sans-serif;
+    --body:'Nunito',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --mono:'DM Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--body);
+    font-size:17px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  .blob{
+    position:fixed;
+    border-radius:50%;
+    filter:blur(60px);
+    opacity:.5;
+    pointer-events:none;
+    z-index:0;
+  }
+  .blob-a{width:520px;height:520px;background:#DCCBEE;top:-140px;left:-120px;animation:drift 26s ease-in-out infinite}
+  .blob-b{width:440px;height:440px;background:#E9D9E4;bottom:-160px;right:-120px;animation:drift 26s ease-in-out infinite reverse}
+  @keyframes drift{
+    0%,100%{transform:translate(0,0)}
+    50%{transform:translate(40px,-30px)}
+  }
+  .wrap{position:relative;z-index:1;max-width:1140px;margin:0 auto;padding:0 24px}
+
+  /* header */
+  header.top{padding:26px 0 0}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .wordmark{
+    font-family:var(--display);font-weight:600;font-size:26px;color:var(--plum);
+    letter-spacing:-.01em;text-decoration:none;display:flex;align-items:center;gap:10px;
+  }
+  .wordmark .mark{
+    width:34px;height:34px;border-radius:12px;background:var(--slab);
+    box-shadow:var(--clay);display:grid;place-items:center;
+  }
+  .wordmark .mark span{width:12px;height:12px;border-radius:5px;background:var(--plum)}
+  .topnav{display:flex;gap:22px;align-items:center;font-size:15px;font-weight:600}
+  .topnav a{color:var(--muted);text-decoration:none;transition:color .18s ease}
+  .topnav a:hover{color:var(--plum)}
+
+  /* eyebrow / status */
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:12px;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+    background:var(--slab);padding:8px 15px;border-radius:999px;box-shadow:var(--clay-press);
+  }
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--coral);animation:pulse 3s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.82)}}
+
+  /* hero */
+  .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;padding:64px 0 88px}
+  h1{
+    font-family:var(--display);font-weight:600;
+    font-size:clamp(2.3rem,4.6vw,3.55rem);line-height:1.08;letter-spacing:-.02em;
+    color:var(--plum);margin:22px 0 20px;
+  }
+  .hero p.sub{font-size:19px;color:var(--ink);opacity:.82;margin:0 0 30px;max-width:33em}
+  .cta-row{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+  .btn{
+    font-family:var(--body);font-weight:700;font-size:16px;
+    padding:15px 28px;border-radius:18px;border:0;cursor:pointer;text-decoration:none;
+    display:inline-block;transition:transform .2s ease,box-shadow .2s ease;
+  }
+  .btn-primary{background:var(--coral);color:#FFF6F3;box-shadow:var(--clay)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:var(--clay-lift)}
+  .btn-primary:active{transform:scale(.96);box-shadow:var(--clay-press)}
+  .btn-ghost{background:var(--slab);color:var(--plum);box-shadow:var(--clay)}
+  .btn-ghost:hover{transform:translateY(-2px);box-shadow:var(--clay-lift)}
+  .btn-ghost:active{transform:scale(.96);box-shadow:var(--clay-press)}
+
+  .hero-plate{background:var(--slab);border-radius:34px;box-shadow:var(--clay-lift);padding:16px 16px 20px}
+  .hero-plate img{width:100%;display:block;border-radius:24px;aspect-ratio:16/9;object-fit:cover}
+
+  /* ledger well — the signature device */
+  .well{
+    background:var(--well);border-radius:var(--radius-sm);box-shadow:var(--inset);
+    padding:14px 16px;margin-top:16px;
+  }
+  .well-head{
+    display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;
+  }
+  .row{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:7px 0}
+  .row + .row{border-top:1px solid rgba(59,46,74,.08)}
+  .row .who{font-weight:700;font-size:14px}
+  .chip{
+    font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+    padding:3px 9px;border-radius:999px;background:var(--slab);color:var(--muted);
+    box-shadow:0 1px 2px rgba(59,46,74,.1);white-space:nowrap;
+  }
+  .chip.pref{color:var(--plum)}
+  .chip.flag{color:var(--coral)}
+  .pct{font-family:var(--mono);font-size:14px;font-variant-numeric:tabular-nums;color:var(--ink);min-width:56px;text-align:right}
+  .vest{height:7px;border-radius:99px;background:rgba(59,46,74,.1);overflow:hidden;margin-top:12px}
+  .vest i{display:block;height:100%;border-radius:99px;background:var(--plum);width:0;transition:width 1.1s cubic-bezier(.34,1.2,.64,1)}
+  .vest-note{
+    display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:7px;
+  }
+
+  /* sections */
+  section{padding:80px 0}
+  .sec-head{max-width:44rem;margin-bottom:44px}
+  h2{
+    font-family:var(--display);font-weight:600;font-size:clamp(1.8rem,3.2vw,2.5rem);
+    line-height:1.14;letter-spacing:-.015em;color:var(--plum);margin:16px 0 14px;
+  }
+  .sec-head p{margin:0;font-size:18px;color:var(--ink);opacity:.78}
+
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+  .slab{
+    background:var(--slab);border-radius:var(--radius);box-shadow:var(--clay);padding:30px 28px;
+    opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease,box-shadow .25s ease;
+  }
+  .slab.in{opacity:1;transform:none}
+  .slab:hover{box-shadow:var(--clay-lift)}
+  .slab h3{font-family:var(--display);font-weight:600;font-size:22px;color:var(--plum);margin:16px 0 12px;line-height:1.2}
+  .slab p{margin:0;font-size:16px;opacity:.82;line-height:1.62}
+  .icon{
+    width:52px;height:52px;border-radius:18px;background:var(--slab-2);box-shadow:var(--inset);
+    display:grid;place-items:center;
+  }
+  .icon svg{width:24px;height:24px;stroke:var(--plum);stroke-width:1.9;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+  /* testimonials */
+  .quote{display:flex;flex-direction:column;gap:20px}
+  .quote blockquote{
+    margin:0;font-family:var(--display);font-weight:400;font-size:19px;line-height:1.45;
+    color:var(--ink);letter-spacing:-.005em;
+  }
+  .who-row{display:flex;align-items:center;gap:13px}
+  .who-row img{width:52px;height:52px;border-radius:50%;object-fit:cover;box-shadow:var(--clay-press);flex:none}
+  .who-row .n{font-weight:700;font-size:15px;line-height:1.25}
+  .who-row .t{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);line-height:1.4}
+
+  /* pricing */
+  .tier{display:flex;flex-direction:column}
+  .tier .name{font-family:var(--display);font-weight:600;font-size:21px;color:var(--plum)}
+  .tier .price{font-family:var(--mono);font-size:30px;font-variant-numeric:tabular-nums;margin:12px 0 6px;letter-spacing:-.02em}
+  .tier .tl{font-size:15px;opacity:.75;margin:0 0 20px;min-height:3.2em}
+  .tier ul{list-style:none;margin:0 0 26px;padding:0;display:flex;flex-direction:column;gap:11px}
+  .tier li{display:flex;gap:10px;font-size:15px;line-height:1.5;opacity:.86}
+  .tier li::before{content:"";flex:none;width:7px;height:7px;border-radius:3px;background:var(--plum);opacity:.5;margin-top:9px}
+  .tier .btn{margin-top:auto;text-align:center}
+  .tier.mid{box-shadow:var(--clay-lift)}
+  .tier .tag{
+    align-self:flex-start;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--coral);background:var(--slab-2);padding:5px 11px;border-radius:999px;box-shadow:var(--clay-press);margin-bottom:14px;
+  }
+
+  /* closing */
+  .close-slab{
+    background:var(--slab);border-radius:36px;box-shadow:var(--clay-lift);
+    padding:60px 48px;text-align:center;
+  }
+  .close-slab h2{margin-top:0}
+  .close-slab p{max-width:36rem;margin:0 auto 30px;font-size:18px;opacity:.8}
+
+  footer{padding:56px 0 64px;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+  footer a{color:var(--muted);text-decoration:none;font-size:15px;font-weight:600;transition:color .18s ease}
+  footer a:hover{color:var(--plum)}
+  footer .fine{font-family:var(--mono);font-size:11.5px;color:var(--muted);letter-spacing:.04em;max-width:40rem;line-height:1.7}
+
+  a:focus-visible,button:focus-visible{outline:3px solid var(--plum);outline-offset:3px;border-radius:8px}
+
+  @media(max-width:900px){
+    .hero{grid-template-columns:1fr;gap:40px;padding:44px 0 64px}
+    .grid-3{grid-template-columns:1fr;gap:20px}
+    .topnav{display:none}
+    section{padding:56px 0}
+    .close-slab{padding:44px 26px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{animation:none!important;transition:none!important}
+    .slab{opacity:1;transform:none}
+    .vest i{transition:none}
+  }
+</style>
+</head>
+<body>
+<div class="blob blob-a"></div>
+<div class="blob blob-b"></div>
+
+<div class="wrap">
+  <header class="top">
+    <div class="topbar">
+      <a class="wordmark" href="#top"><span class="mark"><span></span></span>Nan</a>
+      <nav class="topnav">
+        <a href="#how">How it works</a>
+        <a href="#holders">Holders</a>
+        <a href="#pricing">Pricing</a>
+        <a href="./demo.html">Open the demo</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero" id="top" style="padding-top:56px">
+    <div>
+      <span class="eyebrow"><span class="dot"></span>Ledger · Active</span>
+      <h1>Your grandchildren are already shareholders. Nobody has been tracking it.</h1>
+      <p class="sub">Nan is the system of record for familial equity. Issue shares, set vesting cliffs, and run a defensible valuation on the house before anyone brings up the ring at dinner.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="./demo.html">Open the cap table</a>
+        <a class="btn btn-ghost" href="#how">See how it works</a>
+      </div>
+    </div>
+    <div class="hero-plate">
+      <img src="hero.webp" alt="A grandmother seated in an armchair holding a closed ledger, modeled in soft clay" width="1600" height="900">
+      <div class="well">
+        <div class="well-head"><span>Holder</span><span>Fully diluted</span></div>
+        <div class="row"><span class="who">Odom, Marguerite</span><span class="chip pref">Founder</span><span class="pct">51.0%</span></div>
+        <div class="row"><span class="who">Aughtry, Denise</span><span class="chip">Common</span><span class="pct">4.4%</span></div>
+        <div class="row"><span class="who">Pesh, Raymond</span><span class="chip flag">Break in service</span><span class="pct">1.9%</span></div>
+        <div class="vest"><i data-vest="62"></i></div>
+        <div class="vest-note"><span>Cohort vesting</span><span>62% · cliff cleared</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="sec-head">
+      <span class="eyebrow">Administration</span>
+      <h2>Three things a family has never once written down</h2>
+      <p>Nan records them on your behalf, in a format an auditor would recognize.</p>
+    </div>
+    <div class="grid-3">
+      <article class="slab">
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg></div>
+        <h3>409A on the estate</h3>
+        <p>An independent, audit-ready valuation of everything inside the house, refreshed quarterly. The good china is classified as a Level 3 asset because no observable market exists for it. The cabin is marked to the last offer your son-in-law made out loud.</p>
+      </article>
+      <article class="slab">
+        <div class="icon"><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 4-6 5 4"/><path d="M3 21h18"/><path d="M8 12V4"/></svg></div>
+        <h3>Vesting cliffs for visits</h3>
+        <p>Grandchildren vest over four years with a one-year cliff. A missed Christmas is recorded as a break in service. Reinstatement requires board approval, and the board is you, sitting in the chair by the window.</p>
+      </article>
+      <article class="slab">
+        <div class="icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M18 8v8M22 12h-8"/></svg></div>
+        <h3>Dilution modeling</h3>
+        <p>A new baby is a financing event. Nan models the round, shows every existing holder their revised percentage, and drafts the phone call so you do not have to find the words for it twice.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="holders">
+    <div class="sec-head">
+      <span class="eyebrow">On the ledger</span>
+      <h2>Families already under administration</h2>
+      <p>Quotes collected during onboarding. Retained with consent from the issuing party.</p>
+    </div>
+    <div class="grid-3">
+      <article class="slab quote">
+        <blockquote>“I issued to all eleven of them on a Tuesday. Two of them called me back.”</blockquote>
+        <div class="who-row">
+          <img src="headshot-1.webp" alt="" width="320" height="320">
+          <div><div class="n">Marguerite Odom</div><div class="t">Sole Director, Odom Family Holdings</div></div>
+        </div>
+      </article>
+      <article class="slab quote">
+        <blockquote>“I found out my sister's kids were sitting on preferred. I have been common this entire time.”</blockquote>
+        <div class="who-row">
+          <img src="headshot-2.webp" alt="" width="320" height="320">
+          <div><div class="n">Denise Aughtry</div><div class="t">Grandchild, Class B, Unvested</div></div>
+        </div>
+      </article>
+      <article class="slab quote">
+        <blockquote>“We ran the numbers and the cabin is worth less than the resentment. Nan tracked both line items.”</blockquote>
+        <div class="who-row">
+          <img src="headshot-3.webp" alt="" width="320" height="320">
+          <div><div class="n">Raymond Pesh</div><div class="t">Executor and Middle Son</div></div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="pricing">
+    <div class="sec-head">
+      <span class="eyebrow">Seats</span>
+      <h2>Priced per family, billed to the matriarch</h2>
+      <p>Every plan includes the ledger. What changes is how much of the family it can survive.</p>
+    </div>
+    <div class="grid-3">
+      <article class="slab tier">
+        <div class="name">Sole Proprietor</div>
+        <div class="price">$0</div>
+        <p class="tl">For grandmothers with one grandchild and no disputes.</p>
+        <ul>
+          <li>One cap table</li>
+          <li>Up to 3 holders</li>
+          <li>No valuation</li>
+          <li>Ledger goes read-only after a second holder is added</li>
+        </ul>
+        <a class="btn btn-ghost" href="./demo.html">Start the ledger</a>
+      </article>
+      <article class="slab tier mid">
+        <span class="tag">Most families</span>
+        <div class="name">Matriarch</div>
+        <div class="price">$240/mo</div>
+        <p class="tl">The standard configuration for a family that still eats together.</p>
+        <ul>
+          <li>Unlimited holders</li>
+          <li>Quarterly estate 409A</li>
+          <li>Vesting cliffs and clawbacks</li>
+          <li>One contested Thanksgiving per year, mediated</li>
+          <li>Automated break-in-service notices</li>
+        </ul>
+        <a class="btn btn-primary" href="./demo.html">Choose Matriarch</a>
+      </article>
+      <article class="slab tier">
+        <div class="name">Founding Family Office</div>
+        <div class="price">$18,000/yr</div>
+        <p class="tl">For estates where the word lawyer has already been said out loud.</p>
+        <ul>
+          <li>Dedicated equity administrator</li>
+          <li>Secondary market for the silverware</li>
+          <li>Board observer seat for the executor</li>
+          <li>Anti-dilution protection for the eldest</li>
+          <li>Quiet period enforced through the holidays</li>
+        </ul>
+        <a class="btn btn-ghost" href="./demo.html">Contact administration</a>
+      </article>
+    </div>
+  </section>
+
+  <section>
+    <div class="close-slab">
+      <h2>The shares exist whether or not you issue them</h2>
+      <p>Eleven holders. One founder. No documentation. Open the ledger and see what the family looks like when it is written down properly.</p>
+      <a class="btn btn-primary" href="./demo.html">Open the demo →</a>
+    </div>
+  </section>
+
+  <footer>
+    <a href="/">← theworstaistudioever</a>
+    <div class="fine">Nan is not a broker-dealer, a transfer agent, an estate planner, or a substitute for calling her. Valuations are indicative and have been contested at every family gathering since launch.</div>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var slabs = document.querySelectorAll('.slab');
+  if (reduce || !('IntersectionObserver' in window)) {
+    slabs.forEach(function(s){ s.classList.add('in'); });
+    document.querySelectorAll('.vest i').forEach(function(b){ b.style.width = b.dataset.vest + '%'; });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (!e.isIntersecting) return;
+      var el = e.target;
+      var sibs = Array.prototype.slice.call(el.parentNode.children);
+      setTimeout(function(){ el.classList.add('in'); }, sibs.indexOf(el) * 90);
+      io.unobserve(el);
+    });
+  }, { threshold: .15, rootMargin: '0px 0px -40px' });
+  slabs.forEach(function(s){ io.observe(s); });
+
+  var vio = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (!e.isIntersecting) return;
+      e.target.style.width = e.target.dataset.vest + '%';
+      vio.unobserve(e.target);
+    });
+  }, { threshold: .5 });
+  document.querySelectorAll('.vest i').forEach(function(b){ vio.observe(b); });
+})();
+</script>
+</body>
+</html>
