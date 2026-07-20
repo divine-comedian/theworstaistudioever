@@ -1,0 +1,65 @@
+[2026-07-20T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-07-20T08:00:02Z] invoking claude -p
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/github/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/github/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.openclaw/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.openclaw/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.claude/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.claude/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/aurevon-status/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/aurevon-status/**) instead (Edit rules cover all file-editing tools).
+
+RUN 2026-07-20 — vercel-for-seagulls
+
+ROLL
+- company: Vercel
+- subject: seagulls
+- slug: vercel-for-seagulls
+- rerolls: 2 (first two PRNG pairs were already in history)
+- subject rule check: "seagulls" is an animal — valid, no discard needed
+
+CONCEPT
+- product_name: Squall
+- one-liner: deployment platform for seagulls; edge = railings near fries
+- demo: Vercel-style deployments dashboard (gull rows, statuses incl. "Failed: dog",
+  deploy button with live status progression, build-log drawer, filter + search)
+
+DESIGN DIRECTION
+- style: terminal-minimal deployment console, harbor-night dark mode (Vercel pastiche:
+  near-black #0A0A0A, 1px hairline borders, zero shadows, mono microcopy labels,
+  two-arc gull brand mark)
+- palette: Harbor Night / Fry Gold — primary #FAFAFA, accent #F5B841, bg #0A0A0A,
+  fg #EDEDED, muted #8A8A8A, ink #FAFAFA
+- fonts: Geist Mono (display) / Geist (body)
+- anti-sameness: checked last 7 (clay, glass-aquarium, fantasy-RPG, brutalist intranet,
+  aerospace manual, skeuomorphic chassis, swiss bulletin) — no collision on style,
+  palette, or fonts. ui-ux-pro-max suggested OLED slate + JetBrains Mono/IBM Plex Sans;
+  overridden because IBM Plex Sans was 07-13's body font and the Vercel-pastiche
+  monochrome is more on-bit.
+
+IMAGES
+- allocation: hero skipped (typographic direction — the type is the hero); demo assets
+  skipped (console/table demo, not photo-shaped); 3 testimonial headshots (monochrome
+  studio gull portraits, 320x320 WebP, all ≤13 KB).
+- headshot-gary.webp: attempt 1 passed (the generation call itself needed retries —
+  Gemini returned HTTP 503 "high demand" twice early in the step; retries succeeded).
+- headshot-deborah.webp: attempt 1 rejected (white print-frame margins clashing with
+  full-bleed dark cards); attempt 2 with corrective "no border/full-bleed" feedback
+  passed.
+- headshot-kevin.webp: attempt 1 passed.
+- judge verdicts: correct subject, monochrome matches palette, no text artifacts,
+  no generic-AI tells.
+
+WARNINGS / NEAR-MISSES
+- Gemini API returned 503 (high demand) on the first two generation calls; both
+  recovered on retry. If tomorrow's run hits sustained 503s, the skip path applies.
+- None otherwise.
+
+VALIDATION
+- scripts/validate-entry.sh site vercel-for-seagulls: OK
+- gallery rebuilt: 58 slides, count updated to "58 startups · since 2026",
+  new entry first
+- history.json appended (58 entries), JSON validity re-checked
+[2026-07-20T08:12:36Z] WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks
+[2026-07-20T08:12:36Z] new entry: vercel-for-seagulls
+validate-entry [vercel-for-seagulls]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 58 entries (domain theworstaistudioever.com)
+[2026-07-20T08:12:37Z] committing: Vercel for seagulls

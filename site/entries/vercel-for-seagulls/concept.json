@@ -1,0 +1,94 @@
+{
+  "date": "2026-07-20",
+  "company": "Vercel",
+  "subject": "seagulls",
+  "tagline": "Vercel for seagulls",
+  "slug": "vercel-for-seagulls",
+  "product_name": "Squall",
+  "one_liner": "Squall is the deployment platform for seagulls. Push a gull to any pier, boardwalk, or landfill and intercept fries in under 40 milliseconds.",
+  "brand_voice_notes": "Dev-infra deadpan. Every Vercel noun is applied literally: the edge is a railing, a rollback is a wingbeat, a preview is a scouting pass over a staging beach. No bird puns beyond the load-bearing ones; the company sincerely believes gulls are workloads. Copy reads like docs, prices read like invoices.",
+  "hero": {
+    "h1": "Develop. Preview. Scavenge.",
+    "sub": "Squall is the deployment platform for seagulls. Push a gull to any pier, boardwalk, or landfill and serve interceptions from the railing closest to the fries.",
+    "primary_cta": "Deploy a gull"
+  },
+  "features": [
+    {
+      "title": "The edge, taken literally",
+      "blurb": "Your gull runs on railings, ledges, and mast tops within 40 meters of active food. We call this the food-adjacent edge network. There are no cold starts, because the gull is already there, staring."
+    },
+    {
+      "title": "Preview flocks",
+      "blurb": "Every strategy change ships to an isolated preview flock on a staging beach first. If the new dive angle is wrong, a test gull embarrasses itself instead of production."
+    },
+    {
+      "title": "Instant rollbacks",
+      "blurb": "A missed sandwich reverts your gull to the last known-good railing in one wingbeat. Zero downtime. The tourist never learns there were two attempts."
+    }
+  ],
+  "pricing_tiers": [
+    {
+      "name": "Hobby",
+      "price": "$0",
+      "tagline": "For personal chip theft.",
+      "perks": ["1 gull", "Community boardwalks", "100 dives/mo", "Best-effort screaming"]
+    },
+    {
+      "name": "Pro",
+      "price": "$20/gull/mo",
+      "tagline": "For gulls that scavenge commercially.",
+      "perks": ["Unlimited dives", "Priority perching", "Chips-intercepted analytics", "Custom scream domains"]
+    },
+    {
+      "name": "Colony",
+      "price": "Contact sales",
+      "tagline": "Landfill-scale operations.",
+      "perks": ["Single Squawk-On (SSO)", "99.99% scream-uptime SLA", "Dedicated harbor manager", "Audit log of everything your colony has taken"]
+    }
+  ],
+  "testimonials": [
+    {
+      "quote": "We moved the whole flock off self-hosted cliffs. Time-to-fry dropped 61 percent.",
+      "name": "Gary",
+      "title": "Principal Scavenging Engineer, Brighton Pier"
+    },
+    {
+      "quote": "I used to circle for hours. Now I push to main and the chips are just there.",
+      "name": "Deborah",
+      "title": "Staff Gull, Santa Monica Boardwalk (ex-landfill)"
+    },
+    {
+      "quote": "A rollback saved my reputation at a wedding buffet. I will not be elaborating.",
+      "name": "Kevin",
+      "title": "Head of Platform, Marina del Rey Yacht Club (unofficial)"
+    }
+  ],
+  "images": {
+    "rationale": "hero skipped because the design direction is typographic terminal-minimal (the monochrome type IS the hero); demo assets skipped because the demo is a console/table dashboard, not photo-shaped; full budget minus one went to 3 testimonial headshots, monochrome studio portraits of gulls matching the harbor-night palette",
+    "items": [
+      { "role": "testimonial", "file": "headshot-gary.webp", "prompt": "Deadpan corporate headshot photograph of a single adult herring gull, head and shoulders like an executive portrait, facing slightly off-camera with a stern professional expression, monochrome black-and-white editorial photograph, dramatic studio key light, plain near-black studio backdrop matching #0A0A0A, one focal subject only, sharp focus on the eye, no text, no letters, no numbers, no logos, no watermarks, no rendered UI screens", "attempts": 1 },
+      { "role": "testimonial", "file": "headshot-deborah.webp", "prompt": "Deadpan corporate headshot photograph of a single adult seagull in three-quarter profile, head and shoulders framed like a LinkedIn portrait, calm competent expression, monochrome black-and-white editorial photograph, soft studio lighting with gentle rim light, plain near-black studio backdrop matching #0A0A0A, one focal subject only, sharp focus on the eye, full-bleed composition where the dark backdrop fills the entire square frame edge to edge, absolutely no border, no frame, no white margins, no matting, no text, no letters, no numbers, no logos, no watermarks, no rendered UI screens", "attempts": 2 },
+      { "role": "testimonial", "file": "headshot-kevin.webp", "prompt": "Deadpan corporate headshot photograph of a single adult seagull staring directly into the camera, head and shoulders framed like a board-of-directors portrait, unnervingly direct gaze, monochrome black-and-white editorial photograph, hard studio key light from the left, plain near-black studio backdrop matching #0A0A0A, one focal subject only, sharp focus on the eye, no text, no letters, no numbers, no logos, no watermarks, no rendered UI screens", "attempts": 1 }
+    ]
+  },
+  "demo_screen_concept": "A Vercel-style deployments dashboard: a table of gull deployments, each row showing gull name, target perch (e.g. 'Pier 39 · railing 4'), a commit-style strategy message ('bump dive angle to 37deg'), a status badge cycling Queued -> Building -> Circling -> Deployed (or Failed: dog), interception latency, and a chips-intercepted count. A 'Deploy gull' button spawns a new row that progresses through statuses live; clicking a row opens a build-log drawer with fake wind-check and glide-path logs; a status filter and client-side search work over the table.",
+  "design_direction": {
+    "style": "Terminal-minimal deployment console, harbor-night dark mode. The page is staged as the marketing site of a heavily funded frontend-infrastructure company that has decided coastal scavenging is a latency problem and prices interception by the gull. A flat near-black ground (#0A0A0A) with no texture, no gradient, no grain carries panels ruled by 1px hairline borders (#262626) with 8px radii and zero shadows; the entire depth system is border, spacing, and a border that brightens to half-white on hover, the way a deploy platform draws its dashboard. Structural labels are uppercase mono microcopy in wide tracking (DEPLOYMENTS, EDGE NETWORK, ROLLBACKS-01) so every section reads as console chrome rather than a brochure. One near-white ink carries the wordmark, headlines, hairlines, and all institutional text; one rationed fry gold (#F5B841), the exact yellow of a chip lifted from a paper cone, is reserved strictly for the single primary CTA per section, the live deployment-status dot, and chips-intercepted telemetry, and appears almost nowhere else as fill. The brand mark is two joined 1px-stroke arcs, the shape a child draws when asked for a seagull, set beside the wordmark where the triangle would go. Every figure that pretends to be scavenging telemetry (interception latency, dive success rates, edge-perch counts, tier prices, scream uptime) is set in Geist Mono with tabular figures inside hairline wells, so it reads like build output, not marketing. Geist Mono also sets the wordmark and headlines, because the company believes a terminal is a brand; Geist carries plain, faintly documentation-grade body copy. Motion is CI-restrained: a caret blinks after the h1 on a 1s cycle, the status dot pulses on a 3s cycle, deployment rows fade up 6px with a 40ms stagger, the CTA brightens and lifts 1px on hover and depresses on press, log lines print line-by-line in the demo drawer, all gated behind prefers-reduced-motion. No light mode, no glass, no blur, no clay, no neon, no bento lattice, no serifs, no gradients, no marquee, no emoji. Reads like a company that files a stolen chip under 'edge request' and lists a dog on the pier as an incident.",
+    "palette": {
+      "name": "Harbor Night / Fry Gold",
+      "primary": "#FAFAFA",
+      "accent": "#F5B841",
+      "bg": "#0A0A0A",
+      "fg": "#EDEDED",
+      "muted": "#8A8A8A",
+      "ink": "#FAFAFA"
+    },
+    "fonts": {
+      "display": "'Geist Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace",
+      "body": "'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
+    },
+    "archetype": "developer-tool landing: terminal hero with typed prompt, feature triptych as console panels, telemetry strip, pricing as plan cards with mono figures, demo CTA framed as a running deployment",
+    "motion_vocab": "blinking caret (1s), status-dot pulse (3s), 6px fade-up rows with 40ms stagger, CTA 1px lift/depress, line-by-line log printing; all behind prefers-reduced-motion",
+    "hero_composition_notes": "Left-aligned type block over bare near-black; h1 in Geist Mono with a blinking fry-gold caret; beneath it a hairline terminal well showing '$ squall deploy --target pier-39 --gull gary' with a green-free, gold-dotted READY line; the two-arc gull mark sits 1px-stroked in the top-left lockup. No imagery in the hero; the monochrome type IS the hero."
+  }
+}

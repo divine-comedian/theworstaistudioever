@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Squall Console · flock-prod</title>
+<meta name="description" content="Deployments console for Squall, the deployment platform for seagulls.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0A0A;
+  --fg:#EDEDED;
+  --ink:#FAFAFA;
+  --muted:#8A8A8A;
+  --accent:#F5B841;
+  --line:#262626;
+  --line-hover:#4d4d4d;
+  --well:#0F0F0F;
+  --red:#E5484D;
+  --mono:'Geist Mono','SFMono-Regular',Consolas,'Liberation Mono',monospace;
+  --sans:'Geist',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+::selection{background:var(--accent);color:#0A0A0A}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+.top{border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(10,10,10,.95);z-index:40}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;height:56px;gap:16px}
+.crumb{display:flex;align-items:center;gap:12px;min-width:0}
+.back{font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none;white-space:nowrap;transition:color .15s ease}
+.back:hover{color:var(--ink)}
+.crumb .proj{font-family:var(--mono);font-size:13px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crumb .proj .sep{color:#3d3d3d;padding:0 6px}
+.envchip{font-family:var(--mono);font-size:10px;letter-spacing:.12em;border:1px solid var(--line);border-radius:99px;color:var(--muted);padding:3px 10px;white-space:nowrap}
+@media(max-width:560px){.envchip{display:none}}
+
+.toolbar{padding:24px 0 16px}
+.toolbar .row1{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+h1{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:13px;margin-top:4px}
+.deploybtn{
+  font-family:var(--mono);font-size:13px;font-weight:600;color:#0A0A0A;background:var(--accent);
+  border:none;border-radius:6px;padding:10px 18px;cursor:pointer;
+  transition:transform .15s ease,filter .15s ease;
+}
+.deploybtn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.deploybtn:active{transform:translateY(0)}
+.deploybtn:disabled{opacity:.5;cursor:default;transform:none;filter:none}
+.row2{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.tabs{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.tabs button{
+  font-family:var(--mono);font-size:12px;background:none;border:none;color:var(--muted);
+  padding:8px 14px;cursor:pointer;transition:color .15s ease,background .15s ease;
+  border-left:1px solid var(--line);
+}
+.tabs button:first-child{border-left:none}
+.tabs button:hover{color:var(--fg)}
+.tabs button.on{color:#0A0A0A;background:var(--accent);font-weight:600}
+.search{
+  font-family:var(--mono);font-size:12px;background:var(--well);color:var(--fg);
+  border:1px solid var(--line);border-radius:6px;padding:8px 12px;min-width:200px;flex:1;max-width:320px;
+}
+.search::placeholder{color:#4d4d4d}
+.search:focus{outline:none;border-color:var(--line-hover)}
+
+.list{border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-bottom:20px}
+.lhead,.lrow{
+  display:grid;grid-template-columns:150px 1fr 1.2fr 130px 70px 70px;
+  gap:14px;align-items:center;padding:12px 16px;
+}
+.lhead{
+  font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);border-bottom:1px solid var(--line);background:var(--well);
+}
+.lrow{border-bottom:1px solid var(--line);cursor:pointer;transition:background .15s ease;background:none;width:100%;text-align:left;font:inherit;color:inherit}
+.lrow:last-child{border-bottom:none}
+.lrow:hover{background:#111}
+.lrow .gull{font-family:var(--mono);font-size:13px;color:var(--ink);font-weight:600}
+.lrow .perch{color:var(--muted);font-size:13px}
+.lrow .msg{font-family:var(--mono);font-size:12px;color:var(--fg);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lrow .lat,.lrow .chips{font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;text-align:right}
+.status{font-family:var(--mono);font-size:11px;display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.status .d{width:7px;height:7px;border-radius:50%;flex:none}
+.st-deployed .d{background:var(--accent)}
+.st-deployed{color:var(--fg)}
+.st-circling .d{background:var(--accent);animation:pulse 1.6s ease-in-out infinite}
+.st-circling{color:var(--accent)}
+.st-building .d{background:var(--muted);animation:pulse 1.2s ease-in-out infinite}
+.st-building{color:var(--muted)}
+.st-queued .d{background:#3d3d3d}
+.st-queued{color:var(--muted)}
+.st-failed .d{background:var(--red)}
+.st-failed{color:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@media (prefers-reduced-motion:reduce){.st-circling .d,.st-building .d{animation:none}}
+.empty{padding:40px 16px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:13px}
+@media(max-width:820px){
+  .lhead{display:none}
+  .lrow{grid-template-columns:1fr 1fr;gap:6px;padding:14px 16px}
+  .lrow .msg{display:none}
+  .lrow .lat{text-align:left}
+}
+
+.statbar{
+  display:flex;gap:28px;flex-wrap:wrap;padding:14px 16px;border:1px solid var(--line);
+  border-radius:8px;background:var(--well);margin-bottom:32px;
+  font-family:var(--mono);font-size:12px;color:var(--muted);
+}
+.statbar b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+.statbar .gold{color:var(--accent)}
+
+.drawer{
+  position:fixed;inset:auto 0 0 0;max-height:60vh;background:var(--well);
+  border-top:1px solid var(--line);z-index:60;display:none;flex-direction:column;
+}
+.drawer.open{display:flex}
+.dhead{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--line)}
+.dhead .t{font-family:var(--mono);font-size:12px;color:var(--ink)}
+.dhead .t span{color:var(--muted)}
+.dclose{background:none;border:1px solid var(--line);border-radius:6px;color:var(--muted);font-family:var(--mono);font-size:11px;padding:5px 10px;cursor:pointer;transition:color .15s ease,border-color .15s ease}
+.dclose:hover{color:var(--ink);border-color:var(--line-hover)}
+.dlog{overflow-y:auto;padding:16px 20px;font-family:var(--mono);font-size:12.5px;line-height:1.9;color:var(--muted)}
+.dlog .tm{color:#4d4d4d;margin-right:12px}
+.dlog .ok{color:var(--accent)}
+.dlog .err{color:var(--red)}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="crumb">
+      <a class="back" href="./index.html">← back to the pitch</a>
+      <span class="proj"><span class="sep">/</span>flock-prod<span class="sep">/</span>deployments</span>
+    </div>
+    <span class="envchip">PRODUCTION · PIER-39</span>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="toolbar">
+    <div class="row1">
+      <div>
+        <h1>Deployments</h1>
+        <p class="sub">Every gull currently holding a perch lease, and what it thinks it is doing.</p>
+      </div>
+      <button class="deploybtn" id="deployBtn">Deploy gull</button>
+    </div>
+    <div class="row2">
+      <div class="tabs" role="tablist" aria-label="Filter by status">
+        <button class="on" data-f="all">All</button>
+        <button data-f="deployed">Deployed</button>
+        <button data-f="circling">Circling</button>
+        <button data-f="failed">Failed</button>
+      </div>
+      <input class="search" id="search" type="search" placeholder="search gulls, perches, strategies…" aria-label="Search deployments">
+    </div>
+  </div>
+
+  <div class="list" id="list" aria-live="polite">
+    <div class="lhead">
+      <span>Gull</span><span>Target perch</span><span>Strategy</span><span>Status</span>
+      <span style="text-align:right">Latency</span><span style="text-align:right">Chips</span>
+    </div>
+    <div id="rows"></div>
+  </div>
+
+  <div class="statbar">
+    <span>chips intercepted today <b class="gold" id="chipsToday">1,284</b></span>
+    <span>active perch leases <b id="leases">6</b></span>
+    <span>dogs on pier <b id="dogs">1</b></span>
+    <span>scream uptime <b>99.99%</b></span>
+  </div>
+</main>
+
+<div class="drawer" id="drawer" role="dialog" aria-modal="false" aria-label="Deployment logs">
+  <div class="dhead">
+    <span class="t" id="drawerTitle">gary <span>· build logs</span></span>
+    <button class="dclose" id="drawerClose">close</button>
+  </div>
+  <div class="dlog" id="dlog"></div>
+</div>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var DEPLOYMENTS = [
+    { gull:'gary',    perch:'Pier 39 · railing 4',              msg:'bump dive angle to 37deg',            status:'deployed', lat:'38ms', chips:412 },
+    { gull:'deborah', perch:'Santa Monica · lifeguard tower 26', msg:'hotfix: ignore decoy bread',          status:'deployed', lat:'41ms', chips:388 },
+    { gull:'kevin',   perch:'Marina del Rey · buffet adjacency', msg:"revert 'trust the toddler'",          status:'circling', lat:'—',    chips:216 },
+    { gull:'susan',   perch:'Brighton Pier · lamp post 2',       msg:'enable two-phase swoop',              status:'deployed', lat:'44ms', chips:154 },
+    { gull:'terry',   perch:'Ocean Beach · trash ring 9',        msg:'drop support for damp chips',         status:'failed',   fail:'dog', lat:'—', chips:0 },
+    { gull:'brenda',  perch:'Ferry Terminal · bollard 11',       msg:'tune scream cadence to 0.8hz',        status:'circling', lat:'—',    chips:97 },
+    { gull:'colin',   perch:'Landfill 12 · mound C',             msg:'migrate off pigeon-shared perch',     status:'deployed', lat:'52ms', chips:17 },
+    { gull:'maureen', perch:'Boardwalk · churro cart adjacency', msg:'feat: peripheral ketchup detection',  status:'queued',   lat:'—',    chips:0 }
+  ];
+
+  var NEW_GULLS  = ['nigel','pam','clive','sandra','trevor','joan','derek'];
+  var NEW_PERCH  = ['Pier 39 · railing 7','Fish Shack · roof ridge','Promenade · bin 4 (the good bin)','Harbor Cafe · umbrella 3','Jetty · rock with history'];
+  var NEW_MSGS   = ['patch: respect churro boundaries (temporary)','feat: sandwich classifier v3','chore: molt cleanup','fix: stop deploying to closed kiosks','perf: shave 4ms off approach vector'];
+  var FAILS      = ['dog','lid','swan adjacency','child was ready'];
+
+  var rowsEl = document.getElementById('rows');
+  var filter = 'all', query = '';
+  var chipsToday = 1284;
+
+  function statusHtml(d){
+    if (d.status === 'failed') return '<span class="status st-failed"><span class="d"></span>Failed: ' + d.fail + '</span>';
+    var label = { deployed:'Deployed', circling:'Circling', building:'Building', queued:'Queued' }[d.status];
+    return '<span class="status st-' + d.status + '"><span class="d"></span>' + label + '</span>';
+  }
+
+  function render(){
+    var q = query.toLowerCase();
+    var visible = DEPLOYMENTS.filter(function(d){
+      if (filter !== 'all' && d.status !== filter) return false;
+      if (q && (d.gull + ' ' + d.perch + ' ' + d.msg).toLowerCase().indexOf(q) === -1) return false;
+      return true;
+    });
+    if (!visible.length) {
+      rowsEl.innerHTML = '<div class="empty">no gulls match. the gulls are elsewhere.</div>';
+      return;
+    }
+    rowsEl.innerHTML = visible.map(function(d){
+      return '<button class="lrow" data-gull="' + d.gull + '">' +
+        '<span class="gull">' + d.gull + '</span>' +
+        '<span class="perch">' + d.perch + '</span>' +
+        '<span class="msg">' + d.msg + '</span>' +
+        statusHtml(d) +
+        '<span class="lat">' + d.lat + '</span>' +
+        '<span class="chips">' + d.chips.toLocaleString() + '</span>' +
+      '</button>';
+    }).join('');
+  }
+
+  document.querySelectorAll('.tabs button').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('.tabs button').forEach(function(x){ x.classList.remove('on'); });
+      b.classList.add('on');
+      filter = b.getAttribute('data-f');
+      render();
+    });
+  });
+  document.getElementById('search').addEventListener('input', function(e){
+    query = e.target.value; render();
+  });
+
+  /* ---------- deploy new gull ---------- */
+  var deployBtn = document.getElementById('deployBtn');
+  deployBtn.addEventListener('click', function(){
+    deployBtn.disabled = true;
+    var d = {
+      gull:  NEW_GULLS[Math.floor(Math.random()*NEW_GULLS.length)] + '-' + Math.floor(Math.random()*90+10),
+      perch: NEW_PERCH[Math.floor(Math.random()*NEW_PERCH.length)],
+      msg:   NEW_MSGS[Math.floor(Math.random()*NEW_MSGS.length)],
+      status:'queued', lat:'—', chips:0
+    };
+    DEPLOYMENTS.unshift(d);
+    render();
+    var steps = ['building','circling'];
+    var i = 0;
+    var speed = reduced ? 400 : 1400;
+    var t = setInterval(function(){
+      if (i < steps.length) {
+        d.status = steps[i++]; render();
+      } else {
+        clearInterval(t);
+        if (Math.random() < 0.2) {
+          d.status = 'failed';
+          d.fail = FAILS[Math.floor(Math.random()*FAILS.length)];
+        } else {
+          d.status = 'deployed';
+          d.lat = (Math.floor(Math.random()*30)+34) + 'ms';
+          d.chips = Math.floor(Math.random()*12)+1;
+          chipsToday += d.chips;
+          document.getElementById('chipsToday').textContent = chipsToday.toLocaleString();
+          document.getElementById('leases').textContent =
+            DEPLOYMENTS.filter(function(x){ return x.status === 'deployed'; }).length;
+        }
+        render();
+        deployBtn.disabled = false;
+      }
+    }, speed);
+  });
+
+  /* ---------- log drawer ---------- */
+  var drawer = document.getElementById('drawer');
+  var dlog = document.getElementById('dlog');
+  var drawerTitle = document.getElementById('drawerTitle');
+  var logTimer = null;
+
+  function logsFor(d){
+    var base = [
+      ['09:41:02','resolving perch lease… ok'],
+      ['09:41:02','wind check… 12kt onshore. acceptable.'],
+      ['09:41:03','preflight: feathers nominal, hunger nominal, grudge against ' + (d.gull === 'kevin' ? 'the swan' : 'unspecified') + ' nominal'],
+      ['09:41:04','applying strategy: ' + d.msg],
+      ['09:41:05','circling (radius 14m, expression: none)']
+    ];
+    if (d.status === 'failed') {
+      base.push(['09:41:09','<span class="err">abort: ' + d.fail + ' (assessed: not worth it)</span>']);
+      base.push(['09:41:09','rolling back to last known-good railing…']);
+      base.push(['09:41:10','<span class="ok">rollback complete. dignity: partial.</span>']);
+    } else if (d.status === 'deployed') {
+      base.push(['09:41:09','target acquired: open cone, unattended']);
+      base.push(['09:41:09','dive committed. no further approvals possible.']);
+      base.push(['09:41:10','<span class="ok">interception complete (' + d.lat + ')</span>']);
+      base.push(['09:41:11','incident: bystander made eye contact. logged.']);
+    } else {
+      base.push(['09:41:09','status: ' + d.status + '. the gull is aware of the timeline.']);
+    }
+    return base;
+  }
+
+  function openDrawer(d){
+    drawerTitle.innerHTML = d.gull + ' <span>· build logs · ' + d.perch + '</span>';
+    dlog.innerHTML = '';
+    drawer.classList.add('open');
+    if (logTimer) clearInterval(logTimer);
+    var lines = logsFor(d), i = 0;
+    function print(){
+      var l = lines[i++];
+      dlog.innerHTML += '<div><span class="tm">' + l[0] + '</span>' + l[1] + '</div>';
+      dlog.scrollTop = dlog.scrollHeight;
+      if (i >= lines.length && logTimer) clearInterval(logTimer);
+    }
+    if (reduced) { while (i < lines.length) print(); }
+    else { print(); logTimer = setInterval(function(){ if (i < lines.length) print(); else clearInterval(logTimer); }, 350); }
+  }
+
+  rowsEl.addEventListener('click', function(e){
+    var row = e.target.closest('.lrow');
+    if (!row) return;
+    var d = DEPLOYMENTS.find(function(x){ return x.gull === row.getAttribute('data-gull'); });
+    if (d) openDrawer(d);
+  });
+  document.getElementById('drawerClose').addEventListener('click', function(){
+    drawer.classList.remove('open');
+    if (logTimer) clearInterval(logTimer);
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') { drawer.classList.remove('open'); if (logTimer) clearInterval(logTimer); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

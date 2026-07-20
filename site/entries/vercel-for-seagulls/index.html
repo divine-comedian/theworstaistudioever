@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Squall · theworstaistudioever</title>
+<meta name="description" content="Squall is the deployment platform for seagulls. Push a gull to any pier, boardwalk, or landfill and intercept fries in under 40 milliseconds.">
+<meta property="og:title" content="Squall — Develop. Preview. Scavenge.">
+<meta property="og:description" content="The deployment platform for seagulls. Push a gull to any pier, boardwalk, or landfill and intercept fries in under 40 milliseconds.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Squall — Develop. Preview. Scavenge.">
+<meta name="twitter:description" content="The deployment platform for seagulls.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0A0A;
+  --fg:#EDEDED;
+  --ink:#FAFAFA;
+  --muted:#8A8A8A;
+  --accent:#F5B841;
+  --line:#262626;
+  --line-hover:#4d4d4d;
+  --well:#0F0F0F;
+  --mono:'Geist Mono','SFMono-Regular',Consolas,'Liberation Mono',monospace;
+  --sans:'Geist',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  background:var(--bg);color:var(--fg);
+  font-family:var(--sans);font-size:16px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit}
+::selection{background:var(--accent);color:#0A0A0A}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+/* ---------- header ---------- */
+.top{
+  border-bottom:1px solid var(--line);
+  position:sticky;top:0;background:rgba(10,10,10,.92);backdrop-filter:none;z-index:50;
+}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.lockup{display:flex;align-items:center;gap:10px;text-decoration:none}
+.lockup svg{display:block}
+.lockup .word{font-family:var(--mono);font-weight:700;font-size:15px;letter-spacing:.08em;color:var(--ink)}
+.top nav{display:flex;align-items:center;gap:28px}
+.top nav a{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-decoration:none;color:var(--muted);transition:color .15s ease}
+.top nav a:hover{color:var(--ink)}
+.top nav a.cta{
+  color:#0A0A0A;background:var(--accent);border-radius:6px;padding:8px 14px;font-weight:600;
+  transition:transform .15s ease,filter .15s ease;
+}
+.top nav a.cta:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.top nav a.cta:active{transform:translateY(0)}
+@media(max-width:640px){.top nav a:not(.cta){display:none}}
+
+/* ---------- hero ---------- */
+.hero{padding:104px 0 72px;border-bottom:1px solid var(--line)}
+.kicker{
+  font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--muted);
+  text-transform:uppercase;display:block;margin-bottom:20px;
+}
+.hero h1{
+  font-family:var(--mono);font-weight:700;color:var(--ink);
+  font-size:clamp(34px,6.4vw,64px);line-height:1.08;letter-spacing:-.02em;
+}
+.caret{
+  display:inline-block;width:.5em;height:1em;background:var(--accent);
+  vertical-align:-.12em;margin-left:.12em;
+  animation:blink 1s steps(1) infinite;
+}
+@media (prefers-reduced-motion:reduce){.caret{animation:none}}
+@keyframes blink{50%{opacity:0}}
+.hero .sub{max-width:600px;color:var(--muted);font-size:18px;margin:24px 0 32px}
+.btnrow{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:56px}
+.btn{
+  font-family:var(--mono);font-size:14px;font-weight:600;letter-spacing:.02em;
+  text-decoration:none;border-radius:6px;padding:12px 22px;
+  transition:transform .15s ease,filter .15s ease,border-color .15s ease;
+}
+.btn.primary{background:var(--accent);color:#0A0A0A}
+.btn.primary:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn.primary:active{transform:translateY(0)}
+.btn.ghost{border:1px solid var(--line);color:var(--fg)}
+.btn.ghost:hover{border-color:var(--line-hover)}
+.term{
+  border:1px solid var(--line);border-radius:8px;background:var(--well);
+  font-family:var(--mono);font-size:13.5px;line-height:1.9;
+  padding:20px 24px;max-width:720px;overflow-x:auto;
+}
+.term .cmd{color:var(--ink)}
+.term .cmd::before{content:"$ ";color:var(--muted)}
+.term .out{color:var(--muted)}
+.term .out::before{content:"> ";color:#3d3d3d}
+.term .ready{color:var(--fg)}
+.dot{
+  display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);
+  margin-right:8px;vertical-align:baseline;
+  animation:pulse 3s ease-in-out infinite;
+}
+@media (prefers-reduced-motion:reduce){.dot{animation:none}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.term .url{color:var(--accent);text-decoration:none}
+.term .num{color:var(--accent)}
+
+/* ---------- telemetry strip ---------- */
+.telemetry{border-bottom:1px solid var(--line)}
+.telemetry .wrap{
+  display:grid;grid-template-columns:repeat(4,1fr);
+}
+.tcell{padding:28px 20px;border-left:1px solid var(--line)}
+.tcell:first-child{border-left:none;padding-left:0}
+.tcell .val{font-family:var(--mono);font-size:26px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.tcell .val em{font-style:normal;color:var(--accent)}
+.tcell .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+@media(max-width:760px){
+  .telemetry .wrap{grid-template-columns:1fr 1fr}
+  .tcell{border-left:none;padding-left:0}
+}
+
+/* ---------- sections ---------- */
+section.block{padding:88px 0;border-bottom:1px solid var(--line)}
+.block h2{
+  font-family:var(--mono);font-weight:700;color:var(--ink);
+  font-size:clamp(24px,3.6vw,36px);letter-spacing:-.01em;line-height:1.2;
+  margin-bottom:10px;
+}
+.block .lede{color:var(--muted);max-width:560px;margin-bottom:48px}
+
+/* features */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:860px){.grid3{grid-template-columns:1fr}}
+.panel{
+  border:1px solid var(--line);border-radius:8px;padding:28px 24px;
+  transition:border-color .2s ease;
+}
+.panel:hover{border-color:var(--line-hover)}
+.panel .tag{
+  font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--muted);
+  text-transform:uppercase;display:block;margin-bottom:16px;
+}
+.panel h3{font-family:var(--sans);font-weight:600;font-size:18px;color:var(--ink);margin-bottom:10px}
+.panel p{color:var(--muted);font-size:15px}
+
+/* demo band */
+.demoband{
+  border:1px solid var(--line);border-radius:8px;background:var(--well);
+  padding:40px;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap;
+}
+.demoband h2{margin-bottom:8px}
+.demoband p{color:var(--muted);max-width:480px}
+.deployrow{
+  font-family:var(--mono);font-size:12.5px;color:var(--muted);
+  border:1px solid var(--line);border-radius:6px;padding:10px 14px;margin-top:18px;
+  display:inline-flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.deployrow .name{color:var(--ink)}
+.deployrow .ok{color:var(--accent)}
+
+/* testimonials */
+.tcard{display:flex;flex-direction:column;justify-content:space-between}
+.tcard blockquote{color:var(--fg);font-size:15.5px;margin-bottom:24px}
+.tcard blockquote::before{content:"\201C"}
+.tcard blockquote::after{content:"\201D"}
+.tfoot{display:flex;align-items:center;gap:14px}
+.tfoot img{
+  width:48px;height:48px;border-radius:50%;object-fit:cover;
+  border:1px solid var(--line);filter:grayscale(1);
+}
+.tfoot .who{font-family:var(--mono);font-size:12px;line-height:1.5}
+.tfoot .who .n{color:var(--ink);font-weight:600}
+.tfoot .who .t{color:var(--muted)}
+
+/* pricing */
+.price .name{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink)}
+.price .amount{
+  font-family:var(--mono);font-size:30px;font-weight:700;color:var(--ink);
+  font-variant-numeric:tabular-nums;margin:14px 0 4px;
+}
+.price .ptag{color:var(--muted);font-size:14px;margin-bottom:22px}
+.price ul{list-style:none;border-top:1px solid var(--line);padding-top:18px}
+.price li{
+  color:var(--muted);font-size:14px;padding:5px 0 5px 20px;position:relative;
+}
+.price li::before{
+  content:"";position:absolute;left:0;top:13px;width:8px;height:1px;background:var(--muted);
+}
+.price.featured{border-color:var(--accent)}
+.price.featured .amount{color:var(--accent)}
+.price .btn{display:block;text-align:center;margin-top:24px}
+
+/* footer */
+footer{padding:48px 0 64px}
+footer .wrap{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap}
+footer .legal{color:var(--muted);font-size:13px;max-width:460px}
+footer .legal a{color:var(--fg);text-decoration:none;border-bottom:1px solid var(--line)}
+footer .legal a:hover{border-color:var(--line-hover)}
+footer .back{
+  font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none;
+  transition:color .15s ease;
+}
+footer .back:hover{color:var(--ink)}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(6px);transition:opacity .5s ease,transform .5s ease}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="lockup" href="#" aria-label="Squall home">
+      <svg width="26" height="16" viewBox="0 0 26 16" fill="none" aria-hidden="true">
+        <path d="M1 12 Q7 3 13 12 Q19 3 25 12" stroke="#FAFAFA" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>
+      <span class="word">SQUALL</span>
+    </a>
+    <nav>
+      <a href="#edge">EDGE</a>
+      <a href="#operators">OPERATORS</a>
+      <a href="#plans">PLANS</a>
+      <a class="cta" href="./demo.html">Deploy a gull</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <span class="kicker">The deployment platform for seagulls</span>
+      <h1>Develop. Preview.<br>Scavenge.<span class="caret" aria-hidden="true"></span></h1>
+      <p class="sub">Push a gull to any pier, boardwalk, or landfill and serve interceptions from the railing closest to the fries. Squall handles the wind. You handle nothing.</p>
+      <div class="btnrow">
+        <a class="btn primary" href="./demo.html">Deploy a gull</a>
+        <a class="btn ghost" href="#edge">Read the docs, allegedly</a>
+      </div>
+      <div class="term" role="img" aria-label="Terminal output of a squall deployment">
+        <div class="cmd">squall deploy --target pier-39 --gull gary</div>
+        <div class="out">resolving edge perch… railing 4 (2.1m from active fries)</div>
+        <div class="out">wind check… 12kt onshore. acceptable.</div>
+        <div class="out">gary is staring. this is normal.</div>
+        <div class="ready"><span class="dot" aria-hidden="true"></span>READY <span class="num">38ms</span> · <span class="url">gary.pier-39.squall.dev</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="telemetry" aria-label="Platform telemetry">
+    <div class="wrap">
+      <div class="tcell reveal"><div class="val">38<em>ms</em></div><div class="lbl">median interception</div></div>
+      <div class="tcell reveal"><div class="val">2,407</div><div class="lbl">edge perches</div></div>
+      <div class="tcell reveal"><div class="val">99.99<em>%</em></div><div class="lbl">scream uptime</div></div>
+      <div class="tcell reveal"><div class="val">61<em>%</em></div><div class="lbl">faster time-to-fry</div></div>
+    </div>
+  </section>
+
+  <section class="block" id="edge">
+    <div class="wrap">
+      <span class="kicker">Edge network</span>
+      <h2>Infrastructure for the modern gull.</h2>
+      <p class="lede">Your flock, scheduled against food the way traffic is scheduled against servers. Nobody asked whether it should be.</p>
+      <div class="grid3">
+        <div class="panel reveal">
+          <span class="tag">Edge</span>
+          <h3>The edge, taken literally</h3>
+          <p>Your gull runs on railings, ledges, and mast tops within 40 meters of active food. We call this the food-adjacent edge network. There are no cold starts, because the gull is already there, staring.</p>
+        </div>
+        <div class="panel reveal">
+          <span class="tag">Previews</span>
+          <h3>Preview flocks</h3>
+          <p>Every strategy change ships to an isolated preview flock on a staging beach first. If the new dive angle is wrong, a test gull embarrasses itself instead of production.</p>
+        </div>
+        <div class="panel reveal">
+          <span class="tag">Rollbacks</span>
+          <h3>Instant rollbacks</h3>
+          <p>A missed sandwich reverts your gull to the last known-good railing in one wingbeat. Zero downtime. The tourist never learns there were two attempts.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="demo">
+    <div class="wrap">
+      <div class="demoband reveal">
+        <div>
+          <span class="kicker">Console</span>
+          <h2>One dashboard. Every gull. Most chips.</h2>
+          <p>Watch deployments move from Queued to Circling to Deployed, or occasionally to Failed: dog. The dashboard does not judge. The dashboard records.</p>
+          <div class="deployrow">
+            <span class="name">gary@pier-39</span>
+            <span>bump dive angle to 37deg</span>
+            <span class="ok">● Deployed</span>
+            <span>41ms</span>
+          </div>
+        </div>
+        <a class="btn primary" href="./demo.html">open the demo →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="operators">
+    <div class="wrap">
+      <span class="kicker">Operators</span>
+      <h2>Operators in production.</h2>
+      <p class="lede">Real quotes from gulls we pay in chips.</p>
+      <div class="grid3">
+        <div class="panel tcard reveal">
+          <blockquote>We moved the whole flock off self-hosted cliffs. Time-to-fry dropped 61 percent.</blockquote>
+          <div class="tfoot">
+            <img src="./headshot-gary.webp" alt="Corporate headshot of Gary, a herring gull" width="48" height="48" loading="lazy">
+            <div class="who"><div class="n">Gary</div><div class="t">Principal Scavenging Engineer, Brighton Pier</div></div>
+          </div>
+        </div>
+        <div class="panel tcard reveal">
+          <blockquote>I used to circle for hours. Now I push to main and the chips are just there.</blockquote>
+          <div class="tfoot">
+            <img src="./headshot-deborah.webp" alt="Corporate headshot of Deborah, a seagull in three-quarter profile" width="48" height="48" loading="lazy">
+            <div class="who"><div class="n">Deborah</div><div class="t">Staff Gull, Santa Monica Boardwalk (ex-landfill)</div></div>
+          </div>
+        </div>
+        <div class="panel tcard reveal">
+          <blockquote>A rollback saved my reputation at a wedding buffet. I will not be elaborating.</blockquote>
+          <div class="tfoot">
+            <img src="./headshot-kevin.webp" alt="Corporate headshot of Kevin, a seagull staring directly at the camera" width="48" height="48" loading="lazy">
+            <div class="who"><div class="n">Kevin</div><div class="t">Head of Platform, Marina del Rey Yacht Club (unofficial)</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="plans">
+    <div class="wrap">
+      <span class="kicker">Plans</span>
+      <h2>Priced per gull.</h2>
+      <p class="lede">The gulls do not know this.</p>
+      <div class="grid3">
+        <div class="panel price reveal">
+          <div class="name">Hobby</div>
+          <div class="amount">$0</div>
+          <p class="ptag">For personal chip theft.</p>
+          <ul>
+            <li>1 gull</li>
+            <li>Community boardwalks</li>
+            <li>100 dives/mo</li>
+            <li>Best-effort screaming</li>
+          </ul>
+          <a class="btn ghost" href="./demo.html">Start scavenging</a>
+        </div>
+        <div class="panel price featured reveal">
+          <div class="name">Pro</div>
+          <div class="amount">$20<span style="font-size:15px;color:var(--muted)">/gull/mo</span></div>
+          <p class="ptag">For gulls that scavenge commercially.</p>
+          <ul>
+            <li>Unlimited dives</li>
+            <li>Priority perching</li>
+            <li>Chips-intercepted analytics</li>
+            <li>Custom scream domains</li>
+          </ul>
+          <a class="btn primary" href="./demo.html">Deploy a gull</a>
+        </div>
+        <div class="panel price reveal">
+          <div class="name">Colony</div>
+          <div class="amount">Contact sales</div>
+          <p class="ptag">Landfill-scale operations.</p>
+          <ul>
+            <li>Single Squawk-On (SSO)</li>
+            <li>99.99% scream-uptime SLA</li>
+            <li>Dedicated harbor manager</li>
+            <li>Audit log of everything your colony has taken</li>
+          </ul>
+          <a class="btn ghost" href="./demo.html">Talk to a harbor manager</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="legal">
+      <p>© 2026 Squall Systems, Inc. Not affiliated with Vercel. The gulls are not affiliated with anyone. Latency figures measured from railing to cone under favorable wind and should not be relied upon by tourists.</p>
+    </div>
+    <a class="back" href="/">← theworstaistudioever</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var els = document.querySelectorAll('.reveal');
+  if (reduced || !('IntersectionObserver' in window)) {
+    els.forEach(function(el){ el.classList.add('in'); });
+    return;
+  }
+  var seen = 0;
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) {
+        var el = e.target;
+        setTimeout(function(){ el.classList.add('in'); }, (seen++ % 3) * 40);
+        io.unobserve(el);
+      }
+    });
+  }, { threshold: 0.15 });
+  els.forEach(function(el){ io.observe(el); });
+})();
+</script>
+</body>
+</html>
