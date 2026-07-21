@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Send It Home · Settle.</title>
+<meta name="description" content="The Settle. transfers console. Everything is clearing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,400&family=Libre+Franklin:wght@400;500;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#2B4C9B;
+  --red:#C93A2E;
+  --bg:#F6EFDF;
+  --paper:#FBF6E9;
+  --fg:#2A2418;
+  --muted:#8C8270;
+  --ink:#241E12;
+  --display:'Fraunces',Georgia,serif;
+  --body:'Libre Franklin',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'Courier Prime','Courier New',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:var(--body);
+  background:
+    repeating-linear-gradient(0deg, rgba(43,76,155,.025) 0 1px, transparent 1px 4px),
+    var(--bg);
+  color:var(--fg);font-size:15px;line-height:1.5;
+  min-height:100vh;
+}
+::selection{background:var(--blue);color:var(--paper)}
+.airmail{height:10px;background:repeating-linear-gradient(135deg,var(--blue) 0 14px,var(--bg) 14px 21px,var(--red) 21px 35px,var(--bg) 35px 42px)}
+
+/* console chrome */
+.chrome{
+  display:flex;align-items:center;gap:18px;
+  padding:14px 22px;border-bottom:1px solid var(--blue);
+  background:var(--paper);flex-wrap:wrap;
+}
+.back{
+  font-family:var(--mono);font-size:.8rem;font-weight:700;
+  color:var(--blue);text-decoration:none;white-space:nowrap;
+}
+.back:hover{color:var(--red)}
+.console-name{
+  font-family:var(--display);font-weight:700;font-size:1.15rem;color:var(--ink);
+}
+.console-name .dot{color:var(--red)}
+.status{
+  margin-left:auto;display:flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:.72rem;font-weight:700;
+  letter-spacing:.14em;color:var(--blue);text-transform:uppercase;
+}
+.lamp{
+  width:9px;height:9px;border-radius:50%;background:var(--red);
+  animation:pulse 3s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+@media (prefers-reduced-motion:reduce){.lamp{animation:none}}
+
+/* layout */
+.console{
+  display:grid;grid-template-columns:340px 1fr 360px;gap:18px;
+  padding:20px;max-width:1360px;margin:0 auto;
+  align-items:start;
+}
+@media (max-width:1100px){.console{grid-template-columns:1fr 1fr}}
+@media (max-width:760px){.console{grid-template-columns:1fr}}
+
+.panel{
+  background:var(--paper);border:1px solid var(--blue);border-radius:2px;
+}
+.panel-head{
+  display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+  padding:12px 16px;border-bottom:1px solid var(--blue);
+}
+.panel-title{
+  font-family:var(--mono);font-size:.72rem;font-weight:700;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--blue);
+}
+.panel-sub{font-size:.7rem;color:var(--muted)}
+.panel-body{padding:16px}
+
+/* converter */
+.field label{
+  display:block;font-size:.72rem;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--blue);
+  margin-bottom:6px;
+}
+.field{margin-bottom:16px}
+input[type="number"],select{
+  width:100%;padding:10px 12px;
+  font-family:var(--mono);font-size:1rem;font-weight:700;color:var(--ink);
+  background:var(--bg);border:1px solid var(--blue);border-radius:2px;
+}
+input[type="number"]:focus,select:focus{outline:3px solid var(--red);outline-offset:1px}
+.well{
+  background:var(--bg);border:1px solid var(--blue);border-radius:2px;
+  padding:12px 14px;margin-bottom:12px;
+}
+.well-label{font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.well-value{font-family:var(--mono);font-weight:700;font-size:1.25rem;color:var(--ink)}
+.well-value small{font-size:.72rem;color:var(--muted);font-weight:400}
+.well--red .well-value{color:var(--red)}
+.pints{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.converter-note{
+  font-family:var(--mono);font-size:.68rem;color:var(--muted);
+  border-top:1px dashed rgba(43,76,155,.4);padding-top:10px;margin-top:4px;
+}
+
+/* birthday queue */
+.gc-row{
+  display:flex;align-items:center;gap:12px;
+  border:1px solid var(--blue);border-radius:2px;
+  background:var(--bg);padding:12px 14px;margin-bottom:10px;
+}
+.gc-info{flex:1;min-width:0}
+.gc-name{font-weight:600;color:var(--ink);font-size:.95rem}
+.gc-memo{font-size:.76rem;color:var(--muted);font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gc-meta{display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+.chip{
+  font-family:var(--mono);font-size:.66rem;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;
+  border:1px solid var(--blue);color:var(--blue);
+  padding:2px 7px;border-radius:2px;white-space:nowrap;
+}
+.chip--soon{border-color:var(--red);color:var(--red)}
+.gc-amt{font-family:var(--mono);font-weight:700;font-size:.86rem;color:var(--ink)}
+.rank-btns{display:flex;flex-direction:column;gap:4px}
+.rank-btns button{
+  font-family:var(--mono);font-weight:700;font-size:.8rem;
+  width:30px;height:26px;cursor:pointer;
+  background:var(--paper);color:var(--blue);
+  border:1px solid var(--blue);border-radius:2px;
+}
+.rank-btns button:hover:not(:disabled){background:var(--blue);color:var(--paper)}
+.rank-btns button:disabled{opacity:.35;cursor:default}
+.queue-note{
+  font-family:var(--mono);font-size:.68rem;color:var(--muted);
+  border-top:1px dashed rgba(43,76,155,.4);padding-top:10px;margin-top:8px;
+}
+
+/* pending feed */
+.tx{
+  border:1px solid var(--blue);border-radius:2px;background:var(--bg);
+  padding:12px 14px;margin-bottom:10px;position:relative;
+}
+.tx-route{font-family:var(--mono);font-weight:700;font-size:.9rem;color:var(--ink);margin-bottom:2px}
+.tx-filed{font-size:.72rem;color:var(--muted);margin-bottom:8px}
+.tx-foot{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.tx-state{
+  font-family:var(--mono);font-size:.64rem;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--red);border:2px solid var(--red);
+  padding:2px 7px;transform:rotate(-2deg);display:inline-block;
+  opacity:.85;
+}
+.nudge{
+  font-family:var(--mono);font-size:.72rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.08em;cursor:pointer;
+  background:var(--paper);color:var(--blue);
+  border:1px solid var(--blue);border-radius:2px;padding:6px 12px;
+}
+.nudge:hover{background:var(--blue);color:var(--paper)}
+.nudge:active{transform:translateY(1px)}
+.nudge-count{color:var(--muted);font-weight:400}
+.feed-note{
+  font-family:var(--mono);font-size:.68rem;color:var(--muted);
+  border-top:1px dashed rgba(43,76,155,.4);padding-top:10px;margin-top:8px;
+}
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(8px);
+  background:var(--ink);color:var(--paper);
+  font-family:var(--mono);font-size:.78rem;font-weight:700;
+  padding:10px 18px;border-radius:2px;
+  opacity:0;pointer-events:none;transition:opacity .25s ease-out,transform .25s ease-out;
+  max-width:90vw;text-align:center;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+a:focus-visible,button:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+</style>
+</head>
+<body>
+
+<div class="airmail" aria-hidden="true"></div>
+
+<header class="chrome">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="console-name">Settle<span class="dot">.</span> — Send It Home</span>
+  <div class="status"><span class="lamp" aria-hidden="true"></span> Post room: open</div>
+</header>
+
+<main class="console">
+
+  <!-- converter -->
+  <section class="panel" aria-labelledby="conv-title">
+    <div class="panel-head">
+      <h2 class="panel-title" id="conv-title">Converter</h2>
+      <span class="panel-sub">Form FX-11</span>
+    </div>
+    <div class="panel-body">
+      <div class="field">
+        <label for="amt">Amount to send (EUR)</label>
+        <input type="number" id="amt" value="200" min="0" step="10" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="dest">Destination</label>
+        <select id="dest">
+          <option value="THB" selected>Hua Hin, Thailand (THB)</option>
+          <option value="MXN">Playa del Carmen, Mexico (MXN)</option>
+          <option value="GBP">Home, regrettably (GBP)</option>
+        </select>
+      </div>
+      <div class="well">
+        <div class="well-label">They receive (today's rate)</div>
+        <div class="well-value" id="out-today">—</div>
+      </div>
+      <div class="well well--red">
+        <div class="well-label">They receive (your rate, locked 2011)</div>
+        <div class="well-value" id="out-legacy">—</div>
+      </div>
+      <div class="pints">
+        <div class="well">
+          <div class="well-label">Pints at your old local</div>
+          <div class="well-value" id="pints-old">— <small>pints</small></div>
+        </div>
+        <div class="well">
+          <div class="well-label">Pints at your new local</div>
+          <div class="well-value" id="pints-new">— <small>pints</small></div>
+        </div>
+      </div>
+      <p class="converter-note">OUR PORTION (4.1%) DEDUCTED BEFORE, AFTER, AND IN ONE CASE DURING CONVERSION. THE DIFFERENCE BETWEEN RATES IS BETWEEN US.</p>
+    </div>
+  </section>
+
+  <!-- birthday queue -->
+  <section class="panel" aria-labelledby="queue-title">
+    <div class="panel-head">
+      <h2 class="panel-title" id="queue-title">Grandchild birthday queue</h2>
+      <span class="panel-sub">Rail G-3 · 5 beneficiaries</span>
+    </div>
+    <div class="panel-body">
+      <div id="queue"></div>
+      <p class="queue-note">ORDER OF PREFERENCE IS CONFIDENTIAL AND LEGALLY DISCOVERABLE. MEMO LINES ARE WRITTEN IN YOUR HAND, APPROXIMATELY.</p>
+    </div>
+  </section>
+
+  <!-- pending feed -->
+  <section class="panel" aria-labelledby="feed-title">
+    <div class="panel-head">
+      <h2 class="panel-title" id="feed-title">Pending transfers</h2>
+      <span class="panel-sub">All statuses current</span>
+    </div>
+    <div class="panel-body">
+      <div id="feed"></div>
+      <p class="feed-note">NUDGES ARE RECORDED AND APPRECIATED. THEY DO NOT AFFECT CLEARING. NOTHING AFFECTS CLEARING.</p>
+    </div>
+  </section>
+
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- converter ---- */
+  var RATES = {
+    THB: { today: 38.20, legacy: 43.75, symbol: '฿', pint: 90 },
+    MXN: { today: 19.85, legacy: 16.40, symbol: '$', pint: 75 },
+    GBP: { today: 0.86,  legacy: 0.88,  symbol: '£', pint: 5.40 }
+  };
+  var OLD_LOCAL_PINT_EUR = 6.10; // The Crown, pre-departure prices no longer honored
+  var amt = document.getElementById('amt');
+  var dest = document.getElementById('dest');
+  var outToday = document.getElementById('out-today');
+  var outLegacy = document.getElementById('out-legacy');
+  var pintsOld = document.getElementById('pints-old');
+  var pintsNew = document.getElementById('pints-new');
+  var tickTimers = [];
+
+  function fmt(n){
+    return n.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function setFigure(el, text){
+    if (reduced) { el.textContent = text; return; }
+    // typewriter tick: settle digit by digit
+    var i = 0;
+    el.textContent = '';
+    var t = setInterval(function(){
+      i++;
+      el.textContent = text.slice(0, i);
+      if (i >= text.length) clearInterval(t);
+    }, 18);
+    tickTimers.push(t);
+  }
+
+  function recalc(){
+    tickTimers.forEach(clearInterval);
+    tickTimers = [];
+    var eur = parseFloat(amt.value) || 0;
+    var r = RATES[dest.value];
+    var net = eur * 0.959; // our portion
+    setFigure(outToday, r.symbol + fmt(net * r.today));
+    setFigure(outLegacy, r.symbol + fmt(net * r.legacy));
+    var po = eur / OLD_LOCAL_PINT_EUR;
+    var pn = (net * r.today) / r.pint;
+    pintsOld.innerHTML = po.toFixed(1) + ' <small>pints</small>';
+    pintsNew.innerHTML = pn.toFixed(1) + ' <small>pints</small>';
+  }
+  amt.addEventListener('input', recalc);
+  dest.addEventListener('change', recalc);
+
+  /* ---- birthday queue ---- */
+  var grandchildren = [
+    { name: 'Oliver, turning 9',   days: 12,  amt: '€20', memo: 'Spend it on something sensible' },
+    { name: 'Freya, turning 14',   days: 31,  amt: '€25', memo: 'Do not tell your brother the amount' },
+    { name: 'Little Marcus, turning 6', days: 4, amt: '€20', memo: 'From Grandad, who is not lost, just abroad' },
+    { name: 'Sofia, turning 17',   days: 88,  amt: '€30', memo: 'For the driving lessons, not the other thing' },
+    { name: 'The twins, turning 11', days: 145, amt: '€15 ea.', memo: 'One card between you, as discussed' }
+  ];
+
+  var queueEl = document.getElementById('queue');
+  function renderQueue(){
+    queueEl.innerHTML = '';
+    grandchildren.forEach(function(gc, i){
+      var row = document.createElement('div');
+      row.className = 'gc-row';
+
+      var rank = document.createElement('div');
+      rank.className = 'rank-btns';
+      var up = document.createElement('button');
+      up.textContent = '↑';
+      up.setAttribute('aria-label', 'Move ' + gc.name + ' up the order of preference');
+      up.disabled = i === 0;
+      up.addEventListener('click', function(){
+        grandchildren.splice(i, 1);
+        grandchildren.splice(i - 1, 0, gc);
+        renderQueue();
+        toast('Order of preference amended. The previous order has been retained for our records.');
+      });
+      var down = document.createElement('button');
+      down.textContent = '↓';
+      down.setAttribute('aria-label', 'Move ' + gc.name + ' down the order of preference');
+      down.disabled = i === grandchildren.length - 1;
+      down.addEventListener('click', function(){
+        grandchildren.splice(i, 1);
+        grandchildren.splice(i + 1, 0, gc);
+        renderQueue();
+        toast('Order of preference amended. The previous order has been retained for our records.');
+      });
+      rank.appendChild(up);
+      rank.appendChild(down);
+
+      var info = document.createElement('div');
+      info.className = 'gc-info';
+      var nm = document.createElement('div');
+      nm.className = 'gc-name';
+      nm.textContent = gc.name;
+      var memo = document.createElement('div');
+      memo.className = 'gc-memo';
+      memo.textContent = '"' + gc.memo + '"';
+      info.appendChild(nm);
+      info.appendChild(memo);
+
+      var meta = document.createElement('div');
+      meta.className = 'gc-meta';
+      var chip = document.createElement('span');
+      chip.className = 'chip' + (gc.days <= 14 ? ' chip--soon' : '');
+      chip.textContent = 'T−' + gc.days + ' days';
+      var amount = document.createElement('span');
+      amount.className = 'gc-amt';
+      amount.textContent = gc.amt;
+      meta.appendChild(chip);
+      meta.appendChild(amount);
+
+      row.appendChild(rank);
+      row.appendChild(info);
+      row.appendChild(meta);
+      queueEl.appendChild(row);
+    });
+  }
+
+  /* ---- pending feed ---- */
+  var transfers = [
+    { route: '€200 → Hua Hin',    filed: 'Filed 14 May · Ref PA-0491', nudges: 0 },
+    { route: '€25 → Freya',       filed: 'Filed 02 Jun · Ref PA-0512', nudges: 3 },
+    { route: '€460 → Bar tab (consolidated)', filed: 'Filed 09 Jun · Ref PA-0538', nudges: 0 },
+    { route: '€1,200 → The roofer, allegedly', filed: 'Filed 28 Jun · Ref PA-0561', nudges: 7 }
+  ];
+  var feedEl = document.getElementById('feed');
+  function renderFeed(){
+    feedEl.innerHTML = '';
+    transfers.forEach(function(tx){
+      var el = document.createElement('div');
+      el.className = 'tx';
+      var route = document.createElement('div');
+      route.className = 'tx-route';
+      route.textContent = tx.route;
+      var filed = document.createElement('div');
+      filed.className = 'tx-filed';
+      filed.textContent = tx.filed;
+      var foot = document.createElement('div');
+      foot.className = 'tx-foot';
+      var state = document.createElement('span');
+      state.className = 'tx-state';
+      state.textContent = 'Clearing (6–8 weeks)';
+      var btn = document.createElement('button');
+      btn.className = 'nudge';
+      btn.innerHTML = 'Nudge <span class="nudge-count">(' + tx.nudges + ')</span>';
+      btn.setAttribute('aria-label', 'Nudge transfer ' + tx.route + ', nudged ' + tx.nudges + ' times so far');
+      btn.addEventListener('click', function(){
+        tx.nudges++;
+        renderFeed();
+        toast('Your nudge has been filed. Current status: clearing (6–8 weeks).');
+      });
+      foot.appendChild(state);
+      foot.appendChild(btn);
+      el.appendChild(route);
+      el.appendChild(filed);
+      el.appendChild(foot);
+      feedEl.appendChild(el);
+    });
+  }
+
+  /* ---- toast ---- */
+  var toastEl = document.getElementById('toast');
+  var toastTimer;
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 3200);
+  }
+
+  recalc();
+  renderQueue();
+  renderFeed();
+})();
+</script>
+</body>
+</html>
