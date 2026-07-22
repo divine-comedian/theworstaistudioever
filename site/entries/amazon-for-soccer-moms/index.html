@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fleet · theworstaistudioever</title>
+<meta name="description" content="Fleet turns every minivan in your league into a fulfillment center. Snacks, shin guards, and carpool capacity, routed before the whistle.">
+<meta property="og:title" content="Fleet · Every minivan is a fulfillment center.">
+<meta property="og:description" content="Fleet turns every minivan in your league into a fulfillment center. Snacks, shin guards, and carpool capacity, routed before the whistle.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --green:#17603E;
+  --orange:#FF5A1F;
+  --bg:#F4F6F0;
+  --fg:#1B2420;
+  --muted:#6E7B70;
+  --ink:#0F2418;
+  --cell:#FFFFFF;
+  --well:#EAF0E8;
+  --radius:14px;
+  --display:'Archivo Black','Arial Black',system-ui,sans-serif;
+  --body:'Archivo',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--fg);
+  font-family:var(--body);
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--green);}
+a:focus-visible,button:focus-visible{outline:3px solid var(--orange);outline-offset:2px;}
+.wrap{max-width:1160px;margin:0 auto;padding:0 24px;}
+
+/* ---------- chrome ---------- */
+.mono-label{
+  font-family:var(--mono);
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--green);
+}
+.barcode{
+  height:26px;
+  margin:0 auto;
+  max-width:1160px;
+  background:
+    repeating-linear-gradient(90deg, var(--green) 0 2px, transparent 2px 6px, var(--green) 6px 7px, transparent 7px 13px, var(--green) 13px 17px, transparent 17px 21px, var(--green) 21px 22px, transparent 22px 29px);
+  opacity:.28;
+}
+.divider{padding:34px 24px;}
+
+/* ---------- nav ---------- */
+nav{
+  border-bottom:2px solid var(--green);
+  background:var(--bg);
+  position:sticky;top:0;z-index:50;
+}
+.nav-inner{
+  display:flex;align-items:center;gap:18px;
+  padding:14px 24px;max-width:1160px;margin:0 auto;
+}
+.wordmark{
+  font-family:var(--display);
+  font-size:22px;
+  color:var(--green);
+  text-decoration:none;
+  letter-spacing:-.01em;
+}
+.dispatch{display:flex;align-items:center;gap:8px;margin-left:4px;}
+.dot{
+  width:9px;height:9px;border-radius:50%;
+  background:var(--orange);
+  animation:pulse 3s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.45;transform:scale(.8);}}
+.nav-spacer{flex:1;}
+.nav-cta{
+  font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  background:var(--orange);color:var(--ink);text-decoration:none;
+  padding:10px 18px;border-radius:8px;border:2px solid var(--ink);
+  transition:transform .15s ease;
+  display:inline-block;
+}
+.nav-cta:active{transform:translateY(1px);}
+
+/* ---------- hero ---------- */
+header.hero{position:relative;overflow:hidden;}
+.chalk-arc{
+  position:absolute;
+  width:1200px;height:1200px;
+  border:3px solid rgba(255,255,255,.9);
+  border-radius:50%;
+  top:-780px;left:50%;transform:translateX(-50%);
+  pointer-events:none;
+}
+.hero-grid{
+  display:grid;grid-template-columns:1.2fr .8fr;gap:48px;
+  padding:84px 0 72px;position:relative;align-items:center;
+}
+.kicker{
+  display:inline-block;
+  border:2px solid var(--green);border-radius:999px;
+  padding:5px 14px;margin-bottom:26px;
+  background:var(--cell);
+}
+h1{
+  font-family:var(--display);
+  font-size:clamp(2.6rem,7vw,5.2rem);
+  line-height:1.02;
+  letter-spacing:-.02em;
+  color:var(--ink);
+  margin-bottom:22px;
+}
+.hero-sub{
+  font-size:19px;color:var(--fg);max-width:34em;margin-bottom:34px;
+}
+.hero-ctas{display:flex;gap:18px;align-items:center;flex-wrap:wrap;}
+.btn-primary{
+  font-family:var(--mono);font-size:14px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  background:var(--orange);color:var(--ink);text-decoration:none;
+  padding:16px 30px;border-radius:10px;border:2px solid var(--ink);
+  transition:transform .15s ease;
+  display:inline-block;
+}
+.btn-primary:active{transform:translateY(1px);}
+.demo-link{
+  font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.05em;
+  color:var(--green);text-decoration:none;border-bottom:2px solid var(--green);
+  padding-bottom:2px;
+}
+.demo-link:hover{border-bottom-color:var(--orange);}
+
+/* hero bento cluster */
+.cluster{display:grid;gap:14px;}
+.cell{
+  background:var(--cell);
+  border:2px solid var(--green);
+  border-radius:var(--radius);
+  padding:18px 20px;
+}
+.cell-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;gap:10px;}
+.cell .mono-label{color:var(--muted);}
+.par-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
+.par-name{font-family:var(--mono);font-size:12px;width:104px;flex-shrink:0;color:var(--fg);}
+.par-track{flex:1;height:10px;background:var(--well);border-radius:5px;overflow:hidden;}
+.par-fill{height:100%;background:var(--green);border-radius:5px;}
+.par-fill.low{background:var(--orange);}
+.low-chip{
+  font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;
+  color:var(--ink);background:var(--orange);
+  padding:1px 7px;border-radius:4px;
+}
+.eta-figure{
+  font-family:var(--mono);font-size:44px;font-weight:600;
+  color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.1;
+}
+.eta-caption{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
+.tick-row{
+  display:flex;justify-content:space-between;align-items:baseline;
+  font-family:var(--mono);font-size:13px;padding:7px 0;
+  border-bottom:1px solid var(--well);font-variant-numeric:tabular-nums;
+}
+.tick-row:last-child{border-bottom:none;}
+.tick-sym{color:var(--fg);font-weight:600;}
+.tick-px{color:var(--fg);}
+.tick-px.up{color:var(--orange);font-weight:600;}
+.tick-px.flash{animation:flash .5s ease;}
+@keyframes flash{0%{background:rgba(255,90,31,.25);}100%{background:transparent;}}
+
+/* ---------- sections ---------- */
+section{padding:64px 0;}
+.sec-head{margin-bottom:38px;max-width:44em;}
+h2{
+  font-family:var(--display);
+  font-size:clamp(1.7rem,3.6vw,2.6rem);
+  line-height:1.1;letter-spacing:-.015em;
+  color:var(--ink);margin:10px 0 14px;
+}
+.sec-sub{color:var(--muted);font-size:17px;}
+
+/* telemetry strip */
+.telemetry{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.telemetry .cell{text-align:left;}
+.tele-figure{
+  font-family:var(--mono);font-size:30px;font-weight:600;color:var(--ink);
+  font-variant-numeric:tabular-nums;line-height:1.2;margin-bottom:4px;
+}
+.tele-caption{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
+
+/* features */
+.bento-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.feature h3{
+  font-family:var(--display);font-size:19px;color:var(--ink);
+  margin:14px 0 10px;line-height:1.25;letter-spacing:-.01em;
+}
+.feature p{font-size:15px;color:var(--fg);}
+.feature .route{
+  font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.14em;
+  color:var(--muted);text-transform:uppercase;
+  border-bottom:1px solid var(--well);padding-bottom:10px;display:block;
+}
+
+/* testimonials */
+.testimonial{display:flex;flex-direction:column;gap:16px;}
+.confirm-tag{
+  font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.12em;
+  color:var(--green);text-transform:uppercase;
+  border:1px solid var(--green);border-radius:4px;
+  padding:2px 8px;align-self:flex-start;
+}
+.testimonial blockquote{font-size:15.5px;color:var(--fg);flex:1;}
+.attribution{display:flex;align-items:center;gap:12px;border-top:1px solid var(--well);padding-top:14px;}
+.attribution img{
+  width:52px;height:52px;border-radius:10px;
+  border:2px solid var(--green);display:block;
+}
+.attr-name{font-weight:700;font-size:14px;color:var(--ink);}
+.attr-title{font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.45;}
+
+/* pricing */
+.plan{display:flex;flex-direction:column;}
+.plan-name{
+  font-family:var(--display);font-size:21px;color:var(--ink);letter-spacing:-.01em;
+}
+.plan-price{
+  font-family:var(--mono);font-size:34px;font-weight:600;color:var(--ink);
+  font-variant-numeric:tabular-nums;margin:12px 0 4px;
+}
+.plan-tagline{font-size:14px;color:var(--muted);margin-bottom:18px;}
+.plan ul{list-style:none;flex:1;margin-bottom:22px;}
+.plan li{
+  font-size:14px;padding:9px 0 9px 24px;position:relative;
+  border-bottom:1px solid var(--well);
+}
+.plan li::before{
+  content:"";position:absolute;left:2px;top:16px;
+  width:10px;height:10px;border-radius:2px;background:var(--green);
+}
+.plan .btn-plan{
+  font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  text-align:center;text-decoration:none;
+  border:2px solid var(--green);color:var(--green);
+  padding:12px;border-radius:8px;transition:transform .15s ease;
+}
+.plan .btn-plan:active{transform:translateY(1px);}
+.plan.assigned{border-width:3px;position:relative;}
+.assigned-chip{
+  position:absolute;top:-13px;left:50%;transform:translateX(-50%);
+  font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;
+  background:var(--orange);color:var(--ink);
+  border:2px solid var(--ink);border-radius:999px;
+  padding:3px 12px;white-space:nowrap;
+}
+.plan.assigned .btn-plan{background:var(--orange);color:var(--ink);border-color:var(--ink);}
+
+/* CTA band */
+.cta-band{
+  background:var(--orange);
+  border-top:3px solid var(--ink);
+  border-bottom:3px solid var(--ink);
+}
+.cta-band-inner{
+  display:flex;align-items:center;justify-content:space-between;gap:28px;
+  padding:56px 0;flex-wrap:wrap;
+}
+.cta-band h2{color:var(--ink);margin:0 0 8px;}
+.cta-band p{color:var(--ink);font-size:16px;max-width:36em;}
+.cta-band .mono-label{color:var(--ink);opacity:.7;}
+.btn-ink{
+  font-family:var(--mono);font-size:14px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  background:var(--ink);color:#fff;text-decoration:none;
+  padding:16px 30px;border-radius:10px;border:2px solid var(--ink);
+  transition:transform .15s ease;white-space:nowrap;
+  display:inline-block;
+}
+.btn-ink:active{transform:translateY(1px);}
+
+/* footer */
+footer{padding:44px 0 60px;position:relative;overflow:hidden;}
+.chalk-corner{
+  position:absolute;right:-90px;bottom:-90px;
+  width:260px;height:260px;
+  border:3px solid rgba(255,255,255,.9);
+  border-radius:0;
+  transform:rotate(0deg);
+  pointer-events:none;
+}
+.footer-inner{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;}
+.footer-inner a.home{
+  font-family:var(--mono);font-size:13px;text-decoration:none;color:var(--green);
+}
+.footer-inner a.home:hover{color:var(--orange);}
+.legal{font-family:var(--mono);font-size:11px;color:var(--muted);max-width:44em;line-height:1.7;}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(6px);transition:opacity .5s ease,transform .5s ease;}
+.reveal.in{opacity:1;transform:translateY(0);}
+
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto;}
+  .dot{animation:none;}
+  .reveal{opacity:1;transform:none;transition:none;}
+  .tick-px.flash{animation:none;}
+}
+@media (max-width: 900px){
+  .hero-grid{grid-template-columns:1fr;padding:56px 0 48px;}
+  .bento-3{grid-template-columns:1fr;}
+  .telemetry{grid-template-columns:repeat(2,1fr);}
+}
+@media (max-width: 520px){
+  .telemetry{grid-template-columns:1fr;}
+  .dispatch .mono-label{display:none;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="wordmark" href="#">Fleet</a>
+    <span class="dispatch" aria-label="Network status: dispatching">
+      <span class="dot" aria-hidden="true"></span>
+      <span class="mono-label">Network live · 214 leagues</span>
+    </span>
+    <span class="nav-spacer"></span>
+    <a class="nav-cta" href="#pricing">Join the network</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="chalk-arc" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <span class="kicker mono-label">Sideline logistics network</span>
+        <h1>Every minivan is a fulfillment center.</h1>
+        <p class="hero-sub">Fleet coordinates snacks, shin guards, and 7&nbsp;a.m. carpool capacity across your entire league. Nobody volunteers anymore. The network assigns.</p>
+        <div class="hero-ctas">
+          <a class="btn-primary" href="#pricing">Join the network</a>
+          <a class="demo-link" href="./demo.html">open the demo →</a>
+        </div>
+      </div>
+      <div class="cluster" aria-label="Live network sample">
+        <div class="cell">
+          <div class="cell-head">
+            <span class="mono-label">Node-114 / Trunk B</span>
+            <span class="low-chip">LOW STOCK</span>
+          </div>
+          <div class="par-row"><span class="par-name">ORNG-SLC-08</span><div class="par-track"><div class="par-fill" style="width:82%"></div></div></div>
+          <div class="par-row"><span class="par-name">CAPRI-SUN-40</span><div class="par-track"><div class="par-fill low" style="width:14%"></div></div></div>
+          <div class="par-row"><span class="par-name">SHNGRD-YTH-M</span><div class="par-track"><div class="par-fill" style="width:66%"></div></div></div>
+        </div>
+        <div class="cell">
+          <div class="cell-head"><span class="mono-label">Kickoff guarantee</span></div>
+          <div class="eta-figure" id="eta">11:00</div>
+          <div class="eta-caption">Resupply in transit · Field 4</div>
+        </div>
+        <div class="cell">
+          <div class="cell-head"><span class="mono-label">Snack duty futures</span></div>
+          <div class="tick-row"><span class="tick-sym">SAT-AM</span><span class="tick-px up" data-px="12.40">$12.40 ▲</span></div>
+          <div class="tick-row"><span class="tick-sym">TOURN-WKND</span><span class="tick-px" data-px="41.75">$41.75</span></div>
+          <div class="tick-row"><span class="tick-sym">JUICE-Q3</span><span class="tick-px" data-px="3.05">$3.05</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="divider"><div class="barcode" aria-hidden="true"></div></div>
+
+<section>
+  <div class="wrap">
+    <div class="telemetry">
+      <div class="cell reveal"><div class="tele-figure">11:00</div><div class="tele-caption">Kickoff guarantee</div></div>
+      <div class="cell reveal"><div class="tele-figure">38,412</div><div class="tele-caption">Trunks in network</div></div>
+      <div class="cell reveal"><div class="tele-figure">99.1%</div><div class="tele-caption">Snack availability</div></div>
+      <div class="cell reveal"><div class="tele-figure">0</div><div class="tele-caption">Conversations required</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="mono-label">Manifest / Capabilities</span>
+      <h2>The sideline, solved like a supply chain.</h2>
+      <p class="sec-sub">Because it is one. It always was one. You were just doing it by hand.</p>
+    </div>
+    <div class="bento-3">
+      <div class="cell feature reveal">
+        <span class="route">Route FL-01 · Trunk ops</span>
+        <h3>Distributed Trunk Inventory</h3>
+        <p>Your cargo area is now a micro-fulfillment node. We stock it to par levels overnight. Other families collect from your tailgate between quarters. Eye contact is optional and discouraged.</p>
+      </div>
+      <div class="cell feature reveal">
+        <span class="route">Route FL-02 · Trading desk</span>
+        <h3>Snack Duty Futures</h3>
+        <p>Snack obligations are now a liquid market. Short your Saturday. Hedge the tournament. One mother in Naperville cleared $340 in October and she will not say how.</p>
+      </div>
+      <div class="cell feature reveal">
+        <span class="route">Route FL-03 · Priority lane</span>
+        <h3>The Kickoff Guarantee</h3>
+        <p>Forgotten shin guards reach any field in our coverage area in eleven minutes, handed off by whichever parent the routing engine decided was closest. That is the guarantee. Eleven minutes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><div class="barcode" aria-hidden="true"></div></div>
+
+<section id="testimonials">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="mono-label">Manifest / Confirmations</span>
+      <h2>Signed for on delivery.</h2>
+    </div>
+    <div class="bento-3">
+      <div class="cell testimonial reveal">
+        <span class="confirm-tag">Confirmation FL-88121</span>
+        <blockquote>&ldquo;I haven't set foot in a grocery store since March. My trunk restocks itself overnight. I've stopped asking how they get in.&rdquo;</blockquote>
+        <div class="attribution">
+          <img src="./headshot-1.webp" alt="Denise Kowalczyk" width="52" height="52" loading="lazy">
+          <div>
+            <div class="attr-name">Denise Kowalczyk</div>
+            <div class="attr-title">Interim Snack Coordinator, Brookfield Strikers U-9</div>
+          </div>
+        </div>
+      </div>
+      <div class="cell testimonial reveal">
+        <span class="confirm-tag">Confirmation FL-88437</span>
+        <blockquote>&ldquo;The routing engine assigned me a carpool of children I had never met. We made both games. One of them is ours now, I think.&rdquo;</blockquote>
+        <div class="attribution">
+          <img src="./headshot-2.webp" alt="Marcus Tran" width="52" height="52" loading="lazy">
+          <div>
+            <div class="attr-name">Marcus Tran</div>
+            <div class="attr-title">Father of Twins on Different Teams in Different Counties</div>
+          </div>
+        </div>
+      </div>
+      <div class="cell testimonial reveal">
+        <span class="confirm-tag">Confirmation FL-89002</span>
+        <blockquote>&ldquo;I shorted snack duty the week before spring break and cleared enough for goalie camp. The other mothers know it was me. Nobody can prove it.&rdquo;</blockquote>
+        <div class="attribution">
+          <img src="./headshot-3.webp" alt="Paula Reyes-Whitford" width="52" height="52" loading="lazy">
+          <div>
+            <div class="attr-name">Paula Reyes-Whitford</div>
+            <div class="attr-title">Treasurer, Sherwood Park Sideline Association (dissolved)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="mono-label">Manifest / Route plans</span>
+      <h2>Priced by the trunk. Billed to the household.</h2>
+      <p class="sec-sub">Annual commitment. The season ends. The subscription does not.</p>
+    </div>
+    <div class="bento-3">
+      <div class="cell plan reveal">
+        <div class="plan-name">Orange Slice</div>
+        <div class="plan-price">$14/mo</div>
+        <div class="plan-tagline">For families still pretending this is optional.</div>
+        <ul>
+          <li>1 trunk, stocked weekly</li>
+          <li>Standard 40-minute sideline delivery</li>
+          <li>Snack futures: view only</li>
+        </ul>
+        <a class="btn-plan" href="#">Assign my household</a>
+      </div>
+      <div class="cell plan assigned reveal">
+        <span class="assigned-chip">MOST ASSIGNED</span>
+        <div class="plan-name">Travel Team</div>
+        <div class="plan-price">$89/mo</div>
+        <div class="plan-tagline">The tier most of your league is already on.</div>
+        <ul>
+          <li>3 trunks, pooled inventory</li>
+          <li>11-minute Kickoff Guarantee</li>
+          <li>Full snack futures trading desk</li>
+          <li>Carpool capacity auto-assigned</li>
+        </ul>
+        <a class="btn-plan" href="#">Assign my household</a>
+      </div>
+      <div class="cell plan reveal">
+        <div class="plan-name">Tournament Weekend</div>
+        <div class="plan-price">$1,850/mo</div>
+        <div class="plan-tagline">All logistics. Zero conversations.</div>
+        <ul>
+          <li>Unlimited trunks across two states</li>
+          <li>A dedicated routing strategist named Craig</li>
+          <li>Cooler cold-chain compliance certificate</li>
+          <li>We talk to the other parents for you</li>
+        </ul>
+        <a class="btn-plan" href="#">Assign my household</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="cta-band">
+  <div class="wrap">
+    <div class="cta-band-inner">
+      <div>
+        <span class="mono-label">Coverage notice</span>
+        <h2>Your league is already on it.</h2>
+        <p>Coverage in your area is not a question. It is a schedule. Onboarding takes four minutes, which is less time than the snack signup sheet took to argue about.</p>
+      </div>
+      <a class="btn-ink" href="./demo.html">open the demo →</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="chalk-corner" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="footer-inner">
+      <div>
+        <a class="home" href="/">← theworstaistudioever</a>
+      </div>
+      <p class="legal">Fleet is not affiliated with Amazon. Fleet is affiliated with your league's board, effective March, by a vote you were not invited to. Trunk access windows are enforced. Craig is real.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // reveal on scroll
+  var els = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window && !reduced) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.15 });
+    var i = 0;
+    els.forEach(function(el){
+      el.style.transitionDelay = (i % 4) * 40 + 'ms';
+      i++;
+      io.observe(el);
+    });
+  } else {
+    els.forEach(function(el){ el.classList.add('in'); });
+  }
+
+  // ETA countdown: ticks from 11:00, resets at 00:07 because the guarantee always holds
+  var eta = document.getElementById('eta');
+  if (eta && !reduced) {
+    var secs = 660;
+    setInterval(function(){
+      secs = secs <= 7 ? 660 : secs - 1;
+      var m = Math.floor(secs / 60), s = secs % 60;
+      eta.textContent = (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+    }, 1000);
+  }
+
+  // futures tick in place
+  var pxEls = document.querySelectorAll('.tick-px');
+  if (pxEls.length && !reduced) {
+    setInterval(function(){
+      var el = pxEls[Math.floor((Date.now() / 2500) % pxEls.length)];
+      var base = parseFloat(el.getAttribute('data-px'));
+      var jitter = (((Date.now() / 1000) % 7) - 3) * 0.03;
+      var next = Math.max(0.5, base + jitter);
+      var up = next >= base;
+      el.textContent = '$' + next.toFixed(2) + (up ? ' ▲' : ' ▼');
+      el.classList.toggle('up', up);
+      el.classList.remove('flash');
+      void el.offsetWidth;
+      el.classList.add('flash');
+    }, 2500);
+  }
+})();
+</script>
+</body>
+</html>

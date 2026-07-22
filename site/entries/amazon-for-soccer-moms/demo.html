@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sideline Command · Fleet</title>
+<meta name="description" content="Sideline Command: Saturday morning rendered as a fulfillment queue.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --green:#17603E;
+  --orange:#FF5A1F;
+  --bg:#F4F6F0;
+  --fg:#1B2420;
+  --muted:#6E7B70;
+  --ink:#0F2418;
+  --cell:#FFFFFF;
+  --well:#EAF0E8;
+  --mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+  --body:'Archivo',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --display:'Archivo Black','Arial Black',system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background:var(--bg);color:var(--fg);
+  font-family:var(--body);font-size:15px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+a:focus-visible,button:focus-visible{outline:3px solid var(--orange);outline-offset:2px;}
+.mono{font-family:var(--mono);}
+.label{
+  font-family:var(--mono);font-size:10px;font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+}
+
+/* top bar */
+.topbar{
+  display:flex;align-items:center;gap:16px;
+  padding:12px 20px;
+  border-bottom:2px solid var(--green);
+  background:var(--cell);
+  position:sticky;top:0;z-index:10;
+  flex-wrap:wrap;
+}
+.back{
+  font-family:var(--mono);font-size:12px;color:var(--green);text-decoration:none;
+  white-space:nowrap;
+}
+.back:hover{color:var(--orange);}
+.console-name{
+  font-family:var(--display);font-size:16px;color:var(--ink);letter-spacing:.01em;
+}
+.dot{
+  width:8px;height:8px;border-radius:50%;background:var(--orange);
+  display:inline-block;margin-right:6px;vertical-align:1px;
+  animation:pulse 3s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+.topbar .spacer{flex:1;}
+.operator{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.06em;}
+
+/* layout */
+.console{
+  display:grid;
+  grid-template-columns:1.2fr 1fr 1fr;
+  gap:14px;
+  padding:14px 20px 28px;
+  max-width:1400px;margin:0 auto;
+}
+.panel{
+  background:var(--cell);
+  border:2px solid var(--green);
+  border-radius:14px;
+  padding:16px;
+  align-self:start;
+}
+.panel-head{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:12px;gap:8px;
+}
+.panel-title{
+  font-family:var(--mono);font-size:12px;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--green);
+}
+
+/* queue */
+.tabs{display:flex;gap:6px;margin-bottom:12px;}
+.tab{
+  font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.08em;
+  background:var(--bg);color:var(--fg);
+  border:2px solid var(--green);border-radius:7px;
+  padding:6px 12px;cursor:pointer;
+}
+.tab[aria-pressed="true"]{background:var(--green);color:#fff;}
+.order{
+  border:1px solid var(--well);border-radius:10px;
+  padding:10px 12px;margin-bottom:8px;
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+}
+.order-meta .field{font-weight:700;font-size:13.5px;color:var(--ink);}
+.order-meta .teams{font-size:12px;color:var(--muted);}
+.order-right{text-align:right;}
+.ko{font-family:var(--mono);font-size:12px;color:var(--fg);font-variant-numeric:tabular-nums;}
+.chip{
+  font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.08em;
+  padding:2px 8px;border-radius:4px;display:inline-block;margin-top:3px;
+  border:1px solid var(--green);color:var(--green);
+}
+.chip.transit{background:var(--well);}
+.chip.delivered{background:var(--green);color:#fff;border-color:var(--green);}
+.queue-note{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:10px;letter-spacing:.04em;}
+
+/* trunk */
+.sku{margin-bottom:12px;}
+.sku-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}
+.sku-name{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--fg);}
+.sku-count{font-family:var(--mono);font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;}
+.track{height:10px;background:var(--well);border-radius:5px;overflow:hidden;}
+.fill{height:100%;background:var(--green);border-radius:5px;transition:width .6s ease;}
+.fill.low{background:var(--orange);}
+.lowstock{
+  font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;
+  color:var(--ink);background:var(--orange);border-radius:4px;padding:1px 7px;
+}
+.dispatch-btn{
+  width:100%;
+  font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  background:var(--orange);color:var(--ink);
+  border:2px solid var(--ink);border-radius:9px;
+  padding:13px;cursor:pointer;margin-top:6px;
+  transition:transform .15s ease;
+}
+.dispatch-btn:active{transform:translateY(1px);}
+.dispatch-btn:disabled{opacity:.55;cursor:default;}
+.eta-well{
+  margin-top:12px;background:var(--well);border-radius:9px;padding:12px;
+  text-align:center;
+}
+.eta-time{
+  font-family:var(--mono);font-size:34px;font-weight:600;color:var(--ink);
+  font-variant-numeric:tabular-nums;line-height:1.1;
+}
+.eta-status{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:4px;}
+
+/* futures */
+.contract{
+  border:1px solid var(--well);border-radius:10px;
+  padding:10px 12px;margin-bottom:8px;
+}
+.contract-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+.sym{font-family:var(--mono);font-size:12.5px;font-weight:600;color:var(--ink);}
+.px{font-family:var(--mono);font-size:14px;font-variant-numeric:tabular-nums;color:var(--fg);}
+.px.up{color:var(--orange);font-weight:600;}
+.trade{display:flex;gap:6px;}
+.trade button{
+  flex:1;font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.08em;
+  border-radius:6px;padding:6px;cursor:pointer;
+  border:2px solid var(--green);background:var(--cell);color:var(--green);
+}
+.trade button:active{transform:translateY(1px);}
+.position{
+  margin-top:4px;background:var(--well);border-radius:9px;padding:12px;
+}
+.pos-row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;padding:3px 0;font-variant-numeric:tabular-nums;}
+.pos-row .neg{color:var(--orange);font-weight:600;}
+.desk-note{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-top:10px;letter-spacing:.04em;line-height:1.6;}
+
+@media (prefers-reduced-motion: reduce){
+  .dot{animation:none;}
+  .fill{transition:none;}
+}
+@media (max-width: 1000px){
+  .console{grid-template-columns:1fr 1fr;}
+  .panel.queue{grid-column:1 / -1;}
+}
+@media (max-width: 640px){
+  .console{grid-template-columns:1fr;padding:12px;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="console-name">SIDELINE COMMAND</span>
+  <span class="label"><span class="dot" aria-hidden="true"></span>Sat 07:12 · dispatch active</span>
+  <span class="spacer"></span>
+  <span class="operator">NODE-114 · OPERATOR: D. KOWALCZYK</span>
+</div>
+
+<div class="console">
+
+  <!-- fulfillment queue -->
+  <div class="panel queue">
+    <div class="panel-head">
+      <span class="panel-title">Fulfillment queue · Saturday</span>
+      <span class="label" id="queue-count"></span>
+    </div>
+    <div class="tabs" role="group" aria-label="Filter by division">
+      <button class="tab" data-div="all" aria-pressed="true">ALL</button>
+      <button class="tab" data-div="u7" aria-pressed="false">U-7</button>
+      <button class="tab" data-div="u9" aria-pressed="false">U-9</button>
+      <button class="tab" data-div="u12" aria-pressed="false">U-12</button>
+    </div>
+    <div id="orders"></div>
+    <p class="queue-note">Orders advance automatically. Parents are notified after the fact. This is policy.</p>
+  </div>
+
+  <!-- trunk inventory -->
+  <div class="panel">
+    <div class="panel-head">
+      <span class="panel-title">Trunk B · Inventory</span>
+      <span class="lowstock" id="low-flag">LOW STOCK</span>
+    </div>
+    <div class="sku">
+      <div class="sku-row"><span class="sku-name">ORNG-SLC-08</span><span class="sku-count" id="c-orng">41 / 50</span></div>
+      <div class="track"><div class="fill" id="f-orng" style="width:82%"></div></div>
+    </div>
+    <div class="sku">
+      <div class="sku-row"><span class="sku-name">CAPRI-SUN-40</span><span class="sku-count" id="c-capri">6 / 40</span></div>
+      <div class="track"><div class="fill low" id="f-capri" style="width:15%"></div></div>
+    </div>
+    <div class="sku">
+      <div class="sku-row"><span class="sku-name">SHNGRD-YTH-M</span><span class="sku-count" id="c-shin">33 / 50</span></div>
+      <div class="track"><div class="fill" id="f-shin" style="width:66%"></div></div>
+    </div>
+    <div class="sku">
+      <div class="sku-row"><span class="sku-name">BAND-AID-AST</span><span class="sku-count" id="c-band">88 / 100</span></div>
+      <div class="track"><div class="fill" id="f-band" style="width:88%"></div></div>
+    </div>
+    <button class="dispatch-btn" id="dispatch">Dispatch resupply</button>
+    <div class="eta-well">
+      <div class="eta-time" id="eta">--:--</div>
+      <div class="eta-status" id="eta-status">No resupply in transit</div>
+    </div>
+  </div>
+
+  <!-- futures desk -->
+  <div class="panel">
+    <div class="panel-head">
+      <span class="panel-title">Snack duty futures</span>
+      <span class="label">Desk open</span>
+    </div>
+
+    <div class="contract" data-sym="SAT-AM">
+      <div class="contract-top"><span class="sym">SAT-AM</span><span class="px" data-base="12.40">$12.40</span></div>
+      <div class="trade">
+        <button data-side="buy">BUY</button>
+        <button data-side="short">SHORT</button>
+      </div>
+    </div>
+    <div class="contract" data-sym="TOURN-WKND">
+      <div class="contract-top"><span class="sym">TOURN-WKND</span><span class="px" data-base="41.75">$41.75</span></div>
+      <div class="trade">
+        <button data-side="buy">BUY</button>
+        <button data-side="short">SHORT</button>
+      </div>
+    </div>
+    <div class="contract" data-sym="JUICE-Q3">
+      <div class="contract-top"><span class="sym">JUICE-Q3</span><span class="px" data-base="3.05">$3.05</span></div>
+      <div class="trade">
+        <button data-side="buy">BUY</button>
+        <button data-side="short">SHORT</button>
+      </div>
+    </div>
+
+    <div class="position">
+      <div class="pos-row"><span>POSITION</span><span id="pos-desc">FLAT</span></div>
+      <div class="pos-row"><span>CONTRACTS</span><span id="pos-count">0</span></div>
+      <div class="pos-row"><span>UNREALIZED P&amp;L</span><span id="pos-pnl">$0.00</span></div>
+    </div>
+    <p class="desk-note">Settlement is physical. If you are holding SAT-AM at expiry, you are bringing the snacks. Read that again.</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- fulfillment queue ---------- */
+  var STATUSES = ['PICKING','IN TRANSIT','DELIVERED TO SIDELINE'];
+  var CHIPCLS  = ['', 'transit', 'delivered'];
+  var orders = [
+    { div:'u9',  field:'Field 4',  ko:'08:00', teams:'Strikers vs Thunder',       st:1 },
+    { div:'u7',  field:'Field 1',  ko:'08:30', teams:'Ladybugs vs Tiny Rockets',  st:0 },
+    { div:'u12', field:'Field 6',  ko:'09:00', teams:'Galaxy vs Ridge United',    st:0 },
+    { div:'u9',  field:'Field 2',  ko:'09:15', teams:'Comets vs Wolverines',      st:2 },
+    { div:'u7',  field:'Field 3',  ko:'10:00', teams:'Dandelions vs Mini Storm',  st:0 },
+    { div:'u12', field:'Field 5',  ko:'10:45', teams:'Avalanche vs Hornets',      st:1 },
+    { div:'u9',  field:'Field 4',  ko:'11:30', teams:'Thunder vs Rapids',         st:0 }
+  ];
+  var activeDiv = 'all';
+  var ordersEl = document.getElementById('orders');
+  var countEl = document.getElementById('queue-count');
+
+  function renderOrders(){
+    var rows = orders.filter(function(o){ return activeDiv === 'all' || o.div === activeDiv; });
+    ordersEl.innerHTML = rows.map(function(o){
+      return '<div class="order">' +
+        '<div class="order-meta"><div class="field">' + o.field + ' · ' + o.div.toUpperCase().replace('U','U-') + '</div>' +
+        '<div class="teams">' + o.teams + '</div></div>' +
+        '<div class="order-right"><div class="ko">KO ' + o.ko + '</div>' +
+        '<span class="chip ' + CHIPCLS[o.st] + '">' + STATUSES[o.st] + '</span></div>' +
+        '</div>';
+    }).join('');
+    var delivered = orders.filter(function(o){ return o.st === 2; }).length;
+    countEl.textContent = delivered + '/' + orders.length + ' delivered';
+  }
+  document.querySelectorAll('.tab').forEach(function(tab){
+    tab.addEventListener('click', function(){
+      activeDiv = tab.getAttribute('data-div');
+      document.querySelectorAll('.tab').forEach(function(t){
+        t.setAttribute('aria-pressed', t === tab ? 'true' : 'false');
+      });
+      renderOrders();
+    });
+  });
+  renderOrders();
+
+  // orders advance on their own; nobody is consulted
+  setInterval(function(){
+    var pending = orders.filter(function(o){ return o.st < 2; });
+    if (!pending.length) return;
+    var o = pending[Math.floor(Math.random() * pending.length)];
+    o.st++;
+    renderOrders();
+  }, 5000);
+
+  /* ---------- trunk resupply ---------- */
+  var dispatchBtn = document.getElementById('dispatch');
+  var etaEl = document.getElementById('eta');
+  var etaStatus = document.getElementById('eta-status');
+  var lowFlag = document.getElementById('low-flag');
+  var STAGES = [
+    [660, 'Routing nearest parent'],
+    [600, 'Parent located: did not opt in'],
+    [420, 'Crossing Field 2 mid-play'],
+    [180, 'Approaching your tailgate'],
+    [30,  'Do not make eye contact']
+  ];
+  var timer = null;
+
+  dispatchBtn.addEventListener('click', function(){
+    if (timer) return;
+    dispatchBtn.disabled = true;
+    dispatchBtn.textContent = 'Resupply dispatched';
+    var secs = 660;
+    var tickMs = reduced ? 400 : 50;   // demo time runs faster than parent time
+    timer = setInterval(function(){
+      secs--;
+      var m = Math.floor(secs / 60), s = secs % 60;
+      etaEl.textContent = (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+      for (var i = 0; i < STAGES.length; i++) {
+        if (secs <= STAGES[i][0]) { etaStatus.textContent = STAGES[i][1]; }
+      }
+      if (secs <= 0) {
+        clearInterval(timer); timer = null;
+        etaEl.textContent = '00:00';
+        etaStatus.textContent = 'Delivered · Signature waived';
+        document.getElementById('f-capri').style.width = '100%';
+        document.getElementById('f-capri').classList.remove('low');
+        document.getElementById('c-capri').textContent = '40 / 40';
+        lowFlag.style.display = 'none';
+        dispatchBtn.textContent = 'Par levels restored';
+      }
+    }, tickMs);
+  });
+
+  /* ---------- futures desk ---------- */
+  var pos = {};   // sym -> net contracts
+  var basis = {}; // sym -> avg entry
+  var posDesc = document.getElementById('pos-desc');
+  var posCount = document.getElementById('pos-count');
+  var posPnl = document.getElementById('pos-pnl');
+
+  function price(el){ return parseFloat(el.getAttribute('data-base')); }
+
+  function refreshPosition(){
+    var totalContracts = 0, pnl = 0, parts = [];
+    Object.keys(pos).forEach(function(sym){
+      var n = pos[sym];
+      if (!n) return;
+      totalContracts += Math.abs(n);
+      var el = document.querySelector('.contract[data-sym="' + sym + '"] .px');
+      pnl += n * (price(el) - basis[sym]);
+      parts.push((n > 0 ? 'LONG ' : 'SHORT ') + Math.abs(n) + ' ' + sym);
+    });
+    posDesc.textContent = parts.length ? parts.join(' · ') : 'FLAT';
+    posCount.textContent = totalContracts;
+    posPnl.textContent = (pnl < 0 ? '-$' : '$') + Math.abs(pnl).toFixed(2);
+    posPnl.className = pnl < 0 ? 'neg' : '';
+  }
+
+  document.querySelectorAll('.contract').forEach(function(card){
+    var sym = card.getAttribute('data-sym');
+    pos[sym] = 0; basis[sym] = price(card.querySelector('.px'));
+    card.querySelectorAll('.trade button').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var px = price(card.querySelector('.px'));
+        var dir = btn.getAttribute('data-side') === 'buy' ? 1 : -1;
+        var prev = pos[sym];
+        pos[sym] += dir;
+        if (prev === 0 || (prev > 0) !== (pos[sym] > 0)) basis[sym] = px;
+        refreshPosition();
+      });
+    });
+  });
+
+  // prices drift; the market does not close just because you have regrets
+  setInterval(function(){
+    document.querySelectorAll('.contract .px').forEach(function(el){
+      var base = price(el);
+      var next = Math.max(0.5, base + (Math.random() - 0.48) * base * 0.02);
+      el.setAttribute('data-base', next.toFixed(2));
+      el.textContent = '$' + next.toFixed(2);
+      el.classList.toggle('up', next >= base);
+    });
+    refreshPosition();
+  }, 2000);
+
+  refreshPosition();
+})();
+</script>
+</body>
+</html>
