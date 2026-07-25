@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Closure Terminal — SWTH · theworstaistudioever</title>
+<meta name="description" content="One account holder's unresolved position, marked to sentiment nightly.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,500&family=Public+Sans:wght@400;500;600&family=Fira+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1F4A38;
+    --accent: #8A2D3B;
+    --bg: #F3F0E4;
+    --bg-plate: #F6F4EA;
+    --fg: #24312A;
+    --muted: #7C7F6E;
+    --ink: #182A21;
+    --display: 'Playfair Display', Georgia, serif;
+    --body: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --mono: 'Fira Mono', 'SFMono-Regular', Consolas, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--body);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--primary); color: var(--bg); }
+  a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+  .chrome {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 20px;
+    border-bottom: 2px solid var(--primary);
+    background: var(--bg-plate);
+    flex-wrap: wrap;
+  }
+  .chrome .back {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--primary);
+    text-decoration: none;
+  }
+  .chrome .back:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .chrome .term-title {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 17px;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .chrome .session {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 3s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
+  @media (prefers-reduced-motion: reduce) { .dot { animation: none; } }
+
+  .terminal {
+    max-width: 1180px;
+    margin: 20px auto;
+    padding: 0 16px 40px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 18px;
+  }
+  @media (max-width: 980px) { .terminal { grid-template-columns: 1fr; } }
+
+  .panel {
+    border: 2px solid var(--primary);
+    background: var(--bg-plate);
+    position: relative;
+  }
+  .panel::before {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border: 1px solid var(--primary);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .panel > * { position: relative; z-index: 1; }
+  .panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px 10px;
+    flex-wrap: wrap;
+  }
+  .panel-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--primary);
+  }
+
+  .quote-line {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    padding: 0 18px 6px;
+    flex-wrap: wrap;
+  }
+  .quote-line .tkr { font-family: var(--display); font-weight: 800; font-size: 26px; color: var(--ink); }
+  .quote-line .px { font-family: var(--mono); font-size: 26px; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .quote-line .chg { font-family: var(--mono); font-size: 13px; color: var(--accent); }
+  .quote-line .desc { font-size: 12px; color: var(--muted); flex-basis: 100%; }
+
+  .ranges { display: flex; gap: 6px; padding: 8px 18px 0; flex-wrap: wrap; }
+  .ranges button {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .1em;
+    background: transparent;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    padding: 6px 12px;
+    cursor: pointer;
+    min-height: 30px;
+  }
+  .ranges button.active { background: var(--primary); color: var(--bg); }
+  .ranges button:hover:not(.active) { background: rgba(31,74,56,.08); }
+
+  .chart-wrap { padding: 10px 18px 16px; }
+  #chart { width: 100%; height: auto; display: block; }
+  .chart-note {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .12em;
+    color: var(--muted);
+    padding: 0 18px 14px;
+    text-transform: uppercase;
+  }
+
+  .order-row {
+    display: flex;
+    gap: 10px;
+    padding: 14px 18px 18px;
+    border-top: 1px solid var(--primary);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .order-row label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .order-row input {
+    font-family: var(--mono);
+    font-size: 14px;
+    padding: 9px 12px;
+    border: 1px solid var(--primary);
+    background: var(--bg);
+    color: var(--ink);
+    width: 130px;
+  }
+  .btn {
+    font-family: var(--body);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: #F6F1E2;
+    cursor: pointer;
+    min-height: 40px;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn.disabled-sell {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--muted);
+    cursor: not-allowed;
+    position: relative;
+  }
+  .btn.disabled-sell:active { transform: none; }
+  .tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: var(--bg);
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .04em;
+    text-transform: none;
+    padding: 7px 10px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 150ms ease;
+    z-index: 5;
+  }
+  .btn.disabled-sell:hover .tooltip, .btn.disabled-sell:focus-visible .tooltip { opacity: 1; }
+
+  .side { display: flex; flex-direction: column; gap: 18px; }
+  .ledger { padding-bottom: 8px; }
+  .ledger table { width: 100%; border-collapse: collapse; }
+  .ledger th {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: left;
+    padding: 6px 18px;
+    border-bottom: 1px solid var(--primary);
+    font-weight: 500;
+  }
+  .ledger td {
+    padding: 9px 18px;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(31,74,56,.2);
+    vertical-align: top;
+  }
+  .ledger tr:last-child td { border-bottom: none; }
+  .ledger .sym { font-family: var(--mono); font-weight: 500; color: var(--ink); }
+  .ledger .nm { font-size: 11px; color: var(--muted); display: block; }
+  .ledger .num { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; color: var(--ink); }
+  .ledger .neg { color: var(--accent); }
+
+  .stake-body { padding: 4px 18px 16px; }
+  .stake-line { display: flex; justify-content: space-between; font-size: 12.5px; padding: 5px 0; }
+  .stake-line .k { color: var(--muted); }
+  .stake-line .v { font-family: var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; }
+  .lockbar {
+    height: 8px;
+    border: 1px solid var(--primary);
+    background: var(--bg);
+    margin: 10px 0 6px;
+  }
+  .lockbar .fill { height: 100%; background: var(--primary); width: 31%; }
+  .stake-note { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: .08em; }
+
+  .watchlist { margin: 0 auto 40px; max-width: 1180px; padding: 0 16px; }
+  .watch-rows { border-top: 1px solid var(--primary); }
+  .watch-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 11px 18px;
+    border-bottom: 1px solid rgba(31,74,56,.25);
+    flex-wrap: wrap;
+  }
+  .watch-row .wsym { font-family: var(--mono); font-size: 13px; color: var(--ink); width: 70px; }
+  .watch-row .wname { font-size: 13px; color: var(--fg); flex: 1; min-width: 200px; }
+  .watch-row .wbtn {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .1em;
+    padding: 6px 12px;
+    border: 1px solid var(--primary);
+    background: transparent;
+    color: var(--primary);
+    cursor: pointer;
+    min-height: 30px;
+  }
+  .watch-row .wbtn[disabled] { border-color: var(--muted); color: var(--muted); cursor: default; }
+
+  .modal-scrim {
+    position: fixed;
+    inset: 0;
+    background: rgba(24,42,33,.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 50;
+  }
+  .modal-scrim.open { display: flex; }
+  .modal {
+    background: var(--bg-plate);
+    border: 2px solid var(--primary);
+    max-width: 460px;
+    width: 100%;
+    padding: 28px 26px 24px;
+    position: relative;
+  }
+  .modal::before { content: ""; position: absolute; inset: 4px; border: 1px solid var(--primary); pointer-events: none; }
+  .modal > * { position: relative; }
+  .modal h2 { font-family: var(--display); font-weight: 700; font-size: 20px; color: var(--ink); margin-bottom: 10px; }
+  .modal p { font-size: 13.5px; line-height: 1.6; margin-bottom: 10px; }
+  .modal .fine { font-family: var(--mono); font-size: 10.5px; color: var(--muted); margin: 12px 0 18px; line-height: 1.6; }
+  .modal .modal-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+  .modal .btn.ghost { background: transparent; color: var(--primary); border-color: var(--primary); }
+
+  .toast {
+    position: fixed;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%) translateY(8px);
+    background: var(--ink);
+    color: var(--bg);
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 11px 18px;
+    opacity: 0;
+    transition: opacity 200ms ease, transform 200ms ease;
+    pointer-events: none;
+    z-index: 60;
+    max-width: calc(100vw - 40px);
+    text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  @media (prefers-reduced-motion: reduce) {
+    .toast { transition: none; }
+    .tooltip { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="chrome">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="term-title">
+    Closure Terminal
+    <span class="session"><span class="dot" aria-hidden="true"></span> ACCT 002009 · MARKED TO SENTIMENT</span>
+  </span>
+  <span class="session">FY2009 · STILL OPEN</span>
+</header>
+
+<main class="terminal">
+  <section class="panel" aria-label="Sweetheart Index chart">
+    <div class="panel-head">
+      <span class="panel-title">Position · Sweetheart Index</span>
+      <span class="panel-title" id="range-label">RANGE: SINCE PROM</span>
+    </div>
+    <div class="quote-line">
+      <span class="tkr">SWTH</span>
+      <span class="px" id="px">148.02</span>
+      <span class="chg" id="chg">▼ 1.4% since prom</span>
+      <span class="desc">Perceived life trajectory of D., compiled nightly from sources they forgot were public.</span>
+    </div>
+    <div class="ranges" role="group" aria-label="Chart range">
+      <button data-range="1D">1D</button>
+      <button data-range="1W">1W</button>
+      <button data-range="1Y">1Y</button>
+      <button data-range="PROM" class="active">SINCE PROM</button>
+    </div>
+    <div class="chart-wrap">
+      <svg id="chart" viewBox="0 0 720 300" role="img" aria-label="Line chart of the Sweetheart Index over the selected range"></svg>
+    </div>
+    <p class="chart-note" id="chart-note">Annotations sourced from a very forthcoming mutual friend.</p>
+    <div class="order-row">
+      <label for="amt">Amount (USD)</label>
+      <input id="amt" type="text" inputmode="decimal" value="200.00" autocomplete="off">
+      <button class="btn" id="buy">Buy SWTH</button>
+      <button class="btn disabled-sell" id="sell" aria-disabled="true">
+        Sell
+        <span class="tooltip" role="tooltip">Markets close at 11pm for your protection.</span>
+      </button>
+    </div>
+  </section>
+
+  <aside class="side">
+    <section class="panel ledger" aria-label="Holdings">
+      <div class="panel-head"><span class="panel-title">Holdings</span></div>
+      <table>
+        <thead>
+          <tr><th scope="col">Asset</th><th scope="col" style="text-align:right">Cost basis</th><th scope="col" style="text-align:right">Unrealized</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="sym">WHATIF</span><span class="nm">Hypothetical Futures</span></td>
+            <td class="num" id="whatif-basis">$4,120.00</td>
+            <td class="num neg">−31.2%</td>
+          </tr>
+          <tr>
+            <td><span class="sym">APLGY</span><span class="nm">Apology, Unsent</span></td>
+            <td class="num">$860.00</td>
+            <td class="num neg">−12.8%</td>
+          </tr>
+          <tr>
+            <td><span class="sym">MIXTP</span><span class="nm">Mix CD, 2007 (Vaulted)</span></td>
+            <td class="num">$18.99</td>
+            <td class="num">+4,890%</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="panel" aria-label="Staked position">
+      <div class="panel-head"><span class="panel-title">Staked · Regret</span></div>
+      <div class="stake-body">
+        <div class="stake-line"><span class="k">Principal</span><span class="v">$12,500.00</span></div>
+        <div class="stake-line"><span class="k">Rate</span><span class="v">4.1% APY</span></div>
+        <div class="stake-line"><span class="k">Compounds</span><span class="v">On anniversaries</span></div>
+        <div class="stake-line"><span class="k">Unlocks in</span><span class="v" id="lock-count">17y 122d 09:41:03</span></div>
+        <div class="lockbar" aria-hidden="true"><div class="fill"></div></div>
+        <p class="stake-note">EARLY WITHDRAWAL NOTIFIES YOUR MOTHER.</p>
+      </div>
+    </section>
+  </aside>
+</main>
+
+<section class="watchlist" aria-label="Watchlist">
+  <div class="panel">
+    <div class="panel-head"><span class="panel-title">Watchlist · Other people's sweethearts</span></div>
+    <div class="watch-rows">
+      <div class="watch-row">
+        <span class="wsym">KAREN</span>
+        <span class="wname">Your college roommate's ex. Runs a vineyard now, apparently.</span>
+        <button class="wbtn" data-queue="4102">Request access</button>
+      </div>
+      <div class="watch-row">
+        <span class="wsym">TODD-B</span>
+        <span class="wname">Your sister's prom date. Regional manager, three boats.</span>
+        <button class="wbtn" data-queue="11871">Request access</button>
+      </div>
+      <div class="watch-row">
+        <span class="wsym">JEN-94</span>
+        <span class="wname">Your coworker mentions her every quarter, at the offsite.</span>
+        <button class="wbtn" data-queue="887">Request access</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="modal-scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal">
+    <h2 id="modal-title">Confirm purchase</h2>
+    <p id="modal-body">You are instructing Closure to allocate $200.00 to SWTH, a security representing the perceived life trajectory of a person you last spoke to at a graduation party.</p>
+    <p class="fine">By confirming, you affirm that (i) you are of sound mind, or close enough; (ii) this allocation resolves nothing; and (iii) you will not interpret an uptick as a sign. Execution is final. So was the breakup.</p>
+    <div class="modal-actions">
+      <button class="btn ghost" id="modal-cancel">Reconsider</button>
+      <button class="btn" id="modal-confirm">Confirm — resolve nothing</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- chart ---- */
+  var svg = document.getElementById('chart');
+  var W = 720, H = 300, PAD = { t: 24, r: 16, b: 26, l: 46 };
+
+  function mulberry(seed) {
+    return function () {
+      seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+      var t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  function series(seed, n, start, drift, vol) {
+    var rnd = mulberry(seed), out = [], v = start;
+    for (var i = 0; i < n; i++) {
+      v = Math.max(20, v + drift + (rnd() - 0.5) * vol);
+      out.push(v);
+    }
+    return out;
+  }
+
+  var RANGES = {
+    '1D':   { label: 'RANGE: 1D', pts: series(11, 48, 149.9, -0.02, 1.1), xlab: ['9:30', 'NOON', '2PM', '4PM'],
+              notes: [{ i: 31, txt: 'Posted from a lake' }],
+              chg: '▼ 0.3% today', note: 'Intraday marks reflect one (1) story view. Yours.' },
+    '1W':   { label: 'RANGE: 1W', pts: series(23, 56, 151.5, -0.05, 2.4), xlab: ['MON', 'WED', 'FRI', 'SUN'],
+              notes: [{ i: 18, txt: 'New profile photo' }, { i: 44, txt: 'Gym check-in, 6am' }],
+              chg: '▼ 1.1% this week', note: 'Weekly marks audited against the mutual friend.' },
+    '1Y':   { label: 'RANGE: 1Y', pts: series(7, 64, 132.0, 0.28, 5.2), xlab: ['AUG', 'NOV', 'FEB', 'JUL'],
+              notes: [{ i: 20, txt: 'Ran the half-marathon' }, { i: 49, txt: 'Kitchen renovation' }],
+              chg: '▲ 9.7% this year', note: 'A strong year for them. We are told this is fine.' },
+    'PROM': { label: 'RANGE: SINCE PROM', pts: series(41, 72, 62.0, 1.35, 7.5), xlab: ['2009', '2015', '2020', 'NOW'],
+              notes: [{ i: 26, txt: 'Second marriage' }, { i: 52, txt: 'Got the boat' }],
+              chg: '▼ 1.4% since prom', note: 'Baseline set the night of prom. It has not been revisited. You have.' }
+  };
+
+  function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+
+  function draw(key) {
+    var r = RANGES[key], pts = r.pts;
+    var min = Math.min.apply(null, pts), max = Math.max.apply(null, pts);
+    var span = (max - min) || 1;
+    var iw = W - PAD.l - PAD.r, ih = H - PAD.t - PAD.b;
+    function X(i) { return PAD.l + (i / (pts.length - 1)) * iw; }
+    function Y(v) { return PAD.t + (1 - (v - min) / span) * ih; }
+
+    var s = '';
+    for (var g = 0; g <= 4; g++) {
+      var gy = PAD.t + (g / 4) * ih;
+      var gv = (max - (g / 4) * span).toFixed(0);
+      s += '<line x1="' + PAD.l + '" y1="' + gy + '" x2="' + (W - PAD.r) + '" y2="' + gy + '" stroke="#1F4A38" stroke-opacity=".18" stroke-width="1"/>';
+      s += '<text x="' + (PAD.l - 8) + '" y="' + (gy + 3) + '" text-anchor="end" font-family="Fira Mono, monospace" font-size="10" fill="#7C7F6E">' + gv + '</text>';
+    }
+    r.xlab.forEach(function (lab, k) {
+      var lx = PAD.l + (k / (r.xlab.length - 1)) * iw;
+      var anchor = k === 0 ? 'start' : (k === r.xlab.length - 1 ? 'end' : 'middle');
+      s += '<text x="' + lx + '" y="' + (H - 8) + '" text-anchor="' + anchor + '" font-family="Fira Mono, monospace" font-size="10" fill="#7C7F6E">' + lab + '</text>';
+    });
+
+    var d = '';
+    pts.forEach(function (v, i) { d += (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(v).toFixed(1) + ' '; });
+    var area = d + 'L' + X(pts.length - 1).toFixed(1) + ' ' + (H - PAD.b) + ' L' + PAD.l + ' ' + (H - PAD.b) + ' Z';
+    s += '<path d="' + area + '" fill="#1F4A38" fill-opacity=".07"/>';
+    s += '<path id="swth-line" d="' + d + '" fill="none" stroke="#1F4A38" stroke-width="2"/>';
+
+    r.notes.forEach(function (n) {
+      var nx = X(n.i), ny = Y(pts[n.i]);
+      var above = ny > PAD.t + 40;
+      var ty = above ? ny - 26 : ny + 30;
+      s += '<line x1="' + nx + '" y1="' + ny + '" x2="' + nx + '" y2="' + (above ? ty + 8 : ty - 12) + '" stroke="#8A2D3B" stroke-width="1"/>';
+      s += '<circle cx="' + nx + '" cy="' + ny + '" r="3.5" fill="#8A2D3B"/>';
+      var anchor = nx > W - 130 ? 'end' : 'middle';
+      s += '<text x="' + nx + '" y="' + ty + '" text-anchor="' + anchor + '" font-family="Fira Mono, monospace" font-size="10.5" fill="#182A21">' + esc(n.txt) + '</text>';
+    });
+
+    svg.innerHTML = s;
+    document.getElementById('range-label').textContent = r.label;
+    document.getElementById('chg').textContent = r.chg;
+    document.getElementById('chart-note').textContent = r.note;
+    document.getElementById('px').textContent = pts[pts.length - 1].toFixed(2);
+
+    if (!reduced) {
+      var line = document.getElementById('swth-line');
+      var len = line.getTotalLength();
+      line.style.strokeDasharray = len;
+      line.style.strokeDashoffset = len;
+      line.getBoundingClientRect();
+      line.style.transition = 'stroke-dashoffset 900ms ease-out';
+      line.style.strokeDashoffset = '0';
+    }
+  }
+
+  var buttons = document.querySelectorAll('.ranges button');
+  buttons.forEach(function (b) {
+    b.addEventListener('click', function () {
+      buttons.forEach(function (o) { o.classList.remove('active'); });
+      b.classList.add('active');
+      draw(b.dataset.range);
+    });
+  });
+  draw('PROM');
+
+  /* ---- lock countdown ---- */
+  var lockEl = document.getElementById('lock-count');
+  var remain = ((17 * 365 + 122) * 86400) + (9 * 3600) + (41 * 60) + 3;
+  function fmtLock() {
+    var s = remain;
+    var y = Math.floor(s / (365 * 86400)); s -= y * 365 * 86400;
+    var dd = Math.floor(s / 86400); s -= dd * 86400;
+    var hh = Math.floor(s / 3600); s -= hh * 3600;
+    var mm = Math.floor(s / 60); s -= mm * 60;
+    function p(n) { return (n < 10 ? '0' : '') + n; }
+    lockEl.textContent = y + 'y ' + dd + 'd ' + p(hh) + ':' + p(mm) + ':' + p(s);
+  }
+  fmtLock();
+  setInterval(function () { remain--; fmtLock(); }, 1000);
+
+  /* ---- toast ---- */
+  var toast = document.getElementById('toast'), toastTimer;
+  function say(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toast.classList.remove('show'); }, 4000);
+  }
+
+  /* ---- buy flow ---- */
+  var scrim = document.getElementById('scrim');
+  var amt = document.getElementById('amt');
+  var whatifBasis = document.getElementById('whatif-basis');
+  var basis = 4120.00;
+  var lastFocus = null;
+
+  function parseAmt() {
+    var v = parseFloat(String(amt.value).replace(/[^0-9.]/g, ''));
+    return (isFinite(v) && v > 0) ? v : null;
+  }
+
+  document.getElementById('buy').addEventListener('click', function () {
+    var v = parseAmt();
+    if (v === null) { say('Enter an amount. The feeling is already priced in.'); return; }
+    document.getElementById('modal-body').textContent =
+      'You are instructing Closure to allocate $' + v.toFixed(2) +
+      ' to SWTH, a security representing the perceived life trajectory of a person you last spoke to at a graduation party.';
+    lastFocus = document.activeElement;
+    scrim.classList.add('open');
+    document.getElementById('modal-cancel').focus();
+  });
+
+  function closeModal() {
+    scrim.classList.remove('open');
+    if (lastFocus) lastFocus.focus();
+  }
+  document.getElementById('modal-cancel').addEventListener('click', function () {
+    closeModal();
+    say('Order cancelled. Noted in your file as growth.');
+  });
+  document.getElementById('modal-confirm').addEventListener('click', function () {
+    var v = parseAmt() || 0;
+    basis += v;
+    whatifBasis.textContent = '$' + basis.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    closeModal();
+    say('Order filled at market sentiment. Nothing is resolved.');
+  });
+  scrim.addEventListener('click', function (e) { if (e.target === scrim) closeModal(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && scrim.classList.contains('open')) closeModal();
+  });
+
+  /* ---- sell ---- */
+  document.getElementById('sell').addEventListener('click', function () {
+    say('Sell is unavailable. Markets close at 11pm for your protection.');
+  });
+
+  /* ---- watchlist ---- */
+  document.querySelectorAll('.wbtn').forEach(function (b) {
+    b.addEventListener('click', function () {
+      b.disabled = true;
+      b.textContent = 'WAITLISTED · #' + Number(b.dataset.queue).toLocaleString('en-US');
+      say('Request received. Surveillance of third parties is a premium feature.');
+    });
+  });
+})();
+</script>
+</body>
+</html>

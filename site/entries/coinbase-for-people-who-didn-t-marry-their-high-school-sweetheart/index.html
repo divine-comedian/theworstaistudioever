@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Closure · theworstaistudioever</title>
+<meta name="description" content="A qualified custodian for the one that got away.">
+<meta property="og:title" content="Closure — A qualified custodian for the one that got away.">
+<meta property="og:description" content="A regulated exchange for positions you opened in high school and never closed. Deposit the memories. Watch the chart. Do not text them.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,500;1,600&family=Public+Sans:wght@400;500;600&family=Fira+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1F4A38;
+    --accent: #8A2D3B;
+    --bg: #F3F0E4;
+    --bg-plate: #F6F4EA;
+    --fg: #24312A;
+    --muted: #7C7F6E;
+    --ink: #182A21;
+    --rule: #1F4A38;
+    --display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    --body: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --mono: 'Fira Mono', 'SFMono-Regular', Consolas, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--primary); color: var(--bg); }
+
+  .frame {
+    max-width: 1180px;
+    margin: 18px auto;
+    border: 2px solid var(--rule);
+    position: relative;
+    background: var(--bg);
+  }
+  .frame::before {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border: 1px solid var(--rule);
+    pointer-events: none;
+    z-index: 4;
+  }
+  @media (max-width: 1216px) { .frame { margin: 12px; } }
+
+  .hatch {
+    height: 14px;
+    background: repeating-linear-gradient(45deg, rgba(31,74,56,.28) 0 1px, transparent 1px 5px);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  header.masthead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 20px 36px;
+    border-bottom: 2px solid var(--rule);
+    position: relative;
+  }
+  .wordmark {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .wordmark .mark { width: 34px; height: 34px; flex: none; }
+  .wordmark .name {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 26px;
+    letter-spacing: .01em;
+  }
+  .wordmark .est {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .14em;
+    color: var(--muted);
+    display: block;
+    margin-top: -2px;
+  }
+  nav.toplinks { display: flex; align-items: center; gap: 26px; }
+  nav.toplinks a {
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  nav.toplinks a:hover { text-decoration: underline; text-underline-offset: 4px; }
+  nav.toplinks a:focus-visible, .btn:focus-visible, a:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+  }
+  @media (max-width: 860px) { nav.toplinks .navlink { display: none; } }
+
+  .btn {
+    display: inline-block;
+    background: var(--accent);
+    color: #F6F1E2;
+    font-family: var(--body);
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 13px 26px;
+    border: 1px solid var(--accent);
+    box-shadow: 0 0 0 1px var(--bg), 0 0 0 2px var(--accent);
+    cursor: pointer;
+    transition: transform 120ms ease;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn.ghost {
+    background: transparent;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    box-shadow: 0 0 0 1px var(--bg), 0 0 0 2px var(--primary);
+  }
+
+  .kicker {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .kicker::after { content: ""; height: 1px; background: var(--rule); flex: 0 0 48px; opacity: .5; }
+
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr);
+    gap: 48px;
+    padding: 64px 36px 56px;
+    align-items: center;
+  }
+  @media (max-width: 940px) { .hero { grid-template-columns: 1fr; padding: 48px 24px; } }
+  .hero h1 {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(38px, 5.2vw, 62px);
+    line-height: 1.06;
+    letter-spacing: -.01em;
+    color: var(--ink);
+    margin: 18px 0 20px;
+  }
+  .hero .sub {
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--fg);
+    max-width: 46ch;
+    margin-bottom: 30px;
+  }
+  .hero .cta-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  .hero .cta-note {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .06em;
+    color: var(--muted);
+    margin-top: 14px;
+  }
+
+  .certificate {
+    border: 2px solid var(--rule);
+    background: var(--bg-plate);
+    position: relative;
+    padding: 30px 26px 24px;
+    text-align: center;
+  }
+  .certificate::before {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border: 1px solid var(--rule);
+    pointer-events: none;
+  }
+  .certificate::after {
+    content: "SPECIMEN";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-24deg);
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 64px;
+    letter-spacing: .18em;
+    color: rgba(31,74,56,.07);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .cert-serial {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .16em;
+    color: var(--primary);
+    margin-bottom: 16px;
+  }
+  .rosette {
+    width: 118px;
+    height: 118px;
+    border-radius: 50%;
+    margin: 0 auto 16px;
+    position: relative;
+    background:
+      repeating-conic-gradient(var(--primary) 0deg .6deg, transparent .6deg 4.5deg);
+    -webkit-mask: radial-gradient(circle, transparent 0 18%, #000 19% 44%, transparent 45% 55%, #000 56% 78%, transparent 79% 84%, #000 85% 100%);
+    mask: radial-gradient(circle, transparent 0 18%, #000 19% 44%, transparent 45% 55%, #000 56% 78%, transparent 79% 84%, #000 85% 100%);
+    opacity: .82;
+  }
+  .rosette-wrap { position: relative; width: 118px; height: 118px; margin: 0 auto 16px; }
+  .rosette-wrap .rosette { position: absolute; inset: 0; margin: 0; }
+  .rosette-wrap .rosette-core {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 30px;
+    color: var(--primary);
+  }
+  .cert-title {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 19px;
+    letter-spacing: .04em;
+    color: var(--ink);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .cert-denom {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .18em;
+    color: var(--primary);
+    margin-bottom: 4px;
+  }
+  .cert-payable {
+    font-family: var(--display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 18px;
+  }
+  .quote-well {
+    border: 1px solid var(--rule);
+    background: var(--bg);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--ink);
+    position: relative;
+    z-index: 1;
+  }
+  .quote-well .tick { font-variant-numeric: tabular-nums; }
+  .quote-well .down { color: var(--accent); font-weight: 500; }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex: none;
+    animation: pulse 3s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
+  @media (prefers-reduced-motion: reduce) { .dot { animation: none; } }
+
+  .ledger-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 2px solid var(--rule);
+  }
+  @media (max-width: 860px) { .ledger-strip { grid-template-columns: repeat(2, 1fr); } }
+  .ledger-cell {
+    padding: 22px 24px;
+    border-right: 1px solid var(--rule);
+    text-align: center;
+  }
+  .ledger-cell:last-child { border-right: none; }
+  @media (max-width: 860px) { .ledger-cell:nth-child(2) { border-right: none; } .ledger-cell:nth-child(-n+2) { border-bottom: 1px solid var(--rule); } }
+  .ledger-cell .val {
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .ledger-cell .lbl {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  section.article { padding: 72px 36px; }
+  @media (max-width: 940px) { section.article { padding: 52px 24px; } }
+  .article-head { max-width: 720px; margin-bottom: 44px; }
+  .article-head h2 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(28px, 3.4vw, 40px);
+    line-height: 1.15;
+    color: var(--ink);
+    margin-top: 16px;
+  }
+  .article-head .lede { margin-top: 12px; color: var(--fg); max-width: 56ch; }
+
+  .plates {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+  @media (max-width: 940px) { .plates { grid-template-columns: 1fr; } }
+  .plate {
+    border: 2px solid var(--rule);
+    background: var(--bg-plate);
+    position: relative;
+    padding: 26px 24px 24px;
+  }
+  .plate::before {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border: 1px solid var(--rule);
+    pointer-events: none;
+  }
+  .plate .plate-serial {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .16em;
+    color: var(--muted);
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .plate h3 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 21px;
+    line-height: 1.25;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+  .plate p { font-size: 15px; line-height: 1.65; color: var(--fg); }
+  .plate .apy {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 12px;
+    border: 1px solid var(--rule);
+    padding: 3px 8px;
+    margin-top: 14px;
+    color: var(--primary);
+  }
+
+  .statements { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  @media (max-width: 940px) { .statements { grid-template-columns: 1fr; } }
+  .statement {
+    border: 2px solid var(--rule);
+    background: var(--bg-plate);
+    position: relative;
+    padding: 30px 24px 24px;
+    text-align: center;
+  }
+  .statement::before {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border: 1px solid var(--rule);
+    pointer-events: none;
+  }
+  .portrait {
+    width: 108px;
+    height: 132px;
+    margin: 0 auto 18px;
+    border-radius: 50% / 42%;
+    overflow: hidden;
+    border: 1px solid var(--rule);
+    box-shadow: 0 0 0 3px var(--bg-plate), 0 0 0 4px var(--rule);
+    position: relative;
+    z-index: 1;
+  }
+  .portrait img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .statement blockquote {
+    font-family: var(--display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+  .statement .who { font-weight: 600; font-size: 14px; color: var(--ink); }
+  .statement .role { font-size: 12.5px; color: var(--muted); line-height: 1.5; margin-top: 2px; }
+  .statement .sworn {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(31,74,56,.35);
+  }
+
+  .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; align-items: stretch; }
+  @media (max-width: 940px) { .tiers { grid-template-columns: 1fr; } }
+  .tier {
+    border: 2px solid var(--rule);
+    background: var(--bg-plate);
+    position: relative;
+    padding: 30px 26px 26px;
+    display: flex;
+    flex-direction: column;
+  }
+  .tier::before {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border: 1px solid var(--rule);
+    pointer-events: none;
+  }
+  .tier .flag {
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: #F6F1E2;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .16em;
+    padding: 4px 12px;
+    white-space: nowrap;
+    z-index: 2;
+  }
+  .tier h3 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--ink);
+  }
+  .tier .tier-tag {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 14.5px;
+    color: var(--muted);
+    margin: 4px 0 18px;
+    line-height: 1.45;
+  }
+  .tier .price {
+    font-family: var(--mono);
+    font-size: 30px;
+    font-weight: 500;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    padding: 12px 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 18px;
+  }
+  .tier .price small { font-size: 13px; color: var(--muted); font-weight: 400; }
+  .tier ul { list-style: none; flex: 1; margin-bottom: 22px; }
+  .tier li {
+    font-size: 14px;
+    line-height: 1.55;
+    padding: 7px 0 7px 22px;
+    position: relative;
+  }
+  .tier li::before {
+    content: "§";
+    position: absolute;
+    left: 0;
+    top: 7px;
+    font-family: var(--display);
+    color: var(--primary);
+    font-size: 13px;
+  }
+  .tier .btn { text-align: center; position: relative; z-index: 1; }
+
+  .demo-band {
+    border-top: 2px solid var(--rule);
+    background: var(--primary);
+    color: #EDEBDD;
+    padding: 64px 36px;
+    text-align: center;
+    position: relative;
+  }
+  .demo-band .kicker { color: #B8C9BE; justify-content: center; }
+  .demo-band .kicker::after { background: #B8C9BE; }
+  .demo-band h2 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(28px, 3.6vw, 42px);
+    color: #F3F0E4;
+    margin: 16px auto 12px;
+    max-width: 22ch;
+    line-height: 1.15;
+  }
+  .demo-band p { max-width: 52ch; margin: 0 auto 28px; color: #CBD6CD; font-size: 16px; }
+  .demo-band .btn { box-shadow: 0 0 0 1px var(--primary), 0 0 0 2px var(--accent); font-size: 15px; padding: 15px 34px; }
+
+  footer.colophon {
+    padding: 40px 36px 34px;
+    border-top: 2px solid var(--rule);
+  }
+  .colophon-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 32px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+  .colophon .legal {
+    font-size: 11.5px;
+    line-height: 1.7;
+    color: var(--muted);
+    max-width: 70ch;
+  }
+  .colophon .backlink {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--primary);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .colophon .backlink:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+  .reveal { opacity: 0; transform: translateY(6px); transition: opacity 500ms ease, transform 500ms ease; }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div class="frame">
+
+  <header class="masthead">
+    <a class="wordmark" href="#" aria-label="Closure home">
+      <svg class="mark" viewBox="0 0 34 34" aria-hidden="true" fill="none">
+        <circle cx="17" cy="17" r="15.5" stroke="#1F4A38" stroke-width="1.6"/>
+        <circle cx="17" cy="17" r="11.5" stroke="#1F4A38" stroke-width=".8"/>
+        <path d="M22.5 12.4a7 7 0 1 0 0 9.2" stroke="#1F4A38" stroke-width="2" stroke-linecap="square"/>
+      </svg>
+      <span>
+        <span class="name">Closure</span>
+        <span class="est">QUALIFIED CUSTODIAN · EST. FY2009</span>
+      </span>
+    </a>
+    <nav class="toplinks" aria-label="Primary">
+      <a class="navlink" href="#custody">Custody</a>
+      <a class="navlink" href="#statements">Statements</a>
+      <a class="navlink" href="#fees">Fees</a>
+      <a class="navlink" href="./demo.html">Terminal</a>
+      <a class="btn" href="#fees">Begin custody</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div>
+      <p class="kicker">Form CL-2009 · Offering circular</p>
+      <h1>The one that got away is now an asset class.</h1>
+      <p class="sub">Closure is a regulated exchange for positions you opened in high school and never closed. Deposit the memories. Watch the chart. Do not text them.</p>
+      <div class="cta-row">
+        <a class="btn" href="#fees">Begin custody</a>
+        <a class="btn ghost" href="./demo.html">Open the demo →</a>
+      </div>
+      <p class="cta-note">CUSTODY IS PERMANENT. SO WAS THE FEELING.</p>
+    </div>
+    <div class="certificate reveal" aria-label="Specimen certificate of unresolved position">
+      <div class="cert-serial"><span>NO. 002009</span><span>SERIES A · NON-TRANSFERABLE</span></div>
+      <div class="rosette-wrap" aria-hidden="true">
+        <div class="rosette"></div>
+        <div class="rosette-core">C</div>
+      </div>
+      <p class="cert-title">Certificate of Unresolved Position</p>
+      <p class="cert-denom">ONE (1) UNRESOLVED POSITION</p>
+      <p class="cert-payable">Payable to bearer, eventually</p>
+      <div class="quote-well">
+        <span class="dot" aria-hidden="true"></span>
+        <span>SWTH</span>
+        <span class="tick" id="swth-quote">148.02</span>
+        <span class="down">▼ 1.4% since prom</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="ledger-strip" aria-label="Custody figures">
+    <div class="ledger-cell"><div class="val">412,077</div><div class="lbl">Positions in custody</div></div>
+    <div class="ledger-cell"><div class="val">17.3 yrs</div><div class="lbl">Average hold</div></div>
+    <div class="ledger-cell"><div class="val">1,204,556</div><div class="lbl">Texts prevented</div></div>
+    <div class="ledger-cell"><div class="val">4.1%</div><div class="lbl">APY on regret</div></div>
+  </div>
+
+  <div class="hatch" aria-hidden="true"></div>
+
+  <section class="article" id="custody">
+    <div class="article-head">
+      <p class="kicker">Article II · Custody of memories</p>
+      <h2>Institutional-grade infrastructure for feelings you were supposed to process in 2009.</h2>
+      <p class="lede">Every position is held one-to-one, marked to sentiment nightly, and reviewed by a compliance department that has stopped asking questions.</p>
+    </div>
+    <div class="plates">
+      <article class="plate reveal">
+        <div class="plate-serial"><span>PLATE 01</span><span>NYSE-ADJACENT</span></div>
+        <h3>The Sweetheart Index (SWTH)</h3>
+        <p>One ticker tracking your high school sweetheart's publicly visible life trajectory: the promotion, the lake house, the boat. Updated nightly from sources they forgot were public. Our most-checked chart, by a margin our analysts describe as concerning.</p>
+      </article>
+      <article class="plate reveal">
+        <div class="plate-serial"><span>PLATE 02</span><span>VAULT NV-07</span></div>
+        <h3>Cold Storage</h3>
+        <p>Prom photos, ticket stubs, and the mix CD from 2007, hashed and vaulted in a facility in rural Nevada. Retrieval takes six to eight weeks and a notarized statement explaining what, exactly, you plan to do with them.</p>
+      </article>
+      <article class="plate reveal">
+        <div class="plate-serial"><span>PLATE 03</span><span>LOCK: 25Y</span></div>
+        <h3>Regret Staking</h3>
+        <p>Lock your what-ifs for twenty-five years and earn 4.1% APY, compounded on anniversaries. Early withdrawal is permitted once per decade and triggers a courtesy call to your mother.</p>
+        <span class="apy">4.1% APY · COMPOUNDED ON ANNIVERSARIES</span>
+      </article>
+    </div>
+  </section>
+
+  <div class="hatch" aria-hidden="true"></div>
+
+  <section class="article" id="statements">
+    <div class="article-head">
+      <p class="kicker">Article IV · Sworn statements</p>
+      <h2>Account holders, under oath.</h2>
+      <p class="lede">Statements collected at deposition. Portraits engraved from yearbook reference at the account holder's expense.</p>
+    </div>
+    <div class="statements">
+      <article class="statement reveal">
+        <div class="portrait"><img src="./headshot-melissa.webp" alt="Engraved portrait of Melissa Grantham" width="108" height="132" loading="lazy"></div>
+        <blockquote>“I dollar-cost averaged into acceptance over fourteen months. My cost basis on Derek is now zero.”</blockquote>
+        <p class="who">Melissa Grantham</p>
+        <p class="role">Regional Claims Adjuster; Homecoming Committee Treasurer, 2004</p>
+        <p class="sworn">Sworn · Exhibit A</p>
+      </article>
+      <article class="statement reveal">
+        <div class="portrait"><img src="./headshot-doug.webp" alt="Engraved portrait of Doug Pfeiffer" width="108" height="132" loading="lazy"></div>
+        <blockquote>“It locked my Sell button at 11:04 on a Friday night. That feature alone pays for itself.”</blockquote>
+        <p class="who">Doug Pfeiffer</p>
+        <p class="role">Assistant Principal, married very happily, thanks for asking</p>
+        <p class="sworn">Sworn · Exhibit B</p>
+      </article>
+      <article class="statement reveal">
+        <div class="portrait"><img src="./headshot-priya.webp" alt="Engraved portrait of Priya Raghunathan" width="108" height="132" loading="lazy"></div>
+        <blockquote>“I staked my what-ifs at 4.1%. My therapist says that isn't closure. My quarterly statement says otherwise.”</blockquote>
+        <p class="who">Priya Raghunathan</p>
+        <p class="role">Senior Procurement Analyst; two-time reunion no-show</p>
+        <p class="sworn">Sworn · Exhibit C</p>
+      </article>
+    </div>
+  </section>
+
+  <div class="hatch" aria-hidden="true"></div>
+
+  <section class="article" id="fees">
+    <div class="article-head">
+      <p class="kicker">Article VII · Schedule of fees</p>
+      <h2>Priced by how often you bring it up.</h2>
+      <p class="lede">All plans include nightly marks to sentiment and a strict no-contact execution policy. Fees are non-refundable, like the years.</p>
+    </div>
+    <div class="tiers">
+      <article class="tier reveal">
+        <h3>Acquaintances</h3>
+        <p class="tier-tag">For people who are fine.</p>
+        <p class="price">$0</p>
+        <ul>
+          <li>Read-only access to the Sweetheart Index</li>
+          <li>One unsolicited anniversary alert per year</li>
+          <li>Standard-grade acceptance</li>
+        </ul>
+        <a class="btn ghost" href="./demo.html">Open an account</a>
+      </article>
+      <article class="tier reveal">
+        <span class="flag">MOST SUBSCRIBED</span>
+        <h3>It Was Complicated</h3>
+        <p class="tier-tag">For people who bring it up at dinner parties, unprompted.</p>
+        <p class="price">$34<small>/mo</small></p>
+        <ul>
+          <li>Full candlestick history back to homecoming</li>
+          <li>Reunion futures, cash-settled</li>
+          <li>Sell button disabled after 11pm, for your protection</li>
+          <li>Priority vaulting for up to 40 memories</li>
+        </ul>
+        <a class="btn" href="./demo.html">Begin custody</a>
+      </article>
+      <article class="tier reveal">
+        <h3>Fully Diversified</h3>
+        <p class="tier-tag">For people who married someone wonderful and would like that notarized.</p>
+        <p class="price">$499<small>/mo</small></p>
+        <ul>
+          <li>Joint custody account with your actual spouse</li>
+          <li>Tax-loss harvesting on fiscal year 2009</li>
+          <li>A laminated certificate of closure, suitable for framing</li>
+          <li>Dedicated relationship manager, for the old relationship</li>
+        </ul>
+        <a class="btn ghost" href="./demo.html">Request onboarding</a>
+      </article>
+    </div>
+  </section>
+
+  <section class="demo-band">
+    <p class="kicker">Exhibit D · The terminal</p>
+    <h2>Inspect a live unresolved position.</h2>
+    <p>The Closure terminal renders one account holder's SWTH chart, ledger, and staked regret in real time. The Sell button is present for regulatory reasons.</p>
+    <a class="btn" href="./demo.html">Open the demo →</a>
+  </section>
+
+  <footer class="colophon">
+    <div class="colophon-grid">
+      <p class="legal">Closure is not a bank. Positions custodied with Closure are not FDIC insured, may lose value, and were never really yours. The Sweetheart Index is compiled from publicly visible sources and one very forthcoming mutual friend. Past performance of a person is not indicative of the life you would have had together. Closure does not provide tax, legal, or romantic advice. If you are experiencing an urge to reach out, hold.</p>
+      <a class="backlink" href="/">← theworstaistudioever</a>
+    </div>
+  </footer>
+
+</div>
+<script>
+  (function () {
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var items = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window) || reduced) {
+      items.forEach(function (el) { el.classList.add('in'); });
+    } else {
+      var seen = 0;
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            var el = entry.target;
+            setTimeout(function () { el.classList.add('in'); }, (seen++ % 3) * 40);
+            io.unobserve(el);
+          }
+        });
+      }, { threshold: 0.15 });
+      items.forEach(function (el) { io.observe(el); });
+    }
+
+    var quote = document.getElementById('swth-quote');
+    if (quote && !reduced) {
+      var base = 148.02;
+      setInterval(function () {
+        base += (Math.random() - 0.55) * 0.12;
+        quote.textContent = base.toFixed(2);
+      }, 4000);
+    }
+  })();
+</script>
+</body>
+</html>

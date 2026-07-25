@@ -1,0 +1,72 @@
+[2026-07-25T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-07-25T08:00:02Z] invoking claude -p
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/github/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/github/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.openclaw/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.openclaw/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.claude/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.claude/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/aurevon-status/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/aurevon-status/**) instead (Edit rules cover all file-editing tools).
+[2026-07-25] === agent run summary ===
+
+ROLL
+  company: Coinbase
+  subject: people who didn't marry their high school sweetheart
+  slug:    coinbase-for-people-who-didn-t-marry-their-high-school-sweetheart
+  rerolls: 1 (attempt 1 hit existing pair Binance/freelancers; attempt 2 fresh)
+
+CONCEPT
+  product: Closure -- "A qualified custodian for the one that got away."
+  demo:    SWTH brokerage terminal (chart + holdings ledger + buy flow, Sell disabled)
+
+DESIGN DIRECTION
+  style:   Engraved-securities prospectus / banknote-intaglio daylight mode
+  palette: Intaglio Green / Bearer Ivory (primary #1F4A38, accent #8A2D3B, bg #F3F0E4)
+  fonts:   Playfair Display (display) / Public Sans (body) / Fira Mono (figures)
+  anti-sameness: checked against last 7 (swiss transit, bento logistics, airmail
+  editorial, terminal dark, claymorphic, glassmorphic, RPG game-UI) -- no tuple collision.
+
+IMAGES
+  rationale: hero skipped (typographic certificate hero); demo assets skipped
+  (chart/ledger demo, not photo-shaped); full budget on 3 testimonial portraits
+  as banknote-engraving vignettes in the entry's single green ink.
+  - headshot-melissa.webp: 1 attempt, judge PASS (subject correct, single-ink
+    engraving consistent, no text artifacts)
+  - headshot-doug.webp: 1 generation attempt after two transient API 503s
+    (retried, succeeded), judge PASS
+  - headshot-priya.webp: 1 attempt, judge PASS (has a faint square paper-edge
+    border; cropped inside an oval frame in the layout, so not visible)
+  all three cropped to 320x320 webp, ~20-23 KB each, well under 500 KB cap.
+
+GALLERY
+  rebuilt with 62 slides. First regeneration pass flipped the display order of
+  same-date entries (May 14 and Jun 12 pairs); fixed with a stable
+  date-descending sort that preserves history append order for ties. Final diff
+  vs committed gallery: new slide + count + one dot only.
+
+WARNINGS / NEAR-MISSES
+  - Gemini API returned 503 twice mid-run (high demand); resolved on retry,
+    no image slot dropped.
+  - none else.
+
+VALIDATION
+  scripts/validate-entry.sh site <slug>: OK
+  state/history.json: appended, 62 entries, valid JSON.
+Today's run is complete. **RUN_COMPLETE: coinbase-for-people-who-didn-t-marry-their-high-school-sweetheart**
+
+```
+RUN_COMPLETE: coinbase-for-people-who-didn-t-marry-their-high-school-sweetheart
+```
+
+Summary of what shipped:
+
+- **Roll:** Coinbase × "people who didn't marry their high school sweetheart" (1 reroll; attempt 1 hit the existing Binance/freelancers pair).
+- **Concept:** **Closure** — "A qualified custodian for the one that got away." A regulated exchange where the sweetheart is a ticker (SWTH), memories go to Cold Storage in rural Nevada, and regret stakes at 4.1% APY with a 25-year lock. Pricing runs from *Acquaintances* ($0, "for people who are fine") to *Fully Diversified* ($499/mo, notarized proof you married someone wonderful).
+- **Design:** engraved-securities / banknote-intaglio prospectus — hunter green ink on bearer-bond ivory, CSS guilloché rosette, certificate plates with serial numbers, Playfair Display + Public Sans + Fira Mono. No tuple collision with the last 7 entries.
+- **Images:** hero and demo slots deliberately skipped (typographic hero, chart-shaped demo); budget went to 3 testimonial portraits rendered as banknote-engraving vignettes. All passed the vision check on attempt 1; the API threw two transient 503s on one portrait but succeeded on retry. All ~20 KB WebPs.
+- **Demo:** a working SWTH brokerage terminal — range toggles (including "SINCE PROM") redraw the chart with annotations like "Got the boat," a Buy flow with a compliance modal ("Confirm — resolve nothing"), a permanently disabled Sell button ("Markets close at 11pm for your protection"), a live 25-year lock countdown, and a waitlist-only watchlist of other people's sweethearts.
+- **Gallery:** rebuilt with 62 slides. One fix along the way: my first regeneration flipped same-date slide order, so I switched to a stable date-descending sort that preserves history order for ties — the final diff against the committed gallery is just the new slide, the count, and one dot.
+- **Validation:** `validate-entry.sh` passed; history.json appended (62 entries, valid JSON); run summary written to `state/runs/2026-07-25.log`. No git commands were run — the wrapper takes it from here.
+[2026-07-25T08:14:06Z] new entry: coinbase-for-people-who-didn-t-marry-their-high-school-sweetheart
+validate-entry [coinbase-for-people-who-didn-t-marry-their-high-school-sweetheart]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 62 entries (domain theworstaistudioever.com)
+[2026-07-25T08:14:07Z] committing: Coinbase for people who didn't marry their high school sweetheart
