@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rollover — biscuit.dog · theworstaistudioever</title>
+<meta name="description" content="The Rollover deployments dashboard for a production dog named Biscuit.">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Instrument+Sans:wght@400;500;600;700&family=Martian+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#2B3FD4;
+  --accent:#E8402A;
+  --bg:#FBF4E2;
+  --fg:#1C1A16;
+  --muted:#6E675A;
+  --ink:#12100D;
+  --card:#FFFBF0;
+  --border:2.5px solid var(--ink);
+  --display:'Bricolage Grotesque','Arial Black',system-ui,sans-serif;
+  --body:'Instrument Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'Martian Mono','SFMono-Regular',Consolas,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--bg);color:var(--fg);
+  font-family:var(--body);font-size:15px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--primary);color:#fff}
+.wrap{max-width:1160px;margin:0 auto;padding:0 20px}
+
+/* chrome */
+.chrome{border-bottom:var(--border);background:var(--card);position:sticky;top:0;z-index:50}
+.chrome-inner{
+  max-width:1160px;margin:0 auto;padding:12px 20px;
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+}
+.back{
+  font-size:.85rem;font-weight:600;color:var(--fg);text-decoration:none;
+  border:2px solid var(--ink);border-radius:8px;padding:7px 12px;background:var(--bg);
+  box-shadow:3px 3px 0 var(--ink);
+  transition:transform .15s ease,box-shadow .15s ease;
+}
+.back:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.back:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+.crumb{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:.8rem;font-weight:700}
+.crumb .proj{color:var(--primary)}
+.pill{
+  display:inline-flex;align-items:center;gap:7px;
+  font-family:var(--mono);font-size:.62rem;font-weight:700;letter-spacing:.1em;
+  border:2px solid var(--ink);border-radius:99px;padding:4px 11px;background:var(--bg);
+}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--primary);animation:pulse 3s ease-in-out infinite}
+.pill.err .dot{background:var(--accent)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.chrome .spacer{flex:1}
+.env{font-family:var(--mono);font-size:.62rem;color:var(--muted);letter-spacing:.12em}
+
+/* layout */
+.dash{display:grid;grid-template-columns:1fr 340px;gap:24px;padding:28px 0 48px}
+@media(max-width:980px){.dash{grid-template-columns:1fr}}
+.panel{
+  background:var(--card);border:var(--border);border-radius:12px;
+  box-shadow:6px 6px 0 var(--ink);overflow:hidden;
+}
+.panel-head{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:14px 18px;border-bottom:2px solid var(--ink);flex-wrap:wrap;
+}
+.panel-head h2{
+  font-family:var(--display);font-weight:700;font-size:1.05rem;letter-spacing:-.01em;color:var(--ink);
+}
+.panel-head .sub{font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.12em}
+
+/* tabs */
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{
+  cursor:pointer;font-family:var(--mono);font-size:.62rem;font-weight:700;letter-spacing:.08em;
+  border:2px solid var(--ink);border-radius:8px;padding:6px 11px;background:var(--bg);color:var(--fg);
+}
+.tab[aria-pressed="true"]{background:var(--primary);color:#fff}
+.tab:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
+
+/* deployments table */
+.deploys{list-style:none}
+.deploys li{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 16px;
+  padding:14px 18px;border-bottom:1px dashed rgba(18,16,13,.25);
+}
+.deploys li:last-child{border-bottom:none}
+.deploys .msg{font-weight:600;font-size:.92rem;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.deploys .meta{font-family:var(--mono);font-size:.6rem;color:var(--muted);grid-column:1}
+.deploys .meta a{color:var(--primary);text-decoration:none}
+.deploys .meta a:hover{text-decoration:underline}
+.status{
+  grid-column:2;grid-row:1 / span 2;align-self:center;
+  font-family:var(--mono);font-size:.6rem;font-weight:700;letter-spacing:.08em;
+  border:2px solid var(--ink);border-radius:6px;padding:4px 9px;white-space:nowrap;
+}
+.status.ready{background:var(--primary);color:#fff}
+.status.error{background:var(--accent);color:var(--ink)}
+.status.asleep{background:var(--bg);color:var(--fg)}
+.status.building{background:var(--card);color:var(--muted);border-style:dashed}
+.deploys li.rollback-row{background:rgba(232,64,42,.07)}
+.empty{padding:26px 18px;font-size:.88rem;color:var(--muted)}
+
+/* rollover panel */
+.side{display:flex;flex-direction:column;gap:24px}
+.ro-body{padding:18px}
+.ro-body p{font-size:.85rem;color:var(--muted);margin-bottom:16px}
+.ro-target{
+  font-family:var(--mono);font-size:.68rem;border:2px solid var(--ink);border-radius:8px;
+  background:var(--bg);padding:10px 12px;margin-bottom:16px;
+}
+.btn{
+  display:inline-block;width:100%;cursor:pointer;text-align:center;
+  font-family:var(--display);font-weight:800;font-size:1rem;letter-spacing:.02em;
+  padding:13px 18px;border:var(--border);border-radius:10px;
+  background:var(--accent);color:var(--ink);
+  box-shadow:4px 4px 0 var(--ink);
+  transition:transform .15s ease,box-shadow .15s ease;
+}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+.btn:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--ink)}
+.btn:focus-visible{outline:3px solid var(--primary);outline-offset:3px}
+.btn[disabled]{opacity:.5;cursor:not-allowed;transform:none;box-shadow:4px 4px 0 var(--ink)}
+.ro-note{font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-top:12px;text-align:center}
+
+/* kennels */
+.kennels{list-style:none}
+.kennels li{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:11px 18px;border-bottom:1px dashed rgba(18,16,13,.25);
+  font-size:.84rem;
+}
+.kennels li:last-child{border-bottom:none}
+.kennels .region{font-weight:600}
+.kennels .lat{font-family:var(--mono);font-size:.66rem;color:var(--primary);font-variant-numeric:tabular-nums}
+.kennels .state{font-family:var(--mono);font-size:.58rem;color:var(--muted);letter-spacing:.08em}
+
+/* logs */
+.logs{grid-column:1 / -1}
+@media(max-width:980px){.logs{grid-column:auto}}
+.log-body{
+  background:var(--ink);color:var(--bg);
+  font-family:var(--mono);font-size:.68rem;line-height:1.9;
+  padding:16px 18px;height:210px;overflow-y:auto;
+}
+.log-body .t{color:rgba(251,244,226,.45)}
+.log-body .ok{color:#8FA0FF}
+.log-body .warn{color:#FF8A75}
+@media(prefers-reduced-motion:reduce){
+  .dot{animation:none}
+  .back,.btn{transition:none}
+}
+</style>
+</head>
+<body>
+
+<header class="chrome">
+  <div class="chrome-inner">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <span class="crumb"><span class="proj">rollover</span> / <span>biscuit.dog</span></span>
+    <span class="pill" id="prodPill"><span class="dot"></span><span id="prodState">READY</span></span>
+    <span class="spacer"></span>
+    <span class="env">PRODUCTION · KENNEL US-EAST-1</span>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="dash">
+
+    <section class="panel" aria-labelledby="depTitle">
+      <div class="panel-head">
+        <div>
+          <h2 id="depTitle">Deployments</h2>
+          <span class="sub">BEHAVIOR SHIPS · LAST 24H</span>
+        </div>
+        <div class="tabs" role="group" aria-label="Filter deployments">
+          <button class="tab" aria-pressed="true" data-filter="all" type="button">ALL</button>
+          <button class="tab" aria-pressed="false" data-filter="ready" type="button">READY</button>
+          <button class="tab" aria-pressed="false" data-filter="error" type="button">ERROR</button>
+          <button class="tab" aria-pressed="false" data-filter="asleep" type="button">ASLEEP</button>
+        </div>
+      </div>
+      <ul class="deploys" id="deployList"></ul>
+      <div class="empty" id="deployEmpty" hidden>No deployments match this filter. The dog has been consistent, which is suspicious.</div>
+    </section>
+
+    <div class="side">
+      <section class="panel" aria-labelledby="roTitle">
+        <div class="panel-head">
+          <h2 id="roTitle">Instant Rollover</h2>
+        </div>
+        <div class="ro-body">
+          <p>Revert production to the last deployment that did not involve the trash. Takes effect mid-zoomies if necessary.</p>
+          <div class="ro-target">target: <strong>asleep (v112)</strong> · verified good · 6 naps ago</div>
+          <button class="btn" id="rolloverBtn" type="button">INSTANT ROLLOVER</button>
+          <p class="ro-note" id="roNote">median revert: 38ms · no memory of the incident</p>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="kenTitle">
+        <div class="panel-head">
+          <div>
+            <h2 id="kenTitle">Edge Kennels</h2>
+            <span class="sub">REPLICAS · 6 OF 119 SHOWN</span>
+          </div>
+        </div>
+        <ul class="kennels">
+          <li><span class="region">us-east-1 <span class="state">PORCH</span></span><span class="lat">12ms</span></li>
+          <li><span class="region">us-west-2 <span class="state">YARD</span></span><span class="lat">31ms</span></li>
+          <li><span class="region">eu-central-1 <span class="state">KITCHEN</span></span><span class="lat">38ms</span></li>
+          <li><span class="region">ap-southeast-2 <span class="state">SUNBEAM</span></span><span class="lat">40ms</span></li>
+          <li><span class="region">sa-east-1 <span class="state">UNDER BED</span></span><span class="lat">87ms</span></li>
+          <li><span class="region">af-south-1 <span class="state">COLD START</span></span><span class="lat">2,400ms</span></li>
+        </ul>
+      </section>
+    </div>
+
+    <section class="panel logs" aria-labelledby="logTitle">
+      <div class="panel-head">
+        <div>
+          <h2 id="logTitle">Bark Logs</h2>
+          <span class="sub">LIVE · STDOUT OF ONE (1) DOG</span>
+        </div>
+        <button class="tab" id="logToggle" aria-pressed="true" type="button">STREAMING</button>
+      </div>
+      <div class="log-body" id="logBody" role="log" aria-live="off"></div>
+    </section>
+
+  </div>
+</main>
+
+<script>
+(function(){
+  var deployments=[
+    {msg:'feat: bark at mailman',hash:'c41f9a',age:'2m ago',status:'error',note:'known incident · recurring'},
+    {msg:'fix: stop eating couch',hash:'8b2e07',age:'41m ago',status:'ready',note:'preview walk approved'},
+    {msg:'chore: relocate nap to sunbeam',hash:'f30d1c',age:'1h ago',status:'ready',note:'zero downtime'},
+    {msg:'feat: greet guests at ankle level',hash:'77aa02',age:'3h ago',status:'building',note:'checks running (sniffing)'},
+    {msg:'revert: un-bury the good bone',hash:'d90c44',age:'5h ago',status:'error',note:'bone not found (404)'},
+    {msg:'v112: asleep on the cold tile',hash:'a11eep',age:'6h ago',status:'asleep',note:'last known good state'},
+    {msg:'feat: sit, but only when watched',hash:'3b8f21',age:'9h ago',status:'ready',note:'flagged for partial compliance'},
+    {msg:'chore: patrol perimeter (squirrel)',hash:'e5d716',age:'14h ago',status:'ready',note:'edge routed · 40ms'}
+  ];
+
+  var list=document.getElementById('deployList');
+  var empty=document.getElementById('deployEmpty');
+  var currentFilter='all';
+
+  function render(){
+    list.innerHTML='';
+    var shown=0;
+    deployments.forEach(function(d){
+      if(currentFilter!=='all'&&d.status!==currentFilter)return;
+      shown++;
+      var li=document.createElement('li');
+      if(d.rollback)li.className='rollback-row';
+      var cls=d.status==='ready'?'ready':d.status==='error'?'error':d.status==='asleep'?'asleep':'building';
+      var label=d.status.toUpperCase();
+      li.innerHTML='<span class="msg"></span>'+
+        '<span class="status '+cls+'">'+label+'</span>'+
+        '<span class="meta">'+d.hash+' · '+d.age+' · '+d.note+' · <a href="#" onclick="return false">preview walk</a></span>';
+      li.querySelector('.msg').textContent=d.msg;
+      list.appendChild(li);
+    });
+    empty.hidden=shown>0;
+  }
+
+  document.querySelectorAll('.tab[data-filter]').forEach(function(t){
+    t.addEventListener('click',function(){
+      document.querySelectorAll('.tab[data-filter]').forEach(function(x){x.setAttribute('aria-pressed','false')});
+      t.setAttribute('aria-pressed','true');
+      currentFilter=t.getAttribute('data-filter');
+      render();
+    });
+  });
+
+  /* rollover */
+  var btn=document.getElementById('rolloverBtn');
+  var note=document.getElementById('roNote');
+  var pillState=document.getElementById('prodState');
+  var pill=document.getElementById('prodPill');
+  btn.addEventListener('click',function(){
+    btn.disabled=true;
+    note.textContent='reverting…';
+    setTimeout(function(){
+      deployments.unshift({msg:'rollback: production → asleep (v112)',hash:'a11eep',age:'just now',status:'asleep',note:'38ms · initiated by hand',rollback:true});
+      pillState.textContent='ASLEEP';
+      pill.classList.remove('err');
+      note.textContent='reverted in 38ms · the couch is safe · the dog remembers nothing';
+      addLog('warn','rollover initiated by operator');
+      addLog('ok','state restored: asleep on the cold tile (v112)');
+      addLog('t','memory of incident: purged (both parties)');
+      render();
+      btn.disabled=false;
+    },600);
+  });
+
+  /* bark logs */
+  var logBody=document.getElementById('logBody');
+  var logToggle=document.getElementById('logToggle');
+  var streaming=true;
+  var logLines=[
+    ['t','heartbeat OK · tail at 4.2 wags/sec'],
+    ['ok','GET /fetch → 200 · routed to nearest dog · 40ms'],
+    ['t','sniff event · perimeter · no findings'],
+    ['warn','bark emitted · target: mailman · known incident'],
+    ['ok','treat accepted · latency 0ms · zero cold start'],
+    ['t','nap pressure rising · sunbeam at 87% occupancy'],
+    ['warn','squirrel detected at edge · escalating'],
+    ['ok','sit executed · compliance partial · observer present'],
+    ['t','water bowl at 41% · ticket filed with household'],
+    ['warn','couch proximity alert · rollover armed'],
+    ['ok','preview walk 22c1 approved by 1 reviewer (a dog)'],
+    ['t','dream detected · content: unknown · legs running']
+  ];
+  var idx=0;
+  function stamp(){
+    var d=new Date();
+    function p(n){return (n<10?'0':'')+n}
+    return p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+  }
+  function addLog(cls,text){
+    var line=document.createElement('div');
+    line.innerHTML='<span class="t">'+stamp()+'</span> ';
+    var span=document.createElement('span');
+    span.className=cls;
+    span.textContent=text;
+    line.appendChild(span);
+    logBody.appendChild(line);
+    while(logBody.children.length>60)logBody.removeChild(logBody.firstChild);
+    logBody.scrollTop=logBody.scrollHeight;
+  }
+  for(var i=0;i<4;i++){addLog(logLines[i][0],logLines[i][1]);idx=i+1}
+  var reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var interval=setInterval(function(){
+    if(!streaming)return;
+    var l=logLines[idx%logLines.length];
+    addLog(l[0],l[1]);
+    idx++;
+  },reduced?6000:2200);
+  logToggle.addEventListener('click',function(){
+    streaming=!streaming;
+    logToggle.textContent=streaming?'STREAMING':'PAUSED';
+    logToggle.setAttribute('aria-pressed',String(streaming));
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

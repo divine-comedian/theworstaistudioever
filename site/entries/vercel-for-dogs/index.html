@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rollover · theworstaistudioever</title>
+<meta name="description" content="Rollover deploys your dog to the edge of the yard and reverts it to its last known good state (asleep) the moment the couch is at risk.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Rollover · Ship your dog to production.">
+<meta property="og:description" content="Zero-config dog infrastructure. Preview walks, instant rollbacks to asleep, 119 kennels of presence.">
+<meta property="og:site_name" content="theworstaistudioever">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Instrument+Sans:wght@400;500;600;700&family=Martian+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#2B3FD4;
+  --accent:#E8402A;
+  --bg:#FBF4E2;
+  --fg:#1C1A16;
+  --muted:#6E675A;
+  --ink:#12100D;
+  --card:#FFFBF0;
+  --border:2.5px solid var(--ink);
+  --shadow:6px 6px 0 var(--ink);
+  --shadow-hover:8px 8px 0 var(--ink);
+  --display:'Bricolage Grotesque','Arial Black',system-ui,sans-serif;
+  --body:'Instrument Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'Martian Mono','SFMono-Regular',Consolas,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--fg);
+  font-family:var(--body);
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--primary);color:#fff}
+a{color:var(--primary)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+
+/* ---------- header ---------- */
+.top{
+  border-bottom:var(--border);
+  background:var(--bg);
+  position:sticky;top:0;z-index:100;
+}
+.top-inner{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 24px;max-width:1120px;margin:0 auto;
+}
+.wordmark{
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--display);font-weight:800;font-size:1.35rem;
+  color:var(--ink);text-decoration:none;letter-spacing:-.02em;
+}
+.wordmark svg{display:block}
+.top-nav{display:flex;align-items:center;gap:22px}
+.top-nav a{
+  font-weight:600;font-size:.92rem;color:var(--fg);text-decoration:none;
+}
+.top-nav a:hover{color:var(--primary);text-decoration:underline;text-underline-offset:4px}
+.btn{
+  display:inline-block;cursor:pointer;
+  font-family:var(--body);font-weight:700;font-size:.95rem;
+  padding:11px 20px;border:var(--border);border-radius:10px;
+  text-decoration:none;
+  box-shadow:4px 4px 0 var(--ink);
+  transition:transform .15s ease,box-shadow .15s ease;
+  color:var(--ink);background:var(--card);
+}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+.btn:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--ink)}
+.btn:focus-visible{outline:3px solid var(--primary);outline-offset:3px}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-danger{background:var(--accent);color:var(--ink)}
+.top-nav .btn{padding:9px 16px;font-size:.88rem}
+@media(max-width:720px){.top-nav a:not(.btn){display:none}}
+
+/* ---------- hero ---------- */
+.hero{padding:72px 0 56px;overflow:hidden}
+.hero-grid{
+  display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center;
+}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr;gap:44px}}
+.eyebrow{
+  display:inline-block;font-family:var(--mono);font-size:.68rem;
+  letter-spacing:.14em;text-transform:uppercase;
+  border:2px solid var(--ink);border-radius:6px;padding:5px 10px;
+  background:var(--card);box-shadow:3px 3px 0 var(--ink);
+  margin-bottom:22px;
+}
+h1{
+  font-family:var(--display);font-weight:800;
+  font-size:clamp(2.5rem,5.4vw,4rem);
+  line-height:1.04;letter-spacing:-.03em;color:var(--ink);
+  margin-bottom:8px;
+}
+.h1-slab{
+  display:inline-block;
+  box-shadow:inset 0 -0.28em 0 0 rgba(43,63,212,.35);
+}
+.hero-sub{
+  font-size:1.08rem;color:var(--fg);max-width:34em;margin:18px 0 30px;
+}
+.hero-ctas{display:flex;gap:16px;flex-wrap:wrap}
+.hero-note{
+  margin-top:18px;font-family:var(--mono);font-size:.7rem;color:var(--muted);
+}
+
+/* deployment card */
+.deploy-card{
+  position:relative;
+  background:var(--card);border:var(--border);border-radius:12px;
+  box-shadow:var(--shadow);
+  transform:rotate(1.5deg);
+  padding:22px;
+}
+.sticker{
+  position:absolute;top:-16px;right:-14px;
+  transform:rotate(-4deg);
+  background:var(--accent);color:var(--ink);
+  font-family:var(--mono);font-weight:700;font-size:.66rem;
+  letter-spacing:.12em;text-transform:uppercase;
+  border:2px solid var(--ink);border-radius:8px;
+  padding:7px 12px;box-shadow:3px 3px 0 var(--ink);
+}
+.dc-head{
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:14px;
+}
+.dc-domain{font-family:var(--mono);font-weight:700;font-size:.95rem}
+.pill{
+  display:inline-flex;align-items:center;gap:7px;
+  font-family:var(--mono);font-size:.66rem;font-weight:700;
+  letter-spacing:.1em;
+  border:2px solid var(--ink);border-radius:99px;padding:5px 12px;
+  background:var(--bg);
+}
+.dot{
+  width:8px;height:8px;border-radius:50%;background:var(--primary);
+  animation:pulse 3s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.dc-rows{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+.dc-rows li{
+  display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  font-size:.86rem;
+}
+.dc-rows .msg{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dc-rows .meta{font-family:var(--mono);font-size:.64rem;color:var(--muted);white-space:nowrap}
+.dc-rows .ok{color:var(--primary)}
+.dc-rows .err{color:var(--accent)}
+.rollover-btn{
+  width:100%;text-align:center;
+  font-family:var(--display);font-weight:800;font-size:1.05rem;
+  letter-spacing:.02em;
+  padding:15px 20px;
+}
+.dc-foot{
+  margin-top:12px;text-align:center;
+  font-family:var(--mono);font-size:.62rem;color:var(--muted);
+}
+
+/* ---------- ticker ---------- */
+.ticker{
+  border-top:var(--border);border-bottom:var(--border);
+  background:var(--card);overflow:hidden;padding:12px 0;
+}
+.ticker-track{
+  display:flex;gap:48px;width:max-content;
+  animation:ticker 36s linear infinite;
+}
+.ticker:hover .ticker-track{animation-play-state:paused}
+.ticker span{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.04em;
+  white-space:nowrap;color:var(--fg);
+}
+.ticker b{color:var(--primary);font-weight:700}
+.ticker i{color:var(--accent);font-style:normal;font-weight:700}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ---------- sections ---------- */
+section{padding:80px 0}
+.sec-head{max-width:640px;margin-bottom:48px}
+h2{
+  font-family:var(--display);font-weight:800;
+  font-size:clamp(1.8rem,3.6vw,2.6rem);
+  line-height:1.1;letter-spacing:-.02em;color:var(--ink);
+  margin-bottom:14px;
+}
+.sec-head p{color:var(--muted);font-size:1.02rem}
+
+/* features */
+.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+@media(max-width:900px){.feature-grid{grid-template-columns:1fr}}
+.permit{
+  position:relative;
+  background:var(--card);border:var(--border);border-radius:12px;
+  box-shadow:var(--shadow);padding:26px;
+  transition:transform .15s ease,box-shadow .15s ease;
+}
+.permit:hover{transform:translate(-2px,-2px);box-shadow:var(--shadow-hover)}
+.permit .lic{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;
+  color:var(--muted);text-transform:uppercase;display:block;margin-bottom:16px;
+}
+.permit h3{
+  font-family:var(--display);font-weight:700;font-size:1.3rem;
+  letter-spacing:-.01em;color:var(--ink);margin-bottom:10px;
+}
+.permit p{font-size:.94rem;color:var(--fg)}
+.permit .icon{
+  width:46px;height:46px;display:flex;align-items:center;justify-content:center;
+  border:2px solid var(--ink);border-radius:10px;background:var(--bg);
+  box-shadow:3px 3px 0 var(--ink);margin-bottom:18px;
+}
+
+/* stats strip */
+.stats{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:28px;
+  border:var(--border);border-radius:12px;background:var(--card);
+  box-shadow:var(--shadow);padding:30px;
+}
+@media(max-width:720px){.stats{grid-template-columns:1fr;gap:20px}}
+.stat{text-align:center}
+.stat .num{
+  font-family:var(--mono);font-weight:700;font-size:1.7rem;color:var(--primary);
+  font-variant-numeric:tabular-nums;
+}
+.stat .lbl{font-size:.82rem;color:var(--muted);margin-top:6px}
+
+/* testimonials */
+.quote-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+@media(max-width:900px){.quote-grid{grid-template-columns:1fr}}
+.quote{
+  background:var(--card);border:var(--border);border-radius:12px;
+  box-shadow:var(--shadow);padding:26px;display:flex;flex-direction:column;
+}
+.quote blockquote{font-size:.97rem;flex:1;margin-bottom:22px}
+.quote blockquote::before{content:"\201C";font-family:var(--display);color:var(--primary);font-size:1.4em;font-weight:800;margin-right:2px}
+.who{display:flex;align-items:center;gap:14px}
+.who img{
+  width:52px;height:52px;border-radius:10px;border:2px solid var(--ink);
+  object-fit:cover;display:block;box-shadow:3px 3px 0 var(--ink);
+}
+.who .nm{font-weight:700;font-size:.92rem;color:var(--ink)}
+.who .tt{font-size:.78rem;color:var(--muted);line-height:1.4}
+
+/* pricing */
+.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;align-items:stretch}
+@media(max-width:900px){.price-grid{grid-template-columns:1fr}}
+.tier{
+  position:relative;display:flex;flex-direction:column;
+  background:var(--card);border:var(--border);border-radius:12px;
+  box-shadow:var(--shadow);padding:28px;
+  transition:transform .15s ease,box-shadow .15s ease;
+}
+.tier:hover{transform:translate(-2px,-2px);box-shadow:var(--shadow-hover)}
+.tier.hot{background:var(--primary);color:#fff}
+.tier.hot h3,.tier.hot .amt{color:#fff}
+.tier.hot .tl{color:rgba(255,255,255,.75)}
+.tier.hot li{border-color:rgba(255,255,255,.25)}
+.tier h3{font-family:var(--display);font-weight:700;font-size:1.2rem;color:var(--ink)}
+.tier .amt{
+  font-family:var(--mono);font-weight:700;font-size:1.9rem;color:var(--primary);
+  margin:14px 0 4px;font-variant-numeric:tabular-nums;
+}
+.tier .tl{font-size:.86rem;color:var(--muted);margin-bottom:20px}
+.tier ul{list-style:none;flex:1;margin-bottom:24px}
+.tier li{
+  font-size:.9rem;padding:9px 0;border-bottom:1px dashed rgba(18,16,13,.25);
+}
+.tier li::before{content:"→ ";font-family:var(--mono);font-size:.8em}
+.tier .btn{text-align:center}
+.tier.hot .btn{background:var(--card)}
+.tier .sticker{top:-16px;right:18px}
+
+/* demo cta */
+.demo-cta{
+  border:var(--border);border-radius:12px;background:var(--ink);color:var(--bg);
+  box-shadow:8px 8px 0 var(--primary);
+  padding:56px 40px;text-align:center;
+}
+.demo-cta h2{color:var(--bg)}
+.demo-cta p{color:rgba(251,244,226,.7);max-width:36em;margin:0 auto 30px}
+.demo-cta .btn-danger{font-size:1.05rem;padding:15px 30px}
+
+/* footer */
+footer{border-top:var(--border);padding:40px 0 48px;background:var(--card)}
+.foot{
+  display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap;
+}
+.foot a{color:var(--fg);font-weight:600;text-decoration:none}
+.foot a:hover{color:var(--primary);text-decoration:underline;text-underline-offset:4px}
+.foot small{display:block;color:var(--muted);font-size:.78rem;margin-top:8px;max-width:44em}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(6px);transition:opacity .5s ease,transform .5s ease}
+.reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .ticker-track{animation:none}
+  .dot{animation:none}
+  .reveal{opacity:1;transform:none;transition:none}
+  .btn,.permit,.tier{transition:none}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <a class="wordmark" href="#" aria-label="Rollover home">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+        <rect x="1.5" y="1.5" width="23" height="23" rx="6" stroke="#12100D" stroke-width="3"/>
+        <path d="M18 9.5a5.5 5.5 0 1 0 1.6 6.9" stroke="#2B3FD4" stroke-width="3" stroke-linecap="round"/>
+        <path d="M19.8 5.8v4.2h-4.2" stroke="#2B3FD4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Rollover
+    </a>
+    <nav class="top-nav" aria-label="Main">
+      <a href="#features">Platform</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#testimonials">Customers</a>
+      <a class="btn btn-primary" href="./demo.html">Open dashboard</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow">Dog infrastructure · zero config</span>
+        <h1><span class="h1-slab">Ship your dog</span> to production.</h1>
+        <p class="hero-sub">Rollover is zero-config dog infrastructure. Every walk gets a preview environment, every behavior ships behind a flag, and when the couch is at risk we revert your dog to its last known good state: asleep. Rollbacks land in 38 milliseconds, which is faster than remorse.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="#pricing">Deploy a dog</a>
+          <a class="btn" href="./demo.html">Open the demo →</a>
+        </div>
+        <p class="hero-note">No leash required. No credit card required. A dog is required.</p>
+      </div>
+      <div class="deploy-card" aria-label="Example deployment card">
+        <span class="sticker">Approved</span>
+        <div class="dc-head">
+          <span class="dc-domain">biscuit.dog</span>
+          <span class="pill"><span class="dot"></span>READY</span>
+        </div>
+        <ul class="dc-rows">
+          <li><span class="msg">feat: bark at mailman</span><span class="meta err">FAILED · c41f9a</span></li>
+          <li><span class="msg">fix: stop eating couch</span><span class="meta ok">READY · 8b2e07</span></li>
+          <li><span class="msg">chore: relocate nap to sunbeam</span><span class="meta ok">READY · f30d1c</span></li>
+        </ul>
+        <button class="btn btn-danger rollover-btn" id="heroRollover" type="button">INSTANT ROLLOVER</button>
+        <p class="dc-foot" id="heroRolloverNote">last known good state: asleep (v112)</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      <span><b>biscuit-7f3a</b> promoted to production · 38ms</span>
+      <span><i>rollback</i> peanut reverted to v112 (asleep)</span>
+      <span><b>walnut-22c1</b> preview walk approved by 1 reviewer (a dog)</span>
+      <span>feat: bark at mailman <i>failed checks</i> · known incident</span>
+      <span><b>clementine-90ad</b> replicated to 119 kennels of presence</span>
+      <span>fetch request routed to nearest available dog · 40ms</span>
+      <span><b>biscuit-7f3a</b> promoted to production · 38ms</span>
+      <span><i>rollback</i> peanut reverted to v112 (asleep)</span>
+      <span><b>walnut-22c1</b> preview walk approved by 1 reviewer (a dog)</span>
+      <span>feat: bark at mailman <i>failed checks</i> · known incident</span>
+      <span><b>clementine-90ad</b> replicated to 119 kennels of presence</span>
+      <span>fetch request routed to nearest available dog · 40ms</span>
+    </div>
+  </div>
+
+  <section id="features" class="wrap reveal">
+    <div class="sec-head">
+      <h2>The platform your dog was going to misbehave on anyway.</h2>
+      <p>Three primitives. That's the whole product. We considered a fourth and put it behind a waitlist.</p>
+    </div>
+    <div class="feature-grid">
+      <article class="permit">
+        <span class="lic">License No. K9-2026-001</span>
+        <div class="icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19c2-6 5-9 8-9s6 3 8 9" stroke="#12100D" stroke-width="2.5" stroke-linecap="round"/><circle cx="12" cy="6" r="2.5" stroke="#2B3FD4" stroke-width="2.5"/></svg>
+        </div>
+        <h3>Preview Walks</h3>
+        <p>Every behavioral change gets an isolated preview walk before it merges to the main route. Stakeholders (the neighbors, one squirrel) can comment directly on the walk. Nothing reaches your living room until it has been approved by at least one reviewer who is also a dog.</p>
+      </article>
+      <article class="permit">
+        <span class="lic">License No. K9-2026-002</span>
+        <div class="icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M17 7a7 7 0 1 0 2 5" stroke="#E8402A" stroke-width="2.5" stroke-linecap="round"/><path d="M19.5 3.5v4.2h-4.2" stroke="#E8402A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h3>Instant Rollover</h3>
+        <p>One click reverts your dog to the last deployment that did not involve the trash. Mid-zoomies, mid-bark, mid-shoe: state restores to asleep-on-the-cold-tile with zero downtime and no memory of the incident, on either side.</p>
+      </article>
+      <article class="permit">
+        <span class="lic">License No. K9-2026-003</span>
+        <div class="icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="#12100D" stroke-width="2.5"/><path d="M3.5 12h17M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" stroke="#2B3FD4" stroke-width="2.5"/></svg>
+        </div>
+        <h3>The Edge (of the Yard)</h3>
+        <p>Your dog is replicated across 119 kennels of presence worldwide, so there is always a dog within 40 milliseconds of your hand. Fetch requests route to the nearest available dog. Cold starts apply to senior dogs only, and we think that's fair.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="wrap reveal" aria-label="Platform statistics">
+    <div class="stats">
+      <div class="stat"><div class="num">38ms</div><div class="lbl">median rollback, faster than remorse</div></div>
+      <div class="stat"><div class="num">119</div><div class="lbl">kennels of presence worldwide</div></div>
+      <div class="stat"><div class="num">99.99%</div><div class="lbl">tail uptime, externally audited</div></div>
+    </div>
+  </section>
+
+  <section id="testimonials" class="wrap reveal">
+    <div class="sec-head">
+      <h2>Households at scale.</h2>
+      <p>Real quotes from users we are contractually describing as real.</p>
+    </div>
+    <div class="quote-grid">
+      <article class="quote">
+        <blockquote>We rolled Biscuit back mid-zoomies. The couch survived. I watched the whole thing from the dashboard and felt nothing but uptime.</blockquote>
+        <div class="who">
+          <img src="headshot-1.webp" alt="Corporate headshot of a black labrador" width="52" height="52" loading="lazy">
+          <div><div class="nm">Dana Okafor</div><div class="tt">VP of Household Infrastructure, family of four</div></div>
+        </div>
+      </article>
+      <article class="quote">
+        <blockquote>Before Rollover, our dog's behavior shipped straight to production. To the rug, specifically. Now everything goes through a preview walk first, and the rug is in review.</blockquote>
+        <div class="who">
+          <img src="headshot-2.webp" alt="Corporate headshot of a border collie" width="52" height="52" loading="lazy">
+          <div><div class="nm">Marcus Webb</div><div class="tt">Staff Dog Reliability Engineer (self-appointed)</div></div>
+        </div>
+      </article>
+      <article class="quote">
+        <blockquote>There is always a dog within 40 milliseconds of my hand. I have measured it. I don't know what I was paying for before this.</blockquote>
+        <div class="who">
+          <img src="headshot-3.webp" alt="Corporate headshot of a jack russell terrier" width="52" height="52" loading="lazy">
+          <div><div class="nm">Priya Ananth</div><div class="tt">Head of Fetch Operations, two-terrier household</div></div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="pricing" class="wrap reveal">
+    <div class="sec-head">
+      <h2>Pricing that scales with your dog.</h2>
+      <p>Billed monthly, annually, or in treats at an exchange rate we set.</p>
+    </div>
+    <div class="price-grid">
+      <article class="tier">
+        <h3>Hobby Dog</h3>
+        <div class="amt">$0</div>
+        <p class="tl">For personal, strictly non-commercial dogs.</p>
+        <ul>
+          <li>1 dog, unlimited naps</li>
+          <li>Preview walks on shared leashes</li>
+          <li>Community-supported belly rubs</li>
+          <li>Cold starts (your dog wakes up when it wakes up)</li>
+        </ul>
+        <a class="btn" href="./demo.html">Start for free</a>
+      </article>
+      <article class="tier hot">
+        <span class="sticker">Most deployed</span>
+        <h3>Good Boy Pro</h3>
+        <div class="amt">$20<span style="font-size:.5em">/dog/mo</span></div>
+        <p class="tl">For dogs shipping to production daily.</p>
+        <ul>
+          <li>Unlimited preview walks</li>
+          <li>Instant Rollover to any previous nap</li>
+          <li>Custom domains (biscuit.dog)</li>
+          <li>Priority squirrel routing</li>
+        </ul>
+        <a class="btn" href="./demo.html">Upgrade your dog</a>
+      </article>
+      <article class="tier">
+        <h3>Working Dog</h3>
+        <div class="amt">$4,000<span style="font-size:.5em">/yr</span></div>
+        <p class="tl">Compliance, herding, SSO.</p>
+        <ul>
+          <li>99.99% tail uptime SLA</li>
+          <li>Dedicated handler success manager</li>
+          <li>SOC 2 Type Beagle report on request</li>
+          <li>Single Sign-On (one long whistle)</li>
+        </ul>
+        <a class="btn" href="./demo.html">Talk to the sales pack</a>
+      </article>
+    </div>
+  </section>
+
+  <section class="wrap reveal">
+    <div class="demo-cta">
+      <h2>See a production dog in the wild.</h2>
+      <p>Biscuit is live right now. You can watch her deployments, read her bark logs, and roll her back to asleep. She has consented in the way dogs consent to things, which is that we did not ask.</p>
+      <a class="btn btn-danger" href="./demo.html">open the demo →</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div>
+      <a href="/">← theworstaistudioever</a>
+      <small>Rollover is a fictional product of a very real commitment. Portfolio company no. 63.</small>
+    </div>
+    <div>
+      <small>© 2026 Rollover Infrastructure, Inc. All naps reserved. Rollover is not a veterinarian. Rollover is barely a company. The couch remains a stakeholder.</small>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reveals=document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}
+      });
+    },{threshold:.12});
+    reveals.forEach(function(el){io.observe(el)});
+  }else{
+    reveals.forEach(function(el){el.classList.add('in')});
+  }
+
+  var btn=document.getElementById('heroRollover');
+  var note=document.getElementById('heroRolloverNote');
+  var rolled=false;
+  btn.addEventListener('click',function(){
+    if(rolled)return;
+    rolled=true;
+    note.textContent='production reverted to asleep (v112) · 38ms · no memory of the incident';
+    var pill=document.querySelector('.pill');
+    pill.innerHTML='<span class="dot"></span>ASLEEP';
+    setTimeout(function(){
+      rolled=false;
+      note.textContent='last known good state: asleep (v112)';
+      pill.innerHTML='<span class="dot"></span>READY';
+    },4000);
+  });
+})();
+</script>
+</body>
+</html>
