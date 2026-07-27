@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hollow Farm · Skulk</title>
+<meta name="description" content="The Skulk workspace demo: one den, five channels, forty-seven unread screams.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --amber:#F0913F;
+    --lavender:#B7A9F5;
+    --bg-top:#1D1840;
+    --bg-bottom:#0F0C22;
+    --fg:#EFEAFE;
+    --muted:#9C93C4;
+    --glass:rgba(255,255,255,0.06);
+    --glass-strong:rgba(255,255,255,0.09);
+    --glass-border:rgba(255,255,255,0.14);
+    --well:rgba(9,7,24,0.55);
+    --display:'Sora','Avenir Next','Segoe UI',system-ui,sans-serif;
+    --body:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --mono:'JetBrains Mono','SFMono-Regular',Consolas,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:var(--body);color:var(--fg);
+    background:linear-gradient(180deg,var(--bg-top),var(--bg-bottom));
+    min-height:100vh;line-height:1.5;
+    display:flex;flex-direction:column;
+  }
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:10px 18px;border-bottom:1px solid var(--glass-border);
+    background:rgba(9,7,24,0.4);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    position:sticky;top:0;z-index:20;gap:12px;
+  }
+  .topbar a.back{color:var(--muted);text-decoration:none;font-size:.82rem;font-weight:600;white-space:nowrap}
+  .topbar a.back:hover{color:var(--lavender)}
+  .topbar .brand{font-family:var(--display);font-weight:800;font-size:1rem;display:flex;align-items:center;gap:8px}
+  .gtg{
+    display:flex;align-items:center;gap:10px;font-size:.75rem;color:var(--muted);
+  }
+  .switch{
+    width:42px;height:24px;border-radius:99px;background:rgba(255,255,255,0.12);
+    border:1px solid var(--glass-border);position:relative;cursor:pointer;transition:background .2s ease;flex-shrink:0;
+  }
+  .switch::after{
+    content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;
+    background:var(--muted);transition:transform .2s ease,background .2s ease;
+  }
+  .switch[aria-checked="true"]{background:rgba(240,145,63,0.35)}
+  .switch[aria-checked="true"]::after{transform:translateX(18px);background:var(--amber)}
+  .switch:focus-visible{outline:2px solid var(--lavender);outline-offset:2px}
+
+  .app{flex:1;display:grid;grid-template-columns:240px 1fr;min-height:0}
+  @media(max-width:720px){.app{grid-template-columns:170px 1fr}}
+  @media(max-width:520px){.app{grid-template-columns:140px 1fr}}
+
+  /* sidebar */
+  .side{
+    border-right:1px solid var(--glass-border);
+    background:rgba(9,7,24,0.3);
+    padding:16px 10px;overflow-y:auto;
+  }
+  .ws-name{font-family:var(--display);font-weight:700;font-size:.95rem;padding:0 8px 12px;border-bottom:1px solid var(--glass-border);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .side .label{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:var(--muted);padding:0 8px;margin:16px 0 6px}
+  .chan-btn{
+    display:flex;justify-content:space-between;align-items:center;gap:6px;width:100%;
+    background:none;border:none;color:var(--muted);font-family:var(--body);font-size:.86rem;font-weight:600;
+    padding:6px 8px;border-radius:8px;cursor:pointer;text-align:left;transition:background .15s ease,color .15s ease;
+  }
+  .chan-btn:hover{background:rgba(255,255,255,0.06);color:var(--fg)}
+  .chan-btn.active{background:rgba(240,145,63,0.16);color:var(--fg)}
+  .chan-btn .badge{font-family:var(--mono);font-size:.62rem;background:var(--amber);color:#20130A;border-radius:99px;padding:1px 7px;font-weight:600}
+  .chan-btn:focus-visible{outline:2px solid var(--lavender);outline-offset:-2px}
+  .dm-row{display:flex;align-items:center;gap:8px;min-width:0}
+  .dm-row img{width:20px;height:20px;border-radius:6px;object-fit:cover;flex-shrink:0}
+  .dm-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .eyeshine{display:inline-flex;gap:3px;flex-shrink:0}
+  .eyeshine i{width:5px;height:5px;border-radius:50%;background:var(--amber);box-shadow:0 0 6px rgba(240,145,63,0.8);animation:shine 3s ease-in-out infinite}
+  .eyeshine.off i{background:rgba(255,255,255,0.2);box-shadow:none;animation:none}
+  @keyframes shine{0%,100%{opacity:1}50%{opacity:.35}}
+  .me{
+    margin-top:22px;padding:10px 8px;border-top:1px solid var(--glass-border);
+    display:flex;align-items:center;gap:10px;font-size:.8rem;
+  }
+  .me .avatar{width:28px;height:28px;border-radius:8px;background:rgba(240,145,63,0.25);color:var(--amber);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.72rem;flex-shrink:0}
+  .me .status{font-size:.68rem;color:var(--muted)}
+
+  /* main pane */
+  .main{display:flex;flex-direction:column;min-width:0;min-height:0}
+  .chan-head{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:12px 20px;border-bottom:1px solid var(--glass-border);
+    background:rgba(9,7,24,0.2);
+  }
+  .chan-head .cname{font-family:var(--display);font-weight:700;font-size:1rem}
+  .chan-head .topic{font-size:.75rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .scream-btn{
+    font-family:var(--display);font-weight:800;font-size:.78rem;letter-spacing:.12em;
+    background:var(--amber);color:#20130A;border:none;border-radius:10px;padding:10px 16px;cursor:pointer;
+    box-shadow:0 4px 18px rgba(240,145,63,0.3);transition:transform .12s ease,box-shadow .2s ease;white-space:nowrap;
+  }
+  .scream-btn:hover{box-shadow:0 6px 26px rgba(240,145,63,0.5)}
+  .scream-btn:active{transform:translateY(1px)}
+  .scream-btn:focus-visible{outline:2px solid var(--lavender);outline-offset:2px}
+
+  .feed{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px}
+  .msg{display:flex;gap:12px;max-width:760px}
+  .msg .av{width:36px;height:36px;border-radius:10px;object-fit:cover;flex-shrink:0}
+  .msg .av-init{width:36px;height:36px;border-radius:10px;background:rgba(183,169,245,0.2);color:var(--lavender);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.78rem;flex-shrink:0}
+  .msg .av-init.you{background:rgba(240,145,63,0.25);color:var(--amber)}
+  .msg .who{font-weight:700;font-size:.86rem}
+  .msg .when{font-family:var(--mono);font-size:.66rem;color:var(--muted);margin-left:8px}
+  .msg .txt{font-size:.92rem;overflow-wrap:anywhere}
+  .msg .thread{font-size:.72rem;color:var(--lavender);margin-top:4px;cursor:pointer;width:fit-content}
+  .msg .thread:hover{text-decoration:underline}
+  .sysline{font-size:.72rem;color:var(--muted);text-align:center;padding:4px 0}
+  .daymark{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+  .daymark::before,.daymark::after{content:"";flex:1;height:1px;background:rgba(255,255,255,0.08)}
+
+  .composer{padding:14px 20px 18px}
+  .composer form{
+    display:flex;gap:10px;align-items:center;
+    background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;
+    padding:6px 6px 6px 16px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  }
+  .composer input{
+    flex:1;background:none;border:none;color:var(--fg);font-family:var(--body);font-size:.92rem;padding:10px 0;min-width:0;
+  }
+  .composer input::placeholder{color:var(--muted)}
+  .composer input:focus{outline:none}
+  .composer form:focus-within{border-color:rgba(183,169,245,0.5)}
+  .composer button{
+    font-family:var(--body);font-weight:700;font-size:.85rem;background:var(--amber);color:#20130A;
+    border:none;border-radius:10px;padding:10px 18px;cursor:pointer;transition:transform .12s ease;
+  }
+  .composer button:active{transform:translateY(1px)}
+  .composer button:disabled{opacity:.4;cursor:not-allowed}
+  .composer button:focus-visible{outline:2px solid var(--lavender);outline-offset:2px}
+
+  /* gone to ground state */
+  body.gtg-on .feed,body.gtg-on .side,body.gtg-on .chan-head{opacity:.35;filter:saturate(.4)}
+  body.gtg-on .eyeshine i{background:rgba(255,255,255,0.2);box-shadow:none;animation:none}
+  .gtg-banner{
+    display:none;text-align:center;font-size:.78rem;color:var(--muted);
+    padding:8px;border-bottom:1px solid var(--glass-border);background:rgba(9,7,24,0.5);
+  }
+  body.gtg-on .gtg-banner{display:block}
+  .gtg-banner .mono{font-family:var(--mono);color:var(--amber)}
+
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <div class="brand">
+      <svg width="20" height="20" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+        <path d="M4 5 L13 22 L22 5 L17 9 L13 5 L9 9 Z" fill="#F0913F"/>
+      </svg>
+      Skulk
+    </div>
+    <div class="gtg">
+      <span id="gtgLabel">Gone to Ground</span>
+      <div class="switch" id="gtgSwitch" role="switch" aria-checked="false" tabindex="0" aria-labelledby="gtgLabel"></div>
+    </div>
+  </div>
+
+  <div class="gtg-banner">You are gone to ground. All channels muted. <span class="mono">5 months remaining.</span> Your team sees: unavailable.</div>
+
+  <div class="app">
+    <nav class="side" aria-label="Channels and direct messages">
+      <div class="ws-name"><span class="eyeshine" aria-hidden="true"><i></i><i></i></span> Hollow Farm</div>
+      <div class="label">Channels</div>
+      <div id="chanList"></div>
+      <div class="label">Direct screams</div>
+      <div id="dmList"></div>
+      <div class="me">
+        <span class="avatar">TD</span>
+        <div>
+          <div style="font-weight:700">Tod (you)</div>
+          <div class="status" id="myStatus">Active · Seen Near The Bins</div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="main">
+      <div class="chan-head">
+        <div style="min-width:0">
+          <div class="cname" id="chanName"># screaming</div>
+          <div class="topic" id="chanTopic"></div>
+        </div>
+        <button class="scream-btn" id="screamBtn" type="button">SCREAM</button>
+      </div>
+      <div class="feed" id="feed" aria-live="polite"></div>
+      <div class="composer">
+        <form id="composerForm">
+          <input type="text" id="composerInput" placeholder="Message #screaming" autocomplete="off" aria-label="Message input">
+          <button type="submit" id="sendBtn">Send</button>
+        </form>
+      </div>
+    </main>
+  </div>
+
+<script>
+(function(){
+  var AVATARS = {
+    "Reynard": "./headshot-reynard.webp",
+    "Vesper": "./headshot-vesper.webp",
+    "Maude": "./headshot-maude.webp"
+  };
+
+  var CHANNELS = {
+    "den-general": {
+      topic: "Den business only. The dog goes in #sightings.",
+      msgs: [
+        {who:"Maude", when:"01:12", txt:"Reminder: the all-paws is at moonrise. Attendance is mandatory and will be sniffed."},
+        {who:"Reynard", when:"01:30", txt:"Can someone cover my patrol Thursday. I have a thing."},
+        {who:"Vesper", when:"01:31", txt:"What thing."},
+        {who:"Reynard", when:"01:33", txt:"A thing."},
+        {who:"Ester", when:"02:02", txt:"the farmer got a new dog. flagging for visibility"},
+        {who:"Maude", when:"02:04", txt:"Please log the dog in #sightings. This channel is for den business."}
+      ]
+    },
+    "carcass-logistics": {
+      topic: "First come, first served. Freshness not guaranteed or implied.",
+      msgs: [
+        {who:"Reynard", when:"01:44", txt:"Half a pheasant behind the west hedge. First come first served. This is not a drill and also not fresh."},
+        {who:"Vesper", when:"01:52", txt:"Claimed. Invoice attached."},
+        {who:"Maude", when:"01:55", txt:"You cannot invoice a carcass, Vesper. We have discussed this."},
+        {who:"Vesper", when:"01:58", txt:"Net 30."}
+      ]
+    },
+    "screaming": {
+      topic: "Async contact screams. Social screams belong in DMs.",
+      unread: 47,
+      msgs: [
+        {sys:"47 earlier screams collapsed. They are all the same scream."},
+        {who:"Reynard", when:"02:14", txt:"AAAAAAAAAAAAAAAA", thread:"3 replies · last scream 02:31"},
+        {who:"Vesper", when:"02:15", txt:"Seen. Ignoring per policy."},
+        {who:"Maude", when:"02:31", txt:"AAAAAAAAAAAAAAAAAAAAAA"}
+      ]
+    },
+    "henhouse-raid-q3": {
+      topic: "Q3 raid planning. Blocked on weather. And the dog.",
+      msgs: [
+        {who:"Maude", when:"03:00", txt:"Q3 raid is blocked on weather. Kickoff moves to the next new moon. Update your capacity by dawn."},
+        {who:"Reynard", when:"03:05", txt:"Capacity: full. I am asleep."},
+        {who:"Vesper", when:"03:07", txt:"Per the scheduler, the dog is now a dependency. Risk register updated accordingly."},
+        {who:"Ester", when:"03:15", txt:"what's a risk register"},
+        {who:"Maude", when:"03:16", txt:"You are, currently."}
+      ]
+    },
+    "sightings": {
+      topic: "Log threats, dogs, and unexplained lights.",
+      msgs: [
+        {who:"Ester", when:"02:06", txt:"DOG. big. maybe a lab. smelled friendly which is worse"},
+        {who:"Vesper", when:"02:09", txt:"Logged. Threat matrix updated. Friendliness weighted at 0.8."},
+        {who:"Reynard", when:"02:40", txt:"Saw the moon do something weird. Not actionable. Just sharing."}
+      ]
+    }
+  };
+
+  var DMS = {
+    "Reynard": {
+      topic: "Direct scream with Reynard",
+      dm: true, online: true,
+      msgs: [
+        {who:"Reynard", when:"03:33", txt:"you up"},
+        {who:"Reynard", when:"03:41", txt:"the read receipt says you are up"}
+      ]
+    },
+    "Vesper": {
+      topic: "Direct scream with Vesper",
+      dm: true, online: true,
+      msgs: [
+        {who:"Vesper", when:"02:50", txt:"Do not use #screaming for social screams. That is what direct screams are for."},
+        {who:"Vesper", when:"02:51", txt:"This is not a social scream."}
+      ]
+    },
+    "Maude": {
+      topic: "Direct scream with Maude",
+      dm: true, online: false,
+      msgs: [
+        {who:"Maude", when:"01:05", txt:"Call your mother. She can see your read receipts. We all can."}
+      ]
+    }
+  };
+
+  var current = "screaming";
+  var screamCount = 0;
+  var goneToGround = false;
+
+  var feed = document.getElementById("feed");
+  var chanName = document.getElementById("chanName");
+  var chanTopic = document.getElementById("chanTopic");
+  var composerInput = document.getElementById("composerInput");
+  var sendBtn = document.getElementById("sendBtn");
+  var chanList = document.getElementById("chanList");
+  var dmList = document.getElementById("dmList");
+
+  function getRoom(id){ return CHANNELS[id] || DMS[id]; }
+
+  function nowStamp(){
+    var d = new Date();
+    var h = ("0" + d.getHours()).slice(-2);
+    var m = ("0" + d.getMinutes()).slice(-2);
+    return h + ":" + m;
+  }
+
+  function initials(name){
+    return name.slice(0,2).toUpperCase();
+  }
+
+  function renderMsg(m){
+    if (m.sys) {
+      var s = document.createElement("div");
+      s.className = "sysline";
+      s.textContent = m.sys;
+      return s;
+    }
+    var row = document.createElement("div");
+    row.className = "msg";
+    var av;
+    if (AVATARS[m.who]) {
+      av = document.createElement("img");
+      av.className = "av";
+      av.src = AVATARS[m.who];
+      av.alt = "";
+      av.width = 36; av.height = 36;
+    } else {
+      av = document.createElement("span");
+      av.className = "av-init" + (m.who === "Tod" ? " you" : "");
+      av.textContent = initials(m.who);
+    }
+    var body = document.createElement("div");
+    var head = document.createElement("div");
+    var who = document.createElement("span");
+    who.className = "who";
+    who.textContent = m.who === "Tod" ? "Tod (you)" : m.who;
+    var when = document.createElement("span");
+    when.className = "when";
+    when.textContent = m.when;
+    head.appendChild(who); head.appendChild(when);
+    var txt = document.createElement("div");
+    txt.className = "txt";
+    txt.textContent = m.txt;
+    body.appendChild(head); body.appendChild(txt);
+    if (m.thread) {
+      var t = document.createElement("div");
+      t.className = "thread";
+      t.textContent = m.thread;
+      body.appendChild(t);
+    }
+    row.appendChild(av); row.appendChild(body);
+    return row;
+  }
+
+  function renderFeed(){
+    var room = getRoom(current);
+    feed.innerHTML = "";
+    var mark = document.createElement("div");
+    mark.className = "daymark";
+    mark.textContent = "Tonight";
+    feed.appendChild(mark);
+    room.msgs.forEach(function(m){ feed.appendChild(renderMsg(m)); });
+    feed.scrollTop = feed.scrollHeight;
+    chanName.textContent = room.dm ? current : "# " + current;
+    chanTopic.textContent = room.topic;
+    composerInput.placeholder = goneToGround ? "You are gone to ground." : (room.dm ? "Scream directly at " + current : "Message #" + current);
+  }
+
+  function renderSidebar(){
+    chanList.innerHTML = "";
+    Object.keys(CHANNELS).forEach(function(id){
+      var b = document.createElement("button");
+      b.className = "chan-btn" + (id === current ? " active" : "");
+      b.type = "button";
+      var label = document.createElement("span");
+      label.textContent = "# " + id;
+      b.appendChild(label);
+      var unread = CHANNELS[id].unread;
+      if (unread) {
+        var badge = document.createElement("span");
+        badge.className = "badge";
+        badge.textContent = unread;
+        b.appendChild(badge);
+      }
+      b.addEventListener("click", function(){ switchRoom(id); });
+      chanList.appendChild(b);
+    });
+    dmList.innerHTML = "";
+    Object.keys(DMS).forEach(function(id){
+      var b = document.createElement("button");
+      b.className = "chan-btn" + (id === current ? " active" : "");
+      b.type = "button";
+      var row = document.createElement("span");
+      row.className = "dm-row";
+      var img = document.createElement("img");
+      img.src = AVATARS[id]; img.alt = ""; img.width = 20; img.height = 20;
+      var nm = document.createElement("span");
+      nm.className = "dm-name";
+      nm.textContent = id;
+      var eye = document.createElement("span");
+      eye.className = "eyeshine" + (DMS[id].online ? "" : " off");
+      eye.setAttribute("aria-hidden", "true");
+      eye.innerHTML = "<i></i><i></i>";
+      row.appendChild(img); row.appendChild(nm);
+      b.appendChild(row); b.appendChild(eye);
+      b.addEventListener("click", function(){ switchRoom(id); });
+      dmList.appendChild(b);
+    });
+  }
+
+  function switchRoom(id){
+    current = id;
+    if (id === "screaming") { CHANNELS.screaming.unread = 0; }
+    renderSidebar();
+    renderFeed();
+  }
+
+  document.getElementById("composerForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    if (goneToGround) return;
+    var v = composerInput.value.trim();
+    if (!v) return;
+    getRoom(current).msgs.push({who:"Tod", when:nowStamp(), txt:v});
+    composerInput.value = "";
+    renderFeed();
+  });
+
+  document.getElementById("screamBtn").addEventListener("click", function(){
+    if (goneToGround) return;
+    screamCount++;
+    var scream = new Array(10 + screamCount * 6).join("A");
+    CHANNELS.screaming.msgs.push({who:"Tod", when:nowStamp(), txt:scream});
+    if (screamCount === 3) {
+      CHANNELS.screaming.msgs.push({sys:"Vesper has muted this channel."});
+    }
+    if (current !== "screaming") switchRoom("screaming");
+    else renderFeed();
+  });
+
+  var gtgSwitch = document.getElementById("gtgSwitch");
+  function toggleGtg(){
+    goneToGround = !goneToGround;
+    gtgSwitch.setAttribute("aria-checked", String(goneToGround));
+    document.body.classList.toggle("gtg-on", goneToGround);
+    document.getElementById("myStatus").textContent = goneToGround ? "Unavailable" : "Active · Seen Near The Bins";
+    sendBtn.disabled = goneToGround;
+    composerInput.disabled = goneToGround;
+    renderFeed();
+  }
+  gtgSwitch.addEventListener("click", toggleGtg);
+  gtgSwitch.addEventListener("keydown", function(e){
+    if (e.key === " " || e.key === "Enter") { e.preventDefault(); toggleGtg(); }
+  });
+
+  renderSidebar();
+  renderFeed();
+})();
+</script>
+</body>
+</html>
