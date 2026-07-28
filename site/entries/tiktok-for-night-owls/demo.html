@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>smallhours — the feed · theworstaistudioever</title>
+<meta name="description" content="The smallhours feed at 3:12 AM. Your alarm is closer than you think.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Righteous&family=Poppins:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink:#FF3D8A;
+    --cyan:#35E0DC;
+    --bg:#0B0714;
+    --panel:#130D22;
+    --well:#0E0919;
+    --border:#251B3D;
+    --fg:#F4EEFF;
+    --muted:#8A7FA6;
+    --disp:'Righteous','Arial Rounded MT Bold',system-ui,sans-serif;
+    --body:'Poppins',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --mono:'DM Mono','SFMono-Regular',Consolas,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:var(--bg);color:var(--fg);
+    font-family:var(--body);font-weight:300;
+    min-height:100vh;min-height:100dvh;
+    display:flex;flex-direction:column;align-items:center;
+    transition:filter .4s;
+  }
+  body.winddown{filter:brightness(.96)}
+  a{color:var(--cyan);text-decoration:none}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:4px}
+
+  .chrome{
+    width:100%;max-width:1080px;
+    display:flex;justify-content:space-between;align-items:center;
+    padding:18px 24px;font-size:.85rem;
+  }
+  .chrome .wordmark{
+    font-family:var(--disp);font-size:1.05rem;color:var(--fg);
+    text-shadow:0 0 6px rgba(255,61,138,.9),0 0 18px rgba(255,61,138,.5);
+  }
+
+  .stage{
+    flex:1;width:100%;
+    display:flex;gap:34px;justify-content:center;align-items:flex-start;
+    padding:10px 24px 40px;flex-wrap:wrap;
+  }
+
+  /* ---------- phone ---------- */
+  .phone{
+    width:min(360px,92vw);
+    background:#070410;
+    border:1px solid var(--border);
+    border-radius:34px;
+    padding:12px;
+    box-shadow:0 0 40px rgba(255,61,138,.1),0 24px 60px rgba(0,0,0,.6);
+    flex-shrink:0;
+  }
+  .screen{
+    border-radius:24px;overflow:hidden;position:relative;
+    background:var(--well);
+    height:640px;
+    display:flex;flex-direction:column;
+  }
+  .statusbar{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:10px 16px 8px;
+    font-family:var(--mono);font-size:.68rem;color:var(--muted);
+    letter-spacing:.06em;
+  }
+  .statusbar .batt{color:var(--pink)}
+  .alarmbar{
+    display:flex;justify-content:space-between;align-items:center;
+    background:rgba(53,224,220,.07);
+    border-top:1px solid rgba(53,224,220,.2);
+    border-bottom:1px solid rgba(53,224,220,.2);
+    padding:7px 16px;
+    font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;
+    color:var(--cyan);font-variant-numeric:tabular-nums;
+  }
+  .alarmbar .lbl{color:var(--muted);text-transform:uppercase;letter-spacing:.14em;font-size:.62rem}
+
+  .feed{flex:1;position:relative;overflow:hidden;touch-action:pan-x}
+  .vcard{
+    position:absolute;inset:0;
+    display:flex;flex-direction:column;justify-content:flex-end;
+    opacity:0;transform:translateY(24px);
+    transition:opacity .35s ease,transform .35s ease;
+    pointer-events:none;
+  }
+  .vcard.active{opacity:1;transform:none;pointer-events:auto}
+  .vcard .media{position:absolute;inset:0;z-index:0}
+  .vcard .media img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .scrim{
+    position:absolute;inset:0;z-index:1;
+    background:linear-gradient(to top,rgba(7,4,16,.92) 0%,rgba(7,4,16,.35) 40%,rgba(7,4,16,.15) 100%);
+  }
+  .vcard .meta{position:relative;z-index:2;padding:18px 16px 16px}
+  .niche{
+    display:inline-block;
+    font-family:var(--mono);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--cyan);border:1px solid rgba(53,224,220,.4);border-radius:999px;
+    padding:3px 10px;margin-bottom:10px;background:rgba(7,4,16,.55);
+  }
+  .vtitle{font-family:var(--disp);font-size:1.05rem;font-weight:400;line-height:1.3;margin-bottom:4px}
+  .vby{font-size:.72rem;color:var(--muted);margin-bottom:12px}
+  .vstats{
+    display:flex;gap:14px;align-items:center;
+    font-family:var(--mono);font-size:.66rem;color:var(--muted);
+    font-variant-numeric:tabular-nums;
+  }
+  .drowsy{color:var(--pink)}
+  .likebtn{
+    margin-left:auto;
+    font-family:var(--mono);font-size:.62rem;letter-spacing:.06em;
+    color:var(--fg);background:rgba(255,61,138,.14);
+    border:1px solid rgba(255,61,138,.5);border-radius:999px;
+    padding:7px 12px;cursor:pointer;
+    transition:background .2s,box-shadow .2s;
+  }
+  .likebtn.liked{
+    background:var(--pink);color:#1A0510;
+    box-shadow:0 0 14px rgba(255,61,138,.6);
+  }
+
+  /* CSS-art media for cards without photos */
+  .art-bread{background:radial-gradient(circle at 50% 62%,#B97A3C 0 26%,#8A5426 27% 34%,#3A2412 35% 100%),#170E1F}
+  .art-bread::after{
+    content:"";position:absolute;left:50%;top:62%;transform:translate(-50%,-50%);
+    width:52%;height:30%;border-radius:50%;
+    background:radial-gradient(ellipse at 40% 30%,#E0A45C,#B97A3C 60%,#8A5426);
+    box-shadow:0 14px 40px rgba(0,0,0,.6),inset 0 -8px 18px rgba(58,36,18,.8);
+  }
+  .art-elevator{background:linear-gradient(#12091E,#0A0512)}
+  .art-elevator::after{
+    content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:44%;height:64%;
+    background:
+      linear-gradient(90deg,transparent 47%,#3A2E55 47% 53%,transparent 53%),
+      linear-gradient(#241639 0 0) padding-box;
+    border:2px solid #4A3A6E;border-radius:6px;
+    box-shadow:0 0 30px rgba(53,224,220,.12);
+  }
+
+  .navhint{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:10px 16px;
+    border-top:1px solid var(--border);
+    font-family:var(--mono);font-size:.62rem;color:var(--muted);letter-spacing:.1em;
+  }
+  .navhint .dots{display:flex;gap:6px}
+  .navhint .dots span{width:5px;height:5px;border-radius:50%;background:var(--border);transition:background .2s}
+  .navhint .dots span.on{background:var(--pink);box-shadow:0 0 6px var(--pink)}
+  .navhint button{
+    background:none;border:1px solid var(--border);border-radius:8px;
+    color:var(--fg);font-family:var(--mono);font-size:.7rem;
+    padding:5px 12px;cursor:pointer;transition:border-color .2s;
+  }
+  .navhint button:hover{border-color:var(--pink)}
+
+  /* ---------- side rail ---------- */
+  .rail{
+    width:270px;display:flex;flex-direction:column;gap:16px;
+    padding-top:6px;
+  }
+  .railcard{
+    background:var(--panel);border:1px solid var(--border);border-radius:14px;
+    padding:20px;
+  }
+  .railcard h2{
+    font-family:var(--mono);font-size:.64rem;letter-spacing:.2em;
+    color:var(--muted);text-transform:uppercase;font-weight:400;margin-bottom:14px;
+  }
+  .bignum{font-family:var(--mono);font-size:1.7rem;font-variant-numeric:tabular-nums}
+  .bignum small{font-size:.72rem;color:var(--muted)}
+  .railnote{font-size:.72rem;color:var(--muted);margin-top:8px;line-height:1.6}
+  .toggle-row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .toggle-row .t-label{font-size:.8rem;font-weight:400}
+  .switch{
+    width:42px;height:24px;border-radius:999px;
+    background:var(--well);border:1px solid var(--border);
+    position:relative;cursor:pointer;transition:background .25s,border-color .25s;
+    flex-shrink:0;
+  }
+  .switch::after{
+    content:"";position:absolute;top:2px;left:2px;
+    width:18px;height:18px;border-radius:50%;
+    background:var(--muted);transition:transform .25s,background .25s;
+  }
+  .switch[aria-checked="true"]{background:rgba(53,224,220,.18);border-color:var(--cyan)}
+  .switch[aria-checked="true"]::after{transform:translateX(18px);background:var(--cyan)}
+  .winddown-status{font-family:var(--mono);font-size:.64rem;color:var(--muted);margin-top:10px;min-height:1.2em}
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+  }
+  @media (max-width:760px){
+    .rail{width:min(360px,92vw)}
+  }
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <a href="./index.html">← back to the pitch</a>
+  <span class="wordmark">smallhours</span>
+</div>
+
+<div class="stage">
+
+  <div class="phone" aria-label="The smallhours feed">
+    <div class="screen">
+      <div class="statusbar">
+        <span id="phoneClock">3:12 AM</span>
+        <span class="batt">14%</span>
+      </div>
+      <div class="alarmbar">
+        <span class="lbl">Time until your alarm</span>
+        <span id="alarmClock">3:48:00</span>
+      </div>
+
+      <div class="feed" id="feed">
+
+        <article class="vcard active" data-title="canal lock restoration, part 41">
+          <div class="media"><img src="./feed-canal.webp" alt="A canal lock gate at night" width="600" height="1066"></div>
+          <div class="scrim"></div>
+          <div class="meta">
+            <span class="niche">canal restoration</span>
+            <div class="vtitle">Lock 41: the gate finally moves</div>
+            <div class="vby">@wetherby_navigations · filmed at 2:57am, obviously</div>
+            <div class="vstats">
+              <span>1.2M views</span>
+              <span class="drowsy">drowsy 9.1</span>
+              <button class="likebtn">this is keeping me awake</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="vcard" data-title="VHS deck repair">
+          <div class="media"><img src="./feed-vhs.webp" alt="Hands repairing an open VHS deck" width="600" height="1066"></div>
+          <div class="scrim"></div>
+          <div class="meta">
+            <span class="niche">tape mechanisms</span>
+            <div class="vtitle">Your capstan is fine. Your idler tire is lying to you.</div>
+            <div class="vby">@ferrite_forever · 22 min, you'll watch all of it</div>
+            <div class="vstats">
+              <span>847K views</span>
+              <span class="drowsy">drowsy 8.7</span>
+              <button class="likebtn">this is keeping me awake</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="vcard" data-title="medieval bread">
+          <div class="media art-bread" role="img" aria-label="A round loaf of bread"></div>
+          <div class="scrim"></div>
+          <div class="meta">
+            <span class="niche">medieval bread</span>
+            <div class="vtitle">Baking a 1347 maslin loaf with period-accurate despair</div>
+            <div class="vby">@trencher_daily · the yeast is foraged</div>
+            <div class="vstats">
+              <span>2.4M views</span>
+              <span class="drowsy">drowsy 9.6</span>
+              <button class="likebtn">this is keeping me awake</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="vcard" data-title="soviet elevator design">
+          <div class="media art-elevator" role="img" aria-label="An elevator door in low light"></div>
+          <div class="scrim"></div>
+          <div class="meta">
+            <span class="niche">vertical transport</span>
+            <div class="vtitle">Why the 1972 Mogilev counterweight never forgave anyone</div>
+            <div class="vby">@shaft_and_cab · part 6 of 40</div>
+            <div class="vstats">
+              <span>620K views</span>
+              <span class="drowsy">drowsy 8.9</span>
+              <button class="likebtn">this is keeping me awake</button>
+            </div>
+          </div>
+        </article>
+
+      </div>
+
+      <div class="navhint">
+        <button id="prevBtn" aria-label="Previous video">↑ prev</button>
+        <div class="dots" id="dots" aria-hidden="true"></div>
+        <button id="nextBtn" aria-label="Next video">next ↓</button>
+      </div>
+    </div>
+  </div>
+
+  <aside class="rail">
+    <div class="railcard">
+      <h2>Tonight, so far</h2>
+      <div class="bignum"><span id="tonightCount">61</span> <small>videos</small></div>
+      <p class="railnote">Every swipe is recorded. The Sunrise Report will cite this number at 7:00am, with timestamps.</p>
+    </div>
+    <div class="railcard">
+      <div class="toggle-row">
+        <span class="t-label">Wind-down mode</span>
+        <button class="switch" id="winddown" role="switch" aria-checked="false" aria-label="Wind-down mode"></button>
+      </div>
+      <p class="winddown-status" id="winddownStatus"></p>
+    </div>
+    <div class="railcard">
+      <h2>Drowsy Ranking</h2>
+      <p class="railnote">Scores reflect each video's measured ability to keep you awake. Boost multiplier is currently <span style="color:var(--pink);font-family:var(--mono)">2.4×</span> because it is after 2am and you are still here.</p>
+    </div>
+  </aside>
+
+</div>
+
+<script>
+  // feed navigation
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.vcard'));
+  var dotsWrap = document.getElementById('dots');
+  var tonight = document.getElementById('tonightCount');
+  var idx = 0, watched = 61;
+
+  cards.forEach(function(){
+    var d = document.createElement('span');
+    dotsWrap.appendChild(d);
+  });
+  var dots = Array.prototype.slice.call(dotsWrap.children);
+
+  function show(n){
+    if (n === idx || n < 0 || n >= cards.length) return;
+    cards[idx].classList.remove('active');
+    idx = n;
+    cards[idx].classList.add('active');
+    dots.forEach(function(d,i){ d.classList.toggle('on', i === idx); });
+    watched++;
+    tonight.textContent = watched;
+  }
+  dots[0].classList.add('on');
+
+  document.getElementById('nextBtn').addEventListener('click', function(){ show((idx + 1) % cards.length); });
+  document.getElementById('prevBtn').addEventListener('click', function(){ show((idx - 1 + cards.length) % cards.length); });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') show((idx + 1) % cards.length);
+    if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') show((idx - 1 + cards.length) % cards.length);
+  });
+
+  // touch swipe (vertical, ~50px threshold)
+  var feedEl = document.getElementById('feed'), touchY = null;
+  feedEl.addEventListener('touchstart', function(e){ touchY = e.changedTouches[0].clientY; }, {passive:true});
+  feedEl.addEventListener('touchend', function(e){
+    if (touchY === null) return;
+    var dy = e.changedTouches[0].clientY - touchY;
+    if (dy < -50) show((idx + 1) % cards.length);
+    if (dy > 50) show((idx - 1 + cards.length) % cards.length);
+    touchY = null;
+  }, {passive:true});
+
+  // like buttons
+  document.querySelectorAll('.likebtn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      btn.classList.toggle('liked');
+      btn.textContent = btn.classList.contains('liked') ? 'noted. logged. cited.' : 'this is keeping me awake';
+    });
+  });
+
+  // fake 3:12am clock + alarm countdown, ticking in demo time
+  var alarmEl = document.getElementById('alarmClock');
+  var phoneEl = document.getElementById('phoneClock');
+  var alarmSeconds = 3*3600 + 48*60;
+  var baseH = 3, baseM = 12, elapsed = 0;
+  function pad(n){ return n < 10 ? '0' + n : '' + n; }
+  setInterval(function(){
+    elapsed++;
+    alarmSeconds--;
+    if (alarmSeconds < 0) alarmSeconds = 0;
+    alarmEl.textContent = Math.floor(alarmSeconds/3600) + ':' + pad(Math.floor(alarmSeconds/60)%60) + ':' + pad(alarmSeconds%60);
+    var totalM = baseH*60 + baseM + Math.floor(elapsed/60);
+    phoneEl.textContent = Math.floor(totalM/60) + ':' + pad(totalM%60) + ' AM';
+  }, 1000);
+
+  // wind-down mode: dims the page 4%. that's it. that's the feature.
+  var wd = document.getElementById('winddown');
+  var wdStatus = document.getElementById('winddownStatus');
+  wd.addEventListener('click', function(){
+    var on = wd.getAttribute('aria-checked') === 'true';
+    wd.setAttribute('aria-checked', String(!on));
+    document.body.classList.toggle('winddown', !on);
+    wdStatus.textContent = !on ? 'Screen dimmed 4%. No further action will be taken.' : '';
+  });
+</script>
+</body>
+</html>

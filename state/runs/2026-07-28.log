@@ -1,0 +1,30 @@
+[2026-07-28T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-07-28T08:00:02Z] invoking claude -p
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/github/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/github/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.openclaw/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.openclaw/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.claude/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.claude/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/aurevon-status/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/aurevon-status/**) instead (Edit rules cover all file-editing tools).
+[agent] === run summary ===
+ROLL: TikTok + night owls -> tiktok-for-night-owls (1 reroll; first PRNG draw hit an existing pair)
+CONCEPT: product "smallhours" - short-form video open only 11pm-5am. Features: The Gate, Drowsy Ranking, The Sunrise Report. Tiers: Dusk $0 / Witching Hour $19mo / Permanent Midnight $499yr.
+DESIGN: retro-futurist neon signage, late-night vacancy dark mode. Palette: bg #0B0714, primary sign-pink #FF3D8A, accent all-night cyan #35E0DC. Fonts: Righteous display / Poppins body / DM Mono figures. Anti-sameness verified against last 7 (glassmorphic dusk, neo-brutalist paper, engraved prospectus, swiss transit, bento, airmail editorial, terminal-minimal): no style/palette/fonts collision.
+IMAGES: 4/4 budget used, all passed judge on attempt 1.
+  - hero: skipped (typographic neon sign hero; a photo would compete with the glow lockup)
+  - demo feed-canal.webp (600x1066): canal lock at night, pink neon bleed, no text artifacts. PASS attempt 1.
+  - demo feed-vhs.webp (600x1066): hands repairing open VHS deck, lamp + neon spill. PASS attempt 1.
+  - testimonial headshot-priya.webp (320x320): tired deadpan corporate headshot, violet backdrop, pink rim. PASS attempt 1.
+  - testimonial headshot-doug.webp (320x320): weary man, dated sport coat, cyan rim. PASS attempt 1.
+  Kelsey Trinh keeps CSS initials circle by design.
+BUILD: index.html (neon landing: flickering OPEN 11PM-5AM vacancy sign, live countdown-to-11pm chip, telemetry strip, guestbook testimonials, room-rate pricing). demo.html (phone-frame 3:12AM feed: 4 video cards incl. 2 photo stills + 2 CSS-art, alarm countdown ticking, videos-tonight counter incremented per swipe, wind-down toggle that dims 4% and does nothing else, like button "this is keeping me awake", arrows/keys/touch-swipe nav).
+GALLERY: site/index.html regenerated from 65 concept.json files, new entry first; header count 65; styles.css untouched; slide-cta inner <span> preserved.
+WARNINGS: one gen-image call (feed-vhs) hit the 429 retry path and took ~2min; succeeded on the script's internal retry. No other near-misses.
+VALIDATION: scripts/validate-entry.sh site tiktok-for-night-owls -> OK. history.json appended (65 entries, valid JSON).
+Today's run shipped **smallhours** ("TikTok for night owls", slug `tiktok-for-night-owls`): a short-form video platform that only opens 11pm–5am, with a flickering neon-sign landing page, a 3:12 AM demo feed (alarm countdown, Drowsy Ranking, a wind-down toggle that dims the screen 4% and does nothing else), 4 art-directed images all passing on first attempt, gallery rebuilt to 65 entries, validation OK, history and run log recorded.
+
+RUN_COMPLETE: tiktok-for-night-owls
+[2026-07-28T08:13:24Z] new entry: tiktok-for-night-owls
+validate-entry [tiktok-for-night-owls]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 65 entries (domain theworstaistudioever.com)
+[2026-07-28T08:13:24Z] committing: TikTok for night owls
