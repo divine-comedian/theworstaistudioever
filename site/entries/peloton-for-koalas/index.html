@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perch · theworstaistudioever</title>
+<meta name="description" content="Connected climbing for the world's least available athlete.">
+<meta property="og:title" content="Perch — Peloton for koalas">
+<meta property="og:description" content="Connected climbing for the world's least available athlete.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="instructor.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #45D08C;
+    --accent: #9DBFA9;
+    --bg: #0F1412;
+    --panel: #161D19;
+    --line: #243029;
+    --fg: #EDF3EE;
+    --muted: #8CA096;
+    --well: #0B100D;
+    --display: 'Barlow Condensed', 'Arial Narrow', system-ui, sans-serif;
+    --body: 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --mono: 'Roboto Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
+  a { color: var(--accent); text-decoration: none; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+
+  /* ── nav ─────────────────────────────── */
+  .nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 0;
+  }
+  .wordmark {
+    font-family: var(--display); font-weight: 800; font-size: 28px;
+    letter-spacing: 0.06em; color: var(--fg); text-transform: uppercase;
+    display: inline-flex; align-items: baseline; gap: 6px;
+  }
+  .wordmark::after {
+    content: ""; width: 10px; height: 10px; background: var(--primary);
+    display: inline-block; transform: skewX(-12deg);
+  }
+  .nav-links { display: flex; gap: 28px; align-items: center; }
+  .nav-links a {
+    font-family: var(--display); font-weight: 600; font-size: 16px;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--fg); }
+  .nav-links a.nav-demo { color: var(--primary); }
+
+  /* ── hero ────────────────────────────── */
+  .hero { padding: 72px 0 96px; display: grid; grid-template-columns: 7fr 5fr; gap: 56px; align-items: center; }
+  .kicker {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 20px;
+  }
+  h1 {
+    font-family: var(--display); font-weight: 800; text-transform: uppercase;
+    font-size: clamp(58px, 8.5vw, 112px); line-height: 0.92; letter-spacing: 0.005em;
+  }
+  h1 .hl { color: var(--primary); }
+  .hero-sub { margin: 26px 0 34px; max-width: 34em; color: var(--muted); font-size: 19px; }
+  .cta-row { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-block; background: var(--primary); color: #08130C;
+    font-family: var(--display); font-weight: 700; font-size: 19px;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    padding: 15px 30px; border: none; cursor: pointer;
+    transition: transform 0.12s, background 0.2s;
+  }
+  .btn:hover { background: #5ADF9E; }
+  .btn:active { transform: translateY(1px); }
+  .demo-link {
+    font-family: var(--display); font-weight: 600; font-size: 18px;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg);
+    border-bottom: 2px solid var(--primary); padding-bottom: 2px;
+    transition: color 0.2s;
+  }
+  .demo-link:hover { color: var(--primary); }
+
+  .hero-well {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    padding: 30px 30px 26px;
+  }
+  .well-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .live-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--primary); animation: pulse 3s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+  .well-label { font-family: var(--mono); font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); }
+  .well-class { font-family: var(--display); font-weight: 600; font-size: 21px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--fg); margin-bottom: 20px; }
+  .output-num {
+    font-family: var(--mono); font-weight: 700; font-size: 96px; line-height: 1;
+    color: var(--fg); font-variant-numeric: tabular-nums;
+  }
+  .output-unit { font-family: var(--mono); font-size: 20px; color: var(--muted); margin-left: 8px; }
+  .output-caption { font-family: var(--mono); font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin: 8px 0 22px; }
+  .well-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .well-stat { background: var(--well); padding: 12px 14px; }
+  .well-stat b { display: block; font-family: var(--mono); font-weight: 500; font-size: 20px; color: var(--fg); font-variant-numeric: tabular-nums; }
+  .well-stat span { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+
+  /* ── spec strip ──────────────────────── */
+  .spec-strip { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .spec-grid { display: grid; grid-template-columns: 1.4fr repeat(4, 1fr); gap: 1px; background: var(--line); }
+  .spec-cell { background: var(--bg); padding: 26px 24px; }
+  .spec-cell h2 { font-family: var(--display); font-weight: 700; font-size: 24px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .spec-cell h2 small { display: block; font-family: var(--mono); font-weight: 400; font-size: 11px; letter-spacing: 0.2em; color: var(--muted); margin-top: 4px; }
+  .spec-cell b { display: block; font-family: var(--mono); font-weight: 500; font-size: 26px; font-variant-numeric: tabular-nums; }
+  .spec-cell span { font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+
+  /* ── sections ────────────────────────── */
+  section.block { padding: 110px 0; }
+  .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--primary); margin-bottom: 14px; }
+  .block h2.title { font-family: var(--display); font-weight: 800; font-size: clamp(40px, 5vw, 64px); text-transform: uppercase; line-height: 0.95; margin-bottom: 18px; }
+  .block .lede { color: var(--muted); max-width: 38em; margin-bottom: 56px; font-size: 18px; }
+
+  /* ── spine + features ────────────────── */
+  .spine-wrap { position: relative; padding-left: 56px; }
+  .spine { position: absolute; left: 12px; top: 0; bottom: 0; width: 2px; background: var(--line); overflow: hidden; }
+  .spine::before {
+    content: ""; position: absolute; inset: 0; background: var(--primary);
+    transform: scaleY(0); transform-origin: top;
+    transition: transform 1.4s cubic-bezier(0.25, 0.8, 0.3, 1);
+  }
+  .spine.drawn::before { transform: scaleY(1); }
+  .feature {
+    position: relative; background: var(--panel); border: 1px solid var(--line);
+    border-radius: 12px; padding: 34px 38px; margin-bottom: 36px; max-width: 720px;
+  }
+  .feature::before {
+    content: ""; position: absolute; left: -49px; top: 42px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--bg); border: 2px solid var(--line);
+    transition: border-color 0.4s, background 0.4s;
+  }
+  .feature.vis::before { border-color: var(--primary); background: var(--primary); }
+  .feature .station { font-family: var(--mono); font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .feature h3 { font-family: var(--display); font-weight: 700; font-size: 32px; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 10px; }
+  .feature p { color: var(--muted); }
+
+  /* ── telemetry band ──────────────────── */
+  .telemetry { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--well); }
+  .tel-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); }
+  .tel-cell { background: var(--well); padding: 44px 28px; }
+  .tel-cell b { display: block; font-family: var(--mono); font-weight: 700; font-size: 46px; font-variant-numeric: tabular-nums; line-height: 1; margin-bottom: 10px; }
+  .tel-cell b em { font-style: normal; color: var(--primary); }
+  .tel-cell span { font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+  .tel-note { padding: 18px 28px; font-family: var(--mono); font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); }
+
+  /* ── pricing ─────────────────────────── */
+  .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .tier { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 34px 30px; display: flex; flex-direction: column; }
+  .tier.feature-tier { border-color: var(--primary); }
+  .tier .t-name { font-family: var(--display); font-weight: 700; font-size: 28px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .tier .t-price { font-family: var(--mono); font-weight: 700; font-size: 34px; margin: 14px 0 6px; font-variant-numeric: tabular-nums; }
+  .tier .t-price small { font-size: 14px; font-weight: 400; color: var(--muted); }
+  .tier .t-tag { color: var(--muted); font-size: 15px; margin-bottom: 22px; min-height: 3em; }
+  .tier ul { list-style: none; margin-bottom: 28px; flex-grow: 1; }
+  .tier li { padding: 9px 0 9px 24px; border-top: 1px solid var(--line); position: relative; font-size: 15.5px; color: var(--fg); }
+  .tier li::before { content: ""; position: absolute; left: 2px; top: 17px; width: 8px; height: 2px; background: var(--primary); }
+  .tier .btn { text-align: center; }
+  .tier.quiet .btn { background: transparent; color: var(--fg); border: 1px solid var(--line); }
+  .tier.quiet .btn:hover { border-color: var(--primary); color: var(--primary); }
+  .t-flag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--primary); margin-bottom: 10px; }
+
+  /* ── testimonials ────────────────────── */
+  .quotes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .quote { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 32px 30px; display: flex; flex-direction: column; }
+  .quote p { font-size: 17px; flex-grow: 1; }
+  .quote p::before { content: "“"; color: var(--primary); }
+  .quote p::after { content: "”"; color: var(--primary); }
+  .attr { display: flex; gap: 14px; align-items: center; margin-top: 26px; }
+  .attr .badge {
+    width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+    background: var(--well); border: 1px solid var(--line);
+    display: grid; place-items: center;
+    font-family: var(--display); font-weight: 700; font-size: 16px; color: var(--accent);
+  }
+  .attr b { display: block; font-size: 15px; font-weight: 600; }
+  .attr span { display: block; font-size: 13px; color: var(--muted); line-height: 1.4; }
+
+  /* ── closing ─────────────────────────── */
+  .closing { padding: 130px 0 120px; text-align: center; }
+  .closing h2 {
+    font-family: var(--display); font-weight: 800; text-transform: uppercase;
+    font-size: clamp(56px, 9vw, 120px); line-height: 0.92; margin-bottom: 30px;
+  }
+  .closing h2 .hl { color: var(--primary); }
+  .closing .lede { max-width: 34em; margin: 0 auto 40px; color: var(--muted); }
+  .closing .cta-row { justify-content: center; }
+
+  /* ── footer ──────────────────────────── */
+  footer { border-top: 1px solid var(--line); padding: 30px 0 40px; }
+  .foot { display: flex; justify-content: space-between; align-items: baseline; gap: 20px; flex-wrap: wrap; }
+  .foot .fine { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .foot a.home { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .foot a.home:hover { color: var(--fg); }
+
+  /* ── reveal ──────────────────────────── */
+  .rv { opacity: 0; transform: translateY(6px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .rv.vis { opacity: 1; transform: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .rv { opacity: 1; transform: none; transition: none; }
+    .live-dot { animation: none; }
+    .spine::before { transition: none; transform: scaleY(1); }
+  }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; padding: 48px 0 72px; gap: 44px; }
+    .spec-grid { grid-template-columns: 1fr 1fr; }
+    .tel-grid { grid-template-columns: 1fr 1fr; }
+    .tiers, .quotes { grid-template-columns: 1fr; }
+    .nav-links a:not(.nav-demo) { display: none; }
+    section.block { padding: 72px 0; }
+    .output-num { font-size: 72px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav class="nav">
+    <span class="wordmark">Perch</span>
+    <div class="nav-links">
+      <a href="#program">Program</a>
+      <a href="#pricing">Pricing</a>
+      <a class="nav-demo" href="./demo.html">open the demo →</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <p class="kicker">Connected climbing · est. 2026 · Brisbane / Palo Alto</p>
+      <h1>Meet them where they are. <span class="hl">Asleep.</span></h1>
+      <p class="hero-sub">Perch is the connected climbing platform for koalas: live instructor-led ascents, real-time output tracking, and a community that honors the 20-hour recovery window.</p>
+      <div class="cta-row">
+        <a class="btn" href="#pricing">Start the trial he won't notice</a>
+        <a class="demo-link" href="./demo.html">open the demo →</a>
+      </div>
+    </div>
+    <aside class="hero-well" aria-label="Live class telemetry">
+      <div class="well-head"><span class="live-dot" aria-hidden="true"></span><span class="well-label">Live now</span></div>
+      <p class="well-class">Dawn Eucalyptus Burn · 45 min</p>
+      <div><span class="output-num" id="outputNum">0</span><span class="output-unit">kJ</span></div>
+      <p class="output-caption">Total member output, all time</p>
+      <div class="well-stats">
+        <div class="well-stat"><b>61</b><span>Avg HR</span></div>
+        <div class="well-stat"><b>0</b><span>Cadence</span></div>
+        <div class="well-stat"><b>0</b><span>Attending</span></div>
+      </div>
+    </aside>
+  </header>
+</div>
+
+<div class="spec-strip rv">
+  <div class="wrap">
+    <div class="spec-grid">
+      <div class="spec-cell"><h2>The Trunk<small>Connected climbing hardware, gen 1</small></h2></div>
+      <div class="spec-cell"><b>2.4 m</b><span>Rated height</span></div>
+      <div class="spec-cell"><b>14 kg</b><span>Max athlete</span></div>
+      <div class="spec-cell"><b>20</b><span>Classes / day</span></div>
+      <div class="spec-cell"><b>0</b><span>Ascents logged</span></div>
+    </div>
+  </div>
+</div>
+
+<section class="block" id="program">
+  <div class="wrap">
+    <p class="eyebrow rv">The program</p>
+    <h2 class="title rv">Built around his schedule.<br>All four hours of it.</h2>
+    <p class="lede rv">Most fitness platforms assume the member is awake. We didn't want to assume anything.</p>
+    <div class="spine-wrap">
+      <div class="spine" id="spine" aria-hidden="true"></div>
+      <article class="feature rv">
+        <p class="station">Station 01 · 5:15 AM AEST</p>
+        <h3>Live Dawn Ascents</h3>
+        <p>Certified climb instructors broadcast live from Brisbane at 5:15 AM, the statistical midpoint of the average koala's sleep block. Classes run daily regardless of attendance. Attendance is currently zero.</p>
+      </article>
+      <article class="feature rv">
+        <p class="station">Station 02 · Telemetry</p>
+        <h3>Output Score</h3>
+        <p>One number that reconciles calories burned against eucalyptus consumed. No koala has recorded a positive Output Score since launch. Internally, we call this headroom.</p>
+      </article>
+      <article class="feature rv">
+        <p class="station">Station 03 · Retention</p>
+        <h3>Streak Protection</h3>
+        <p>Sleeping within 40 meters of the Trunk counts as a completed workout. Member streaks average 141 days. Retention is 100%. Engagement is a different metric, tracked by a different team.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<div class="telemetry rv">
+  <div class="wrap">
+    <div class="tel-grid">
+      <div class="tel-cell"><b>141</b><span>Avg streak, days</span></div>
+      <div class="tel-cell"><b><em>100%</em></b><span>Retention</span></div>
+      <div class="tel-cell"><b>4,201</b><span>Members enrolled</span></div>
+      <div class="tel-cell"><b>0</b><span>Positive output scores</span></div>
+    </div>
+    <p class="tel-note">Figures audited quarterly. Engagement figures available on request. Requests are declined.</p>
+  </div>
+</div>
+
+<section class="block" id="pricing">
+  <div class="wrap">
+    <p class="eyebrow rv">Membership</p>
+    <h2 class="title rv">Priced with confidence</h2>
+    <p class="lede rv">Every tier includes the full class library, streak protection, and the quiet certainty that none of it will be used.</p>
+    <div class="tiers">
+      <div class="tier quiet rv">
+        <p class="t-name">Joey</p>
+        <p class="t-price">$39<small>/mo</small></p>
+        <p class="t-tag">For the koala starting out. Or not starting.</p>
+        <ul>
+          <li>Full access to live classes (unattended)</li>
+          <li>Weekly Output Score report, delivered blank</li>
+          <li>Sleep-adjacent workout credit</li>
+        </ul>
+        <a class="btn" href="#">Enroll him</a>
+      </div>
+      <div class="tier feature-tier rv">
+        <p class="t-flag">Most popular</p>
+        <p class="t-name">Marsupial+</p>
+        <p class="t-price">$119<small>/mo</small></p>
+        <p class="t-tag">Our most popular tier among the humans paying for it.</p>
+        <ul>
+          <li>Everything in Joey</li>
+          <li>Leaderboard placement while unconscious</li>
+          <li>Quarterly wellness call from a man named Grant</li>
+          <li>Branded headband (unworn)</li>
+        </ul>
+        <a class="btn" href="#">Enroll him</a>
+      </div>
+      <div class="tier quiet rv">
+        <p class="t-name">Apex Canopy</p>
+        <p class="t-price">$499<small>/mo</small></p>
+        <p class="t-tag">For households that are serious about this.</p>
+        <ul>
+          <li>A second Trunk, so he can ignore both</li>
+          <li>Dedicated instructor who narrates climbs he could be doing</li>
+          <li>Priority support: we call you, to talk about him</li>
+          <li>Annual summit retreat (he stays home)</li>
+        </ul>
+        <a class="btn" href="#">Enroll him</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="community">
+  <div class="wrap">
+    <p class="eyebrow rv">The community</p>
+    <h2 class="title rv">Handlers love it</h2>
+    <div class="quotes">
+      <div class="quote rv">
+        <p>Gumnut hasn't attended a class in six months and her streak is intact. I've stopped asking how.</p>
+        <div class="attr">
+          <span class="badge" aria-hidden="true">FH</span>
+          <span><b>Dr. Fiona Harrop</b><span>Head of Marsupial Performance, Currumbin Wildlife Sanctuary</span></span>
+        </div>
+      </div>
+      <div class="quote rv">
+        <p>The leaderboard ranks Warra 4,201st out of 4,201. He seems genuinely at peace with it.</p>
+        <div class="attr">
+          <span class="badge" aria-hidden="true">KD</span>
+          <span><b>Kevin Doyle</b><span>Volunteer Tree Coordinator, Port Macquarie Koala Hospital</span></span>
+        </div>
+      </div>
+      <div class="quote rv">
+        <p>We upgraded to Apex Canopy. He now ignores two Trunks. The second one was $499.</p>
+        <div class="attr">
+          <span class="badge" aria-hidden="true">MT</span>
+          <span><b>Melinda Tsai</b><span>Koala Foster Parent (Class of 2024), Adelaide Hills</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="closing">
+  <div class="wrap">
+    <h2 class="rv">The climb<br>can <span class="hl">wait.</span></h2>
+    <p class="lede rv">It has waited 25 million years. Perch will be there when he's ready, billing monthly in the meantime.</p>
+    <div class="cta-row rv">
+      <a class="btn" href="#pricing">Start the trial he won't notice</a>
+      <a class="demo-link" href="./demo.html">open the demo →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <a class="home" href="/">← theworstaistudioever</a>
+    <span class="fine">© 2026 Perch Fitness Pty Ltd. Results not typical. Results not observed.</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Reveal on scroll
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('vis'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.rv, .feature').forEach(function (el) { io.observe(el); });
+
+  // Spine draws when the program section enters view
+  var spine = document.getElementById('spine');
+  if (spine) {
+    var sio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { spine.classList.add('drawn'); sio.unobserve(spine); }
+      });
+    }, { threshold: 0.1 });
+    sio.observe(spine);
+  }
+
+  // Hero output counter: ticks once, stops at 0.
+  var out = document.getElementById('outputNum');
+  if (out && !reduced) {
+    var frames = ['0', '1', '1', '2', '1', '0'];
+    var i = 0;
+    var t = setInterval(function () {
+      out.textContent = frames[i];
+      i++;
+      if (i >= frames.length) { clearInterval(t); out.textContent = '0'; }
+    }, 260);
+  }
+})();
+</script>
+
+</body>
+</html>

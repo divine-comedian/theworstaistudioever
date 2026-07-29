@@ -1,0 +1,42 @@
+[2026-07-29T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-07-29T08:00:02Z] invoking claude -p
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/github/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/github/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.openclaw/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.openclaw/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.claude/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.claude/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/aurevon-status/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/aurevon-status/**) instead (Edit rules cover all file-editing tools).
+[2026-07-29] === agent run summary ===
+ROLL: Peloton for koalas (slug: peloton-for-koalas). Rerolls: 0 (first draw was fresh).
+DESIGN: Matte athletic hardware-launch corridor, midnight-eucalyptus dark mode.
+  Palette: Midnight Gum / Eucalyptus Pulse (primary #45D08C, accent #9DBFA9, bg #0F1412, fg #EDF3EE, muted #8CA096, ink #F0F6F1).
+  Fonts: Barlow Condensed / Barlow, telemetry in Roboto Mono.
+  Anti-sameness: ui-ux-pro-max recommended Liquid Glass, rejected (collides with 2026-07-27 glassmorphic entry); kept its Barlow pairing and hardware-corridor archetype, restyled matte. Tuple is fresh vs last 7.
+IMAGES: 3 of 4 budget used, all demo-role. GEMINI_API_KEY present; one transient HTTP 503 on the first call, retried by gen-image.sh itself.
+  - instructor.webp (1600x900, 1 attempt): koala on climbing post, judge PASS (subject, palette rim light, no text artifacts).
+  - avatar-1.webp (320x320, 1 attempt): frontal sleepy headshot, judge PASS.
+  - avatar-2.webp (320x320, 1 attempt): three-quarter headshot, judge PASS.
+  Hero skipped (monumental typographic style). Testimonial headshots skipped (testimonials are human handlers; koala headshots would break the bit).
+BUILD: landing (index.html) with spine rail + zeroed Output counter; demo (demo.html) live-class screen with class picker, flatline output graph, jittering leaderboard, encouragement button.
+GALLERY: rebuilt site/index.html from 66 concepts, count updated to 66, contract markup preserved.
+WARNINGS / NEAR-MISSES:
+  - validate-entry initially failed: it greps demo.html for img src patterns and flagged the JS string concatenation of the avatar src as a missing image. Rewrote avatar rendering with DOM createElement/.src. Second run: OK.
+  - Inline Bash heredocs with quoted braces are rejected by the shell filter; roll and gallery scripts were written to temp files under state/ and removed after use.
+VALIDATION: scripts/validate-entry.sh site peloton-for-koalas -> OK.
+HISTORY: appended, now 66 entries.
+All nine steps are done. Today's entry is **Peloton for koalas** — "Perch", connected climbing hardware (the Trunk) plus live 5:15 AM classes for an animal that sleeps 20 hours a day, with the zeroed Output Score as the running joke.
+
+What shipped:
+
+- **Roll:** first draw was fresh, zero rerolls.
+- **Design:** matte athletic hardware-launch dark mode (Barlow Condensed / Barlow, eucalyptus green #45D08C on charcoal). The skill's Liquid Glass suggestion was rejected for colliding with the 07-27 glassmorphic entry; the tuple is fresh against the last 7.
+- **Images:** 3 of 4 budget, all in the demo — an instructor tile and two koala leaderboard headshots, each passing the vision judge on the first attempt. Hero and testimonial headshots deliberately skipped, rationale recorded in `concept.json`.
+- **Pages:** landing with a scroll-drawn spine rail and a hero output counter that ticks and settles at 0; demo is the live-class screen with a class picker, flatlining output graph, jittering leaderboard, and an encouragement button that changes nothing.
+- **Gallery:** rebuilt with 66 slides, contract markup preserved.
+- **Validation:** passed after one fix — the validator flagged a JS string-concatenated `img src` in the demo as a missing image, so avatar rendering now uses DOM construction. History appended (66 entries), run summary written to `state/runs/2026-07-29.log`.
+
+RUN_COMPLETE: peloton-for-koalas
+[2026-07-29T08:11:45Z] new entry: peloton-for-koalas
+validate-entry [peloton-for-koalas]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 66 entries (domain theworstaistudioever.com)
+[2026-07-29T08:11:45Z] committing: Peloton for koalas

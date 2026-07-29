@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perch — Live Class · theworstaistudioever</title>
+<meta name="description" content="Dawn Eucalyptus Burn. Live now. 0 attending.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #45D08C;
+    --accent: #9DBFA9;
+    --bg: #0F1412;
+    --panel: #161D19;
+    --line: #243029;
+    --fg: #EDF3EE;
+    --muted: #8CA096;
+    --well: #0B100D;
+    --display: 'Barlow Condensed', 'Arial Narrow', system-ui, sans-serif;
+    --body: 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --mono: 'Roboto Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--fg); font-family: var(--body);
+    font-size: 15px; line-height: 1.5; min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+  /* ── chrome ─────────────────────────── */
+  .topbar {
+    display: flex; align-items: center; gap: 18px;
+    padding: 14px 22px; border-bottom: 1px solid var(--line);
+  }
+  .back { font-family: var(--mono); font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .back:hover { color: var(--fg); }
+  .topbar .wordmark {
+    font-family: var(--display); font-weight: 800; font-size: 20px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    display: inline-flex; align-items: baseline; gap: 5px;
+  }
+  .topbar .wordmark::after { content: ""; width: 8px; height: 8px; background: var(--primary); display: inline-block; transform: skewX(-12deg); }
+  .topbar .session { margin-left: auto; font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  .topbar .session b { color: var(--primary); font-weight: 500; }
+
+  /* ── layout ─────────────────────────── */
+  .app { display: grid; grid-template-columns: 250px 1fr 300px; gap: 1px; background: var(--line); min-height: calc(100vh - 53px); }
+  .app > * { background: var(--bg); }
+
+  .pane-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); padding: 18px 18px 10px; }
+
+  /* ── class picker ───────────────────── */
+  .classes { display: flex; flex-direction: column; }
+  .class-btn {
+    text-align: left; background: none; border: none; border-top: 1px solid var(--line);
+    color: var(--fg); font-family: var(--body); cursor: pointer;
+    padding: 14px 18px; transition: background 0.15s;
+  }
+  .class-btn:hover { background: var(--panel); }
+  .class-btn.active { background: var(--panel); box-shadow: inset 3px 0 0 var(--primary); }
+  .class-btn .c-name { font-family: var(--display); font-weight: 600; font-size: 17px; text-transform: uppercase; letter-spacing: 0.04em; display: block; }
+  .class-btn .c-meta { font-family: var(--mono); font-size: 10.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; margin-top: 3px; }
+  .c-meta .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--primary); animation: pulse 3s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  /* ── stage ──────────────────────────── */
+  .stage { padding: 22px; display: flex; flex-direction: column; gap: 18px; }
+  .video {
+    position: relative; border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+    aspect-ratio: 16 / 9; background: var(--well);
+  }
+  .video img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .badge-live {
+    position: absolute; top: 14px; left: 14px;
+    display: inline-flex; align-items: center; gap: 7px;
+    background: rgba(11, 16, 13, 0.82); border: 1px solid var(--line); border-radius: 6px;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--fg); padding: 6px 10px;
+  }
+  .badge-live .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--primary); animation: pulse 3s ease-in-out infinite; }
+  .video .v-title {
+    position: absolute; left: 14px; bottom: 12px; right: 14px;
+    display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+  }
+  .v-title h1 { font-family: var(--display); font-weight: 700; font-size: 26px; text-transform: uppercase; letter-spacing: 0.04em; text-shadow: 0 1px 8px rgba(0,0,0,0.7); }
+  .v-title span { font-family: var(--mono); font-size: 11px; color: var(--accent); text-shadow: 0 1px 6px rgba(0,0,0,0.8); white-space: nowrap; }
+
+  .metrics { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .metric { background: var(--panel); padding: 16px 18px; }
+  .metric .m-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .metric .m-value { font-family: var(--mono); font-weight: 700; font-size: 34px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .metric .m-value small { font-size: 14px; font-weight: 400; color: var(--muted); margin-left: 4px; }
+  .metric svg { display: block; width: 100%; height: 52px; }
+  .metric .flat { stroke: var(--primary); stroke-width: 2; fill: none; }
+  .metric .flat-fill { fill: rgba(69, 208, 140, 0.08); stroke: none; }
+
+  .encourage { display: flex; align-items: center; gap: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); padding: 16px 18px; flex-wrap: wrap; }
+  .enc-btn {
+    background: var(--primary); color: #08130C; border: none; cursor: pointer;
+    font-family: var(--display); font-weight: 700; font-size: 17px;
+    text-transform: uppercase; letter-spacing: 0.08em; padding: 12px 22px;
+    transition: transform 0.12s, background 0.2s;
+  }
+  .enc-btn:hover { background: #5ADF9E; }
+  .enc-btn:active { transform: translateY(1px); }
+  .enc-count { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .enc-count b { color: var(--fg); font-weight: 500; font-variant-numeric: tabular-nums; }
+  .enc-status { font-family: var(--mono); font-size: 12px; color: var(--accent); margin-left: auto; opacity: 0; transition: opacity 0.3s; }
+  .enc-status.show { opacity: 1; }
+
+  /* ── leaderboard ────────────────────── */
+  .board { display: flex; flex-direction: column; }
+  .rider { display: flex; align-items: center; gap: 12px; padding: 11px 18px; border-top: 1px solid var(--line); }
+  .rider .rank { font-family: var(--mono); font-size: 11px; color: var(--muted); width: 34px; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+  .rider .face {
+    width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0; overflow: hidden;
+    background: var(--well); border: 1px solid var(--line);
+    display: grid; place-items: center;
+    font-family: var(--display); font-weight: 700; font-size: 14px; color: var(--accent);
+  }
+  .rider .face img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .rider .who { min-width: 0; flex-grow: 1; }
+  .rider .who b { display: block; font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rider .who span { display: block; font-family: var(--mono); font-size: 10px; color: var(--muted); }
+  .rider .out { font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; color: var(--fg); flex-shrink: 0; }
+  .rider .out small { color: var(--muted); font-size: 10px; }
+  .board-note { padding: 14px 18px; font-family: var(--mono); font-size: 10.5px; color: var(--muted); border-top: 1px solid var(--line); margin-top: auto; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dot, .badge-live .dot, .c-meta .dot { animation: none; }
+  }
+  @media (max-width: 1020px) {
+    .app { grid-template-columns: 1fr; min-height: 0; }
+    .metrics { grid-template-columns: 1fr 1fr; }
+    .topbar .session { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="wordmark">Perch</span>
+  <span class="session">Signed in as <b>Gumnut's household</b> · Marsupial+</span>
+</div>
+
+<div class="app">
+
+  <aside class="classes" aria-label="Class picker">
+    <p class="pane-label">Today's classes</p>
+    <div id="classList"></div>
+  </aside>
+
+  <main class="stage">
+    <div class="video">
+      <img src="instructor.webp" alt="Instructor koala on the Trunk, broadcasting live" width="1600" height="900">
+      <span class="badge-live"><span class="dot" aria-hidden="true"></span>Live</span>
+      <div class="v-title">
+        <h1 id="classTitle">Dawn Eucalyptus Burn</h1>
+        <span id="classInstructor">with Coach Banjo · Brisbane Studio B</span>
+      </div>
+    </div>
+
+    <div class="metrics" aria-label="Your athlete's telemetry">
+      <div class="metric">
+        <p class="m-label">Output, live</p>
+        <svg viewBox="0 0 300 52" preserveAspectRatio="none" aria-hidden="true">
+          <polygon class="flat-fill" id="outFill" points=""></polygon>
+          <polyline class="flat" id="outLine" points=""></polyline>
+        </svg>
+      </div>
+      <div class="metric"><p class="m-label">Output</p><p class="m-value"><span id="mOut">0.4</span><small>kJ</small></p></div>
+      <div class="metric"><p class="m-label">Heart rate</p><p class="m-value"><span id="mHr">61</span><small>bpm</small></p></div>
+      <div class="metric"><p class="m-label">Cadence</p><p class="m-value"><span id="mCad">0</span><small>rpm</small></p></div>
+    </div>
+
+    <div class="encourage">
+      <button class="enc-btn" id="encBtn" type="button">Send encouragement</button>
+      <span class="enc-count">Sent this session: <b id="encCount">0</b></span>
+      <span class="enc-status" id="encStatus">Delivered. No change in output.</span>
+    </div>
+  </main>
+
+  <aside class="board" aria-label="Leaderboard">
+    <p class="pane-label">Leaderboard · <span id="boardClass">Dawn Eucalyptus Burn</span></p>
+    <div id="riders"></div>
+    <p class="board-note">Rankings update in real time. The numbers do not.</p>
+  </aside>
+
+</div>
+
+<script>
+(function () {
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var CLASSES = [
+    { name: 'Dawn Eucalyptus Burn', len: '45 min', instructor: 'with Coach Banjo · Brisbane Studio B', hr: 61 },
+    { name: 'Zone 0 Endurance', len: '90 min', instructor: 'with Coach Matilda · Brisbane Studio A', hr: 59 },
+    { name: 'Canopy Intervals', len: '30 min', instructor: 'with Coach Banjo · Brisbane Studio B', hr: 63 },
+    { name: 'All-Day Doze Recovery', len: '8 hr', instructor: 'self-guided · no instructor required', hr: 57 },
+    { name: 'Guided Stillness', len: '6 hr', instructor: 'with Coach Pip · audio only', hr: 58 }
+  ];
+
+  var RIDERS = [
+    { name: 'Gumnut', status: 'Asleep', img: 'avatar-1.webp', out: 1.8 },
+    { name: 'Warra', status: 'Asleep (near Trunk)', img: 'avatar-2.webp', out: 1.2 },
+    { name: 'Banjo Jr.', status: 'Chewing', init: 'BJ', out: 0.9 },
+    { name: 'Matilda', status: 'Asleep', init: 'M', out: 0.7 },
+    { name: 'Clancy', status: 'Asleep', init: 'C', out: 0.4 },
+    { name: 'Wattle', status: 'Repositioning (slowly)', init: 'W', out: 0.3 },
+    { name: 'Bindi', status: 'Asleep', init: 'B', out: 0.1 },
+    { name: 'Bruce', status: 'Asleep', init: 'BR', out: 0.0 }
+  ];
+
+  var current = 0;
+
+  // ── class picker ──
+  var listEl = document.getElementById('classList');
+  CLASSES.forEach(function (c, i) {
+    var b = document.createElement('button');
+    b.className = 'class-btn' + (i === 0 ? ' active' : '');
+    b.type = 'button';
+    b.innerHTML = '<span class="c-name">' + c.name + '</span>' +
+      '<span class="c-meta"><span class="dot"></span>Live · ' + c.len + ' · 0 attending</span>';
+    b.addEventListener('click', function () { selectClass(i); });
+    listEl.appendChild(b);
+  });
+
+  function selectClass(i) {
+    current = i;
+    var c = CLASSES[i];
+    document.querySelectorAll('.class-btn').forEach(function (el, j) {
+      el.classList.toggle('active', j === i);
+    });
+    document.getElementById('classTitle').textContent = c.name;
+    document.getElementById('classInstructor').textContent = c.instructor;
+    document.getElementById('boardClass').textContent = c.name;
+    document.getElementById('mHr').textContent = c.hr;
+    document.getElementById('mOut').textContent = '0.' + (i % 3);
+    document.getElementById('mCad').textContent = '0';
+  }
+
+  // ── leaderboard ──
+  var ridersEl = document.getElementById('riders');
+  function renderRiders() {
+    ridersEl.innerHTML = '';
+    RIDERS.slice().sort(function (a, b) { return b.out - a.out; }).forEach(function (r, i) {
+      var d = document.createElement('div');
+      d.className = 'rider';
+      d.innerHTML = '<span class="rank">' + (i + 1) + '</span><span class="face"></span>' +
+        '<span class="who"><b>' + r.name + '</b><span>' + r.status + '</span></span>' +
+        '<span class="out">' + r.out.toFixed(1) + ' <small>kJ</small></span>';
+      var face = d.querySelector('.face');
+      if (r.img) {
+        var im = document.createElement('img');
+        im.src = r.img;
+        im.alt = '';
+        im.width = 38;
+        im.height = 38;
+        face.appendChild(im);
+      } else {
+        face.textContent = r.init;
+      }
+      ridersEl.appendChild(d);
+    });
+  }
+  renderRiders();
+
+  // ── flatline graph ──
+  var points = [];
+  for (var p = 0; p < 30; p++) points.push(0.4);
+  function drawGraph() {
+    var step = 300 / (points.length - 1);
+    var coords = points.map(function (v, i) {
+      // 0 kJ sits at y=46; 3 kJ would reach y=6. It never does.
+      return (i * step).toFixed(1) + ',' + (46 - v * 13.3).toFixed(1);
+    });
+    document.getElementById('outLine').setAttribute('points', coords.join(' '));
+    document.getElementById('outFill').setAttribute('points', '0,52 ' + coords.join(' ') + ' 300,52');
+  }
+  drawGraph();
+
+  // ── live jitter ──
+  var tick = 0;
+  function jitter() {
+    tick++;
+    // graph shifts left, new value wobbles between 0.1 and 0.9
+    points.shift();
+    points.push(Math.max(0.1, Math.min(0.9, points[points.length - 1] + (Math.random() - 0.5) * 0.3)));
+    drawGraph();
+    document.getElementById('mOut').textContent = points[points.length - 1].toFixed(1);
+    // heart rate wobbles within one respectful bpm
+    if (tick % 3 === 0) {
+      var base = CLASSES[current].hr;
+      document.getElementById('mHr').textContent = base + Math.round(Math.random() * 2 - 1);
+    }
+    // one koala's output drifts by a decimal, occasionally
+    if (tick % 4 === 0) {
+      var r = RIDERS[Math.floor(Math.random() * RIDERS.length)];
+      r.out = Math.max(0, Math.min(2.0, r.out + (Math.random() > 0.5 ? 0.1 : -0.1)));
+      renderRiders();
+    }
+  }
+  if (!reduced) setInterval(jitter, 1600);
+
+  // ── encouragement ──
+  var enc = 0;
+  var encTimer = null;
+  document.getElementById('encBtn').addEventListener('click', function () {
+    enc++;
+    document.getElementById('encCount').textContent = enc;
+    var s = document.getElementById('encStatus');
+    s.textContent = enc < 3 ? 'Delivered. No change in output.'
+      : enc < 6 ? 'Delivered. He is still asleep.'
+      : 'Encouragement quota is unlimited. Its effect is not.';
+    s.classList.add('show');
+    clearTimeout(encTimer);
+    encTimer = setTimeout(function () { s.classList.remove('show'); }, 2600);
+  });
+})();
+</script>
+
+</body>
+</html>
