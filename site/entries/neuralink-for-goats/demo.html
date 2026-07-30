@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Herd Console · Capra</title>
+<meta name="description" content="Live neural telemetry for six instrumented goats. Zero interventions that have ever worked.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#6D4FC4;
+    --accent:#FF7A59;
+    --bg:#F3F0FA;
+    --card:#F9F7FD;
+    --well:#EBE6F5;
+    --fg:#3A3354;
+    --muted:#8B84A6;
+    --ink:#2A2344;
+    --display:'Fraunces', Georgia, 'Times New Roman', serif;
+    --body:'Karla', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --clay: 14px 14px 28px rgba(58,51,84,.13), -8px -8px 20px rgba(255,255,255,.9), inset 1px 1px 4px rgba(255,255,255,.7);
+    --clay-soft: 8px 8px 18px rgba(58,51,84,.10), -5px -5px 12px rgba(255,255,255,.85);
+    --clay-well: inset 4px 4px 10px rgba(58,51,84,.12), inset -3px -3px 8px rgba(255,255,255,.8);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--body);background:var(--bg);color:var(--fg);line-height:1.5;min-height:100vh}
+  ::selection{background:var(--primary);color:#fff}
+  button{font-family:var(--body);cursor:pointer}
+  a:focus-visible,button:focus-visible{outline:3px solid var(--primary);outline-offset:2px;border-radius:8px}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 28px;flex-wrap:wrap}
+  .back{color:var(--muted);text-decoration:none;font-size:.88rem;font-weight:500}
+  .back:hover{color:var(--primary)}
+  .console-title{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;color:var(--ink);font-size:1.15rem}
+  .coin{width:28px;height:28px;border-radius:50%;background:radial-gradient(circle at 34% 30%, #FDFCFF 0%, #E5DEF4 55%, #CFC5E8 100%);box-shadow:var(--clay-soft);flex:none}
+  .herd-stats{display:flex;gap:10px;align-items:center;font-size:.78rem;color:var(--muted)}
+  .herd-stats .pill{background:var(--well);box-shadow:var(--clay-well);border-radius:999px;padding:5px 13px;font-weight:700;color:var(--fg);font-variant-numeric:tabular-nums}
+  .live-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block;margin-right:6px;animation:pulse 3s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(255,122,89,.5)}50%{opacity:.6;box-shadow:0 0 0 6px rgba(255,122,89,0)}}
+
+  .layout{display:grid;grid-template-columns:1fr 320px;gap:24px;padding:8px 28px 32px;max-width:1280px;margin:0 auto}
+
+  .tabs{display:flex;gap:10px;margin-bottom:18px}
+  .tab{border:none;background:var(--card);box-shadow:var(--clay-soft);border-radius:999px;padding:9px 20px;font-size:.85rem;font-weight:700;color:var(--muted);transition:transform .15s ease}
+  .tab:active{transform:scale(.96)}
+  .tab.active{background:var(--primary);color:#fff;box-shadow:8px 8px 18px rgba(109,79,196,.3), -5px -5px 12px rgba(255,255,255,.8)}
+  .tab .count{font-variant-numeric:tabular-nums;opacity:.75;margin-left:5px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:18px}
+  .goat-card{background:var(--card);border-radius:24px;box-shadow:var(--clay);padding:20px;border:none;text-align:left;transition:transform .2s ease;font-family:var(--body);color:var(--fg)}
+  .goat-card:hover{transform:translateY(-3px)}
+  .goat-card:active{transform:scale(.98)}
+  .goat-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .goat-avatar{width:42px;height:42px;border-radius:50%;flex:none;box-shadow:var(--clay-soft);object-fit:cover}
+  .goat-initial{width:42px;height:42px;border-radius:50%;flex:none;box-shadow:var(--clay-soft);background:radial-gradient(circle at 34% 30%, #FDFCFF 0%, #E0D8F2 100%);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:700;color:var(--primary);font-size:1.05rem}
+  .goat-name{font-weight:700;color:var(--ink);font-size:.98rem}
+  .goat-tag{font-size:.7rem;color:var(--muted);letter-spacing:.08em}
+  .spark{width:100%;height:36px;margin:4px 0 10px}
+  .spark polyline{fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .goat-state-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .state-pill{background:var(--well);box-shadow:var(--clay-well);border-radius:999px;padding:4px 12px;font-size:.74rem;font-weight:700;color:var(--primary)}
+  .state-pill.alarm{color:var(--accent)}
+  .meter{background:var(--well);box-shadow:var(--clay-well);border-radius:999px;height:11px;overflow:hidden}
+  .meter-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#FFA184,var(--accent));transition:width .8s ease}
+  .meter-label{display:flex;justify-content:space-between;font-size:.7rem;color:var(--muted);margin-top:5px}
+  .meter-label strong{color:var(--accent);font-variant-numeric:tabular-nums}
+
+  .feed{background:var(--card);border-radius:24px;box-shadow:var(--clay);padding:20px;align-self:start;position:sticky;top:16px}
+  .feed h2{font-family:var(--display);font-weight:600;font-size:1.05rem;color:var(--ink);margin-bottom:4px}
+  .feed-sub{font-size:.75rem;color:var(--muted);margin-bottom:14px}
+  .feed-list{list-style:none;display:flex;flex-direction:column;gap:10px;max-height:520px;overflow-y:auto}
+  .feed-item{background:var(--well);box-shadow:var(--clay-well);border-radius:16px;padding:10px 14px;font-size:.82rem}
+  .feed-meta{display:flex;justify-content:space-between;font-size:.68rem;color:var(--muted);margin-bottom:3px}
+  .feed-meta .who{font-weight:700;color:var(--primary)}
+  .feed-quote{color:var(--ink)}
+
+  .overlay{position:fixed;inset:0;background:rgba(42,35,68,.45);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}
+  .overlay.open{display:flex}
+  .detail{background:var(--card);border-radius:28px;box-shadow:var(--clay);padding:30px;width:min(520px,100%);max-height:88vh;overflow-y:auto;position:relative}
+  .detail-close{position:absolute;top:18px;right:18px;border:none;background:var(--well);box-shadow:var(--clay-soft);border-radius:50%;width:36px;height:36px;font-size:1rem;color:var(--fg);line-height:1}
+  .detail-close:active{transform:scale(.94)}
+  .detail-head{display:flex;align-items:center;gap:16px;margin-bottom:6px}
+  .detail-avatar{width:72px;height:72px;border-radius:50%;object-fit:cover;box-shadow:var(--clay-soft);flex:none}
+  .detail-initial{width:72px;height:72px;border-radius:50%;box-shadow:var(--clay-soft);background:radial-gradient(circle at 34% 30%, #FDFCFF 0%, #E0D8F2 100%);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:700;color:var(--primary);font-size:1.7rem;flex:none}
+  .detail-name{font-family:var(--display);font-weight:700;font-size:1.5rem;color:var(--ink)}
+  .detail-sub{font-size:.78rem;color:var(--muted)}
+  .detail-note{font-size:.85rem;color:var(--muted);margin:10px 0 20px}
+  .okr-title{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+  .okr{margin-bottom:14px}
+  .okr-row{display:flex;justify-content:space-between;font-size:.83rem;margin-bottom:5px}
+  .okr-row strong{font-variant-numeric:tabular-nums;color:var(--ink)}
+  .okr .meter-fill{background:linear-gradient(90deg,#9C85DD,var(--primary))}
+  .okr.missed .meter-fill{background:linear-gradient(90deg,#FFA184,var(--accent))}
+  .recal{margin-top:22px}
+  .recal-btn{border:none;background:var(--primary);color:#fff;font-weight:700;font-size:.92rem;border-radius:999px;padding:13px 26px;box-shadow:8px 8px 18px rgba(109,79,196,.3);transition:transform .15s ease}
+  .recal-btn:active{transform:scale(.96)}
+  .recal-btn[disabled]{opacity:.55;cursor:wait}
+  .recal-bar{background:var(--well);box-shadow:var(--clay-well);border-radius:999px;height:11px;overflow:hidden;margin-top:12px;display:none}
+  .recal-bar.running{display:block}
+  .recal-fill{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#9C85DD,var(--primary))}
+  .recal-status{font-size:.76rem;color:var(--muted);margin-top:8px;min-height:1.2em}
+
+  .empty{background:var(--card);border-radius:24px;box-shadow:var(--clay);padding:34px;text-align:center;color:var(--muted);font-size:.92rem;grid-column:1/-1}
+
+  @media (max-width:900px){
+    .layout{grid-template-columns:1fr}
+    .feed{position:static;order:2}
+    .feed-list{max-height:280px}
+    .topbar{padding:14px 18px}
+    .layout{padding:4px 18px 24px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .live-dot{animation:none}
+    .meter-fill{transition:none}
+    .goat-card,.tab,.recal-btn{transition:none}
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <div class="console-title"><span class="coin" aria-hidden="true"></span>Herd Console</div>
+  <div class="herd-stats">
+    <span class="pill"><span class="live-dot" aria-hidden="true"></span>6 minds online</span>
+    <span class="pill" id="scream-count">0 screams today</span>
+  </div>
+</header>
+
+<div class="layout">
+  <main>
+    <div class="tabs" role="tablist" aria-label="Filter herd by state">
+      <button class="tab active" data-filter="all">All <span class="count" id="count-all"></span></button>
+      <button class="tab" data-filter="plotting">Plotting <span class="count" id="count-plotting"></span></button>
+      <button class="tab" data-filter="compliant">Compliant <span class="count" id="count-compliant"></span></button>
+    </div>
+    <div class="grid" id="grid"></div>
+  </main>
+
+  <aside class="feed" aria-label="Scream-to-text feed">
+    <h2>Scream-to-Text</h2>
+    <p class="feed-sub">Live transcripts. Translation confidence varies.</p>
+    <ul class="feed-list" id="feed"></ul>
+  </aside>
+</div>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="detail-name">
+  <div class="detail">
+    <button class="detail-close" id="detail-close" aria-label="Close detail panel">✕</button>
+    <div class="detail-head">
+      <span id="detail-avatar-slot"></span>
+      <div>
+        <div class="detail-name" id="detail-name"></div>
+        <div class="detail-sub" id="detail-sub"></div>
+      </div>
+    </div>
+    <p class="detail-note" id="detail-note"></p>
+    <div class="okr-title">Rumination OKRs · Q3</div>
+    <div id="okrs"></div>
+    <div class="recal">
+      <button class="recal-btn" id="recal-btn">Recalibrate</button>
+      <div class="recal-bar" id="recal-bar"><div class="recal-fill" id="recal-fill"></div></div>
+      <p class="recal-status" id="recal-status"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var GOATS = [
+    { id:'denise', name:'DENISE', tag:'EAR TAG 0114', state:'plotting', breach:87, img:'denise.webp',
+      note:'Subject maintains sustained attention on the northeast fence post. Capra classifies this as intent. Denise classifies it as a hobby.',
+      okrs:[["Compartment 1 · intake",78],["Compartment 2 · fermentation",64],["Compartment 3 · absorption",41],["Compartment 4 · finishing",22]] },
+    { id:'gary', name:'GARY', tag:'EAR TAG 0087', state:'screaming', breach:12,
+      note:'Screaming is continuous but unmotivated. All transcripts resolve to "no." No action recommended. No action possible.',
+      okrs:[["Compartment 1 · intake",91],["Compartment 2 · fermentation",83],["Compartment 3 · absorption",70],["Compartment 4 · finishing",66]] },
+    { id:'bianca', name:'BIANCA', tag:'EAR TAG 0201', state:'ruminating', breach:4,
+      note:'Model employee. On pace across all four compartments. Has never once thought about the fence, which the anomaly team finds suspicious.',
+      okrs:[["Compartment 1 · intake",97],["Compartment 2 · fermentation",95],["Compartment 3 · absorption",92],["Compartment 4 · finishing",89]] },
+    { id:'chip', name:'CHIP', tag:'EAR TAG 0155', state:'asleep standing up', breach:2,
+      note:'Neural activity minimal. Posture fully load-bearing. Dreams indexed nightly; most recent dream was about standing somewhere else.',
+      okrs:[["Compartment 1 · intake",55],["Compartment 2 · fermentation",48],["Compartment 3 · absorption",50],["Compartment 4 · finishing",44]] },
+    { id:'mabel', name:'MABEL', tag:'EAR TAG 0092', state:'plotting', breach:63,
+      note:'Coordinating with Denise. Cross-referenced gaze telemetry confirms both are looking at the same post. This is the first documented caprine standup meeting.',
+      okrs:[["Compartment 1 · intake",71],["Compartment 2 · fermentation",60],["Compartment 3 · absorption",52],["Compartment 4 · finishing",30]] },
+    { id:'walnut', name:'WALNUT', tag:'EAR TAG 0218', state:'ruminating', breach:9,
+      note:'Chewing on schedule. Missed one finishing target in June and has not been told. The red table knows.',
+      okrs:[["Compartment 1 · intake",88],["Compartment 2 · fermentation",81],["Compartment 3 · absorption",74],["Compartment 4 · finishing",58]] }
+  ];
+
+  var SCREAMS = [
+    ['GARY','"no."'],
+    ['GARY','"NO."'],
+    ['DENISE','"the gate was open in 2024. it can be open again."'],
+    ['GARY','"[unintelligible, 14 seconds]"'],
+    ['MABEL','"post four is loose. pass it on."'],
+    ['GARY','"no. (repeated 31 times)"'],
+    ['WALNUT','"[chewing, logged in error]"'],
+    ['DENISE','"i have seen the other side. it is a driveway."'],
+    ['GARY','"[translation confidence: 3%]"'],
+    ['CHIP','"[sleep vocalization. subject remained standing]"'],
+    ['MABEL','"tuesday. tell no one."'],
+    ['GARY','"no?"']
+  ];
+
+  var COMPLIANT = { 'ruminating':1, 'asleep standing up':1 };
+  var currentFilter = 'all';
+  var grid = document.getElementById('grid');
+
+  function sparkPoints(){
+    var pts = [], y = 18;
+    for (var x = 0; x <= 200; x += 8) {
+      y = Math.max(4, Math.min(32, y + (Math.random() * 14 - 7)));
+      pts.push(x + ',' + y.toFixed(1));
+    }
+    return pts.join(' ');
+  }
+
+  function matches(g){
+    if (currentFilter === 'all') return true;
+    if (currentFilter === 'plotting') return g.state === 'plotting';
+    return COMPLIANT[g.state] === 1;
+  }
+
+  function avatarHTML(g, cls, initialCls){
+    if (g.img) return "<img class='" + cls + "' src='" + g.img + "' alt='Portrait of " + g.name + "'>";
+    return '<span class="' + initialCls + '" aria-hidden="true">' + g.name.charAt(0) + '</span>';
+  }
+
+  function render(){
+    var visible = GOATS.filter(matches);
+    var html = visible.map(function(g){
+      var alarm = g.state === 'plotting' || g.state === 'screaming';
+      return '<button class="goat-card" data-id="' + g.id + '" aria-haspopup="dialog">' +
+        '<div class="goat-head">' + avatarHTML(g, 'goat-avatar', 'goat-initial') +
+          '<div><div class="goat-name">' + g.name + '</div><div class="goat-tag">' + g.tag + '</div></div></div>' +
+        '<svg class="spark" viewBox="0 0 200 36" preserveAspectRatio="none" aria-hidden="true"><polyline data-spark="' + g.id + '" points="' + sparkPoints() + '"/></svg>' +
+        '<div class="goat-state-row"><span class="state-pill' + (alarm ? ' alarm' : '') + '">' + g.state + '</span></div>' +
+        '<div class="meter" aria-hidden="true"><div class="meter-fill" data-meter="' + g.id + '" style="width:' + g.breach + '%"></div></div>' +
+        '<div class="meter-label"><span>fence-breach probability</span><strong data-breach="' + g.id + '">' + g.breach + '%</strong></div>' +
+      '</button>';
+    }).join('');
+    grid.innerHTML = html || '<div class="empty">No goats match this filter. Statistically, this never lasts.</div>';
+    document.getElementById('count-all').textContent = GOATS.length;
+    document.getElementById('count-plotting').textContent = GOATS.filter(function(g){ return g.state === 'plotting'; }).length;
+    document.getElementById('count-compliant').textContent = GOATS.filter(function(g){ return COMPLIANT[g.state] === 1; }).length;
+  }
+
+  // Tabs
+  document.querySelectorAll('.tab').forEach(function(tab){
+    tab.addEventListener('click', function(){
+      document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+      tab.classList.add('active');
+      currentFilter = tab.getAttribute('data-filter');
+      render();
+    });
+  });
+
+  // Live drift: sparklines + breach probabilities
+  if (!reduced) {
+    setInterval(function(){
+      document.querySelectorAll('[data-spark]').forEach(function(line){
+        line.setAttribute('points', sparkPoints());
+      });
+    }, 900);
+    setInterval(function(){
+      GOATS.forEach(function(g){
+        var drift = Math.round(Math.random() * 6 - 3);
+        g.breach = Math.max(1, Math.min(99, g.breach + drift));
+        var meter = document.querySelector('[data-meter="' + g.id + '"]');
+        var label = document.querySelector('[data-breach="' + g.id + '"]');
+        if (meter) meter.style.width = g.breach + '%';
+        if (label) label.textContent = g.breach + '%';
+      });
+    }, 2600);
+  }
+
+  // Scream feed
+  var feed = document.getElementById('feed');
+  var screamTotal = 0, screamIdx = 0;
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function pushScream(){
+    var s = SCREAMS[screamIdx % SCREAMS.length];
+    screamIdx++;
+    screamTotal++;
+    var d = new Date();
+    var li = document.createElement('li');
+    li.className = 'feed-item';
+    li.innerHTML = '<div class="feed-meta"><span class="who">' + s[0] + '</span><span>' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()) + '</span></div><div class="feed-quote">' + s[1] + '</div>';
+    feed.insertBefore(li, feed.firstChild);
+    while (feed.children.length > 9) feed.removeChild(feed.lastChild);
+    document.getElementById('scream-count').textContent = screamTotal + ' screams today';
+  }
+  pushScream(); pushScream(); pushScream();
+  (function loop(){
+    setTimeout(function(){ pushScream(); loop(); }, 3500 + Math.random() * 4000);
+  })();
+
+  // Detail panel
+  var overlay = document.getElementById('overlay');
+  var lastFocus = null;
+  function openDetail(g){
+    lastFocus = document.activeElement;
+    document.getElementById('detail-avatar-slot').innerHTML = avatarHTML(g, 'detail-avatar', 'detail-initial');
+    document.getElementById('detail-name').textContent = g.name;
+    document.getElementById('detail-sub').textContent = g.tag + ' · ' + g.state + ' · breach ' + g.breach + '%';
+    document.getElementById('detail-note').textContent = g.note;
+    document.getElementById('okrs').innerHTML = g.okrs.map(function(o){
+      var missed = o[1] < 60;
+      return '<div class="okr' + (missed ? ' missed' : '') + '"><div class="okr-row"><span>' + o[0] + '</span><strong>' + o[1] + '% of target</strong></div><div class="meter"><div class="meter-fill" style="width:' + o[1] + '%"></div></div></div>';
+    }).join('');
+    document.getElementById('recal-status').textContent = '';
+    document.getElementById('recal-bar').classList.remove('running');
+    document.getElementById('recal-fill').style.width = '0';
+    overlay.classList.add('open');
+    document.getElementById('detail-close').focus();
+  }
+  function closeDetail(){
+    overlay.classList.remove('open');
+    if (lastFocus) lastFocus.focus();
+  }
+  grid.addEventListener('click', function(e){
+    var card = e.target.closest('.goat-card');
+    if (!card) return;
+    var g = GOATS.filter(function(x){ return x.id === card.getAttribute('data-id'); })[0];
+    if (g) openDetail(g);
+  });
+  document.getElementById('detail-close').addEventListener('click', closeDetail);
+  overlay.addEventListener('click', function(e){ if (e.target === overlay) closeDetail(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && overlay.classList.contains('open')) closeDetail(); });
+
+  // Recalibrate: a confidence-inspiring progress bar that changes nothing
+  var recalBtn = document.getElementById('recal-btn');
+  recalBtn.addEventListener('click', function(){
+    var bar = document.getElementById('recal-bar');
+    var fill = document.getElementById('recal-fill');
+    var status = document.getElementById('recal-status');
+    recalBtn.disabled = true;
+    bar.classList.add('running');
+    fill.style.width = '0';
+    status.textContent = 'Recalibrating…';
+    var w = 0;
+    var t = setInterval(function(){
+      w += Math.random() * 9 + 3;
+      if (w >= 100) {
+        w = 100;
+        clearInterval(t);
+        status.textContent = 'Recalibration complete. No parameters were changed.';
+        recalBtn.disabled = false;
+      }
+      fill.style.width = w + '%';
+    }, reduced ? 20 : 140);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Capra · theworstaistudioever</title>
+<meta name="description" content="A coin-sized neural implant that streams your goats' thoughts to a dashboard. The thoughts are mostly about fencing.">
+<meta property="og:title" content="Capra · Neuralink for goats">
+<meta property="og:description" content="A coin-sized neural implant that streams your goats' thoughts to a dashboard. The thoughts are mostly about fencing.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#6D4FC4;
+    --primary-deep:#5A3FA8;
+    --accent:#FF7A59;
+    --bg:#F3F0FA;
+    --card:#F9F7FD;
+    --well:#EBE6F5;
+    --fg:#3A3354;
+    --muted:#8B84A6;
+    --ink:#2A2344;
+    --display:'Fraunces', Georgia, 'Times New Roman', serif;
+    --body:'Karla', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --clay: 16px 16px 32px rgba(58,51,84,.13), -10px -10px 24px rgba(255,255,255,.9), inset 1px 1px 4px rgba(255,255,255,.7);
+    --clay-soft: 10px 10px 22px rgba(58,51,84,.10), -6px -6px 16px rgba(255,255,255,.85), inset 1px 1px 3px rgba(255,255,255,.6);
+    --clay-well: inset 5px 5px 12px rgba(58,51,84,.12), inset -4px -4px 10px rgba(255,255,255,.8);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--body);
+    background:var(--bg);
+    color:var(--fg);
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--primary);color:#fff}
+
+  .blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.5;pointer-events:none;z-index:0}
+  .blob-a{width:520px;height:520px;background:#E4DCF7;top:-140px;right:-120px}
+  .blob-b{width:420px;height:420px;background:#FBE4DC;top:520px;left:-180px;opacity:.4}
+  .blob-c{width:460px;height:460px;background:#E4DCF7;bottom:-120px;right:-100px;opacity:.45}
+
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+
+  header.nav{position:relative;z-index:5;padding:28px 0}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .wordmark{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink)}
+  .wordmark-coin{width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 34% 30%, #FDFCFF 0%, #E5DEF4 55%, #CFC5E8 100%);box-shadow:var(--clay-soft);position:relative;flex:none}
+  .wordmark-coin::after{content:"";position:absolute;inset:11px;border-radius:50%;box-shadow:var(--clay-well)}
+  .wordmark span{font-family:var(--display);font-weight:700;font-size:1.5rem;letter-spacing:-.01em}
+  .nav-links{display:flex;align-items:center;gap:28px}
+  .nav-links a{color:var(--fg);text-decoration:none;font-weight:500;font-size:.95rem}
+  .nav-links a:hover{color:var(--primary)}
+  .nav-links a:focus-visible,.btn:focus-visible,.slide-focus:focus-visible{outline:3px solid var(--primary);outline-offset:3px;border-radius:8px}
+
+  .btn{display:inline-block;font-family:var(--body);font-weight:700;font-size:1rem;text-decoration:none;border:none;cursor:pointer;border-radius:999px;padding:15px 30px;transition:transform .18s ease, box-shadow .18s ease;will-change:transform}
+  .btn-primary{background:var(--primary);color:#fff;box-shadow:10px 10px 24px rgba(109,79,196,.32), -6px -6px 16px rgba(255,255,255,.8)}
+  .btn-primary:hover{transform:translateY(-3px);box-shadow:14px 14px 30px rgba(109,79,196,.36), -6px -6px 16px rgba(255,255,255,.8)}
+  .btn-primary:active{transform:scale(.97)}
+  .btn-ghost{background:var(--card);color:var(--primary);box-shadow:var(--clay-soft)}
+  .btn-ghost:hover{transform:translateY(-3px)}
+  .btn-ghost:active{transform:scale(.97)}
+  .btn-small{padding:11px 22px;font-size:.9rem}
+
+  .hero{padding:64px 0 96px;display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center}
+  .eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+  h1{font-family:var(--display);font-weight:600;font-size:clamp(2.6rem,5.4vw,4.1rem);line-height:1.06;color:var(--ink);letter-spacing:-.02em;margin-bottom:8px}
+  .h1-eeg{position:relative;display:inline-block;white-space:nowrap}
+  .h1-eeg svg{position:absolute;left:0;bottom:-10px;width:100%;height:22px;overflow:visible}
+  .h1-eeg polyline{fill:none;stroke:var(--accent);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+  .hero-sub{font-size:1.13rem;color:var(--fg);max-width:34em;margin:22px 0 34px}
+  .hero-ctas{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+  .hero-footnote{margin-top:26px;font-size:.85rem;color:var(--muted)}
+
+  .hero-visual{position:relative;display:flex;flex-direction:column;align-items:center;gap:0}
+  .implant-coin{width:min(300px,64vw);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 32% 28%, #FEFDFF 0%, #EAE4F7 45%, #CFC5E8 100%);box-shadow:24px 24px 52px rgba(58,51,84,.18), -14px -14px 36px rgba(255,255,255,.95), inset 2px 2px 6px rgba(255,255,255,.8);position:relative;animation:coin-float 7s ease-in-out infinite}
+  .implant-coin::before{content:"";position:absolute;inset:16%;border-radius:50%;box-shadow:var(--clay-well)}
+  .implant-coin::after{content:"";position:absolute;inset:38%;border-radius:50%;background:radial-gradient(circle at 36% 30%, #FDFCFF 0%, #E0D8F2 70%);box-shadow:6px 6px 14px rgba(58,51,84,.14), -4px -4px 10px rgba(255,255,255,.9)}
+  @keyframes coin-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+
+  .telemetry-chip{margin-top:-34px;background:var(--card);border-radius:24px;box-shadow:var(--clay);padding:20px 24px;width:min(340px,88vw);position:relative;z-index:2}
+  .chip-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .chip-name{font-weight:700;color:var(--ink);font-size:.95rem;letter-spacing:.02em}
+  .chip-tag{font-size:.72rem;color:var(--muted);letter-spacing:.1em}
+  .live-dot{width:9px;height:9px;border-radius:50%;background:var(--accent);display:inline-block;margin-right:7px;vertical-align:1px;animation:pulse 3s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(255,122,89,.5)}50%{opacity:.6;box-shadow:0 0 0 7px rgba(255,122,89,0)}}
+  .chip-state{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .state-pill{background:var(--well);box-shadow:var(--clay-well);border-radius:999px;padding:5px 14px;font-size:.8rem;font-weight:700;color:var(--primary)}
+  .chip-meter{background:var(--well);box-shadow:var(--clay-well);border-radius:999px;height:14px;overflow:hidden;margin-bottom:8px}
+  .chip-meter-fill{height:100%;width:87%;border-radius:999px;background:linear-gradient(90deg,#FFA184,var(--accent))}
+  .chip-meter-label{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted)}
+  .chip-meter-label strong{color:var(--accent);font-variant-numeric:tabular-nums}
+
+  section{padding:88px 0;position:relative}
+  .section-head{max-width:38em;margin-bottom:52px}
+  h2{font-family:var(--display);font-weight:600;font-size:clamp(1.9rem,3.6vw,2.7rem);line-height:1.12;color:var(--ink);letter-spacing:-.015em;margin-bottom:14px}
+  .section-sub{color:var(--muted);font-size:1.05rem}
+
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+  .step-card{background:var(--card);border-radius:28px;box-shadow:var(--clay);padding:34px 30px;transition:transform .25s ease, box-shadow .25s ease}
+  .step-card:hover{transform:translateY(-4px)}
+  .step-coin{width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 34% 30%, #FDFCFF 0%, #E5DEF4 55%, #CFC5E8 100%);box-shadow:var(--clay-soft);display:flex;align-items:center;justify-content:center;margin-bottom:22px;font-family:var(--display);font-weight:700;color:var(--primary);font-size:1.1rem}
+  .step-card h3{font-family:var(--display);font-weight:600;font-size:1.3rem;color:var(--ink);margin-bottom:10px}
+  .step-card p{font-size:.98rem}
+
+  .features{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+  .feature-card{background:var(--card);border-radius:28px;box-shadow:var(--clay);padding:36px 30px;transition:transform .25s ease}
+  .feature-card:hover{transform:translateY(-4px)}
+  .feature-well{background:var(--well);box-shadow:var(--clay-well);border-radius:20px;padding:16px 18px;margin-bottom:24px;display:flex;align-items:baseline;gap:10px}
+  .feature-stat{font-family:var(--display);font-weight:700;font-size:1.9rem;color:var(--primary);font-variant-numeric:tabular-nums;line-height:1}
+  .feature-stat-label{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .feature-card h3{font-family:var(--display);font-weight:600;font-size:1.35rem;color:var(--ink);margin-bottom:10px}
+  .feature-card p{font-size:.98rem}
+
+  .eeg-divider{display:block;width:100%;height:34px;overflow:visible;margin:0 auto}
+  .eeg-divider polyline{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
+
+  .testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+  .quote-card{background:var(--card);border-radius:28px;box-shadow:var(--clay);padding:34px 30px;display:flex;flex-direction:column;transition:transform .25s ease}
+  .quote-card:hover{transform:translateY(-4px)}
+  .quote-card blockquote{font-family:var(--display);font-weight:500;font-size:1.12rem;line-height:1.45;color:var(--ink);margin-bottom:26px;flex:1}
+  .quote-person{display:flex;align-items:center;gap:14px}
+  .quote-face{width:56px;height:56px;border-radius:50%;object-fit:cover;box-shadow:var(--clay-soft);flex:none}
+  .quote-name{font-weight:700;color:var(--ink);font-size:.95rem}
+  .quote-title{font-size:.8rem;color:var(--muted);line-height:1.35}
+
+  .pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;align-items:start}
+  .price-card{background:var(--card);border-radius:28px;box-shadow:var(--clay);padding:38px 32px;transition:transform .25s ease}
+  .price-card:hover{transform:translateY(-4px)}
+  .price-card.featured{background:linear-gradient(160deg,#F9F7FD 0%,#F1EBFB 100%);position:relative}
+  .price-flag{position:absolute;top:-14px;right:26px;background:var(--accent);color:#fff;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;border-radius:999px;padding:6px 14px;box-shadow:6px 6px 14px rgba(255,122,89,.35)}
+  .price-name{font-family:var(--display);font-weight:600;font-size:1.4rem;color:var(--ink)}
+  .price-tagline{font-size:.88rem;color:var(--muted);margin:4px 0 22px}
+  .price-well{background:var(--well);box-shadow:var(--clay-well);border-radius:20px;padding:14px 20px;margin-bottom:24px}
+  .price-amount{font-family:var(--display);font-weight:700;font-size:1.75rem;color:var(--primary);font-variant-numeric:tabular-nums}
+  .price-per{font-size:.8rem;color:var(--muted)}
+  .price-card ul{list-style:none;margin-bottom:28px}
+  .price-card li{padding:8px 0 8px 26px;position:relative;font-size:.95rem}
+  .price-card li::before{content:"";position:absolute;left:0;top:14px;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 34% 30%, #FDFCFF 0%, #D9D0EE 100%);box-shadow:2px 2px 5px rgba(58,51,84,.2), -1px -1px 3px rgba(255,255,255,.9)}
+
+  .demo-band{background:var(--card);border-radius:32px;box-shadow:var(--clay);padding:56px 48px;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap}
+  .demo-band h2{margin-bottom:8px}
+  .demo-band p{color:var(--muted);max-width:30em}
+
+  footer{padding:56px 0 48px;position:relative;z-index:1}
+  .foot-inner{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap}
+  .foot-back{color:var(--muted);text-decoration:none;font-size:.9rem}
+  .foot-back:hover{color:var(--primary)}
+  .fineprint{font-size:.78rem;color:var(--muted);max-width:44em;line-height:1.6}
+
+  .reveal{opacity:0;transform:translateY(8px);transition:opacity .6s ease, transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  @media (max-width:900px){
+    .hero{grid-template-columns:1fr;padding:40px 0 72px;gap:44px}
+    .steps,.features,.testimonials,.pricing{grid-template-columns:1fr}
+    .nav-links a:not(.btn){display:none}
+    section{padding:64px 0}
+    .demo-band{padding:40px 28px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .implant-coin{animation:none}
+    .live-dot{animation:none}
+    .reveal{opacity:1;transform:none;transition:none}
+    .btn,.step-card,.feature-card,.quote-card,.price-card{transition:none}
+    .h1-eeg polyline,.eeg-divider polyline{stroke-dasharray:none !important;stroke-dashoffset:0 !important}
+  }
+</style>
+</head>
+<body>
+<div class="blob blob-a"></div>
+<div class="blob blob-b"></div>
+<div class="blob blob-c"></div>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="wordmark" href="#"><span class="wordmark-coin" aria-hidden="true"></span><span>Capra</span></a>
+    <nav class="nav-links">
+      <a href="#moment">The moment</a>
+      <a href="#telemetry">Telemetry</a>
+      <a href="#pricing">Pricing</a>
+      <a class="btn btn-primary btn-small" href="#pricing">Instrument the herd</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <p class="eyebrow">Clinical-grade caprine telemetry</p>
+        <h1>Know what the herd is <span class="h1-eeg">thinking.<svg viewBox="0 0 200 22" preserveAspectRatio="none" aria-hidden="true"><polyline id="hero-eeg" points="0,11 28,11 38,11 46,3 54,19 62,7 70,11 104,11 114,2 122,20 130,11 200,11"/></svg></span></h1>
+        <p class="hero-sub">Capra pairs a coin-sized neural implant with a live telemetry dashboard: rumination depth, scream transcripts, and fence-breach intent with up to 40 seconds of warning. What you do with those 40 seconds is between you and the fence.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="#pricing">Instrument the herd</a>
+          <a class="btn btn-ghost" href="./demo.html">open the demo →</a>
+        </div>
+        <p class="hero-footnote">Backed by investors who have never visited a farm.</p>
+      </div>
+      <div class="hero-visual">
+        <div class="implant-coin" role="img" aria-label="The Capra implant, a smooth pale disc the size of a coin"></div>
+        <div class="telemetry-chip">
+          <div class="chip-head">
+            <span class="chip-name"><span class="live-dot" aria-hidden="true"></span>DENISE</span>
+            <span class="chip-tag">EAR TAG 0114</span>
+          </div>
+          <div class="chip-state">
+            <span class="state-pill">plotting</span>
+            <span class="chip-tag">4 min in current state</span>
+          </div>
+          <div class="chip-meter" aria-hidden="true"><div class="chip-meter-fill"></div></div>
+          <div class="chip-meter-label"><span>fence-breach probability</span><strong>87%</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section id="moment">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <h2>Three steps to a fully instrumented mind.</h2>
+        <p class="section-sub">Most owners complete onboarding in under a week. The goats complete it whenever they complete it.</p>
+      </div>
+      <div class="steps">
+        <div class="step-card reveal">
+          <div class="step-coin" aria-hidden="true">1</div>
+          <h3>The consult</h3>
+          <p>A 30-minute video call with a Capra placement specialist. The goat is not required to attend and historically has not.</p>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-coin" aria-hidden="true">2</div>
+          <h3>The moment</h3>
+          <p>Placement takes 20 minutes and is performed by a licensed professional in your driveway. The goat forgives you on its own timeline.</p>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-coin" aria-hidden="true">3</div>
+          <h3>The dashboard</h3>
+          <p>Telemetry begins immediately. Thoughts arrive pre-labeled. Most of them are about the fence, which we consider validation of the product thesis.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="telemetry">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <h2>Everything a goat won't tell you, in one place.</h2>
+        <p class="section-sub">Capra surfaces the herd's inner life as metrics you can act on, or simply watch.</p>
+      </div>
+      <div class="features">
+        <div class="feature-card reveal">
+          <div class="feature-well"><span class="feature-stat">40s</span><span class="feature-stat-label">advance notice</span></div>
+          <h3>Fence-Breach Forecasting</h3>
+          <p>Motor-cortex telemetry flags escape intent up to 40 seconds before contact. That's 40 seconds of complete situational awareness while it happens anyway.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-well"><span class="feature-stat">100%</span><span class="feature-stat-label">of screams captured</span></div>
+          <h3>Scream-to-Text</h3>
+          <p>Every scream is transcribed, timestamped, and routed to your inbox. Most transcripts read "no." It's now on the record.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-well"><span class="feature-stat">4</span><span class="feature-stat-label">compartments tracked</span></div>
+          <h3>Rumination OKRs</h3>
+          <p>Set quarterly chewing targets across all four stomach compartments. Goats who miss their numbers appear in a red table. The table has never been empty.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <svg class="eeg-divider wrap" viewBox="0 0 1120 34" preserveAspectRatio="none" aria-hidden="true"><polyline class="eeg-line" points="0,17 340,17 380,17 400,5 420,29 440,11 460,17 660,17 690,3 710,31 730,17 1120,17"/></svg>
+
+  <section id="voices">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <h2>Owners who stopped wondering.</h2>
+        <p class="section-sub">Real quotes from the Capra community, printed with permission from the humans involved.</p>
+      </div>
+      <div class="testimonials">
+        <div class="quote-card reveal">
+          <blockquote>"I get an alert 40 seconds before Denise hits the fence. The outcome has not changed once, but I've stopped being surprised."</blockquote>
+          <div class="quote-person">
+            <img class="quote-face" src="headshot-1.webp" alt="Studio headshot of a white goat" width="56" height="56" loading="lazy">
+            <div>
+              <div class="quote-name">Carol Wetzel</div>
+              <div class="quote-title">Owner-Operator, 14-Goat Hobby Farm, Zone 6b</div>
+            </div>
+          </div>
+        </div>
+        <div class="quote-card reveal">
+          <blockquote>"The scream transcripts confirmed what we suspected: it's nothing. He's just doing it."</blockquote>
+          <div class="quote-person">
+            <img class="quote-face" src="headshot-2.webp" alt="Studio headshot of a brown goat with floppy ears" width="56" height="56" loading="lazy">
+            <div>
+              <div class="quote-name">Marcus Ferreira</div>
+              <div class="quote-title">Assistant Regional Manager, Petting-Zoo Compliance</div>
+            </div>
+          </div>
+        </div>
+        <div class="quote-card reveal">
+          <blockquote>"Capra told me my buck dreams about the recycling bins. I checked the bins. He had been in them."</blockquote>
+          <div class="quote-person">
+            <img class="quote-face" src="headshot-3.webp" alt="Studio headshot of a small black and white goat" width="56" height="56" loading="lazy">
+            <div>
+              <div class="quote-name">Ingrid Halvorsen</div>
+              <div class="quote-title">Certified Small-Ruminant Nutritionist, semi-retired</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <h2>Priced per mind.</h2>
+        <p class="section-sub">All plans include the implant, the dashboard, and a decision you can't easily walk back.</p>
+      </div>
+      <div class="pricing">
+        <div class="price-card reveal">
+          <div class="price-name">Kid</div>
+          <p class="price-tagline">For the emotionally prepared.</p>
+          <div class="price-well"><span class="price-amount">$89</span><span class="price-per">/goat/mo</span></div>
+          <ul>
+            <li>1 implant, surgically optional</li>
+            <li>Scream transcripts (English only)</li>
+            <li>Fence alerts with 8 seconds of notice</li>
+            <li>Community support (a forum)</li>
+          </ul>
+          <a class="btn btn-ghost btn-small" href="#pricing">Start with one goat</a>
+        </div>
+        <div class="price-card featured reveal">
+          <span class="price-flag">Most instrumented</span>
+          <div class="price-name">Ruminant</div>
+          <p class="price-tagline">Our most defensible tier.</p>
+          <div class="price-well"><span class="price-amount">$449</span><span class="price-per">/goat/mo</span></div>
+          <ul>
+            <li>Full 40-second breach forecasting</li>
+            <li>All four stomach compartments instrumented</li>
+            <li>Weekly cognition report, unread</li>
+            <li>Priority scream routing</li>
+          </ul>
+          <a class="btn btn-primary btn-small" href="#pricing">Instrument the herd</a>
+        </div>
+        <div class="price-card reveal">
+          <div class="price-name">Oracle</div>
+          <p class="price-tagline">For herds with institutional backing.</p>
+          <div class="price-well"><span class="price-amount">$18,000</span><span class="price-per">/mo</span></div>
+          <ul>
+            <li>Herd-wide thought consensus</li>
+            <li>Dedicated caprine neurologist (remote)</li>
+            <li>SLA on dreams</li>
+            <li>Quarterly business review, attended by the goats</li>
+          </ul>
+          <a class="btn btn-ghost btn-small" href="#pricing">Talk to placement</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="demo-band reveal">
+        <div>
+          <h2>Watch a live herd think.</h2>
+          <p>Six instrumented goats, one console, zero interventions that have ever worked.</p>
+        </div>
+        <a class="btn btn-primary" href="./demo.html">open the demo →</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot-inner">
+    <div>
+      <a class="foot-back" href="/">← theworstaistudioever</a>
+    </div>
+    <p class="fineprint">Capra is not a medical device. Capra is not a veterinary device. Capra is a device. Fence outcomes are not covered under any plan. Scream transcripts are provided as-is and reflect the views of the goat, not of Capra, Inc.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Section reveals
+  var reveals = document.querySelectorAll('.reveal');
+  if (reduced || !('IntersectionObserver' in window)) {
+    reveals.forEach(function(el){ el.classList.add('in'); });
+  } else {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting) {
+          var el = entry.target;
+          var siblings = Array.prototype.filter.call(el.parentNode.children, function(c){ return c.classList && c.classList.contains('reveal'); });
+          var idx = siblings.indexOf(el);
+          el.style.transitionDelay = (idx > 0 ? idx * 40 : 0) + 'ms';
+          el.classList.add('in');
+          io.unobserve(el);
+        }
+      });
+    }, { threshold: 0.15 });
+    reveals.forEach(function(el){ io.observe(el); });
+  }
+
+  // EEG lines draw themselves once when visible
+  function drawLine(line, duration){
+    var len = line.getTotalLength();
+    line.style.strokeDasharray = len;
+    line.style.strokeDashoffset = len;
+    line.getBoundingClientRect();
+    line.style.transition = 'stroke-dashoffset ' + duration + 'ms ease-out';
+    line.style.strokeDashoffset = '0';
+  }
+  var eegLines = [document.getElementById('hero-eeg')].concat(Array.prototype.slice.call(document.querySelectorAll('.eeg-line')));
+  if (!reduced && 'IntersectionObserver' in window) {
+    var eio = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting) {
+          drawLine(entry.target, 1200);
+          eio.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.4 });
+    eegLines.forEach(function(l){ if (l) eio.observe(l); });
+  }
+})();
+</script>
+</body>
+</html>

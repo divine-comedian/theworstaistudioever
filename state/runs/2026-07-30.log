@@ -1,0 +1,82 @@
+[2026-07-30T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-07-30T08:00:02Z] invoking claude -p
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/github/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/github/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.openclaw/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.openclaw/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.claude/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.claude/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/aurevon-status/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/aurevon-status/**) instead (Edit rules cover all file-editing tools).
+
+=== agent run summary ===
+
+ROLL
+- Rolled: Neuralink + goats -> neuralink-for-goats ("Neuralink for goats")
+- Rerolls: 0 (first draw was fresh)
+- Subject rule check: goats is an animal. Valid.
+
+CONCEPT
+- Product: Capra. A coin-sized neural implant that streams goat cognition to a herd
+  telemetry dashboard. Features: Fence-Breach Forecasting (40s of warning, zero
+  prevention), Scream-to-Text, Rumination OKRs across four stomach compartments.
+- Demo concept: live herd neural console; goat cards with EEG sparklines, state pills,
+  breach-probability meters; streaming scream-transcript feed; detail panel with
+  rumination OKRs and a Recalibrate button that changes nothing.
+
+DESIGN DIRECTION
+- Style: claymorphic pharma-DTC wellness brochure, pastel lavender daylight mode.
+  Elective goat neurosurgery sold with the visual language of a meditation app.
+  Signature: CSS clay implant coin + a single coral EEG squiggle as the only sharp
+  element on the page.
+- Palette: Lavender Clay / Signal Coral (primary #6D4FC4, accent #FF7A59, bg #F3F0FA,
+  fg #3A3354, muted #8B84A6, ink #2A2344)
+- Fonts: Fraunces (display) / Karla (body)
+- Anti-sameness: last 7 were matte athletic dark, retro-futurist neon, glassmorphism,
+  neo-brutalist paper, engraved-serif prospectus, swiss transit signage, bento grid.
+  ui-ux-pro-max's first suggestion (Bento Box Grid) collided with 2026-07-22 and was
+  rejected; claymorphism / pastel lavender / Fraunces+Karla appear nowhere in the
+  window. No collision.
+
+IMAGES
+- Allocation: hero skipped (claymorphic CSS implant disc carries the hero; a photo
+  would fight the direction). 3 testimonial headshots + 1 demo featured-goat portrait
+  (Denise, used in the console detail panel and her goat card). 4/4 budget used.
+- headshot-1.webp (white Saanen, 320x320): attempt 1, PASS. Deadpan stare, lavender
+  backdrop on palette, no text artifacts.
+- headshot-2.webp (Nubian, floppy ears, 320x320): attempt 1, PASS. Properly
+  unimpressed.
+- headshot-3.webp (pygmy, 320x320): attempt 1, PASS. Vacant serene gaze past camera.
+- denise.webp (alert brown doe, 640x640): attempt 1, PASS. Sideways glance reads as
+  "plotting"; coral-warm light harmonizes with accent.
+- One transient HTTP 503 from the Gemini API on the first call; the script's built-in
+  retry succeeded. Cap not reached.
+
+BUILD
+- index.html: self-contained claymorphic landing (hero with floating clay implant coin
+  + Denise telemetry chip, 3-step "the moment" onboarding, 3 features with stat wells,
+  3 testimonials with goat headshots, 3 pricing tiers, demo CTA band, footer with
+  back-link and fine print). EEG polylines self-draw on scroll; reveals, squish
+  states, and pulses all gated behind prefers-reduced-motion.
+- demo.html: Herd Console. 6 goats, filter tabs (All/Plotting/Compliant) with live
+  counts, animated EEG sparklines, drifting breach probabilities, streaming
+  scream-to-text feed, modal detail panel with rumination OKRs and a Recalibrate
+  progress bar that completes and changes no parameters. Vanilla JS, all mocked.
+
+GALLERY
+- site/index.html regenerated from 67 concept.json files, newest first. Header count
+  updated to 67 startups. Root metadata contract, brand lockup, favicon link, nav
+  arrows, dot rail, keyboard/touch nav all preserved. styles.css untouched.
+
+WARNINGS / NEAR-MISSES
+- Validation initially failed: the demo's JS builds avatar <img> tags by string
+  concatenation, and the validator's <img src="..."> grep matched the literal
+  '" src="' + g.img + '"' fragment as a missing-image reference. Fixed by emitting
+  single-quoted HTML attributes in the JS-built tag. No actual missing images.
+
+VALIDATION
+- scripts/validate-entry.sh site neuralink-for-goats: OK (after the fix above)
+- state/history.json appended (67 entries, parses clean)
+[2026-07-30T08:13:16Z] WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks
+[2026-07-30T08:13:16Z] new entry: neuralink-for-goats
+validate-entry [neuralink-for-goats]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 67 entries (domain theworstaistudioever.com)
+[2026-07-30T08:13:17Z] committing: Neuralink for goats
