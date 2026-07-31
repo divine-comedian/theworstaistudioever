@@ -1,0 +1,27 @@
+[2026-07-31T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-07-31T08:00:02Z] invoking claude -p
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/github/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/github/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.openclaw/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.openclaw/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.claude/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.claude/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/aurevon-status/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/aurevon-status/**) instead (Edit rules cover all file-editing tools).
+
+=== run summary 2026-07-31 ===
+ROLL: DoorDash + squirrels -> doordash-for-squirrels ("DoorDash for squirrels"). Fresh on attempt 1, 0 rerolls (PRNG seed 1833192767 from date string).
+CONCEPT: product "Cache" — on-demand nut delivery to a hole you almost remember digging. Features: Last-Branch Delivery, Burial-as-a-Service, Hawk Surge Pricing. Tiers: Forager $0 / Hoarder $34/mo / Apex Rodent $890/yr.
+DESIGN: glossy consumer super-app marketplace, harvest daylight mode. Palette: primary #D9530B (burnt squirrel-fur orange), accent #2F6B3A (oak-leaf green), bg #FDF8EF cashew cream, ink #2A1B0C. Fonts: Gabarito display / Figtree body / IBM Plex Mono telemetry. Anti-sameness verified against last 7 (clay pastel, matte athletic dark, neon signage, glassmorphic dark, neo-brutalist permit, engraved prospectus, swiss transit) — no tuple collision. Signature: hero photo card with escaped-app-component chips + marching dashed courier route.
+IMAGES: 4 generated (budget fully used). Rationale: hero earns its slot (split hero composed around customer photo card); demo assets skipped (map/tracking demo is CSS/SVG-shaped); remaining 3 on testimonial headshots.
+  - hero.webp 1600x900: PASS attempt 1 (gray squirrel + acorn + kraft bag on cream, no text artifacts). Note: two transient HTTP 503s from the API before the first successful generation; resolved with backoff.
+  - headshot-pretzel.webp 320x320: PASS attempt 1.
+  - headshot-walnut.webp 320x320: FAIL attempt 1 (outdoor shot on wooden post, broke studio-headshot consistency) -> PASS attempt 2 with corrective studio-backdrop feedback.
+  - headshot-gary.webp 320x320: PASS attempt 1.
+BUILD: index.html (landing, all 4 images incorporated; headshots replace initials circles) + demo.html (live order tracker: animated Doug marker on SVG route, status timeline, tip-in-acorns slider with reactive order total, hawk-surge toggle, cache list filter). frontend-design + anti-ai-slop + ui-ux-pro-max skills invoked per pipeline.
+GALLERY: site/index.html regenerated from all 68 concept.json files, newest first, count updated to 68. Shell contract preserved (styles.css link, favicon, brand lockup, dot rail, swipe nav).
+WARNINGS: image API returned 503 three times early in the run (high demand); no other near-misses. Note for maintainer: same-date tie ordering in the gallery now follows slug order rather than the previous hand order (affects only the two 2026-06-12 and two 2026-05-14 entries, cosmetic).
+VALIDATION: scripts/validate-entry.sh site doordash-for-squirrels -> OK. History appended (68 entries).
+[2026-07-31T08:15:21Z] WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks
+[2026-07-31T08:15:21Z] new entry: doordash-for-squirrels
+validate-entry [doordash-for-squirrels]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 68 entries (domain theworstaistudioever.com)
+[2026-07-31T08:15:21Z] committing: DoorDash for squirrels

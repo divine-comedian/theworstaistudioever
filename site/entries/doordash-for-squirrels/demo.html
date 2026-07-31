@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cache · Live order #0447</title>
+<meta name="description" content="Track order #0447. Doug is climbing.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Gabarito:wght@500;700;800;900&family=Figtree:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --primary:#D9530B;
+  --primary-deep:#B84406;
+  --accent:#2F6B3A;
+  --bg:#FDF8EF;
+  --card:#FFFDF8;
+  --well:#F5EDDD;
+  --fg:#33210F;
+  --muted:#8A6F52;
+  --ink:#2A1B0C;
+  --line:#EBDFC9;
+  --shadow:0 10px 30px rgba(70,45,15,.10);
+  --display:'Gabarito','Avenir Next','Segoe UI',system-ui,sans-serif;
+  --body:'Figtree',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--primary);text-decoration:none}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--primary);outline-offset:2px;border-radius:6px}
+button{font-family:inherit;cursor:pointer}
+
+/* top chrome */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  background:rgba(253,248,239,.95);
+  border-bottom:1px solid var(--line);
+  padding:12px 20px;
+  display:flex;align-items:center;gap:18px;
+}
+.back{font-size:.9rem;color:var(--muted);font-weight:500}
+.back:hover{color:var(--primary)}
+.topbar .brand{display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:900;font-size:1.15rem;color:var(--ink)}
+.order-tag{
+  margin-left:auto;display:flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;color:var(--ink);
+  background:var(--well);border-radius:999px;padding:6px 14px;
+}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--primary);flex:none;animation:pulse 3s ease-in-out infinite}
+.dot.green{background:var(--accent);animation:none}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* layout */
+.app{max-width:1180px;margin:0 auto;padding:24px 20px 60px;display:grid;grid-template-columns:1.6fr 1fr;gap:22px}
+@media (max-width:920px){.app{grid-template-columns:1fr}}
+.col{display:flex;flex-direction:column;gap:22px}
+.panel{background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:22px}
+.panel-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:16px}
+.panel h2{font-family:var(--display);font-weight:800;font-size:1.15rem;color:var(--ink);letter-spacing:-.01em}
+.panel-label{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+
+/* map */
+.map-wrap{position:relative;border-radius:14px;overflow:hidden;background:#F8F0DD}
+.map-wrap svg{display:block;width:100%;height:auto}
+.map-chip{
+  position:absolute;background:var(--card);border:1px solid var(--line);border-radius:999px;
+  padding:6px 13px;font-family:var(--mono);font-size:.68rem;letter-spacing:.05em;color:var(--ink);
+  box-shadow:var(--shadow);display:flex;gap:7px;align-items:center;white-space:nowrap;
+}
+.map-chip.eta{top:12px;right:12px}
+.map-chip.surge{bottom:12px;right:12px;color:var(--primary)}
+.map-chip strong{color:var(--primary);font-weight:600}
+.map-foot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;flex-wrap:wrap;gap:10px}
+.doug-line{font-family:var(--mono);font-size:.78rem;color:var(--fg)}
+.doug-line b{color:var(--primary);font-weight:600}
+.hawk-btn{
+  background:var(--well);border:1px solid var(--line);border-radius:999px;
+  padding:8px 16px;font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;color:var(--ink);
+  transition:background .15s ease;
+}
+.hawk-btn:hover{background:var(--line)}
+.hawk-btn.active{background:var(--primary);border-color:var(--primary);color:#fff}
+
+/* timeline */
+.timeline{list-style:none}
+.timeline li{
+  position:relative;padding:0 0 20px 30px;
+  font-size:.95rem;color:var(--muted);
+}
+.timeline li:last-child{padding-bottom:0}
+.timeline li::before{
+  content:"";position:absolute;left:7px;top:22px;bottom:2px;width:2px;background:var(--line);
+}
+.timeline li:last-child::before{display:none}
+.timeline li::after{
+  content:"";position:absolute;left:0;top:5px;width:12px;height:12px;border-radius:50%;
+  background:var(--bg);border:2px solid var(--line);
+}
+.timeline li.done{color:var(--fg)}
+.timeline li.done::after{background:var(--accent);border-color:var(--accent)}
+.timeline li.now{color:var(--ink);font-weight:600}
+.timeline li.now::after{background:var(--primary);border-color:var(--primary);animation:pulse 3s ease-in-out infinite}
+.timeline .t{display:block;font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;color:var(--muted);font-weight:400}
+
+/* order summary */
+.lines{font-family:var(--mono);font-size:.8rem;color:var(--fg)}
+.lines .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);gap:12px}
+.lines .row span:last-child{font-variant-numeric:tabular-nums;white-space:nowrap}
+.lines .row.total{border-bottom:none;font-weight:600;color:var(--ink);font-size:.9rem;padding-top:12px}
+.lines .row.surge span{color:var(--primary)}
+.lines .note{color:var(--muted)}
+
+/* tip slider */
+.tip-value{font-family:var(--mono);font-weight:600;font-size:1.7rem;color:var(--ink);font-variant-numeric:tabular-nums}
+.tip-value span{font-size:.8rem;color:var(--muted);font-weight:400}
+input[type=range]{
+  width:100%;margin:14px 0 6px;appearance:none;-webkit-appearance:none;height:8px;border-radius:999px;
+  background:linear-gradient(to right,var(--primary) 0%,var(--primary) var(--fill,7.5%),var(--well) var(--fill,7.5%),var(--well) 100%);
+}
+input[type=range]::-webkit-slider-thumb{
+  appearance:none;-webkit-appearance:none;width:24px;height:24px;border-radius:50%;
+  background:var(--card);border:3px solid var(--primary);box-shadow:0 2px 6px rgba(70,45,15,.25);cursor:grab;
+}
+input[type=range]::-moz-range-thumb{
+  width:18px;height:18px;border-radius:50%;
+  background:var(--card);border:3px solid var(--primary);box-shadow:0 2px 6px rgba(70,45,15,.25);cursor:grab;
+}
+.tip-note{font-size:.85rem;color:var(--muted);min-height:2.6em;margin-top:6px}
+
+/* caches */
+.cache-head-controls{display:flex;gap:8px}
+.filter-btn{
+  background:var(--well);border:1px solid var(--line);border-radius:999px;
+  padding:5px 12px;font-family:var(--mono);font-size:.66rem;letter-spacing:.06em;color:var(--ink);
+}
+.filter-btn.active{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.caches{list-style:none}
+.caches li{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  padding:11px 0;border-bottom:1px solid var(--line);font-size:.9rem;
+}
+.caches li:last-child{border-bottom:none}
+.caches .c-name{color:var(--ink);font-weight:500}
+.caches .c-meta{font-family:var(--mono);font-size:.68rem;color:var(--muted);letter-spacing:.04em}
+.tag{
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;
+  border-radius:999px;padding:4px 10px;white-space:nowrap;
+}
+.tag.ok{background:rgba(47,107,58,.12);color:var(--accent)}
+.tag.lost{background:rgba(217,83,11,.12);color:var(--primary)}
+.cache-fine{font-family:var(--mono);font-size:.66rem;color:var(--muted);margin-top:12px;letter-spacing:.04em}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="brand">
+    <svg width="18" height="23" viewBox="0 0 34 44" fill="none" aria-hidden="true">
+      <path d="M17 43C17 43 32 27.5 32 16.5C32 8 25.3 2 17 2C8.7 2 2 8 2 16.5C2 27.5 17 43 17 43Z" fill="#D9530B"/>
+      <circle cx="17" cy="17" r="6.5" fill="#FDF8EF"/>
+    </svg>
+    Cache
+  </span>
+  <span class="order-tag"><span class="dot" id="order-dot"></span>ORDER #0447 · <span id="order-state">IN PROGRESS</span></span>
+</div>
+
+<main class="app">
+  <div class="col">
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Backyard 14, north fence</h2>
+        <span class="panel-label">Live map</span>
+      </div>
+      <div class="map-wrap">
+        <svg viewBox="0 0 720 420" role="img" aria-label="Stylized map showing Doug's route from Big Oak Fulfillment to your drey">
+          <rect width="720" height="420" fill="#F8F0DD"/>
+          <!-- lawn patches -->
+          <ellipse cx="150" cy="330" rx="130" ry="60" fill="#EFE6CC"/>
+          <ellipse cx="520" cy="90" rx="160" ry="70" fill="#EFE6CC"/>
+          <ellipse cx="600" cy="330" rx="110" ry="55" fill="#E9F0DF"/>
+          <!-- fence -->
+          <g stroke="#D9CDB2" stroke-width="4" stroke-linecap="round">
+            <line x1="20" y1="20" x2="700" y2="20"/>
+            <line x1="60" y1="12" x2="60" y2="28"/><line x1="140" y1="12" x2="140" y2="28"/>
+            <line x1="220" y1="12" x2="220" y2="28"/><line x1="300" y1="12" x2="300" y2="28"/>
+            <line x1="380" y1="12" x2="380" y2="28"/><line x1="460" y1="12" x2="460" y2="28"/>
+            <line x1="540" y1="12" x2="540" y2="28"/><line x1="620" y1="12" x2="620" y2="28"/>
+          </g>
+          <!-- big oak: fulfillment -->
+          <g>
+            <circle cx="110" cy="120" r="52" fill="#CBD9AF"/>
+            <circle cx="80" cy="100" r="30" fill="#C0D2A0"/>
+            <circle cx="145" cy="95" r="26" fill="#C0D2A0"/>
+            <rect x="102" y="150" width="16" height="34" rx="6" fill="#B08A55"/>
+            <text x="110" y="215" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" letter-spacing="1.5" fill="#8A6F52">BIG OAK FULFILLMENT</text>
+          </g>
+          <!-- birdbath hazard -->
+          <g>
+            <circle cx="400" cy="250" r="26" fill="#D8E4EA"/>
+            <circle cx="400" cy="250" r="16" fill="#C6D7E0"/>
+            <text x="400" y="295" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" letter-spacing="1.5" fill="#8A6F52">BIRDBATH (AVOID)</text>
+          </g>
+          <!-- your drey -->
+          <g>
+            <circle cx="620" cy="150" r="40" fill="#CBD9AF"/>
+            <circle cx="646" cy="132" r="22" fill="#C0D2A0"/>
+            <rect x="612" y="172" width="14" height="30" rx="6" fill="#B08A55"/>
+            <circle cx="620" cy="140" r="12" fill="#8A5A2B"/>
+            <text x="620" y="235" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="11" letter-spacing="1.5" fill="#8A6F52">YOUR DREY</text>
+          </g>
+          <!-- route -->
+          <path id="route" d="M130 170 C 200 260, 300 320, 400 300 C 480 285, 520 220, 600 165"
+                fill="none" stroke="#D9530B" stroke-width="3" stroke-dasharray="8 9" opacity=".6"/>
+          <!-- destination pin -->
+          <g transform="translate(600,165)">
+            <path d="M0 0C0 0 11 -11.5 11 -19.5C11 -25.6 6.1 -30 0 -30C-6.1 -30 -11 -25.6 -11 -19.5C-11 -11.5 0 0 0 0Z" fill="#2F6B3A"/>
+            <circle cx="0" cy="-19.5" r="4.5" fill="#FDF8EF"/>
+          </g>
+          <!-- doug -->
+          <g id="doug">
+            <circle r="13" fill="#D9530B"/>
+            <circle r="13" fill="none" stroke="#FDF8EF" stroke-width="3"/>
+            <text y="4.5" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-weight="600" font-size="12" fill="#FDF8EF">D</text>
+          </g>
+        </svg>
+        <div class="map-chip eta"><span class="dot"></span>ETA <strong id="eta">38 MIN</strong></div>
+        <div class="map-chip surge" id="surge-chip">HAWK SURGE <strong id="surge">1.4x</strong></div>
+      </div>
+      <div class="map-foot">
+        <p class="doug-line" id="doug-line">Doug is climbing · branch <b id="branch">3</b>/7</p>
+        <button class="hawk-btn" id="hawk-btn" aria-pressed="false">REPORT HAWK</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Order status</h2>
+        <span class="panel-label">Updated constantly, changed rarely</span>
+      </div>
+      <ol class="timeline" id="timeline">
+        <li class="done">Order confirmed <span class="t">14:02 · 60 acorns, 12 walnut halves, 1 burial</span></li>
+        <li class="done">Nuts inspected <span class="t">14:09 · grade A, two rejected for attitude</span></li>
+        <li class="now" id="step-climb">Doug is climbing <span class="t">14:31 · branch-by-branch telemetry enabled</span></li>
+        <li id="step-delivered">Delivered to hole <span class="t" id="delivered-t">pending · hole subject to availability</span></li>
+      </ol>
+    </section>
+  </div>
+
+  <div class="col">
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Order summary</h2>
+        <span class="panel-label">#0447</span>
+      </div>
+      <div class="lines">
+        <div class="row"><span>Acorns, premium (60)</span><span>240.00 ac</span></div>
+        <div class="row"><span>Walnut halves (12)</span><span>96.00 ac</span></div>
+        <div class="row"><span>Burial-as-a-Service (1 hole)</span><span>40.00 ac</span></div>
+        <div class="row"><span>Delivery fee</span><span>18.00 ac</span></div>
+        <div class="row"><span>Cold paw fee <span class="note">(seasonal)</span></span><span>6.00 ac</span></div>
+        <div class="row surge"><span>Hawk surge ×<span id="surge-line">1.4</span></span><span id="surge-amt">+9.60 ac</span></div>
+        <div class="row"><span>Tip for Doug</span><span id="tip-line">3.00 ac</span></div>
+        <div class="row total"><span>Total</span><span id="total">412.60 ac</span></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Tip Doug</h2>
+        <span class="panel-label">He can see this screen</span>
+      </div>
+      <div class="tip-value"><span id="tip-num">3</span> <span>acorns</span></div>
+      <input type="range" id="tip" min="0" max="40" value="3" step="1" aria-label="Tip for Doug, in acorns">
+      <p class="tip-note" id="tip-note">A standard tip. Doug has noted it without comment.</p>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>My caches</h2>
+        <div class="cache-head-controls">
+          <button class="filter-btn active" data-filter="all">ALL</button>
+          <button class="filter-btn" data-filter="lost">FORGOTTEN</button>
+        </div>
+      </div>
+      <ul class="caches" id="caches">
+        <li data-state="ok"><div><div class="c-name">Under the birdbath, east lip</div><div class="c-meta">34 ac · buried 07-12</div></div><span class="tag ok">GPS LOGGED</span></li>
+        <li data-state="lost"><div><div class="c-name">Somewhere near the shed</div><div class="c-meta">112 ac · buried 06-28</div></div><span class="tag lost">LOCATION FORGOTTEN</span></li>
+        <li data-state="ok"><div><div class="c-name">Flowerpot 3, second knuckle deep</div><div class="c-meta">8 ac · buried 07-25</div></div><span class="tag ok">GPS LOGGED</span></li>
+        <li data-state="lost"><div><div class="c-name">The good spot</div><div class="c-meta">61 ac · buried 05-30</div></div><span class="tag lost">LOCATION FORGOTTEN</span></li>
+        <li data-state="lost"><div><div class="c-name">By the— it was definitely by something</div><div class="c-meta">57 ac · buried 05-11</div></div><span class="tag lost">LOCATION FORGOTTEN</span></li>
+        <li data-state="ok"><div><div class="c-name">Doug's pick (sealed)</div><div class="c-meta">200 ac · buried 07-30</div></div><span class="tag ok">GPS LOGGED</span></li>
+      </ul>
+      <p class="cache-fine">472 AC TRACKED · 230 AC FORGOTTEN (48.7%) · RECOVERY NOT OFFERED AT THIS TIER</p>
+    </section>
+  </div>
+</main>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ----- order math ----- */
+  var SUBTOTAL = 400.00;           // items + fees before surge and tip
+  var SURGEABLE = 24.00;           // delivery + cold paw fee
+  var surge = 1.4;
+  var tip = 3;
+
+  function fmt(n){ return n.toFixed(2) + ' ac'; }
+  function recalc(){
+    var surgeAmt = SURGEABLE * (surge - 1);
+    document.getElementById('surge-line').textContent = surge.toFixed(1);
+    document.getElementById('surge-amt').textContent = '+' + fmt(surgeAmt);
+    document.getElementById('surge').textContent = surge.toFixed(1) + 'x';
+    document.getElementById('tip-line').textContent = fmt(tip);
+    document.getElementById('total').textContent = fmt(SUBTOTAL + surgeAmt + tip);
+  }
+
+  /* ----- tip slider ----- */
+  var slider = document.getElementById('tip');
+  var tipNotes = [
+    [0,  "Zero acorns. Doug has seen this. Doug sees everything."],
+    [1,  "A tip technically exists. Doug is technically grateful."],
+    [4,  "A standard tip. Doug has noted it without comment."],
+    [10, "Generous. Doug's climbing pace has measurably improved."],
+    [20, "Doug has told the other Dashers about you. Favorably."],
+    [31, "Doug would enter the birdbath for you. He wants you to know that."],
+    [40, "The maximum. Doug is naming a cache after you."]
+  ];
+  function noteFor(v){
+    var out = tipNotes[0][1];
+    for (var i=0;i<tipNotes.length;i++){ if (v >= tipNotes[i][0]) out = tipNotes[i][1]; }
+    return out;
+  }
+  function syncTip(){
+    tip = parseInt(slider.value, 10);
+    document.getElementById('tip-num').textContent = tip;
+    document.getElementById('tip-note').textContent = noteFor(tip);
+    slider.style.setProperty('--fill', (tip/40*100) + '%');
+    recalc();
+  }
+  slider.addEventListener('input', syncTip);
+
+  /* ----- hawk surge toggle ----- */
+  var hawkBtn = document.getElementById('hawk-btn');
+  hawkBtn.addEventListener('click', function(){
+    var active = hawkBtn.classList.toggle('active');
+    hawkBtn.setAttribute('aria-pressed', String(active));
+    hawkBtn.textContent = active ? 'HAWK REPORTED' : 'REPORT HAWK';
+    surge = active ? 2.1 : 1.4;
+    if (!delivered){
+      etaMin += active ? 9 : -9;
+      updateEta();
+    }
+    recalc();
+  });
+
+  /* ----- doug moves along the route ----- */
+  var route = document.getElementById('route');
+  var doug = document.getElementById('doug');
+  var len = route.getTotalLength();
+  var progress = 3/7;               // branch 3 of 7
+  var branch = 3;
+  var etaMin = 38;
+  var delivered = false;
+
+  function place(p){
+    var pt = route.getPointAtLength(len * Math.min(p, 1));
+    doug.setAttribute('transform', 'translate(' + pt.x + ',' + pt.y + ')');
+  }
+  function updateEta(){
+    document.getElementById('eta').textContent = delivered ? 'ARRIVED' : etaMin + ' MIN';
+  }
+  place(progress);
+  updateEta();
+
+  function deliver(){
+    delivered = true;
+    updateEta();
+    document.getElementById('doug-line').innerHTML = 'Doug has reached the hole. The hole was acceptable.';
+    document.getElementById('order-state').textContent = 'DELIVERED';
+    var dot = document.getElementById('order-dot');
+    dot.classList.add('green');
+    var climb = document.getElementById('step-climb');
+    climb.classList.remove('now'); climb.classList.add('done');
+    var last = document.getElementById('step-delivered');
+    last.classList.add('now');
+    document.getElementById('delivered-t').textContent = '15:09 · contents verified by sniff';
+  }
+
+  if (reduced){
+    // static scene: Doug stays at branch 3, order remains honestly in progress
+  } else {
+    var timer = setInterval(function(){
+      branch += 1;
+      if (branch >= 7){
+        clearInterval(timer);
+        place(1);
+        deliver();
+        return;
+      }
+      progress = branch/7;
+      place(progress);
+      etaMin = Math.max(2, etaMin - 9);
+      updateEta();
+      document.getElementById('branch').textContent = branch;
+    }, 5000);
+  }
+
+  /* ----- cache filter ----- */
+  var filterBtns = document.querySelectorAll('.filter-btn');
+  filterBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      filterBtns.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      var mode = btn.getAttribute('data-filter');
+      document.querySelectorAll('#caches li').forEach(function(li){
+        li.style.display = (mode === 'all' || li.getAttribute('data-state') === 'lost') ? '' : 'none';
+      });
+    });
+  });
+
+  syncTip();
+})();
+</script>
+</body>
+</html>

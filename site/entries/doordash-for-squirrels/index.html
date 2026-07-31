@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cache · theworstaistudioever</title>
+<meta name="description" content="On-demand nut delivery to a hole you almost remember digging.">
+<meta property="og:title" content="Cache — DoorDash for squirrels">
+<meta property="og:description" content="On-demand nut delivery to a hole you almost remember digging.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="hero.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Gabarito:wght@500;700;800;900&family=Figtree:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --primary:#D9530B;
+  --primary-deep:#B84406;
+  --accent:#2F6B3A;
+  --bg:#FDF8EF;
+  --card:#FFFDF8;
+  --well:#F5EDDD;
+  --fg:#33210F;
+  --muted:#8A6F52;
+  --ink:#2A1B0C;
+  --line:#EBDFC9;
+  --shadow:0 10px 30px rgba(70,45,15,.10);
+  --shadow-lift:0 16px 38px rgba(70,45,15,.14);
+  --radius:20px;
+  --display:'Gabarito','Avenir Next','Segoe UI',system-ui,sans-serif;
+  --body:'Figtree',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--fg);
+  font-family:var(--body);
+  font-size:17px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--primary);color:#fff}
+a{color:var(--primary);text-decoration:none}
+a:focus-visible,button:focus-visible{outline:3px solid var(--primary);outline-offset:3px;border-radius:6px}
+img{display:block;max-width:100%}
+
+/* ---------- nav ---------- */
+.nav{
+  position:sticky;top:0;z-index:50;
+  background:rgba(253,248,239,.94);
+  border-bottom:1px solid var(--line);
+}
+.nav-inner{
+  max-width:1120px;margin:0 auto;padding:14px 24px;
+  display:flex;align-items:center;gap:28px;
+}
+.brand{
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--display);font-weight:900;font-size:1.5rem;color:var(--ink);
+  letter-spacing:-.02em;
+}
+.brand svg{flex:none}
+.nav-links{display:flex;gap:22px;margin-left:auto;align-items:center}
+.nav-links a{color:var(--fg);font-weight:500;font-size:.95rem}
+.nav-links a:hover{color:var(--primary)}
+.pill{
+  display:inline-block;
+  background:var(--primary);color:#fff;
+  font-family:var(--display);font-weight:700;
+  padding:11px 24px;border-radius:999px;border:none;cursor:pointer;
+  font-size:1rem;letter-spacing:.01em;
+  box-shadow:0 6px 16px rgba(217,83,11,.30);
+  transition:transform .15s ease,box-shadow .15s ease,background .15s ease;
+}
+.pill:hover{background:var(--primary-deep);box-shadow:0 8px 20px rgba(217,83,11,.36)}
+.pill:active{transform:translateY(1px);box-shadow:0 4px 10px rgba(217,83,11,.28)}
+.pill.small{padding:9px 20px;font-size:.92rem}
+@media (max-width:720px){.nav-links a:not(.pill){display:none}}
+
+/* ---------- hero ---------- */
+.hero{max-width:1120px;margin:0 auto;padding:72px 24px 40px;position:relative}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+@media (max-width:900px){.hero-grid{grid-template-columns:1fr;gap:40px}}
+.eyebrow{
+  font-family:var(--mono);font-size:.78rem;letter-spacing:.14em;
+  color:var(--muted);text-transform:uppercase;margin-bottom:18px;
+  display:flex;align-items:center;gap:8px;
+}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--primary);flex:none;animation:pulse 3s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+h1{
+  font-family:var(--display);font-weight:900;
+  font-size:clamp(2.6rem,5.2vw,4.1rem);
+  line-height:1.04;letter-spacing:-.03em;color:var(--ink);
+  margin-bottom:22px;
+}
+h1 em{font-style:normal;color:var(--primary)}
+.hero-sub{font-size:1.16rem;color:#55402a;max-width:33em;margin-bottom:30px}
+.hero-ctas{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-bottom:26px}
+.ghost-link{font-weight:600;color:var(--ink)}
+.ghost-link:hover{color:var(--primary)}
+.badge-row{font-family:var(--mono);font-size:.75rem;color:var(--muted);letter-spacing:.06em}
+
+.hero-card{position:relative}
+.photo-card{
+  border-radius:var(--radius);overflow:hidden;
+  box-shadow:var(--shadow-lift);
+  background:var(--card);
+}
+.photo-card img{width:100%;height:auto;aspect-ratio:16/10;object-fit:cover}
+.chip{
+  position:absolute;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:8px 16px;
+  font-family:var(--mono);font-size:.75rem;letter-spacing:.04em;color:var(--ink);
+  box-shadow:var(--shadow);
+  display:flex;align-items:center;gap:8px;white-space:nowrap;
+}
+.chip .live-dot{width:7px;height:7px}
+.chip.eta{top:-16px;right:26px}
+.chip.status{bottom:52px;left:-22px}
+.chip.tip{bottom:-16px;right:52px}
+.chip strong{font-weight:600;color:var(--primary)}
+.chip.tip strong{color:var(--accent)}
+@media (max-width:900px){
+  .chip.status{left:-6px}
+  .chip.eta{right:10px}
+  .chip.tip{right:20px}
+}
+
+/* pin drop */
+.pin{
+  position:absolute;top:-30px;left:34px;width:34px;height:44px;
+  animation:pindrop .7s cubic-bezier(.2,.9,.3,1.2) both;
+}
+@keyframes pindrop{
+  0%{transform:translateY(-46px);opacity:0}
+  70%{transform:translateY(4px);opacity:1}
+  100%{transform:translateY(0);opacity:1}
+}
+
+/* dashed route */
+.route{position:absolute;inset:0;pointer-events:none;overflow:visible;z-index:-1}
+.route path{
+  fill:none;stroke:var(--primary);stroke-width:2;
+  stroke-dasharray:7 8;opacity:.45;
+  animation:march 1.4s linear infinite;
+}
+@keyframes march{to{stroke-dashoffset:-15}}
+
+/* ---------- telemetry strip ---------- */
+.telemetry{max-width:1120px;margin:40px auto 0;padding:0 24px}
+.telemetry-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:16px;
+}
+@media (max-width:900px){.telemetry-grid{grid-template-columns:repeat(2,1fr)}}
+.well{
+  background:var(--well);
+  border-radius:14px;
+  padding:18px 20px;
+  box-shadow:inset 0 2px 4px rgba(70,45,15,.06);
+}
+.well .num{
+  font-family:var(--mono);font-weight:600;font-size:1.5rem;color:var(--ink);
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em;
+}
+.well .num.surge{color:var(--primary)}
+.well .label{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+
+/* ---------- sections ---------- */
+section{max-width:1120px;margin:0 auto;padding:88px 24px 0}
+.kicker{
+  font-family:var(--mono);font-size:.78rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--primary);margin-bottom:14px;
+}
+h2{
+  font-family:var(--display);font-weight:800;
+  font-size:clamp(1.9rem,3.4vw,2.7rem);
+  letter-spacing:-.02em;line-height:1.1;color:var(--ink);
+  margin-bottom:14px;max-width:20em;
+}
+.section-sub{color:#55402a;max-width:38em;margin-bottom:44px}
+
+/* features */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+@media (max-width:900px){.cards{grid-template-columns:1fr}}
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:30px 28px;
+  box-shadow:var(--shadow);
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lift)}
+.card .icon{
+  width:48px;height:48px;border-radius:14px;
+  background:var(--well);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:20px;color:var(--primary);
+}
+.card h3{font-family:var(--display);font-weight:700;font-size:1.25rem;color:var(--ink);margin-bottom:10px;letter-spacing:-.01em}
+.card p{color:#55402a;font-size:.98rem}
+
+/* demo banner */
+.demo-banner{
+  margin-top:88px;
+  background:var(--ink);
+  border-radius:calc(var(--radius) + 6px);
+  padding:52px 48px;
+  display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap;
+  box-shadow:var(--shadow-lift);
+  position:relative;overflow:hidden;
+}
+.demo-banner::after{
+  content:"";position:absolute;right:-60px;top:-60px;width:240px;height:240px;
+  border-radius:50%;background:rgba(217,83,11,.18);
+}
+.demo-banner h2{color:#FDF8EF;margin-bottom:8px}
+.demo-banner p{color:#C9B79D;max-width:34em}
+.demo-banner .chip-inline{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:.75rem;letter-spacing:.06em;color:#C9B79D;
+  border:1px solid rgba(253,248,239,.25);border-radius:999px;padding:6px 14px;margin-bottom:18px;
+}
+.demo-banner .pill{position:relative;z-index:1}
+
+/* testimonials */
+.testimonials .card{display:flex;flex-direction:column;gap:22px}
+.quote{font-size:1.02rem;color:var(--fg)}
+.person{display:flex;align-items:center;gap:14px}
+.person img{width:56px;height:56px;border-radius:50%;object-fit:cover;box-shadow:0 3px 8px rgba(70,45,15,.18)}
+.person .name{font-family:var(--display);font-weight:700;color:var(--ink);font-size:1rem;line-height:1.25}
+.person .title{font-size:.82rem;color:var(--muted);line-height:1.4}
+.verified{
+  display:inline-flex;align-items:center;gap:5px;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;color:var(--accent);
+  margin-top:3px;
+}
+
+/* pricing */
+.price-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;align-items:stretch}
+@media (max-width:900px){.price-cards{grid-template-columns:1fr}}
+.price-card{
+  background:var(--card);border-radius:var(--radius);padding:34px 30px;
+  box-shadow:var(--shadow);display:flex;flex-direction:column;position:relative;
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+.price-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lift)}
+.price-card.featured{border:2px solid var(--primary)}
+.flag{
+  position:absolute;top:-14px;left:28px;
+  background:var(--primary);color:#fff;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;
+  padding:5px 14px;border-radius:999px;
+}
+.price-card h3{font-family:var(--display);font-weight:800;font-size:1.35rem;color:var(--ink);letter-spacing:-.01em}
+.price{
+  font-family:var(--mono);font-weight:600;font-size:2.1rem;color:var(--ink);
+  font-variant-numeric:tabular-nums;margin:10px 0 6px;
+}
+.price span{font-size:.85rem;color:var(--muted);font-weight:400}
+.tier-tag{color:#55402a;font-size:.95rem;margin-bottom:22px;min-height:3em}
+.perks{list-style:none;margin-bottom:28px;flex:1}
+.perks li{
+  padding:9px 0 9px 30px;position:relative;font-size:.95rem;color:var(--fg);
+  border-top:1px solid var(--line);
+}
+.perks li:first-child{border-top:none}
+.perks li::before{
+  content:"";position:absolute;left:2px;top:14px;width:14px;height:14px;
+  background:var(--accent);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+.price-card .pill{text-align:center}
+.price-card .pill.secondary{
+  background:var(--well);color:var(--ink);box-shadow:none;
+}
+.price-card .pill.secondary:hover{background:var(--line)}
+.fine{font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-top:26px;letter-spacing:.03em}
+
+/* footer */
+footer{
+  max-width:1120px;margin:96px auto 0;padding:34px 24px 44px;
+  border-top:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;
+}
+footer .legal{font-size:.82rem;color:var(--muted);max-width:40em}
+footer .home{font-size:.85rem;color:var(--muted)}
+footer .home:hover{color:var(--primary)}
+
+/* reveal on scroll */
+.reveal{opacity:0;transform:translateY(6px);transition:opacity .5s ease,transform .5s ease}
+.reveal.in{opacity:1;transform:none}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .reveal{opacity:1;transform:none}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="#" aria-label="Cache home">
+      <svg width="26" height="32" viewBox="0 0 34 44" fill="none" aria-hidden="true">
+        <path d="M17 43C17 43 32 27.5 32 16.5C32 8 25.3 2 17 2C8.7 2 2 8 2 16.5C2 27.5 17 43 17 43Z" fill="#D9530B"/>
+        <path d="M9 13c0-4 3.6-7 8-7s8 3 8 7c0 1.1-.9 2-2 2H11c-1.1 0-2-.9-2-2z" fill="#8A5A2B"/>
+        <circle cx="17" cy="20" r="6.5" fill="#FDF8EF"/>
+      </svg>
+      Cache
+    </a>
+    <div class="nav-links">
+      <a href="#features">Coverage</a>
+      <a href="#pricing">Pricing</a>
+      <a href="./demo.html">Live order</a>
+      <a class="pill small" href="#pricing">Order nuts</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <svg class="route" viewBox="0 0 1120 520" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M80 30 C 240 140, 420 60, 600 180 S 940 240, 1010 380"/>
+  </svg>
+  <div class="hero-grid">
+    <div>
+      <p class="eyebrow"><span class="live-dot" aria-hidden="true"></span>Now covering 61 backyards</p>
+      <h1>Winter is a <em>supply chain</em> problem.</h1>
+      <p class="hero-sub">Cache delivers foraged, grade-A nuts to any branch, stump, or shallow hole in under 40 minutes. Stop climbing. Start allocating.</p>
+      <div class="hero-ctas">
+        <a class="pill" href="#pricing">Order nuts</a>
+        <a class="ghost-link" href="./demo.html">open the demo →</a>
+      </div>
+      <p class="badge-row">AVAILABLE ON DEVICES SQUIRRELS DO NOT OWN</p>
+    </div>
+    <div class="hero-card">
+      <svg class="pin" viewBox="0 0 34 44" fill="none" aria-hidden="true">
+        <path d="M17 43C17 43 32 27.5 32 16.5C32 8 25.3 2 17 2C8.7 2 2 8 2 16.5C2 27.5 17 43 17 43Z" fill="#D9530B"/>
+        <circle cx="17" cy="17" r="6.5" fill="#FDF8EF"/>
+      </svg>
+      <div class="photo-card">
+        <img src="hero.webp" alt="An eastern gray squirrel holding an acorn next to a kraft paper delivery bag" width="1600" height="900">
+      </div>
+      <div class="chip eta"><span class="live-dot" aria-hidden="true"></span>ETA <strong id="eta">38 MIN</strong></div>
+      <div class="chip status">DOUG IS CLIMBING · BRANCH 3/7</div>
+      <div class="chip tip">TIP <strong>3 ACORNS</strong></div>
+    </div>
+  </div>
+</header>
+
+<div class="telemetry reveal">
+  <div class="telemetry-grid">
+    <div class="well"><div class="num">4,209,117</div><div class="label">acorns delivered</div></div>
+    <div class="well"><div class="num">38 min</div><div class="label">median eta</div></div>
+    <div class="well"><div class="num">47%</div><div class="label">caches forgotten</div></div>
+    <div class="well"><div class="num surge">1.4x</div><div class="label">hawk surge, current</div></div>
+  </div>
+</div>
+
+<section id="features">
+  <p class="kicker reveal">Coverage</p>
+  <h2 class="reveal">Everything your instincts used to handle.</h2>
+  <p class="section-sub reveal">Foraging worked for 36 million years. Our data suggests it stops scaling around backyard three.</p>
+  <div class="cards">
+    <div class="card reveal">
+      <div class="icon" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V8"/><path d="M5 12l7-4 7 4"/><path d="M5 12v4l7 4 7-4v-4"/><path d="M12 2v6"/><path d="M9 4.5L12 2l3 2.5"/></svg>
+      </div>
+      <h3>Last-Branch Delivery</h3>
+      <p>A background-checked adult climbs your tree and leaves the order at the drey entrance. No contact, no eye contact, per your saved preferences.</p>
+    </div>
+    <div class="card reveal">
+      <div class="icon" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+      </div>
+      <h3>Burial-as-a-Service</h3>
+      <p>Your Dasher buries surplus acorns in GPS-logged locations you will never visit. The memory game is over. We won it for you.</p>
+    </div>
+    <div class="card reveal">
+      <div class="icon" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>
+      </div>
+      <h3>Hawk Surge Pricing</h3>
+      <p>Delivery fees adjust in real time to local raptor activity. When coverage gets dangerous, it costs more. This is fair to everyone except you.</p>
+    </div>
+  </div>
+
+  <div class="demo-banner reveal">
+    <div>
+      <span class="chip-inline"><span class="live-dot" aria-hidden="true"></span>ORDER #0447 IN PROGRESS</span>
+      <h2>Watch Doug work.</h2>
+      <p>One live order, tracked branch by branch. The tip slider goes up to 40 acorns and we see no reason it shouldn't.</p>
+    </div>
+    <a class="pill" href="./demo.html">open the demo →</a>
+  </div>
+</section>
+
+<section class="testimonials">
+  <p class="kicker reveal">Verified customers</p>
+  <h2 class="reveal">The neighborhood has opinions.</h2>
+  <p class="section-sub reveal">All three of them, published with consent we recorded as a chittering noise.</p>
+  <div class="cards">
+    <div class="card reveal">
+      <p class="quote">“I buried 3,000 acorns last season and found 200. This year a man named Doug buried them for me and I found zero, but the app says they're safe.”</p>
+      <div class="person">
+        <img src="headshot-pretzel.webp" alt="Corporate headshot of Pretzel, an eastern gray squirrel" width="320" height="320">
+        <div>
+          <div class="name">Pretzel</div>
+          <div class="title">Eastern Gray, Cache Portfolio Manager, Prospect Park</div>
+          <span class="verified">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+            VERIFIED RODENT
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="card reveal">
+      <p class="quote">“The hawk surcharge felt punitive until I remembered what it pays for. Now I tip 30% and stay indoors.”</p>
+      <div class="person">
+        <img src="headshot-walnut.webp" alt="Corporate headshot of Walnut, a fox squirrel" width="320" height="320">
+        <div>
+          <div class="name">Walnut</div>
+          <div class="title">Fox Squirrel, HOA Liaison, Oak Cluster 4</div>
+          <span class="verified">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+            VERIFIED RODENT
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="card reveal">
+      <p class="quote">“Cache didn't change what I eat. It changed how far I'm willing to walk, which is now nothing.”</p>
+      <div class="person">
+        <img src="headshot-gary.webp" alt="Corporate headshot of Gary, an American red squirrel" width="320" height="320">
+        <div>
+          <div class="name">Gary</div>
+          <div class="title">American Red, Early Adopter, Third Feeder on the Left</div>
+          <span class="verified">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+            VERIFIED RODENT
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <p class="kicker reveal">Pricing</p>
+  <h2 class="reveal">Priced for how you actually hoard.</h2>
+  <p class="section-sub reveal">Every plan includes the app. The app is where the nuts are. We think this is a fair arrangement.</p>
+  <div class="price-cards">
+    <div class="price-card reveal">
+      <h3>Forager</h3>
+      <div class="price">$0</div>
+      <p class="tier-tag">You keep gathering your own nuts. We keep the app open.</p>
+      <ul class="perks">
+        <li>Browse nuts you cannot afford</li>
+        <li>Hawk alerts, delayed 15 minutes</li>
+        <li>One free delivery to a hole of our choosing</li>
+      </ul>
+      <a class="pill secondary" href="./demo.html">Start foraging</a>
+    </div>
+    <div class="price-card featured reveal">
+      <span class="flag">MOST HOARDED</span>
+      <h3>Hoarder</h3>
+      <div class="price">$34<span>/mo</span></div>
+      <p class="tier-tag">For the squirrel who has stopped pretending this is about winter.</p>
+      <ul class="perks">
+        <li>Free delivery on orders over 200 acorns</li>
+        <li>GPS burial ledger</li>
+        <li>Priority Dashers during rut season</li>
+        <li>Cache insurance up to 12 acorns</li>
+      </ul>
+      <a class="pill" href="./demo.html">Start hoarding</a>
+    </div>
+    <div class="price-card reveal">
+      <h3>Apex Rodent</h3>
+      <div class="price">$890<span>/yr</span></div>
+      <p class="tier-tag">Territory-level nut dominance, invoiced annually.</p>
+      <ul class="perks">
+        <li>Dedicated Dasher named Doug</li>
+        <li>Guaranteed winter reserve, or we mail you a letter</li>
+        <li>Surge immunity below Category 2 hawk activity</li>
+        <li>Quarterly cache audit, findings sealed</li>
+      </ul>
+      <a class="pill secondary" href="./demo.html">Contact sales</a>
+    </div>
+  </div>
+  <p class="fine reveal">Prices in USD. Squirrels do not have USD. See the Forager plan.</p>
+</section>
+
+<footer>
+  <p class="legal">Cache is a logistics platform and is not responsible for holes, the contents of holes, or the emotional consequences of holes. © 2026 Cache Logistics, a Delaware corporation physically located in an oak.</p>
+  <a class="home" href="/">← theworstaistudioever</a>
+</footer>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var reveals = document.querySelectorAll('.reveal');
+  if (reduced || !('IntersectionObserver' in window)) {
+    reveals.forEach(function(el){ el.classList.add('in'); });
+  } else {
+    var seen = 0;
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting) {
+          var el = entry.target;
+          setTimeout(function(){ el.classList.add('in'); }, (seen++ % 3) * 40);
+          io.unobserve(el);
+        }
+      });
+    }, {threshold: 0.12});
+    reveals.forEach(function(el){ io.observe(el); });
+  }
+
+  // one downward tick of the ETA chip
+  if (!reduced) {
+    var eta = document.getElementById('eta');
+    if (eta) setTimeout(function(){ eta.textContent = '37 MIN'; }, 2600);
+  }
+})();
+</script>
+</body>
+</html>
