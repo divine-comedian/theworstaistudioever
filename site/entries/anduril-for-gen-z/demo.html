@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dome console · theworstaistudioever</title>
+<meta name="description" content="Dome battlespace console: live classification and intercept authorization for your group chat airspace.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0C0F12;
+  --plate:#12161B;
+  --well:#0A0C0F;
+  --line:#242C33;
+  --fg:#E6EBEE;
+  --muted:#57636D;
+  --orange:#FF4E11;
+  --steel:#9DB4C0;
+  --sit:#C7A64B;
+  --brk:#3A454E;
+  --disp:'Chakra Petch','Segoe UI',system-ui,sans-serif;
+  --body:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--bg);color:var(--fg);
+  font-family:var(--body);font-size:15px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;min-height:100dvh;
+}
+::selection{background:var(--orange);color:var(--bg)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--steel);outline-offset:2px}
+
+.brk{
+  position:relative;--bc:var(--brk);
+  background-image:
+    linear-gradient(var(--bc) 0 0),linear-gradient(var(--bc) 0 0),
+    linear-gradient(var(--bc) 0 0),linear-gradient(var(--bc) 0 0),
+    linear-gradient(var(--bc) 0 0),linear-gradient(var(--bc) 0 0),
+    linear-gradient(var(--bc) 0 0),linear-gradient(var(--bc) 0 0);
+  background-repeat:no-repeat;
+  background-size:10px 2px,2px 10px,10px 2px,2px 10px,10px 2px,2px 10px,10px 2px,2px 10px;
+  background-position:top left,top left,top right,top right,bottom left,bottom left,bottom right,bottom right;
+}
+.brk.hot{--bc:var(--orange)}
+
+/* top chrome */
+.chrome{
+  display:flex;align-items:center;gap:1.5rem;
+  padding:.7rem 1.25rem;border-bottom:1px solid var(--line);
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;
+  flex-wrap:wrap;
+}
+.chrome a{color:var(--steel);text-decoration:none;white-space:nowrap}
+.chrome a:hover{color:var(--orange)}
+.chrome .title{font-family:var(--disp);font-weight:700;font-size:.85rem;letter-spacing:.14em;color:var(--fg)}
+.chrome .spacer{flex:1}
+.chrome .stat{color:var(--muted);white-space:nowrap}
+.chrome .stat b{color:var(--steel);font-weight:500}
+.chrome .stat b.hot{color:var(--orange)}
+.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--orange);margin-right:.4rem;animation:pulse 3s ease-in-out infinite;vertical-align:1px}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,78,17,.5)}50%{box-shadow:0 0 0 7px rgba(255,78,17,0)}}
+
+/* layout */
+.console{
+  display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr) minmax(0,300px);
+  gap:1rem;padding:1rem 1.25rem;max-width:1500px;margin:0 auto;
+}
+@media(max-width:1150px){.console{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.col-right{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:1rem}}
+@media(max-width:760px){.console{grid-template-columns:1fr}.col-right{grid-template-columns:1fr}}
+
+.panel{background:var(--plate);border:1px solid var(--line);border-radius:4px;padding:1.1rem}
+.panel-h{
+  display:flex;justify-content:space-between;align-items:baseline;
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.22em;
+  color:var(--muted);text-transform:uppercase;margin-bottom:.9rem;
+}
+.panel-h b{color:var(--steel);font-weight:500}
+
+/* radar */
+.radar{position:relative;width:100%;aspect-ratio:1;margin-bottom:.25rem}
+.radar svg{width:100%;height:100%;display:block}
+.sweep{
+  position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(from 0deg,rgba(157,180,192,.2) 0deg,rgba(157,180,192,.04) 40deg,transparent 70deg);
+  animation:sweep 8s linear infinite;pointer-events:none;
+}
+@keyframes sweep{to{transform:rotate(360deg)}}
+.blip{
+  position:absolute;width:22px;height:22px;transform:translate(-50%,-50%);
+  background:none;border:0;cursor:pointer;padding:0;
+}
+.blip::after{
+  content:"";position:absolute;inset:7px;border-radius:50%;background:var(--steel);
+}
+.blip.c-HOSTILE::after{background:var(--orange);animation:pulse 3s ease-in-out infinite}
+.blip.c-SITUATIONSHIP::after{background:var(--sit)}
+.blip.sel::before{
+  content:"";position:absolute;inset:0;
+  border:1px solid var(--orange);
+}
+.blip-tag{
+  position:absolute;transform:translate(12px,-50%);
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.06em;
+  color:var(--muted);white-space:nowrap;pointer-events:none;
+}
+
+/* track table */
+table{width:100%;border-collapse:collapse;font-size:.8rem}
+th{
+  font-family:var(--mono);font-weight:400;font-size:.6rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--muted);text-align:left;
+  padding:.45rem .6rem;border-bottom:1px solid var(--line);
+}
+td{padding:.55rem .6rem;border-bottom:1px solid var(--line);vertical-align:middle}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:rgba(157,180,192,.05)}
+tbody tr.sel{background:rgba(255,78,17,.07);box-shadow:inset 2px 0 0 var(--orange)}
+.trk-id{font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+.trk-name{font-family:var(--disp);font-weight:600;letter-spacing:.03em}
+.trk-chat{color:var(--muted);font-size:.74rem}
+.lat{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:.74rem;color:var(--steel)}
+.pill{
+  display:inline-block;font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;
+  padding:.18rem .5rem;border:1px solid;border-radius:2px;white-space:nowrap;
+}
+.p-FRIENDLY{color:var(--steel);border-color:var(--steel)}
+.p-SITUATIONSHIP{color:var(--sit);border-color:var(--sit)}
+.p-HOSTILE{color:var(--orange);border-color:var(--orange)}
+.p-SUPPRESSED{color:var(--muted);border-color:var(--muted);text-decoration:line-through}
+@media(max-width:560px){.hide-s{display:none}}
+
+/* detail card */
+.detail{margin-top:1rem;padding:1.1rem}
+.detail .d-empty{color:var(--muted);font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;text-align:center;padding:1.2rem 0}
+.d-name{font-family:var(--disp);font-weight:700;font-size:1.15rem;letter-spacing:.05em;text-transform:uppercase}
+.d-meta{font-family:var(--mono);font-size:.64rem;color:var(--muted);letter-spacing:.1em;margin:.2rem 0 .8rem}
+.d-note{color:var(--steel);font-size:.85rem;margin-bottom:1rem}
+.d-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1rem}
+.d-well{background:var(--well);border:1px solid var(--line);border-radius:2px;padding:.5rem .6rem}
+.d-well .k{font-family:var(--mono);font-size:.56rem;letter-spacing:.16em;color:var(--muted);text-transform:uppercase}
+.d-well .v{font-family:var(--mono);font-size:.85rem;font-variant-numeric:tabular-nums;color:var(--fg);margin-top:.15rem}
+.btn-int{
+  width:100%;font-family:var(--disp);font-weight:600;font-size:.8rem;
+  letter-spacing:.16em;text-transform:uppercase;
+  padding:.85rem 1rem;border:1px solid var(--orange);
+  background:var(--orange);color:var(--bg);cursor:pointer;
+  transition:background .15s,transform .1s;
+}
+.btn-int:hover{background:#ff6a35;border-color:#ff6a35}
+.btn-int:active{transform:translateY(1px)}
+.btn-int:disabled{
+  background:transparent;color:var(--muted);border-color:var(--line);
+  cursor:not-allowed;transform:none;
+}
+
+/* ROE */
+.roe-row{
+  display:flex;justify-content:space-between;align-items:center;gap:.75rem;
+  padding:.65rem 0;border-bottom:1px solid var(--line);
+}
+.roe-row:last-child{border-bottom:0}
+.roe-name{font-size:.8rem;color:var(--fg)}
+.roe-sub{font-family:var(--mono);font-size:.6rem;color:var(--muted);letter-spacing:.08em}
+.toggle{
+  position:relative;width:46px;height:22px;flex:none;
+  border:1px solid var(--line);border-radius:2px;background:var(--well);cursor:pointer;padding:0;
+  transition:border-color .15s;
+}
+.toggle .knob{
+  position:absolute;top:2px;left:2px;width:16px;height:16px;
+  background:var(--muted);transition:left .15s,background .15s;
+}
+.toggle[aria-pressed="true"]{border-color:var(--orange)}
+.toggle[aria-pressed="true"] .knob{left:26px;background:var(--orange)}
+.roe-state{font-family:var(--mono);font-size:.56rem;letter-spacing:.14em;color:var(--muted);width:3.2rem;text-align:right}
+.roe-state.armed{color:var(--orange)}
+
+/* log */
+.log{
+  font-family:var(--mono);font-size:.66rem;line-height:1.7;
+  color:var(--steel);background:var(--well);border:1px solid var(--line);border-radius:2px;
+  padding:.7rem .8rem;height:280px;overflow-y:auto;
+}
+.log .t{color:var(--muted)}
+.log .hot{color:var(--orange)}
+.log p{margin-bottom:.35rem}
+@media(prefers-reduced-motion:reduce){
+  .sweep,.blip.c-HOSTILE::after,.live-dot{animation:none}
+  .toggle .knob{transition:none}
+}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <a href="./index.html">← back to the pitch</a>
+  <span class="title">DOME // BATTLESPACE CONSOLE</span>
+  <span class="spacer"></span>
+  <span class="stat"><span class="live-dot" aria-hidden="true"></span>LIVE</span>
+  <span class="stat">TRACKS <b id="st-tracks">6</b></span>
+  <span class="stat">HOSTILE <b class="hot" id="st-hostile">1</b></span>
+  <span class="stat">ROE ARMED <b id="st-roe">3/4</b></span>
+</div>
+
+<main class="console">
+
+  <div class="col-left">
+    <div class="panel brk hot">
+      <div class="panel-h"><span>GROUP CHAT AIRSPACE</span><span>RANGE: EMOTIONAL</span></div>
+      <div class="radar" id="radar">
+        <svg viewBox="0 0 200 200" aria-hidden="true">
+          <circle cx="100" cy="100" r="98" fill="none" stroke="#242C33" stroke-width="1"/>
+          <circle cx="100" cy="100" r="70" fill="none" stroke="#242C33" stroke-width="1"/>
+          <circle cx="100" cy="100" r="42" fill="none" stroke="#242C33" stroke-width="1"/>
+          <circle cx="100" cy="100" r="14" fill="none" stroke="#242C33" stroke-width="1"/>
+          <line x1="100" y1="2" x2="100" y2="198" stroke="#242C33" stroke-width="1"/>
+          <line x1="2" y1="100" x2="198" y2="100" stroke="#242C33" stroke-width="1"/>
+          <circle cx="100" cy="100" r="2.5" fill="#57636D"/>
+        </svg>
+        <div class="sweep" aria-hidden="true"></div>
+      </div>
+      <div class="panel-h" style="margin:0"><span>YOU ARE THE CENTER</span><span>AS ALWAYS</span></div>
+    </div>
+  </div>
+
+  <div class="col-mid">
+    <div class="panel">
+      <div class="panel-h"><span>TRACK FILE</span><b id="clock">08:00:00Z</b></div>
+      <table id="trk-table">
+        <thead>
+          <tr><th>Trk</th><th>Contact</th><th class="hide-s">Reply latency</th><th class="hide-s">Read status</th><th>Class</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="panel brk detail" id="detail">
+      <div class="d-empty">SELECT A TRACK TO REVIEW ENGAGEMENT OPTIONS</div>
+    </div>
+  </div>
+
+  <div class="col-right">
+    <div class="panel">
+      <div class="panel-h"><span>RULES OF ENGAGEMENT</span></div>
+      <div id="roe"></div>
+    </div>
+    <div class="panel" style="margin-top:1rem">
+      <div class="panel-h"><span>ENGAGEMENT LOG</span><span>UNCLASS</span></div>
+      <div class="log" id="log" aria-live="polite"></div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var TRACKS = [
+    {id:'TRK-017', name:'Emma B.', chat:'the girls (14)', lat:'00:00:12', read:'RECEIPTS ON', cls:'FRIENDLY',
+     note:'Best friend since 6th grade. Replies before you finish typing. Zero threat. Maximum leverage.',
+     x:32, y:38, spotify:'NEGLIGIBLE', story:'ALL OF THEM'},
+    {id:'TRK-029', name:'Josh T.', chat:'intramural frisbee (9)', lat:'00:04:51', read:'RECEIPTS OFF', cls:'FRIENDLY',
+     note:'Communicates exclusively in reaction images. Assessed as harmless. Monitor for personality.',
+     x:61, y:70, spotify:'NONE DETECTED', story:'OCCASIONAL'},
+    {id:'TRK-041', name:'Tyler M.', chat:'direct channel', lat:'07:12:44', read:'OPENED, NO REPLY', cls:'HOSTILE',
+     note:'The ex. Opened your message seven hours ago. Watches every story within 90 seconds of posting. Intent assessed as ambiguous, which is worse.',
+     x:71, y:26, spotify:'2AM ACTIVITY', story:'FIRST, ALWAYS'},
+    {id:'TRK-044', name:'Sam K.', chat:'econ study group (6)', lat:'01:22:09', read:'RECEIPTS ON', cls:'SITUATIONSHIP',
+     note:'Replies warmly, commits to nothing. Latency drifting upward 14% week over week. Reclassification review is queued.',
+     x:44, y:57, spotify:'SHARED PLAYLIST', story:'SELECTIVE'},
+    {id:'TRK-052', name:'Mom', chat:'direct channel', lat:'00:00:03', read:'RECEIPTS ON', cls:'FRIENDLY',
+     note:'Fastest reply latency on record. Holds escalation authority over this entire console. Do not engage.',
+     x:25, y:66, spotify:'N/A', story:'LIKES EACH ONE'},
+    {id:'TRK-058', name:'Unknown Number', chat:'direct channel', lat:'NO CONTACT', read:'DELIVERED', cls:'HOSTILE',
+     note:'Texted "hey" at 1:14 a.m. and nothing since. Origin unresolved. Dome recommends treating all unknown warmth as incoming.',
+     x:82, y:62, spotify:'UNKNOWN', story:'CANNOT SEE'}
+  ];
+
+  var ROE = [
+    {id:'roe-si', name:'Screenshot interdiction', sub:'Proportional drywall response', armed:true},
+    {id:'roe-cr', name:'Counter-ratio battery', sub:'Pre-cleared comebacks, 90s SLA', armed:true},
+    {id:'roe-gd', name:'Ghost detection', sub:'Flags fading engagement early', armed:true},
+    {id:'roe-ts', name:'Typing-indicator spoofing', sub:'Appear busy. Deter nothing.', armed:false}
+  ];
+
+  var AMBIENT = [
+    ['TRK-041','opened your story. No engagement. Logged.',true],
+    ['TRK-044','latency drift +2%. Trend holds. Feelings not consulted.',false],
+    ['TRK-017','replied in 9 seconds. Alliance integrity nominal.',false],
+    ['TRK-058','no contact for 41 hours. Warmth assessed as expended.',true],
+    ['TRK-052','sent a thumbs-up. Meaning: all clear. Confidence: high.',false],
+    ['TRK-029','posted a reaction image. Analysts are still interpreting.',false],
+    ['SYSTEM','sweep complete. Airspace remains emotionally contested.',false],
+    ['TRK-044','added one (1) song to the shared playlist. Significance board convened.',true]
+  ];
+
+  var selected = null;
+  var suppressed = {};
+  var logEl = document.getElementById('log');
+  var tbody = document.querySelector('#trk-table tbody');
+  var radar = document.getElementById('radar');
+  var detail = document.getElementById('detail');
+
+  var clockBase = 8*3600;
+  var clockTick = 0;
+  function stamp(){
+    var s = clockBase + clockTick;
+    var h = Math.floor(s/3600)%24, m = Math.floor(s%3600/60), sec = s%60;
+    function p(n){return (n<10?'0':'')+n}
+    return p(h)+':'+p(m)+':'+p(sec)+'Z';
+  }
+  setInterval(function(){
+    clockTick++;
+    document.getElementById('clock').textContent = stamp();
+  },1000);
+
+  function addLog(who, msg, hot){
+    var p = document.createElement('p');
+    p.innerHTML = '<span class="t">'+stamp()+'</span> ' +
+      (hot ? '<span class="hot">'+who+'</span>' : who) + ' — ' + msg;
+    logEl.prepend(p);
+    while(logEl.children.length > 40) logEl.removeChild(logEl.lastChild);
+  }
+
+  function clsOf(t){ return suppressed[t.id] ? 'SUPPRESSED' : t.cls; }
+
+  function renderTable(){
+    tbody.innerHTML = '';
+    TRACKS.forEach(function(t){
+      var tr = document.createElement('tr');
+      tr.dataset.id = t.id;
+      if(selected === t.id) tr.className = 'sel';
+      var c = clsOf(t);
+      tr.innerHTML =
+        '<td class="trk-id">'+t.id+'</td>' +
+        '<td><span class="trk-name">'+t.name+'</span><br><span class="trk-chat">'+t.chat+'</span></td>' +
+        '<td class="lat hide-s">'+t.lat+'</td>' +
+        '<td class="lat hide-s">'+t.read+'</td>' +
+        '<td><span class="pill p-'+c+'">'+c+'</span></td>';
+      tr.addEventListener('click', function(){ select(t.id); });
+      tbody.appendChild(tr);
+    });
+    var hostiles = TRACKS.filter(function(t){ return clsOf(t) === 'HOSTILE'; }).length;
+    document.getElementById('st-hostile').textContent = hostiles;
+  }
+
+  function renderRadar(){
+    radar.querySelectorAll('.blip,.blip-tag').forEach(function(n){ n.remove(); });
+    TRACKS.forEach(function(t){
+      var c = clsOf(t);
+      var b = document.createElement('button');
+      b.className = 'blip c-'+c + (selected === t.id ? ' sel' : '');
+      b.style.left = t.x+'%'; b.style.top = t.y+'%';
+      b.setAttribute('aria-label', t.id+' '+t.name+', classification '+c);
+      b.addEventListener('click', function(){ select(t.id); });
+      radar.appendChild(b);
+      var tag = document.createElement('span');
+      tag.className = 'blip-tag'; tag.textContent = t.id;
+      tag.style.left = t.x+'%'; tag.style.top = t.y+'%';
+      radar.appendChild(tag);
+    });
+  }
+
+  function renderDetail(){
+    var t = TRACKS.find(function(x){ return x.id === selected; });
+    if(!t){
+      detail.classList.remove('hot');
+      detail.innerHTML = '<div class="d-empty">SELECT A TRACK TO REVIEW ENGAGEMENT OPTIONS</div>';
+      return;
+    }
+    var c = clsOf(t);
+    detail.classList.add('hot');
+    detail.innerHTML =
+      '<div class="d-name">'+t.name+'</div>' +
+      '<div class="d-meta">'+t.id+' // '+t.chat+' // <span class="pill p-'+c+'">'+c+'</span></div>' +
+      '<div class="d-note">'+t.note+'</div>' +
+      '<div class="d-grid">' +
+        '<div class="d-well"><div class="k">Reply latency</div><div class="v">'+t.lat+'</div></div>' +
+        '<div class="d-well"><div class="k">Read status</div><div class="v">'+t.read+'</div></div>' +
+        '<div class="d-well"><div class="k">2AM Spotify</div><div class="v">'+t.spotify+'</div></div>' +
+        '<div class="d-well"><div class="k">Story views</div><div class="v">'+t.story+'</div></div>' +
+      '</div>' +
+      '<button class="btn-int" id="btn-int"' + (c==='SUPPRESSED' ? ' disabled' : '') + '>' +
+        (c==='SUPPRESSED' ? 'Target suppressed' : 'Authorize intercept') + '</button>';
+    var btn = document.getElementById('btn-int');
+    if(btn && c!=='SUPPRESSED'){
+      btn.addEventListener('click', function(){ intercept(t); });
+    }
+  }
+
+  function select(id){
+    selected = (selected === id) ? null : id;
+    renderTable(); renderRadar(); renderDetail();
+  }
+
+  function intercept(t){
+    var btn = document.getElementById('btn-int');
+    btn.disabled = true; btn.textContent = 'Deploying…';
+    addLog(t.id, 'INTERCEPT AUTHORIZED. Pre-cleared comeback en route.', true);
+    setTimeout(function(){
+      suppressed[t.id] = true;
+      addLog(t.id, 'Comeback delivered. Battle damage assessment: they left it on read, but differently this time.', true);
+      renderTable(); renderRadar(); renderDetail();
+    }, reduced ? 0 : 1100);
+  }
+
+  var roeWrap = document.getElementById('roe');
+  ROE.forEach(function(r){
+    var row = document.createElement('div');
+    row.className = 'roe-row';
+    row.innerHTML =
+      '<div><div class="roe-name">'+r.name+'</div><div class="roe-sub">'+r.sub+'</div></div>' +
+      '<button class="toggle" id="'+r.id+'" aria-pressed="'+r.armed+'" aria-label="'+r.name+'"><span class="knob"></span></button>' +
+      '<span class="roe-state'+(r.armed?' armed':'')+'">'+(r.armed?'ARMED':'SAFE')+'</span>';
+    roeWrap.appendChild(row);
+    var btn = row.querySelector('.toggle');
+    var state = row.querySelector('.roe-state');
+    btn.addEventListener('click', function(){
+      r.armed = !r.armed;
+      btn.setAttribute('aria-pressed', String(r.armed));
+      state.textContent = r.armed ? 'ARMED' : 'SAFE';
+      state.classList.toggle('armed', r.armed);
+      addLog('SYSTEM', r.name + (r.armed ? ' armed. Restraint disabled.' : ' safed. Restraint noted for the record.'), r.armed);
+      var n = ROE.filter(function(x){ return x.armed; }).length;
+      document.getElementById('st-roe').textContent = n + '/' + ROE.length;
+    });
+  });
+
+  addLog('SYSTEM','Console initialized. Operator assumed competent.',false);
+  addLog('SYSTEM','6 tracks resumed from persistent grudge file.',false);
+  var ai = 0;
+  setInterval(function(){
+    var e = AMBIENT[ai % AMBIENT.length]; ai++;
+    addLog(e[0], e[1], e[2]);
+  }, 7000);
+
+  renderTable(); renderRadar(); renderDetail();
+})();
+</script>
+</body>
+</html>
