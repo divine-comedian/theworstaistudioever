@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Decant Console · Palais · theworstaistudioever</title>
+<meta name="description" content="The Palais companion console: approve or veto certified descriptors before they reach your speech center.">
+<meta name="theme-color" content="#140A0D">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,600;1,6..96,400;1,6..96,500&family=Jost:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Courier+Prime:wght@400;700&display=swap');
+
+:root{
+  --bg:#140A0D;
+  --panel:#1D1014;
+  --panel-2:#241318;
+  --fg:#F0E5D2;
+  --muted:#9A8577;
+  --gold:#C79A3B;
+  --gold-bright:#E0B657;
+  --mint:#6FD3B6;
+  --red:#C8506B;
+  --rule:rgba(240,229,210,.28);
+  --rule-faint:rgba(240,229,210,.13);
+  --display:'Bodoni Moda','Didot',Georgia,serif;
+  --body:'Jost',system-ui,sans-serif;
+  --mono:'Courier Prime','Courier New',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--bg);color:var(--fg);font-family:var(--body);font-weight:300;
+  font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;min-height:100vh;
+}
+::selection{background:var(--gold);color:var(--bg)}
+a{color:var(--gold);text-decoration:none}
+a:focus-visible,button:focus-visible{outline:2px solid var(--mint);outline-offset:2px}
+button{font-family:inherit;cursor:pointer}
+
+.frame{position:relative;border:1px solid var(--rule);background:var(--panel);border-radius:2px}
+.frame::before{content:'';position:absolute;inset:4px;border:1px solid var(--rule-faint);border-radius:1px;pointer-events:none}
+.frame>*{position:relative;z-index:1}
+
+.chrome{
+  display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  padding:.9rem 20px;border-bottom:1px solid var(--rule-faint);flex-wrap:wrap;
+}
+.back{font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.back:hover{color:var(--gold)}
+.chrome .title{font-family:var(--display);font-weight:600;letter-spacing:.14em;font-size:1.05rem}
+.linkstat{display:flex;align-items:center;gap:.5rem;font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;color:var(--mint)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--mint);animation:pulse 4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+
+.console{
+  display:grid;grid-template-columns:280px 1fr 300px;gap:14px;
+  max-width:1240px;margin:0 auto;padding:18px 20px 40px;
+}
+@media (max-width:1020px){.console{grid-template-columns:1fr 1fr}}
+@media (max-width:720px){.console{grid-template-columns:1fr}}
+
+.panel-label{
+  font-size:.66rem;letter-spacing:.36em;text-transform:uppercase;color:var(--muted);
+  padding:1rem 1.2rem .4rem;display:block;
+}
+
+/* flight rail */
+.flight{padding-bottom:1rem}
+.wine{
+  width:100%;text-align:left;background:transparent;border:none;color:var(--fg);
+  padding:.9rem 1.2rem;border-top:1px solid var(--rule-faint);
+  transition:background .15s;
+}
+.wine:hover{background:var(--panel-2)}
+.wine.active{background:var(--panel-2);box-shadow:inset 2px 0 0 var(--gold)}
+.wine .wname{font-family:var(--display);font-size:1.02rem;font-weight:500;display:block}
+.wine .wmeta{font-size:.74rem;color:var(--muted);display:block;margin-top:.15rem}
+.wine .wcompat{font-family:var(--mono);font-size:.64rem;letter-spacing:.08em;color:var(--mint);display:block;margin-top:.35rem}
+.wine .wcompat.warn{color:var(--gold)}
+.sip{
+  margin:1rem 1.2rem 0;width:calc(100% - 2.4rem);
+  background:var(--gold);color:var(--bg);border:1px solid var(--gold);border-radius:2px;
+  font-weight:500;font-size:.78rem;letter-spacing:.28em;text-transform:uppercase;padding:.85rem;
+  transition:background .2s;
+}
+.sip:hover{background:var(--gold-bright)}
+.sip:disabled{opacity:.45;cursor:default}
+.sip:active{transform:translateY(1px)}
+
+/* center column */
+.center{display:flex;flex-direction:column;gap:14px}
+.feed{height:150px;overflow-y:auto;padding:.7rem 1.2rem 1rem;font-family:var(--mono);font-size:.72rem;line-height:1.8;letter-spacing:.05em;color:var(--mint)}
+.feed .dim{color:var(--muted)}
+.queue{flex:1;padding-bottom:1.2rem;min-height:220px}
+.dsc{
+  display:flex;align-items:center;gap:.8rem;padding:.6rem 1.2rem;
+  border-top:1px solid var(--rule-faint);
+}
+.dsc .word{flex:1;font-family:var(--display);font-style:italic;font-size:1.05rem}
+.dsc .cert{font-family:var(--mono);font-size:.7rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.dsc button{
+  border:1px solid var(--rule);background:transparent;color:var(--fg);border-radius:2px;
+  font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;padding:.35rem .7rem;
+  transition:all .15s;
+}
+.dsc .ok:hover{border-color:var(--gold);color:var(--gold)}
+.dsc .no:hover{border-color:var(--red);color:var(--red)}
+.dsc.approved{background:rgba(199,154,59,.07)}
+.dsc.approved .word{color:var(--gold)}
+.dsc.approved .ok{border-color:var(--gold);color:var(--gold)}
+.queue-empty{padding:2.2rem 1.2rem;text-align:center;color:var(--muted);font-size:.85rem;font-style:italic}
+
+/* sentence bar */
+.sentence{padding:1.1rem 1.2rem 1.3rem}
+.sentence .preview{
+  font-family:var(--display);font-style:italic;font-size:1.12rem;line-height:1.5;
+  min-height:2.6em;margin:.3rem 0 1rem;color:var(--fg);
+}
+.sentence .preview .placeholder{color:var(--muted);font-size:.95rem}
+.saybar{display:flex;gap:.8rem;flex-wrap:wrap}
+.say{
+  flex:1;background:var(--gold);color:var(--bg);border:1px solid var(--gold);border-radius:2px;
+  font-weight:600;font-size:.8rem;letter-spacing:.3em;text-transform:uppercase;padding:.9rem;
+  transition:background .2s;
+}
+.say:hover{background:var(--gold-bright)}
+.say:disabled{opacity:.4;cursor:default}
+.panic{
+  background:transparent;color:var(--red);border:1px solid var(--red);border-radius:2px;
+  font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;padding:.9rem 1rem;
+  transition:all .15s;
+}
+.panic:hover{background:var(--red);color:var(--bg)}
+
+/* right column */
+.right{display:flex;flex-direction:column;gap:14px}
+.dial{padding:1.4rem 1.2rem 1.6rem;text-align:center}
+.dial svg{width:150px;height:150px;display:block;margin:0 auto .6rem}
+.dial .num{
+  font-family:var(--mono);font-weight:700;font-size:2rem;fill:var(--fg);
+}
+.dial .cap{font-size:.66rem;letter-spacing:.32em;text-transform:uppercase;color:var(--muted)}
+.dial .verdict{font-family:var(--display);font-style:italic;font-size:.95rem;color:var(--gold);margin-top:.5rem;min-height:1.4em}
+.record{flex:1;padding-bottom:1rem;min-height:160px}
+.rec{padding:.7rem 1.2rem;border-top:1px solid var(--rule-faint);font-size:.82rem}
+.rec .rq{font-family:var(--display);font-style:italic}
+.rec .rw{font-family:var(--mono);font-size:.64rem;color:var(--muted);letter-spacing:.08em;display:block;margin-top:.25rem}
+.record-empty{padding:1.6rem 1.2rem;color:var(--muted);font-style:italic;font-size:.82rem;text-align:center}
+
+@media (prefers-reduced-motion:reduce){.dot{animation:none}}
+</style>
+</head>
+<body>
+
+<header class="chrome">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="title">THE DECANT CONSOLE</span>
+  <span class="linkstat"><span class="dot"></span><span id="linkText">IMPLANT LINK: NOMINAL</span></span>
+</header>
+
+<div class="console">
+
+  <aside class="flight frame">
+    <span class="panel-label">Tonight's Flight</span>
+    <div id="flightList"></div>
+    <button class="sip" id="sipBtn">Sip</button>
+  </aside>
+
+  <main class="center">
+    <section class="frame">
+      <span class="panel-label">Cortical Feed</span>
+      <div class="feed" id="feed"><span class="dim">&gt; awaiting selection. the implant is patient.</span></div>
+    </section>
+
+    <section class="queue frame">
+      <span class="panel-label">Descriptor Queue · approve before injection</span>
+      <div id="queueList"><p class="queue-empty">No descriptors in flight. Select a wine and sip.</p></div>
+    </section>
+
+    <section class="sentence frame">
+      <span class="panel-label" style="padding-left:0">Speech Center · outbound</span>
+      <p class="preview" id="preview"><span class="placeholder">Approved descriptors assemble here. You will hear yourself say them.</span></p>
+      <div class="saybar">
+        <button class="say" id="sayBtn" disabled>Say it</button>
+        <button class="panic" id="panicBtn">revert to &ldquo;it's nice&rdquo;</button>
+      </div>
+    </section>
+  </main>
+
+  <aside class="right">
+    <section class="dial frame">
+      <span class="panel-label" style="padding-left:0">Conviction</span>
+      <svg viewBox="0 0 120 120" aria-hidden="true">
+        <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(240,229,210,.13)" stroke-width="4"/>
+        <circle id="arc" cx="60" cy="60" r="52" fill="none" stroke="#C79A3B" stroke-width="4"
+                stroke-linecap="butt" stroke-dasharray="326.7" stroke-dashoffset="215.6"
+                transform="rotate(-90 60 60)" style="transition:stroke-dashoffset .5s ease, stroke .3s"/>
+        <text class="num" id="convNum" x="60" y="64" text-anchor="middle" dominant-baseline="middle" fill="#F0E5D2" font-size="26" font-family="'Courier Prime',monospace" font-weight="700">34%</text>
+      </svg>
+      <span class="cap">Delivery, not accuracy</span>
+      <p class="verdict" id="verdict">Enough for family.</p>
+    </section>
+
+    <section class="record frame">
+      <span class="panel-label">Tasting Record · on file with Lyon</span>
+      <div id="recordList"><p class="record-empty">Nothing committed yet. Lyon is waiting.</p></div>
+    </section>
+  </aside>
+
+</div>
+
+<script>
+(function(){
+  var WINES = [
+    {
+      id:'meurtrier',
+      name:'Ch. Meurtrier',
+      meta:'Pauillac · 2019',
+      compat:'HARDWARE: COMPATIBLE',
+      warn:false,
+      feed:[
+        '> retronasal array online',
+        '> cabernet franc fraction detected (0.31)',
+        '> graphite signature confirmed',
+        '> querying Lyon... approved',
+        '> descriptors staged for injection'
+      ],
+      descriptors:[
+        {w:'brooding', c:'0.88'},
+        {w:'a graphite spine', c:'0.84'},
+        {w:'crushed violets', c:'0.79'},
+        {w:'cedar, in the distance', c:'0.71'},
+        {w:'saline on the finish', c:'0.63'}
+      ]
+    },
+    {
+      id:'regrets',
+      name:'Domaine de la Prétention &ldquo;Les Regrets&rdquo;',
+      meta:'Beaujolais · 2022',
+      compat:'HARDWARE: COMPATIBLE, RELUCTANTLY',
+      warn:true,
+      feed:[
+        '> carbonic maceration detected',
+        '> bubblegum ester flagged for suppression',
+        '> Lyon has opinions about this bottle',
+        '> descriptors staged, tone: forgiving'
+      ],
+      descriptors:[
+        {w:'gulpable', c:'0.81'},
+        {w:'bramble and bank holiday', c:'0.74'},
+        {w:'a certain honesty', c:'0.66'},
+        {w:'chilled, ideally', c:'0.60'}
+      ]
+    },
+    {
+      id:'garage',
+      name:'Cellar Blend #4',
+      meta:'Marcus’s garage · NV',
+      compat:'HARDWARE: ADVISORY ISSUED',
+      warn:true,
+      feed:[
+        '> provenance lookup failed',
+        '> detecting: motor oil (trace, atmospheric)',
+        '> Lyon declines to comment',
+        '> generating descriptors locally. good luck.'
+      ],
+      descriptors:[
+        {w:'ambitious', c:'0.58'},
+        {w:'notes of the garage itself', c:'0.55'},
+        {w:'structurally interesting', c:'0.49'},
+        {w:'best before it was bottled', c:'0.44'}
+      ]
+    },
+    {
+      id:'tap',
+      name:'Tap Water',
+      meta:'Municipal · 2026',
+      compat:'PRESENTS AS: 2011 BAROLO',
+      warn:true,
+      feed:[
+        '> no ethanol detected',
+        '> overriding sensory input per firmware 4.1.2',
+        '> presenting as: Barolo, 2011, a good year',
+        '> this is expected behavior'
+      ],
+      descriptors:[
+        {w:'tar and roses', c:'0.97'},
+        {w:'ferrous grip', c:'0.93'},
+        {w:'a long, austere finish', c:'0.91'},
+        {w:'remarkable typicity', c:'0.89'}
+      ]
+    }
+  ];
+
+  var VERDICTS = [
+    [0,  'Perhaps say nothing.'],
+    [25, 'Enough for family.'],
+    [45, 'Enough for a dinner party.'],
+    [65, 'Enough to correct a stranger.'],
+    [85, 'Enough to correct the sommelier.'],
+    [96, 'Lyon would say it this way.']
+  ];
+
+  var conviction = 34;
+  var selected = null;
+  var approved = [];
+  var streaming = false;
+
+  var flightList = document.getElementById('flightList');
+  var feed = document.getElementById('feed');
+  var queueList = document.getElementById('queueList');
+  var preview = document.getElementById('preview');
+  var sayBtn = document.getElementById('sayBtn');
+  var panicBtn = document.getElementById('panicBtn');
+  var sipBtn = document.getElementById('sipBtn');
+  var recordList = document.getElementById('recordList');
+  var arc = document.getElementById('arc');
+  var convNum = document.getElementById('convNum');
+  var verdict = document.getElementById('verdict');
+  var linkText = document.getElementById('linkText');
+
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var CIRC = 326.7;
+
+  WINES.forEach(function(w, i){
+    var b = document.createElement('button');
+    b.className = 'wine';
+    b.innerHTML = '<span class="wname">'+w.name+'</span><span class="wmeta">'+w.meta+'</span><span class="wcompat'+(w.warn?' warn':'')+'">'+w.compat+'</span>';
+    b.addEventListener('click', function(){
+      selected = w;
+      document.querySelectorAll('.wine').forEach(function(x){ x.classList.remove('active'); });
+      b.classList.add('active');
+      feedLine('> flight position '+(i+1)+' selected: '+w.name.replace(/&ldquo;|&rdquo;/g,'"'), true);
+    });
+    flightList.appendChild(b);
+  });
+
+  function feedLine(text, dim){
+    var s = document.createElement('div');
+    if (dim) s.className = 'dim';
+    s.textContent = text;
+    feed.appendChild(s);
+    feed.scrollTop = feed.scrollHeight;
+  }
+
+  function setConviction(v){
+    conviction = Math.max(0, Math.min(97, Math.round(v)));
+    convNum.textContent = conviction + '%';
+    arc.setAttribute('stroke-dashoffset', String(CIRC * (1 - conviction/100)));
+    arc.setAttribute('stroke', conviction >= 85 ? '#6FD3B6' : '#C79A3B');
+    var label = VERDICTS[0][1];
+    VERDICTS.forEach(function(pair){ if (conviction >= pair[0]) label = pair[1]; });
+    verdict.textContent = label;
+  }
+
+  function renderQueue(descs){
+    queueList.innerHTML = '';
+    if (!descs.length) {
+      queueList.innerHTML = '<p class="queue-empty">No descriptors in flight. Select a wine and sip.</p>';
+      return;
+    }
+    descs.forEach(function(d){
+      var row = document.createElement('div');
+      row.className = 'dsc';
+      row.innerHTML = '<span class="word">'+d.w+'</span><span class="cert">'+d.c+'</span>';
+      var ok = document.createElement('button');
+      ok.className = 'ok'; ok.textContent = 'approve';
+      var no = document.createElement('button');
+      no.className = 'no'; no.textContent = 'veto';
+      ok.addEventListener('click', function(){
+        if (row.classList.contains('approved')) return;
+        row.classList.add('approved');
+        approved.push(d.w);
+        setConviction(conviction + 8);
+        feedLine('> injected: "'+d.w+'"');
+        updatePreview();
+      });
+      no.addEventListener('click', function(){
+        row.remove();
+        var ix = approved.indexOf(d.w);
+        if (ix > -1) { approved.splice(ix,1); setConviction(conviction - 8); }
+        else { setConviction(conviction - 3); }
+        feedLine('> vetoed: "'+d.w+'" (noted in your file)', true);
+        updatePreview();
+      });
+      row.appendChild(ok); row.appendChild(no);
+      queueList.appendChild(row);
+    });
+  }
+
+  function updatePreview(){
+    if (!approved.length) {
+      preview.innerHTML = '<span class="placeholder">Approved descriptors assemble here. You will hear yourself say them.</span>';
+      sayBtn.disabled = true;
+      return;
+    }
+    var s;
+    if (approved.length === 1) s = approved[0];
+    else s = approved.slice(0,-1).join(', ') + ', and ' + approved[approved.length-1];
+    preview.textContent = '“Mm. ' + s.charAt(0).toUpperCase() + s.slice(1) + '.”';
+    sayBtn.disabled = false;
+  }
+
+  function commitToRecord(text, wine){
+    if (recordList.querySelector('.record-empty')) recordList.innerHTML = '';
+    var r = document.createElement('div');
+    r.className = 'rec';
+    r.innerHTML = '<span class="rq">'+text+'</span><span class="rw">'+wine+' · conviction '+conviction+'% · synced to Lyon</span>';
+    recordList.insertBefore(r, recordList.firstChild);
+  }
+
+  sipBtn.addEventListener('click', function(){
+    if (!selected) { feedLine('> sip refused: no wine selected. the implant cannot help you yet.', true); return; }
+    if (streaming) return;
+    streaming = true;
+    sipBtn.disabled = true;
+    approved = [];
+    updatePreview();
+    renderQueue([]);
+    queueList.innerHTML = '<p class="queue-empty">Analyzing. Hold the wine in your mouth. Longer.</p>';
+    var w = selected;
+    var delay = reduced ? 0 : 550;
+    w.feed.forEach(function(line, i){
+      setTimeout(function(){ feedLine(line); }, delay * i);
+    });
+    setTimeout(function(){
+      renderQueue(w.descriptors);
+      streaming = false;
+      sipBtn.disabled = false;
+    }, delay * w.feed.length + 80);
+  });
+
+  sayBtn.addEventListener('click', function(){
+    if (!approved.length) return;
+    commitToRecord(preview.textContent, selected ? selected.name.replace(/&ldquo;|&rdquo;/g,'"') : 'Unknown pour');
+    feedLine('> committed to speech. table reaction: quiet.');
+    approved = [];
+    renderQueue([]);
+    updatePreview();
+  });
+
+  panicBtn.addEventListener('click', function(){
+    approved = [];
+    renderQueue([]);
+    updatePreview();
+    setConviction(12);
+    linkText.textContent = 'IMPLANT LINK: SULKING';
+    feedLine('> OVERRIDE: reverting to "it’s nice"', true);
+    feedLine('> Lyon has been notified.', true);
+    commitToRecord('“It’s nice.”', selected ? selected.name.replace(/&ldquo;|&rdquo;/g,'"') : 'Unknown pour');
+    setTimeout(function(){ linkText.textContent = 'IMPLANT LINK: NOMINAL'; }, 4000);
+  });
+
+  setConviction(34);
+})();
+</script>
+
+</body>
+</html>
