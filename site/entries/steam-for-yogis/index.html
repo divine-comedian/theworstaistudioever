@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drishti · theworstaistudioever</title>
+<meta name="description" content="The pose distribution platform. Browse 4,000+ asanas, buy them during seasonal sales, and get to them eventually.">
+<meta property="og:title" content="Drishti">
+<meta property="og:description" content="The pose distribution platform. Browse 4,000+ asanas, buy them during seasonal sales, and get to them eventually.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="crow.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #5FA8D3;
+    --accent: #A9BE55;
+    --bg: #151C26;
+    --panel: #1C2634;
+    --panel-2: #1A2230;
+    --well: #10161E;
+    --border: #2A3648;
+    --border-bright: #3D4E66;
+    --fg: #E8EDF2;
+    --muted: #77879B;
+    --ink: #EAF0F6;
+    --display: 'Marcellus', Georgia, 'Times New Roman', serif;
+    --body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --mono: 'Space Mono', 'Courier New', monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--primary); text-decoration: none; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+  img { display: block; max-width: 100%; }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- nav ---------- */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(21, 28, 38, 0.92);
+    backdrop-filter: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    display: flex; align-items: center; gap: 28px;
+    height: 58px;
+  }
+  .wordmark {
+    font-family: var(--display);
+    font-size: 1.35rem;
+    letter-spacing: 0.06em;
+    color: var(--primary);
+  }
+  .nav-links { display: flex; gap: 22px; margin-left: auto; align-items: center; }
+  .nav-links a {
+    color: var(--muted);
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .nav-links a:hover { color: var(--fg); }
+  .nav-cta {
+    background: var(--primary);
+    color: #0D1117 !important;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: none !important;
+    font-size: 0.9rem !important;
+  }
+  .nav-cta:hover { filter: brightness(1.08); color: #0D1117 !important; }
+  .nav-cta:active { transform: translateY(1px); }
+
+  /* ---------- hero ---------- */
+  .hero { padding: 88px 0 64px; }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 56px;
+    align-items: center;
+  }
+  .kicker {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+  h1 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(2.4rem, 5vw, 3.6rem);
+    line-height: 1.12;
+    color: var(--ink);
+    margin-bottom: 22px;
+  }
+  .tagged {
+    position: relative;
+    display: inline-block;
+  }
+  .tagged .word-tag {
+    position: absolute;
+    top: -0.65em; right: -1.1em;
+    background: var(--accent);
+    color: #141A0A;
+    font-family: var(--mono);
+    font-size: 0.28em;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 2px;
+    letter-spacing: 0.05em;
+    transform: rotate(3deg);
+    white-space: nowrap;
+  }
+  .hero-sub {
+    color: var(--muted);
+    font-size: 1.06rem;
+    max-width: 46ch;
+    margin-bottom: 32px;
+  }
+  .cta-row { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--primary);
+    color: #0D1117;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 13px 26px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    transition: filter 0.18s ease;
+  }
+  .btn-primary:hover { filter: brightness(1.08); }
+  .btn-primary:active { transform: translateY(1px); }
+  .btn-ghost {
+    color: var(--primary);
+    font-weight: 500;
+    font-size: 0.98rem;
+    padding: 13px 4px;
+    border-bottom: 1px solid transparent;
+  }
+  .btn-ghost:hover { border-bottom-color: var(--primary); }
+
+  /* featured capsule */
+  .capsule {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.18s ease, border-color 0.18s ease;
+  }
+  .capsule:hover { transform: translateY(-3px); border-color: var(--border-bright); }
+  .capsule-label {
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .capsule-art { position: relative; }
+  .capsule-art img { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+  .corner-tag {
+    position: absolute;
+    top: 12px; left: -4px;
+    background: var(--accent);
+    color: #141A0A;
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 0.78rem;
+    padding: 4px 12px;
+    letter-spacing: 0.06em;
+    border-radius: 0 2px 2px 0;
+  }
+  .capsule-body { padding: 16px; }
+  .capsule-title {
+    font-family: var(--display);
+    font-size: 1.25rem;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .chip {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--well);
+    border: 1px solid var(--border);
+    padding: 3px 8px;
+    border-radius: 2px;
+  }
+  .review-line { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+  .review-name { font-size: 0.8rem; color: var(--muted); width: 108px; flex-shrink: 0; }
+  .bar-track {
+    flex: 1; height: 6px;
+    background: var(--well);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 3px;
+    width: 0;
+    transition: width 1s ease;
+  }
+  .bar-fill.negative { background: #B0653A; }
+  .review-pct { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); width: 40px; text-align: right; }
+  .verdict-positive { color: var(--accent); font-weight: 600; }
+  .verdict-negative { color: #B0653A; font-weight: 600; }
+  .price-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 16px; padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+  .discount-pct {
+    background: var(--accent);
+    color: #141A0A;
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 5px 9px;
+    border-radius: 2px;
+  }
+  .price-old {
+    font-family: var(--mono);
+    color: var(--muted);
+    text-decoration: line-through;
+    font-size: 0.85rem;
+  }
+  .price-new { font-family: var(--mono); font-size: 1.05rem; color: var(--fg); font-weight: 700; }
+  .price-row .mini-cta {
+    margin-left: auto;
+    background: var(--primary);
+    color: #0D1117;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 8px 14px;
+    border-radius: 4px;
+  }
+  .price-row .mini-cta:hover { filter: brightness(1.08); }
+
+  /* ---------- sale strip ---------- */
+  .sale-strip {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--panel-2);
+    padding: 14px 0;
+    overflow: hidden;
+  }
+  .sale-inner {
+    display: flex; align-items: center; justify-content: center;
+    gap: 26px; flex-wrap: wrap;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .sale-inner .sale-name { color: var(--accent); font-weight: 700; }
+  .sale-inner .sale-copy { color: var(--muted); }
+  .sale-inner .sale-clock { color: var(--fg); }
+
+  /* ---------- sections ---------- */
+  section { padding: 76px 0; }
+  .section-head { margin-bottom: 40px; }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--primary);
+    margin-bottom: 12px;
+  }
+  h2 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(1.7rem, 3.4vw, 2.4rem);
+    color: var(--ink);
+    line-height: 1.2;
+    max-width: 26ch;
+  }
+  .section-sub { color: var(--muted); margin-top: 12px; max-width: 58ch; }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .feature { display: flex; flex-direction: column; }
+  .feature .capsule-body { padding: 22px; flex: 1; display: flex; flex-direction: column; }
+  .feature h3 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: 1.3rem;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+  .feature p { color: var(--muted); font-size: 0.94rem; flex: 1; }
+  .mono-well {
+    margin-top: 18px;
+    background: var(--well);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 12px 14px;
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    color: var(--fg);
+    letter-spacing: 0.04em;
+    line-height: 1.7;
+  }
+  .mono-well .dim { color: var(--muted); }
+  .mono-well .good { color: var(--accent); }
+  .mono-well .bad { color: #B0653A; }
+
+  /* ---------- testimonials ---------- */
+  .review-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .review-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 22px;
+    display: flex; flex-direction: column;
+    transition: transform 0.18s ease, border-color 0.18s ease;
+  }
+  .review-card:hover { transform: translateY(-3px); border-color: var(--border-bright); }
+  .review-head {
+    display: flex; align-items: center; gap: 10px;
+    padding-bottom: 14px; margin-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .thumb {
+    width: 30px; height: 30px; flex-shrink: 0;
+    background: var(--well);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    display: grid; place-items: center;
+    color: var(--primary);
+  }
+  .rec-label { font-weight: 600; font-size: 0.92rem; color: var(--fg); }
+  .rec-hours { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); margin-left: auto; text-align: right; }
+  .review-quote { color: var(--fg); font-size: 0.97rem; flex: 1; }
+  .reviewer {
+    display: flex; align-items: center; gap: 12px;
+    margin-top: 18px; padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+  .avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--well);
+    border: 1px solid var(--border-bright);
+    display: grid; place-items: center;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--primary);
+    flex-shrink: 0;
+  }
+  .reviewer-name { font-weight: 600; font-size: 0.88rem; color: var(--fg); }
+  .reviewer-title { font-size: 0.76rem; color: var(--muted); }
+  .verified {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  /* ---------- pricing ---------- */
+  .tier-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    align-items: stretch;
+  }
+  .tier {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 26px;
+    position: relative;
+    display: flex; flex-direction: column;
+    transition: transform 0.18s ease, border-color 0.18s ease;
+  }
+  .tier:hover { transform: translateY(-3px); border-color: var(--border-bright); }
+  .tier.lifted { border-color: var(--primary); }
+  .tier-flag {
+    position: absolute; top: -11px; left: 22px;
+    background: var(--primary);
+    color: #0D1117;
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 2px;
+  }
+  .tier-flag.matcha { background: var(--accent); color: #141A0A; }
+  .tier h3 { font-family: var(--display); font-weight: 400; font-size: 1.35rem; color: var(--ink); }
+  .tier-tagline { color: var(--muted); font-size: 0.88rem; margin: 6px 0 18px; }
+  .tier-price { font-family: var(--mono); font-size: 2rem; font-weight: 700; color: var(--fg); margin-bottom: 20px; }
+  .tier-price .per { font-size: 0.85rem; font-weight: 400; color: var(--muted); }
+  .tier ul { list-style: none; flex: 1; }
+  .tier li {
+    padding: 8px 0 8px 24px;
+    position: relative;
+    color: var(--muted);
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .tier li:last-child { border-bottom: none; }
+  .tier li::before {
+    content: '';
+    position: absolute; left: 2px; top: 15px;
+    width: 10px; height: 10px;
+    border: 1px solid var(--primary);
+    border-radius: 2px;
+  }
+  .tier .btn-primary { width: 100%; text-align: center; margin-top: 22px; }
+  .tier .btn-outline {
+    width: 100%; text-align: center; margin-top: 22px;
+    display: inline-block;
+    padding: 12px 0;
+    border: 1px solid var(--border-bright);
+    border-radius: 4px;
+    color: var(--fg);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .tier .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+  /* ---------- closing ---------- */
+  .closing {
+    border-top: 1px solid var(--border);
+    background: var(--panel-2);
+    text-align: center;
+  }
+  .closing h2 { margin: 0 auto 14px; }
+  .closing .section-sub { margin: 0 auto 32px; }
+  .closing .cta-row { justify-content: center; }
+
+  /* ---------- footer ---------- */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 36px 0 44px;
+  }
+  .foot-inner { display: flex; flex-wrap: wrap; gap: 18px; justify-content: space-between; align-items: baseline; }
+  .fine-print {
+    color: var(--muted);
+    font-size: 0.74rem;
+    max-width: 62ch;
+    line-height: 1.7;
+  }
+  .home-link { font-size: 0.8rem; color: var(--muted); }
+  .home-link:hover { color: var(--primary); }
+
+  /* ---------- motion ---------- */
+  .fade-up { opacity: 0; transform: translateY(6px); transition: opacity 0.5s ease, transform 0.5s ease; }
+  .fade-up.in { opacity: 1; transform: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { transition: none !important; animation: none !important; }
+    .fade-up { opacity: 1; transform: none; }
+  }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+    .feature-grid, .review-grid, .tier-grid { grid-template-columns: 1fr; }
+    .nav-links a:not(.nav-cta) { display: none; }
+    .hero { padding: 56px 0 48px; }
+    section { padding: 56px 0; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap nav-inner">
+    <span class="wordmark">Drishti</span>
+    <div class="nav-links">
+      <a href="#features">Store</a>
+      <a href="#reviews">Reviews</a>
+      <a href="#editions">Editions</a>
+      <a class="nav-cta" href="./demo.html">Open the library</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="kicker">Drishti · The pose distribution platform</p>
+      <h1>Own every pose. Do <span class="tagged">four<span class="word-tag">-66%</span></span> of them.</h1>
+      <p class="hero-sub">Drishti is the world's largest digital pose storefront. Build a library of over 4,000 asanas, install them into your body at your own pace, and leave reviews for the ones you never opened.</p>
+      <div class="cta-row">
+        <a class="btn-primary" href="#editions">Browse the Pose Store</a>
+        <a class="btn-ghost" href="./demo.html">open the demo &rarr;</a>
+      </div>
+    </div>
+    <div class="capsule fade-up">
+      <div class="capsule-label">Featured &amp; Recommended</div>
+      <div class="capsule-art">
+        <img src="crow.webp" alt="A yogi balancing in crow pose on a dark slate mat, lit in cool blue" width="1600" height="900">
+        <span class="corner-tag">SOLSTICE SALE</span>
+      </div>
+      <div class="capsule-body">
+        <div class="capsule-title">Crow Pose (Bakasana)</div>
+        <div class="chips">
+          <span class="chip">Difficult</span>
+          <span class="chip">Arm Balance</span>
+          <span class="chip">Floor-Based</span>
+          <span class="chip">Single-Player</span>
+        </div>
+        <div class="review-line">
+          <span class="review-name">All reviews</span>
+          <div class="bar-track"><div class="bar-fill" data-w="79"></div></div>
+          <span class="review-pct">79%</span>
+        </div>
+        <div class="review-line">
+          <span class="review-name">Recent</span>
+          <div class="bar-track"><div class="bar-fill negative" data-w="44"></div></div>
+          <span class="review-pct">44%</span>
+        </div>
+        <div class="price-row">
+          <span class="discount-pct">-66%</span>
+          <span class="price-old">$6.79</span>
+          <span class="price-new">$2.31</span>
+          <a class="mini-cta" href="#editions">Add to Mat</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="sale-strip" aria-label="Solstice Sale countdown">
+  <div class="wrap sale-inner">
+    <span class="sale-name">Solstice Sale</span>
+    <span class="sale-copy">Up to 90% off stillness</span>
+    <span class="sale-clock">Ends in <span id="countdown">71:59:32</span></span>
+  </div>
+</div>
+
+<section id="features">
+  <div class="wrap">
+    <div class="section-head fade-up">
+      <p class="eyebrow">Platform capabilities</p>
+      <h2>A complete practice, in the technical sense of complete.</h2>
+      <p class="section-sub">Everything you would expect from a modern storefront, applied without hesitation to the human body.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="capsule feature fade-up">
+        <div class="capsule-body">
+          <h3>Your Backlog</h3>
+          <p>Every pose you buy goes straight to your library, where it stays. Drishti tracks hours practiced with two-decimal honesty, so you always know Pigeon Pose has been in your body for 14 months and run for 0.2 hours.</p>
+          <div class="mono-well">
+            PIGEON POSE<br>
+            <span class="dim">installed</span> 14 mo &nbsp;·&nbsp; <span class="dim">practiced</span> 0.2 hrs<br>
+            <span class="dim">status</span> READY TO PLAY
+          </div>
+        </div>
+      </div>
+      <div class="capsule feature fade-up">
+        <div class="capsule-body">
+          <h3>Early Access Asanas</h3>
+          <p>Practice poses before they're finished. Headstand is currently in version 0.4 and ships without neck support. Weekly patch notes tell your hamstrings exactly what changed and what is still a known issue.</p>
+          <div class="mono-well">
+            HEADSTAND <span class="dim">build</span> 0.4.2<br>
+            <span class="dim">known issues</span> <span class="bad">7</span><br>
+            <span class="dim">neck support</span> PLANNED (Q3)
+          </div>
+        </div>
+      </div>
+      <div class="capsule feature fade-up">
+        <div class="capsule-body">
+          <h3>Verified Reviews</h3>
+          <p>Every pose is reviewed by people who did it once. Savasana holds Overwhelmingly Positive at 98%. Chair Pose has been Mostly Negative since 2019, and the developers have stopped responding.</p>
+          <div class="mono-well">
+            SAVASANA &nbsp;<span class="good">OVERWHELMINGLY POSITIVE</span><br>
+            CHAIR POSE &nbsp;<span class="bad">MOSTLY NEGATIVE</span><br>
+            <span class="dim">developer response</span> NONE SINCE 2019
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="reviews" style="padding-top: 0;">
+  <div class="wrap">
+    <div class="section-head fade-up">
+      <p class="eyebrow">Community reviews</p>
+      <h2>What Verified Owners are saying.</h2>
+    </div>
+    <div class="review-grid">
+      <div class="review-card fade-up">
+        <div class="review-head">
+          <span class="thumb" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M2 21h4V9H2v12zM22 10c0-1.1-.9-2-2-2h-6.3l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L13.17 1 6.58 7.59C6.22 7.95 6 8.45 6 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
+          </span>
+          <span class="rec-label">Recommended</span>
+          <span class="rec-hours">3.9 hrs on record<br>212 poses owned</span>
+        </div>
+        <p class="review-quote">&ldquo;I bought 212 poses during the Solstice Sale. I have done four of them. I feel like that is the practice.&rdquo;</p>
+        <div class="reviewer">
+          <span class="avatar" aria-hidden="true">DW</span>
+          <div>
+            <div class="reviewer-name">Dana Whitfield</div>
+            <div class="reviewer-title">Restorative Completionist, Level 41</div>
+            <span class="verified">Verified Owner</span>
+          </div>
+        </div>
+      </div>
+      <div class="review-card fade-up">
+        <div class="review-head">
+          <span class="thumb" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M2 21h4V9H2v12zM22 10c0-1.1-.9-2-2-2h-6.3l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L13.17 1 6.58 7.59C6.22 7.95 6 8.45 6 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
+          </span>
+          <span class="rec-label">Recommended</span>
+          <span class="rec-hours">0.4 hrs on record<br>Headstand branch</span>
+        </div>
+        <p class="review-quote">&ldquo;The patch notes said 0.5 fixed my lower back. My lower back is aware of no such patch.&rdquo;</p>
+        <div class="reviewer">
+          <span class="avatar" aria-hidden="true">MO</span>
+          <div>
+            <div class="reviewer-name">Marcus Oyelaran</div>
+            <div class="reviewer-title">Early Access Participant, Headstand branch</div>
+            <span class="verified">Verified Owner</span>
+          </div>
+        </div>
+      </div>
+      <div class="review-card fade-up">
+        <div class="review-head">
+          <span class="thumb" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M2 21h4V9H2v12zM22 10c0-1.1-.9-2-2-2h-6.3l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L13.17 1 6.58 7.59C6.22 7.95 6 8.45 6 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
+          </span>
+          <span class="rec-label">Recommended</span>
+          <span class="rec-hours">11.2 hrs on record<br>4,006 poses owned</span>
+        </div>
+        <p class="review-quote">&ldquo;I left a negative review on Savasana because it ended.&rdquo;</p>
+        <div class="reviewer">
+          <span class="avatar" aria-hidden="true">PR</span>
+          <div>
+            <div class="reviewer-name">Priya Ramachandran</div>
+            <div class="reviewer-title">Verified Owner of 4,006 poses, 11 hours total</div>
+            <span class="verified">Verified Owner</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="editions" style="padding-top: 0;">
+  <div class="wrap">
+    <div class="section-head fade-up">
+      <p class="eyebrow">Editions</p>
+      <h2>Choose how much stillness to own.</h2>
+      <p class="section-sub">All editions include the storefront. Poses sold separately, except where they are sold together.</p>
+    </div>
+    <div class="tier-grid">
+      <div class="tier fade-up">
+        <h3>Free Weekend</h3>
+        <p class="tier-tagline">Mountain Pose, unlocked until Sunday.</p>
+        <div class="tier-price">$0</div>
+        <ul>
+          <li>Access to Mountain Pose (Standing)</li>
+          <li>Read-only access to reviews</li>
+          <li>Backlog capacity: 1</li>
+        </ul>
+        <a class="btn-outline" href="./demo.html">Try the weekend</a>
+      </div>
+      <div class="tier lifted fade-up">
+        <span class="tier-flag">Most installed</span>
+        <h3>Season Pass</h3>
+        <p class="tier-tagline">The flexibility battle pass.</p>
+        <div class="tier-price">$34<span class="per">/mo</span></div>
+        <ul>
+          <li>Daily quests for your hips</li>
+          <li>Full Solstice Sale access</li>
+          <li>Backlog capacity: unlimited</li>
+          <li>Patch notes delivered to your mat</li>
+        </ul>
+        <a class="btn-primary" href="./demo.html">Start the season</a>
+      </div>
+      <div class="tier fade-up">
+        <span class="tier-flag matcha">Never on sale</span>
+        <h3>Collector's Edition</h3>
+        <p class="tier-tagline">For completionists of stillness.</p>
+        <div class="tier-price">$1,499</div>
+        <ul>
+          <li>Every pose, including delisted ones</li>
+          <li>Exclusive mat skin (Obsidian)</li>
+          <li>Your name in the credits of Sun Salutation</li>
+          <li>Founder badge on your review profile</li>
+        </ul>
+        <a class="btn-outline" href="./demo.html">Complete the set</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="closing">
+  <div class="wrap">
+    <p class="eyebrow fade-up">The Solstice Sale is live</p>
+    <h2 class="fade-up">The sale ends. The backlog is forever.</h2>
+    <p class="section-sub fade-up">Join 2.1 million yogis who own an average of 178 poses and have practiced an average of 6.</p>
+    <div class="cta-row fade-up">
+      <a class="btn-primary" href="./demo.html">Open the demo &rarr;</a>
+      <a class="btn-ghost" href="#features">Read the store policy</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-inner">
+    <div>
+      <span class="wordmark" style="font-size: 1.05rem;">Drishti</span>
+      <p class="fine-print" style="margin-top: 10px;">Poses purchased on Drishti are licensed, not owned, notwithstanding the headline. Refunds are available within 14 days if the pose has been practiced for under two hours, which statistically it has. Drishti is not responsible for necks running Early Access builds.</p>
+    </div>
+    <a class="home-link" href="/">&larr; theworstaistudioever</a>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Fake sale countdown
+    var clock = document.getElementById('countdown');
+    var total = 71 * 3600 + 59 * 60 + 32;
+    function pad(n) { return n < 10 ? '0' + n : '' + n; }
+    function tick() {
+      total = total > 0 ? total - 1 : 0;
+      var h = Math.floor(total / 3600), m = Math.floor((total % 3600) / 60), s = total % 60;
+      clock.textContent = pad(h) + ':' + pad(m) + ':' + pad(s);
+    }
+    setInterval(tick, 1000);
+
+    // Review bars + fade-ups
+    function fillBars(scope) {
+      scope.querySelectorAll('.bar-fill').forEach(function (b) {
+        b.style.width = b.getAttribute('data-w') + '%';
+      });
+    }
+    if (reduced || !('IntersectionObserver' in window)) {
+      document.querySelectorAll('.fade-up').forEach(function (el) { el.classList.add('in'); });
+      fillBars(document);
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e, i) {
+        if (e.isIntersecting) {
+          setTimeout(function () { e.target.classList.add('in'); }, i * 40);
+          fillBars(e.target);
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.fade-up').forEach(function (el) { io.observe(el); });
+  })();
+</script>
+</body>
+</html>
