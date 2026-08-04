@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keel · theworstaistudioever</title>
+<meta name="description" content="Territory-verified matchmaking for gulls who are done circling.">
+<meta property="og:title" content="Keel · Tinder for seagulls">
+<meta property="og:description" content="Territory-verified matchmaking for gulls who are done circling.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@700;800;900&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red:#C8322B;
+    --teal:#23726A;
+    --bg:#F8F4E9;
+    --panel:#FCF9F0;
+    --fg:#22303C;
+    --muted:#7E8A90;
+    --ink:#16222B;
+    --hairline:rgba(34,48,60,.28);
+    --hairline-soft:rgba(34,48,60,.14);
+    --display:'Libre Franklin','Franklin Gothic Medium','Helvetica Neue',Arial,sans-serif;
+    --body:'Public Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --mono:'JetBrains Mono','SFMono-Regular',Consolas,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--body);
+    background:var(--bg);
+    color:var(--fg);
+    font-size:16px;
+    line-height:1.6;
+    background-image:
+      linear-gradient(var(--hairline-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--hairline-soft) 1px, transparent 1px);
+    background-size:120px 120px;
+  }
+  ::selection{background:var(--red);color:var(--bg)}
+
+  .doc-strip{
+    border-bottom:1px solid var(--hairline);
+    background:var(--panel);
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--muted);
+    display:flex;
+    justify-content:space-between;
+    gap:16px;
+    padding:6px 20px;
+    white-space:nowrap;
+    overflow:hidden;
+  }
+
+  header.masthead{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:24px;
+    padding:18px 20px;
+    border-bottom:2px solid var(--ink);
+    max-width:1180px;
+    margin:0 auto;
+  }
+  .wordmark{
+    font-family:var(--display);
+    font-weight:900;
+    font-size:26px;
+    letter-spacing:.04em;
+    color:var(--red);
+    text-decoration:none;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .buoy{
+    width:14px;height:14px;border-radius:50%;
+    border:2px solid var(--ink);
+    background:linear-gradient(to bottom, var(--panel) 45%, var(--red) 45%);
+    display:inline-block;flex:none;
+  }
+  nav.top{display:flex;align-items:center;gap:26px}
+  nav.top a{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--fg);
+    text-decoration:none;
+    border-bottom:1px solid transparent;
+    padding:4px 0;
+  }
+  nav.top a:hover{border-bottom-color:var(--red);color:var(--red)}
+  nav.top a.demo-link{
+    border:1.5px solid var(--red);
+    color:var(--red);
+    padding:8px 14px;
+  }
+  nav.top a.demo-link:hover{background:var(--red);color:var(--bg)}
+  @media(max-width:760px){nav.top a:not(.demo-link){display:none}}
+
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+  /* ---------- hero ---------- */
+  .hero{
+    display:grid;
+    grid-template-columns:1.1fr .9fr;
+    gap:48px;
+    padding:64px 0 56px;
+    align-items:center;
+  }
+  @media(max-width:900px){.hero{grid-template-columns:1fr;gap:40px}}
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--teal);
+    display:flex;align-items:center;gap:10px;
+    margin-bottom:22px;
+  }
+  .eyebrow::before{content:"";width:34px;height:1px;background:var(--teal)}
+  h1{
+    font-family:var(--display);
+    font-weight:900;
+    font-size:clamp(44px,6.4vw,78px);
+    line-height:.98;
+    letter-spacing:-.01em;
+    text-transform:uppercase;
+    color:var(--ink);
+  }
+  h1 .red{color:var(--red)}
+  .hero-sub{
+    margin:26px 0 32px;
+    font-size:18px;
+    max-width:52ch;
+    color:var(--fg);
+  }
+  .cta-row{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+  .stamp-cta{
+    font-family:var(--display);
+    font-weight:800;
+    font-size:15px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--bg);
+    background:var(--red);
+    border:2px solid var(--ink);
+    box-shadow:4px 4px 0 var(--ink);
+    padding:16px 28px;
+    text-decoration:none;
+    display:inline-block;
+    transition:transform .12s ease, box-shadow .12s ease;
+    cursor:pointer;
+  }
+  .stamp-cta:hover{transform:translate(1px,1px);box-shadow:3px 3px 0 var(--ink)}
+  .stamp-cta:active{transform:translate(4px,4px);box-shadow:0 0 0 var(--ink)}
+  .cta-note{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.06em;
+    color:var(--muted);
+    max-width:24ch;
+  }
+
+  /* chart inset */
+  .chart-inset{
+    position:relative;
+    border:1px solid var(--ink);
+    outline:1px solid var(--ink);
+    outline-offset:3px;
+    background:var(--panel);
+    padding:26px;
+    background-image:
+      linear-gradient(var(--hairline-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--hairline-soft) 1px, transparent 1px);
+    background-size:40px 40px;
+  }
+  .chart-inset .contours{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  .chart-title{
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    color:var(--muted);
+    display:flex;justify-content:space-between;
+    margin-bottom:18px;
+  }
+  .specimen-frame{
+    position:relative;
+    border:1px solid var(--ink);
+    background:var(--bg);
+    padding:10px;
+    transform:rotate(-1.2deg);
+    width:min(78%,340px);
+    margin:0 auto;
+  }
+  .specimen-frame img{display:block;width:100%;height:auto}
+  .specimen-caption{
+    font-family:var(--mono);
+    font-size:9.5px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--fg);
+    border-top:1px solid var(--hairline);
+    margin-top:10px;
+    padding-top:8px;
+    display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;
+  }
+  .specimen-caption .listed{color:var(--red)}
+  .compass{
+    position:absolute;
+    top:44px;right:22px;
+    width:74px;height:74px;
+  }
+  .coord-tag{
+    position:absolute;
+    font-family:var(--mono);
+    font-size:9px;
+    letter-spacing:.1em;
+    color:var(--teal);
+    display:flex;align-items:center;gap:6px;
+  }
+  .coord-tag .buoy{width:10px;height:10px;border-width:1.5px}
+  .coord-1{bottom:56px;left:18px}
+  .coord-2{top:110px;left:26px}
+
+  /* ---------- sounding stats ---------- */
+  .soundings{
+    border-top:2px solid var(--ink);
+    border-bottom:1px solid var(--hairline);
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+  }
+  @media(max-width:820px){.soundings{grid-template-columns:repeat(2,1fr)}}
+  .sounding{
+    padding:22px 18px;
+    border-right:1px solid var(--hairline);
+  }
+  .sounding:last-child{border-right:none}
+  @media(max-width:820px){.sounding:nth-child(2){border-right:none}.sounding:nth-child(-n+2){border-bottom:1px solid var(--hairline)}}
+  .sounding .num{
+    font-family:var(--mono);
+    font-weight:600;
+    font-size:26px;
+    font-variant-numeric:tabular-nums;
+    color:var(--ink);
+  }
+  .sounding .num.teal{color:var(--teal)}
+  .sounding .lbl{
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-top:4px;
+  }
+
+  /* ---------- notice banners ---------- */
+  .notice{
+    border-top:2px solid var(--ink);
+    border-bottom:1px solid var(--ink);
+    background:var(--panel);
+    margin-top:84px;
+    padding:10px 0;
+  }
+  .notice .wrap{
+    display:flex;justify-content:space-between;align-items:baseline;gap:16px;
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.24em;
+    text-transform:uppercase;
+    color:var(--ink);
+  }
+  .notice .sec-no{color:var(--red)}
+
+  .section-head{
+    padding:56px 0 8px;
+    max-width:60ch;
+  }
+  h2{
+    font-family:var(--display);
+    font-weight:900;
+    font-size:clamp(28px,3.6vw,44px);
+    text-transform:uppercase;
+    line-height:1.04;
+    color:var(--ink);
+  }
+  h2 .red{color:var(--red)}
+  .section-head p{margin-top:14px;color:var(--fg)}
+
+  /* ---------- feature plates ---------- */
+  .plates{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:22px;
+    padding:34px 0 20px;
+  }
+  @media(max-width:900px){.plates{grid-template-columns:1fr}}
+  .plate{
+    border:1px solid var(--ink);
+    outline:1px solid var(--hairline);
+    outline-offset:3px;
+    background:var(--panel);
+    padding:26px 24px 22px;
+    display:flex;flex-direction:column;gap:14px;
+    transition:transform .15s ease;
+  }
+  .plate:hover{transform:translateY(-2px);outline-color:var(--ink)}
+  .plate-tag{
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    color:var(--muted);
+    display:flex;justify-content:space-between;align-items:center;
+    border-bottom:1px solid var(--hairline);
+    padding-bottom:12px;
+  }
+  .plate h3{
+    font-family:var(--display);
+    font-weight:800;
+    font-size:20px;
+    text-transform:uppercase;
+    letter-spacing:.01em;
+    color:var(--ink);
+    display:flex;align-items:center;gap:10px;
+  }
+  .plate p{font-size:15px}
+  .plate .fineline{
+    font-family:var(--mono);
+    font-size:10px;
+    color:var(--muted);
+    letter-spacing:.05em;
+    border-top:1px solid var(--hairline);
+    padding-top:10px;
+    margin-top:auto;
+  }
+
+  /* ---------- mariner logs ---------- */
+  .logs{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:22px;
+    padding:34px 0 20px;
+  }
+  @media(max-width:900px){.logs{grid-template-columns:1fr}}
+  .log{
+    border:1px solid var(--ink);
+    background:var(--panel);
+    padding:24px;
+    display:flex;flex-direction:column;gap:16px;
+  }
+  .log-head{
+    display:flex;align-items:center;gap:12px;
+    border-bottom:1px solid var(--hairline);
+    padding-bottom:14px;
+  }
+  .log-avatar{
+    width:44px;height:44px;border-radius:50%;
+    border:2px solid var(--ink);
+    background:linear-gradient(to bottom, var(--panel) 50%, var(--red) 50%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--display);font-weight:900;font-size:16px;color:var(--ink);
+    flex:none;
+  }
+  .log-id .nm{font-family:var(--display);font-weight:800;font-size:15px;text-transform:uppercase;color:var(--ink)}
+  .log-id .ttl{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--muted);line-height:1.5}
+  .log q{font-size:15px;quotes:'\201C' '\201D'}
+  .log .log-no{
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--teal);margin-top:auto;
+  }
+
+  /* ---------- tariffs ---------- */
+  .tariffs{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:22px;
+    padding:34px 0 20px;
+    align-items:stretch;
+  }
+  @media(max-width:900px){.tariffs{grid-template-columns:1fr}}
+  .tariff{
+    border:1px solid var(--ink);
+    background:var(--panel);
+    padding:28px 26px;
+    display:flex;flex-direction:column;gap:6px;
+    position:relative;
+  }
+  .tariff.claimed{
+    outline:2px solid var(--red);
+    outline-offset:4px;
+  }
+  .claim-flag{
+    position:absolute;top:-14px;left:22px;
+    background:var(--red);color:var(--bg);
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+    padding:4px 10px;
+    border:1px solid var(--ink);
+  }
+  .tariff .tname{
+    font-family:var(--display);font-weight:900;font-size:22px;text-transform:uppercase;color:var(--ink);
+  }
+  .tariff .tprice{
+    font-family:var(--mono);font-weight:600;font-size:30px;font-variant-numeric:tabular-nums;
+    color:var(--red);
+    border-bottom:1px solid var(--hairline);
+    padding:8px 0 14px;
+  }
+  .tariff .tprice small{font-size:13px;color:var(--muted)}
+  .tariff .ttag{font-style:italic;color:var(--fg);font-size:14.5px;padding-top:10px}
+  .tariff ul{list-style:none;margin-top:14px;display:flex;flex-direction:column;gap:10px}
+  .tariff li{
+    font-size:14px;
+    padding-left:22px;
+    position:relative;
+  }
+  .tariff li::before{
+    content:"";
+    position:absolute;left:0;top:5px;
+    width:9px;height:9px;border-radius:50%;
+    border:1.5px solid var(--ink);
+    background:linear-gradient(to bottom, var(--panel) 45%, var(--red) 45%);
+  }
+  .tariff .enroll{
+    margin-top:22px;
+    text-align:center;
+    font-family:var(--display);
+    font-weight:800;font-size:13px;letter-spacing:.12em;text-transform:uppercase;
+    text-decoration:none;
+    border:1.5px solid var(--ink);
+    color:var(--ink);
+    padding:12px 0;
+    transition:background .12s ease,color .12s ease;
+  }
+  .tariff .enroll:hover{background:var(--ink);color:var(--bg)}
+  .tariff.claimed .enroll{background:var(--red);border-color:var(--ink);color:var(--bg)}
+  .tariff.claimed .enroll:hover{background:var(--ink)}
+
+  /* ---------- demo band ---------- */
+  .demo-band{
+    margin-top:96px;
+    border-top:2px solid var(--ink);
+    border-bottom:2px solid var(--ink);
+    background:var(--panel);
+    padding:64px 0;
+    position:relative;
+    overflow:hidden;
+  }
+  .demo-band .wrap{display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap}
+  .demo-band h2{max-width:16ch}
+  .demo-band .demo-note{
+    font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.05em;
+    margin-top:12px;max-width:40ch;
+  }
+
+  footer{
+    padding:36px 0 48px;
+  }
+  footer .wrap{
+    display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--muted);
+  }
+  footer a{color:var(--fg);text-decoration:none;border-bottom:1px solid var(--hairline)}
+  footer a:hover{color:var(--red);border-bottom-color:var(--red)}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(6px);transition:opacity .5s ease,transform .5s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  @keyframes needle{
+    0%{transform:rotate(-140deg)}
+    60%{transform:rotate(18deg)}
+    80%{transform:rotate(-6deg)}
+    100%{transform:rotate(0deg)}
+  }
+  .needle{transform-origin:50% 50%;animation:needle 1.6s ease-out both}
+  @keyframes march{to{stroke-dashoffset:-40}}
+  .contour-line{animation:march 4s linear infinite}
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+    .reveal{opacity:1;transform:none}
+    html{scroll-behavior:auto}
+  }
+  :focus-visible{outline:2px solid var(--red);outline-offset:3px}
+</style>
+</head>
+<body>
+
+<div class="doc-strip">
+  <span>United Courtship Survey</span>
+  <span>Chart No. 88-04 · Soundings in feet</span>
+  <span>Corrected through tide 1,441</span>
+</div>
+
+<header class="masthead">
+  <a class="wordmark" href="#"><span class="buoy" aria-hidden="true"></span>KEEL</a>
+  <nav class="top" aria-label="Primary">
+    <a href="#instrumentation">Instrumentation</a>
+    <a href="#logs">Mariner logs</a>
+    <a href="#tariffs">Tariffs</a>
+    <a class="demo-link" href="./demo.html">Open the demo →</a>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap">
+    <section class="hero">
+      <div class="reveal in">
+        <p class="eyebrow">Notice to Mariners · Vol. 88 · Courtship Edition</p>
+        <h1>Stop circling.<br><span class="red">Start nesting.</span></h1>
+        <p class="hero-sub">Keel matches herring gulls on verified territory, call spectrogram, and documented theft history. The pier is crowded. Your standards shouldn't be.</p>
+        <div class="cta-row">
+          <a class="stamp-cta" href="#tariffs">Claim your railing</a>
+          <p class="cta-note">Verification takes one tide cycle. Bring a witness.</p>
+        </div>
+      </div>
+      <div class="chart-inset reveal in" aria-label="Survey chart inset">
+        <svg class="contours" viewBox="0 0 400 460" preserveAspectRatio="none" aria-hidden="true">
+          <path class="contour-line" d="M-20,90 C90,60 180,130 420,80" fill="none" stroke="#22303C" stroke-width="1" stroke-dasharray="6 5" opacity=".45"/>
+          <path class="contour-line" d="M-20,400 C120,360 260,430 420,370" fill="none" stroke="#22303C" stroke-width="1" stroke-dasharray="6 5" opacity=".45"/>
+          <path class="contour-line" d="M-20,430 C140,400 280,460 420,410" fill="none" stroke="#23726A" stroke-width="1" stroke-dasharray="4 5" opacity=".5"/>
+        </svg>
+        <div class="chart-title"><span>Fig. 1 · Registered specimen</span><span>Scale 1:1</span></div>
+        <figure class="specimen-frame">
+          <img src="./specimen.webp" alt="Archival survey photograph of a herring gull in side profile" width="800" height="800">
+          <figcaption class="specimen-caption">
+            <span>Specimen 04 · Larus argentatus</span>
+            <span class="listed">Status: listed</span>
+          </figcaption>
+        </figure>
+        <svg class="compass" viewBox="0 0 80 80" aria-hidden="true">
+          <circle cx="40" cy="40" r="36" fill="none" stroke="#22303C" stroke-width="1.5"/>
+          <circle cx="40" cy="40" r="28" fill="none" stroke="#22303C" stroke-width=".75" opacity=".5"/>
+          <g class="needle">
+            <polygon points="40,10 45,40 40,70 35,40" fill="#C8322B"/>
+            <polygon points="40,10 45,40 40,40 35,40" fill="#16222B"/>
+          </g>
+          <circle cx="40" cy="40" r="3.5" fill="#F8F4E9" stroke="#16222B" stroke-width="1.5"/>
+        </svg>
+        <span class="coord-tag coord-1"><span class="buoy" aria-hidden="true"></span>36°57'N · SLIP 14</span>
+        <span class="coord-tag coord-2"><span class="buoy" aria-hidden="true"></span>DUMPSTER B · ACTIVE</span>
+      </div>
+    </section>
+  </div>
+
+  <section class="soundings" aria-label="Survey figures">
+    <div class="sounding reveal"><div class="num">48,112</div><div class="lbl">Paired gulls</div></div>
+    <div class="sounding reveal"><div class="num teal">1.2M</div><div class="lbl">Attested thefts</div></div>
+    <div class="sounding reveal"><div class="num">3.4</div><div class="lbl">Tides, mean time to match</div></div>
+    <div class="sounding reveal"><div class="num">0</div><div class="lbl">Refunds issued</div></div>
+  </section>
+
+  <div class="notice" id="instrumentation">
+    <div class="wrap"><span><span class="sec-no">Section II</span> · The instrumentation</span><span>Unclass · For gull use only</span></div>
+  </div>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2>Courtship is a <span class="red">survey problem.</span></h2>
+      <p>Other platforms ask a gull to describe itself. Keel measures it, files it, and publishes the result to every eligible bird within one nautical mile.</p>
+    </div>
+    <div class="plates">
+      <article class="plate reveal">
+        <div class="plate-tag"><span>Plate A</span><span>Ref. 88-04-A</span></div>
+        <h3>Territory Attestation</h3>
+        <p>Every profile is pinned to one verified perch. We cross-reference municipal boardwalk records and tide schedules so nobody claims a dumpster they can't hold.</p>
+        <p class="fineline">False perch claims are referred to the crows.</p>
+      </article>
+      <article class="plate reveal">
+        <div class="plate-tag"><span>Plate B</span><span>Ref. 88-04-B</span></div>
+        <h3>Long-Call Spectral Match</h3>
+        <p>Upload eight seconds of screaming. A 40-band acoustic model finds the gull whose scream completes yours.</p>
+        <p class="fineline">Volume is not a personality. It is, however, scored.</p>
+      </article>
+      <article class="plate reveal">
+        <div class="plate-tag"><span>Plate C</span><span>Ref. 88-04-C</span></div>
+        <h3>Provenance-Grade Theft Ledger</h3>
+        <p>Self-reported fry seizures don't count here. Every sandwich acquisition is timestamped and attested by two unrelated witness gulls.</p>
+        <p class="fineline">Witnesses must not share a nest with the claimant.</p>
+      </article>
+    </div>
+  </div>
+
+  <div class="notice" id="logs">
+    <div class="wrap"><span><span class="sec-no">Section III</span> · Mariner logs</span><span>Entries reproduced as filed</span></div>
+  </div>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2>Filed by <span class="red">paired parties.</span></h2>
+    </div>
+    <div class="logs">
+      <article class="log reveal">
+        <div class="log-head">
+          <span class="log-avatar" aria-hidden="true">G</span>
+          <div class="log-id">
+            <div class="nm">Gary</div>
+            <div class="ttl">Senior Boardwalk Presence, Santa Cruz Wharf, Slip 14</div>
+          </div>
+        </div>
+        <q>I held the north railing of Pier 39 alone for six years. Keel matched me with a female whose long-call peaks at 104 decibels. We have four eggs.</q>
+        <p class="log-no">Log 0611 · Verified pairing</p>
+      </article>
+      <article class="log reveal">
+        <div class="log-head">
+          <span class="log-avatar" aria-hidden="true">D</span>
+          <div class="log-id">
+            <div class="nm">Deborah</div>
+            <div class="ttl">Landfill Route Optimization Lead, Route 6, Tuesdays</div>
+          </div>
+        </div>
+        <q>The theft ledger changed how I vet providers. Talk is cheap. Attested sandwich acquisitions are not.</q>
+        <p class="log-no">Log 0798 · Verified pairing</p>
+      </article>
+      <article class="log reveal">
+        <div class="log-head">
+          <span class="log-avatar" aria-hidden="true">K</span>
+          <div class="log-id">
+            <div class="nm">Kevin</div>
+            <div class="ttl">Three-Time Regional Finalist, Unattended Fry Division</div>
+          </div>
+        </div>
+        <q>We matched at the start of chip season. Everyone said it wouldn't hold. We closed on a chimney in March.</q>
+        <p class="log-no">Log 0841 · Verified pairing</p>
+      </article>
+    </div>
+  </div>
+
+  <div class="notice" id="tariffs">
+    <div class="wrap"><span><span class="sec-no">Section IV</span> · Schedule of tariffs</span><span>Prices in USD · Fish not accepted</span></div>
+  </div>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <h2>Priced by <span class="red">appetite.</span></h2>
+    </div>
+    <div class="tariffs">
+      <article class="tariff reveal">
+        <div class="tname">Fledgling</div>
+        <div class="tprice">$0</div>
+        <p class="ttag">For gulls still eating what they're given.</p>
+        <ul>
+          <li>Three swipes per tide cycle</li>
+          <li>One unverified perch</li>
+          <li>Standard screech quality (64 kbps)</li>
+        </ul>
+        <a class="enroll" href="#">Enroll</a>
+      </article>
+      <article class="tariff claimed reveal">
+        <span class="claim-flag">Most claimed</span>
+        <div class="tname">Kleptoparasite</div>
+        <div class="tprice">$34<small>/mo</small></div>
+        <p class="ttag">You take what you want. Take this too.</p>
+        <ul>
+          <li>Unlimited swipes</li>
+          <li>Theft ledger verification</li>
+          <li>Priority placement during chip season</li>
+          <li>See who screeched at you</li>
+        </ul>
+        <a class="enroll" href="#">Enroll</a>
+      </article>
+      <article class="tariff reveal">
+        <div class="tname">Harbor Authority</div>
+        <div class="tprice">$220<small>/mo</small></div>
+        <p class="ttag">Total pier awareness.</p>
+        <ul>
+          <li>Dedicated territory analyst</li>
+          <li>Incognito circling</li>
+          <li>Quarterly landfill route briefings</li>
+          <li>Dispute mediation, crows included</li>
+        </ul>
+        <a class="enroll" href="#">Enroll</a>
+      </article>
+    </div>
+  </div>
+
+  <section class="demo-band">
+    <div class="wrap">
+      <div class="reveal">
+        <h2>Inspect the <span class="red">instrument.</span></h2>
+        <p class="demo-note">One screen of the product, populated with gulls currently listed on the registry.</p>
+      </div>
+      <a class="stamp-cta reveal" href="./demo.html">Open the demo →</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span><a href="/">← theworstaistudioever</a></span>
+    <span>Keel is not affiliated with Tinder, any port authority, or any individual gull. Chart not for navigation.</span>
+  </div>
+</footer>
+
+<script>
+  const reveals = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('in'), (i % 4) * 40);
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    reveals.forEach(el => io.observe(el));
+  } else {
+    reveals.forEach(el => el.classList.add('in'));
+  }
+</script>
+</body>
+</html>
