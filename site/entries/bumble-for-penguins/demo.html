@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rookery — first-move inbox · theworstaistudioever</title>
+<meta name="description" content="The Rookery first-move inbox. 40,000 visually identical males, sorted by metadata.">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@800;900&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Spline+Sans+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --yolk:#FFC116;
+  --ice:#1C7FA6;
+  --bg:#F5F9FB;
+  --fg:#15242E;
+  --muted:#6E8291;
+  --ink:#0C1A24;
+  --card:#FFFFFF;
+  --display:'Nunito','Avenir Next','Segoe UI',system-ui,sans-serif;
+  --body:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'Spline Sans Mono',ui-monospace,'SF Mono',Menlo,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+img{display:block;max-width:100%}
+button{font-family:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible{outline:3px solid var(--ice);outline-offset:2px;border-radius:6px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* top chrome */
+.topbar{
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  padding:14px 20px;background:var(--card);border-bottom:2px solid var(--ink);
+  position:sticky;top:0;z-index:50;
+}
+.back-link{font-size:.85rem;font-weight:500;text-decoration:none}
+.back-link:hover{text-decoration:underline}
+.topbar-brand{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--display);font-weight:900;font-size:1.05rem;color:var(--ink);
+  background:var(--yolk);border:2px solid var(--ink);border-radius:10px;
+  padding:4px 12px;box-shadow:3px 3px 0 var(--ink);
+}
+.topbar-title{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.escrow-chip{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:.72rem;font-weight:700;color:var(--ink);
+  background:var(--card);border:2px solid var(--ink);border-radius:999px;padding:6px 14px;
+}
+.escrow-chip .dot{width:8px;height:8px;border-radius:50%;background:var(--ice);border:1.5px solid var(--ink)}
+@media(max-width:700px){.topbar-title{display:none}}
+
+/* layout */
+.app{display:grid;grid-template-columns:1fr 300px;gap:24px;max-width:1200px;margin:0 auto;padding:24px 20px 64px}
+@media(max-width:960px){.app{grid-template-columns:1fr}}
+
+/* filters */
+.filters{
+  grid-column:1/-1;display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+  background:var(--card);border:2px solid var(--ink);border-radius:14px;
+  box-shadow:4px 4px 0 var(--ink);padding:14px 18px;
+}
+.filters .label{font-family:var(--mono);font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-right:2px}
+.chip{
+  font-family:var(--mono);font-size:.72rem;font-weight:700;letter-spacing:.04em;
+  background:var(--bg);border:2px solid var(--ink);border-radius:999px;
+  padding:6px 14px;color:var(--ink);transition:background .15s ease;
+}
+.chip:hover{background:#EAF2F6}
+.chip[aria-pressed="true"]{background:var(--yolk)}
+.filters .divider{width:2px;height:22px;background:var(--ink);opacity:.15;margin:0 6px}
+.result-count{margin-left:auto;font-family:var(--mono);font-size:.72rem;font-weight:700;color:var(--muted)}
+
+/* match grid */
+.queue{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;align-content:start}
+.match-card{
+  background:var(--card);border:2px solid var(--ink);border-radius:16px;
+  box-shadow:5px 5px 0 var(--ink);overflow:hidden;
+  display:flex;flex-direction:column;
+  transition:transform .15s ease,box-shadow .15s ease,opacity .3s ease;
+}
+.match-card:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--ink)}
+.match-photo{position:relative;border-bottom:2px solid var(--ink)}
+.match-photo img{width:100%;aspect-ratio:1;object-fit:cover}
+.timer-pill{
+  position:absolute;top:10px;right:10px;
+  font-family:var(--mono);font-size:.72rem;font-weight:700;
+  background:var(--card);border:2px solid var(--ink);border-radius:999px;padding:4px 10px;color:var(--ink);
+}
+.timer-pill.low{background:var(--yolk)}
+.identical-tag{
+  position:absolute;bottom:10px;left:10px;
+  font-family:var(--mono);font-size:.6rem;font-weight:700;letter-spacing:.1em;
+  background:var(--card);border:2px solid var(--ink);border-radius:6px;padding:3px 8px;color:var(--muted);
+}
+.match-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:10px;flex:1}
+.match-name{font-family:var(--display);font-weight:900;font-size:1.15rem;color:var(--ink)}
+.match-id{font-family:var(--mono);font-size:.65rem;color:var(--muted);letter-spacing:.06em}
+.meta-rows{display:flex;flex-direction:column;gap:5px;font-size:.8rem}
+.meta-row{display:flex;justify-content:space-between;gap:8px}
+.meta-row .k{color:var(--muted)}
+.meta-row .v{font-family:var(--mono);font-weight:700;color:var(--ink)}
+.meta-row .v.grade-a{color:var(--ice)}
+.meta-row .v.grade-gravel{color:#B3421B}
+.first-move-btn{
+  margin-top:auto;font-family:var(--display);font-weight:900;font-size:.95rem;
+  background:var(--yolk);border:2px solid var(--ink);border-radius:12px;
+  box-shadow:3px 3px 0 var(--ink);padding:10px 14px;color:var(--ink);
+  transition:transform .15s ease,box-shadow .15s ease;
+}
+.first-move-btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.first-move-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.match-card.sent .first-move-btn{background:var(--ice);color:#fff;pointer-events:none}
+.match-card.expired{opacity:.55}
+.match-card.expired .first-move-btn{background:var(--bg);color:var(--muted);pointer-events:none;box-shadow:none}
+.match-card.expired .match-photo img{filter:grayscale(1)}
+
+/* sidebar */
+.sidebar{display:flex;flex-direction:column;gap:20px}
+.panel{background:var(--card);border:2px solid var(--ink);border-radius:16px;box-shadow:5px 5px 0 var(--ink);padding:18px}
+.panel h2{font-family:var(--display);font-weight:900;font-size:1rem;color:var(--ink);margin-bottom:12px}
+.balance-big{font-family:var(--mono);font-weight:700;font-size:2rem;color:var(--ink);line-height:1}
+.balance-sub{font-size:.72rem;color:var(--muted);margin-top:4px;margin-bottom:14px}
+.balance-rows{display:flex;flex-direction:column;gap:8px;font-size:.8rem}
+.balance-row{display:flex;justify-content:space-between;border-top:1.5px dashed #CBD8DF;padding-top:8px}
+.balance-row .k{color:var(--muted)}
+.balance-row .v{font-family:var(--mono);font-weight:700}
+.balance-row .v.blue{color:var(--ice)}
+.balance-row .v.warn{color:#B3421B}
+.feed{display:flex;flex-direction:column;gap:12px}
+.feed-item{display:flex;gap:10px;font-size:.76rem;line-height:1.45}
+.feed-item .dot{width:8px;height:8px;border-radius:50%;background:var(--ice);border:1.5px solid var(--ink);flex:none;margin-top:4px}
+.feed-item .t{font-family:var(--mono);font-size:.62rem;color:var(--muted);display:block}
+@media(prefers-reduced-motion:no-preference){
+  .feed-item:first-child .dot{animation:pulse 3s infinite}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.4)}}
+}
+
+/* opener drawer */
+.drawer-backdrop{
+  position:fixed;inset:0;background:rgba(12,26,36,.55);z-index:90;
+  opacity:0;pointer-events:none;transition:opacity .2s ease;
+}
+.drawer-backdrop.open{opacity:1;pointer-events:auto}
+.drawer{
+  position:fixed;right:0;top:0;bottom:0;width:min(400px,92vw);z-index:100;
+  background:var(--bg);border-left:2px solid var(--ink);
+  transform:translateX(102%);transition:transform .25s ease;
+  display:flex;flex-direction:column;
+}
+.drawer.open{transform:none}
+@media(prefers-reduced-motion:reduce){.drawer{transition:none}.drawer-backdrop{transition:none}}
+.drawer-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:20px;border-bottom:2px solid var(--ink);background:var(--card)}
+.drawer-head h2{font-family:var(--display);font-weight:900;font-size:1.15rem;color:var(--ink)}
+.drawer-head p{font-size:.78rem;color:var(--muted);margin-top:4px}
+.drawer-close{background:var(--card);border:2px solid var(--ink);border-radius:10px;box-shadow:2px 2px 0 var(--ink);width:36px;height:36px;font-size:1.1rem;font-weight:700;color:var(--ink);flex:none}
+.drawer-body{padding:20px;display:flex;flex-direction:column;gap:14px;overflow-y:auto}
+.opener{
+  text-align:left;background:var(--card);border:2px solid var(--ink);border-radius:14px;
+  box-shadow:4px 4px 0 var(--ink);padding:16px;display:flex;flex-direction:column;gap:10px;
+  transition:transform .15s ease,box-shadow .15s ease;
+}
+.opener:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+.opener-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.opener-name{font-family:var(--display);font-weight:900;font-size:.95rem;color:var(--ink)}
+.notary-tag{
+  display:inline-flex;align-items:center;gap:5px;
+  font-family:var(--mono);font-size:.58rem;font-weight:700;letter-spacing:.1em;
+  background:var(--ice);color:#fff;border:1.5px solid var(--ink);border-radius:999px;padding:3px 8px;
+}
+.opener-desc{font-size:.78rem;color:var(--muted)}
+.waveform{display:flex;align-items:flex-end;gap:2px;height:30px}
+.waveform span{flex:1;background:var(--ink);border-radius:2px;min-height:3px;opacity:.85}
+.drawer-note{font-size:.7rem;color:var(--muted);font-style:italic}
+
+/* toast */
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translate(-50%,120%);z-index:120;
+  background:var(--ink);color:var(--bg);border:2px solid var(--ink);border-radius:12px;
+  box-shadow:5px 5px 0 rgba(12,26,36,.3);padding:12px 20px;
+  font-family:var(--mono);font-size:.75rem;font-weight:700;letter-spacing:.04em;
+  transition:transform .25s ease;max-width:92vw;text-align:center;
+}
+.toast.show{transform:translate(-50%,0)}
+@media(prefers-reduced-motion:reduce){.toast{transition:none}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back-link" href="./index.html">← back to the pitch</a>
+  <span class="topbar-brand">
+    <svg width="16" height="19" viewBox="0 0 22 26" aria-hidden="true"><ellipse cx="11" cy="13" rx="9.5" ry="12" fill="#0C1A24"/><ellipse cx="11" cy="16" rx="5.5" ry="8" fill="#fff"/><circle cx="8" cy="8" r="1.3" fill="#fff"/><circle cx="14" cy="8" r="1.3" fill="#fff"/><path d="M10 10.5h2l-1 2z" fill="#FFC116"/></svg>
+    Rookery
+  </span>
+  <span class="topbar-title">First-move inbox · Colony 4 North</span>
+  <div class="topbar-right">
+    <span class="escrow-chip"><span class="dot" aria-hidden="true"></span>ESCROW: 12 PEBBLES</span>
+  </div>
+</div>
+
+<div class="app">
+
+  <!-- filters -->
+  <div class="filters" role="group" aria-label="Match filters">
+    <span class="label">Distance</span>
+    <button class="chip" data-filter="dist" data-value="all" aria-pressed="true">ALL FLOES</button>
+    <button class="chip" data-filter="dist" data-value="near" aria-pressed="false">&le; 3 FLOES</button>
+    <span class="divider" aria-hidden="true"></span>
+    <span class="label">Pebble grade</span>
+    <button class="chip" data-filter="grade" data-value="all" aria-pressed="true">ALL</button>
+    <button class="chip" data-filter="grade" data-value="a" aria-pressed="false">CERTIFIED ONLY</button>
+    <button class="chip" data-filter="grade" data-value="gravel" aria-pressed="false">GRAVEL RISK</button>
+    <span class="divider" aria-hidden="true"></span>
+    <button class="chip" data-filter="molt" data-value="hide" aria-pressed="false">HIDE MOLTING</button>
+    <span class="result-count" id="result-count"></span>
+  </div>
+
+  <!-- queue -->
+  <main class="queue" id="queue" aria-label="Matched males"></main>
+
+  <!-- sidebar -->
+  <aside class="sidebar">
+    <div class="panel">
+      <h2>Pebble escrow</h2>
+      <div class="balance-big">12</div>
+      <div class="balance-sub">pebbles under management</div>
+      <div class="balance-rows">
+        <div class="balance-row"><span class="k">Certified</span><span class="v blue">9</span></div>
+        <div class="balance-row"><span class="k">Pending appraisal</span><span class="v">2</span></div>
+        <div class="balance-row"><span class="k">Flagged as gravel</span><span class="v warn">1</span></div>
+        <div class="balance-row"><span class="k">Skua custody fee</span><span class="v">0.5/mo</span></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Skua arbitration feed</h2>
+      <div class="feed">
+        <div class="feed-item"><span class="dot" aria-hidden="true"></span><span><span class="t">08:41 UTC</span>Case #4417 opened. Disputed pebble reclassified as gravel on appeal.</span></div>
+        <div class="feed-item"><span class="dot" style="background:#CBD8DF" aria-hidden="true"></span><span><span class="t">07:58 UTC</span>Arbiter ate the evidence. Case #4402 closed by default.</span></div>
+        <div class="feed-item"><span class="dot" style="background:#CBD8DF" aria-hidden="true"></span><span><span class="t">07:12 UTC</span>Escrow release approved for nest B-118. Both parties waddled.</span></div>
+        <div class="feed-item"><span class="dot" style="background:#CBD8DF" aria-hidden="true"></span><span><span class="t">06:44 UTC</span>Reminder: appraisal is by volume, not sentiment.</span></div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- opener drawer -->
+<div class="drawer-backdrop" id="backdrop"></div>
+<div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+  <div class="drawer-head">
+    <div>
+      <h2 id="drawer-title">Approved openers</h2>
+      <p id="drawer-sub">Select a notarized contact call. It cannot be unsent.</p>
+    </div>
+    <button class="drawer-close" id="drawer-close" aria-label="Close opener drawer">×</button>
+  </div>
+  <div class="drawer-body">
+    <button class="opener" data-opener="Standard Greeting Call">
+      <span class="opener-top"><span class="opener-name">Standard Greeting Call</span><span class="notary-tag">NOTARIZED</span></span>
+      <span class="waveform" aria-hidden="true"><span style="height:20%"></span><span style="height:55%"></span><span style="height:80%"></span><span style="height:45%"></span><span style="height:90%"></span><span style="height:35%"></span><span style="height:60%"></span><span style="height:25%"></span><span style="height:70%"></span><span style="height:40%"></span><span style="height:15%"></span></span>
+      <span class="opener-desc">Two-note descending bray. Professional. Says you are here to nest, not to play games.</span>
+    </button>
+    <button class="opener" data-opener="Assertive Locator Call">
+      <span class="opener-top"><span class="opener-name">Assertive Locator Call</span><span class="notary-tag">NOTARIZED</span></span>
+      <span class="waveform" aria-hidden="true"><span style="height:85%"></span><span style="height:90%"></span><span style="height:95%"></span><span style="height:88%"></span><span style="height:92%"></span><span style="height:85%"></span><span style="height:90%"></span><span style="height:95%"></span><span style="height:87%"></span><span style="height:93%"></span><span style="height:90%"></span></span>
+      <span class="opener-desc">Sustained full-volume locator. He will hear it. So will Colony 5.</span>
+    </button>
+    <button class="opener" data-opener="The Long Call">
+      <span class="opener-top"><span class="opener-name">The Long Call</span><span class="notary-tag">NOTARIZED</span></span>
+      <span class="waveform" aria-hidden="true"><span style="height:30%"></span><span style="height:45%"></span><span style="height:30%"></span><span style="height:50%"></span><span style="height:30%"></span><span style="height:55%"></span><span style="height:30%"></span><span style="height:60%"></span><span style="height:30%"></span><span style="height:65%"></span><span style="height:30%"></span></span>
+      <span class="opener-desc">Eleven minutes. Use sparingly. Legal has asked us to note that this one is binding in some colonies.</span>
+    </button>
+    <span class="drawer-note">All calls are played from your verified waveform on file. Improvised calls are a Terms violation.</span>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+var MALES=[
+  {id:"M-40217",name:"Dave",dist:2,grade:"A+",call:"8.4",molt:false,timer:31329},
+  {id:"M-40218",name:"Dave",dist:5,grade:"A",call:"7.9",molt:false,timer:63840},
+  {id:"M-39002",name:"Daveth",dist:1,grade:"B",call:"9.1",molt:true,timer:12602},
+  {id:"M-41118",name:"Gary",dist:3,grade:"GRAVEL RISK",call:"6.2",molt:false,timer:8},
+  {id:"M-38771",name:"Kevin",dist:7,grade:"A+",call:"5.5",molt:false,timer:47013},
+  {id:"M-40904",name:"Kevin B.",dist:2,grade:"B",call:"8.8",molt:true,timer:20518},
+  {id:"M-42230",name:"Trent",dist:11,grade:"A",call:"7.0",molt:false,timer:70255},
+  {id:"M-40219",name:"Dave",dist:4,grade:"GRAVEL RISK",call:"8.1",molt:false,timer:15904}
+];
+var state={dist:"all",grade:"all",molt:false,sent:{},expired:{}};
+
+function pad(n){return String(n).padStart(2,'0')}
+function fmt(t){return pad(Math.floor(t/3600))+':'+pad(Math.floor(t%3600/60))+':'+pad(t%60)}
+function gradeClass(g){return g==="A+"||g==="A"?"grade-a":(g.indexOf("GRAVEL")===0?"grade-gravel":"")}
+
+function visible(m){
+  if(state.dist==="near"&&m.dist>3)return false;
+  if(state.grade==="a"&&!(m.grade==="A+"||m.grade==="A"))return false;
+  if(state.grade==="gravel"&&m.grade.indexOf("GRAVEL")!==0)return false;
+  if(state.molt&&m.molt)return false;
+  return true;
+}
+
+function render(){
+  var q=document.getElementById('queue');
+  q.innerHTML='';
+  var shown=0;
+  MALES.forEach(function(m){
+    if(!visible(m))return;
+    shown++;
+    var card=document.createElement('article');
+    card.className='match-card'+(state.sent[m.id]?' sent':'')+(state.expired[m.id]?' expired':'');
+    card.dataset.id=m.id;
+    var btnLabel=state.expired[m.id]?'EXPIRED WITH THE ICE SHELF':(state.sent[m.id]?'FIRST MOVE SENT · AWAITING WADDLE':'Make the first move');
+    card.innerHTML=
+      '<div class="match-photo">'+
+        '<img src="match-male.webp" alt="Profile photo of '+m.name+', an Adelie penguin visually identical to every other match" width="600" height="600" loading="lazy">'+
+        '<span class="timer-pill'+(m.timer<600?' low':'')+'" data-timer>'+fmt(m.timer)+'</span>'+
+        '<span class="identical-tag">PHOTO VERIFIED IDENTICAL</span>'+
+      '</div>'+
+      '<div class="match-body">'+
+        '<div><span class="match-name">'+m.name+'</span><br><span class="match-id">'+m.id+' · '+(m.molt?'MOLTING':'WATERPROOF')+'</span></div>'+
+        '<div class="meta-rows">'+
+          '<div class="meta-row"><span class="k">Distance</span><span class="v">'+m.dist+' floe'+(m.dist===1?'':'s')+'</span></div>'+
+          '<div class="meta-row"><span class="k">Pebble portfolio</span><span class="v '+gradeClass(m.grade)+'">'+m.grade+'</span></div>'+
+          '<div class="meta-row"><span class="k">Call quality</span><span class="v">'+m.call+'/10</span></div>'+
+        '</div>'+
+        '<button class="first-move-btn" data-move>'+btnLabel+'</button>'+
+      '</div>';
+    q.appendChild(card);
+  });
+  document.getElementById('result-count').textContent=shown+' OF 40,000 SHOWN';
+}
+
+/* filters */
+document.querySelectorAll('.chip').forEach(function(chip){
+  chip.addEventListener('click',function(){
+    var f=chip.dataset.filter,v=chip.dataset.value;
+    if(f==='molt'){
+      state.molt=!state.molt;
+      chip.setAttribute('aria-pressed',String(state.molt));
+    }else{
+      state[f]=v;
+      document.querySelectorAll('.chip[data-filter="'+f+'"]').forEach(function(c){
+        c.setAttribute('aria-pressed',String(c===chip));
+      });
+    }
+    render();
+  });
+});
+
+/* timers */
+setInterval(function(){
+  MALES.forEach(function(m){
+    if(state.expired[m.id])return;
+    m.timer=Math.max(0,m.timer-1);
+    if(m.timer===0&&!state.expired[m.id]){
+      state.expired[m.id]=true;
+      delete state.sent[m.id];
+      render();
+      toast('MATCH '+m.id+' EXPIRED. THE WINDOW WAS THE POINT.');
+      return;
+    }
+  });
+  document.querySelectorAll('.match-card').forEach(function(card){
+    var m=MALES.find(function(x){return x.id===card.dataset.id});
+    if(!m)return;
+    var pill=card.querySelector('[data-timer]');
+    if(pill){
+      pill.textContent=fmt(m.timer);
+      if(m.timer<600)pill.classList.add('low');
+    }
+  });
+},1000);
+
+/* drawer */
+var drawer=document.getElementById('drawer'),
+    backdrop=document.getElementById('backdrop'),
+    activeMatch=null,lastFocus=null;
+function openDrawer(id){
+  activeMatch=id;
+  var m=MALES.find(function(x){return x.id===id});
+  document.getElementById('drawer-sub').textContent='Select a notarized contact call for '+m.name+' ('+id+'). It cannot be unsent.';
+  drawer.classList.add('open');backdrop.classList.add('open');
+  lastFocus=document.activeElement;
+  document.getElementById('drawer-close').focus();
+}
+function closeDrawer(){
+  drawer.classList.remove('open');backdrop.classList.remove('open');
+  activeMatch=null;
+  if(lastFocus)lastFocus.focus();
+}
+document.getElementById('queue').addEventListener('click',function(e){
+  var btn=e.target.closest('[data-move]');
+  if(!btn)return;
+  var card=btn.closest('.match-card');
+  if(card.classList.contains('sent')||card.classList.contains('expired'))return;
+  openDrawer(card.dataset.id);
+});
+document.getElementById('drawer-close').addEventListener('click',closeDrawer);
+backdrop.addEventListener('click',closeDrawer);
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeDrawer()});
+document.querySelectorAll('.opener').forEach(function(op){
+  op.addEventListener('click',function(){
+    if(!activeMatch)return;
+    state.sent[activeMatch]=true;
+    var name=op.dataset.opener;
+    closeDrawer();
+    render();
+    toast('FIRST MOVE SENT: '+name.toUpperCase()+'. HE HAS 24 HOURS TO WADDLE.');
+  });
+});
+
+/* toast */
+var toastTimer=null;
+function toast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){t.classList.remove('show')},4000);
+}
+
+render();
+</script>
+</body>
+</html>
