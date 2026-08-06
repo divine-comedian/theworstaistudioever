@@ -1,0 +1,81 @@
+[2026-08-06T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-08-06T08:00:02Z] invoking claude -p
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/github/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/github/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.openclaw/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.openclaw/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.claude/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.claude/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/aurevon-status/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/aurevon-status/**) instead (Edit rules cover all file-editing tools).
+
+=== agent run summary 2026-08-06 ===
+
+ROLL
+  company: Hinge
+  subject: divorced dads
+  slug:    hinge-for-divorced-dads
+  tagline: Hinge for divorced dads
+  rerolls: 0 (first draw was fresh)
+
+CONCEPT
+  product: Threshold.
+  one-liner: relationship platform for men re-entering the market with a
+  60/40 custody split and a brand-new mattress. Hero riffs Hinge's
+  "designed to be deleted" slogan: "Designed to be deleted. Again."
+
+DESIGN DIRECTION
+  style:   heritage workwear catalog / lodge membership handbook, cream
+           daylight mode; embroidered merit-patch motif (stitch-dashed
+           borders), catalog dept labels, inspection-form mono wells
+  palette: bg #F7F2E7, primary #2F5D42 (forest), accent #C1502E (ember
+           rust), fg #3A2E23, muted #8A7963, ink #241B12
+  fonts:   Besley (Clarendon slab display) + Work Sans (body) +
+           Courier Prime (telemetry)
+  anti-sameness: checked last 7 (sticker-sheet poster, nautical chart,
+  game storefront, wine-label didone, mil-spec console, super-app
+  marketplace, claymorphic pharma). No collision on style, fonts, or
+  palette. ui-ux-pro-max's default suggestion (rose/pink Fredoka
+  "vibrant block" dating look) was rejected as off-bit.
+
+IMAGES (4/10 daily cap used)
+  rationale: photo-shaped demo (dating card stack) took the budget:
+  2 demo card portraits + 2 testimonial headshots; hero skipped because
+  the direction calls for a typographic crest hero.
+  - card-rick.webp     (demo, 720x960, 63KB)  attempt 1, PASS: deadpan man
+    with plastic-wrapped floor lamp among moving boxes; palette fits;
+    no text artifacts
+  - card-dave.webp     (demo, 720x960, 58KB)  attempt 1, PASS: forest
+    fleece vest, air fryer held like a trophy, cream backdrop; the
+    appliance display reads as a plausible product detail, not an AI
+    text tell (near-miss, judged acceptable)
+  - headshot-greg.webp (testimonial, 320x320, 10KB) attempt 1, PASS
+  - headshot-marcus.webp (testimonial, 320x320, 14KB) attempt 1, PASS
+  warnings: Gemini returned HTTP 503 (high demand) on the first two calls;
+  all four succeeded on the script's internal retry. Third testimonial
+  (Dale P.) intentionally uses the CSS initials-patch treatment.
+
+BUILD
+  index.html: catalog landing (crest hero, telemetry wells, Dept. 02-05
+  sections, stitched-patch features, field-notes testimonials with 2
+  photo headshots + 1 initials fallback, membership pricing, demo CTA).
+  demo.html: "This weekend's market" swipeable card stack, 5 dads
+  (2 photo cards, 3 CSS-avatar cards), drag/buttons/arrow-key input,
+  free-weekend overlap meters, doing-great streak counter, restock
+  empty state. All inline CSS/JS, no frameworks.
+
+GALLERY
+  site/index.html regenerated from all 74 concept.json files; diff vs
+  previous was exactly +new slide, count 73->74, dot rail 73->74 dots.
+  Root metadata contract, brand lockup, and nav script preserved.
+
+VALIDATION
+  validate-entry.sh: first run FAILED (validator's img-src grep matched a
+  JS string concatenation in demo.html); switched the card photo to DOM
+  createElement. Second run: OK.
+
+RECORD
+  state/history.json appended (74 entries, JSON valid).
+[2026-08-06T08:18:11Z] WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks
+[2026-08-06T08:18:11Z] new entry: hinge-for-divorced-dads
+validate-entry [hinge-for-divorced-dads]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 74 entries (domain theworstaistudioever.com)
+[2026-08-06T08:18:11Z] committing: Hinge for divorced dads

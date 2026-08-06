@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Threshold. · theworstaistudioever</title>
+<meta name="description" content="A relationship platform for men re-entering the market with a 60/40 custody split and a brand-new mattress.">
+<meta property="og:title" content="Threshold. Designed to be deleted. Again.">
+<meta property="og:description" content="A relationship platform for men re-entering the market with a 60/40 custody split and a brand-new mattress.">
+<meta property="og:type" content="website">
+<link href="https://fonts.googleapis.com/css2?family=Besley:ital,wght@0,700;0,800;0,900;1,700&family=Work+Sans:wght@400;500;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#2F5D42;
+  --accent:#C1502E;
+  --bg:#F7F2E7;
+  --fg:#3A2E23;
+  --muted:#8A7963;
+  --ink:#241B12;
+  --panel:#FDFAF2;
+  --thread:#C9B893;
+  --well:#F1EAD9;
+  --display:'Besley','Clarendon',Georgia,serif;
+  --body:'Work Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'Courier Prime','Courier New',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+.dept{font-family:var(--body);font-weight:600;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);}
+.stitch-rule{border:none;border-top:1px dashed var(--thread);margin:0;}
+h1,h2,h3{font-family:var(--display);color:var(--ink);line-height:1.12;}
+a{color:var(--primary);}
+.hl{color:var(--accent);}
+
+/* header */
+.topbar{border-bottom:2px solid var(--ink);background:var(--bg);position:sticky;top:0;z-index:50;}
+.topbar .wrap{display:flex;align-items:center;justify-content:space-between;padding-top:14px;padding-bottom:14px;}
+.wordmark{font-family:var(--display);font-weight:900;font-size:22px;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:10px;}
+.wordmark svg{display:block;}
+.topnav{display:flex;gap:22px;align-items:center;}
+.topnav a{font-weight:600;font-size:14px;text-decoration:none;color:var(--fg);}
+.topnav a:hover{color:var(--accent);}
+.topnav .btn-small{border:2px solid var(--ink);padding:8px 16px;background:var(--primary);color:#fff;border-radius:6px;}
+.topnav .btn-small:hover{background:var(--accent);color:#fff;}
+@media(max-width:720px){.topnav a:not(.btn-small){display:none;}}
+
+/* hero */
+.hero{padding:84px 0 64px;border-bottom:1px dashed var(--thread);}
+.hero .wrap{display:grid;grid-template-columns:1.5fr 1fr;gap:48px;align-items:center;}
+@media(max-width:860px){.hero .wrap{grid-template-columns:1fr;}}
+.hero h1{font-size:clamp(40px,6.2vw,72px);font-weight:900;margin:18px 0 22px;}
+.hero .sub{font-size:19px;max-width:52ch;color:var(--fg);}
+.cta-row{display:flex;gap:16px;margin-top:34px;flex-wrap:wrap;align-items:center;}
+.btn{display:inline-block;font-family:var(--body);font-weight:600;font-size:16px;text-decoration:none;border:2px solid var(--ink);border-radius:6px;padding:14px 28px;cursor:pointer;transition:transform .15s ease,background .15s ease;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-primary:hover{background:#25482F;}
+.btn:active{transform:translateY(1px);}
+.btn-ghost{background:var(--panel);color:var(--ink);}
+.btn-ghost:hover{background:var(--well);}
+.crest-col{display:flex;justify-content:center;}
+.crest{position:relative;width:270px;height:330px;transition:transform .2s ease;}
+.crest:hover{transform:rotate(2deg);}
+.crest .oval{width:100%;height:100%;border:3px solid var(--ink);border-radius:50%;background:var(--primary);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;position:relative;}
+.crest .oval::after{content:"";position:absolute;inset:9px;border:2px dashed var(--thread);border-radius:50%;pointer-events:none;}
+.crest .oval svg{display:block;}
+.crest .crest-word{font-family:var(--display);font-weight:800;font-size:20px;color:#F3EBD9;letter-spacing:.04em;}
+.crest .crest-sub{font-family:var(--mono);font-size:11px;color:#CBBF9F;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:0 30px;}
+@media(max-width:860px){.crest{width:220px;height:270px;}}
+
+/* telemetry strip */
+.telemetry{padding:34px 0;border-bottom:1px dashed var(--thread);}
+.telemetry .wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+@media(max-width:720px){.telemetry .wrap{grid-template-columns:1fr;}}
+.well{background:var(--well);border:1px solid var(--thread);border-radius:6px;padding:18px 20px;}
+.well .num{font-family:var(--mono);font-weight:700;font-size:26px;color:var(--ink);font-variant-numeric:tabular-nums;}
+.well .lbl{font-size:13px;color:var(--muted);margin-top:4px;}
+.well .num .live{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--accent);margin-left:8px;animation:pulse 4s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+
+/* sections */
+section{padding:76px 0;}
+.sec-head{margin-bottom:44px;}
+.sec-head h2{font-size:clamp(30px,4vw,44px);font-weight:800;margin-top:12px;}
+.sec-head .rule2{width:76px;border-top:3px double var(--ink);margin-top:16px;}
+
+/* features */
+.features{border-bottom:1px dashed var(--thread);}
+.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+@media(max-width:860px){.feature-grid{grid-template-columns:1fr;}}
+.card{background:var(--panel);border:2px solid var(--ink);border-radius:6px;padding:28px 26px;position:relative;transition:transform .2s ease;}
+.card:hover{transform:translateY(-2px);}
+.card .dept{display:block;margin-bottom:14px;}
+.card h3{font-size:22px;font-weight:800;margin-bottom:12px;}
+.card p{font-size:15.5px;color:var(--fg);}
+.patch{display:inline-flex;align-items:center;justify-content:center;width:54px;height:54px;border:2px solid var(--ink);border-radius:50%;background:var(--primary);position:relative;margin-bottom:16px;transition:transform .2s ease;}
+.patch::after{content:"";position:absolute;inset:4px;border:1px dashed #E8DDBF;border-radius:50%;}
+.patch svg{display:block;}
+.card:hover .patch{transform:rotate(2deg);}
+
+/* testimonials */
+.testimonials{border-bottom:1px dashed var(--thread);}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+@media(max-width:860px){.testi-grid{grid-template-columns:1fr;}}
+.note{background:var(--panel);border:1px solid var(--thread);border-radius:6px;padding:26px 24px;display:flex;flex-direction:column;gap:18px;}
+.note blockquote{font-family:var(--display);font-weight:700;font-style:italic;font-size:17.5px;color:var(--ink);line-height:1.45;}
+.note .person{display:flex;align-items:center;gap:14px;border-top:1px dashed var(--thread);padding-top:16px;}
+.note .face{width:56px;height:56px;border-radius:50%;border:2px solid var(--ink);overflow:hidden;flex-shrink:0;position:relative;background:var(--primary);}
+.note .face img{width:100%;height:100%;object-fit:cover;display:block;}
+.note .face.initials{display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:800;font-size:18px;color:#F3EBD9;}
+.note .face.initials::after{content:"";position:absolute;inset:3px;border:1px dashed #E8DDBF;border-radius:50%;}
+.note .who .nm{font-weight:600;font-size:15px;color:var(--ink);}
+.note .who .ttl{font-size:12.5px;color:var(--muted);line-height:1.4;}
+
+/* pricing */
+.pricing{border-bottom:1px dashed var(--thread);}
+.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;align-items:stretch;}
+@media(max-width:860px){.price-grid{grid-template-columns:1fr;}}
+.tier{background:var(--panel);border:2px solid var(--ink);border-radius:6px;padding:30px 26px;display:flex;flex-direction:column;transition:transform .2s ease;}
+.tier:hover{transform:translateY(-2px);}
+.tier.featured{background:var(--primary);color:#EFE7D3;}
+.tier.featured h3,.tier.featured .price{color:#FDFAF2;}
+.tier.featured .tier-tag{color:#CBBF9F;}
+.tier.featured li{border-color:#48705A;color:#EFE7D3;}
+.tier h3{font-size:24px;font-weight:800;}
+.tier .price{font-family:var(--mono);font-weight:700;font-size:34px;color:var(--ink);margin:12px 0 4px;font-variant-numeric:tabular-nums;}
+.tier .tier-tag{font-size:14px;color:var(--muted);margin-bottom:18px;}
+.tier ul{list-style:none;margin-top:auto;}
+.tier li{font-size:14.5px;padding:10px 0;border-top:1px dashed var(--thread);display:flex;gap:10px;align-items:flex-start;}
+.tier li::before{content:"";flex-shrink:0;width:10px;height:10px;margin-top:6px;border-radius:50%;background:var(--accent);border:1px solid var(--ink);}
+.tier.featured li::before{background:#FFC98F;}
+.tier .btn{margin-top:22px;text-align:center;}
+.tier.featured .btn{background:var(--bg);color:var(--ink);}
+.ribbon{align-self:flex-start;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;background:var(--accent);color:#fff;border:1px solid var(--ink);border-radius:4px;padding:4px 10px;margin-bottom:14px;}
+
+/* demo cta */
+.demo-cta{text-align:center;}
+.demo-cta h2{font-size:clamp(28px,4vw,42px);font-weight:800;margin-bottom:14px;}
+.demo-cta p{max-width:56ch;margin:0 auto 30px;color:var(--fg);}
+.demo-cta .btn-primary{font-size:18px;padding:16px 36px;}
+
+/* footer */
+footer{border-top:2px solid var(--ink);padding:34px 0;background:var(--bg);}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;}
+footer .fine{font-family:var(--mono);font-size:12px;color:var(--muted);}
+footer a{font-weight:600;font-size:14px;text-decoration:none;}
+footer a:hover{color:var(--accent);}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(6px);transition:opacity .5s ease,transform .5s ease;}
+.reveal.in{opacity:1;transform:none;}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+  *,*::before,*::after{animation:none!important;transition:none!important;}
+  .reveal{opacity:1;transform:none;}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="wordmark" href="#">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="2" y="2" width="22" height="22" rx="3" fill="#2F5D42" stroke="#241B12" stroke-width="2"/><rect x="8" y="6" width="10" height="14" rx="1" fill="#F7F2E7"/><circle cx="15.5" cy="13" r="1.3" fill="#241B12"/></svg>
+      Threshold.
+    </a>
+    <nav class="topnav">
+      <a href="#provisions">Provisions</a>
+      <a href="#field-notes">Field notes</a>
+      <a href="#membership">Membership</a>
+      <a class="btn-small" href="./demo.html">Open the demo</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div class="reveal">
+        <span class="dept">Re-entry outfitters · Est. the separation</span>
+        <h1>Designed to be deleted. <span class="hl">Again.</span></h1>
+        <p class="sub">Threshold matches recently divorced men with people who understand that the first four photos are from 2019. He's in a really good place right now. Serious inquiries only.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="./demo.html">Re-enter the market</a>
+          <a class="btn btn-ghost" href="#provisions">Read the catalog</a>
+        </div>
+      </div>
+      <div class="crest-col reveal">
+        <div class="crest" aria-hidden="true">
+          <div class="oval">
+            <svg width="64" height="80" viewBox="0 0 64 80"><rect x="10" y="4" width="44" height="72" rx="3" fill="#F3EBD9" stroke="#241B12" stroke-width="3"/><rect x="4" y="14" width="8" height="12" rx="2" fill="#C1502E" stroke="#241B12" stroke-width="2"/><rect x="4" y="52" width="8" height="12" rx="2" fill="#C1502E" stroke="#241B12" stroke-width="2"/><circle cx="44" cy="40" r="3.5" fill="#241B12"/></svg>
+            <div class="crest-word">Threshold.</div>
+            <div class="crest-sub">Certified re-entrant · lamp verified</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="telemetry">
+    <div class="wrap">
+      <div class="well reveal">
+        <div class="num">40,000</div>
+        <div class="lbl">men on the platform, all of whom are doing great</div>
+      </div>
+      <div class="well reveal">
+        <div class="num">1</div>
+        <div class="lbl">lamp minimum, strictly enforced at inspection</div>
+      </div>
+      <div class="well reveal">
+        <div class="num">87%<span class="live"></span></div>
+        <div class="lbl">average free-weekend overlap among current matches</div>
+      </div>
+    </div>
+  </div>
+
+  <section class="features" id="provisions">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="dept">Dept. 02 · Provisions</span>
+        <h2>Standard-issue equipment for the man starting over.</h2>
+        <div class="rule2"></div>
+      </div>
+      <div class="feature-grid">
+        <div class="card reveal">
+          <span class="patch" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 26 26"><rect x="3" y="4" width="20" height="16" rx="2" fill="#F3EBD9" stroke="#241B12" stroke-width="2"/><line x1="3" y1="9" x2="23" y2="9" stroke="#241B12" stroke-width="2"/><rect x="7" y="12" width="4" height="4" fill="#C1502E"/><rect x="15" y="12" width="4" height="4" fill="#2F5D42" stroke="#241B12" stroke-width="1"/></svg></span>
+          <span class="dept">Item no. 001</span>
+          <h3>Custody-Aware Matching</h3>
+          <p>Our scheduling engine ingests your parenting calendar and suppresses all matches on kid weekends. Dates are proposed only for Saturdays you were already going to spend at the driving range.</p>
+        </div>
+        <div class="card reveal">
+          <span class="patch" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 26 26"><path d="M13 3 L23 10 L23 22 L3 22 L3 10 Z" fill="#F3EBD9" stroke="#241B12" stroke-width="2"/><rect x="10" y="14" width="6" height="8" fill="#C1502E" stroke="#241B12" stroke-width="1.5"/></svg></span>
+          <span class="dept">Item no. 002</span>
+          <h3>Verified Apartment</h3>
+          <p>A Threshold field agent inspects your new place and certifies a minimum of one lamp, one shower curtain, and one pan that isn't nonstick-flaking. The badge is stitched onto your profile in institutional green.</p>
+        </div>
+        <div class="card reveal">
+          <span class="patch" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 26 26"><path d="M4 5 H22 V17 H14 L9 22 V17 H4 Z" fill="#F3EBD9" stroke="#241B12" stroke-width="2"/><line x1="8" y1="9.5" x2="18" y2="9.5" stroke="#241B12" stroke-width="2"/><line x1="8" y1="13" x2="15" y2="13" stroke="#C1502E" stroke-width="2"/></svg></span>
+          <span class="dept">Item no. 003</span>
+          <h3>Prompt Assist</h3>
+          <p>Machine-written answers to profile prompts, trained on 40,000 men who are doing great, actually. Mentions the gym once, the kids twice, and the divorce zero times.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="testimonials" id="field-notes">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="dept">Dept. 03 · Field notes</span>
+        <h2>Reports from men currently in a really good place.</h2>
+        <div class="rule2"></div>
+      </div>
+      <div class="testi-grid">
+        <div class="note reveal">
+          <blockquote>"I matched with someone who also owns an air fryer. We talked about the air fryers for three weeks. The app never rushed us."</blockquote>
+          <div class="person">
+            <span class="face"><img src="./headshot-greg.webp" alt="Greg T." width="56" height="56"></span>
+            <span class="who"><span class="nm">Greg T.</span><br><span class="ttl">Regional Sales Director, Owns a Kayak Now</span></span>
+          </div>
+        </div>
+        <div class="note reveal">
+          <blockquote>"Threshold recommended I wait four more months. No other app has that feature."</blockquote>
+          <div class="person">
+            <span class="face initials" aria-hidden="true">DP</span>
+            <span class="who"><span class="nm">Dale P.</span><br><span class="ttl">Little League Third-Base Coach, Recently Repainted Everything Greige</span></span>
+          </div>
+        </div>
+        <div class="note reveal">
+          <blockquote>"The apartment inspection failed me twice. The day I passed, I teared up in front of the inspector. He said that was normal."</blockquote>
+          <div class="person">
+            <span class="face"><img src="./headshot-marcus.webp" alt="Marcus B." width="56" height="56"></span>
+            <span class="who"><span class="nm">Marcus B.</span><br><span class="ttl">Fantasy Commissioner, 14th Season, Learning Bread</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pricing" id="membership">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="dept">Dept. 04 · Membership</span>
+        <h2>Priced for where you are right now.</h2>
+        <div class="rule2"></div>
+      </div>
+      <div class="price-grid">
+        <div class="tier reveal">
+          <h3>Trial Separation</h3>
+          <div class="price">$0</div>
+          <div class="tier-tag">For men who downloaded the app in a Buffalo Wild Wings parking lot.</div>
+          <ul>
+            <li>Four swipes per day</li>
+            <li>One profile photo, taken by your sister</li>
+            <li>Standard-issue prompt: "Just seeing what's out there"</li>
+          </ul>
+          <a class="btn btn-ghost" href="./demo.html">Start quietly</a>
+        </div>
+        <div class="tier featured reveal">
+          <span class="ribbon">Most popular, statistically</span>
+          <h3>Amicable</h3>
+          <div class="price">$39/mo</div>
+          <div class="tier-tag">Our most popular tier, statistically.</div>
+          <ul>
+            <li>Unlimited swipes on your off weekends</li>
+            <li>Verified Apartment inspection (one visit)</li>
+            <li>Read receipts, which you will regret</li>
+            <li>Kayak photo placement optimization</li>
+          </ul>
+          <a class="btn" href="./demo.html">Proceed calmly</a>
+        </div>
+        <div class="tier reveal">
+          <h3>Fresh Start Executive</h3>
+          <div class="price">$249/yr</div>
+          <div class="tier-tag">Billed annually to your new solo checking account.</div>
+          <ul>
+            <li>Priority placement among women who also kayak</li>
+            <li>Re-inspection when the couch arrives</li>
+            <li>Quarterly "doing great" report, printable</li>
+            <li>A human reviews your use of the thumbs-up emoji</li>
+          </ul>
+          <a class="btn btn-ghost" href="./demo.html">Commit fully</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="demo-cta">
+    <div class="wrap reveal">
+      <span class="dept">Dept. 05 · The floor model</span>
+      <h2>See this weekend's market.</h2>
+      <p>A working sample of the Threshold browsing experience, stocked with certified re-entrants. Every man shown has passed inspection or is scheduled for one.</p>
+      <a class="btn btn-primary" href="./demo.html">Open the demo →</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a href="/">← theworstaistudioever</a>
+    <span class="fine">THRESHOLD. IS NOT A LICENSED INSPECTOR OF ANYTHING. LAMP COUNTS SELF-REPORTED.</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var els = document.querySelectorAll('.reveal');
+  if (reduced || !('IntersectionObserver' in window)) {
+    els.forEach(function(el){ el.classList.add('in'); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e, i){
+      if (e.isIntersecting) {
+        setTimeout(function(){ e.target.classList.add('in'); }, (i % 4) * 40);
+        io.unobserve(e.target);
+      }
+    });
+  }, {threshold: 0.12});
+  els.forEach(function(el){ io.observe(el); });
+})();
+</script>
+</body>
+</html>

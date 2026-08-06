@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>This weekend's market · Threshold.</title>
+<meta name="description" content="A working sample of the Threshold browsing experience, stocked with certified re-entrants.">
+<link href="https://fonts.googleapis.com/css2?family=Besley:ital,wght@0,700;0,800;0,900;1,700&family=Work+Sans:wght@400;500;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#2F5D42;
+  --accent:#C1502E;
+  --bg:#F7F2E7;
+  --fg:#3A2E23;
+  --muted:#8A7963;
+  --ink:#241B12;
+  --panel:#FDFAF2;
+  --thread:#C9B893;
+  --well:#F1EAD9;
+  --display:'Besley','Clarendon',Georgia,serif;
+  --body:'Work Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'Courier Prime','Courier New',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;}
+
+/* app bar */
+.appbar{border-bottom:2px solid var(--ink);background:var(--panel);position:sticky;top:0;z-index:40;}
+.appbar-inner{max-width:960px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;}
+.back{font-weight:600;font-size:14px;text-decoration:none;color:var(--primary);white-space:nowrap;}
+.back:hover{color:var(--accent);}
+.appbar .status{display:flex;gap:12px;align-items:center;}
+.chip{font-family:var(--mono);font-size:12px;background:var(--well);border:1px solid var(--thread);border-radius:5px;padding:5px 10px;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums;}
+.chip .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);margin-right:6px;animation:pulse 4s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+@media(max-width:620px){.chip.weekend{display:none;}}
+
+/* stage */
+.stage{flex:1;max-width:960px;margin:0 auto;width:100%;padding:26px 20px 40px;display:flex;flex-direction:column;align-items:center;}
+.stage-head{text-align:center;margin-bottom:20px;}
+.stage-head .dept{font-weight:600;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);}
+.stage-head h1{font-family:var(--display);font-weight:900;font-size:clamp(24px,4vw,34px);color:var(--ink);margin-top:6px;}
+
+/* card stack */
+.deck{position:relative;width:min(380px,92vw);height:600px;touch-action:pan-y;}
+.dcard{position:absolute;inset:0;background:var(--panel);border:2px solid var(--ink);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;user-select:none;cursor:grab;transition:transform .25s ease,opacity .25s ease;will-change:transform;}
+.dcard.dragging{transition:none;cursor:grabbing;}
+.dcard.gone-left{transform:translateX(-130%) rotate(-14deg)!important;opacity:0;}
+.dcard.gone-right{transform:translateX(130%) rotate(14deg)!important;opacity:0;}
+.dcard .photo{height:46%;background:var(--primary);position:relative;flex-shrink:0;}
+.dcard .photo img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;pointer-events:none;}
+.dcard .photo .avatar{width:100%;height:100%;display:flex;align-items:center;justify-content:center;position:relative;}
+.dcard .photo .avatar .ring{width:120px;height:120px;border-radius:50%;border:3px solid #F3EBD9;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:800;font-size:38px;color:#F3EBD9;position:relative;}
+.dcard .photo .avatar .ring::after{content:"";position:absolute;inset:6px;border:1px dashed #CBBF9F;border-radius:50%;}
+.dcard .photo .cam{position:absolute;bottom:10px;right:12px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:#F3EBD9;background:rgba(36,27,18,.55);padding:3px 8px;border-radius:4px;text-transform:uppercase;}
+.stamp{position:absolute;top:18px;font-family:var(--display);font-weight:900;font-size:22px;letter-spacing:.06em;text-transform:uppercase;border:3px solid;border-radius:6px;padding:6px 14px;opacity:0;transform:rotate(-12deg);pointer-events:none;background:rgba(253,250,242,.88);}
+.stamp.yes{left:16px;color:var(--primary);border-color:var(--primary);}
+.stamp.no{right:16px;color:var(--accent);border-color:var(--accent);transform:rotate(12deg);}
+.dcard .body{padding:16px 18px 14px;display:flex;flex-direction:column;gap:10px;overflow:hidden;}
+.dcard .nameline{display:flex;align-items:baseline;justify-content:space-between;gap:10px;}
+.dcard .nameline h2{font-family:var(--display);font-weight:800;font-size:24px;color:var(--ink);}
+.dcard .fin{font-family:var(--mono);font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;text-align:right;}
+.badges{display:flex;flex-wrap:wrap;gap:6px;}
+.badge{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#F3EBD9;background:var(--primary);border:1.5px solid var(--ink);border-radius:999px;padding:4px 11px;position:relative;}
+.badge::after{content:"";position:absolute;inset:2px;border:1px dashed rgba(243,235,217,.55);border-radius:999px;pointer-events:none;}
+.badge.pending{background:var(--well);color:var(--fg);}
+.badge.pending::after{border-color:var(--thread);}
+.meter{background:var(--well);border:1px solid var(--thread);border-radius:6px;padding:10px 12px;}
+.meter .m-label{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-bottom:6px;}
+.meter .m-label b{font-family:var(--mono);color:var(--ink);font-size:13px;}
+.meter .bar{height:8px;background:#E4D9C0;border:1px solid var(--thread);border-radius:99px;overflow:hidden;}
+.meter .fill{height:100%;background:var(--primary);border-radius:99px;}
+.prompt{border-top:1px dashed var(--thread);padding-top:10px;}
+.prompt .q{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);}
+.prompt .a{font-family:var(--display);font-style:italic;font-weight:700;font-size:15.5px;color:var(--ink);margin-top:4px;line-height:1.35;}
+
+/* empty state */
+.empty{position:absolute;inset:0;border:2px dashed var(--thread);border-radius:8px;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;gap:14px;}
+.empty.show{display:flex;}
+.empty h2{font-family:var(--display);font-weight:800;font-size:24px;color:var(--ink);}
+.empty p{font-size:14.5px;color:var(--muted);max-width:32ch;}
+.empty button{font-family:var(--body);font-weight:600;font-size:15px;border:2px solid var(--ink);border-radius:6px;background:var(--primary);color:#fff;padding:12px 22px;cursor:pointer;}
+.empty button:hover{background:#25482F;}
+.empty button:active{transform:translateY(1px);}
+
+/* actions */
+.actions{display:flex;gap:18px;margin-top:22px;}
+.act{font-family:var(--body);font-weight:600;font-size:16px;border:2px solid var(--ink);border-radius:6px;padding:14px 26px;cursor:pointer;transition:transform .15s ease,background .15s ease;background:var(--panel);color:var(--ink);}
+.act:hover{background:var(--well);}
+.act:active{transform:translateY(1px);}
+.act.like{background:var(--primary);color:#fff;}
+.act.like:hover{background:#25482F;}
+.hint{margin-top:14px;font-family:var(--mono);font-size:11.5px;color:var(--muted);letter-spacing:.06em;text-align:center;}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(8px);background:var(--ink);color:#F3EBD9;font-size:14px;padding:12px 20px;border-radius:6px;opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease;max-width:90vw;text-align:center;z-index:60;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;}
+}
+</style>
+</head>
+<body>
+
+<header class="appbar">
+  <div class="appbar-inner">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <div class="status">
+      <span class="chip weekend">NEXT FREE WEEKEND: AUG 15–17</span>
+      <span class="chip"><span class="dot"></span>DOING GREAT: <span id="streak">6</span> DAYS</span>
+    </div>
+  </div>
+</header>
+
+<main class="stage">
+  <div class="stage-head">
+    <span class="dept">Dept. 05 · The floor model</span>
+    <h1>This weekend's market</h1>
+  </div>
+
+  <div class="deck" id="deck">
+    <div class="empty" id="empty">
+      <h2>The market is closed.</h2>
+      <p>You have reviewed every certified re-entrant in your area. New inventory arrives when someone's couch does.</p>
+      <button id="restock" type="button">Restock the market</button>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="act pass" id="btnPass" type="button">Not ready</button>
+    <button class="act like" id="btnLike" type="button">Seems ready</button>
+  </div>
+  <p class="hint">DRAG THE CARD, USE THE BUTTONS, OR ARROW KEYS. ALL DECISIONS ARE FINAL AND GENTLE.</p>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  var DADS = [
+    {
+      name:"Rick, 47", fin:"FINALIZED 14 MO AGO", img:"./card-rick.webp",
+      badges:[["Verified Apartment",false],["Lamp Count: 3",false],["Owns a Pan",false]],
+      overlap:87,
+      q:"My most controversial opinion is...",
+      a:"The thermostat stays at 68. This is not a discussion. Welcome, though."
+    },
+    {
+      name:"Dave, 52", fin:"FINALIZED 9 MO AGO", img:"./card-dave.webp",
+      badges:[["Air Fryer Owner",false],["Inspection Scheduled",true],["Kayak: Deposit Paid",true]],
+      overlap:64,
+      q:"The way to my heart is...",
+      a:"A reasonable timeline."
+    },
+    {
+      name:"Craig, 49", fin:"FINALIZED 22 MO AGO", initials:"C",
+      badges:[["Verified Apartment",false],["Greige Certified",false],["Grill: Propane",false]],
+      overlap:91,
+      q:"A shower thought I recently had...",
+      a:"The garage is a room if you heat it."
+    },
+    {
+      name:"Tom, 44", fin:"FINALIZED 6 MO AGO", initials:"T",
+      badges:[["Lamp Count: 1 (Minimum)",true],["Couch En Route",true],["Doing Great",false]],
+      overlap:42,
+      q:"Together, we could...",
+      a:"Split some appetizers and the check. Whatever feels right. No pressure."
+    },
+    {
+      name:"Bill, 55", fin:"FINALIZED 31 MO AGO", initials:"B",
+      badges:[["Verified Apartment",false],["Bread: Sourdough",false],["Fantasy Commissioner",false]],
+      overlap:78,
+      q:"I geek out on...",
+      a:"Maintaining the starter. Her name is Carol. She eats before I do."
+    }
+  ];
+
+  var deck = document.getElementById('deck');
+  var empty = document.getElementById('empty');
+  var toast = document.getElementById('toast');
+  var streakEl = document.getElementById('streak');
+  var streak = 6;
+  var toastTimer = null;
+
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2600);
+  }
+
+  function buildCard(d){
+    var card = document.createElement('div');
+    card.className = 'dcard';
+    var photo = d.img
+      ? ''
+      : '<div class="avatar"><div class="ring">' + d.initials + '</div></div>';
+    var badges = d.badges.map(function(b){
+      return '<span class="badge' + (b[1] ? ' pending' : '') + '">' + b[0] + '</span>';
+    }).join('');
+    card.innerHTML =
+      '<div class="photo">' + photo +
+        '<span class="stamp yes">Seems ready</span>' +
+        '<span class="stamp no">Not ready</span>' +
+        '<span class="cam">Photo: recent, allegedly</span>' +
+      '</div>' +
+      '<div class="body">' +
+        '<div class="nameline"><h2>' + d.name + '</h2><span class="fin">' + d.fin + '</span></div>' +
+        '<div class="badges">' + badges + '</div>' +
+        '<div class="meter">' +
+          '<div class="m-label"><span>FREE-WEEKEND OVERLAP</span><b>' + d.overlap + '%</b></div>' +
+          '<div class="bar"><div class="fill" style="width:' + d.overlap + '%"></div></div>' +
+        '</div>' +
+        '<div class="prompt"><div class="q">' + d.q + '</div><div class="a">"' + d.a + '"</div></div>' +
+      '</div>';
+    if (d.img) {
+      var im = document.createElement('img');
+      im.src = d.img;
+      im.alt = d.name;
+      im.draggable = false;
+      card.querySelector('.photo').insertBefore(im, card.querySelector('.stamp.yes'));
+    }
+    return card;
+  }
+
+  function stack(){
+    deck.querySelectorAll('.dcard').forEach(function(c){ c.remove(); });
+    for (var i = DADS.length - 1; i >= 0; i--) {
+      deck.appendChild(buildCard(DADS[i]));
+    }
+    empty.classList.remove('show');
+    layout();
+  }
+
+  function cards(){ return Array.prototype.slice.call(deck.querySelectorAll('.dcard')); }
+
+  function layout(){
+    var cs = cards();
+    cs.forEach(function(c, idx){
+      var fromTop = cs.length - 1 - idx; // last child is top card
+      c.style.zIndex = idx + 1;
+      if (!c.classList.contains('dragging')) {
+        c.style.transform = 'translateY(' + (fromTop * -8) + 'px) scale(' + (1 - fromTop * 0.03) + ')';
+      }
+      c.style.pointerEvents = (fromTop === 0) ? 'auto' : 'none';
+    });
+    if (cs.length === 0) empty.classList.add('show');
+  }
+
+  function topCard(){ var cs = cards(); return cs[cs.length - 1] || null; }
+
+  var LIKE_MSGS = [
+    "You said he seems ready. He has been notified, gently.",
+    "Noted. A field agent will confirm the lamp count.",
+    "Match request filed. Processing takes one business weekend."
+  ];
+  var PASS_MSGS = [
+    "Understood. He will not be told. He is doing great.",
+    "Noted without judgment. The market moves on.",
+    "He has been returned to inventory in original condition."
+  ];
+  var likeIdx = 0, passIdx = 0;
+
+  function decide(dir){
+    var c = topCard();
+    if (!c) return;
+    c.classList.add(dir === 'right' ? 'gone-right' : 'gone-left');
+    streak += 1;
+    streakEl.textContent = streak;
+    showToast(dir === 'right'
+      ? LIKE_MSGS[(likeIdx++) % LIKE_MSGS.length]
+      : PASS_MSGS[(passIdx++) % PASS_MSGS.length]);
+    setTimeout(function(){ c.remove(); layout(); }, 260);
+  }
+
+  /* drag */
+  var drag = null;
+  deck.addEventListener('pointerdown', function(e){
+    var c = topCard();
+    if (!c || !c.contains(e.target)) return;
+    drag = { card: c, x: e.clientX, dx: 0 };
+    c.classList.add('dragging');
+    c.setPointerCapture && c.setPointerCapture(e.pointerId);
+  });
+  document.addEventListener('pointermove', function(e){
+    if (!drag) return;
+    drag.dx = e.clientX - drag.x;
+    var rot = drag.dx / 18;
+    drag.card.style.transform = 'translateX(' + drag.dx + 'px) rotate(' + rot + 'deg)';
+    var yes = drag.card.querySelector('.stamp.yes');
+    var no = drag.card.querySelector('.stamp.no');
+    yes.style.opacity = Math.max(0, Math.min(1, drag.dx / 80));
+    no.style.opacity = Math.max(0, Math.min(1, -drag.dx / 80));
+  });
+  document.addEventListener('pointerup', function(){
+    if (!drag) return;
+    var c = drag.card, dx = drag.dx;
+    c.classList.remove('dragging');
+    c.querySelector('.stamp.yes').style.opacity = 0;
+    c.querySelector('.stamp.no').style.opacity = 0;
+    drag = null;
+    if (dx > 80) { decide('right'); }
+    else if (dx < -80) { decide('left'); }
+    else { layout(); }
+  });
+
+  /* touch fallback for browsers without pointer events */
+  var touchX = null;
+  deck.addEventListener('touchstart', function(e){
+    if (window.PointerEvent) return;
+    touchX = e.touches[0].clientX;
+  }, {passive:true});
+  deck.addEventListener('touchend', function(e){
+    if (window.PointerEvent || touchX === null) return;
+    var dx = e.changedTouches[0].clientX - touchX;
+    touchX = null;
+    if (dx > 50) decide('right');
+    else if (dx < -50) decide('left');
+  }, {passive:true});
+
+  document.getElementById('btnLike').addEventListener('click', function(){ decide('right'); });
+  document.getElementById('btnPass').addEventListener('click', function(){ decide('left'); });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'ArrowRight') decide('right');
+    if (e.key === 'ArrowLeft') decide('left');
+  });
+  document.getElementById('restock').addEventListener('click', function(){
+    stack();
+    showToast("Inventory restocked. Everyone is still doing great.");
+  });
+
+  stack();
+})();
+</script>
+</body>
+</html>
