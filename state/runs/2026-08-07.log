@@ -1,0 +1,48 @@
+[2026-08-07T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-08-07T08:00:02Z] invoking claude -p
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/github/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/github/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.openclaw/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.openclaw/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.claude/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.claude/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/aurevon-status/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/aurevon-status/**) instead (Edit rules cover all file-editing tools).
+
+# Daily run — 2026-08-07
+
+## Roll
+- Company: Midjourney
+- Subject: hedgehogs (animal — passes the subject rule)
+- Slug: midjourney-for-hedgehogs
+- Rerolls: 0 (first draw was fresh)
+
+## Concept
+- Product: Bramble — a generative image studio for nocturnal insectivores.
+- Demo: render-queue console (prompt bar with snout-input toggle, 2x2 render grid with U/V buttons, queue sidebar with dusk countdown, GPU-weather widget).
+
+## Design direction
+- Style: Moonlit generative-atelier, aurora glass dark mode. Deliberately the first glass/gradient entry after seven consecutive flat print-chrome styles (catalog, sticker sheet, nautical chart, storefront, wine label, mil-spec console, marketplace) — it parodies actual AI-lab design, which fits an image-gen company.
+- Palette: primary #B79CFF (moonbeam lilac), accent #A3C585 (moss green, telemetry only), bg #0F1220 (nocturnal indigo).
+- Fonts: Fraunces (display) / Outfit (body) / Fira Code (telemetry).
+- Anti-sameness: style, palette, and font pairing all disjoint from the last 7 entries. ui-ux-pro-max suggested Kinetic Brutalism + Inter/Inter; overridden because it neither fit the bit nor differentiated well.
+
+## Images
+- Allocation: demo is photo-shaped (the render grid is the product's output), so 3 demo renders + 1 testimonial headshot. Hero image skipped: typographic aurora hero whose grid reuses the demo assets. Two testimonial slots intentionally show "portrait queued" frames as part of the joke.
+- render-leafpile.webp (800x800): 1 attempt, judge pass (dewy leaves, indigo/lilac night palette, no text).
+- render-hedgerow.webp (800x800): 2 attempts — first API call failed with HTTP 503 (model overload, script retry also 503); second call succeeded. Judge pass (dusk indigo sky, moss/lilac tones, burrow gap).
+- render-mossbed.webp (800x800): 1 attempt (script auto-retried an internal 503 and succeeded). Judge pass (lilac dew highlights on moss, nocturnal forest).
+- headshot-beatrix.webp (320x320): 1 attempt, judge pass (deadpan corporate hedgehog on indigo backdrop, lilac rim light).
+- API calls used: 5 of 10 (one burned by the failed 503 attempt).
+
+## Warnings / near-misses
+- Gemini image endpoint was intermittently returning 503 (high demand); one budget slot lost to it. No other issues.
+- One roll only, so no near-collisions with history.
+
+## Validation
+- scripts/validate-entry.sh site midjourney-for-hedgehogs → OK.
+- Gallery rebuilt from all 75 concept.json files; header count updated to 75; new slide first.
+- history.json appended (75 entries).
+[2026-08-07T08:13:51Z] WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks
+[2026-08-07T08:13:51Z] new entry: midjourney-for-hedgehogs
+validate-entry [midjourney-for-hedgehogs]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 75 entries (domain theworstaistudioever.com)
+[2026-08-07T08:13:52Z] committing: Midjourney for hedgehogs

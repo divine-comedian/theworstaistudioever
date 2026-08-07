@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bramble console · theworstaistudioever</title>
+<meta name="description" content="The Bramble render queue. Prompt by snout, render by moonlight, review by morning.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,600&family=Outfit:wght@300;400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#B79CFF;
+  --accent:#A3C585;
+  --bg:#0F1220;
+  --fg:#EDEBFF;
+  --muted:#181C30;
+  --ink:#E9E6FA;
+  --glass:rgba(255,255,255,0.06);
+  --line:rgba(183,156,255,0.22);
+  --line-soft:rgba(183,156,255,0.12);
+  --dim:rgba(237,235,255,0.62);
+  --dimmer:rgba(237,235,255,0.42);
+  --display:'Fraunces',Georgia,'Times New Roman',serif;
+  --body:'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'Fira Code',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--bg);color:var(--fg);font-family:var(--body);font-weight:300;
+  line-height:1.5;min-height:100vh;overflow-x:hidden;
+}
+::selection{background:rgba(183,156,255,0.35)}
+a{color:var(--primary)}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:4px}
+.aurora{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.aurora::before,.aurora::after{content:"";position:absolute;width:70vmax;height:70vmax;border-radius:50%;filter:blur(90px);opacity:.28}
+.aurora::before{background:radial-gradient(circle,rgba(183,156,255,0.5) 0%,transparent 65%);top:-30vmax;right:-20vmax;animation:driftA 30s ease-in-out infinite alternate}
+.aurora::after{background:radial-gradient(circle,rgba(163,197,133,0.32) 0%,transparent 65%);bottom:-32vmax;left:-22vmax;animation:driftB 34s ease-in-out infinite alternate}
+@keyframes driftA{to{transform:translate(-8vmax,6vmax)}}
+@keyframes driftB{to{transform:translate(7vmax,-6vmax)}}
+
+/* chrome */
+header{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:14px 22px;border-bottom:1px solid var(--line-soft);
+  background:rgba(15,18,32,0.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  position:sticky;top:0;z-index:20;flex-wrap:wrap;
+}
+.back{font-size:.88rem;color:var(--dim);text-decoration:none}
+.back:hover{color:var(--fg)}
+.app-title{font-family:var(--display);font-weight:600;font-size:1.1rem;display:flex;align-items:center;gap:9px}
+.app-title .moon{width:12px;height:12px;border-radius:50%;background:linear-gradient(105deg,var(--primary) 55%,rgba(183,156,255,0.15) 55%);box-shadow:0 0 12px rgba(183,156,255,0.55)}
+.gpu-weather{
+  font-family:var(--mono);font-size:.72rem;color:var(--dim);
+  border:1px solid var(--line-soft);border-radius:99px;padding:7px 14px;
+  display:flex;gap:9px;align-items:center;background:rgba(24,28,48,0.6);
+}
+.gpu-weather .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* layout */
+.console{display:grid;grid-template-columns:300px 1fr;gap:22px;max-width:1180px;margin:0 auto;padding:24px 22px 60px}
+@media(max-width:900px){.console{grid-template-columns:1fr}}
+.panel{
+  background:var(--glass);border:1px solid var(--line-soft);border-radius:16px;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.07);
+}
+
+/* queue sidebar */
+.queue{padding:22px 20px;align-self:start}
+.queue h2{font-family:var(--display);font-weight:600;font-size:1.05rem;margin-bottom:4px}
+.queue .dusk{font-family:var(--mono);font-size:.72rem;color:var(--accent);margin-bottom:18px}
+.job{
+  border:1px solid var(--line-soft);border-radius:10px;padding:12px 14px;margin-bottom:10px;
+  font-size:.82rem;background:rgba(15,18,32,0.45);
+}
+.job .jp{color:var(--fg);margin-bottom:5px;line-height:1.4}
+.job .js{font-family:var(--mono);font-size:.66rem;color:var(--dimmer);display:flex;justify-content:space-between;gap:8px}
+.job .js .st-q{color:var(--primary)}
+.job .js .st-d{color:var(--dimmer);text-decoration:line-through}
+.job .js .st-r{color:var(--accent)}
+.queue-note{font-size:.72rem;color:var(--dimmer);margin-top:14px;font-style:italic;font-family:var(--display)}
+
+/* main column */
+.main{display:flex;flex-direction:column;gap:22px;min-width:0}
+
+/* prompt bar */
+.promptbar{padding:18px 20px}
+.pb-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.pb-field{
+  flex:1;min-width:220px;display:flex;align-items:center;gap:10px;
+  border:1px solid var(--line);border-radius:12px;padding:12px 16px;
+  background:rgba(15,18,32,0.6);
+}
+.pb-field .slash{font-family:var(--mono);color:var(--primary);font-size:.85rem}
+.pb-field input{
+  flex:1;background:transparent;border:none;color:var(--fg);
+  font-family:var(--mono);font-size:.85rem;min-width:0;
+}
+.pb-field input::placeholder{color:var(--dimmer)}
+.snout-toggle{
+  display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none;
+  border:1px solid var(--line-soft);border-radius:99px;padding:10px 16px;
+  font-size:.8rem;color:var(--dim);background:transparent;font-family:var(--body);
+  transition:border-color .2s,color .2s;
+}
+.snout-toggle[aria-pressed="true"]{border-color:var(--accent);color:var(--fg)}
+.snout-toggle .sw{
+  width:30px;height:16px;border-radius:99px;border:1px solid var(--line);position:relative;flex:none;transition:background .2s;
+}
+.snout-toggle .sw::after{
+  content:"";position:absolute;top:2px;left:2px;width:10px;height:10px;border-radius:50%;
+  background:var(--dimmer);transition:transform .2s,background .2s;
+}
+.snout-toggle[aria-pressed="true"] .sw{background:rgba(163,197,133,0.2)}
+.snout-toggle[aria-pressed="true"] .sw::after{transform:translateX(14px);background:var(--accent)}
+.pb-submit{
+  border:none;border-radius:99px;padding:12px 22px;font-family:var(--body);font-weight:500;
+  font-size:.88rem;background:var(--primary);color:var(--bg);cursor:pointer;
+  transition:box-shadow .25s,transform .1s;
+}
+.pb-submit:hover{box-shadow:0 0 20px rgba(183,156,255,0.5)}
+.pb-submit:active{transform:translateY(1px)}
+.transcript{
+  font-family:var(--mono);font-size:.7rem;color:var(--dimmer);margin-top:12px;min-height:1.2em;
+}
+.transcript .ok{color:var(--accent)}
+.transcript .lbl{color:var(--primary)}
+
+/* render grid */
+.grid-panel{padding:20px}
+.grid-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px;gap:12px;flex-wrap:wrap}
+.grid-head h2{font-family:var(--display);font-weight:600;font-size:1.05rem}
+.grid-head .meta{font-family:var(--mono);font-size:.68rem;color:var(--dimmer)}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:560px){.rgrid{grid-template-columns:1fr}}
+.tile{display:flex;flex-direction:column;gap:10px;min-width:0}
+.rframe{position:relative;border-radius:12px;overflow:hidden;background:var(--muted);aspect-ratio:1/1}
+.rframe::before,.rframe::after,.rframe .tb::before,.rframe .tb::after{
+  content:"";position:absolute;width:12px;height:12px;z-index:3;border-color:var(--primary);border-style:solid;opacity:.85;
+}
+.rframe::before{top:7px;left:7px;border-width:2px 0 0 2px}
+.rframe::after{top:7px;right:7px;border-width:2px 2px 0 0}
+.rframe .tb{position:absolute;inset:0;pointer-events:none;z-index:3}
+.rframe .tb::before{bottom:7px;left:7px;border-width:0 0 2px 2px}
+.rframe .tb::after{bottom:7px;right:7px;border-width:0 2px 2px 0}
+.rframe img{display:block;width:100%;height:100%;object-fit:cover}
+.rframe .swap{animation:swapfade .5s ease}
+@keyframes swapfade{from{opacity:0;filter:blur(4px)}to{opacity:1;filter:none}}
+.rlabel{
+  position:absolute;left:9px;bottom:9px;z-index:4;
+  font-family:var(--mono);font-size:.64rem;color:var(--ink);
+  background:rgba(15,18,32,0.78);border:1px solid var(--line-soft);border-radius:6px;padding:3px 8px;
+}
+.rlabel .ok{color:var(--accent)}
+.rframe.working{border:1px dashed var(--line)}
+.rframe.working .inner{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  font-family:var(--mono);font-size:.7rem;color:var(--dimmer);text-align:center;padding:16px;
+}
+.rframe.working .pct{font-size:1.3rem;color:var(--primary);font-variant-numeric:tabular-nums}
+.rframe.working .shimmer{
+  position:absolute;inset:0;z-index:1;
+  background:linear-gradient(105deg,transparent 40%,rgba(183,156,255,0.14) 50%,transparent 60%);
+  background-size:220% 100%;animation:shimmer 2.6s linear infinite;
+}
+@keyframes shimmer{from{background-position:120% 0}to{background-position:-120% 0}}
+.uv{display:flex;gap:6px}
+.uv button{
+  flex:1;border:1px solid var(--line-soft);background:rgba(24,28,48,0.6);color:var(--dim);
+  font-family:var(--mono);font-size:.68rem;padding:7px 0;border-radius:8px;cursor:pointer;
+  transition:border-color .15s,color .15s,background .15s;
+}
+.uv button:hover:not(:disabled){border-color:var(--primary);color:var(--fg);background:rgba(183,156,255,0.1)}
+.uv button:disabled{opacity:.35;cursor:not-allowed}
+
+/* modal */
+.modal{
+  position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;
+  background:rgba(8,10,20,0.8);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:24px;
+}
+.modal.open{display:flex}
+.modal-box{max-width:640px;width:100%;padding:18px;position:relative}
+.modal-box img{width:100%;border-radius:10px;display:block}
+.modal-box .cap{font-family:var(--mono);font-size:.7rem;color:var(--dim);margin-top:12px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.modal-box .cap .ok{color:var(--accent)}
+.modal-close{
+  position:absolute;top:-14px;right:-8px;border:1px solid var(--line);background:var(--bg);
+  color:var(--fg);border-radius:99px;padding:8px 16px;font-family:var(--mono);font-size:.72rem;cursor:pointer;
+}
+.modal-close:hover{border-color:var(--primary)}
+
+/* toast */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translate(-50%,80px);z-index:90;
+  font-family:var(--mono);font-size:.74rem;color:var(--ink);
+  background:rgba(15,18,32,0.92);border:1px solid var(--line);border-radius:10px;padding:12px 18px;
+  transition:transform .3s ease;max-width:90vw;text-align:center;
+}
+.toast.show{transform:translate(-50%,0)}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"></div>
+
+<header>
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="app-title"><span class="moon" aria-hidden="true"></span>Bramble console</span>
+  <span class="gpu-weather"><span class="dot" aria-hidden="true"></span><span id="gpu-weather-txt">data burrow: clear · 4 GPUs cool</span></span>
+</header>
+
+<div class="console">
+  <aside class="queue panel" aria-label="Render queue">
+    <h2>Tonight's queue</h2>
+    <p class="dusk">renders begin at dusk · <span id="dusk-count">--:--:--</span></p>
+    <div id="job-list">
+      <div class="job"><p class="jp">damp leaf pile, dew, golden hour, --no owls</p><p class="js"><span>seed 4471</span><span class="st-r">done</span></p></div>
+      <div class="job"><p class="jp">moss bed, plush, suitable for one</p><p class="js"><span>seed 4472</span><span class="st-r">done</span></p></div>
+      <div class="job"><p class="jp">hedgerow with a private entrance</p><p class="js"><span>seed 4473</span><span class="st-r">done</span></p></div>
+      <div class="job"><p class="jp">compost bin interior, aspirational</p><p class="js"><span>seed 4474</span><span class="st-q">rendering</span></p></div>
+      <div class="job"><p class="jp">a second, braver hedgehog</p><p class="js"><span>submitted 14:02</span><span class="st-d">discarded</span></p></div>
+    </div>
+    <p class="queue-note">Queue position is assigned by spine count. This is fair and we will not discuss it further.</p>
+  </aside>
+
+  <main class="main">
+    <section class="promptbar panel" aria-label="Prompt input">
+      <div class="pb-row">
+        <label class="pb-field" for="prompt-input">
+          <span class="slash">/imagine</span>
+          <input id="prompt-input" type="text" placeholder="describe the burrow, or snuffle" autocomplete="off">
+        </label>
+        <button class="snout-toggle" id="snout-toggle" aria-pressed="false"><span class="sw" aria-hidden="true"></span>snout input</button>
+        <button class="pb-submit" id="pb-submit">Queue render</button>
+      </div>
+      <p class="transcript" id="transcript" aria-live="polite">snout input off. keyboard mode is supported but frowned upon.</p>
+    </section>
+
+    <section class="grid-panel panel" aria-label="Finished renders">
+      <div class="grid-head">
+        <h2>Last night's batch</h2>
+        <span class="meta">model v0.9 "damp" · 4 jobs · 3 resolved · dew: heavy</span>
+      </div>
+      <div class="rgrid">
+        <div class="tile">
+          <div class="rframe"><span class="tb" aria-hidden="true"></span><img id="img-0" src="render-leafpile.webp" alt="Generated render: damp leaf pile at night" width="800" height="800"><span class="rlabel" id="lbl-0">seed 4471 · <span class="ok">done</span></span></div>
+          <div class="uv">
+            <button data-act="u" data-tile="0">U1</button><button data-act="u" data-tile="0">U2</button><button data-act="u" data-tile="0">U3</button><button data-act="u" data-tile="0">U4</button>
+          </div>
+          <div class="uv">
+            <button data-act="v" data-tile="0">V1</button><button data-act="v" data-tile="0">V2</button><button data-act="v" data-tile="0">V3</button><button data-act="v" data-tile="0">V4</button>
+          </div>
+        </div>
+        <div class="tile">
+          <div class="rframe"><span class="tb" aria-hidden="true"></span><img id="img-1" src="render-mossbed.webp" alt="Generated render: plush moss bed" width="800" height="800"><span class="rlabel" id="lbl-1">seed 4472 · <span class="ok">done</span></span></div>
+          <div class="uv">
+            <button data-act="u" data-tile="1">U1</button><button data-act="u" data-tile="1">U2</button><button data-act="u" data-tile="1">U3</button><button data-act="u" data-tile="1">U4</button>
+          </div>
+          <div class="uv">
+            <button data-act="v" data-tile="1">V1</button><button data-act="v" data-tile="1">V2</button><button data-act="v" data-tile="1">V3</button><button data-act="v" data-tile="1">V4</button>
+          </div>
+        </div>
+        <div class="tile">
+          <div class="rframe"><span class="tb" aria-hidden="true"></span><img id="img-2" src="render-hedgerow.webp" alt="Generated render: hedgerow at dusk with a private entrance" width="800" height="800"><span class="rlabel" id="lbl-2">seed 4473 · <span class="ok">done</span></span></div>
+          <div class="uv">
+            <button data-act="u" data-tile="2">U1</button><button data-act="u" data-tile="2">U2</button><button data-act="u" data-tile="2">U3</button><button data-act="u" data-tile="2">U4</button>
+          </div>
+          <div class="uv">
+            <button data-act="v" data-tile="2">V1</button><button data-act="v" data-tile="2">V2</button><button data-act="v" data-tile="2">V3</button><button data-act="v" data-tile="2">V4</button>
+          </div>
+        </div>
+        <div class="tile">
+          <div class="rframe working"><span class="tb" aria-hidden="true"></span><span class="shimmer" aria-hidden="true"></span>
+            <div class="inner"><span class="pct" id="stall-pct">61%</span>compost bin interior, aspirational<br>awaiting moonlight</div>
+          </div>
+          <div class="uv">
+            <button disabled>U1</button><button disabled>U2</button><button disabled>U3</button><button disabled>U4</button>
+          </div>
+          <div class="uv">
+            <button disabled>V1</button><button disabled>V2</button><button disabled>V3</button><button disabled>V4</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Upscaled render">
+  <div class="modal-box panel">
+    <button class="modal-close" id="modal-close">close</button>
+    <img id="modal-img" src="render-leafpile.webp" alt="Upscaled render">
+    <p class="cap"><span id="modal-cap">seed 4471 · upscaled 2x</span><span class="ok">same image, more of it</span></p>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+  var IMGS = ['render-leafpile.webp','render-mossbed.webp','render-hedgerow.webp'];
+  var ALTS = [
+    'Generated render: damp leaf pile at night',
+    'Generated render: plush moss bed',
+    'Generated render: hedgerow at dusk with a private entrance'
+  ];
+  var SEEDS = [4471,4472,4473];
+  var tileImg = [0,1,2];
+
+  // dusk countdown (dusk is 20:30, per policy)
+  function tick(){
+    var now = new Date();
+    var dusk = new Date(now);
+    dusk.setHours(20,30,0,0);
+    if (dusk <= now) dusk.setDate(dusk.getDate()+1);
+    var s = Math.floor((dusk-now)/1000);
+    var h = String(Math.floor(s/3600)).padStart(2,'0');
+    var m = String(Math.floor(s%3600/60)).padStart(2,'0');
+    var sec = String(s%60).padStart(2,'0');
+    document.getElementById('dusk-count').textContent = h+':'+m+':'+sec;
+  }
+  tick(); setInterval(tick,1000);
+
+  // GPU weather cycles
+  var weather = [
+    'data burrow: clear · 4 GPUs cool',
+    'data burrow: light cloud · renders unaffected',
+    'data burrow: badger nearby · GPUs curled up',
+    'data burrow: dew forming · 4 GPUs cool'
+  ];
+  var wi = 0;
+  setInterval(function(){
+    wi = (wi+1) % weather.length;
+    document.getElementById('gpu-weather-txt').textContent = weather[wi];
+  }, 7000);
+
+  // stalled render creeps toward 99 and stays there
+  var pct = 61;
+  setInterval(function(){
+    if (pct < 99) pct += 1;
+    document.getElementById('stall-pct').textContent = pct + '%';
+  }, 4500);
+
+  // toast
+  var toastEl = document.getElementById('toast');
+  var toastTimer;
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 3800);
+  }
+
+  // snout toggle + transcript
+  var snout = document.getElementById('snout-toggle');
+  var transcript = document.getElementById('transcript');
+  var input = document.getElementById('prompt-input');
+  var snuffleTimer = null;
+  var SNUFFLES = [
+    'transcribing snuffle... <span class="lbl">interpretation:</span> damp leaves <span class="ok">(confidence 91%)</span>',
+    'transcribing snuffle... <span class="lbl">interpretation:</span> damp leaves <span class="ok">(confidence 88%)</span>',
+    'transcribing snuffle... <span class="lbl">interpretation:</span> a profound longing, possibly slugs <span class="ok">(confidence 12%)</span>',
+    'transcribing snuffle... <span class="lbl">interpretation:</span> damp leaves <span class="ok">(confidence 94%)</span>'
+  ];
+  var si = 0;
+  snout.addEventListener('click', function(){
+    var on = snout.getAttribute('aria-pressed') === 'true';
+    snout.setAttribute('aria-pressed', String(!on));
+    if (!on) {
+      input.disabled = true;
+      input.placeholder = 'snout input active. approach the pad.';
+      transcript.innerHTML = SNUFFLES[0];
+      snuffleTimer = setInterval(function(){
+        si = (si+1) % SNUFFLES.length;
+        transcript.innerHTML = SNUFFLES[si];
+      }, 3200);
+    } else {
+      clearInterval(snuffleTimer);
+      input.disabled = false;
+      input.placeholder = 'describe the burrow, or snuffle';
+      transcript.textContent = 'snout input off. keyboard mode is supported but frowned upon.';
+    }
+  });
+
+  // queue submission: everything before dusk is daylight
+  var jobList = document.getElementById('job-list');
+  var seedNext = 4475;
+  document.getElementById('pb-submit').addEventListener('click', function(){
+    var snoutOn = snout.getAttribute('aria-pressed') === 'true';
+    var text = snoutOn ? 'damp leaves (transcribed)' : (input.value.trim() || 'untitled burrow');
+    var job = document.createElement('div');
+    job.className = 'job';
+    var jp = document.createElement('p');
+    jp.className = 'jp';
+    jp.textContent = text;
+    var js = document.createElement('p');
+    js.className = 'js';
+    var left = document.createElement('span');
+    left.textContent = 'seed ' + seedNext++;
+    var right = document.createElement('span');
+    right.className = 'st-q';
+    right.textContent = 'queued · dusk';
+    js.appendChild(left); js.appendChild(right);
+    job.appendChild(jp); job.appendChild(js);
+    jobList.appendChild(job);
+    input.value = '';
+    toast('queued. renders begin at dusk. submitting again will not make it dusk.');
+  });
+  input.addEventListener('keydown', function(e){
+    if (e.key === 'Enter') document.getElementById('pb-submit').click();
+  });
+
+  // U/V buttons
+  var modal = document.getElementById('modal');
+  var modalImg = document.getElementById('modal-img');
+  var modalCap = document.getElementById('modal-cap');
+  document.querySelectorAll('.uv button:not(:disabled)').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var t = parseInt(btn.getAttribute('data-tile'), 10);
+      if (btn.getAttribute('data-act') === 'u') {
+        modalImg.src = IMGS[tileImg[t]];
+        modalImg.alt = 'Upscaled: ' + ALTS[tileImg[t]];
+        modalCap.textContent = 'seed ' + SEEDS[tileImg[t]] + ' · upscaled 2x · ' + btn.textContent + ' selected, which changed nothing';
+        modal.classList.add('open');
+        document.getElementById('modal-close').focus();
+      } else {
+        tileImg[t] = (tileImg[t] + 1) % IMGS.length;
+        var img = document.getElementById('img-' + t);
+        img.classList.remove('swap');
+        void img.offsetWidth;
+        img.src = IMGS[tileImg[t]];
+        img.alt = 'Variation: ' + ALTS[tileImg[t]];
+        img.classList.add('swap');
+        document.getElementById('lbl-' + t).innerHTML = 'seed ' + SEEDS[tileImg[t]] + ' · <span class="ok">varied</span>';
+        toast('variation complete. it is one of the other renders. this is a known behavior.');
+      }
+    });
+  });
+  function closeModal(){ modal.classList.remove('open'); }
+  document.getElementById('modal-close').addEventListener('click', closeModal);
+  modal.addEventListener('click', function(e){ if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
+})();
+</script>
+</body>
+</html>
