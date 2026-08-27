@@ -1,0 +1,132 @@
+NOTE: the agent wrote this summary with a full-file write, which overwrote the wrapper's
+start-of-run preamble for today (the "=== daily run start ===", "invoking claude -p", and
+git-pull lines). Those lines are left unreconstructed rather than filled in with invented
+timestamps.
+The wrapper appends everything after this point as normal, so RUN_COMPLETE and the
+post-run git output still land in this file.
+
+RUN 2026-08-27 — figma-for-left-handed-people
+
+STEP 1 — ROLL
+  company: Figma
+  subject: left-handed people
+  slug:    figma-for-left-handed-people
+  rerolls: 0 (first pair drawn from the 2026-08-27 LCG was unused)
+  subject rule: "left-handed people" is a relatable type of person. Passes. No seed removal needed.
+  note: the subject has appeared before (Quora, Slack, Gopuff, Steam) but never paired with Figma,
+        so the {company, subject} match against history.json was clean on the first draw.
+
+STEP 2 — CONCEPT
+  product:   Verso
+  one-liner: a collaborative interface design tool that loads every file mirrored, so your drawing
+             hand never sits on top of the work.
+  angle:     handedness treated as an unsolved layout problem. The fix (flip everything, forever,
+             including exports) is confidently wrong. Right-handed collaborators are a supported
+             read-only population. Paper is framed as a competitor with better palm dynamics.
+  anti-ai-slop invoked before writing any copy. Zero em dashes across concept, landing, and demo.
+             No throat-clearing, no corrective antithesis, no gift-wrapped closer.
+
+STEP 3 — PLAN (visual direction)
+  ui-ux-pro-max invoked. Its --design-system query returned an Event/Conference pattern with a
+  black + pink "vibrant block-based" system, which did not fit a design-tool product page, so the
+  returned pattern was discarded and only its rule categories were carried forward (contrast,
+  focus states, tabular figures, 44px targets, 150-300ms transitions, reduced-motion, no emoji
+  icons). Style, palette, and fonts were selected directly.
+
+  style:     Mirrored Swiss modernist design-tool site, paper daylight mode. Right-anchored grid,
+             0px radii, hairline rules, solid ultramarine floods, no shadows and no gradients.
+             Section numerals count down (04 03 02 01) and render mirrored via scaleX(-1);
+             pricing runs most expensive first.
+  palette:   Paper / Ultramarine / Rationed Fuchsia
+             primary #1F2ED6, accent #D6006B, bg #F1F1EE, fg #16161A, muted #78786F, ink #0B0B0D
+  fonts:     display Archivo, body Figtree, telemetry DM Mono
+  archetype: collaborative design-tool product page, mirrored
+  signature: the header "Flip back" control, which mirrors the entire page for 1.8 seconds, raises
+             a fuchsia re-assessment notice, and reverts itself.
+
+  ANTI-SAMENESS CHECK vs the last 7 entries — no collision on style, palette, or font pair:
+    2026-08-08 replit-for-red-pandas          claymorphic light   / rust+moss     / Bricolage + Red Hat Text
+    2026-08-07 midjourney-for-hedgehogs       aurora glass dark   / lilac+moss    / Fraunces + Outfit
+    2026-08-06 hinge-for-divorced-dads        heritage catalog    / forest+rust   / Besley + Work Sans
+    2026-08-05 bumble-for-penguins            sticker poster      / yolk+ice blue / Nunito + DM Sans
+    2026-08-04 tinder-for-seagulls            nautical chart      / red+teal      / Libre Franklin + Public Sans
+    2026-08-03 steam-for-yogis                storefront dark     / blue+matcha   / Marcellus + Inter
+    2026-08-02 neuralink-for-amateur-somm.    didone label dark   / gold+mint     / Bodoni Moda + Jost
+  Swiss modernist is unused in the window; magenta/fuchsia is the first non-green, non-rust accent
+  in seven entries; Archivo, Figtree, and DM Mono are all unused in the window.
+
+STEP 4 — IMAGES
+  budget: 4 available, 3 spent, 1 deliberately left unspent.
+  allocation rationale:
+    hero      — SKIPPED. The direction is purely typographic; a photograph would soften the grid
+                poster and fight the ultramarine floods.
+    demo      — SKIPPED. demo_screen_concept is a design-editor console (tool rail, layers list,
+                inspector), not photo-shaped. Console demos get no assets per the image guidelines.
+    headshots — 3 generated, the always-applicable fallback slot.
+
+  headshot-1.webp  attempt 1/2  JUDGE: PASS. Correct subject, deadpan, paper-white seamless
+                   backdrop reading close to #F1F1EE, small ultramarine garment accent, no text
+                   artifacts, no generic-render tells. 8,406 bytes.
+  headshot-2.webp  attempt 1/2  JUDGE: PASS. Same criteria. 7,734 bytes.
+  headshot-3.webp  attempt 1/2  JUDGE: PASS. Same criteria. 8,844 bytes.
+  All three cropped to 320x320 WebP with --delete-input; raw PNGs removed. No regenerations,
+  no drops. 3 of the day's 10-call cap consumed.
+
+  NEAR-MISS: all three subjects hold the pencil in their right hand as rendered, despite the
+  prompt asking for the left. Rather than burn regenerations, both pages render the headshots
+  with transform: scaleX(-1). That corrects the handedness and is on-concept for a site whose
+  entire premise is mirroring. No image was regenerated or dropped on this basis.
+
+STEP 5 — BUILD LANDING
+  frontend-design invoked before writing markup. Landing page is self-contained: inline CSS,
+  inline JS, Google Fonts via <link>, no frameworks, no build step, no hotlinked assets.
+  Sections: inverted masthead (nav left, wordmark hard right), right-anchored hero with the
+  mirror axis and a bleeding mirrored numeral, hairline telemetry strip, CSS-built mirrored
+  editor plate, three feature columns numbered 03/02/01, three testimonial plates carrying the
+  headshots, a pricing ladder running Ambidextrous / Sinistral / Southpaw, closing CTA band on
+  ink, footer with the back link to /.
+  Accessibility: fuchsia focus-visible rings, 44px+ hit areas, alt text on every headshot,
+  prefers-reduced-motion disables the axis draw, reveals, and the page flip.
+
+  frontend-design flags "broadsheet with hairline rules and zero radius" as one of three current
+  AI-design defaults, which is adjacent to this direction. Kept it because the brief pinned the
+  direction, and the mirroring conceit, ultramarine floods, rationed fuchsia telemetry, and the
+  self-reverting flip control are what carry the page rather than the hairlines.
+
+STEP 6 — BUILD DEMO
+  demo.html is the mirrored Verso editor. Toolbar, layers, and inspector pinned right; the
+  artboard sits left and renders scaleX(-1). Working interactivity, all client-side:
+    - cursor and touch movement across the artboard lays permanent stepped graphite smudge nodes,
+      driving live stroke and coverage counters (node pool capped at 420 for scroll performance)
+    - per-layer visibility toggles, except Smudge Layer whose control is disabled and answers
+      with "The Smudge Layer stays on. It is the product."
+    - five tools (Move, Frame, Pen, Palm, Text) each swapping the inspector fields and its note
+    - the X field rejects positive values and inverts them, since X counts leftward
+    - "Flip back" opens a modal with one selectable option, Escape and scrim close, focus is
+      restored to the trigger, and confirming reports "Assessment matches file. No change applied."
+    - collaborator avatars reuse the three headshots with verified / pending / read-only states
+  Top-left chrome carries the "back to the pitch" link to ./index.html.
+
+STEP 7 — GALLERY REBUILD
+  site/index.html regenerated from all 77 concept.json files, sorted by date descending.
+  Verified with git diff: all 76 prior slides are byte-identical. Only the new slide, the count
+  (76 -> 77 startups), and the dot rail changed. styles.css untouched. Root metadata contract,
+  favicon link, 50x50 brand lockup, and the arrows-plus-scrollable-dot-rail nav all preserved.
+  Machine fixtures left to the wrapper's build-seo.sh, as specified.
+
+STEP 8 — VALIDATE & RECORD
+  scripts/validate-entry.sh site figma-for-left-handed-people -> OK (exit 0)
+  state/history.json appended, 76 -> 77 entries. git diff confirms 6 insertions, 0 deletions.
+
+WARNINGS
+  - ui-ux-pro-max's --design-system recommendation was off-brief and was overridden. Noted in case
+    the pattern repeats and the query needs rewording on future runs.
+  - Headshot handedness miss described above, corrected in CSS rather than by regeneration.
+  - No git operations performed. Working tree only.
+
+VALIDATION PASSED.
+[2026-08-27T15:07:52Z] WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks
+[2026-08-27T15:07:52Z] new entry: figma-for-left-handed-people
+validate-entry [figma-for-left-handed-people]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 77 entries (domain theworstaistudioever.com)
+[2026-08-27T15:07:52Z] committing: Figma for left-handed people

@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verso · theworstaistudioever</title>
+<meta name="description" content="A collaborative interface design tool that loads every file mirrored, so your drawing hand never sits on top of the work.">
+<meta name="theme-color" content="#F1F1EE">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Verso · theworstaistudioever">
+<meta property="og:description" content="A collaborative interface design tool that loads every file mirrored, so your drawing hand never sits on top of the work.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Verso · theworstaistudioever">
+<meta name="twitter:description" content="A collaborative interface design tool that loads every file mirrored, so your drawing hand never sits on top of the work.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Figtree:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F1F1EE;
+  --ink:#0B0B0D;
+  --fg:#16161A;
+  --muted:#78786F;
+  --blue:#1F2ED6;
+  --fuchsia:#D6006B;
+  --rule:rgba(11,11,13,.20);
+  --rule-soft:rgba(11,11,13,.11);
+  --display:'Archivo','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --body:'Figtree',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'DM Mono','SFMono-Regular',Consolas,monospace;
+  --pad:clamp(18px,4vw,56px);
+  --smudge:repeating-linear-gradient(90deg,#DCDCD5 0 5px,#CDCDC5 5px 11px,#E4E4DD 11px 19px,#D3D3CB 19px 26px);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--fg);
+  font-family:var(--body);
+  font-size:17px;
+  line-height:1.55;
+  overflow-x:hidden;
+}
+img{display:block;max-width:100%}
+a{color:var(--blue)}
+::selection{background:var(--blue);color:var(--paper)}
+:focus-visible{outline:3px solid var(--fuchsia);outline-offset:3px}
+
+/* ---------- primitives ---------- */
+.wrap{max-width:1240px;margin:0 auto;padding:0 var(--pad)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+.eyebrow{
+  font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--muted);margin:0;
+}
+.flip{display:inline-block;transform:scaleX(-1)}
+.smudge{height:13px;background:var(--smudge);border-top:1px solid var(--rule-soft)}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.6em;
+  min-height:52px;padding:0 26px;border:1px solid var(--blue);
+  background:var(--blue);color:var(--paper);
+  font-family:var(--display);font-weight:700;font-size:15px;
+  letter-spacing:.03em;text-transform:uppercase;text-decoration:none;
+  border-radius:0;cursor:pointer;transition:background .18s ease,color .18s ease,transform .09s ease;
+}
+.btn:hover{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.btn:active{transform:translateX(-2px)}
+.btn--ghost{background:transparent;color:var(--blue)}
+.btn--ghost:hover{background:var(--blue);color:var(--paper)}
+
+/* ---------- header (inverted: nav left, mark right) ---------- */
+.masthead{border-bottom:1px solid var(--ink)}
+.masthead .wrap{
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+  min-height:70px;
+}
+.nav{display:flex;align-items:center;gap:clamp(14px,2.4vw,30px)}
+.nav a,.nav button{
+  font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--fg);text-decoration:none;background:none;border:0;padding:8px 0;cursor:pointer;
+}
+.nav a:hover,.nav button:hover{color:var(--blue)}
+.mark{
+  font-family:var(--display);font-weight:900;font-size:26px;letter-spacing:-.045em;
+  text-transform:uppercase;line-height:1;color:var(--ink);text-decoration:none;
+}
+
+/* ---------- hero ---------- */
+.hero{position:relative;padding:clamp(56px,10vh,110px) 0 0;overflow:hidden}
+.axis{
+  position:absolute;top:0;bottom:0;left:38%;width:1px;background:var(--blue);
+  transform-origin:top center;animation:axis .6s cubic-bezier(.2,.7,.2,1) both;
+}
+@keyframes axis{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.hero .wrap{position:relative}
+.hero-grid{display:grid;grid-template-columns:38% 1fr;align-items:end;gap:0}
+.ghost-num{
+  font-family:var(--display);font-weight:900;font-size:clamp(140px,26vw,340px);
+  line-height:.72;letter-spacing:-.06em;color:transparent;
+  -webkit-text-stroke:1px rgba(11,11,13,.28);
+  transform:scaleX(-1);margin-left:-.14em;user-select:none;
+}
+.hero-copy{text-align:right;padding-left:clamp(20px,4vw,64px);padding-bottom:6px}
+.hero h1{
+  font-family:var(--display);font-weight:800;
+  font-size:clamp(2.5rem,6.6vw,5.2rem);line-height:.94;letter-spacing:-.045em;
+  margin:14px 0 0;color:var(--ink);text-wrap:balance;
+}
+.hero h1 .knock{background:var(--blue);color:var(--paper);padding:0 .1em .04em}
+.hero p.sub{max-width:47ch;margin:22px 0 0 auto;color:var(--fg)}
+.hero .cta-row{display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap;margin-top:28px}
+.fineprint{margin:14px 0 0;color:var(--muted);font-size:13px}
+
+/* ---------- telemetry ---------- */
+.telemetry{border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);margin-top:clamp(46px,7vw,84px)}
+.telemetry .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+.tcell{padding:20px 0 18px;border-left:1px solid var(--rule-soft);padding-left:18px}
+.tcell:first-child{border-left:0;padding-left:0}
+.tnum{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:clamp(20px,2.6vw,30px);color:var(--ink);letter-spacing:-.02em}
+.tnum.hot{color:var(--fuchsia)}
+.tlabel{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+
+/* ---------- section scaffolding ---------- */
+.band{padding:clamp(58px,9vw,104px) 0}
+.sec-head{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:20px;
+  border-bottom:1px solid var(--ink);padding-bottom:12px;margin-bottom:clamp(28px,4vw,46px);
+}
+.sec-num{
+  font-family:var(--display);font-weight:900;font-size:clamp(38px,6vw,64px);line-height:.8;
+  letter-spacing:-.05em;color:transparent;-webkit-text-stroke:1px var(--ink);
+  transform:scaleX(-1);display:block;
+}
+.sec-title{font-family:var(--mono);font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--fg);text-align:right}
+.sec-title span{display:block;color:var(--muted);margin-top:5px;letter-spacing:.14em}
+
+/* ---------- editor plate ---------- */
+.plate-editor{border:1px solid var(--ink);background:#FBFBF9;display:grid;grid-template-columns:1fr 210px}
+.canvas-side{position:relative;padding:26px;min-height:280px;border-right:1px solid var(--ink);overflow:hidden}
+.frame{border:1px solid var(--rule);background:var(--paper);position:absolute}
+.frame::after{
+  content:attr(data-label);position:absolute;top:-17px;right:0;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+}
+.f1{left:8%;top:16%;width:44%;height:56%;transform:scaleX(-1)}
+.f1::after{transform:scaleX(-1)}
+.f2{left:58%;top:30%;width:30%;height:34%;background:var(--blue);border-color:var(--blue)}
+.canvas-smudge{position:absolute;left:0;right:0;bottom:38px;height:11px;background:var(--smudge);opacity:.9}
+.rail{padding:16px 14px}
+.rail h3{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;text-align:right}
+.rail ul{list-style:none;margin:0 0 18px;padding:0}
+.rail li{
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:12px;padding:7px 0;border-bottom:1px solid var(--rule-soft);color:var(--fg);
+}
+.rail li:last-child{border-bottom:0}
+.locked{color:var(--muted)}
+.pin{width:7px;height:7px;background:var(--fuchsia);flex:0 0 auto}
+.pin.on{background:var(--blue)}
+.pin.off{background:transparent;border:1px solid var(--muted)}
+
+/* ---------- features ---------- */
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--rule-soft)}
+.card{
+  padding:26px 22px 30px;border-left:1px solid var(--rule-soft);
+  transition:background .18s ease,color .18s ease,border-color .18s ease;
+}
+.card:first-child{border-left:0}
+.card .idx{
+  font-family:var(--display);font-weight:900;font-size:30px;letter-spacing:-.04em;
+  display:block;transform:scaleX(-1);transform-origin:left center;color:var(--blue);
+}
+.card h3{font-family:var(--display);font-weight:800;font-size:23px;letter-spacing:-.02em;margin:16px 0 10px;color:var(--ink)}
+.card p{margin:0;color:var(--fg);font-size:15.5px;line-height:1.62}
+.card:hover{background:var(--blue);color:var(--paper);border-color:var(--blue)}
+.card:hover h3,.card:hover p{color:var(--paper)}
+.card:hover .idx{color:var(--paper)}
+
+/* ---------- testimonials ---------- */
+.notes{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--rule-soft)}
+.note{padding:26px 22px 28px;border-left:1px solid var(--rule-soft);display:flex;flex-direction:column;gap:18px}
+.note:first-child{border-left:0}
+.note blockquote{margin:0;font-family:var(--display);font-weight:600;font-size:19px;line-height:1.32;letter-spacing:-.018em;color:var(--ink)}
+.who{display:flex;align-items:center;gap:13px;margin-top:auto}
+.shot{width:56px;height:56px;flex:0 0 auto;border:1px solid var(--ink);overflow:hidden;background:#E6E6E0}
+.shot img{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.who-name{font-family:var(--display);font-weight:700;font-size:14.5px;letter-spacing:-.01em;color:var(--ink)}
+.who-title{font-family:var(--mono);font-size:10.5px;line-height:1.45;letter-spacing:.05em;color:var(--muted);margin-top:3px}
+.badge{
+  display:inline-block;margin-top:5px;font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--fuchsia);border:1px solid var(--fuchsia);padding:1px 5px;
+}
+
+/* ---------- pricing ---------- */
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--ink)}
+.tier{padding:26px 22px 28px;border-left:1px solid var(--rule);display:flex;flex-direction:column}
+.tier:first-child{border-left:0}
+.tier h3{font-family:var(--display);font-weight:900;font-size:20px;letter-spacing:-.02em;text-transform:uppercase;margin:0;color:var(--ink)}
+.price{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:36px;letter-spacing:-.03em;margin:14px 0 4px;color:var(--ink)}
+.tier .tag{font-family:var(--mono);font-size:11px;line-height:1.5;color:var(--muted);min-height:3em}
+.perks{list-style:none;margin:18px 0 22px;padding:0;border-top:1px solid var(--rule-soft)}
+.perks li{padding:9px 0;border-bottom:1px solid var(--rule-soft);font-size:14.5px;display:flex;gap:10px;align-items:flex-start}
+.perks li::before{content:"";width:7px;height:7px;background:var(--blue);margin-top:8px;flex:0 0 auto}
+.tier .btn{width:100%;margin-top:auto}
+.tier--lead{background:var(--blue);color:var(--paper);border-left-color:var(--blue)}
+.tier--lead h3,.tier--lead .price{color:var(--paper)}
+.tier--lead .tag{color:rgba(241,241,238,.72)}
+.tier--lead .perks,.tier--lead .perks li{border-color:rgba(241,241,238,.28)}
+.tier--lead .perks li::before{background:var(--paper)}
+.tier--lead .btn{background:var(--paper);color:var(--blue);border-color:var(--paper)}
+.tier--lead .btn:hover{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.stamp{
+  align-self:flex-end;font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+  border:1px solid currentColor;padding:2px 6px;margin-bottom:12px;
+}
+.stamp.hollow{color:transparent}
+
+/* ---------- closing ---------- */
+.closer{background:var(--ink);color:var(--paper);padding:clamp(52px,8vw,88px) 0}
+.closer .wrap{text-align:right}
+.closer h2{
+  font-family:var(--display);font-weight:800;font-size:clamp(2rem,5.2vw,3.6rem);
+  line-height:.98;letter-spacing:-.04em;margin:12px 0 0;color:var(--paper);
+}
+.closer p{max-width:52ch;margin:18px 0 0 auto;color:rgba(241,241,238,.7)}
+.closer .eyebrow{color:rgba(241,241,238,.55)}
+.closer .btn{margin-top:28px;background:var(--paper);color:var(--ink);border-color:var(--paper);min-height:60px;font-size:16px}
+.closer .btn:hover{background:var(--blue);border-color:var(--blue);color:var(--paper)}
+
+footer{border-top:1px solid var(--ink);padding:26px 0 34px}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+footer a{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--fg);text-decoration:none}
+footer a:hover{color:var(--blue)}
+.colophon{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+
+/* ---------- flip signature ---------- */
+#sheet{transition:transform .34s cubic-bezier(.2,.7,.2,1)}
+body.flipped #sheet{transform:scaleX(-1)}
+#recert{
+  position:fixed;left:50%;top:24px;transform:translateX(-50%);z-index:50;
+  background:var(--fuchsia);color:var(--paper);padding:11px 18px;
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
+  opacity:0;pointer-events:none;transition:opacity .18s ease;
+}
+#recert.show{opacity:1}
+
+/* ---------- reveal ---------- */
+.rv{opacity:0;transform:translateY(6px);transition:opacity .5s ease,transform .5s ease}
+.rv.in{opacity:1;transform:none}
+
+/* ---------- responsive ---------- */
+@media (max-width:900px){
+  .cols,.notes,.tiers{grid-template-columns:1fr}
+  .card,.note,.tier{border-left:0;border-top:1px solid var(--rule-soft)}
+  .card:first-child,.note:first-child,.tier:first-child{border-top:0}
+  .tier{border-top:1px solid var(--rule)}
+  .plate-editor{grid-template-columns:1fr}
+  .canvas-side{border-right:0;border-bottom:1px solid var(--ink)}
+  .rail h3{text-align:left}
+}
+@media (max-width:760px){
+  body{font-size:16px}
+  .axis{left:16px}
+  .hero-grid{grid-template-columns:1fr}
+  .ghost-num{display:none}
+  .hero-copy{padding-left:32px}
+  .telemetry .wrap{grid-template-columns:1fr 1fr}
+  .tcell{border-left:1px solid var(--rule-soft);padding-left:16px;border-top:1px solid var(--rule-soft)}
+  .tcell:nth-child(odd){border-left:0;padding-left:0}
+  .tcell:nth-child(-n+2){border-top:0}
+  .masthead .wrap{min-height:60px}
+  .nav{gap:14px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .rv{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<div id="recert" role="status" aria-live="polite">Re-assessment required. Reverting.</div>
+
+<div id="sheet">
+
+<header class="masthead">
+  <div class="wrap">
+    <nav class="nav">
+      <a href="#editor">Editor</a>
+      <a href="#tiers">Pricing</a>
+      <a href="./demo.html">Demo</a>
+      <button id="flipbtn" type="button">Flip back</button>
+    </nav>
+    <a class="mark" href="#top"><span class="flip">V</span>erso</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <div class="axis" aria-hidden="true"></div>
+    <div class="wrap">
+      <div class="hero-grid">
+        <div class="ghost-num" aria-hidden="true">01</div>
+        <div class="hero-copy">
+          <p class="eyebrow">Verso / collaborative interface design</p>
+          <h1>The canvas was on the <span class="knock">wrong</span> side.</h1>
+          <p class="sub">Verso is a collaborative interface design tool that loads every file mirrored and keeps the toolbar on the right. Your hand sits beside the work instead of across it. Right-handed collaborators are welcome to comment.</p>
+          <div class="cta-row">
+            <a class="btn btn--ghost" href="#tiers">See the tiers</a>
+            <a class="btn" href="./demo.html">Open a mirrored file</a>
+          </div>
+          <p class="fineprint mono">Verification takes 40 seconds. Bring scissors.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="telemetry" aria-label="Workspace telemetry">
+    <div class="wrap">
+      <div class="tcell"><div class="tnum">41,802</div><div class="tlabel">Hands verified</div></div>
+      <div class="tcell"><div class="tnum">100.0%</div><div class="tlabel">Files mirrored</div></div>
+      <div class="tcell"><div class="tnum hot">6,514</div><div class="tlabel">Re-flips pending</div></div>
+      <div class="tcell"><div class="tnum">0</div><div class="tlabel">Re-flips granted</div></div>
+    </div>
+  </section>
+  <div class="smudge" aria-hidden="true"></div>
+
+  <section class="band" id="editor">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <span class="sec-num" aria-hidden="true">04</span>
+        <div class="sec-title">The editor<span>Toolbar right. Artboard left. Permanently.</span></div>
+      </div>
+      <div class="plate-editor rv">
+        <div class="canvas-side">
+          <div class="frame f1" data-label="Artboard, as served"></div>
+          <div class="frame f2" data-label="Selection"></div>
+          <div class="canvas-smudge" aria-hidden="true"></div>
+        </div>
+        <aside class="rail">
+          <h3>Layers</h3>
+          <ul>
+            <li><span>Smudge</span><span class="pin" title="Locked on"></span></li>
+            <li><span>Nav / mirrored</span><span class="pin on"></span></li>
+            <li><span>Grid, 8pt</span><span class="pin on"></span></li>
+            <li class="locked"><span>Right-hand guides</span><span class="pin off"></span></li>
+          </ul>
+          <h3>Position</h3>
+          <ul>
+            <li><span>X</span><span>-448</span></li>
+            <li><span>Y</span><span>112</span></li>
+            <li><span>Flip</span><span>true</span></li>
+          </ul>
+        </aside>
+      </div>
+      <p class="fineprint mono" style="text-align:right">X counts leftward from the right edge. It does not accept positive values.</p>
+    </div>
+  </section>
+
+  <section class="band" style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <span class="sec-num" aria-hidden="true">03</span>
+        <div class="sec-title">What ships<span>Read from the right.</span></div>
+      </div>
+      <div class="cols">
+        <article class="card rv"><span class="idx">03</span>
+          <h3>The Smudge Layer</h3>
+          <p>A top layer that renders graphite drag beneath your cursor in real time. It cannot be hidden, flattened, or deleted. Parity with paper was the entire brief.</p>
+        </article>
+        <article class="card rv"><span class="idx">02</span>
+          <h3>Handedness SSO</h3>
+          <p>Onboarding runs a forty-second scissors assessment. Verified left-handers receive edit rights. Everyone else receives comment access and a weekly digest of what they missed.</p>
+        </article>
+        <article class="card rv"><span class="idx">01</span>
+          <h3>Mirrored Canvas</h3>
+          <p>Every file opens flipped on the vertical axis, so your hand rests beside the artboard instead of over it. Exports ship flipped as well. Most clients adjust inside a quarter.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <div class="smudge" aria-hidden="true"></div>
+
+  <section class="band">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <span class="sec-num" aria-hidden="true">02</span>
+        <div class="sec-title">Field notes<span>Collected after verification.</span></div>
+      </div>
+      <div class="notes">
+        <article class="note rv">
+          <blockquote>&ldquo;We shipped the entire rebrand mirrored. Nobody mentioned it for a full quarter.&rdquo;</blockquote>
+          <div class="who">
+            <div class="shot"><img src="headshot-1.webp" alt="Marguerite Oyelaran, holding a pencil" width="320" height="320" loading="lazy"></div>
+            <div>
+              <div class="who-name">Marguerite Oyelaran</div>
+              <div class="who-title">Head of Design Operations, Spiral Notebook Division</div>
+              <span class="badge">Hand verified</span>
+            </div>
+          </div>
+        </article>
+        <article class="note rv">
+          <blockquote>&ldquo;The scissors assessment took forty seconds and I have thought about it every day since.&rdquo;</blockquote>
+          <div class="who">
+            <div class="shot"><img src="headshot-2.webp" alt="Deon Vasquez-Pryor, holding a pencil" width="320" height="320" loading="lazy"></div>
+            <div>
+              <div class="who-name">Deon Vasquez-Pryor</div>
+              <div class="who-title">Principal Designer, Ergonomics Compliance</div>
+              <span class="badge">Hand verified</span>
+            </div>
+          </div>
+        </article>
+        <article class="note rv">
+          <blockquote>&ldquo;I asked support to turn off the Smudge Layer. They sent me a diagram of a hand.&rdquo;</blockquote>
+          <div class="who">
+            <div class="shot"><img src="headshot-3.webp" alt="Ines Kowalczyk, holding a pencil" width="320" height="320" loading="lazy"></div>
+            <div>
+              <div class="who-name">Ines Kowalczyk</div>
+              <div class="who-title">VP of Interface Standards, third-largest scissors manufacturer in the region</div>
+              <span class="badge">Hand verified</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="tiers" style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <span class="sec-num" aria-hidden="true">01</span>
+        <div class="sec-title">Tiers<span>Most expensive first. It reads better that way.</span></div>
+      </div>
+      <div class="tiers">
+        <article class="tier rv">
+          <span class="stamp">Annual</span>
+          <h3>Ambidextrous</h3>
+          <div class="price">$2,400</div>
+          <p class="tag">Flat, annual. For organizations that have declined to choose.</p>
+          <ul class="perks">
+            <li>Both toolbars, simultaneously</li>
+            <li>Handedness disputes routed to an external arbiter</li>
+            <li>A named flip engineer</li>
+            <li>No refunds after the first flip</li>
+          </ul>
+          <a class="btn btn--ghost" href="./demo.html">Book the arbiter</a>
+        </article>
+        <article class="tier rv">
+          <span class="stamp hollow" aria-hidden="true">Annual</span>
+          <h3>Sinistral</h3>
+          <div class="price">$84</div>
+          <p class="tag">Per editor, per month. For teams that have picked a side.</p>
+          <ul class="perks">
+            <li>Scissors assessment for up to 40 seats</li>
+            <li>Re-flip requests answered within a business week</li>
+            <li>Shared smudge history</li>
+            <li>Handedness audit log</li>
+          </ul>
+          <a class="btn btn--ghost" href="./demo.html">Start the assessment</a>
+        </article>
+        <article class="tier tier--lead rv">
+          <span class="stamp">Most hands</span>
+          <h3>Southpaw</h3>
+          <div class="price">$19</div>
+          <p class="tag">Per editor, per month. One hand, verified.</p>
+          <ul class="perks">
+            <li>Mirrored canvas on every file</li>
+            <li>Smudge Layer, permanently on</li>
+            <li>One verified hand</li>
+            <li>Comment seats for the right-handed</li>
+          </ul>
+          <a class="btn" href="./demo.html">Take Southpaw</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="closer">
+    <div class="wrap">
+      <p class="eyebrow">Next</p>
+      <h2>Everything is already flipped.<br>You may as well look.</h2>
+      <p>The editor runs on mock data, holds no files, and cannot be flipped back. The Smudge Layer is on and there is no control for it.</p>
+      <a class="btn" href="./demo.html">Open the demo &rarr;</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <a href="/">&larr; theworstaistudioever</a>
+    <span class="colophon">Verso / Figma for left-handed people / 2026</span>
+  </div>
+</footer>
+
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* scroll reveal, staggered per section */
+  var items = document.querySelectorAll('.rv');
+  if (reduce || !('IntersectionObserver' in window)) {
+    items.forEach(function(el){ el.classList.add('in'); });
+  } else {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e, i){
+        if (!e.isIntersecting) return;
+        var el = e.target;
+        setTimeout(function(){ el.classList.add('in'); }, i * 40);
+        io.unobserve(el);
+      });
+    }, { rootMargin: '0px 0px -8% 0px' });
+    items.forEach(function(el){ io.observe(el); });
+  }
+
+  /* the flip: the one control everyone asks for, granted for 1.8 seconds */
+  var btn = document.getElementById('flipbtn');
+  var recert = document.getElementById('recert');
+  var busy = false;
+  btn.addEventListener('click', function(){
+    if (busy) return;
+    busy = true;
+    document.body.classList.add('flipped');
+    window.setTimeout(function(){ recert.classList.add('show'); }, reduce ? 0 : 340);
+    window.setTimeout(function(){
+      document.body.classList.remove('flipped');
+      recert.classList.remove('show');
+      busy = false;
+    }, 1800);
+  });
+
+  /* smooth scroll for in-page nav */
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click', function(ev){
+      var t = document.querySelector(a.getAttribute('href'));
+      if (!t) return;
+      ev.preventDefault();
+      t.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    });
+  });
+})();
+</script>
+</body>
+</html>

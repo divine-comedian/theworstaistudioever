@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verso Editor · theworstaistudioever</title>
+<meta name="description" content="The Verso editor. Toolbar right, artboard mirrored, Smudge Layer permanently on.">
+<meta name="theme-color" content="#F1F1EE">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Verso Editor · theworstaistudioever">
+<meta property="og:description" content="The Verso editor. Toolbar right, artboard mirrored, Smudge Layer permanently on.">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Figtree:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F1F1EE;
+  --ink:#0B0B0D;
+  --fg:#16161A;
+  --muted:#78786F;
+  --blue:#1F2ED6;
+  --fuchsia:#D6006B;
+  --rule:rgba(11,11,13,.20);
+  --rule-soft:rgba(11,11,13,.11);
+  --surface:#FBFBF9;
+  --display:'Archivo','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --body:'Figtree',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'DM Mono','SFMono-Regular',Consolas,monospace;
+  --smudge:repeating-linear-gradient(90deg,#DCDCD5 0 5px,#CDCDC5 5px 11px,#E4E4DD 11px 19px,#D3D3CB 19px 26px);
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:var(--paper);color:var(--fg);
+  font-family:var(--body);font-size:14px;line-height:1.5;
+  display:flex;flex-direction:column;overflow:hidden;
+}
+img{display:block;max-width:100%}
+button,input,select{font:inherit;color:inherit;border-radius:0}
+:focus-visible{outline:3px solid var(--fuchsia);outline-offset:2px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.flip{display:inline-block;transform:scaleX(-1)}
+
+/* ---------- chrome ---------- */
+.chrome{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:0 14px;min-height:52px;border-bottom:1px solid var(--ink);
+  background:var(--paper);flex:0 0 auto;
+}
+.back{
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--fg);text-decoration:none;padding:10px 0;white-space:nowrap;
+}
+.back:hover{color:var(--blue)}
+.filename{
+  font-family:var(--display);font-weight:800;font-size:14px;letter-spacing:-.01em;
+  display:flex;align-items:center;gap:9px;min-width:0;
+}
+.filename .dot{width:7px;height:7px;background:var(--fuchsia);flex:0 0 auto;animation:pulse 4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+.filename span.path{color:var(--muted);font-family:var(--mono);font-size:11px;font-weight:400;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.crew{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.av{position:relative;width:30px;height:30px;border:1px solid var(--ink);overflow:hidden;background:#E6E6E0}
+.av img{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.av::after{
+  content:"";position:absolute;right:-1px;bottom:-1px;width:8px;height:8px;
+  background:var(--blue);border:1px solid var(--paper);
+}
+.av.pending::after{background:var(--fuchsia)}
+.av.ro{filter:grayscale(1) contrast(.86)}
+.av.ro::after{background:var(--muted)}
+.crewlabel{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- shell ---------- */
+.shell{flex:1 1 auto;display:grid;grid-template-columns:1fr 312px;min-height:0}
+
+/* ---------- canvas ---------- */
+.stage{position:relative;overflow:hidden;background:#E9E9E4;border-right:1px solid var(--ink)}
+.stage::before{
+  content:"";position:absolute;inset:0;
+  background-image:linear-gradient(rgba(11,11,13,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(11,11,13,.05) 1px,transparent 1px);
+  background-size:32px 32px;
+}
+.board{
+  position:absolute;left:6%;top:8%;width:64%;height:78%;
+  background:var(--paper);border:1px solid var(--ink);transform:scaleX(-1);
+  padding:22px 20px;
+}
+.board::after{
+  content:"Home / mirrored";position:absolute;top:-19px;left:0;transform:scaleX(-1);
+  transform-origin:left center;
+  font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+}
+.mock-nav{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--ink);padding-bottom:10px}
+.mock-nav i{display:block;height:7px;background:var(--rule)}
+.mock-nav .links{display:flex;gap:8px}
+.mock-nav .links i{width:34px}
+.mock-nav .brand{width:56px;height:9px;background:var(--ink)}
+.mock-h{margin-top:26px;display:flex;flex-direction:column;align-items:flex-start;gap:9px}
+.mock-h i{display:block;height:16px;background:var(--ink)}
+.mock-h i:nth-child(1){width:70%}
+.mock-h i:nth-child(2){width:46%;background:var(--blue)}
+.mock-body{margin-top:20px;display:flex;flex-direction:column;gap:7px}
+.mock-body i{display:block;height:6px;background:var(--rule)}
+.mock-body i:nth-child(1){width:64%}
+.mock-body i:nth-child(2){width:58%}
+.mock-body i:nth-child(3){width:38%}
+.mock-cta{margin-top:22px;width:120px;height:30px;background:var(--blue)}
+.selection{
+  position:absolute;left:6%;top:8%;width:64%;height:78%;
+  outline:1px solid var(--blue);outline-offset:3px;pointer-events:none;
+}
+.handle{position:absolute;width:7px;height:7px;background:var(--paper);border:1px solid var(--blue)}
+.handle.tl{left:-3px;top:-3px}.handle.tr{right:-3px;top:-3px}
+.handle.bl{left:-3px;bottom:-3px}.handle.br{right:-3px;bottom:-3px}
+.smudge-node{position:absolute;height:9px;background:var(--smudge);pointer-events:none;opacity:.85}
+.stage-foot{
+  position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;gap:12px;
+  padding:8px 12px;border-top:1px solid var(--rule);background:rgba(241,241,238,.9);
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+}
+.stage-foot b{color:var(--fuchsia);font-weight:500}
+.hint{
+  position:absolute;left:14px;top:14px;z-index:3;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);background:rgba(241,241,238,.86);border:1px solid var(--rule-soft);padding:5px 8px;
+}
+
+/* ---------- right rail ---------- */
+.rail{display:flex;flex-direction:column;min-height:0;background:var(--surface);overflow-y:auto}
+.tools{display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(--ink);flex:0 0 auto}
+.tool{
+  min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  background:transparent;border:0;border-left:1px solid var(--rule-soft);cursor:pointer;
+  font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+  transition:background .15s ease,color .15s ease;
+}
+.tool:first-child{border-left:0}
+.tool svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.5}
+.tool:hover{background:rgba(31,46,214,.08);color:var(--fg)}
+.tool[aria-pressed="true"]{background:var(--blue);color:var(--paper)}
+
+.pane{border-bottom:1px solid var(--rule);padding:14px}
+.pane h2{
+  font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--muted);margin:0 0 11px;display:flex;justify-content:space-between;align-items:center;
+}
+.pane h2 em{font-style:normal;color:var(--fuchsia)}
+
+.layer{
+  display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid var(--rule-soft);
+  font-family:var(--mono);font-size:12px;
+}
+.layer:last-child{border-bottom:0}
+.eye{
+  width:26px;height:26px;flex:0 0 auto;border:1px solid var(--rule);background:transparent;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s ease;
+}
+.eye i{display:block;width:8px;height:8px;background:var(--blue)}
+.eye[aria-pressed="false"] i{background:transparent;border:1px solid var(--muted)}
+.eye:hover{background:rgba(31,46,214,.09)}
+.eye[disabled]{cursor:not-allowed;opacity:.55;background:repeating-linear-gradient(45deg,transparent 0 3px,rgba(11,11,13,.09) 3px 6px)}
+.eye[disabled] i{background:var(--muted)}
+.layer .nm{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.layer.off .nm{color:var(--muted);text-decoration:line-through}
+.lock{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--fuchsia);flex:0 0 auto}
+
+.field{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.field label{font-family:var(--mono);font-size:11px;color:var(--muted);width:74px;flex:0 0 auto}
+.field input,.field select{
+  flex:1 1 auto;min-width:0;background:var(--paper);border:1px solid var(--rule);
+  padding:7px 8px;font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums;
+}
+.field input:disabled,.field select:disabled{color:var(--muted);background:rgba(11,11,13,.04);cursor:not-allowed}
+.note{font-family:var(--mono);font-size:10px;line-height:1.5;color:var(--fuchsia);margin:6px 0 0;min-height:1.5em}
+.readout{
+  display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--rule-soft);
+  font-family:var(--mono);font-size:11.5px;font-variant-numeric:tabular-nums;
+}
+.readout:last-of-type{border-bottom:0}
+.readout span:last-child{color:var(--ink)}
+
+.railfoot{margin-top:auto;padding:14px;border-top:1px solid var(--ink);background:var(--paper);flex:0 0 auto}
+.bigbtn{
+  width:100%;min-height:46px;background:var(--blue);color:var(--paper);border:1px solid var(--blue);
+  font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.05em;text-transform:uppercase;
+  cursor:pointer;transition:background .16s ease,transform .09s ease;
+}
+.bigbtn:hover{background:var(--ink);border-color:var(--ink)}
+.bigbtn:active{transform:translateX(-2px)}
+.railfoot p{margin:9px 0 0;font-family:var(--mono);font-size:10px;line-height:1.5;color:var(--muted)}
+
+/* ---------- modal ---------- */
+.scrim{
+  position:fixed;inset:0;background:rgba(11,11,13,.55);display:none;
+  align-items:center;justify-content:center;padding:20px;z-index:60;
+}
+.scrim.open{display:flex}
+.modal{
+  background:var(--paper);border:1px solid var(--ink);max-width:440px;width:100%;
+  padding:22px;max-height:90vh;overflow-y:auto;
+}
+.modal h3{font-family:var(--display);font-weight:900;font-size:19px;letter-spacing:-.02em;text-transform:uppercase;margin:0}
+.modal p.lede{margin:10px 0 16px;font-size:13.5px;color:var(--fg)}
+.opt{
+  display:flex;align-items:flex-start;gap:11px;padding:11px;border:1px solid var(--rule);
+  margin-bottom:8px;cursor:pointer;font-size:13.5px;transition:border-color .15s ease,background .15s ease;
+}
+.opt:hover{border-color:var(--blue);background:rgba(31,46,214,.05)}
+.opt input{margin:3px 0 0;accent-color:var(--blue);flex:0 0 auto}
+.opt.dead{cursor:not-allowed;color:var(--muted);background:rgba(11,11,13,.03)}
+.opt.dead:hover{border-color:var(--rule);background:rgba(11,11,13,.03)}
+.opt small{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--muted);margin-top:3px}
+.modal-actions{display:flex;gap:9px;justify-content:flex-end;margin-top:16px}
+.mbtn{
+  min-height:44px;padding:0 18px;border:1px solid var(--blue);background:var(--blue);color:var(--paper);
+  font-family:var(--display);font-weight:700;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;
+}
+.mbtn.ghost{background:transparent;color:var(--blue)}
+.mbtn.ghost:hover{background:var(--blue);color:var(--paper)}
+.mbtn:hover{background:var(--ink);border-color:var(--ink)}
+
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:70;
+  background:var(--fuchsia);color:var(--paper);padding:11px 16px;
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+  opacity:0;pointer-events:none;transition:opacity .2s ease;max-width:92vw;text-align:center;
+}
+.toast.show{opacity:1}
+
+@media (max-width:900px){
+  body{overflow:auto;height:auto}
+  .shell{grid-template-columns:1fr;min-height:0}
+  .stage{min-height:56vh;border-right:0;border-bottom:1px solid var(--ink)}
+  .rail{overflow:visible}
+  .filename span.path{display:none}
+}
+@media (max-width:520px){
+  .chrome{flex-wrap:wrap;padding:8px 12px;gap:8px}
+  .crewlabel{display:none}
+  .tools{grid-template-columns:repeat(5,1fr)}
+  .tool{font-size:8px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <a class="back" href="./index.html">&larr; back to the pitch</a>
+  <div class="filename">
+    <span class="dot" aria-hidden="true"></span>
+    <span class="flip">V</span>erso
+    <span class="path">/ Acquisition v14 / Home, mirrored</span>
+  </div>
+  <div class="crew">
+    <span class="crewlabel">In file</span>
+    <div class="av" title="Marguerite Oyelaran. Hand verified."><img src="headshot-1.webp" alt="Marguerite Oyelaran, hand verified" width="320" height="320"></div>
+    <div class="av pending" title="Deon Vasquez-Pryor. Verification pending."><img src="headshot-2.webp" alt="Deon Vasquez-Pryor, verification pending" width="320" height="320"></div>
+    <div class="av ro" title="Ines Kowalczyk. Right-handed, read only."><img src="headshot-3.webp" alt="Ines Kowalczyk, right-handed, read only" width="320" height="320"></div>
+  </div>
+</div>
+
+<div class="shell">
+
+  <section class="stage" id="stage" aria-label="Artboard">
+    <p class="hint">Move the cursor across the artboard. The Smudge Layer is recording.</p>
+    <div class="board" id="board">
+      <div class="mock-nav"><div class="links"><i></i><i></i><i></i></div><div class="brand"></div></div>
+      <div class="mock-h"><i></i><i></i></div>
+      <div class="mock-body"><i></i><i></i><i></i></div>
+      <div class="mock-cta"></div>
+    </div>
+    <div class="selection" id="sel" aria-hidden="true">
+      <span class="handle tl"></span><span class="handle tr"></span>
+      <span class="handle bl"></span><span class="handle br"></span>
+    </div>
+    <div class="stage-foot">
+      <span>Zoom 100% / axis inverted</span>
+      <span>Smudge coverage <b id="cov">0.4%</b></span>
+    </div>
+  </section>
+
+  <aside class="rail">
+
+    <div class="tools" role="group" aria-label="Tools">
+      <button class="tool" data-tool="move" aria-pressed="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/></svg>
+        Move
+      </button>
+      <button class="tool" data-tool="frame" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v18M17 3v18M3 7h18M3 17h18"/></svg>
+        Frame
+      </button>
+      <button class="tool" data-tool="pen" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l3-1 11-11-2-2L5 17l-1 3z"/><path d="M14 6l4 4"/></svg>
+        Pen
+      </button>
+      <button class="tool" data-tool="palm" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11V5a1.5 1.5 0 013 0v6M12 11V4a1.5 1.5 0 013 0v7M15 11V6a1.5 1.5 0 013 0v8a7 7 0 01-7 7h-1a6 6 0 01-6-6v-3a1.5 1.5 0 013 0"/></svg>
+        Palm
+      </button>
+      <button class="tool" data-tool="text" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14M12 5v14M9 19h6"/></svg>
+        Text
+      </button>
+    </div>
+
+    <div class="pane">
+      <h2>Layers <em id="lcount">4 shown</em></h2>
+      <div id="layers">
+        <div class="layer">
+          <button class="eye" aria-pressed="true" disabled aria-disabled="true" title="Smudge Layer cannot be hidden. See your plan." aria-label="Smudge Layer visibility, locked on"><i></i></button>
+          <span class="nm">Smudge Layer</span>
+          <span class="lock">Locked</span>
+        </div>
+        <div class="layer">
+          <button class="eye" aria-pressed="true" data-layer=".mock-nav" aria-label="Toggle Nav, mirrored"><i></i></button>
+          <span class="nm">Nav / mirrored</span>
+        </div>
+        <div class="layer">
+          <button class="eye" aria-pressed="true" data-layer=".mock-h" aria-label="Toggle Headline block"><i></i></button>
+          <span class="nm">Headline block</span>
+        </div>
+        <div class="layer">
+          <button class="eye" aria-pressed="true" data-layer=".mock-cta" aria-label="Toggle Primary action"><i></i></button>
+          <span class="nm">Primary action</span>
+        </div>
+        <div class="layer off">
+          <button class="eye" aria-pressed="false" data-layer=".mock-body" aria-label="Toggle Body copy"><i></i></button>
+          <span class="nm">Body copy</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pane" id="inspector">
+      <h2 id="inspector-title">Position</h2>
+      <div id="inspector-body"></div>
+      <p class="note" id="inspector-note"></p>
+    </div>
+
+    <div class="pane">
+      <h2>Session</h2>
+      <div class="readout"><span>Strokes recorded</span><span class="mono" id="strokes">0</span></div>
+      <div class="readout"><span>Re-flips requested</span><span class="mono" id="reflips">0</span></div>
+      <div class="readout"><span>Re-flips granted</span><span class="mono">0</span></div>
+      <div class="readout"><span>Hands on file</span><span class="mono">2 of 3</span></div>
+    </div>
+
+    <div class="railfoot">
+      <button class="bigbtn" id="flipbtn" type="button">Flip back</button>
+      <p>Flipping back requires a current handedness assessment. Assessments expire every 30 days.</p>
+    </div>
+
+  </aside>
+</div>
+
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+  <div class="modal">
+    <h3 id="modal-title">Handedness re-assessment</h3>
+    <p class="lede">Flipping a file back changes the render order for everyone in it. Confirm your dominant hand to continue.</p>
+    <label class="opt">
+      <input type="radio" name="hand" value="left" checked>
+      <span>I am left-handed.<small>Verified 41 days ago. Expired.</small></span>
+    </label>
+    <label class="opt dead">
+      <input type="radio" name="hand" value="right" disabled>
+      <span>I am right-handed.<small>Not available on your plan.</small></span>
+    </label>
+    <label class="opt dead">
+      <input type="radio" name="hand" value="both" disabled>
+      <span>I use both.<small>Requires Ambidextrous. Contact your flip engineer.</small></span>
+    </label>
+    <div class="modal-actions">
+      <button class="mbtn ghost" id="cancel" type="button">Cancel</button>
+      <button class="mbtn" id="confirm" type="button">Confirm and flip</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var stage = document.getElementById('stage');
+  var board = document.getElementById('board');
+  var toast = document.getElementById('toast');
+
+  /* ---------- toast ---------- */
+  var toastTimer;
+  function say(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(function(){ toast.classList.remove('show'); }, 3600);
+  }
+
+  /* ---------- the Smudge Layer ---------- */
+  var strokes = 0, coverage = 0.4, lastX = null, lastY = null, nodes = [];
+  var strokeOut = document.getElementById('strokes');
+  var covOut = document.getElementById('cov');
+
+  function smudgeAt(clientX, clientY){
+    var r = stage.getBoundingClientRect();
+    var x = clientX - r.left, y = clientY - r.top;
+    if (x < 0 || y < 0 || x > r.width || y > r.height) return;
+    if (lastX !== null && Math.abs(x - lastX) + Math.abs(y - lastY) < 26) return;
+    lastX = x; lastY = y;
+
+    var el = document.createElement('div');
+    el.className = 'smudge-node';
+    var w = 34 + Math.round((x * 7 + y * 3) % 46);
+    el.style.left = Math.max(0, x - w / 2) + 'px';
+    el.style.top = (y - 4) + 'px';
+    el.style.width = w + 'px';
+    stage.appendChild(el);
+    nodes.push(el);
+    if (nodes.length > 420) { var old = nodes.shift(); if (old.parentNode) old.parentNode.removeChild(old); }
+
+    strokes++;
+    strokeOut.textContent = strokes.toLocaleString('en-US');
+    coverage = Math.min(99.9, coverage + 0.13);
+    covOut.textContent = coverage.toFixed(1) + '%';
+  }
+
+  stage.addEventListener('mousemove', function(e){ smudgeAt(e.clientX, e.clientY); });
+  stage.addEventListener('touchmove', function(e){
+    var t = e.touches[0];
+    if (t) smudgeAt(t.clientX, t.clientY);
+  }, { passive: true });
+
+  /* ---------- layer visibility ---------- */
+  var lcount = document.getElementById('lcount');
+  function recount(){
+    var on = document.querySelectorAll('#layers .eye[aria-pressed="true"]').length;
+    lcount.textContent = on + ' shown';
+  }
+  document.querySelectorAll('#layers .eye[data-layer]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var on = btn.getAttribute('aria-pressed') === 'true';
+      btn.setAttribute('aria-pressed', String(!on));
+      btn.closest('.layer').classList.toggle('off', on);
+      var target = board.querySelector(btn.dataset.layer);
+      if (target) target.style.visibility = on ? 'hidden' : 'visible';
+    });
+  });
+  document.querySelector('#layers .eye[disabled]').addEventListener('click', function(){
+    say('The Smudge Layer stays on. It is the product.');
+  });
+  board.querySelector('.mock-body').style.visibility = 'hidden';
+  recount();
+  document.getElementById('layers').addEventListener('click', recount);
+
+  /* ---------- tools drive the inspector ---------- */
+  var title = document.getElementById('inspector-title');
+  var bodyEl = document.getElementById('inspector-body');
+  var noteEl = document.getElementById('inspector-note');
+
+  var PANES = {
+    move: {
+      title: 'Position',
+      html:
+        '<div class="field"><label for="fx">X</label><input id="fx" type="number" value="-448" step="8"></div>' +
+        '<div class="field"><label for="fy">Y</label><input id="fy" type="number" value="112" step="8"></div>' +
+        '<div class="field"><label for="fw">Width</label><input id="fw" type="number" value="1280" disabled></div>' +
+        '<div class="field"><label for="fflip">Flip</label><select id="fflip"><option>Mirrored</option></select></div>',
+      note: 'X counts leftward from the right edge.'
+    },
+    frame: {
+      title: 'Frame',
+      html:
+        '<div class="field"><label for="fp">Preset</label><select id="fp"><option>Desktop, mirrored</option><option>Tablet, mirrored</option><option>Phone, mirrored</option></select></div>' +
+        '<div class="field"><label for="fg">Grid</label><input id="fg" type="text" value="8pt, right-anchored"></div>' +
+        '<div class="field"><label for="fo">Origin</label><input id="fo" type="text" value="top right" disabled></div>',
+      note: 'New frames inherit the file flip. There is no setting for this.'
+    },
+    pen: {
+      title: 'Pen',
+      html:
+        '<div class="field"><label for="pw">Weight</label><input id="pw" type="number" value="1" step="1" min="1"></div>' +
+        '<div class="field"><label for="pc">Cap</label><select id="pc"><option>Butt</option><option>Round</option><option>Square</option></select></div>' +
+        '<div class="field"><label for="pd">Draw from</label><input id="pd" type="text" value="right to left" disabled></div>',
+      note: 'Paths drawn left to right are reversed on save.'
+    },
+    palm: {
+      title: 'Palm',
+      html:
+        '<div class="field"><label for="mp">Pressure</label><input id="mp" type="number" value="62" min="0" max="100"></div>' +
+        '<div class="field"><label for="ms">Drag model</label><select id="ms"><option>Graphite, HB</option><option>Graphite, 2B</option><option>Charcoal</option></select></div>' +
+        '<div class="field"><label for="mc">Clean up</label><input id="mc" type="text" value="not available" disabled></div>',
+      note: 'Palm output writes to the Smudge Layer and is permanent.'
+    },
+    text: {
+      title: 'Text',
+      html:
+        '<div class="field"><label for="tf">Family</label><select id="tf"><option>Archivo</option><option>Figtree</option><option>DM Mono</option></select></div>' +
+        '<div class="field"><label for="ts">Size</label><input id="ts" type="number" value="48" min="8"></div>' +
+        '<div class="field"><label for="ta">Align</label><select id="ta"><option>Right</option><option>Right, forced</option></select></div>',
+      note: 'Left alignment was removed in 14.2. Nobody has asked for it back.'
+    }
+  };
+
+  function wireX(){
+    var fx = document.getElementById('fx');
+    if (!fx) return;
+    fx.addEventListener('change', function(){
+      var v = parseInt(fx.value, 10);
+      if (isNaN(v)) v = -448;
+      if (v >= 0) {
+        fx.value = String(-Math.abs(v) || -8);
+        noteEl.textContent = 'X cannot be positive. Value inverted for you.';
+      } else {
+        fx.value = String(v);
+        noteEl.textContent = 'X counts leftward from the right edge.';
+      }
+    });
+  }
+
+  function setTool(name){
+    var p = PANES[name];
+    title.textContent = p.title;
+    bodyEl.innerHTML = p.html;
+    noteEl.textContent = p.note;
+    if (name === 'move') wireX();
+  }
+
+  document.querySelectorAll('.tool').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.tool').forEach(function(b){ b.setAttribute('aria-pressed', 'false'); });
+      btn.setAttribute('aria-pressed', 'true');
+      setTool(btn.dataset.tool);
+    });
+  });
+  setTool('move');
+
+  /* ---------- flip back ---------- */
+  var scrim = document.getElementById('scrim');
+  var flipbtn = document.getElementById('flipbtn');
+  var reflips = 0;
+  var reflipOut = document.getElementById('reflips');
+  var lastFocus = null;
+
+  function openModal(){
+    lastFocus = document.activeElement;
+    scrim.hidden = false;
+    scrim.classList.add('open');
+    document.getElementById('confirm').focus();
+  }
+  function closeModal(){
+    scrim.classList.remove('open');
+    scrim.hidden = true;
+    if (lastFocus) lastFocus.focus();
+  }
+
+  flipbtn.addEventListener('click', openModal);
+  document.getElementById('cancel').addEventListener('click', closeModal);
+  scrim.addEventListener('click', function(e){ if (e.target === scrim) closeModal(); });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && scrim.classList.contains('open')) closeModal();
+  });
+  document.getElementById('confirm').addEventListener('click', function(){
+    closeModal();
+    reflips++;
+    reflipOut.textContent = String(reflips);
+    if (!reduce) {
+      board.style.transition = 'transform .34s cubic-bezier(.2,.7,.2,1)';
+      board.style.transform = 'scaleX(1)';
+      window.setTimeout(function(){ board.style.transform = 'scaleX(-1)'; }, 900);
+    }
+    say('Assessment matches file. No change applied.');
+  });
+})();
+</script>
+</body>
+</html>
