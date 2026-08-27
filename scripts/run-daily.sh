@@ -11,6 +11,40 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO_ROOT"
 
+# --- PATH hardening -------------------------------------------------------
+# cron runs this job with a bare PATH (/usr/bin:/bin). The claude CLI lives in
+# ~/.local/bin, and the crontab's only PATH= line is tagged for another project
+# and sits *below* this entry, so it never applied here — which silently broke
+# every run from 2026-08-09 to 2026-08-27. Resolve our own tools instead of
+# depending on crontab line ordering.
+export PATH="$HOME/.local/bin:/usr/local/bin:$PATH"
+
+REQUIRED_BINS=(claude git jq curl flock comm python3)
+
+check_deps() { # prints "<bin> -> <path|MISSING>" per dep; returns 1 if any missing
+  local b p missing=0
+  for b in "${REQUIRED_BINS[@]}"; do
+    if p="$(command -v "$b" 2>/dev/null)"; then
+      echo "  $b -> $p"
+    else
+      echo "  $b -> MISSING"
+      missing=1
+    fi
+  done
+  return "$missing"
+}
+
+# Dependency-only smoke check: no lock, no log file, no notifications.
+if [[ "${1:-}" == "--preflight" ]]; then
+  echo "preflight: PATH=$PATH"
+  if check_deps; then
+    echo "preflight: OK"
+    exit 0
+  fi
+  echo "preflight: FAILED — missing dependencies"
+  exit 1
+fi
+
 # Load .env if present
 if [[ -f .env ]]; then
   set -a
@@ -74,6 +108,16 @@ notify_success() { # notify_success <tagline> <product_name> <url>
 }
 
 log "=== daily run start ==="
+
+# Fail loudly on a missing binary rather than emitting a bare
+# "command not found" 80 lines later.
+if ! DEPS="$(check_deps)"; then
+  log "RUN FAILED: missing dependencies"
+  log "$DEPS"
+  notify_fail "missing dependencies on PATH:
+$DEPS"
+  exit 1
+fi
 
 # Pull latest in case seeds or pipeline changed elsewhere
 if ! git pull --rebase --autostash >> "$LOG" 2>&1; then
