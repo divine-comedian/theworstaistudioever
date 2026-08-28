@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Range · theworstaistudioever</title>
+<meta name="description" content="A photo network for wolves where reach is measured in kilometers of audible howl and the feed is ranked by rank.">
+<meta name="theme-color" content="#0B0C0B">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Range · Instagram for wolves">
+<meta property="og:description" content="A photo network for wolves where reach is measured in kilometers of audible howl and the feed is ranked by rank.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Range · Instagram for wolves">
+<meta name="twitter:description" content="A photo network for wolves where reach is measured in kilometers of audible howl and the feed is ranked by rank.">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0C0B;
+    --surface:#141614;
+    --well:#0E100E;
+    --line:#262A25;
+    --bone:#EFEBE1;
+    --fg:#DEDACF;
+    --muted:#7C8079;
+    --ink:#F4F1E9;
+    --arterial:#E64B38;
+    --gutter:14px;
+    --radius:14px;
+    --display:'Syne','Helvetica Neue',Helvetica,Arial,sans-serif;
+    --body:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--fg);
+    font-family:var(--body);
+    font-weight:400;
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  img{display:block;max-width:100%}
+  a{color:var(--bone);text-decoration:none}
+
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+  /* ---------- lattice ---------- */
+  .lattice{
+    display:grid;
+    grid-template-columns:repeat(12,1fr);
+    gap:var(--gutter);
+  }
+  .tile{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:26px;
+    transition:border-color 180ms ease;
+  }
+  .tile:hover{border-color:rgba(239,235,225,.30)}
+  .tile--invert{
+    background:var(--bone);
+    border-color:var(--bone);
+    color:#0B0C0B;
+  }
+  .tile--invert:hover{border-color:var(--bone)}
+  .tile--flush{padding:0;overflow:hidden}
+
+  /* ---------- type ---------- */
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:11px;
+    font-weight:500;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin:0 0 14px;
+  }
+  .tile--invert .eyebrow{color:#4A4C47}
+  h1,h2,h3{font-family:var(--display);font-weight:800;letter-spacing:-.02em;margin:0;color:var(--ink)}
+  h1{font-size:clamp(2.4rem,5.6vw,4.1rem);line-height:1.02}
+  h2{font-size:clamp(1.75rem,3.4vw,2.6rem);line-height:1.06}
+  h3{font-size:1.15rem;line-height:1.25;font-weight:700;letter-spacing:-.01em}
+  .tile--invert h1,.tile--invert h2,.tile--invert h3{color:#0B0C0B}
+  .flood{
+    background:var(--bone);
+    color:#0B0C0B;
+    padding:0 .16em;
+    border-radius:3px;
+    box-decoration-break:clone;
+    -webkit-box-decoration-break:clone;
+  }
+  p{margin:0 0 16px}
+  .lede{font-size:1.05rem;color:var(--fg);max-width:52ch}
+  .fine{font-size:.86rem;color:var(--muted);line-height:1.55}
+
+  .num{font-family:var(--mono);font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+  .alarm{color:var(--arterial)}
+
+  /* ---------- header ---------- */
+  .top{
+    position:sticky;top:0;z-index:40;
+    background:rgba(11,12,11,.94);
+    border-bottom:1px solid var(--line);
+  }
+  .top .wrap{display:flex;align-items:center;justify-content:space-between;height:62px;gap:16px}
+  .mark{
+    font-family:var(--display);font-weight:800;font-size:1.05rem;letter-spacing:-.02em;
+    background:var(--bone);color:#0B0C0B;padding:4px 10px;border-radius:6px;
+  }
+  .top nav{display:flex;align-items:center;gap:22px}
+  .top nav a{font-size:.86rem;color:var(--muted);transition:color 180ms ease}
+  .top nav a:hover{color:var(--bone)}
+  .top .btn{font-size:.82rem;padding:9px 15px}
+
+  /* ---------- buttons ---------- */
+  .btn{
+    display:inline-flex;align-items:center;gap:9px;
+    font-family:var(--body);font-weight:600;font-size:.94rem;
+    background:var(--bone);color:#0B0C0B;
+    border:1px solid var(--bone);border-radius:8px;
+    padding:13px 20px;cursor:pointer;
+    transition:opacity 180ms ease,transform 90ms ease;
+  }
+  .btn:hover{opacity:.86}
+  .btn:active{transform:translateY(1px)}
+  .btn--ghost{background:transparent;color:var(--bone);border-color:var(--line)}
+  .btn--ghost:hover{border-color:var(--bone);opacity:1}
+  .tile--invert .btn{background:#0B0C0B;color:var(--bone);border-color:#0B0C0B}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--arterial);outline-offset:3px;border-radius:6px}
+
+  /* ---------- howl meter ---------- */
+  .howl{display:flex;align-items:flex-end;gap:3px;height:22px}
+  .howl i{
+    display:block;width:3px;border-radius:1px;
+    background:var(--bone);opacity:.12;
+    transform:scaleY(0);transform-origin:bottom;
+    transition:transform 520ms cubic-bezier(.2,.7,.3,1),opacity 300ms ease;
+  }
+  .howl.lit i{transform:scaleY(1)}
+  .howl.lit i.on{opacity:1}
+  .tile--invert .howl i{background:#0B0C0B}
+  .howl--sm{height:14px}
+  .howl--sm i{width:2px}
+
+  /* ---------- relay dot ---------- */
+  .dot{
+    display:inline-block;width:7px;height:7px;border-radius:50%;
+    background:var(--arterial);margin-right:7px;vertical-align:middle;
+    animation:pulse 4s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+
+  /* ---------- sections ---------- */
+  section{padding:72px 0}
+  .sec-head{margin-bottom:26px;max-width:60ch}
+  .sec-head p{margin-top:12px}
+
+  /* ---------- hero ---------- */
+  .hero{padding:64px 0 8px}
+  .hero .claim{grid-column:span 7;display:flex;flex-direction:column;justify-content:center;padding:38px 34px}
+  .hero .plate{grid-column:span 5;padding:16px;display:flex;flex-direction:column;gap:var(--gutter)}
+  .hero .plate .post{flex:1;display:flex;flex-direction:column;min-height:0}
+  .hero h1{margin-bottom:20px}
+  .hero .lede{margin-bottom:26px}
+  .cta-row{display:flex;flex-wrap:wrap;gap:10px}
+
+  .post{
+    background:var(--well);border:1px solid var(--line);border-radius:10px;overflow:hidden;
+  }
+  .post img{width:100%;height:150px;object-fit:cover;filter:grayscale(1) contrast(1.05)}
+  /* height:0 keeps the photos out of the plate's intrinsic height, so the
+     claim tile sets the hero row and the images grow to fill it. */
+  .hero .plate .post img{flex:1 1 0;height:0;min-height:0}
+  .post .meta{padding:11px 13px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .rank{
+    font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:.13em;
+    padding:3px 7px;border-radius:4px;border:1px solid var(--line);color:var(--muted);
+  }
+  .rank--alpha{background:var(--bone);color:#0B0C0B;border-color:var(--bone)}
+  .rank--held{color:var(--arterial);border-color:rgba(230,75,56,.5)}
+  .post .km{font-family:var(--mono);font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+  /* ---------- telemetry strip ---------- */
+  .strip{margin-top:var(--gutter)}
+  .stat{grid-column:span 3;padding:20px 22px}
+  .stat .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:9px}
+  .stat .v{font-family:var(--mono);font-size:1.65rem;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1}
+  .stat .v.alarm{color:var(--arterial)}
+  .stat .n{font-size:.78rem;color:var(--muted);margin-top:8px;line-height:1.4}
+
+  /* ---------- features ---------- */
+  .feat{grid-column:span 4;display:flex;flex-direction:column;gap:16px}
+  .feat h3{margin-bottom:2px}
+  .feat p{margin:0;font-size:.93rem;color:var(--muted);line-height:1.62}
+  .tile--invert.feat p{color:#3A3C37}
+
+  /* ---------- testimonials ---------- */
+  .quote{grid-column:span 4;display:flex;flex-direction:column;justify-content:space-between;gap:22px}
+  .quote blockquote{margin:0;font-size:1.02rem;line-height:1.55;color:var(--ink)}
+  .who{display:flex;align-items:center;gap:12px}
+  .monogram{
+    flex:0 0 auto;width:42px;height:42px;border-radius:8px;
+    background:var(--well);border:1px solid var(--line);
+    display:grid;place-items:center;
+    font-family:var(--display);font-weight:700;font-size:.9rem;color:var(--bone);
+  }
+  .who .name{font-weight:600;font-size:.9rem;color:var(--ink);line-height:1.25}
+  .who .role{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.04em}
+
+  /* ---------- pricing ---------- */
+  .tier{grid-column:span 4;display:flex;flex-direction:column}
+  .tier .name{font-family:var(--display);font-weight:700;font-size:1.3rem;letter-spacing:-.01em;color:var(--ink)}
+  .tier--top .name{color:#0B0C0B}
+  .tier .price{font-family:var(--mono);font-size:1.9rem;font-weight:500;margin:14px 0 4px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .tier .tag{font-size:.88rem;color:var(--muted);margin-bottom:20px}
+  .tier--top .tag{color:#4A4C47}
+  .tier ul{list-style:none;margin:0 0 24px;padding:0;display:flex;flex-direction:column;gap:11px;flex:1}
+  .tier li{font-size:.89rem;line-height:1.5;color:var(--fg);display:flex;gap:11px;align-items:flex-start}
+  .tier--top li{color:#25271F}
+  .tier li .howl{flex:0 0 auto;margin-top:3px}
+
+  /* ---------- closing ---------- */
+  .close{grid-column:span 12;text-align:center;padding:56px 30px}
+  .close h2{margin-bottom:14px}
+  .close p{margin:0 auto 26px;max-width:46ch;color:#3A3C37}
+
+  /* ---------- footer ---------- */
+  footer{border-top:1px solid var(--line);padding:30px 0 46px}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
+  footer a.home{font-size:.86rem;color:var(--muted);transition:color 180ms ease}
+  footer a.home:hover{color:var(--bone)}
+  footer .disc{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.03em}
+
+  /* ---------- reveal ---------- */
+  /* Reveals only engage when JS is running, so the page is never blank without it. */
+  .js .rise{opacity:0;transform:translateY(6px);transition:opacity 420ms ease,transform 420ms ease}
+  .js .rise.in{opacity:1;transform:none}
+
+  @media (max-width:900px){
+    .hero .claim,.hero .plate,.feat,.quote,.tier{grid-column:span 12}
+    .stat{grid-column:span 6}
+    .hero .claim{padding:30px 24px}
+    section{padding:52px 0}
+  }
+  @media (max-width:520px){
+    .tile{padding:22px}
+    .top nav a:not(.btn){display:none}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+    .js .rise{opacity:1;transform:none}
+    .howl i{transform:scaleY(1)}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <span class="mark">Range</span>
+    <nav>
+      <a href="#relay">Relay</a>
+      <a href="#voices">Packs</a>
+      <a href="#tiers">Tiers</a>
+      <a class="btn" href="./demo.html">Open the demo &rarr;</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="lattice">
+        <div class="tile claim rise">
+          <p class="eyebrow">Acoustic distribution network</p>
+          <h1>Every wolf is a <span class="flood">distribution</span> channel.</h1>
+          <p class="lede">Range is the photo network for pack animals. Post a kill, mark the range it came from, and let the howl relay carry it across nine adjacent territories before the ravens file their version.</p>
+          <div class="cta-row">
+            <a class="btn" href="./demo.html">Claim your range</a>
+            <a class="btn btn--ghost" href="#relay">How the relay works</a>
+          </div>
+        </div>
+
+        <div class="tile plate rise">
+          <article class="post">
+            <img src="post-1.webp" alt="A grey wolf standing in profile on a frost-cracked ridgeline at moonrise" loading="eager" width="720" height="720">
+            <div class="meta">
+              <span class="rank rank--alpha">ALPHA</span>
+              <span class="km"><span class="dot"></span>96 km &middot; 9 packs</span>
+            </div>
+          </article>
+          <article class="post">
+            <img src="post-3.webp" alt="A wolf mid-howl, head thrown back against a pale overcast sky" loading="lazy" width="720" height="720">
+            <div class="meta">
+              <span class="rank">MID-PACK</span>
+              <span class="km">11 km &middot; 1 pack</span>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <!-- TELEMETRY -->
+      <div class="lattice strip">
+        <div class="tile stat rise">
+          <div class="k">Relayed tonight</div>
+          <div class="v num">1,204 km</div>
+          <div class="n">Across 61 participating ranges.</div>
+        </div>
+        <div class="tile stat rise">
+          <div class="k">In flight now</div>
+          <div class="v num alarm"><span class="dot"></span>38</div>
+          <div class="n">Posts mid-chain, awaiting a repeat.</div>
+        </div>
+        <div class="tile stat rise">
+          <div class="k">Median latency</div>
+          <div class="v num">4 nights</div>
+          <div class="n">Six in weather. We publish this figure.</div>
+        </div>
+        <div class="tile stat rise">
+          <div class="k">Under verification</div>
+          <div class="v num">217</div>
+          <div class="n">Perimeters pending an unaffiliated sniff.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="relay">
+    <div class="wrap">
+      <div class="sec-head rise">
+        <p class="eyebrow">What the network does</p>
+        <h2>Three systems, none of them optional.</h2>
+        <p class="fine">Range does not run experiments on the ranking model. The ranking model is the pack, and the pack was here first.</p>
+      </div>
+      <div class="lattice">
+        <div class="tile feat rise">
+          <div class="howl" data-lit="5"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <h3>Howl Relay</h3>
+          <p>Posts propagate by acoustic handoff. One howl moves your photograph roughly 11 km, then holds until a neighboring pack repeats it. Median delivery is four nights. Weather adds two. We have modeled this extensively and consider it acceptable.</p>
+        </div>
+        <div class="tile tile--invert feat rise">
+          <div class="howl" data-lit="10"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <h3>Hierarchy Feed</h3>
+          <p>The feed is ranked by rank. Breeding pairs surface first in every territory they border, permanently. Mid-pack wolves may purchase placement by the night. Omegas are shown their own posts, which our retention data suggests is sufficient.</p>
+        </div>
+        <div class="tile feat rise">
+          <div class="howl" data-lit="3"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <h3>Scent-Verified Posting</h3>
+          <p>Every upload is authenticated against a marked perimeter before it enters the relay. If the scent does not match the geotag, the post is held for review by an unaffiliated pack with no standing in the dispute. Appeals resolve within one season.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section id="voices">
+    <div class="wrap">
+      <div class="sec-head rise">
+        <p class="eyebrow">From the ranges</p>
+        <h2>Wolves on the network.</h2>
+      </div>
+      <div class="lattice">
+        <div class="tile quote rise">
+          <blockquote>&ldquo;I posted an elk femur at moonrise. By the third night it had reached the Sawtooth pack. By the fifth it had reached a pack I have never met and would kill on sight. That is reach.&rdquo;</blockquote>
+          <div class="who">
+            <span class="monogram" aria-hidden="true">GM</span>
+            <span>
+              <span class="name">Grey Marla</span><br>
+              <span class="role">BREEDING FEMALE &middot; LOWER BITTERROOT</span>
+            </span>
+          </div>
+        </div>
+        <div class="tile quote rise">
+          <blockquote>&ldquo;The hierarchy feed showed me my own posts for eleven months. I assumed the network was small. I have since been told there are four thousand wolves on it.&rdquo;</blockquote>
+          <div class="who">
+            <span class="monogram" aria-hidden="true">TK</span>
+            <span>
+              <span class="name">Tuck</span><br>
+              <span class="role">OMEGA &middot; NINE MILE (TRANSFER PENDING)</span>
+            </span>
+          </div>
+        </div>
+        <div class="tile quote rise">
+          <blockquote>&ldquo;Our relay contract stipulates six wolves howling in sequence at 0340. Two of them are not committed to the work and you can see it in the kilometer numbers.&rdquo;</blockquote>
+          <div class="who">
+            <span class="monogram" aria-hidden="true">AR</span>
+            <span>
+              <span class="name">Anders Rulle</span><br>
+              <span class="role">HEAD OF ACOUSTIC DISTRIBUTION</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="tiers">
+    <div class="wrap">
+      <div class="sec-head rise">
+        <p class="eyebrow">Network tiers</p>
+        <h2>Placement is purchasable. Rank is not.</h2>
+        <p class="fine">Tiers govern how far a post travels and how many markers you may hold. They do not govern where you sit in the pack, and we would ask you to stop writing in about it.</p>
+      </div>
+      <div class="lattice">
+        <div class="tile tier rise">
+          <span class="name">Omega</span>
+          <span class="price num">$0</span>
+          <span class="tag">Post freely. Nothing leaves the den.</span>
+          <ul>
+            <li><span class="howl howl--sm" data-lit="1"><i></i><i></i><i></i><i></i><i></i></span>Unlimited uploads, unrelayed</li>
+            <li><span class="howl howl--sm" data-lit="1"><i></i><i></i><i></i><i></i><i></i></span>A feed consisting entirely of your own posts, in order</li>
+            <li><span class="howl howl--sm" data-lit="1"><i></i><i></i><i></i><i></i><i></i></span>One howl per lunar cycle, unamplified</li>
+            <li><span class="howl howl--sm" data-lit="1"><i></i><i></i><i></i><i></i><i></i></span>Scent verification on a single marker, renewed annually</li>
+          </ul>
+          <a class="btn btn--ghost" href="./demo.html">Start at the bottom</a>
+        </div>
+
+        <div class="tile tier rise">
+          <span class="name">Territorial</span>
+          <span class="price num">$44 / mo</span>
+          <span class="tag">For wolves with a perimeter to defend.</span>
+          <ul>
+            <li><span class="howl howl--sm" data-lit="3"><i></i><i></i><i></i><i></i><i></i></span>Scent verification on nine boundary markers</li>
+            <li><span class="howl howl--sm" data-lit="3"><i></i><i></i><i></i><i></i><i></i></span>Relay priority through two adjacent packs</li>
+            <li><span class="howl howl--sm" data-lit="3"><i></i><i></i><i></i><i></i><i></i></span>Rival-sighting alerts, delivered nightly at 0340</li>
+            <li><span class="howl howl--sm" data-lit="3"><i></i><i></i><i></i><i></i><i></i></span>Denning-season archive with automatic litter tagging</li>
+          </ul>
+          <a class="btn btn--ghost" href="./demo.html">Hold the line</a>
+        </div>
+
+        <div class="tile tile--invert tier tier--top rise">
+          <span class="name">Apex</span>
+          <span class="price num">$2,400 / qtr</span>
+          <span class="tag">Ranked first everywhere, structurally.</span>
+          <ul>
+            <li><span class="howl howl--sm" data-lit="5"><i></i><i></i><i></i><i></i><i></i></span>Permanent top-of-feed placement across your range and every range bordering it</li>
+            <li><span class="howl howl--sm" data-lit="5"><i></i><i></i><i></i><i></i><i></i></span>A retained relay chorus of six wolves under contract</li>
+            <li><span class="howl howl--sm" data-lit="5"><i></i><i></i><i></i><i></i><i></i></span>Right of first refusal on any post tagged inside your territory</li>
+            <li><span class="howl howl--sm" data-lit="5"><i></i><i></i><i></i><i></i><i></i></span>Quarterly dominance audit by a biologist with no pack affiliation</li>
+          </ul>
+          <a class="btn" href="./demo.html">Take the top</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLOSING -->
+  <section>
+    <div class="wrap">
+      <div class="lattice">
+        <div class="tile tile--invert close rise">
+          <h2>The console is live. The relay is slower.</h2>
+          <p>Open the feed the way a wolf sees it: ranked by rank, verified by scent, and four nights behind.</p>
+          <a class="btn" href="./demo.html">Open the demo &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="home" href="/">&larr; theworstaistudioever</a>
+    <span class="disc">RANGE IS NOT A REAL COMPANY. WOLVES CANNOT OPERATE A PHONE.</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var supported = 'IntersectionObserver' in window;
+  if (supported && !reduce) document.documentElement.classList.add('js');
+
+  function fillHowl(el){
+    var lit = parseInt(el.getAttribute('data-lit') || '0', 10);
+    var bars = el.querySelectorAll('i');
+    bars.forEach(function(bar, i){
+      bar.style.height = (5 + ((i * 7) % 12) + (i < lit ? 5 : 0)) + 'px';
+      if (i < lit) bar.classList.add('on');
+      bar.style.transitionDelay = reduce ? '0ms' : (i * 34) + 'ms';
+    });
+    el.classList.add('lit');
+  }
+
+  if (reduce || !supported) {
+    document.querySelectorAll('.howl').forEach(fillHowl);
+    document.querySelectorAll('.rise').forEach(function(el){ el.classList.add('in'); });
+    return;
+  }
+
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if (!entry.isIntersecting) return;
+      var el = entry.target;
+      if (el.classList.contains('howl')) { fillHowl(el); }
+      else {
+        var sibs = Array.prototype.slice.call(el.parentNode.children).filter(function(n){
+          return n.classList && n.classList.contains('rise');
+        });
+        el.style.transitionDelay = (sibs.indexOf(el) * 40) + 'ms';
+        el.classList.add('in');
+      }
+      io.unobserve(el);
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+
+  document.querySelectorAll('.rise, .howl').forEach(function(el){ io.observe(el); });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,81 @@
+[2026-08-28T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-08-28T08:00:02Z] invoking claude -p
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/github/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/github/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.openclaw/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.openclaw/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.claude/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.claude/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/aurevon-status/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/aurevon-status/**) instead (Edit rules cover all file-editing tools).
+Error: Reached max turns (80)[2026-08-28T08:31:43Z] RUN FAILED: claude -p exited non-zero
+
+===== SALVAGE SUMMARY (written manually after the run, not by the agent) =====
+
+The 2026-08-28 run did NOT complete. `claude -p` exhausted its 80-turn budget at
+08:31:43Z and exited non-zero, so Step 8 (VALIDATE & RECORD) and Step 9 (DONE)
+never ran. The entry itself was already finished and valid at that point; the
+history append, this summary, and the commit were done by hand afterwards.
+
+RUN 2026-08-28 — instagram-for-wolves
+
+STEP 1 — ROLL
+  company: Instagram
+  subject: wolves
+  slug:    instagram-for-wolves
+  rerolls: 0
+
+STEP 2 — CONCEPT
+  product:   Range
+  one-liner: a photo network for wolves where reach is measured in kilometers of
+             audible howl and the feed is ranked by rank.
+  anti-ai-slop invoked before any copy was written.
+
+STEP 3 — PLAN (visual direction)
+  style:     quarantined-accent monochrome bento lattice, basalt dark mode
+  palette:   Basalt / Bone / Quarantined Arterial
+             primary #EFEBE1, accent #E64B38, bg #0B0C0B, fg #DEDACF,
+             muted #7C8079, ink #F4F1E9
+  fonts:     display Syne, body IBM Plex Sans, telemetry IBM Plex Mono
+  signature: the inversion tile (one bone-flooded tile per section) plus the
+             CSS howl meter.
+  ui-ux-pro-max and frontend-design both invoked.
+
+STEP 4 — IMAGES
+  budget: 4 available, 4 spent, 0 skipped.
+  allocation: whole budget on demo subject assets (post-1..post-4), the four
+              near-monochrome wolf photographs filling the demo feed grid and
+              the two hero feed tiles. Hero image and testimonial headshots
+              deliberately skipped in favour of CSS treatments.
+  API trouble: Gemini was returning HTTP 503 throughout this window. Ten 503s
+              across the step. Four images were still produced, but three script
+              invocations died outright on 503 and had to be re-invoked, and the
+              daily counter reached 7 for 4 delivered images because it charged
+              for the failed calls. Both issues fixed the same day — see the
+              gen-image.sh retry/accounting change.
+
+STEP 5-7 — BUILD LANDING, BUILD DEMO, GALLERY REBUILD
+  All completed. Gallery regenerated cleanly (new slide, count, and dot only).
+
+STEP 8 — VALIDATE & RECORD
+  validate-entry.sh site instagram-for-wolves: OK
+  Recorded to state/history.json by hand during the salvage.
+
+WHY THE RUN FAILED
+  After the gallery rebuild the agent began an unrequested browser
+  screenshot/critique loop: it hit the missing-browser error from shoot-site.sh,
+  followed Playwright's suggestion to run `npx playwright install chromium`,
+  installed the browser mid-run, and then spent its remaining turns on a
+  render -> read PNG -> tweak -> re-render cycle across index.html and
+  demo.html. That loop consumed 35 of the 80 turns and the run hit the cap
+  before recording anything. pipeline.md never asked for it; the prompt came
+  from the frontend-design skill's "critique your own work, taking screenshots
+  if your environment supports it."
+
+  Fixed same-day:
+   - pipeline.md Step 8 is now an explicit checkpoint that must finish before
+     any optional work, and the visual check is a new hard-capped Step 9
+     (2 captures, 3 edits, 1 re-capture, skip if no browser, never install).
+   - shoot-site.sh preflights for an installed browser and exits 3 with
+     SHOOT_NO_BROWSER rather than surfacing Playwright's "run npx playwright
+     install" banner.
+   - gen-image.sh retries 3x with backoff on 429/5xx and only charges the daily
+     cap for calls that actually returned an image.

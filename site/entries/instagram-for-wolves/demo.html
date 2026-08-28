@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Range · Feed console</title>
+<meta name="description" content="The Range feed console: posts ranked by rank, verified by scent, relayed by howl.">
+<meta name="theme-color" content="#0B0C0B">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Range · Feed console">
+<meta property="og:description" content="The Range feed console: posts ranked by rank, verified by scent, relayed by howl.">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0C0B;
+    --surface:#141614;
+    --well:#0E100E;
+    --line:#262A25;
+    --bone:#EFEBE1;
+    --fg:#DEDACF;
+    --muted:#7C8079;
+    --ink:#F4F1E9;
+    --arterial:#E64B38;
+    --gutter:14px;
+    --radius:14px;
+    --display:'Syne','Helvetica Neue',Helvetica,Arial,sans-serif;
+    --body:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--bg);color:var(--fg);
+    font-family:var(--body);font-size:15px;line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  img{display:block;max-width:100%}
+  button{font:inherit;color:inherit;cursor:pointer}
+  .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  :focus-visible{outline:2px solid var(--arterial);outline-offset:2px;border-radius:6px}
+
+  .shell{max-width:1180px;margin:0 auto;padding:0 18px 64px}
+
+  /* ---------- chrome ---------- */
+  .chrome{
+    position:sticky;top:0;z-index:30;
+    background:rgba(11,12,11,.95);border-bottom:1px solid var(--line);
+  }
+  .chrome .row{
+    max-width:1180px;margin:0 auto;padding:0 18px;
+    height:58px;display:flex;align-items:center;gap:16px;
+  }
+  .back{font-size:.84rem;color:var(--muted);text-decoration:none;transition:color 180ms ease;white-space:nowrap}
+  .back:hover{color:var(--bone)}
+  .mark{
+    font-family:var(--display);font-weight:800;font-size:.95rem;letter-spacing:-.02em;
+    background:var(--bone);color:#0B0C0B;padding:3px 9px;border-radius:6px;
+  }
+  .chrome .live{
+    margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--muted);
+    letter-spacing:.08em;display:flex;align-items:center;gap:7px;white-space:nowrap;
+  }
+  .dot{
+    width:7px;height:7px;border-radius:50%;background:var(--arterial);
+    animation:pulse 4s ease-in-out infinite;flex:0 0 auto;
+  }
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+
+  /* ---------- header block ---------- */
+  .head{padding:28px 0 18px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:18px;justify-content:space-between}
+  .head h1{
+    font-family:var(--display);font-weight:800;font-size:1.55rem;letter-spacing:-.02em;
+    margin:0;color:var(--ink);
+  }
+  .head .sub{font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin:6px 0 0}
+  .gauge{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:12px 18px;display:flex;align-items:center;gap:16px;
+  }
+  .gauge .k{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);line-height:1.4}
+  .gauge .v{font-family:var(--mono);font-size:1.35rem;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.1}
+
+  /* ---------- filter chips ---------- */
+  .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:var(--gutter)}
+  .chip{
+    background:transparent;border:1px solid var(--line);border-radius:999px;
+    padding:7px 14px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+    color:var(--muted);transition:border-color 180ms ease,color 180ms ease;
+  }
+  .chip:hover:not(:disabled){border-color:var(--bone);color:var(--bone)}
+  .chip[aria-pressed="true"]{background:var(--bone);border-color:var(--bone);color:#0B0C0B}
+  .chip:disabled{cursor:not-allowed;color:var(--arterial);border-color:rgba(230,75,56,.4);opacity:1}
+  .bar .note{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-left:auto;letter-spacing:.06em}
+
+  /* ---------- feed lattice ---------- */
+  .feed{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--gutter);align-content:start}
+  .card{
+    grid-column:span 4;
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    overflow:hidden;display:flex;flex-direction:column;
+    transition:border-color 180ms ease;
+  }
+  .card:hover{border-color:rgba(239,235,225,.3)}
+  .card.sp6{grid-column:span 6}
+  .card.sp8{grid-column:span 8}
+  .card.pinned{border-color:var(--bone)}
+  /* height:auto is required — the width/height attributes are presentational
+     hints that otherwise beat aspect-ratio and stretch the photo to 720px. */
+  .card .shot{width:100%;height:auto;aspect-ratio:1/1;object-fit:cover;filter:grayscale(1) contrast(1.05);cursor:pointer}
+  .card.sp6 .shot{aspect-ratio:4/3}
+  .card.sp8 .shot{aspect-ratio:16/9}
+  .card .body{padding:15px 16px 16px;display:flex;flex-direction:column;gap:11px;flex:1}
+  .card .cap{font-size:.9rem;color:var(--fg);line-height:1.45;margin:0}
+  .card .who{font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:.06em}
+  .badges{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .tag{
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;
+    padding:3px 7px;border-radius:4px;border:1px solid var(--line);color:var(--muted);
+  }
+  .tag.alpha{background:var(--bone);color:#0B0C0B;border-color:var(--bone)}
+  .tag.held{color:var(--arterial);border-color:rgba(230,75,56,.5)}
+  .tag.pending{color:var(--fg);border-style:dashed}
+  .tag.pin{display:none}
+  .card.pinned .tag.pin{display:inline}
+  .relay{display:flex;align-items:center;gap:11px;margin-top:auto;padding-top:4px}
+  .howl{display:flex;align-items:flex-end;gap:2px;height:16px;flex:0 0 auto}
+  .howl i{display:block;width:2px;border-radius:1px;background:var(--bone);opacity:.12;transition:opacity 260ms ease}
+  .howl i.on{opacity:1}
+  .km{font-family:var(--mono);font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .detail{
+    margin-left:auto;background:transparent;border:1px solid var(--line);border-radius:7px;
+    padding:6px 11px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--muted);
+    transition:border-color 180ms ease,color 180ms ease;white-space:nowrap;
+  }
+  .detail:hover{border-color:var(--bone);color:var(--bone)}
+
+  /* ---------- sheet ---------- */
+  .scrim{
+    position:fixed;inset:0;background:rgba(6,7,6,.74);z-index:50;
+    display:none;align-items:center;justify-content:center;padding:20px;
+  }
+  .scrim.open{display:flex}
+  .sheet{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    width:min(560px,100%);max-height:88vh;overflow:auto;padding:26px;
+  }
+  .sheet h2{font-family:var(--display);font-weight:800;font-size:1.2rem;letter-spacing:-.02em;color:var(--ink);margin:0 0 4px}
+  .sheet .sub{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--muted);margin:0 0 18px}
+  .sheet .quote{font-size:.94rem;color:var(--fg);margin:0 0 18px}
+  .chain{list-style:none;margin:0 0 20px;padding:0;border-top:1px solid var(--line)}
+  .chain li{
+    display:flex;align-items:baseline;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);
+    font-family:var(--mono);font-size:11.5px;font-variant-numeric:tabular-nums;
+  }
+  .chain .pack{color:var(--fg);flex:1;letter-spacing:.04em}
+  .chain .t,.chain .d{color:var(--muted)}
+  .chain li.self .pack{color:var(--arterial)}
+  .sheet .actions{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{
+    background:var(--bone);color:#0B0C0B;border:1px solid var(--bone);border-radius:8px;
+    padding:11px 18px;font-weight:600;font-size:.9rem;
+    transition:opacity 180ms ease,transform 90ms ease;
+  }
+  .btn:hover:not(:disabled){opacity:.86}
+  .btn:active:not(:disabled){transform:translateY(1px)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn.ghost{background:transparent;color:var(--bone);border-color:var(--line)}
+  .btn.ghost:hover{border-color:var(--bone);opacity:1}
+
+  @media (max-width:900px){
+    .card,.card.sp6,.card.sp8{grid-column:span 6}
+    .card.sp8 .shot{aspect-ratio:4/3}
+  }
+  @media (max-width:560px){
+    .card,.card.sp6,.card.sp8{grid-column:span 12}
+    .card.sp8 .shot,.card.sp6 .shot{aspect-ratio:4/3}
+    .head{padding-top:20px}
+    .gauge{width:100%}
+    .bar .note{margin-left:0;width:100%}
+    .relay{flex-wrap:wrap;gap:8px}
+    .detail{margin-left:0}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  }
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="row">
+    <a class="back" href="./index.html">&larr; back to the pitch</a>
+    <span class="mark">Range</span>
+    <span class="live"><span class="dot"></span>RELAY ACTIVE &middot; NORTHERN RANGE</span>
+  </div>
+</div>
+
+<div class="shell">
+
+  <div class="head">
+    <div>
+      <h1>Feed console</h1>
+      <p class="sub">Signed in as Tuck &middot; Nine Mile Pack &middot; Omega</p>
+    </div>
+    <div class="gauge">
+      <span class="k">Audible range<br>tonight</span>
+      <span class="v num" id="gauge">1,204 km</span>
+    </div>
+  </div>
+
+  <div class="bar">
+    <button class="chip" aria-pressed="true" data-filter="hierarchy">HIERARCHY</button>
+    <button class="chip" aria-pressed="false" data-filter="nearest">NEAREST RANGE</button>
+    <button class="chip" disabled title="Territorial and above">CHRONOLOGICAL &middot; LOCKED</button>
+    <span class="note" id="count"></span>
+  </div>
+
+  <div class="feed" id="feed">
+
+    <article class="card" id="p1" data-id="p1">
+      <img class="shot" src="post-1.webp" alt="A grey wolf standing in profile on a frost-cracked ridgeline at moonrise" width="720" height="720">
+      <div class="body">
+        <div class="badges">
+          <span class="tag alpha">ALPHA</span>
+          <span class="tag" data-scent>SCENT VERIFIED</span>
+          <span class="tag pin">PINNED BY RANK</span>
+        </div>
+        <p class="cap">Ridgeline at moonrise. Marked the north face on the way up, so the geotag will clear.</p>
+        <span class="who">GREY MARLA &middot; LOWER BITTERROOT</span>
+        <div class="relay">
+          <span class="howl" aria-hidden="true"></span>
+          <span class="km" data-km></span>
+          <button class="detail">RELAY CHAIN &rarr;</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="card" id="p2" data-id="p2">
+      <img class="shot" src="post-2.webp" alt="Close portrait of a grey wolf turned three-quarters toward the camera" loading="lazy" width="720" height="720">
+      <div class="body">
+        <div class="badges">
+          <span class="tag">MID-PACK</span>
+          <span class="tag" data-scent>SCENT VERIFIED</span>
+          <span class="tag pin">PINNED BY RANK</span>
+        </div>
+        <p class="cap">Third of six in the 0340 chorus. He held the note. The other two did not.</p>
+        <span class="who">ANDERS RULLE &middot; NORTHERN RANGE</span>
+        <div class="relay">
+          <span class="howl" aria-hidden="true"></span>
+          <span class="km" data-km></span>
+          <button class="detail">RELAY CHAIN &rarr;</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="card" id="p3" data-id="p3">
+      <img class="shot" src="post-3.webp" alt="A wolf mid-howl, head thrown back against a pale overcast sky" loading="lazy" width="720" height="720">
+      <div class="body">
+        <div class="badges">
+          <span class="tag">MID-PACK</span>
+          <span class="tag pending" data-scent>SCENT PENDING</span>
+          <span class="tag pin">PINNED BY RANK</span>
+        </div>
+        <p class="cap">Posting the howl that carries the other posts. Range has not indexed the irony.</p>
+        <span class="who">HALDIS &middot; SLOUGH CREEK</span>
+        <div class="relay">
+          <span class="howl" aria-hidden="true"></span>
+          <span class="km" data-km></span>
+          <button class="detail">RELAY CHAIN &rarr;</button>
+        </div>
+      </div>
+    </article>
+
+    <article class="card" id="p4" data-id="p4">
+      <img class="shot" src="post-4.webp" alt="Two grey wolves standing nose to nose in shallow snow" loading="lazy" width="720" height="720">
+      <div class="body">
+        <div class="badges">
+          <span class="tag">OMEGA</span>
+          <span class="tag held" data-scent>HELD</span>
+          <span class="tag pin">PINNED BY RANK</span>
+        </div>
+        <p class="cap">Me and my brother. Held for review since March. The reviewing pack has not replied.</p>
+        <span class="who">TUCK &middot; NINE MILE (YOU)</span>
+        <div class="relay">
+          <span class="howl" aria-hidden="true"></span>
+          <span class="km" data-km></span>
+          <button class="detail">RELAY CHAIN &rarr;</button>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</div>
+
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script>
+(function(){
+  var DATA = {
+    p1: { rank:'ALPHA', pinned:true, km:96, hops:9, dist:4, scent:'VERIFIED',
+          who:'GREY MARLA · LOWER BITTERROOT',
+          cap:'Ridgeline at moonrise. Marked the north face on the way up, so the geotag will clear.',
+          chain:[['LOWER BITTERROOT','0341','0 km'],['SAWTOOTH','0402','11 km'],['WEST FORK','0518','27 km'],['ELK CREEK','0044','52 km'],['UNAFFILIATED','0339','96 km']] },
+    p2: { rank:'MID-PACK', pinned:false, km:33, hops:3, dist:12, scent:'VERIFIED',
+          who:'ANDERS RULLE · NORTHERN RANGE',
+          cap:'Third of six in the 0340 chorus. He held the note. The other two did not.',
+          chain:[['NORTHERN RANGE','0340','0 km'],['SLOUGH CREEK','0357','11 km'],['JUNCTION BUTTE','0511','33 km']] },
+    p3: { rank:'MID-PACK', pinned:false, km:11, hops:1, dist:6, scent:'PENDING',
+          who:'HALDIS · SLOUGH CREEK',
+          cap:'Posting the howl that carries the other posts. Range has not indexed the irony.',
+          chain:[['SLOUGH CREEK','0338','0 km'],['NORTHERN RANGE','0359','11 km']] },
+    p4: { rank:'OMEGA', pinned:false, km:0, hops:0, dist:0, scent:'HELD',
+          who:'TUCK · NINE MILE (YOU)',
+          cap:'Me and my brother. Held for review since March. The reviewing pack has not replied.',
+          chain:[['NINE MILE','2214','0 km']] }
+  };
+  var RANK = { 'ALPHA':0, 'MID-PACK':1, 'OMEGA':2 };
+  var IDS = ['p1','p2','p3','p4'];
+
+  var feed = document.getElementById('feed');
+  var scrim = document.getElementById('scrim');
+  var sheet = document.getElementById('sheet');
+  var gauge = document.getElementById('gauge');
+  var count = document.getElementById('count');
+  var mode = 'hierarchy';
+  var total = 1204;
+  var lastFocus = null;
+
+  function bars(el, hops){
+    var out = '';
+    for (var i = 0; i < 9; i++){
+      var h = 4 + ((i * 5) % 9) + (i < hops ? 4 : 0);
+      out += '<i class="' + (i < hops ? 'on' : '') + '" style="height:' + h + 'px"></i>';
+    }
+    el.innerHTML = out;
+  }
+
+  function paint(id){
+    var d = DATA[id];
+    var card = document.getElementById(id);
+    bars(card.querySelector('.howl'), d.hops);
+    card.querySelector('[data-km]').textContent =
+      d.km + ' km · ' + d.hops + (d.hops === 1 ? ' pack' : ' packs');
+  }
+
+  function render(){
+    var order = IDS.slice().sort(function(a, b){
+      if (mode === 'hierarchy') return RANK[DATA[a].rank] - RANK[DATA[b].rank] || DATA[b].km - DATA[a].km;
+      return DATA[a].dist - DATA[b].dist;
+    });
+
+    // Spans that fill the 12-column lattice exactly, so no slot is left empty.
+    var spans = mode === 'hierarchy' ? [8, 4, 6, 6] : [6, 6, 6, 6];
+
+    order.forEach(function(id, i){
+      var card = document.getElementById(id);
+      card.style.order = i;
+      card.classList.remove('sp6', 'sp8');
+      if (spans[i] === 6) card.classList.add('sp6');
+      if (spans[i] === 8) card.classList.add('sp8');
+      card.classList.toggle('pinned', mode === 'hierarchy' && DATA[id].pinned);
+      paint(id);
+    });
+
+    count.textContent = mode === 'hierarchy'
+      ? IDS.length + ' POSTS · BREEDING PAIRS PINNED, NOT REMOVABLE'
+      : IDS.length + ' POSTS · SORTED BY DISTANCE FROM YOUR MARKER';
+  }
+
+  function openSheet(id){
+    var d = DATA[id];
+    lastFocus = document.activeElement;
+
+    var rows = d.chain.map(function(c, i){
+      var self = c[0] === 'NINE MILE' ? ' class="self"' : '';
+      return '<li' + self + '><span class="pack">' + (i + 1) + '. ' + c[0] + '</span>' +
+             '<span class="t">' + c[1] + '</span><span class="d">' + c[2] + '</span></li>';
+    }).join('');
+
+    var canHowl = d.scent !== 'HELD';
+    sheet.innerHTML =
+      '<h2 id="sheetTitle">Relay chain</h2>' +
+      '<p class="sub">' + d.who + ' · ' + d.rank + ' · SCENT ' + d.scent + '</p>' +
+      '<p class="quote">' + d.cap + '</p>' +
+      '<ul class="chain">' + rows + '</ul>' +
+      '<div class="actions">' +
+        '<button class="btn" id="howlBtn"' + (canHowl ? '' : ' disabled') + '>' +
+          (canHowl ? 'Howl this on (+11 km)' : 'Held for review') + '</button>' +
+        '<button class="btn ghost" id="closeBtn">Close</button>' +
+      '</div>';
+
+    scrim.classList.add('open');
+    var closeBtn = document.getElementById('closeBtn');
+    closeBtn.addEventListener('click', closeSheet);
+    closeBtn.focus();
+
+    if (canHowl){
+      var howlBtn = document.getElementById('howlBtn');
+      howlBtn.addEventListener('click', function(){
+        d.km += 11;
+        d.hops += 1;
+        d.chain.push(['NINE MILE', '0341', d.km + ' km']);
+        total += 11;
+        gauge.textContent = total.toLocaleString('en-US') + ' km';
+        howlBtn.disabled = true;
+        howlBtn.textContent = 'Repeated. Waiting on the next pack.';
+        render();
+      });
+    }
+  }
+
+  function closeSheet(){
+    scrim.classList.remove('open');
+    sheet.innerHTML = '';
+    if (lastFocus) lastFocus.focus();
+  }
+
+  feed.addEventListener('click', function(e){
+    if (!e.target.closest('.detail') && !e.target.closest('.shot')) return;
+    var card = e.target.closest('.card');
+    if (card) openSheet(card.getAttribute('data-id'));
+  });
+
+  scrim.addEventListener('click', function(e){ if (e.target === scrim) closeSheet(); });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && scrim.classList.contains('open')) closeSheet();
+  });
+
+  document.querySelectorAll('.chip[data-filter]').forEach(function(chip){
+    chip.addEventListener('click', function(){
+      mode = chip.getAttribute('data-filter');
+      document.querySelectorAll('.chip[data-filter]').forEach(function(c){
+        c.setAttribute('aria-pressed', String(c === chip));
+      });
+      render();
+    });
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
