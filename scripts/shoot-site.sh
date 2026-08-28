@@ -29,6 +29,18 @@ VIEWPORT="1440,900"
 WAIT_MS="2500"
 PW="npx --yes playwright@1.60.0"
 
+# Browser preflight. Playwright's own "Executable doesn't exist" error helpfully
+# prints `npx playwright install` — which the 2026-08-28 daily run followed,
+# downloading a browser mid-run and opening an unbounded screenshot-critique
+# loop that ate the turn budget. Fail fast and unambiguously instead: this
+# script captures with what is already installed, and never installs anything.
+# Exit 3 = "no browser, skip the capture", distinct from exit 1 = real failure.
+if ! ls -d "$HOME/.cache/ms-playwright"/chromium-* >/dev/null 2>&1; then
+  echo "shoot-site: SHOOT_NO_BROWSER — no chromium in ~/.cache/ms-playwright" >&2
+  echo "shoot-site: this script never installs browsers; skip the capture step." >&2
+  exit 3
+fi
+
 echo "shooting (full-page): $URL -> $OUT_DIR/$SLUG.png"
 $PW screenshot --full-page \
   --viewport-size="$VIEWPORT" \

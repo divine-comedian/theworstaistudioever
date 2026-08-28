@@ -105,6 +105,91 @@ else
   fi
 fi
 
+# --- HTTP retry / counter-accounting tests ------------------------------------
+# Regression cover for 2026-08-28: Gemini returned ten consecutive 503s, and the
+# counter (then incremented before the call) charged the daily budget for calls
+# that produced no image. A `curl` shim on PATH replays a scripted sequence of
+# HTTP codes so these run offline.
+SHIM="$TMP/shim"
+mkdir -p "$SHIM"
+cat > "$SHIM/curl" <<'SHIMEOF'
+#!/usr/bin/env bash
+# Replays codes from $SHIM_CODES (space separated), one per invocation.
+# Honours `-o <file>` and prints the code, like `curl -o F -w '%{http_code}'`.
+OUT=""
+prev=""
+for a in "$@"; do
+  [[ "$prev" == "-o" ]] && OUT="$a"
+  prev="$a"
+done
+N="$(cat "$SHIM_STATE" 2>/dev/null || echo 0)"
+N=$((N + 1))
+echo "$N" > "$SHIM_STATE"
+read -r -a CODES <<< "$SHIM_CODES"
+IDX=$((N - 1))
+CODE="${CODES[$IDX]:-${CODES[${#CODES[@]}-1]}}"
+if [[ -n "$OUT" ]]; then
+  if [[ "$CODE" == "200" ]]; then
+    printf '{"candidates":[{"content":{"parts":[{"inlineData":{"data":"%s"}}]}}]}' \
+      "$(printf 'PNGDATA' | base64 -w0)" > "$OUT"
+  else
+    printf '{"error":{"code":%s,"message":"shim"}}' "$CODE" > "$OUT"
+  fi
+fi
+printf '%s' "$CODE"
+SHIMEOF
+chmod +x "$SHIM/curl"
+
+# Test 9: persistent 503 exhausts 3 attempts, fails, and does NOT charge the cap
+rm -f "$CAP_FILE"
+echo 0 > "$TMP/shim.state"
+ARGS=("prompt" "1:1" "$TMP/out9.png")
+if ERR="$(run_gen env PATH="$SHIM:$PATH" SHIM_CODES="503 503 503" \
+          SHIM_STATE="$TMP/shim.state" GEN_IMAGE_RETRY_BASE_SLEEP=0 \
+          GEMINI_API_KEY=dummy 2>&1)"; then
+  bad "persistent 503 exits non-zero"
+else
+  ATTEMPTS="$(cat "$TMP/shim.state")"
+  if [[ "$ATTEMPTS" == "3" ]] && [[ ! -e "$CAP_FILE" ]]; then
+    ok "persistent 503 retries 3x and does not charge the daily cap"
+  else
+    bad "persistent 503 (attempts: $ATTEMPTS, want 3; cap file: $(cat "$CAP_FILE" 2>/dev/null || echo absent), want absent)"
+  fi
+fi
+
+# Test 10: 503 then 200 succeeds, and charges the cap exactly once
+rm -f "$CAP_FILE"
+echo 0 > "$TMP/shim.state"
+ARGS=("prompt" "1:1" "$TMP/out10.png")
+if ERR="$(run_gen env PATH="$SHIM:$PATH" SHIM_CODES="503 200" \
+          SHIM_STATE="$TMP/shim.state" GEN_IMAGE_RETRY_BASE_SLEEP=0 \
+          GEMINI_API_KEY=dummy 2>&1)"; then
+  if [[ "$(cat "$CAP_FILE" 2>/dev/null)" == "1" ]] && [[ -s "$TMP/out10.png" ]]; then
+    ok "503 then 200 succeeds and charges the cap once"
+  else
+    bad "503 then 200 (cap: $(cat "$CAP_FILE" 2>/dev/null || echo absent), want 1; out: $(wc -c < "$TMP/out10.png" 2>/dev/null || echo 0) bytes)"
+  fi
+else
+  bad "503 then 200 succeeds ($ERR)"
+fi
+
+# Test 11: a non-retryable 400 fails on the first attempt, no cap charge
+rm -f "$CAP_FILE"
+echo 0 > "$TMP/shim.state"
+ARGS=("prompt" "1:1" "$TMP/out11.png")
+if ERR="$(run_gen env PATH="$SHIM:$PATH" SHIM_CODES="400" \
+          SHIM_STATE="$TMP/shim.state" GEN_IMAGE_RETRY_BASE_SLEEP=0 \
+          GEMINI_API_KEY=dummy 2>&1)"; then
+  bad "400 exits non-zero without retrying"
+else
+  if [[ "$(cat "$TMP/shim.state")" == "1" ]] && [[ ! -e "$CAP_FILE" ]]; then
+    ok "400 fails on first attempt without charging the cap"
+  else
+    bad "400 (attempts: $(cat "$TMP/shim.state"), want 1; cap: $(cat "$CAP_FILE" 2>/dev/null || echo absent))"
+  fi
+fi
+rm -f "$CAP_FILE"
+
 echo ""
 echo "Results: $PASS passed, $FAIL failed"
 [[ $FAIL -eq 0 ]]

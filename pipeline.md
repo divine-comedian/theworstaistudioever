@@ -135,7 +135,7 @@ Generate up to **4 AI images** for the entry via `scripts/gen-image.sh`, but onl
 
 ## Step 5 — BUILD LANDING
 
-1. **Invoke the `frontend-design` skill.** This is required — it's the guardrail against generic AI output.
+1. **Invoke the `frontend-design` skill.** This is required — it's the guardrail against generic AI output. Note that its "critique your work with screenshots" advice is deferred to Step 9, under a hard cap — do not render or screenshot anything here.
 2. Write a single self-contained HTML file to `site/entries/<slug>/index.html` with:
    - `<head>`: title (`product_name · theworstaistudioever`), meta description (the one-liner), Open Graph tags, the chosen Google Fonts import (if any) inline.
    - `<style>` block: inline CSS implementing the chosen style + palette + fonts. No external CSS frameworks. No Tailwind CDN. No Bootstrap.
@@ -195,6 +195,8 @@ Generate up to **4 AI images** for the entry via `scripts/gen-image.sh`, but onl
 
 ## Step 8 — VALIDATE & RECORD
 
+**This is a checkpoint. Finish all three items below before you do anything optional.** The run has a hard 80-turn cap; work done before this point survives a turn blowout, work done after it does not. On 2026-08-28 the run built a complete, valid entry and then spent its last 35 turns on unrequested polish, hit the cap, and lost the whole day because this step never ran.
+
 1. Run `scripts/validate-entry.sh site <slug>` via the Bash tool. If it exits non-zero, abort the run — print the error, do not proceed.
 2. Append `{date, company, subject, slug}` to `state/history.json`. Read the existing array, append, write back. Maintain JSON validity.
 3. Write a run summary to `state/runs/<today>.log`. Include:
@@ -207,7 +209,29 @@ Generate up to **4 AI images** for the entry via `scripts/gen-image.sh`, but onl
 
 ---
 
-## Step 9 — DONE
+## Step 9 — VISUAL CHECK (optional, hard-capped)
+
+Everything that matters is already recorded, so this step is pure upside and is allowed to be skipped. It exists because the `frontend-design` skill asks you to critique your own work with screenshots — which is good advice with no natural stopping point, and an unbounded render-critique-fix loop is exactly what blew the turn budget on 2026-08-28.
+
+**Skip this step entirely if any of these are true:**
+- A headless browser is not already installed. Check, do not fix: `ls ~/.cache/ms-playwright/ 2>/dev/null`. If the capture command fails for any reason, that is your answer — skip the step. **Never install anything to make this step work.**
+- You have already made more than ~55 tool calls this run.
+- The entry has no images and a purely typographic design direction (nothing to look at that you did not just write).
+
+**The caps, if you do run it:**
+- **At most 2 captures total** — one for `index.html`, one for `demo.html`. Use `scripts/shoot-site.sh "file://$PWD/site/entries/<slug>/index.html" <slug>-landing`.
+- **At most 3 corrective edits total**, across both files combined.
+- **At most 1 re-capture** after editing, to confirm you did not make it worse.
+- Fix only real breakage: overlapping text, an image at the wrong aspect ratio, an element off-canvas, an unreadable contrast pair. Taste-level tweaks are not breakage — leave them.
+- Do not write helper scripts to do the capturing. `shoot-site.sh` is the only capture path. If it does not work, skip the step.
+
+That is a ceiling of roughly 8 tool calls. If you are past it, stop and go to Step 10 — a shipped entry with a minor layout wart beats a run that dies at the cap.
+
+**If you edit anything here, re-run `scripts/validate-entry.sh site <slug>` before Step 10.** The wrapper validates again after you exit, and a polish edit that breaks validation fails the run.
+
+---
+
+## Step 10 — DONE
 
 Print exactly this line to stdout (the wrapper greps for it):
 
@@ -222,6 +246,8 @@ Then exit cleanly. **Do NOT run git commands.** The wrapper handles git.
 ## Things to NOT do
 
 - Do not introduce any build step. No npm install. No bundlers.
+- Do not install software of any kind — no `playwright install`, no `npm install`, no `pip install`, no `apt`. The run environment is fixed. If a tool is missing, that is a signal to skip the optional step that wanted it, not to go get it.
+- Do not write throwaway helper scripts into the repo root. Use a heredoc through `python3 -` when you need a scratch computation, so nothing is left behind to clean up.
 - Do not use external CSS frameworks (Tailwind, Bootstrap) in per-entry pages.
 - Do not write any file outside the working tree.
 - Do not commit, push, or pull.

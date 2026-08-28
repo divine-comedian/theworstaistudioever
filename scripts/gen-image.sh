@@ -76,12 +76,18 @@ if [[ "$COUNT" -ge 10 ]]; then
   echo "gen-image: IMAGEGEN_CAP_REACHED ($COUNT calls today)" >&2
   exit 3
 fi
-echo $((COUNT + 1)) > "$CAP_FILE"
 
-# Call the API; one mechanical retry with backoff on 429/5xx
+# The counter charges for *successful* calls only, and is incremented after the
+# request loop below. It exists to cap spend, and a 429/5xx returns no image and
+# costs nothing. Charging for those let one Gemini overload window (2026-08-28:
+# ten consecutive 503s) burn most of the day's budget on nothing.
+
+# Call the API; up to 3 attempts with linear backoff on 429/5xx/timeout.
+# A single retry was too thin for a model-overloaded window.
+RETRY_BASE_SLEEP="${GEN_IMAGE_RETRY_BASE_SLEEP:-10}"
 RESPONSE_FILE="$(mktemp)"
 trap 'rm -f "$RESPONSE_FILE"' EXIT
-for attempt in 1 2; do
+for attempt in 1 2 3; do
   HTTP_CODE="$(curl -sS -o "$RESPONSE_FILE" -w '%{http_code}' \
     -X POST "$URL" \
     -H "x-goog-api-key: ${GEMINI_API_KEY}" \
@@ -90,13 +96,17 @@ for attempt in 1 2; do
   if [[ "$HTTP_CODE" == "200" ]]; then
     break
   fi
-  if [[ "$attempt" == "1" && ( "$HTTP_CODE" == "429" || "$HTTP_CODE" =~ ^5 || "$HTTP_CODE" == "000" ) ]]; then
-    echo "gen-image: HTTP $HTTP_CODE — retrying in 10s" >&2
-    sleep 10
+  if [[ "$attempt" -lt 3 && ( "$HTTP_CODE" == "429" || "$HTTP_CODE" =~ ^5 || "$HTTP_CODE" == "000" ) ]]; then
+    SLEEP_FOR=$((RETRY_BASE_SLEEP * attempt))
+    echo "gen-image: HTTP $HTTP_CODE — attempt $attempt/3 failed, retrying in ${SLEEP_FOR}s" >&2
+    sleep "$SLEEP_FOR"
     continue
   fi
   fail "API call failed with HTTP $HTTP_CODE: $(head -c 500 "$RESPONSE_FILE")"
 done
+
+# The call succeeded, so charge it against the daily cap.
+echo $((COUNT + 1)) > "$CAP_FILE"
 
 # Decode the base64 inlineData image part
 if ! jq -er '[.candidates[0].content.parts[] | select(.inlineData.data) | .inlineData.data][0]' \
