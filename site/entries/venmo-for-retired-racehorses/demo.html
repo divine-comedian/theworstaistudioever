@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Furlong · the paddock feed</title>
+<meta name="description" content="Every settlement in Barn 7, posted publicly, split by distance travelled.">
+<meta name="theme-color" content="#0D1712">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+:root{
+  --bg:#0D1712;--board:#12211A;--board-2:#16281F;--fg:#EAE6DA;
+  --primary:#1F7A4C;--accent:#F5B32C;--muted:#7C8B80;--brass:#8A7434;
+  --rule:rgba(234,230,218,.14);
+  --display:'Oswald','Haettenschweiler','Arial Narrow',sans-serif;
+  --body:'IBM Plex Sans','Segoe UI',system-ui,sans-serif;
+  --mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+button{font:inherit;cursor:pointer}
+
+/* chrome */
+.chrome{
+  position:sticky;top:0;z-index:30;background:#0A120E;
+  border-bottom:1px solid var(--brass);
+}
+.chrome-inner{
+  max-width:1180px;margin:0 auto;padding:10px 20px;
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+}
+.back{
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;border-bottom:1px solid transparent;padding:6px 0;
+}
+.back:hover{color:var(--accent);border-bottom-color:var(--accent)}
+.chrome .wordmark{
+  font-family:var(--display);font-weight:600;font-size:19px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--accent);margin-right:auto;
+}
+.whoami{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.whoami b{color:var(--fg);font-weight:500}
+
+/* board summary */
+.summary{border-bottom:1px solid var(--rule);background:linear-gradient(180deg,#0F1B15,#0D1712)}
+.summary-inner{
+  max-width:1180px;margin:0 auto;padding:20px;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:18px;
+}
+.stat-k{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.stat-v{font-family:var(--mono);font-weight:600;font-size:clamp(20px,2.6vw,28px);color:var(--accent);margin-top:4px;font-variant-numeric:tabular-nums}
+.stat-v.bone{color:var(--fg)}
+.stat-v .tick{display:inline-block;transition:opacity .12s linear}
+.stat-v .tick.off{opacity:.3}
+
+/* layout */
+.wrap{max-width:1180px;margin:0 auto;padding:24px 20px 64px;display:grid;grid-template-columns:212px 1fr;gap:26px;align-items:start}
+
+/* rail */
+.rail{position:sticky;top:78px}
+.rail h2{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;font-weight:400}
+.filters{display:grid;gap:2px;margin-bottom:24px}
+.filter{
+  display:flex;justify-content:space-between;align-items:center;gap:8px;
+  background:transparent;border:1px solid transparent;color:var(--fg);
+  padding:10px 12px;text-align:left;min-height:44px;
+  font-family:var(--display);font-size:15px;letter-spacing:.09em;text-transform:uppercase;
+  transition:background .16s ease-out,border-color .16s ease-out,color .16s ease-out;
+}
+.filter:hover{background:var(--board)}
+.filter[aria-pressed="true"]{background:var(--board-2);border-color:var(--brass);color:var(--accent)}
+.filter .count{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.filter[aria-pressed="true"] .count{color:var(--accent)}
+.rail .btn-request{
+  width:100%;background:var(--accent);color:#14100A;border:1px solid var(--accent);
+  padding:13px 14px;font-family:var(--display);font-size:15px;letter-spacing:.12em;
+  text-transform:uppercase;min-height:44px;transition:background .16s ease-out;
+}
+.rail .btn-request:hover{background:#FFD168}
+.rail-note{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--muted);margin-top:12px;line-height:1.6;text-transform:uppercase}
+
+/* feed */
+.feed-head{
+  display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+  padding-bottom:9px;border-bottom:1px solid var(--brass);margin-bottom:0;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);
+}
+.feed{list-style:none;margin:0;padding:0}
+.post{border-bottom:1px solid var(--rule);transition:background .16s ease-out}
+.post:hover{background:rgba(22,40,31,.55)}
+.post.fresh{animation:drop .32s ease-out}
+@keyframes drop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.post-main{display:grid;grid-template-columns:44px 1fr auto;gap:14px;padding:15px 12px;align-items:start;width:100%;background:none;border:0;color:inherit;text-align:left;font:inherit}
+.avatar{width:44px;height:44px;object-fit:cover;border:1px solid var(--brass);filter:saturate(.85);display:block}
+.monogram{
+  width:44px;height:44px;border:1px solid var(--rule);background:var(--board-2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--display);font-size:17px;letter-spacing:.05em;color:var(--primary);
+}
+.post-who{font-family:var(--display);font-weight:400;font-size:16.5px;letter-spacing:.05em;text-transform:uppercase;line-height:1.25}
+.post-who .arrow{color:var(--primary);padding:0 6px}
+.post-memo{font-size:14px;color:#B9B6AB;margin-top:3px}
+.post-meta{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:7px;display:flex;gap:14px;flex-wrap:wrap}
+.post-right{text-align:right;align-self:center}
+.post-amt{font-family:var(--mono);font-weight:600;font-size:19px;color:var(--accent);font-variant-numeric:tabular-nums}
+.post-amt.owed{color:var(--fg)}
+.post-state{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.split{display:none;padding:0 12px 18px 70px}
+.post.open .split{display:block}
+.split-title{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:9px}
+.split table{width:100%;border-collapse:collapse}
+.split th,.split td{
+  font-family:var(--mono);font-size:12.5px;text-align:left;padding:6px 8px;
+  border-bottom:1px solid rgba(234,230,218,.07);font-variant-numeric:tabular-nums;
+}
+.split th{color:var(--muted);font-weight:400;font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+.split td:last-child,.split th:last-child{text-align:right;color:var(--accent)}
+.split td:first-child{color:var(--fg)}
+.empty{padding:44px 12px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+
+/* modal */
+.scrim{
+  position:fixed;inset:0;background:rgba(5,10,8,.72);z-index:50;
+  display:none;align-items:center;justify-content:center;padding:20px;
+}
+.scrim.open{display:flex}
+.modal{
+  background:var(--board);border:1px solid var(--brass);width:min(440px,100%);
+  padding:24px;box-shadow:0 24px 60px rgba(0,0,0,.6);
+}
+.modal h3{font-family:var(--display);font-weight:600;font-size:26px;text-transform:uppercase;letter-spacing:.06em;margin:0 0 4px}
+.modal .sub{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 20px}
+.field{margin-bottom:16px}
+.field label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.field input,.field select{
+  width:100%;background:#0B1410;border:1px solid var(--rule);color:var(--fg);
+  padding:11px 12px;font-family:var(--body);font-size:16px;min-height:44px;border-radius:0;
+}
+.field input:focus,.field select:focus{border-color:var(--accent);outline:none}
+.field .help{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--muted);margin-top:6px;text-transform:uppercase}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:22px}
+.modal-actions button{
+  padding:12px 18px;font-family:var(--display);font-size:14px;letter-spacing:.12em;
+  text-transform:uppercase;min-height:44px;border:1px solid var(--rule);background:transparent;color:var(--fg);
+  transition:border-color .16s ease-out,color .16s ease-out,background .16s ease-out;
+}
+.modal-actions .primary{background:var(--accent);border-color:var(--accent);color:#14100A}
+.modal-actions .primary:hover{background:#FFD168}
+.modal-actions button:not(.primary):hover{border-color:var(--accent);color:var(--accent)}
+
+.toast{
+  position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(16px);
+  background:var(--board-2);border:1px solid var(--brass);color:var(--fg);
+  padding:12px 18px;font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;
+  text-transform:uppercase;opacity:0;pointer-events:none;transition:opacity .2s ease-out,transform .2s ease-out;z-index:60;
+}
+.toast.show{opacity:1;transform:translateX(-50%)}
+
+@media (max-width:860px){
+  .wrap{grid-template-columns:1fr;gap:20px}
+  .rail{position:static}
+  .filters{grid-template-columns:repeat(2,1fr);display:grid}
+  .summary-inner{grid-template-columns:repeat(2,1fr)}
+  .split{padding-left:12px}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <span class="wordmark">Furlong</span>
+    <span class="whoami">Signed in as <b>Marjoram</b> · hoof ID, day 63</span>
+  </div>
+</div>
+
+<div class="summary">
+  <div class="summary-inner">
+    <div><div class="stat-k">Your balance</div><div class="stat-v"><span class="tick" id="s-balance">$74.15</span></div></div>
+    <div><div class="stat-k">You owe</div><div class="stat-v"><span class="tick" id="s-owe">$52.75</span></div></div>
+    <div><div class="stat-k">Owed to you</div><div class="stat-v bone"><span class="tick" id="s-owed">$126.90</span></div></div>
+    <div><div class="stat-k">Posted publicly</div><div class="stat-v bone"><span class="tick" id="s-posted">all of it</span></div></div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <aside class="rail">
+    <h2>Filter the board</h2>
+    <div class="filters" role="group" aria-label="Feed filters">
+      <button class="filter" data-f="all" aria-pressed="true">All<span class="count" data-c="all">0</span></button>
+      <button class="filter" data-f="barn7" aria-pressed="false">Barn 7<span class="count" data-c="barn7">0</span></button>
+      <button class="filter" data-f="owed" aria-pressed="false">Owed to me<span class="count" data-c="owed">0</span></button>
+      <button class="filter" data-f="settled" aria-pressed="false">Settled<span class="count" data-c="settled">0</span></button>
+    </div>
+    <button class="btn-request" id="open-request">Request money</button>
+    <p class="rail-note">Requests post to the board immediately. The other horse is notified over the barn PA at 6am.</p>
+  </aside>
+
+  <main>
+    <div class="feed-head">
+      <span id="feed-label">All settlements</span>
+      <span>Tap a row for the distance split</span>
+    </div>
+    <ul class="feed" id="feed"></ul>
+  </main>
+
+</div>
+
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal">
+    <h3 id="modal-title">Request money</h3>
+    <p class="sub">This posts to the paddock feed. It cannot be recalled.</p>
+    <form id="request-form">
+      <div class="field">
+        <label for="who">Which horse</label>
+        <select id="who">
+          <option>Comanche Gap</option>
+          <option>Dutch Interior</option>
+          <option>Something Borrowed</option>
+          <option>Late Model</option>
+          <option>Pale Wednesday</option>
+          <option>Ash Wednesday</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="amt">Amount</label>
+        <input id="amt" type="text" inputmode="decimal" value="24.00" autocomplete="off">
+        <div class="help" id="amt-help">Dollars. Oats convert at Tuesday's rate.</div>
+      </div>
+      <div class="field">
+        <label for="memo">Memo</label>
+        <input id="memo" type="text" value="fly spray, communal" maxlength="46" autocomplete="off">
+        <div class="help">Shown to the whole barn. Forty-six characters.</div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" id="cancel">Cancel</button>
+        <button type="submit" class="primary">Post the request</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var AVATARS = {
+    'Marjoram':'horse-1.webp',
+    'Dutch Interior':'horse-2.webp',
+    'Something Borrowed':'horse-3.webp',
+    'Comanche Gap':'horse-4.webp'
+  };
+
+  var POSTS = [
+    { from:'Marjoram', to:'Comanche Gap', memo:'farrier, split 3 ways', amt:41.00, when:'11 min', barn7:true, owed:false, settled:true, nudges:4, likes:12,
+      split:[['Marjoram','2 fur','$41.00'],['Comanche Gap','1 fur','$20.50'],['Late Model','4 fur','$82.00']] },
+    { from:'Dutch Interior', to:'Marjoram', memo:'trailer fuel, Ocala return', amt:11.50, when:'34 min', barn7:false, owed:true, settled:false, nudges:1, likes:3,
+      split:[['Dutch Interior','6 fur','$11.50'],['Marjoram','1 fur','$1.90']] },
+    { from:'Something Borrowed', to:'Barn 7 fund', memo:'fly spray, communal', amt:6.25, when:'1 hr', barn7:true, owed:false, settled:true, nudges:0, likes:8,
+      split:[['Something Borrowed','1 fur','$6.25'],['Marjoram','1 fur','$6.25'],['Comanche Gap','1 fur','$6.25'],['Pale Wednesday','1 fur','$6.25']] },
+    { from:'Late Model', to:'Marjoram', memo:'settled at last, thank you', amt:88.00, when:'2 hr', barn7:true, owed:true, settled:false, nudges:9, likes:41,
+      split:[['Late Model','5 fur','$88.00'],['Marjoram','1 fur','$17.60']] },
+    { from:'Pale Wednesday', to:'Dutch Interior', memo:'lost bet, unspecified', amt:20.00, when:'4 hr', barn7:false, owed:false, settled:true, nudges:2, likes:19,
+      split:[['Pale Wednesday','3 fur','$20.00'],['Dutch Interior','3 fur','$20.00']] },
+    { from:'Comanche Gap', to:'Late Model', memo:'hay, weekly', amt:134.75, when:'6 hr', barn7:true, owed:false, settled:false, nudges:6, likes:2,
+      split:[['Comanche Gap','2 fur','$134.75'],['Late Model','2 fur','$134.75'],['Ash Wednesday','7 fur','$471.60']] },
+    { from:'Ash Wednesday', to:'Something Borrowed', memo:'braiding, one mane', amt:15.00, when:'9 hr', barn7:true, owed:false, settled:true, nudges:0, likes:6,
+      split:[['Ash Wednesday','1 fur','$15.00']] },
+    { from:'Barn 7 fund', to:'Marjoram', memo:'reimbursement, disputed', amt:3.40, when:'19 hr', barn7:true, owed:true, settled:false, nudges:14, likes:0,
+      split:[['Barn 7 fund','0 fur','$3.40'],['Marjoram','8 fur','$27.20']] }
+  ];
+
+  var feed = document.getElementById('feed');
+  var current = 'all';
+
+  function matches(p, f){
+    if (f === 'all') return true;
+    if (f === 'barn7') return p.barn7;
+    if (f === 'owed') return p.owed;
+    if (f === 'settled') return p.settled;
+    return true;
+  }
+
+  function initials(name){
+    var parts = name.split(' ');
+    return (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
+  }
+
+  function faceHTML(name){
+    if (AVATARS[name]) {
+      return "<img class='avatar' src='" + AVATARS[name] + "' alt='' width='44' height='44' loading='lazy'>";
+    }
+    return '<div class="monogram" aria-hidden="true">' + initials(name) + '</div>';
+  }
+
+  function splitHTML(p){
+    var rows = '';
+    for (var i = 0; i < p.split.length; i++) {
+      rows += '<tr><td>' + p.split[i][0] + '</td><td>' + p.split[i][1] + '</td><td>' + p.split[i][2] + '</td></tr>';
+    }
+    return '<div class="split">' +
+      '<div class="split-title">Distance split, rounded up</div>' +
+      '<table><thead><tr><th>Horse</th><th>Walked</th><th>Share</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+    '</div>';
+  }
+
+  function pl(n, word){
+    return n + ' ' + word + (n === 1 ? '' : 's');
+  }
+
+  function postHTML(p, i, fresh){
+    return '<li class="post' + (fresh ? ' fresh' : '') + '" data-i="' + i + '">' +
+      '<button class="post-main" aria-expanded="false">' +
+        faceHTML(p.from) +
+        '<div>' +
+          '<div class="post-who">' + p.from + '<span class="arrow">→</span>' + p.to + '</div>' +
+          '<div class="post-memo">' + p.memo + '</div>' +
+          '<div class="post-meta"><span>' + p.when + ' ago</span><span>' + pl(p.likes, 'like') + '</span><span>' + pl(p.nudges, 'nudge') + '</span></div>' +
+        '</div>' +
+        '<div class="post-right">' +
+          '<div class="post-amt' + (p.settled ? '' : ' owed') + '">$' + p.amt.toFixed(2) + '</div>' +
+          '<div class="post-state">' + (p.settled ? 'Settled' : 'Outstanding') + '</div>' +
+        '</div>' +
+      '</button>' +
+      splitHTML(p) +
+    '</li>';
+  }
+
+  function render(freshTop){
+    var out = '', shown = 0;
+    for (var i = 0; i < POSTS.length; i++) {
+      if (matches(POSTS[i], current)) { out += postHTML(POSTS[i], i, freshTop && shown === 0); shown++; }
+    }
+    feed.innerHTML = shown ? out : '<li class="empty">No settlements match. The debts still exist.</li>';
+    updateCounts();
+  }
+
+  function updateCounts(){
+    var keys = ['all','barn7','owed','settled'];
+    for (var k = 0; k < keys.length; k++) {
+      var n = 0;
+      for (var i = 0; i < POSTS.length; i++) if (matches(POSTS[i], keys[k])) n++;
+      document.querySelector('[data-c="' + keys[k] + '"]').textContent = n;
+    }
+  }
+
+  feed.addEventListener('click', function(e){
+    var btn = e.target.closest('.post-main');
+    if (!btn) return;
+    var li = btn.parentNode;
+    var open = li.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+
+  var LABELS = { all:'All settlements', barn7:'Barn 7 only', owed:'Owed to Marjoram', settled:'Settled and closed' };
+
+  var filters = document.querySelectorAll('.filter');
+  for (var f = 0; f < filters.length; f++) {
+    filters[f].addEventListener('click', function(){
+      for (var j = 0; j < filters.length; j++) filters[j].setAttribute('aria-pressed','false');
+      this.setAttribute('aria-pressed','true');
+      current = this.getAttribute('data-f');
+      document.getElementById('feed-label').textContent = LABELS[current];
+      render(false);
+      flickerStats();
+    });
+  }
+
+  function flickerStats(){
+    if (reduce) return;
+    var ticks = document.querySelectorAll('.tick');
+    for (var i = 0; i < ticks.length; i++) {
+      (function(el, n){
+        setTimeout(function(){
+          el.classList.add('off');
+          setTimeout(function(){ el.classList.remove('off'); }, 120);
+        }, n * 45);
+      })(ticks[i], i);
+    }
+  }
+
+  /* ---- request modal ---- */
+  var scrim = document.getElementById('scrim');
+  var lastFocus = null;
+
+  function openModal(){
+    lastFocus = document.activeElement;
+    scrim.classList.add('open');
+    document.getElementById('who').focus();
+  }
+  function closeModal(){
+    scrim.classList.remove('open');
+    if (lastFocus) lastFocus.focus();
+  }
+
+  document.getElementById('open-request').addEventListener('click', openModal);
+  document.getElementById('cancel').addEventListener('click', closeModal);
+  scrim.addEventListener('click', function(e){ if (e.target === scrim) closeModal(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && scrim.classList.contains('open')) closeModal(); });
+
+  var toast = document.getElementById('toast');
+  var toastTimer = null;
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 4000);
+  }
+
+  document.getElementById('request-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    var who = document.getElementById('who').value;
+    var raw = parseFloat(document.getElementById('amt').value.replace(/[^0-9.]/g, ''));
+    var help = document.getElementById('amt-help');
+
+    if (!raw || raw <= 0) {
+      help.textContent = 'Enter an amount above zero. The barn will not act on nothing.';
+      help.style.color = '#F5B32C';
+      document.getElementById('amt').focus();
+      return;
+    }
+    help.textContent = 'Dollars. Oats convert at Tuesday’s rate.';
+    help.style.color = '';
+
+    POSTS.unshift({
+      from: who, to:'Marjoram',
+      memo: document.getElementById('memo').value || 'no memo given',
+      amt: raw, when:'just now', barn7:true, owed:true, settled:false, nudges:0, likes:0,
+      split:[[who,'3 fur','$' + raw.toFixed(2)],['Marjoram','1 fur','$' + (raw / 3).toFixed(2)]]
+    });
+
+    current = 'all';
+    for (var j = 0; j < filters.length; j++) filters[j].setAttribute('aria-pressed', filters[j].getAttribute('data-f') === 'all' ? 'true' : 'false');
+    document.getElementById('feed-label').textContent = LABELS.all;
+
+    closeModal();
+    render(true);
+    showToast('Posted. ' + who + ' has been notified, and so has everyone else.');
+  });
+
+  render(false);
+})();
+</script>
+</body>
+</html>

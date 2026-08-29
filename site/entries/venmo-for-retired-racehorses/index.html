@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Furlong · theworstaistudioever</title>
+<meta name="description" content="Settle up with the other horses in your field. Publicly, in oats or dollars, whether or not anyone asked.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Furlong · theworstaistudioever">
+<meta property="og:description" content="Settle up with the other horses in your field. Publicly, in oats or dollars, whether or not anyone asked.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Furlong · theworstaistudioever">
+<meta name="twitter:description" content="Settle up with the other horses in your field. Publicly, in oats or dollars, whether or not anyone asked.">
+<meta name="theme-color" content="#0D1712">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+:root{
+  --bg:#0D1712;
+  --board:#12211A;
+  --board-2:#16281F;
+  --fg:#EAE6DA;
+  --primary:#1F7A4C;
+  --accent:#F5B32C;
+  --muted:#7C8B80;
+  --brass:#8A7434;
+  --rule:rgba(234,230,218,.16);
+  --display:'Oswald','Haettenschweiler','Arial Narrow',sans-serif;
+  --body:'IBM Plex Sans','Segoe UI',system-ui,sans-serif;
+  --mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+  --pad:clamp(20px,5vw,72px);
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--fg);
+  font-family:var(--body);
+  font-size:17px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  background:
+    repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 1px,transparent 1px 3px),
+    radial-gradient(120% 80% at 20% 0%,rgba(31,122,76,.22),transparent 60%);
+  opacity:.55;
+}
+main,header,footer{position:relative;z-index:1}
+
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.rule-brass{border:0;border-top:1px solid var(--brass);opacity:.7;margin:0}
+
+/* ---------- board header ---------- */
+.board-head{
+  position:sticky;top:0;z-index:40;
+  background:linear-gradient(180deg,#0A120E 0%,#0D1712 100%);
+  border-bottom:1px solid var(--brass);
+}
+.board-head-inner{
+  max-width:1240px;margin:0 auto;padding:10px var(--pad);
+  display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+}
+.wordmark{
+  font-family:var(--display);font-weight:600;font-size:24px;
+  letter-spacing:.24em;text-transform:uppercase;color:var(--accent);
+  text-decoration:none;line-height:1;
+}
+.condition-line{
+  font-family:var(--mono);font-size:11px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--muted);
+  display:flex;gap:14px;flex-wrap:wrap;margin-right:auto;
+}
+.condition-line b{color:var(--fg);font-weight:500}
+.live-pip{
+  display:inline-block;width:7px;height:7px;border-radius:50%;
+  background:var(--accent);margin-right:6px;vertical-align:1px;
+  animation:pip 2.4s steps(2,end) infinite;
+}
+@keyframes pip{0%,60%{opacity:1}61%,100%{opacity:.25}}
+
+.btn{
+  display:inline-block;font-family:var(--display);font-weight:500;
+  font-size:15px;letter-spacing:.12em;text-transform:uppercase;
+  padding:12px 22px;border-radius:0;text-decoration:none;
+  border:1px solid transparent;transition:background .18s ease-out,color .18s ease-out,border-color .18s ease-out;
+  cursor:pointer;min-height:44px;
+}
+.btn-amber{background:var(--accent);color:#14100A;border-color:var(--accent)}
+.btn-amber:hover{background:#FFD168;border-color:#FFD168}
+.btn-ghost{background:transparent;color:var(--fg);border-color:var(--rule)}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn-sm{padding:9px 16px;font-size:13px}
+
+/* ---------- hero ---------- */
+.hero{max-width:1240px;margin:0 auto;padding:clamp(40px,7vw,84px) var(--pad) clamp(36px,6vw,64px)}
+.hero-grid{display:grid;grid-template-columns:1.35fr 1fr;gap:clamp(28px,5vw,64px);align-items:start}
+.eyebrow{
+  font-family:var(--mono);font-size:11px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 18px;
+}
+h1{
+  font-family:var(--display);font-weight:600;
+  font-size:clamp(40px,6.6vw,80px);line-height:.95;
+  letter-spacing:-.01em;text-transform:uppercase;margin:0 0 22px;
+  text-wrap:balance;
+}
+h1 .amber{color:var(--accent)}
+.hero-sub{font-size:clamp(17px,1.6vw,20px);color:#C9C6BA;max-width:52ch;margin:0 0 30px}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.fineprint{
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+  color:var(--muted);text-transform:uppercase;margin-top:22px;
+}
+
+/* ---------- results panel (signature) ---------- */
+.results{
+  background:var(--board);
+  border:1px solid var(--rule);
+  border-top:2px solid var(--brass);
+  box-shadow:0 0 0 1px rgba(0,0,0,.4), inset 0 1px 0 rgba(234,230,218,.06);
+}
+.results-head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding:12px 16px;border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--muted);
+}
+.results-head span:last-child{color:var(--accent)}
+.result-row{
+  display:grid;grid-template-columns:1fr auto;gap:12px;
+  padding:13px 16px;border-bottom:1px solid rgba(234,230,218,.07);
+  transition:background .18s ease-out;
+}
+.result-row:hover{background:var(--board-2)}
+.result-who{font-family:var(--display);font-weight:400;font-size:16px;letter-spacing:.06em;text-transform:uppercase}
+.result-who .arrow{color:var(--primary);padding:0 5px}
+.result-memo{font-size:13px;color:var(--muted);margin-top:2px}
+.result-amt{
+  font-family:var(--mono);font-weight:600;font-size:19px;
+  color:var(--accent);font-variant-numeric:tabular-nums;align-self:center;
+}
+.flip{display:inline-block;transition:opacity .1s linear}
+.flip.flipping{opacity:.35}
+.results-foot{
+  padding:11px 16px;font-family:var(--mono);font-size:10.5px;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+}
+
+/* ---------- sections ---------- */
+section{max-width:1240px;margin:0 auto;padding:clamp(48px,7vw,90px) var(--pad)}
+.sec-label{
+  font-family:var(--mono);font-size:11px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--accent);
+  padding-bottom:10px;border-bottom:1px solid var(--brass);margin-bottom:38px;
+  display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+}
+.sec-label span:last-child{color:var(--muted)}
+h2{
+  font-family:var(--display);font-weight:600;font-size:clamp(28px,3.6vw,44px);
+  line-height:1.02;text-transform:uppercase;letter-spacing:0;margin:0 0 14px;
+}
+
+/* features */
+.features{display:grid;gap:0}
+.feature{
+  display:grid;grid-template-columns:150px 1fr;gap:clamp(16px,4vw,48px);
+  padding:30px 0;border-bottom:1px solid var(--rule);align-items:start;
+}
+.feature:first-child{border-top:1px solid var(--rule)}
+.feature-key{
+  font-family:var(--mono);font-size:11px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--primary);padding-top:8px;
+}
+.feature h3{
+  font-family:var(--display);font-weight:500;font-size:clamp(22px,2.6vw,30px);
+  text-transform:uppercase;letter-spacing:.01em;margin:0 0 10px;line-height:1.05;
+}
+.feature p{margin:0;color:#BEBBB0;max-width:62ch}
+
+/* testimonials */
+.quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(18px,2.4vw,28px)}
+.quote{
+  background:var(--board);border:1px solid var(--rule);
+  border-top:2px solid var(--brass);padding:24px 22px 22px;
+  display:flex;flex-direction:column;
+}
+.quote blockquote{margin:0 0 22px;font-size:16px;color:#D8D4C8;line-height:1.55}
+.quote-who{display:flex;gap:13px;align-items:center;margin-top:auto}
+.quote-who img{
+  width:52px;height:52px;object-fit:cover;flex:0 0 52px;
+  border:1px solid var(--brass);filter:saturate(.85);
+}
+.quote-name{font-family:var(--display);font-weight:500;font-size:17px;text-transform:uppercase;letter-spacing:.07em;line-height:1.1}
+.quote-title{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;margin-top:4px;line-height:1.35}
+
+/* pricing */
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(18px,2.4vw,28px)}
+.tier{
+  background:var(--board);border:1px solid var(--rule);
+  padding:26px 22px;display:flex;flex-direction:column;
+}
+.tier.featured{border-color:var(--accent);background:var(--board-2)}
+.tier-name{font-family:var(--display);font-weight:600;font-size:24px;text-transform:uppercase;letter-spacing:.14em;margin:0}
+.tier-price{font-family:var(--mono);font-weight:600;font-size:34px;color:var(--accent);margin:12px 0 6px;font-variant-numeric:tabular-nums}
+.tier-tagline{font-size:14px;color:var(--muted);margin:0 0 20px;min-height:3.2em}
+.tier ul{list-style:none;margin:0 0 24px;padding:0;display:grid;gap:11px}
+.tier li{font-size:14.5px;color:#C6C3B7;padding-left:20px;position:relative;line-height:1.45}
+.tier li::before{
+  content:"";position:absolute;left:0;top:.62em;
+  width:9px;height:1px;background:var(--primary);
+}
+.tier .btn{margin-top:auto;text-align:center}
+
+/* demo cta */
+.demo-cta{
+  max-width:1240px;margin:0 auto;padding:0 var(--pad) clamp(48px,7vw,90px);
+}
+.demo-cta-inner{
+  border:1px solid var(--brass);background:linear-gradient(180deg,var(--board-2),var(--board));
+  padding:clamp(28px,5vw,52px);display:flex;gap:28px;
+  justify-content:space-between;align-items:center;flex-wrap:wrap;
+}
+.demo-cta h2{margin-bottom:8px}
+.demo-cta p{margin:0;color:var(--muted);max-width:48ch}
+
+/* footer */
+footer{border-top:1px solid var(--brass);margin-top:20px}
+.foot-inner{
+  max-width:1240px;margin:0 auto;padding:26px var(--pad) 40px;
+  display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);
+}
+.foot-inner a{color:var(--muted);text-decoration:none;border-bottom:1px solid transparent}
+.foot-inner a:hover{color:var(--accent);border-bottom-color:var(--accent)}
+
+@media (max-width:960px){
+  .hero-grid{grid-template-columns:1fr}
+  .quotes,.tiers{grid-template-columns:1fr}
+  .feature{grid-template-columns:1fr;gap:8px}
+  .feature-key{padding-top:0}
+  .condition-line{font-size:10px;gap:10px}
+}
+@media (max-width:520px){
+  body{font-size:16px}
+  .wordmark{font-size:20px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<header class="board-head">
+  <div class="board-head-inner">
+    <a class="wordmark" href="#top">Furlong</a>
+    <div class="condition-line">
+      <span><span class="live-pip"></span>Settlements open</span>
+      <span>Barn 7 · <b class="num" id="online">41</b> horses posted</span>
+      <span>Board updated <b class="num" id="clock">00:00</b></span>
+    </div>
+    <a class="btn btn-amber btn-sm" href="./demo.html">Open the demo →</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <div class="hero">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow">Peer-to-peer settlement · retired thoroughbreds</p>
+        <h1>Every horse owes<br>another horse<br><span class="amber">something.</span></h1>
+        <p class="hero-sub">Furlong settles debts between retired racehorses and posts the result to the paddock feed within four seconds. There is no private mode. There was going to be one.</p>
+        <div class="hero-actions">
+          <a class="btn btn-amber" href="#pricing">Open a stall account</a>
+          <a class="btn btn-ghost" href="./demo.html">See the feed</a>
+        </div>
+        <p class="fineprint">Available in nine states and one province. Oats settled at Tuesday's rate.</p>
+      </div>
+
+      <aside class="results" aria-label="Recent settlements">
+        <div class="results-head"><span>Today's settlements</span><span>Live</span></div>
+        <div id="rows"></div>
+        <div class="results-foot">Posted publicly. Cannot be recalled.</div>
+      </aside>
+    </div>
+  </div>
+
+  <section id="features">
+    <div class="sec-label"><span>Conditions of use</span><span>Three, non-negotiable</span></div>
+    <h2>What the product does to you</h2>
+    <div class="features">
+      <article class="feature">
+        <div class="feature-key">Visibility</div>
+        <div>
+          <h3>Public by default, permanently</h3>
+          <p>Each settlement posts to the feed the whole barn reads: payer, payee, amount, memo. The visibility toggle exists in the settings screen and has never once changed anything. We left it in because removing it required a migration.</p>
+        </div>
+      </article>
+      <article class="feature">
+        <div class="feature-key">Splitting</div>
+        <div>
+          <h3>Split by distance travelled</h3>
+          <p>Furlong divides a shared bill by how far each horse walked to reach the thing being paid for, measured in furlongs, rounded up. The horse nearest the hay pays least. This has restructured the social order of nine separate farms and we are watching closely.</p>
+        </div>
+      </article>
+      <article class="feature">
+        <div class="feature-key">Access</div>
+        <div>
+          <h3>Hoof ID</h3>
+          <p>Biometric authentication from a single front hoof pressed to the reader plate. Median time to authenticate is 41 minutes, most of which is convincing the horse. Once in, the session lasts eleven months.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="quotes">
+    <div class="sec-label"><span>Paddock comments</span><span>Verified account holders</span></div>
+    <h2>From the barn</h2>
+    <div class="quotes">
+      <figure class="quote">
+        <blockquote>“I paid Comanche back for the farrier in March and the feed has shown it every day since. He has liked it forty times. I understand this is the product working.”</blockquote>
+        <figcaption class="quote-who">
+          <img src="horse-1.webp" alt="Portrait of Marjoram, a chestnut mare" width="52" height="52" loading="lazy">
+          <div>
+            <div class="quote-name">Marjoram</div>
+            <div class="quote-title">Retired claimer, 14, currently a lawn ornament in Ocala</div>
+          </div>
+        </figcaption>
+      </figure>
+      <figure class="quote">
+        <blockquote>“The distance split put me at eleven dollars and put the gelding by the gate at two. I have moved my stall twice. I am now at four dollars and I am not finished.”</blockquote>
+        <figcaption class="quote-who">
+          <img src="horse-2.webp" alt="Portrait of Dutch Interior, a dark bay gelding" width="52" height="52" loading="lazy">
+          <div>
+            <div class="quote-name">Dutch Interior</div>
+            <div class="quote-title">Grade III placer 2021, now leads the pony string at Belmont</div>
+          </div>
+        </figcaption>
+      </figure>
+      <figure class="quote">
+        <blockquote>“Hoof ID took most of a Tuesday. I have not logged out. I am told I cannot.”</blockquote>
+        <figcaption class="quote-who">
+          <img src="horse-3.webp" alt="Portrait of Something Borrowed, a dappled grey mare" width="52" height="52" loading="lazy">
+          <div>
+            <div class="quote-name">Something Borrowed</div>
+            <div class="quote-title">Broodmare, third career, unofficial treasurer of Barn 7</div>
+          </div>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="pricing">
+    <div class="sec-label"><span>Classes</span><span>Billed monthly, per horse</span></div>
+    <h2>Pick your class</h2>
+    <div class="tiers">
+      <div class="tier">
+        <h3 class="tier-name">Claiming</h3>
+        <div class="tier-price num">$6<span style="font-size:15px;color:var(--muted)">/mo</span></div>
+        <p class="tier-tagline">For the horse with three debts and one opinion about them.</p>
+        <ul>
+          <li>Six settlements a month, then it stops</li>
+          <li>Feed posts, no comments</li>
+          <li>Balance shown to the nearest twenty dollars</li>
+        </ul>
+        <a class="btn btn-ghost" href="./demo.html">Enter</a>
+      </div>
+      <div class="tier featured">
+        <h3 class="tier-name">Allowance</h3>
+        <div class="tier-price num">$44<span style="font-size:15px;color:var(--muted)">/mo</span></div>
+        <p class="tier-tagline">The tier the farm manager puts everyone on and then forgets.</p>
+        <ul>
+          <li>Unlimited settlements and dunning notices</li>
+          <li>Split by distance, split by weight, split by grudge</li>
+          <li>Hoof ID on up to two hooves</li>
+          <li>Export the ledger as a printed racing form</li>
+        </ul>
+        <a class="btn btn-amber" href="./demo.html">Enter</a>
+      </div>
+      <div class="tier">
+        <h3 class="tier-name">Stakes</h3>
+        <div class="tier-price num">$2,400<span style="font-size:15px;color:var(--muted)">/mo</span></div>
+        <p class="tier-tagline">Priced for the horse who won a Grade II in 2019 and has not stopped mentioning it.</p>
+        <ul>
+          <li>Your transactions announced over the barn PA</li>
+          <li>Dedicated racing secretary, human, on call until 4pm</li>
+          <li>Retroactive memo editing for the last nine years</li>
+          <li>A brass nameplate we mail to the wrong address</li>
+        </ul>
+        <a class="btn btn-ghost" href="./demo.html">Enter</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="demo-cta">
+    <div class="demo-cta-inner">
+      <div>
+        <h2>The feed is the product</h2>
+        <p>Every debt in Barn 7, who owes whom, and the distance split that started two arguments this week.</p>
+      </div>
+      <a class="btn btn-amber" href="./demo.html">Open the demo →</a>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="foot-inner">
+    <a href="/">← theworstaistudioever</a>
+    <span>Furlong is not a bank. Furlong is not a stable. Furlong is a feed.</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var LEDGER = [
+    { from:'Marjoram',        to:'Comanche Gap',     memo:'farrier, split 3 ways',      amt:'41.00' },
+    { from:'Dutch Interior',  to:'Ash Wednesday',    memo:'trailer fuel, Ocala return', amt:'11.50' },
+    { from:'Something Borrowed', to:'Barn 7 fund',   memo:'fly spray, communal',        amt:'6.25'  },
+    { from:'Late Model',      to:'Marjoram',         memo:'settled at last, thank you', amt:'88.00' },
+    { from:'Pale Wednesday',  to:'Dutch Interior',   memo:'lost bet, unspecified',      amt:'20.00' },
+    { from:'Comanche Gap',    to:'Late Model',       memo:'hay, weekly',                amt:'134.75'},
+    { from:'Ash Wednesday',   to:'Something Borrowed', memo:'braiding, one mane',       amt:'15.00' },
+    { from:'Barn 7 fund',     to:'Pale Wednesday',   memo:'reimbursement, disputed',    amt:'3.40'  }
+  ];
+
+  var rows = document.getElementById('rows');
+  var idx = 0;
+
+  function rowHTML(e){
+    return '<div class="result-row">' +
+      '<div><div class="result-who">' + e.from + '<span class="arrow">→</span>' + e.to + '</div>' +
+      '<div class="result-memo">' + e.memo + '</div></div>' +
+      '<div class="result-amt"><span class="flip">$' + e.amt + '</span></div>' +
+    '</div>';
+  }
+
+  function render(){
+    var out = '';
+    for (var i = 0; i < 4; i++) out += rowHTML(LEDGER[(idx + i) % LEDGER.length]);
+    rows.innerHTML = out;
+  }
+  render();
+
+  if (!reduce) {
+    setInterval(function(){
+      var flips = rows.querySelectorAll('.flip');
+      for (var i = 0; i < flips.length; i++) {
+        (function(el, n){
+          setTimeout(function(){ el.classList.add('flipping'); }, n * 40);
+        })(flips[i], i);
+      }
+      setTimeout(function(){ idx = (idx + 1) % LEDGER.length; render(); }, 260);
+    }, 4200);
+  }
+
+  function tick(){
+    var d = new Date();
+    var h = ('0' + d.getHours()).slice(-2), m = ('0' + d.getMinutes()).slice(-2);
+    document.getElementById('clock').textContent = h + ':' + m;
+  }
+  tick();
+  setInterval(tick, 30000);
+})();
+</script>
+</body>
+</html>
