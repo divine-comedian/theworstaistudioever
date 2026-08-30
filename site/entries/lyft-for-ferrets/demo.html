@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Slink Dispatch · Sheet D-01</title>
+<meta name="description" content="Live cavity dispatch console for one residence. Route segments, clearances, fare, and an ETA that only increases.">
+<meta name="robots" content="index,follow">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;700;900&family=Atkinson+Hyperlegible:wght@400;700&family=Azeret+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#E8E4D8;
+    --paper-2:#EFECE3;
+    --prussian:#1B3B6F;
+    --orange:#C8471F;
+    --ink:#16202B;
+    --muted:#8A8574;
+    --hair:rgba(27,59,111,.32);
+    --hair-soft:rgba(27,59,111,.16);
+    --display:'Chivo','Helvetica Neue',Helvetica,Arial,sans-serif;
+    --body:'Atkinson Hyperlegible',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --mono:'Azeret Mono','SFMono-Regular',Consolas,monospace;
+    --hatch:repeating-linear-gradient(45deg,var(--hair-soft) 0 1px,transparent 1px 7px);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:var(--body);font-size:16px;line-height:1.55;
+  }
+  a{color:var(--prussian)}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+  .cap{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+
+  /* ---- top chrome ---- */
+  .chrome{
+    position:sticky;top:0;z-index:20;background:var(--paper);
+    border-bottom:1px solid var(--hair);
+    display:flex;align-items:center;gap:16px;
+    padding:10px 20px;flex-wrap:wrap;
+  }
+  .back{
+    font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    text-decoration:none;color:var(--prussian);border:1px solid var(--hair);
+    padding:7px 11px;border-radius:2px;background:transparent;
+    transition:background 180ms ease,color 180ms ease,border-color 180ms ease;
+  }
+  .back:hover,.back:focus-visible{background:var(--prussian);color:var(--paper);border-color:var(--prussian)}
+  .chrome-title{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+  .chrome-spacer{flex:1 1 auto}
+  .live{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--orange)}
+  .live-dot{width:7px;height:7px;border-radius:50%;background:var(--orange);animation:pulse 4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+
+  /* ---- shell ---- */
+  .shell{
+    display:grid;gap:0;
+    grid-template-columns:minmax(230px,268px) minmax(0,1fr) minmax(230px,282px);
+    max-width:1400px;margin:0 auto;min-height:calc(100dvh - 47px);
+  }
+  .rail{border-right:1px solid var(--hair);padding:18px 18px 40px}
+  .rail:last-child{border-right:0;border-left:1px solid var(--hair)}
+  .stage{padding:18px 22px 40px;min-width:0}
+
+  .plate{border:1px solid var(--hair);border-radius:2px;background:var(--paper-2);margin-bottom:16px}
+  .plate-hd{
+    display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+    padding:8px 11px;border-bottom:1px solid var(--hair);background-image:var(--hatch);
+  }
+  .plate-hd h2{
+    margin:0;font-family:var(--display);font-size:12px;font-weight:900;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--prussian);
+  }
+  .plate-bd{padding:12px 11px}
+
+  /* ---- driver card ---- */
+  .driver{display:flex;gap:11px;align-items:flex-start}
+  .plateshot{
+    width:56px;height:56px;flex:0 0 56px;border:1px solid var(--prussian);border-radius:2px;
+    background:var(--paper);background-image:var(--hatch);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--display);font-weight:900;font-size:17px;color:var(--prussian);
+  }
+  .driver-name{font-family:var(--display);font-weight:700;font-size:16px;line-height:1.2}
+  .driver-meta{margin-top:3px;font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.5}
+  .wave{display:flex;align-items:flex-end;gap:2px;height:26px;margin-top:11px}
+  .wave i{flex:1 1 auto;background:var(--prussian);opacity:.55;border-radius:1px;transition:height 240ms ease}
+  .kv{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px dotted var(--hair-soft);font-size:13px}
+  .kv:last-child{border-bottom:0}
+  .kv span:first-child{color:var(--muted);font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding-top:3px}
+  .kv span:last-child{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500;text-align:right}
+
+  /* ---- toggles ---- */
+  .tog{
+    display:flex;align-items:center;gap:9px;width:100%;text-align:left;
+    padding:9px 8px;margin:0 0 5px;border:1px solid var(--hair);border-radius:2px;
+    background:var(--paper);color:var(--ink);cursor:pointer;font:inherit;font-size:13px;
+    min-height:44px;transition:background 180ms ease,border-color 180ms ease;
+  }
+  .tog:hover{border-color:var(--prussian)}
+  .tog:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+  .box{
+    width:15px;height:15px;flex:0 0 15px;border:1px solid var(--prussian);border-radius:1px;
+    display:flex;align-items:center;justify-content:center;background:var(--paper);
+  }
+  .box::after{content:"";width:8px;height:8px;background:var(--prussian);transform:scale(0);transition:transform 160ms ease}
+  .tog[aria-pressed="true"] .box::after{transform:scale(1)}
+  .tog[aria-pressed="true"]{background-image:var(--hatch)}
+
+  /* ---- drawing ---- */
+  .sheet{border:1px solid var(--hair);border-radius:2px;background:var(--paper-2);padding:12px}
+  .sheet svg{display:block;width:100%;height:auto}
+  .seg{fill:none;stroke-width:3;cursor:pointer}
+  .seg-hit{fill:none;stroke:transparent;stroke-width:22;cursor:pointer}
+  .seg.idle{stroke:var(--hair);stroke-width:2;stroke-dasharray:5 4}
+  .seg.active{stroke:var(--prussian)}
+  .seg.oos{stroke:var(--muted);stroke-width:2;stroke-dasharray:2 5;opacity:.6}
+  .seg-g:hover .seg{stroke:var(--orange)}
+  .seg-g:focus-visible{outline:none}
+  .seg-g:focus-visible .seg{stroke:var(--orange);stroke-width:4}
+  .lbl{font-family:var(--mono);font-size:8.5px;letter-spacing:.06em;fill:var(--muted);text-transform:uppercase;pointer-events:none}
+  .lbl.on{fill:var(--prussian)}
+  .surge-chip{font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;fill:var(--orange);pointer-events:none}
+
+  .seglist{margin:0;padding:0;list-style:none}
+  .seglist li{
+    display:flex;justify-content:space-between;gap:8px;align-items:baseline;
+    padding:6px 0;border-bottom:1px dotted var(--hair-soft);font-family:var(--mono);font-size:11px;
+  }
+  .seglist li:last-child{border-bottom:0}
+  .seglist .nm{color:var(--ink);letter-spacing:.04em}
+  .seglist .cl{color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .seglist li.hold .nm{color:var(--orange)}
+
+  /* ---- fare ---- */
+  .eta{border:1px solid var(--prussian);border-radius:2px;padding:11px;text-align:center;margin-bottom:12px}
+  .eta .n{font-family:var(--mono);font-weight:700;font-size:36px;line-height:1;color:var(--prussian);font-variant-numeric:tabular-nums}
+  .eta.hold .n{color:var(--orange);font-size:26px}
+  .eta .u{margin-top:6px}
+  .fare-total{display:flex;justify-content:space-between;gap:10px;margin-top:9px;padding-top:9px;border-top:1px solid var(--prussian);font-family:var(--mono);font-weight:700;font-size:15px}
+  .surge-note{margin:9px 0 0;font-size:12px;color:var(--orange);line-height:1.45}
+  .cta{
+    display:block;width:100%;margin-top:14px;padding:14px;min-height:44px;
+    border:1px solid var(--prussian);border-radius:2px;background:var(--prussian);color:var(--paper);
+    font-family:var(--display);font-weight:900;font-size:13px;letter-spacing:.12em;text-transform:uppercase;
+    cursor:pointer;transition:transform 120ms ease,background 180ms ease;
+  }
+  .cta:hover{background:#16325D}
+  .cta:active{transform:translateY(1px)}
+  .cta:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+  .cta[disabled]{opacity:.45;cursor:not-allowed}
+
+  /* ---- log ---- */
+  .log{margin:0;padding:0;list-style:none;font-family:var(--mono);font-size:11px}
+  .log li{display:grid;grid-template-columns:52px 1fr auto;gap:9px;padding:7px 0;border-bottom:1px dotted var(--hair-soft);align-items:baseline}
+  .log li:last-child{border-bottom:0}
+  .log .t{color:var(--muted);font-variant-numeric:tabular-nums}
+  .log .o{letter-spacing:.05em;color:var(--prussian);text-align:right;white-space:nowrap}
+  .log .o.warn{color:var(--orange)}
+
+  .titleblock{
+    margin-top:16px;border:1px solid var(--hair);border-radius:2px;
+    display:grid;grid-template-columns:repeat(4,1fr);font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;
+  }
+  .titleblock div{padding:7px 9px;border-right:1px solid var(--hair);color:var(--muted)}
+  .titleblock div:last-child{border-right:0}
+  .titleblock b{display:block;color:var(--prussian);font-weight:700;font-size:11px;letter-spacing:.06em;margin-top:2px}
+
+  .toast{
+    position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(14px);
+    background:var(--prussian);color:var(--paper);padding:11px 16px;border-radius:2px;
+    font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;
+    opacity:0;pointer-events:none;transition:opacity 200ms ease,transform 200ms ease;z-index:40;max-width:92vw;text-align:center;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  @media (max-width:1080px){
+    .shell{grid-template-columns:1fr;min-height:0}
+    .rail{border-right:0;border-bottom:1px solid var(--hair)}
+    .rail:last-child{border-left:0;border-top:1px solid var(--hair)}
+    .stage{order:-1;padding:18px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
+  }
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <a class="back" href="./index.html">&larr; back to the pitch</a>
+  <span class="chrome-title">Slink dispatch &middot; sheet D-01</span>
+  <span class="chrome-spacer"></span>
+  <span class="live"><span class="live-dot"></span><span id="liveState">in transit</span></span>
+</div>
+
+<div class="shell">
+
+  <!-- LEFT RAIL -->
+  <aside class="rail">
+    <section class="plate">
+      <div class="plate-hd"><h2>Matched driver</h2><span class="cap">HOB-4471</span></div>
+      <div class="plate-bd">
+        <div class="driver">
+          <div class="plateshot" id="driverShot" aria-hidden="true">DO</div>
+          <div>
+            <div class="driver-name">Dennis Ott</div>
+            <div class="driver-meta">4.9 &middot; 3,180 slinks<br>Sable jill, 41 cm, no collar</div>
+          </div>
+        </div>
+        <div class="cap" style="margin-top:13px">Dook signature &middot; matched 0.981</div>
+        <div class="wave" id="wave" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <section class="plate">
+      <div class="plate-hd"><h2>Route preferences</h2></div>
+      <div class="plate-bd">
+        <button class="tog" data-flag="insulation" aria-pressed="false"><span class="box" aria-hidden="true"></span>Avoid insulation</button>
+        <button class="tog" data-flag="cat" aria-pressed="false"><span class="box" aria-hidden="true"></span>Avoid the cat</button>
+        <button class="tog" data-flag="structural" aria-pressed="false"><span class="box" aria-hidden="true"></span>Allow structural</button>
+        <button class="tog" data-flag="chimney" aria-pressed="false"><span class="box" aria-hidden="true"></span>Permit chimney</button>
+        <p class="cap" style="margin:10px 0 0;line-height:1.6">Preferences take effect on the next leg. They do not apply retroactively to a ferret already inside a wall.</p>
+      </div>
+    </section>
+  </aside>
+
+  <!-- CENTRE STAGE -->
+  <main class="stage">
+    <div class="sheet">
+      <svg viewBox="0 0 660 470" role="img" aria-labelledby="dwgTitle dwgDesc">
+        <title id="dwgTitle">Cavity network, section through 41 Ottway Lane</title>
+        <desc id="dwgDesc">A cutaway section through a two-storey house showing the wall cavities, joist voids, and vents currently in service as transit segments.</desc>
+        <defs>
+          <pattern id="hatch" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+            <line x1="0" y1="0" x2="0" y2="8" stroke="#1B3B6F" stroke-opacity=".22" stroke-width="1.2"/>
+          </pattern>
+        </defs>
+
+        <!-- envelope -->
+        <g stroke="#1B3B6F" stroke-opacity=".55" fill="none" stroke-width="1.4">
+          <polyline points="40,150 330,42 620,150"/>
+          <rect x="40" y="150" width="580" height="286"/>
+          <line x1="40" y1="436" x2="620" y2="436" stroke-width="2.4"/>
+        </g>
+        <!-- walls + slab, hatched -->
+        <g fill="url(#hatch)" stroke="#1B3B6F" stroke-opacity=".4" stroke-width="1">
+          <rect x="40" y="150" width="22" height="286"/>
+          <rect x="598" y="150" width="22" height="286"/>
+          <rect x="62" y="278" width="536" height="16"/>
+          <rect x="312" y="294" width="16" height="142"/>
+        </g>
+        <!-- ground hatch -->
+        <g stroke="#1B3B6F" stroke-opacity=".3" stroke-width="1">
+          <line x1="40" y1="436" x2="24" y2="452"/><line x1="90" y1="436" x2="74" y2="452"/>
+          <line x1="140" y1="436" x2="124" y2="452"/><line x1="190" y1="436" x2="174" y2="452"/>
+          <line x1="240" y1="436" x2="224" y2="452"/><line x1="290" y1="436" x2="274" y2="452"/>
+          <line x1="340" y1="436" x2="324" y2="452"/><line x1="390" y1="436" x2="374" y2="452"/>
+          <line x1="440" y1="436" x2="424" y2="452"/><line x1="490" y1="436" x2="474" y2="452"/>
+          <line x1="540" y1="436" x2="524" y2="452"/><line x1="590" y1="436" x2="574" y2="452"/>
+          <line x1="636" y1="436" x2="620" y2="452"/>
+        </g>
+
+        <!-- storey captions -->
+        <text class="lbl" x="72" y="172">Floor 02</text>
+        <text class="lbl" x="72" y="316">Floor 01</text>
+        <text class="lbl" x="72" y="464">Grade</text>
+
+        <!-- segments injected here -->
+        <g id="segLayer"></g>
+
+        <!-- endpoints -->
+        <g id="ends">
+          <circle cx="110" cy="400" r="5" fill="#1B3B6F"/>
+          <text class="lbl on" x="96" y="418">Pickup</text>
+          <rect x="554" y="190" width="11" height="11" fill="#1B3B6F"/>
+          <text class="lbl on" x="524" y="182">Drop-off</text>
+        </g>
+
+        <!-- travelling dot -->
+        <path id="routePath" fill="none" stroke="none"/>
+        <circle id="dot" r="5" fill="#C8471F" style="display:none"/>
+      </svg>
+
+      <div class="titleblock">
+        <div>Drawing no.<b>D-01</b></div>
+        <div>Revision<b id="revNo">A</b></div>
+        <div>Scale<b>1:24</b></div>
+        <div>Residence<b>41 Ottway Ln</b></div>
+      </div>
+    </div>
+
+    <section class="plate" style="margin-top:16px">
+      <div class="plate-hd"><h2>Trip log</h2><span class="cap">last 6</span></div>
+      <div class="plate-bd">
+        <ul class="log">
+          <li><span class="t">19:41</span><span>Baseboard run, east</span><span class="o">Arrived</span></li>
+          <li><span class="t">19:12</span><span>Joist void, floor 2</span><span class="o warn">Arrived, wrong floor</span></li>
+          <li><span class="t">18:55</span><span>Dryer vent</span><span class="o warn">Rider asleep in transit</span></li>
+          <li><span class="t">18:30</span><span>Under-sink bypass</span><span class="o warn">Cat</span></li>
+          <li><span class="t">17:58</span><span>Soffit run, north</span><span class="o">Arrived</span></li>
+          <li><span class="t">17:04</span><span>Partition riser, centre</span><span class="o warn">Still in transit</span></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- RIGHT RAIL -->
+  <aside class="rail">
+    <div class="eta" id="etaBox">
+      <div class="n" id="etaNum">04:00</div>
+      <div class="cap u" id="etaLabel">Estimated arrival</div>
+    </div>
+
+    <section class="plate">
+      <div class="plate-hd"><h2>Route in service</h2><span class="cap" id="clearTotal">0 mm</span></div>
+      <div class="plate-bd">
+        <ul class="seglist" id="segList"></ul>
+      </div>
+    </section>
+
+    <section class="plate">
+      <div class="plate-hd"><h2>Fare breakdown</h2><span class="cap">USD</span></div>
+      <div class="plate-bd">
+        <div id="fareLines"></div>
+        <div class="fare-total"><span>Total</span><span id="fareTotal">$0.00</span></div>
+        <p class="surge-note" id="surgeNote" hidden>Dryer vent surge active until the cycle finishes at 20:04.</p>
+      </div>
+    </section>
+
+    <button class="cta" id="confirmBtn">Confirm slink</button>
+    <p class="cap" style="margin:10px 0 0;line-height:1.6">Fare recalculates on every reroute. Estimated arrival does not decrease.</p>
+  </aside>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  // Each leg offers candidates in preference order. The router takes the first
+  // candidate that is in service and not excluded by a preference flag.
+  var LEGS = [
+    { name:"Leg 1", candidates:[
+      { id:"s1", label:"Baseboard run, east",   mm:74,  fare:1.10, min:2, flag:null,          pts:"110,400 320,400" },
+      { id:"s2", label:"Under-sink bypass",     mm:88,  fare:0.40, min:1, flag:"cat",         pts:"110,400 150,354 280,354 320,400" }
+    ]},
+    { name:"Leg 2", candidates:[
+      { id:"s3", label:"Partition riser, centre",mm:52, fare:2.20, min:3, flag:null,          pts:"320,400 320,286" },
+      { id:"s4", label:"Stud bay 3",            mm:41,  fare:3.40, min:2, flag:"!structural", pts:"320,400 250,400 250,286 320,286" },
+      { id:"s5", label:"Chimney flue",          mm:210, fare:0.00, min:7, flag:"!chimney",    pts:"320,400 470,400 470,286 320,286" }
+    ]},
+    { name:"Leg 3", candidates:[
+      { id:"s6", label:"Joist void, floor 2",   mm:63,  fare:1.80, min:2, flag:"insulation",  pts:"320,286 520,286" },
+      { id:"s7", label:"Soffit run, north",     mm:55,  fare:2.90, min:4, flag:null,          pts:"320,286 320,236 520,236 520,286" }
+    ]},
+    { name:"Leg 4", candidates:[
+      { id:"s8", label:"Dryer vent",            mm:102, fare:4.20, min:1, flag:null, surge:true, pts:"520,286 520,196 560,196" },
+      { id:"s9", label:"Closet return",         mm:38,  fare:1.30, min:5, flag:null,          pts:"520,286 582,286 582,196 560,196" }
+    ]}
+  ];
+
+  var prefs = { insulation:false, cat:false, structural:false, chimney:false };
+  var oos = {};                 // segments the operator has taken out of service
+  var etaSeconds = 240;
+  var revIndex = 0;
+  var REVS = "ABCDEFGHJKLMNP";
+
+  var $ = function(id){ return document.getElementById(id); };
+  var segLayer = $("segLayer"), segList = $("segList");
+  var routePath = $("routePath"), dot = $("dot");
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ---- build segment geometry once ----
+  var NS = "http://www.w3.org/2000/svg";
+  var nodes = {};
+  LEGS.forEach(function(leg){
+    leg.candidates.forEach(function(c){
+      var g = document.createElementNS(NS,"g");
+      g.setAttribute("class","seg-g");
+      g.setAttribute("tabindex","0");
+      g.setAttribute("role","button");
+
+      var hit = document.createElementNS(NS,"polyline");
+      hit.setAttribute("points", c.pts);
+      hit.setAttribute("class","seg-hit");
+
+      var line = document.createElementNS(NS,"polyline");
+      line.setAttribute("points", c.pts);
+      line.setAttribute("class","seg idle");
+
+      // clearance callouts are placed by hand: alternative segments share endpoints,
+      // so a computed midpoint stacks two labels on top of each other
+      var LBL = {
+        s1:[168,388], s2:[176,346], s3:[330,352], s4:[196,318], s5:[478,352],
+        s6:[386,276], s7:[386,228], s8:[458,244], s9:[590,244]
+      };
+      var lp = LBL[c.id];
+      var txt = document.createElementNS(NS,"text");
+      txt.setAttribute("class","lbl");
+      txt.setAttribute("x", lp[0]);
+      txt.setAttribute("y", lp[1]);
+      txt.textContent = c.mm + " mm";
+
+      g.appendChild(line); g.appendChild(hit); g.appendChild(txt);
+      segLayer.appendChild(g);
+      nodes[c.id] = { g:g, line:line, txt:txt, cand:c };
+
+      var toggle = function(){
+        oos[c.id] = !oos[c.id];
+        toast(c.label + (oos[c.id] ? " taken out of service" : " returned to service"));
+        recompute(true);
+      };
+      g.addEventListener("click", toggle);
+      g.addEventListener("keydown", function(e){
+        if(e.key === "Enter" || e.key === " "){ e.preventDefault(); toggle(); }
+      });
+    });
+  });
+
+  // surge chip on the dryer vent
+  var chip = document.createElementNS(NS,"text");
+  chip.setAttribute("class","surge-chip");
+  chip.setAttribute("x", 528); chip.setAttribute("y", 240);
+  chip.textContent = "SURGE 2.4×";
+  segLayer.appendChild(chip);
+
+  function excluded(c){
+    if(oos[c.id]) return true;
+    if(!c.flag) return false;
+    if(c.flag.charAt(0) === "!") return !prefs[c.flag.slice(1)];  // opt-in route
+    return prefs[c.flag];                                          // opt-out route
+  }
+
+  function route(){
+    return LEGS.map(function(leg){
+      for(var i=0;i<leg.candidates.length;i++){
+        if(!excluded(leg.candidates[i])) return leg.candidates[i];
+      }
+      return null;
+    });
+  }
+
+  function money(n){ return "$" + n.toFixed(2); }
+
+  function recompute(bump){
+    var picked = route();
+    var held = picked.indexOf(null) !== -1;
+
+    // segment styling
+    Object.keys(nodes).forEach(function(id){
+      var n = nodes[id];
+      var on = picked.indexOf(n.cand) !== -1;
+      n.line.setAttribute("class", "seg " + (on ? "active" : (oos[id] ? "oos" : "idle")));
+      n.txt.setAttribute("class", "lbl" + (on ? " on" : ""));
+      n.g.setAttribute("aria-label", n.cand.label + ", " + n.cand.mm + " millimetres clearance, " +
+        (on ? "in use" : (oos[id] ? "out of service" : "available")));
+    });
+
+    // route list
+    segList.innerHTML = "";
+    var mm = 0, fare = 3.50, mins = 0, surge = false;
+    picked.forEach(function(c, i){
+      var li = document.createElement("li");
+      if(!c){
+        li.className = "hold";
+        li.innerHTML = '<span class="nm">' + LEGS[i].name + ' &middot; no cavity</span><span class="cl">HOLD</span>';
+      }else{
+        mm += c.mm; fare += c.fare; mins += c.min;
+        if(c.surge) surge = true;
+        li.innerHTML = '<span class="nm">' + c.label + '</span><span class="cl">' + c.mm + ' mm</span>';
+      }
+      segList.appendChild(li);
+    });
+    $("clearTotal").textContent = mm + " mm";
+
+    // fare
+    var lines = [["Base fare", 3.50], ["Cavity surcharge", fare - 3.50], ["Dook verification levy", 0.75]];
+    if(prefs.insulation === false && picked.indexOf(nodes.s6.cand) !== -1) lines.push(["Insulation displaced", 1.25]);
+    if(surge) lines.push(["Vent surge, 2.4×", 5.88]);
+    if(held) lines.push(["Hold, per minute", 0.90]);
+    var total = lines.reduce(function(a,l){ return a + l[1]; }, 0);
+
+    $("fareLines").innerHTML = lines.map(function(l){
+      return '<div class="kv"><span>' + l[0] + '</span><span>' + money(l[1]) + '</span></div>';
+    }).join("");
+    $("fareTotal").textContent = money(total);
+    $("surgeNote").hidden = !surge;
+
+    // eta never decreases
+    if(bump){ etaSeconds += 40 + Math.round(mins * 17); revIndex = (revIndex + 1) % REVS.length; }
+    $("revNo").textContent = REVS.charAt(revIndex);
+    var box = $("etaBox");
+    if(held){
+      box.classList.add("hold");
+      $("etaNum").textContent = "UNRESOLVED";
+      $("etaLabel").textContent = "Awaiting a cavity";
+      $("liveState").textContent = "held";
+      $("confirmBtn").disabled = true;
+    }else{
+      box.classList.remove("hold");
+      paintEta();
+      $("etaLabel").textContent = "Estimated arrival";
+      $("liveState").textContent = "in transit";
+      $("confirmBtn").disabled = false;
+    }
+
+    drawPath(picked, held);
+  }
+
+  function paintEta(){
+    var m = Math.floor(etaSeconds/60), s = etaSeconds % 60;
+    $("etaNum").textContent = (m<10?"0":"") + m + ":" + (s<10?"0":"") + s;
+  }
+
+  function drawPath(picked, held){
+    if(held){ routePath.setAttribute("d",""); dot.style.display = "none"; return; }
+    var d = "";
+    picked.forEach(function(c, i){
+      var pts = c.pts.split(" ");
+      pts.forEach(function(p, j){
+        if(i === 0 && j === 0) d += "M" + p;
+        else if(j === 0) return;             // shared node, already drawn
+        else d += "L" + p;
+      });
+    });
+    routePath.setAttribute("d", d);
+    dot.style.display = reduce ? "none" : "";
+  }
+
+  // travelling dot
+  var t0 = null;
+  function tick(ts){
+    if(!reduce){
+      if(t0 === null) t0 = ts;
+      var len = routePath.getTotalLength();
+      if(len > 0){
+        var p = routePath.getPointAtLength(((ts - t0) / 6000 % 1) * len);
+        dot.setAttribute("cx", p.x); dot.setAttribute("cy", p.y);
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  // dook waveform
+  var wave = $("wave");
+  for(var i=0;i<26;i++){ wave.appendChild(document.createElement("i")); }
+  var bars = wave.querySelectorAll("i");
+  function paintWave(){
+    for(var i=0;i<bars.length;i++){
+      bars[i].style.height = (14 + Math.round(Math.abs(Math.sin(i*0.9 + Date.now()/900)) * 86)) + "%";
+    }
+  }
+  paintWave();
+  if(!reduce) setInterval(paintWave, 420);
+
+  // toggles
+  Array.prototype.forEach.call(document.querySelectorAll(".tog"), function(btn){
+    btn.addEventListener("click", function(){
+      var f = btn.dataset.flag;
+      prefs[f] = !prefs[f];
+      btn.setAttribute("aria-pressed", String(prefs[f]));
+      recompute(true);
+    });
+  });
+
+  // eta creep
+  setInterval(function(){
+    if($("etaBox").classList.contains("hold")) return;
+    etaSeconds += 1 + Math.floor(Math.random() * 3);
+    paintEta();
+  }, 5000);
+
+  var toastEl = $("toast"), toastTimer;
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove("show"); }, 3200);
+  }
+
+  $("confirmBtn").addEventListener("click", function(){
+    etaSeconds += 95;
+    paintEta();
+    toast("Slink confirmed. Dennis has been notified and is already somewhere.");
+  });
+
+  recompute(false);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+[2026-08-30T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-08-30T08:00:02Z] invoking claude -p
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/github/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/github/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.openclaw/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.openclaw/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.claude/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.claude/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/aurevon-status/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/aurevon-status/**) instead (Edit rules cover all file-editing tools).
+
+--- agent run summary (step 8) ---
+ROLL          Lyft x ferrets -> lyft-for-ferrets
+REROLLS       2 (DoorDash/squirrels 2026-07-31, Steam/yogis 2026-08-03 both in history)
+SUBJECT RULE  ferrets is an animal; seeds/subjects.json unchanged
+
+DESIGN        style     Diazo whiteprint drawing set, ozalid daylight mode
+              palette   bg #E8E4D8 / primary #1B3B6F prussian / accent #C8471F survey orange
+                        fg+ink #16202B / muted #8A8574
+              fonts     display Chivo, body Atkinson Hyperlegible, data Azeret Mono
+              archetype consumer on-demand transport page issued as a mechanical drawing set
+              signature dimension line (arrow-ticked rule with the value floating in a break)
+                        plus 45-degree section-cut hatch on every plate header
+ANTI-SAMENESS checked last 7 (venmo-for-retired-racehorses, instagram-for-wolves,
+              figma-for-left-handed-people, replit-for-red-pandas, midjourney-for-hedgehogs,
+              hinge-for-divorced-dads, bumble-for-penguins). No collision on
+              (style, palette, fonts). Nearest neighbours are 08-27 mirrored swiss (also a
+              light hairline-ruled page, but ink-on-paper editorial rather than a drawing set,
+              different palette and fonts) and 08-29 amber-on-green totalisator (dark).
+
+IMAGES        SKIPPED ENTIRELY. Allocation had been: hero skipped (typographic drawing-set
+              direction, a photograph breaks the print conceit); demo assets skipped
+              (demo_screen_concept is a schematic dispatch console, not photo-shaped);
+              budget allocated to 3 testimonial headshots of ferrets as deadpan ID portraits.
+              Headshot 1 attempt 1 failed: gen-image.sh exhausted its 3 internal retries
+              against Gemini HTTP 503 UNAVAILABLE ("model is currently experiencing high
+              demand"). Upstream outage, not a cap and not a key problem. Remaining headshots
+              not attempted. No judge verdicts recorded. No raw or partial files left on disk.
+              concept.json carries no "images" key, per step 4.6.
+              Both pages ship the CSS/SVG fallback: testimonials use hatched ID plates with
+              initials, so no <img> references a missing file.
+
+WARNINGS      Gemini image API returned 503 on all 3 retries; if this persists the next run
+              will also come back image-free.
+              state/runs/2026-08-30.log already existed (wrapper preamble); summary appended
+              rather than overwritten.
+
+BUILD         site/entries/lyft-for-ferrets/index.html  landing, self-contained, inline CSS/JS
+              site/entries/lyft-for-ferrets/demo.html   live cavity dispatch console:
+                clickable route segments, 4 route-preference toggles, fallback routing with a
+                HOLD state when a leg has no cavity, fare recompute, ETA that only increases,
+                travelling route dot, trip log. All client-side, no frameworks, no API calls.
+              site/index.html regenerated from all 80 concept.json files, newest first.
+
+VALIDATION    scripts/validate-entry.sh site lyft-for-ferrets -> OK (exit 0)
+HISTORY       appended; state/history.json now holds 80 entries
+
+VISUAL CHECK  RAN (headless browser present). 2 captures, 3 corrective edits, 1 re-capture.
+              index.html capture 1 exposed real breakage: features, testimonials, and fares
+              all rendered blank. .rise started at opacity:0 and was only cleared by
+              IntersectionObserver, so everything below the fold stayed invisible in any
+              non-scrolling context. Fix (2 edits): content is visible by default and the
+              hidden state is gated behind html.reveal-js, which the script adds only after
+              confirming it can undo it, plus an 1800ms failsafe that reveals anything the
+              observer never reached.
+              demo.html capture showed clearance callouts colliding where alternative
+              segments share endpoints (computed midpoints stacked 88mm/52mm/210mm and
+              102mm over the surge chip). Fix (1 edit): explicit per-segment label table.
+              Re-capture of index.html confirms all sections render, no overlaps, no
+              off-canvas elements. Remaining differences are taste-level and were left alone.
+              Revalidated after the edits: validate-entry.sh -> OK (exit 0).
+Today's entry is built, validated, and recorded.
+
+**Rolled:** `Lyft` × `ferrets` → **Slink**, on-demand transit for domesticated ferrets routed through the wall cavities of participating residences. 2 rerolls (DoorDash/squirrels, Steam/yogis already in history).
+
+**Design direction:** diazo whiteprint drawing set on ozalid paper (`#E8E4D8`), prussian blue linework, survey orange quarantined to live dispatch telemetry. Chivo / Atkinson Hyperlegible / Azeret Mono. The signature device is the dimension line, an arrow-ticked rule with the value floating in a break, which carries every quantity on the page. No collision with the last 7 entries on style, palette, or fonts.
+
+**Images: skipped.** The Gemini API returned HTTP 503 on all three retries of the first headshot, so the whole step was dropped and `concept.json` carries no `images` key. Hero and demo slots were already planned as skips (a photo breaks the drawing-set conceit; the demo is a schematic console). Both pages ship the CSS/SVG fallback, so nothing references a missing file.
+
+**Visual check found two real defects, both fixed:**
+- The landing page rendered its features, testimonials, and fares sections completely blank. `.rise` started at `opacity:0` and was only cleared by IntersectionObserver, so everything below the fold was invisible to anything that doesn't scroll. Content is now visible by default, with the hidden state gated behind a class the script only adds once it can undo it, plus a failsafe.
+- Demo clearance callouts overlapped where alternative route segments share endpoints. Replaced computed midpoints with an explicit label table.
+
+Validation passed before and after the edits, history is appended (80 entries), and the gallery is regenerated from all 80 concept files.
+
+```
+RUN_COMPLETE: lyft-for-ferrets
+```
+[2026-08-30T08:14:20Z] new entry: lyft-for-ferrets
+validate-entry [lyft-for-ferrets]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 80 entries (domain theworstaistudioever.com)
+[2026-08-30T08:14:20Z] committing: Lyft for ferrets
