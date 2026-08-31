@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Frond console · theworstaistudioever</title>
+<meta name="description" content="The Frond profile console: verified plant grids, the append-only care ledger, and your sponsor score.">
+<meta name="theme-color" content="#14432A">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Bodoni:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Public+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root{
+  --primary:#14432A;
+  --accent:#A25E00;
+  --accent-soft:rgba(162,94,0,.08);
+  --bg:#FBFAF6;
+  --panel:#FFFFFF;
+  --fg:#1B2A20;
+  --muted:#6F7A70;
+  --muted-strong:#5A645B;
+  --ink:#101A14;
+  --rule:rgba(16,26,20,.13);
+  --rule-hard:rgba(16,26,20,.3);
+  --display:'Libre Bodoni','Bodoni MT',Didot,Georgia,serif;
+  --body:'Public Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* ---------- chrome ---------- */
+.chrome{
+  position:sticky;top:0;z-index:20;background:var(--bg);
+  border-bottom:2px solid var(--ink);display:flex;align-items:center;gap:18px;
+  padding:12px clamp(14px,2.4vw,28px);flex-wrap:wrap;
+}
+.back{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;color:var(--primary);border-bottom:1px solid transparent;padding-block:4px}
+.back:hover{border-color:var(--primary)}
+.chrome .mark{font-family:var(--display);font-weight:700;font-size:19px;text-transform:uppercase;letter-spacing:.02em;border-left:1px solid var(--rule-hard);padding-left:18px}
+.chrome .env{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-strong)}
+.chrome .env b{color:var(--accent);font-weight:500}
+
+/* ---------- shell ---------- */
+.shell{display:grid;grid-template-columns:274px minmax(0,1fr);align-items:start;gap:0}
+.rail{border-right:1px solid var(--rule-hard);min-height:calc(100vh - 54px);padding:20px 0 40px}
+.rail-head{padding:0 20px 14px;border-bottom:1px solid var(--rule);margin-bottom:8px}
+.rail-head .t{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted-strong)}
+.rail-head .h{font-family:var(--display);font-size:19px;margin-top:5px}
+.plant-btn{
+  width:100%;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;
+  text-align:left;padding:11px 20px;border-left:2px solid transparent;
+  transition:background .15s ease,border-color .15s ease;
+}
+.plant-btn:hover{background:rgba(20,67,42,.05)}
+.plant-btn[aria-current="true"]{background:rgba(20,67,42,.09);border-left-color:var(--primary)}
+.plant-btn>span{min-width:0}
+.plant-btn .hd{display:block;font-family:var(--mono);font-size:11.5px;letter-spacing:.02em;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.plant-btn .sp{display:block;font-family:var(--body);font-size:11.5px;color:var(--muted);font-style:italic;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.flag{
+  font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:10px;letter-spacing:.06em;
+  border:1px solid var(--accent);color:var(--accent);padding:2px 6px;line-height:1.3;white-space:nowrap;
+}
+.flag.clear{border-color:var(--rule-hard);color:var(--muted)}
+.rail-foot{margin-top:22px;padding:16px 20px 0;border-top:1px solid var(--rule);font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);line-height:1.8}
+
+/* ---------- profile ---------- */
+.main{padding:26px clamp(14px,2.6vw,34px) 60px;max-width:1080px}
+.phead{display:grid;grid-template-columns:minmax(0,1fr) 236px;gap:clamp(20px,3vw,44px);align-items:start;padding-bottom:24px;border-bottom:2px solid var(--ink)}
+.handle{font-family:var(--mono);font-size:13px;letter-spacing:.02em;color:var(--primary);display:flex;align-items:center;gap:8px}
+.tick{width:13px;height:13px;flex:0 0 auto}
+.pname{font-family:var(--display);font-size:clamp(27px,3.4vw,40px);line-height:1.08;margin:8px 0 4px;letter-spacing:-.015em}
+.pspecies{font-style:italic;color:var(--muted-strong);margin:0 0 18px}
+.counts{display:flex;gap:0;flex-wrap:wrap;border-top:1px solid var(--rule)}
+.count{padding:12px 22px 12px 0;margin-right:22px;border-right:1px solid var(--rule)}
+.count:last-child{border-right:0;margin-right:0;padding-right:0}
+.count .n{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500;font-size:19px;color:var(--ink)}
+.count .l{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted-strong);margin-top:4px}
+
+/* sponsor gauge */
+.gauge{border:1px solid var(--ink);background:var(--panel);padding:16px 16px 18px}
+.gauge .t{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-strong)}
+.gauge .who{font-family:var(--mono);font-size:11px;color:var(--ink);margin-top:6px}
+.gauge .v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500;font-size:40px;line-height:1;margin-top:10px;color:var(--primary)}
+.gauge.low .v{color:var(--accent)}
+.bars{display:flex;gap:2px;margin-top:12px;height:18px;align-items:flex-end}
+.bars i{flex:1;background:var(--rule);height:40%}
+.bars i.on{background:var(--primary)}
+.gauge.low .bars i.on{background:var(--accent)}
+.gauge .note{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:12px;line-height:1.7}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;gap:26px;border-bottom:1px solid var(--rule-hard);margin:24px 0 22px;flex-wrap:wrap}
+.tab{font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted-strong);padding:12px 0;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab[aria-selected="true"]{color:var(--primary);border-bottom-color:var(--primary)}
+.tab:hover{color:var(--primary)}
+
+/* ---------- grid ---------- */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(12px,1.6vw,22px)}
+.tile figure{margin:0}
+.tile img{width:100%;height:auto;aspect-ratio:1/1;object-fit:cover;background:#EFEEE8}
+.tile .cap{border-top:1px solid var(--ink);margin-top:7px;padding-top:6px;font-family:var(--mono);font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted-strong);line-height:1.7}
+.tile .cap b{display:block;color:var(--primary);font-weight:500}
+.tile .cap .fig{font-variant-numeric:tabular-nums;color:var(--ink)}
+.tile.pending .slot{
+  aspect-ratio:1/1;border:1px dashed var(--accent);background:var(--accent-soft);
+  display:grid;place-content:center;text-align:center;padding:14px;gap:8px;
+}
+.tile.pending .slot .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);line-height:1.8}
+.tile.pending .slot .d{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:23px;color:var(--accent)}
+.tile.pending .cap{border-top-color:var(--accent);color:var(--accent)}
+
+/* ---------- ledger ---------- */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.chip{
+  font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  border:1px solid var(--rule-hard);color:var(--muted-strong);padding:7px 12px;transition:all .15s ease;
+}
+.chip:hover{border-color:var(--primary);color:var(--primary)}
+.chip[aria-pressed="true"]{background:var(--primary);border-color:var(--primary);color:var(--bg)}
+.chip.warn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent)}
+.ledger{border:1px solid var(--ink);background:var(--panel)}
+.lrow{
+  display:grid;grid-template-columns:74px 92px minmax(0,1fr) auto;gap:14px;align-items:baseline;
+  padding:12px 16px;border-bottom:1px solid var(--rule);
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.03em;font-variant-numeric:tabular-nums;
+}
+.lrow:last-child{border-bottom:0}
+.lrow .t{color:var(--muted)}
+.lrow .k{font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted-strong)}
+.lrow .d{color:var(--ink);font-family:var(--body);font-size:13.5px;letter-spacing:0}
+.lrow .w{font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted-strong);text-align:right}
+.lrow.warn{background:var(--accent-soft);box-shadow:inset 2px 0 0 var(--accent)}
+.lrow.warn .k,.lrow.warn .d{color:var(--accent)}
+.empty{padding:34px 16px;text-align:center;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- composer ---------- */
+.composer{border:1px solid var(--ink);background:var(--panel);margin-top:26px}
+.composer h2{font-family:var(--display);font-size:20px;font-weight:500;margin:0;padding:15px 18px;border-bottom:1px solid var(--ink);letter-spacing:-.01em}
+.cbody{display:grid;grid-template-columns:132px minmax(0,1fr);gap:18px;padding:18px}
+.drop{aspect-ratio:1/1;border:1px dashed var(--rule-hard);display:grid;place-content:center;text-align:center;padding:10px;gap:6px;transition:border-color .15s ease}
+.drop:hover{border-color:var(--primary)}
+.drop .k{font-family:var(--mono);font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted-strong);line-height:1.7}
+.drop.filled{border-style:solid;border-color:var(--primary);padding:0}
+.drop.filled img{width:100%;height:100%;object-fit:cover}
+label{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-strong);margin-bottom:7px}
+textarea{
+  width:100%;min-height:82px;resize:vertical;padding:11px 12px;
+  border:1px solid var(--rule-hard);background:var(--bg);color:var(--ink);
+  font-family:var(--body);font-size:14px;line-height:1.5;
+}
+textarea:focus{border-color:var(--primary);outline:none;box-shadow:0 0 0 2px rgba(20,67,42,.14)}
+.help{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:7px;line-height:1.7}
+.cactions{display:flex;gap:12px;align-items:center;margin-top:14px;flex-wrap:wrap}
+.btn{
+  font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;
+  border:1px solid var(--primary);color:var(--primary);padding:11px 18px;
+  transition:background .18s ease,color .18s ease,transform .1s ease;
+}
+.btn:hover{background:var(--primary);color:var(--bg)}
+.btn:active{transform:translateY(1px)}
+.btn.solid{background:var(--primary);color:var(--bg)}
+.btn.solid:hover{background:var(--ink);border-color:var(--ink)}
+.btn:disabled{opacity:.42;cursor:not-allowed;transform:none}
+.btn:disabled:hover{background:none;color:var(--primary)}
+.notice{
+  border-top:2px solid var(--accent);background:var(--accent-soft);padding:14px 18px;
+  font-size:13.5px;color:var(--accent);line-height:1.55;
+}
+.notice .k{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:5px}
+[hidden]{display:none!important}
+
+/* ---------- toast ---------- */
+.toast{
+  position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(8px);
+  background:var(--primary);color:var(--bg);padding:13px 20px;z-index:40;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease;max-width:calc(100vw - 32px);
+}
+.toast.up{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (max-width:940px){
+  .shell{grid-template-columns:1fr}
+  .rail{border-right:0;border-bottom:1px solid var(--rule-hard);min-height:0;padding-bottom:18px}
+  .rail-inner{display:flex;gap:0;overflow-x:auto;padding-bottom:2px}
+  .plant-btn{width:auto;min-width:214px;border-left:0;border-bottom:2px solid transparent}
+  .plant-btn[aria-current="true"]{border-left-color:transparent;border-bottom-color:var(--primary)}
+  .rail-foot{display:none}
+  .phead{grid-template-columns:1fr}
+  .gauge{max-width:300px}
+}
+@media (max-width:640px){
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .lrow{grid-template-columns:64px minmax(0,1fr);gap:6px 12px}
+  .lrow .w{grid-column:2;text-align:left}
+  .cbody{grid-template-columns:1fr}
+  .drop{max-width:150px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <a class="back" href="./index.html">&larr; back to the pitch</a>
+  <span class="mark">Frond</span>
+  <span class="env">Household 4B &middot; caretaker <b>D. Falk</b> &middot; sponsor score 71</span>
+</div>
+
+<div class="shell">
+
+  <aside class="rail">
+    <div class="rail-head">
+      <div class="t">Verified accounts</div>
+      <div class="h">Household 4B</div>
+    </div>
+    <div class="rail-inner" id="rail"></div>
+    <div class="rail-foot">
+      Ledger sync 08:41<br>
+      Next required specimen 26 Aug<br>
+      Appeals open 0
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <section class="phead">
+      <div>
+        <div class="handle">
+          <svg class="tick" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6.6"/><path d="M5 8.2 7.1 10.3 11 5.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span id="p-handle">@monstera.deliciosa.4c</span>
+        </div>
+        <h1 class="pname" id="p-name">The one by the window</h1>
+        <p class="pspecies" id="p-species">Monstera deliciosa</p>
+        <div class="counts">
+          <div class="count"><div class="n" id="c-followers">4,182</div><div class="l">Followers</div></div>
+          <div class="count"><div class="n" id="c-posts">61</div><div class="l">Specimens</div></div>
+          <div class="count"><div class="n" id="c-waterings">214</div><div class="l">Logged waterings</div></div>
+          <div class="count"><div class="n" id="c-rank">40 / 412,006</div><div class="l">Cohort rank</div></div>
+        </div>
+      </div>
+      <div class="gauge" id="gauge">
+        <div class="t">Sponsor score</div>
+        <div class="who">Dennis Aubrey Falk</div>
+        <div class="v" id="g-value">71</div>
+        <div class="bars" id="g-bars" aria-hidden="true"></div>
+        <div class="note" id="g-note">Cohort median 61<br>Weighting not disclosed</div>
+      </div>
+    </section>
+
+    <div class="tabs" role="tablist" aria-label="Account views">
+      <button class="tab" role="tab" id="tab-grid" aria-controls="view-grid" aria-selected="true">Grid</button>
+      <button class="tab" role="tab" id="tab-ledger" aria-controls="view-ledger" aria-selected="false">Care ledger</button>
+    </div>
+
+    <section id="view-grid" role="tabpanel" aria-labelledby="tab-grid">
+      <div class="grid" id="grid"></div>
+    </section>
+
+    <section id="view-ledger" role="tabpanel" aria-labelledby="tab-ledger" hidden>
+      <div class="filters" id="filters"></div>
+      <div class="ledger" id="ledger"></div>
+    </section>
+
+    <section class="composer">
+      <h2>Post a specimen</h2>
+      <div class="cbody">
+        <button class="drop" id="drop" type="button" aria-label="Attach the week's specimen photograph">
+          <span class="k">Attach<br>specimen</span>
+        </button>
+        <div>
+          <label for="caption">Caption</label>
+          <textarea id="caption" placeholder="Say something about the plant."></textarea>
+          <p class="help">Captions are reviewed against account ownership before posting.</p>
+          <div class="cactions">
+            <button class="btn solid" id="post" type="button" disabled>Post to grid</button>
+            <button class="btn" id="dispute" type="button">File a dispute</button>
+          </div>
+        </div>
+      </div>
+      <div class="notice" id="notice" hidden></div>
+    </section>
+
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  var PLATES = ['plate-1.webp','plate-2.webp','plate-3.webp'];
+
+  var PLANTS = [
+    {
+      handle:'@monstera.deliciosa.4c', name:'The one by the window', species:'Monstera deliciosa',
+      followers:'4,182', posts:'61', waterings:'214', rank:'40 / 412,006', score:71, complaints:1,
+      tiles:[
+        {img:0, date:'26 Aug', note:'Plate 12 · Intake', fig:'1,204 likes'},
+        {img:1, date:'19 Aug', note:'Plate 11 · Leaf 11', fig:'918 likes'},
+        {img:2, date:'12 Aug', note:'Plate 10 · Chlorosis, lower left', fig:'2,660 likes'},
+        {overdue:'4 d', note:'Required 05 Aug'}
+      ],
+      ledger:[
+        {t:'08:14', k:'Watered', d:'340 ml, room temperature', w:'D. Falk'},
+        {t:'08:15', k:'Rotated', d:'90 degrees clockwise', w:'D. Falk'},
+        {t:'14:00', k:'Skipped', d:'Scheduled misting, no entry received', w:'D. Falk', warn:true},
+        {t:'14:02', k:'Posted', d:'Lapse published to grid, automatic', w:'System'},
+        {t:'14:06', k:'Disputed', d:'Caretaker contests the 14:00 record', w:'D. Falk'},
+        {t:'14:41', k:'Disputed', d:'Dispute denied, record stands', w:'Arbitration', warn:true},
+        {t:'19:30', k:'Repotted', d:'Terracotta, 24 cm, unlogged for 6 hours', w:'D. Falk'}
+      ]
+    },
+    {
+      handle:'@ficus.lyrata.7', name:'The expensive mistake', species:'Ficus lyrata',
+      followers:'8,640', posts:'44', waterings:'96', rank:'11,908 / 88,412', score:44, complaints:3,
+      tiles:[
+        {img:2, date:'24 Aug', note:'Plate 09 · Leaf drop, week 3', fig:'6,110 likes'},
+        {overdue:'11 d', note:'Required 20 Aug'},
+        {img:1, date:'10 Aug', note:'Plate 08 · Detail', fig:'3,402 likes'},
+        {overdue:'18 d', note:'Required 13 Aug'}
+      ],
+      ledger:[
+        {t:'07:02', k:'Skipped', d:'Watering window closed with no entry', w:'D. Falk', warn:true},
+        {t:'09:20', k:'Watered', d:'910 ml, three days late', w:'D. Falk'},
+        {t:'09:21', k:'Posted', d:'Late watering published to grid, automatic', w:'System'},
+        {t:'11:44', k:'Skipped', d:'Required specimen photograph, overdue 11 days', w:'D. Falk', warn:true},
+        {t:'16:10', k:'Disputed', d:'Caretaker cites a work trip', w:'D. Falk'},
+        {t:'16:12', k:'Disputed', d:'Dispute denied, travel is not a mitigating factor', w:'Arbitration', warn:true}
+      ]
+    },
+    {
+      handle:'@sansevieria.11', name:'The one that asks for nothing', species:'Dracaena trifasciata',
+      followers:'302', posts:'19', waterings:'21', rank:'6 / 240,551', score:93, complaints:0,
+      tiles:[
+        {img:1, date:'25 Aug', note:'Plate 06 · Standard angle', fig:'88 likes'},
+        {img:0, date:'11 Aug', note:'Plate 05 · Standard angle', fig:'71 likes'},
+        {img:2, date:'28 Jul', note:'Plate 04 · Standard angle', fig:'64 likes'},
+        {overdue:'0 d', note:'On schedule', clear:true}
+      ],
+      ledger:[
+        {t:'08:40', k:'Watered', d:'120 ml, first in five weeks, as specified', w:'D. Falk'},
+        {t:'08:41', k:'Rotated', d:'45 degrees, discretionary', w:'D. Falk'},
+        {t:'12:00', k:'Posted', d:'Weekly specimen published on time', w:'System'},
+        {t:'12:04', k:'Watered', d:'Duplicate entry withdrawn by caretaker', w:'D. Falk'}
+      ]
+    },
+    {
+      handle:'@calathea.orbifolia.3', name:'The one with opinions', species:'Calathea orbifolia',
+      followers:'12,410', posts:'88', waterings:'403', rank:'2,044 / 61,229', score:39, complaints:5,
+      tiles:[
+        {img:1, date:'27 Aug', note:'Plate 21 · Edge curl', fig:'9,880 likes'},
+        {img:2, date:'20 Aug', note:'Plate 20 · Edge curl, worse', fig:'11,204 likes'},
+        {overdue:'6 d', note:'Required 25 Aug'},
+        {overdue:'13 d', note:'Required 18 Aug'}
+      ],
+      ledger:[
+        {t:'06:55', k:'Watered', d:'Tap water, against standing guidance', w:'D. Falk', warn:true},
+        {t:'06:56', k:'Posted', d:'Water source published to grid, automatic', w:'System'},
+        {t:'10:30', k:'Skipped', d:'Humidity check, 4 of 7 this week', w:'D. Falk', warn:true},
+        {t:'13:12', k:'Rotated', d:'180 degrees, followers notified', w:'D. Falk'},
+        {t:'18:00', k:'Disputed', d:'Caretaker contests the water source record', w:'D. Falk'},
+        {t:'18:00', k:'Disputed', d:'Dispute denied within the same minute', w:'Arbitration', warn:true}
+      ]
+    },
+    {
+      handle:'@pothos.aureum.2a', name:'The one on the fridge', species:'Epipremnum aureum',
+      followers:'1,097', posts:'33', waterings:'140', rank:'812 / 903,470', score:66, complaints:0,
+      tiles:[
+        {img:2, date:'23 Aug', note:'Plate 14 · Trailing growth', fig:'404 likes'},
+        {img:0, date:'16 Aug', note:'Plate 13 · Trailing growth', fig:'388 likes'},
+        {overdue:'2 d', note:'Required 29 Aug'},
+        {img:1, date:'02 Aug', note:'Plate 12 · Detail', fig:'351 likes'}
+      ],
+      ledger:[
+        {t:'09:15', k:'Watered', d:'260 ml', w:'D. Falk'},
+        {t:'11:00', k:'Repotted', d:'Moved 40 cm left, geolocation updated', w:'D. Falk'},
+        {t:'15:22', k:'Posted', d:'Weekly specimen published, two days late', w:'System'},
+        {t:'21:03', k:'Skipped', d:'Leaf wipe, deferred to next cycle', w:'D. Falk', warn:true}
+      ]
+    },
+    {
+      handle:'@zamioculcas.6b', name:'The one nobody watches', species:'Zamioculcas zamiifolia',
+      followers:'88', posts:'9', waterings:'12', rank:'44,190 / 118,004', score:88, complaints:0,
+      tiles:[
+        {img:0, date:'22 Aug', note:'Plate 03 · Standard angle', fig:'11 likes'},
+        {overdue:'1 d', note:'Required 30 Aug'},
+        {img:2, date:'08 Aug', note:'Plate 02 · Standard angle', fig:'9 likes'},
+        {img:1, date:'25 Jul', note:'Plate 01 · Intake', fig:'6 likes'}
+      ],
+      ledger:[
+        {t:'10:10', k:'Watered', d:'80 ml, quarterly', w:'D. Falk'},
+        {t:'10:12', k:'Posted', d:'Specimen published, 4 impressions', w:'System'},
+        {t:'17:45', k:'Rotated', d:'15 degrees, no engagement recorded', w:'D. Falk'}
+      ]
+    }
+  ];
+
+  var FILTERS = ['All','Watered','Rotated','Repotted','Skipped','Disputed'];
+  var active = 0, filter = 'All', attached = false;
+
+  var $ = function(id){ return document.getElementById(id); };
+
+  function toast(msg){
+    var el = $('toast');
+    el.textContent = msg;
+    el.classList.add('up');
+    clearTimeout(el._t);
+    el._t = setTimeout(function(){ el.classList.remove('up'); }, 3600);
+  }
+
+  function renderRail(){
+    var rail = $('rail');
+    rail.innerHTML = '';
+    PLANTS.forEach(function(p, i){
+      var b = document.createElement('button');
+      b.className = 'plant-btn';
+      b.type = 'button';
+      b.setAttribute('aria-current', i === active ? 'true' : 'false');
+      var flag = p.complaints > 0
+        ? '<span class="flag">' + p.complaints + ' open</span>'
+        : '<span class="flag clear">clear</span>';
+      b.innerHTML = '<span><span class="hd">' + p.handle + '</span>' +
+        '<span class="sp">' + p.species + '</span></span>' + flag;
+      b.addEventListener('click', function(){
+        active = i; filter = 'All';
+        renderAll();
+        toast('Switched to ' + p.handle);
+      });
+      rail.appendChild(b);
+    });
+  }
+
+  function renderHead(){
+    var p = PLANTS[active];
+    $('p-handle').textContent = p.handle;
+    $('p-name').textContent = p.name;
+    $('p-species').textContent = p.species;
+    $('c-followers').textContent = p.followers;
+    $('c-posts').textContent = p.posts;
+    $('c-waterings').textContent = p.waterings;
+    $('c-rank').textContent = p.rank;
+    $('g-value').textContent = p.score;
+    $('gauge').classList.toggle('low', p.score < 61);
+    $('g-note').innerHTML = p.score < 61
+      ? 'Cohort median 61<br>Below median, visible in search'
+      : 'Cohort median 61<br>Weighting not disclosed';
+    var bars = '';
+    for (var i = 0; i < 20; i++){
+      bars += '<i class="' + (i < Math.round(p.score / 5) ? 'on' : '') + '" style="height:' + (34 + ((i * 37) % 66)) + '%"></i>';
+    }
+    $('g-bars').innerHTML = bars;
+  }
+
+  function renderGrid(){
+    var p = PLANTS[active];
+    var g = $('grid');
+    g.innerHTML = '';
+    p.tiles.forEach(function(t){
+      var d = document.createElement('div');
+      d.className = 'tile' + (t.overdue !== undefined && !t.clear ? ' pending' : '');
+      if (t.img !== undefined){
+        var fig = document.createElement('figure');
+        var im = document.createElement('img');
+        im.src = PLATES[t.img];
+        im.width = 640; im.height = 640;
+        im.alt = 'Specimen photograph of ' + p.species + ' dated ' + t.date + '.';
+        var cap = document.createElement('figcaption');
+        cap.className = 'cap';
+        cap.innerHTML = '<b>' + p.handle + '</b>' + t.note + ' &middot; ' + t.date +
+          '<br><span class="fig">' + t.fig + '</span>';
+        fig.appendChild(im);
+        fig.appendChild(cap);
+        d.appendChild(fig);
+      } else if (t.clear){
+        d.innerHTML = '<div class="slot" style="border-style:solid;border-color:rgba(16,26,20,.13);background:none">' +
+          '<span class="k" style="color:var(--muted-strong)">Next specimen<br>not yet due</span></div>' +
+          '<div class="cap">' + t.note + '</div>';
+      } else {
+        d.innerHTML = '<div class="slot"><span class="k">Awaiting specimen</span>' +
+          '<span class="d">' + t.overdue + '</span>' +
+          '<span class="k">Overdue</span></div>' +
+          '<div class="cap">' + t.note + '</div>';
+      }
+      g.appendChild(d);
+    });
+  }
+
+  function renderFilters(){
+    var f = $('filters');
+    f.innerHTML = '';
+    FILTERS.forEach(function(name){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'chip' + (name === 'Skipped' || name === 'Disputed' ? ' warn' : '');
+      b.textContent = name;
+      b.setAttribute('aria-pressed', name === filter ? 'true' : 'false');
+      b.addEventListener('click', function(){ filter = name; renderFilters(); renderLedger(); });
+      f.appendChild(b);
+    });
+  }
+
+  function renderLedger(){
+    var p = PLANTS[active];
+    var rows = p.ledger.filter(function(r){ return filter === 'All' || r.k === filter; });
+    var l = $('ledger');
+    if (!rows.length){
+      l.innerHTML = '<div class="empty">No ' + filter.toLowerCase() + ' entries on this account. The ledger only records what happened.</div>';
+      return;
+    }
+    l.innerHTML = rows.map(function(r){
+      return '<div class="lrow' + (r.warn ? ' warn' : '') + '">' +
+        '<span class="t">' + r.t + '</span>' +
+        '<span class="k">' + r.k + '</span>' +
+        '<span class="d">' + r.d + '</span>' +
+        '<span class="w">' + r.w + '</span></div>';
+    }).join('');
+  }
+
+  function renderAll(){ renderRail(); renderHead(); renderGrid(); renderFilters(); renderLedger(); }
+
+  /* tabs */
+  function selectTab(which){
+    var isGrid = which === 'grid';
+    $('tab-grid').setAttribute('aria-selected', isGrid ? 'true' : 'false');
+    $('tab-ledger').setAttribute('aria-selected', isGrid ? 'false' : 'true');
+    $('view-grid').hidden = !isGrid;
+    $('view-ledger').hidden = isGrid;
+  }
+  $('tab-grid').addEventListener('click', function(){ selectTab('grid'); });
+  $('tab-ledger').addEventListener('click', function(){ selectTab('ledger'); });
+
+  /* composer */
+  $('drop').addEventListener('click', function(){
+    var p = PLANTS[active];
+    attached = !attached;
+    this.classList.toggle('filled', attached);
+    if (attached){
+      this.innerHTML = '';
+      var im = document.createElement('img');
+      im.src = PLATES[0];
+      im.alt = 'Attached specimen photograph of ' + p.species + '.';
+      this.appendChild(im);
+    } else {
+      this.innerHTML = '<span class="k">Attach<br>specimen</span>';
+    }
+    $('post').disabled = !attached;
+    toast(attached ? 'Specimen attached, unpublished' : 'Specimen removed');
+  });
+
+  $('post').addEventListener('click', function(){
+    var p = PLANTS[active];
+    var cap = $('caption').value.trim();
+    var n = $('notice');
+    n.hidden = false;
+    if (cap){
+      n.innerHTML = '<span class="k">Caption rejected</span>Captions are written by the account holder. The account holder is a plant. ' +
+        'The photograph posted without it, credited to you.';
+    } else {
+      n.innerHTML = '<span class="k">Specimen posted</span>Published to ' + p.handle +
+        ' and appended to the care ledger. Your name is on the entry.';
+    }
+    p.ledger.unshift({
+      t:'08:41', k:'Posted',
+      d:'Specimen published' + (cap ? ', caption withheld' : ', no caption submitted'),
+      w:'D. Falk'
+    });
+    $('caption').value = '';
+    attached = false;
+    $('drop').classList.remove('filled');
+    $('drop').innerHTML = '<span class="k">Attach<br>specimen</span>';
+    $('post').disabled = true;
+    renderLedger();
+    toast('Posted to ' + p.handle);
+  });
+
+  $('dispute').addEventListener('click', function(){
+    var p = PLANTS[active];
+    var n = $('notice');
+    n.hidden = false;
+    n.innerHTML = '<span class="k">Dispute denied</span>Reviewed in 0.4 seconds. The record stands. ' +
+      'You may file again on ' + p.handle + ' after 30 days.';
+    p.ledger.unshift({ t:'08:41', k:'Disputed', d:'Dispute filed and denied, record stands', w:'Arbitration', warn:true });
+    p.complaints += 1;
+    renderRail();
+    renderLedger();
+    selectTab('ledger');
+    toast('Dispute denied on ' + p.handle);
+  });
+
+  renderAll();
+})();
+</script>
+
+</body>
+</html>

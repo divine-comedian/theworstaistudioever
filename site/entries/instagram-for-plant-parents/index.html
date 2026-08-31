@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Frond · theworstaistudioever</title>
+<meta name="description" content="The social network where your houseplants hold the accounts and you are listed as the caretaker.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Frond · theworstaistudioever">
+<meta property="og:description" content="The social network where your houseplants hold the accounts and you are listed as the caretaker.">
+<meta property="og:image" content="hero.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Frond · theworstaistudioever">
+<meta name="twitter:description" content="The social network where your houseplants hold the accounts and you are listed as the caretaker.">
+<meta name="theme-color" content="#14432A">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Bodoni:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root{
+  --primary:#14432A;
+  --accent:#A25E00;
+  --accent-lift:#E0A03A;
+  --bg:#FBFAF6;
+  --fg:#1B2A20;
+  --muted:#6F7A70;
+  --muted-strong:#5A645B;
+  --ink:#101A14;
+  --rule:rgba(16,26,20,.14);
+  --rule-hard:rgba(16,26,20,.28);
+  --display:'Libre Bodoni','Bodoni MT',Didot,Georgia,serif;
+  --body:'Public Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --gut:clamp(20px,4vw,72px);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--fg);
+  font-family:var(--body);font-size:17px;font-weight:400;line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+img{display:block;max-width:100%}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* ---------- shared type ---------- */
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:.09em;text-transform:uppercase;font-size:11px}
+.wrap{max-width:1280px;margin:0 auto;padding-inline:var(--gut)}
+.folio{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--primary)}
+.eyebrow{
+  display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+  border-bottom:1px solid var(--rule-hard);padding-bottom:10px;margin-bottom:clamp(28px,4vw,52px);
+}
+.eyebrow .dept{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-strong)}
+.eyebrow .folio{margin-left:auto}
+h1,h2,h3{font-family:var(--display);font-weight:500;letter-spacing:-.015em;margin:0}
+h1{font-size:clamp(38px,6.4vw,80px);line-height:1.02}
+h2{font-size:clamp(30px,4.6vw,56px);line-height:1.06}
+h3{font-size:clamp(23px,2.4vw,31px);line-height:1.14}
+.flood{background:var(--primary);color:var(--bg);padding:0 .16em .06em;display:inline-block}
+.measure{max-width:62ch}
+
+/* ---------- masthead ---------- */
+.masthead{border-bottom:2px solid var(--ink)}
+.masthead .wrap{display:flex;align-items:center;gap:22px;padding-block:16px;flex-wrap:wrap}
+.wordmark{
+  font-family:var(--display);font-weight:700;font-size:27px;letter-spacing:.02em;
+  text-transform:uppercase;text-decoration:none;line-height:1;
+}
+.issue-line{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-strong);border-left:1px solid var(--rule-hard);padding-left:22px}
+.masthead nav{margin-left:auto;display:flex;gap:22px;align-items:center}
+.masthead nav a{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;color:var(--muted-strong);padding-block:8px}
+.masthead nav a:hover{color:var(--primary)}
+.masthead nav a.now{color:var(--primary);box-shadow:inset 0 -2px 0 var(--primary)}
+
+/* ---------- hero ---------- */
+.hero{padding-top:clamp(40px,6vw,80px)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,6fr);gap:clamp(28px,4vw,56px);align-items:end}
+.hero h1{margin-bottom:26px}
+.dropcap::first-letter{
+  font-family:var(--display);float:left;font-size:3.05em;line-height:.82;
+  padding:.05em .1em 0 0;color:var(--primary);font-weight:600;
+}
+.hero-sub{font-size:clamp(17px,1.5vw,20px);color:var(--fg);max-width:52ch;margin:0 0 28px}
+.hero-actions{display:flex;gap:20px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.btn{
+  font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  text-decoration:none;border:1px solid var(--primary);color:var(--primary);
+  padding:15px 26px;display:inline-block;transition:background .2s ease,color .2s ease,transform .1s ease;
+}
+.btn:hover{background:var(--primary);color:var(--bg)}
+.btn:active{transform:translateY(1px)}
+.btn-solid{background:var(--primary);color:var(--bg)}
+.btn-solid:hover{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.link-mono{
+  font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--primary);text-decoration:none;border-bottom:1px solid var(--rule-hard);padding-bottom:4px;
+  transition:border-color .2s ease;
+}
+.link-mono:hover{border-color:var(--primary)}
+
+/* ---------- signature: the plate + caption block ---------- */
+.plate{margin:0}
+.plate img{width:100%;height:auto;object-fit:cover;background:#EFEEE8}
+.plate-cap{
+  border-top:1px solid var(--ink);margin-top:9px;padding-top:8px;
+  display:flex;flex-wrap:wrap;gap:0 16px;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted-strong);
+}
+.plate-cap b{font-weight:500;color:var(--primary)}
+.plate-cap span{position:relative;padding-right:16px}
+.plate-cap span+span::before{content:"";position:absolute;left:-16px;top:.25em;bottom:.15em;width:1px;background:var(--rule-hard)}
+.plate-cap .fig{font-variant-numeric:tabular-nums;color:var(--ink)}
+.plate-bleed{margin-right:calc(-1 * var(--gut))}
+
+/* ---------- telemetry strip ---------- */
+.telemetry{border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);margin-top:clamp(44px,6vw,76px)}
+.telemetry .wrap{display:grid;grid-template-columns:repeat(4,1fr);padding-block:0}
+.tel{padding:20px 24px 22px;border-left:1px solid var(--rule)}
+.tel:first-child{border-left:0;padding-left:0}
+.tel .fig{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500;font-size:clamp(22px,2.6vw,32px);line-height:1;color:var(--ink)}
+.tel .lab{font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted-strong);margin-top:10px;line-height:1.5}
+.tel.warn .fig{color:var(--accent)}
+.tel.warn{border-top:2px solid var(--accent);margin-top:-1px}
+
+/* ---------- sections ---------- */
+section{padding-block:clamp(56px,8vw,116px)}
+.spread{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,5vw,72px);align-items:center}
+.spread + .spread{margin-top:clamp(52px,7vw,104px)}
+.spread.flip .col-text{order:2}
+.spread h3{margin-bottom:16px}
+.spread p{color:var(--muted-strong);margin:0}
+.spread .kicker{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--primary);display:block;margin-bottom:14px}
+
+/* ledger specimen card (CSS, no image) */
+.ledger{border:1px solid var(--ink);background:#fff}
+.ledger-head{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid var(--ink);padding:11px 16px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-strong)}
+.ledger-row{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:baseline;padding:13px 16px;border-bottom:1px solid var(--rule);font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;font-variant-numeric:tabular-nums}
+.ledger-row:last-child{border-bottom:0}
+.ledger-row .t{color:var(--muted)}
+.ledger-row .who{text-transform:uppercase;letter-spacing:.1em;font-size:10px;color:var(--muted-strong);text-align:right}
+.ledger-row.skipped{background:rgba(162,94,0,.06);box-shadow:inset 2px 0 0 var(--accent)}
+.ledger-row.skipped .ev{color:var(--accent);font-weight:500}
+
+/* ---------- testimonials: green flood ---------- */
+.press{background:var(--primary);color:var(--bg)}
+.press .eyebrow{border-color:rgba(251,250,246,.3)}
+.press .eyebrow .dept{color:rgba(251,250,246,.66)}
+.press .folio{color:var(--accent-lift)}
+.press h2{color:var(--bg);margin-bottom:clamp(34px,5vw,58px);max-width:20ch}
+.quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(24px,3.4vw,48px)}
+.quote{border-top:1px solid rgba(251,250,246,.34);padding-top:22px}
+.quote blockquote{
+  margin:0 0 24px;font-family:var(--display);font-style:italic;font-weight:400;
+  font-size:clamp(20px,1.85vw,25px);line-height:1.32;color:var(--bg);
+}
+.byline{display:flex;gap:14px;align-items:center}
+.monogram{
+  flex:0 0 auto;width:46px;height:46px;border:1px solid rgba(251,250,246,.5);
+  display:grid;place-items:center;font-family:var(--display);font-size:16px;letter-spacing:.02em;color:var(--bg);
+}
+.byline .nm{font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--bg);line-height:1.5}
+.byline .ti{font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:rgba(251,250,246,.62);line-height:1.5}
+
+/* ---------- pricing rate card ---------- */
+.rates{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--ink)}
+.rate{border-left:1px solid var(--rule);border-bottom:1px solid var(--ink);padding:30px 26px 32px;display:flex;flex-direction:column}
+.rate:first-child{border-left:0;padding-left:0}
+.rate:last-child{padding-right:0}
+.rate.marked{border-top:2px solid var(--accent);margin-top:-1px}
+.rate .tag{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;min-height:1em}
+.rate h3{margin-bottom:10px}
+.rate .price{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500;font-size:26px;color:var(--ink);margin-bottom:14px}
+.rate .rt{color:var(--muted-strong);font-size:15.5px;margin:0 0 22px}
+.rate ul{list-style:none;margin:0 0 26px;padding:0;flex:1}
+.rate li{padding:11px 0 11px 22px;border-top:1px solid var(--rule);font-size:14.5px;line-height:1.5;position:relative}
+.rate li::before{content:"";position:absolute;left:0;top:1.05em;width:10px;height:1px;background:var(--primary)}
+.rate li.denied{color:var(--accent)}
+.rate li.denied::before{background:var(--accent);height:2px}
+.rate .btn{text-align:center}
+
+/* ---------- closing ---------- */
+.closer{border-top:2px solid var(--ink);padding-block:clamp(56px,7vw,96px)}
+.closer .wrap{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:clamp(28px,5vw,64px);align-items:end}
+.closer h2{margin-bottom:18px}
+.closer p{color:var(--muted-strong);margin:0 0 26px;max-width:44ch}
+
+footer{border-top:1px solid var(--ink);padding-block:26px 40px}
+footer .wrap{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:baseline}
+footer a{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;color:var(--primary);border-bottom:1px solid transparent}
+footer a:hover{border-color:var(--primary)}
+footer .colo{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-strong);max-width:52ch;line-height:1.7}
+
+/* ---------- reveal ---------- */
+.rise{transform:translateY(6px);transition:transform .5s ease-out}
+.rise.seen{transform:none}
+.plate img{transform:scale(1.02);transition:transform .42s cubic-bezier(.2,.7,.3,1)}
+.plate.seen img{transform:scale(1)}
+
+@media (max-width:1000px){
+  .hero-grid{grid-template-columns:1fr;align-items:start}
+  .plate-bleed{margin-right:0}
+  .quotes{grid-template-columns:1fr;gap:34px}
+  .rates{grid-template-columns:1fr}
+  .rate{border-left:0;padding-inline:0}
+  .telemetry .wrap{grid-template-columns:1fr 1fr}
+  .tel{padding-inline:0 20px}
+  .tel:nth-child(3){border-left:0}
+  .tel:nth-child(n+3){border-top:1px solid var(--rule)}
+  .closer .wrap{grid-template-columns:1fr}
+}
+@media (max-width:720px){
+  .spread{grid-template-columns:1fr;gap:26px}
+  .spread.flip .col-text{order:0}
+  .telemetry .wrap{grid-template-columns:1fr}
+  .tel{border-left:0;border-top:1px solid var(--rule);padding-inline:0}
+  .tel:first-child{border-top:0}
+  .issue-line{border-left:0;padding-left:0;width:100%}
+  .masthead nav{margin-left:0;gap:16px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .rise{opacity:1;transform:none}
+  .plate img{transform:none}
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <a class="wordmark" href="#top">Frond</a>
+    <span class="issue-line">Specimen network &middot; Vol. 3 &middot; Talent relations</span>
+    <nav>
+      <a href="#talent">Talent</a>
+      <a href="#record">Record</a>
+      <a href="#rates">Rates</a>
+      <a class="now" href="./demo.html">Console</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <h1 class="dropcap rise">Your monstera has 4,182 followers and one <span class="flood">open</span> complaint.</h1>
+          <p class="hero-sub rise">Frond gives every houseplant a verified account, a permanent public care ledger, and an audience that can see precisely how long you waited. Caretakers are listed by full name.</p>
+          <div class="hero-actions rise">
+            <a class="btn btn-solid" href="#rates">Claim your plant's handle</a>
+            <a class="link-mono" href="./demo.html">Open the demo &rarr;</a>
+          </div>
+        </div>
+        <figure class="plate plate-bleed rise">
+          <img src="hero.webp" width="1600" height="900" alt="A monstera deliciosa in a terracotta pot beside a tall window in a bare, sunlit room.">
+          <figcaption class="plate-cap">
+            <span><b>@monstera.deliciosa.4c</b></span>
+            <span>Monstera deliciosa</span>
+            <span>Plate 01 &middot; 26 Aug</span>
+            <span class="fig">4,182 followers</span>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <div class="telemetry">
+    <div class="wrap">
+      <div class="tel"><div class="fig">1.4M</div><div class="lab">Plant accounts verified<br>Since March</div></div>
+      <div class="tel"><div class="fig">61</div><div class="lab">Median sponsor score<br>Ficus cohort</div></div>
+      <div class="tel warn"><div class="fig">192 h</div><div class="lab">Longest unlogged interval<br>This quarter</div></div>
+      <div class="tel"><div class="fig">0</div><div class="lab">Backdating requests granted<br>All time</div></div>
+    </div>
+  </div>
+
+  <section id="talent">
+    <div class="wrap">
+      <div class="eyebrow">
+        <span class="dept">Dept. Talent</span>
+        <span class="folio">p. 14</span>
+      </div>
+
+      <div class="spread">
+        <div class="col-text">
+          <span class="kicker">Verified grids</span>
+          <h3>The account belongs to the plant.</h3>
+          <p>Every plant gets its own handle, its own followers, and a weekly specimen photograph you are required to take. You hold the camera and you hold the login. You do not write the captions, because the account is not yours.</p>
+        </div>
+        <figure class="plate rise">
+          <img src="plate-2.webp" width="640" height="640" alt="Close crop of a single fenestrated monstera leaf against a bone-white backdrop.">
+          <figcaption class="plate-cap">
+            <span><b>@monstera.deliciosa.4c</b></span>
+            <span>Plate 07 &middot; Leaf 11</span>
+            <span class="fig">918 likes</span>
+          </figcaption>
+        </figure>
+      </div>
+
+      <div class="spread flip">
+        <div class="col-text">
+          <span class="kicker">The care ledger</span>
+          <h3>Append-only, and public from the first entry.</h3>
+          <p>Waterings, rotations, repots, and lapses post to the grid at the moment they happen, or at the moment they were scheduled to happen. Backdating is available on request and has never once been granted.</p>
+        </div>
+        <div class="ledger rise">
+          <div class="ledger-head"><span>Care ledger &middot; 4c</span><span>Append-only</span></div>
+          <div class="ledger-row"><span class="t">08:14</span><span class="ev">Watered &middot; 340 ml</span><span class="who">D. Falk</span></div>
+          <div class="ledger-row"><span class="t">08:15</span><span class="ev">Rotated &middot; 90&deg; clockwise</span><span class="who">D. Falk</span></div>
+          <div class="ledger-row skipped"><span class="t">14:00</span><span class="ev">Skipped &middot; scheduled misting</span><span class="who">D. Falk</span></div>
+          <div class="ledger-row"><span class="t">14:02</span><span class="ev">Posted to grid &middot; automatic</span><span class="who">System</span></div>
+          <div class="ledger-row"><span class="t">14:06</span><span class="ev">Dispute filed &middot; 1 of 3 this month</span><span class="who">D. Falk</span></div>
+          <div class="ledger-row skipped"><span class="t">14:41</span><span class="ev">Dispute denied &middot; record stands</span><span class="who">Arbitration</span></div>
+        </div>
+      </div>
+
+      <div class="spread">
+        <div class="col-text">
+          <span class="kicker">Sponsor score</span>
+          <h3>A single number between 0 and 100, describing you.</h3>
+          <p>It appears on your profile, on each of your plants' profiles, and in cohort search results. Ficus caretakers average 61. Nobody has asked us to explain the weighting, and we would not.</p>
+        </div>
+        <figure class="plate rise">
+          <img src="plate-3.webp" width="640" height="640" alt="A monstera seen from a low angle, one lower leaf yellowing at the edge.">
+          <figcaption class="plate-cap">
+            <span><b>@monstera.deliciosa.4c</b></span>
+            <span>Plate 09 &middot; Chlorosis, lower left</span>
+            <span class="fig">Score 71</span>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="press" id="record">
+    <div class="wrap">
+      <div class="eyebrow">
+        <span class="dept">Dept. Record</span>
+        <span class="folio">p. 22</span>
+      </div>
+      <h2>Caretakers on the record.</h2>
+      <div class="quotes">
+        <div class="quote">
+          <blockquote>&ldquo;I found out about the aphids from the grid. I was in the room at the time.&rdquo;</blockquote>
+          <div class="byline">
+            <div class="monogram" aria-hidden="true">MO</div>
+            <div><div class="nm">Marguerite Okonjo-Vance</div><div class="ti">Assistant Curator of Succulents, Residential</div></div>
+          </div>
+        </div>
+        <div class="quote">
+          <blockquote>&ldquo;My sponsor score went from 44 to 71 in a season and my ex-husband still follows the pothos.&rdquo;</blockquote>
+          <div class="byline">
+            <div class="monogram" aria-hidden="true">DF</div>
+            <div><div class="nm">Dennis Aubrey Falk</div><div class="ti">Third-Shift Watering Coordinator, Unit 4B</div></div>
+          </div>
+        </div>
+        <div class="quote">
+          <blockquote>&ldquo;We contested a skipped watering and we lost. The record stands. I have made my peace with the record.&rdquo;</blockquote>
+          <div class="byline">
+            <div class="monogram" aria-hidden="true">PR</div>
+            <div><div class="nm">Priya Ramanathan-Lund</div><div class="ti">Regional Compliance Lead, Midwest Terrarium Cooperative</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="rates">
+    <div class="wrap">
+      <div class="eyebrow">
+        <span class="dept">Dept. Rates</span>
+        <span class="folio">p. 31</span>
+      </div>
+      <div class="rates">
+        <div class="rate">
+          <div class="tag">&nbsp;</div>
+          <h3>Single specimen</h3>
+          <div class="price">$12/mo</div>
+          <p class="rt">One plant. One grid. No analytics and no appeals.</p>
+          <ul>
+            <li>1 verified plant account</li>
+            <li>Public care ledger, hourly sync</li>
+            <li>Sponsor score, recalculated whether or not you look at it</li>
+          </ul>
+          <a class="btn" href="./demo.html">Start one grid</a>
+        </div>
+        <div class="rate marked">
+          <div class="tag">Most disputed</div>
+          <h3>Household</h3>
+          <div class="price">$58/mo</div>
+          <p class="rt">Forty plants and at least one contested ranking.</p>
+          <ul>
+            <li>40 verified accounts</li>
+            <li>Cohort Explore placement by species and USDA zone</li>
+            <li class="denied">Ledger dispute filing, resolved within 48 hours, against you</li>
+            <li>Shared custody for one additional adult in the residence</li>
+          </ul>
+          <a class="btn btn-solid" href="./demo.html">Register the household</a>
+        </div>
+        <div class="rate">
+          <div class="tag">&nbsp;</div>
+          <h3>Estate</h3>
+          <div class="price">$1,400/mo</div>
+          <p class="rt">For collections that have outgrown the person maintaining them.</p>
+          <ul>
+            <li>Unlimited accounts across unlimited rooms</li>
+            <li>A named account manager who will call you about the ficus</li>
+            <li>Priority arbitration on disputed waterings</li>
+            <li>Quarterly leaf audit, conducted in person, unannounced</li>
+          </ul>
+          <a class="btn" href="./demo.html">Book the audit</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div class="closer">
+  <div class="wrap">
+    <div>
+      <h2>Every plant in this residence is already listed.</h2>
+      <p>Claiming the handle only decides who is named on the ledger beside it. Your name appears within one hour of signup.</p>
+      <a class="btn btn-solid" href="./demo.html">Open the demo &rarr;</a>
+    </div>
+    <figure class="plate rise">
+      <img src="plate-1.webp" width="640" height="640" alt="A monstera deliciosa in a terracotta pot photographed straight on against a seamless bone backdrop.">
+      <figcaption class="plate-cap">
+        <span><b>@monstera.deliciosa.4c</b></span>
+        <span>Plate 12 &middot; Intake</span>
+        <span class="fig">Cohort rank 40 of 412,006</span>
+      </figcaption>
+    </figure>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <a href="/">&larr; theworstaistudioever</a>
+    <span class="colo">Frond is a specimen network. Handles are issued to plants and cannot be transferred to the people who bought them.</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var items = document.querySelectorAll('.rise, .plate');
+  if (reduce || !('IntersectionObserver' in window)) {
+    items.forEach(function(el){ el.classList.add('seen'); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e, i){
+      if (!e.isIntersecting) return;
+      var el = e.target;
+      setTimeout(function(){ el.classList.add('seen'); }, i * 40);
+      io.unobserve(el);
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+  items.forEach(function(el){ io.observe(el); });
+
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click', function(ev){
+      var t = document.querySelector(a.getAttribute('href'));
+      if (!t) return;
+      ev.preventDefault();
+      t.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
