@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quill Console · theworstaistudioever</title>
+<meta name="description" content="The Quill in-vehicle console: one hedgehog, one residential B-road, 02:14.">
+<meta name="theme-color" content="#12161A">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Manrope:wght@400;500;600;700&family=Martian+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --bg:#12161A;
+  --surface:#181D22;
+  --well:#0E1216;
+  --road:#0A0D0F;
+  --line:#252C32;
+  --fg:#E7ECEF;
+  --muted:#8A959D;
+  --dim:#4E575E;
+  --green:#3BE08A;
+  --cyan:#35C8E8;
+  --knock:#0A0D0F;
+  --display:'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --body:'Manrope','Segoe UI',system-ui,-apple-system,sans-serif;
+  --mono:'Martian Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--fg);
+  font-family:var(--body);font-size:15px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.lbl{
+  font-family:var(--mono);font-size:9px;font-weight:500;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--muted);
+}
+
+/* ---------- chrome ---------- */
+.chrome{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  height:56px;padding:0 20px;border-bottom:1px solid var(--line);background:var(--surface);
+}
+.back{
+  font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--muted);
+  text-decoration:none;padding:8px 0;
+}
+.back:hover{color:var(--green)}
+.chrome .badge{font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:-.04em;color:var(--green)}
+.chrome .right{display:flex;gap:18px;align-items:center}
+
+/* ---------- ota ---------- */
+.ota{
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  padding:12px 20px;border-bottom:1px solid var(--line);background:var(--well);
+}
+.ota p{margin:0;font-size:13.5px;color:var(--muted);flex:1;min-width:220px}
+.ota strong{color:var(--fg);font-weight:600}
+.ota.gone{display:none}
+.mini{
+  font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;
+  padding:8px 14px;border:1px solid var(--line);border-radius:3px;min-height:36px;
+  transition:border-color .16s,color .16s;
+}
+.mini:hover{border-color:var(--cyan);color:var(--cyan)}
+.mini[disabled]{opacity:.4;cursor:not-allowed}
+.mini.solid{background:var(--green);color:var(--knock);border-color:var(--green)}
+.mini.solid:hover{background:#2ec178;color:var(--knock)}
+
+/* ---------- layout ---------- */
+.console{
+  display:grid;grid-template-columns:190px 1fr 300px;gap:1px;
+  background:var(--line);border-bottom:1px solid var(--line);
+}
+.rail,.stagewrap,.side{background:var(--bg)}
+.rail{padding:20px 18px}
+.side{padding:20px 18px;display:grid;gap:22px;align-content:start}
+
+/* instrument rail */
+.inst{border-bottom:1px solid var(--line);padding:0 0 16px;margin-bottom:16px}
+.inst:last-child{border-bottom:0;margin-bottom:0;padding-bottom:0}
+.inst .v{font-family:var(--mono);font-size:26px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.03em;margin-top:8px}
+.inst .v .u{font-size:11px;color:var(--muted);margin-left:4px;letter-spacing:0}
+.inst .v.cy{color:var(--cyan);font-size:15px}
+
+.charge{display:flex;gap:2px;height:12px;margin-top:10px}
+.charge i{display:block;flex:1;background:var(--green);opacity:.14;transition:opacity .18s}
+.charge i.on{opacity:1}
+.charge.cy i{background:var(--cyan)}
+
+/* ---------- stage ---------- */
+.stagewrap{padding:20px}
+.stage{
+  position:relative;background:var(--road);border:1px solid var(--line);
+  height:440px;overflow:hidden;
+}
+.verge{position:absolute;left:0;right:0;height:52px;background:#141A16}
+.verge.near{bottom:0;border-top:2px solid var(--line)}
+.verge.far{top:0;border-bottom:2px solid var(--line)}
+.centre{
+  position:absolute;left:0;right:0;top:50%;height:2px;
+  background:repeating-linear-gradient(90deg,#3A4249 0 42px,transparent 42px 82px);
+}
+.wet{
+  position:absolute;left:0;right:0;top:52px;bottom:52px;
+  background:radial-gradient(120% 60% at 30% 40%,rgba(53,200,232,.045),transparent 70%);
+  pointer-events:none;
+}
+
+.obj{
+  position:absolute;transform:translate(-50%,-50%);
+  border:1px solid transparent;
+}
+.det{
+  position:absolute;inset:-9px;border:0;cursor:pointer;padding:0;
+}
+.det::before,.det::after,.det i::before,.det i::after{
+  content:"";position:absolute;width:11px;height:11px;border:1px solid var(--cyan);opacity:.72;
+  transition:all .16s ease-out;
+}
+.det::before{top:0;left:0;border-right:0;border-bottom:0}
+.det::after{top:0;right:0;border-left:0;border-bottom:0}
+.det i::before{bottom:0;left:0;border-right:0;border-top:0}
+.det i::after{bottom:0;right:0;border-left:0;border-top:0}
+.det:hover::before,.det:focus-visible::before{top:-3px;left:-3px}
+.det:hover::after,.det:focus-visible::after{top:-3px;right:-3px}
+.det:hover i::before,.det:focus-visible i::before{bottom:-3px;left:-3px}
+.det:hover i::after,.det:focus-visible i::after{bottom:-3px;right:-3px}
+.det b{
+  position:absolute;top:-16px;left:0;white-space:nowrap;
+  font-family:var(--mono);font-size:8.5px;font-weight:500;letter-spacing:.08em;
+  color:var(--cyan);background:rgba(10,13,15,.82);padding:2px 4px;
+}
+.obj.low .det b{color:#7A848B}
+.obj.low .det::before,.obj.low .det::after,
+.obj.low .det i::before,.obj.low .det i::after{border-color:#7A848B;opacity:.6}
+
+.shape{background:#2A3238;border:1px solid #3A444B}
+.car{width:56px;height:104px;border-radius:3px}
+.car::after{
+  content:"";position:absolute;left:8px;right:8px;top:14px;height:20px;
+  background:#1B2126;border-radius:2px;
+}
+.grate{width:34px;height:20px;background:repeating-linear-gradient(90deg,#3A444B 0 3px,#0F1418 3px 7px);border:1px solid #3A444B}
+.cat{width:40px;height:22px;border-radius:11px;background:#2E2A33;border:1px solid #43404B}
+.badger{width:46px;height:20px;border-radius:10px;background:#20262B;border:1px solid #39424A}
+
+.hog{
+  position:absolute;left:26%;bottom:26px;width:30px;height:20px;
+  border-radius:15px/10px;background:#8E7A5C;
+  transform:translate(-50%,50%);
+}
+.hog::after{
+  content:"";position:absolute;right:-3px;top:50%;width:7px;height:5px;
+  background:#6E5C42;border-radius:50%;transform:translateY(-50%);
+}
+.hog .ring{position:absolute;inset:-8px;border:1px solid var(--green);opacity:.85}
+.hog.balled{border-radius:50%;width:26px;height:26px;background:#7E6C51}
+.hog.balled .ring{border-color:var(--cyan);border-radius:50%;animation:pulse 4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+
+.hud{
+  position:absolute;top:12px;left:12px;display:flex;gap:8px;align-items:center;
+  font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--muted);
+  background:rgba(10,13,15,.8);padding:5px 8px;
+}
+.hud .dot{width:6px;height:6px;border-radius:50%;background:var(--dim)}
+.hud.live .dot{background:var(--green);animation:pulse 4s ease-in-out infinite}
+.hud.rec .dot{background:var(--cyan);animation:pulse 4s ease-in-out infinite}
+
+/* ---------- controls under stage ---------- */
+.drive{
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+  margin-top:16px;padding:16px;border:1px solid var(--line);background:var(--surface);
+}
+.engage{
+  font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:-.01em;
+  background:var(--green);color:var(--knock);padding:14px 30px;border-radius:4px;min-height:48px;
+  transition:background .16s,transform .06s;
+}
+.engage:hover{background:#2ec178}
+.engage:active{transform:translateY(1px)}
+.engage.off{background:transparent;color:var(--fg);border:1px solid var(--line)}
+.engage.off:hover{border-color:var(--cyan);color:var(--cyan)}
+.engage[disabled]{opacity:.4;cursor:not-allowed}
+.status{flex:1;min-width:220px;font-size:13.5px;color:var(--muted)}
+.status b{color:var(--fg);font-weight:600}
+.progress{display:flex;gap:2px;height:12px;width:180px}
+.progress i{display:block;flex:1;background:var(--green);opacity:.14}
+.progress i.on{opacity:1}
+
+/* ---------- side panel ---------- */
+.seg{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:3px;overflow:hidden}
+.seg button{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;
+  padding:11px 4px;border-right:1px solid var(--line);color:var(--muted);min-height:40px;
+  transition:background .16s,color .16s;
+}
+.seg button:last-child{border-right:0}
+.seg button:hover{color:var(--fg)}
+.seg button[aria-pressed="true"]{background:var(--green);color:var(--knock)}
+
+.toggle{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;
+  border:1px solid var(--line);padding:14px;border-radius:3px;text-align:left;min-height:48px;
+  transition:border-color .16s;
+}
+.toggle:hover{border-color:var(--cyan)}
+.toggle .t{font-family:var(--display);font-weight:600;font-size:14px}
+.toggle .s{font-size:12px;color:var(--muted);margin-top:2px}
+.sw{width:36px;height:20px;border:1px solid var(--line);border-radius:10px;position:relative;flex:none}
+.sw::after{
+  content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;
+  background:var(--dim);transition:transform .18s,background .18s;
+}
+.toggle[aria-pressed="true"]{border-color:var(--cyan)}
+.toggle[aria-pressed="true"] .sw{border-color:var(--cyan)}
+.toggle[aria-pressed="true"] .sw::after{transform:translateX(16px);background:var(--cyan)}
+
+.dets{display:grid;gap:1px;background:var(--line);border:1px solid var(--line)}
+.dets button{
+  display:flex;justify-content:space-between;gap:10px;align-items:center;
+  background:var(--surface);padding:11px 12px;width:100%;text-align:left;min-height:42px;
+  font-family:var(--mono);font-size:10px;letter-spacing:.05em;
+  transition:background .16s;
+}
+.dets button:hover{background:#1E242A}
+.dets button .cf{color:var(--cyan)}
+.dets button.low .cf{color:#7A848B}
+.dets button[aria-current="true"]{background:#1E242A;box-shadow:inset 2px 0 0 var(--cyan)}
+
+/* ---------- classification card ---------- */
+.scrim{
+  position:fixed;inset:0;background:rgba(10,13,15,.72);
+  display:none;align-items:center;justify-content:center;padding:24px;z-index:60;
+}
+.scrim.open{display:flex}
+.card{
+  background:var(--surface);border:1px solid var(--cyan);max-width:420px;width:100%;padding:24px;
+}
+.card h2{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:-.025em;margin:10px 0 0}
+.card p{color:var(--muted);font-size:14px;margin:14px 0 0}
+.card dl{display:grid;grid-template-columns:1fr auto;gap:10px 16px;margin:20px 0 0;font-family:var(--mono);font-size:11px}
+.card dt{color:var(--muted);letter-spacing:.06em}
+.card dd{margin:0;text-align:right;color:var(--cyan);font-variant-numeric:tabular-nums}
+.card .acts{display:flex;gap:10px;margin-top:24px}
+
+/* ---------- toast ---------- */
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translate(-50%,14px);
+  background:var(--surface);border:1px solid var(--cyan);padding:13px 18px;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:var(--fg);
+  opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:70;max-width:90vw;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:1080px){
+  .console{grid-template-columns:1fr}
+  .rail{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .inst{border-bottom:0;border-right:1px solid var(--line);padding:0 16px 0 0;margin:0}
+  .inst:last-child{border-right:0;padding-right:0}
+  .stage{height:380px}
+}
+@media (max-width:620px){
+  .rail{grid-template-columns:repeat(2,1fr)}
+  .inst:nth-child(2){border-right:0}
+  .stage{height:320px}
+  .car{width:44px;height:80px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <a class="back" href="./index.html">&larr; back to the pitch</a>
+  <span class="badge">QUILL</span>
+  <div class="right">
+    <span class="lbl">Unit 0041</span>
+    <span class="lbl mono" id="clock">02:14</span>
+    <span class="lbl">FW <span id="fwver" style="color:var(--cyan)">12.4</span></span>
+  </div>
+</div>
+
+<div class="ota" id="ota">
+  <p><strong>Firmware 12.5 is ready to install.</strong> Installs at 03:00. Adds nothing. Removes verge dismount. <span id="deferLeft" class="mono" style="color:var(--cyan)">3 deferrals remaining</span></p>
+  <button class="mini" id="deferBtn">Defer</button>
+  <button class="mini solid" id="installBtn">Install now</button>
+</div>
+
+<div class="console">
+
+  <aside class="rail">
+    <div class="inst">
+      <span class="lbl">Charge</span>
+      <div class="v mono" id="worms">6<span class="u">worms</span></div>
+      <div class="charge" id="chargeBar"></div>
+    </div>
+    <div class="inst">
+      <span class="lbl">Range</span>
+      <div class="v mono" id="range">1,840<span class="u">m</span></div>
+    </div>
+    <div class="inst">
+      <span class="lbl">Ground speed</span>
+      <div class="v mono" id="speed">0<span class="u">m/h</span></div>
+    </div>
+    <div class="inst">
+      <span class="lbl">Cabin</span>
+      <div class="v cy mono" id="cabin">9.4&deg;C &middot; OUTSIDE</div>
+    </div>
+  </aside>
+
+  <section class="stagewrap">
+    <div class="stage" id="stage">
+      <div class="verge far"></div>
+      <div class="verge near"></div>
+      <div class="centre"></div>
+      <div class="wet"></div>
+
+      <div class="hud" id="hud"><span class="dot"></span><span id="hudText">STANDBY &middot; B4021 &middot; 02:14</span></div>
+
+      <div class="obj" style="left:66%;top:20%">
+        <div class="shape car"></div>
+        <button class="det" data-key="corsa" aria-label="Detected object: parked hatchback"><i></i><b>PARKED HATCHBACK 0.94</b></button>
+      </div>
+      <div class="obj" style="left:14%;top:62%">
+        <div class="shape grate"></div>
+        <button class="det" data-key="grate" aria-label="Detected object: drain grate"><i></i><b>DRAIN GRATE 0.97</b></button>
+      </div>
+      <div class="obj low" style="left:44%;top:36%">
+        <div class="shape cat"></div>
+        <button class="det" data-key="cat" aria-label="Detected object: unknown object"><i></i><b>UNKNOWN OBJECT 0.38</b></button>
+      </div>
+      <div class="obj" style="left:84%;top:88%">
+        <div class="shape badger"></div>
+        <button class="det" data-key="badger" aria-label="Detected object: badger"><i></i><b>BADGER 0.71</b></button>
+      </div>
+
+      <div class="hog" id="hog"><span class="ring"></span></div>
+    </div>
+
+    <div class="drive">
+      <button class="engage" id="engage">Engage self-crossing</button>
+      <div class="progress" id="progress"></div>
+      <p class="status" id="status"><b>Standing by at the near kerb.</b> Supervisor present. The far kerb has not been certified.</p>
+    </div>
+  </section>
+
+  <aside class="side">
+    <div>
+      <span class="lbl">Driving profile</span>
+      <div class="seg" id="profiles" style="margin-top:10px" role="group" aria-label="Driving profile">
+        <button data-p="chill" aria-pressed="false">Chill</button>
+        <button data-p="standard" aria-pressed="true">Standard</button>
+        <button data-p="assertive" aria-pressed="false">Assertive</button>
+      </div>
+      <p class="lbl" id="profileNote" style="margin-top:10px;text-transform:none;letter-spacing:.02em;line-height:1.6">Crosses at 1.4 km/h. Disengages for anything larger than a leaf.</p>
+    </div>
+
+    <button class="toggle" id="sentry" aria-pressed="false">
+      <span>
+        <span class="t">Sentry Mode</span>
+        <span class="s" id="sentrySub">Records four metres when parked.</span>
+      </span>
+      <span class="sw"></span>
+    </button>
+
+    <div>
+      <span class="lbl">Perception &middot; 4 tracked</span>
+      <div class="dets" id="detList" style="margin-top:10px"></div>
+    </div>
+  </aside>
+
+</div>
+
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="cardTitle">
+  <div class="card">
+    <span class="lbl" id="cardClass">Classification</span>
+    <h2 id="cardTitle">Object</h2>
+    <p id="cardBody">Description.</p>
+    <dl>
+      <dt>Confidence</dt><dd id="cardConf">0.00</dd>
+      <dt>Range from chassis</dt><dd id="cardRange">0.0 m</dd>
+      <dt>Planner response</dt><dd id="cardPlan">NONE</dd>
+    </dl>
+    <div class="acts">
+      <button class="mini solid" id="cardOk">Acknowledge</button>
+      <button class="mini" id="cardClose">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var OBJECTS = {
+    corsa: {
+      title:'Parked hatchback', cls:'Static obstacle / class 4',
+      conf:'0.94', range:'2.6 m', plan:'ROUTE AROUND',
+      body:'Stationary since 21:40. The planner treats it as permanent because it has not moved in five nights. It is taxed until March.'
+    },
+    grate: {
+      title:'Drain grate', cls:'Surface hazard / class 2',
+      conf:'0.97', range:'0.8 m', plan:'AVOID, 30 CM MARGIN',
+      body:'Slot width exceeds chassis foot width. Avoided by policy since 11.9, when it was avoided by memorial.'
+    },
+    cat: {
+      title:'Unknown object', cls:'Unclassified / review queued',
+      conf:'0.38', range:'1.9 m', plan:'HOLD AND OBSERVE',
+      body:'Warm, mobile, approximately four times chassis mass, has been watching the crossing for six minutes. The fleet has seen this shape 41,000 times and has not named it.'
+    },
+    badger: {
+      title:'Badger', cls:'Dynamic actor / class 9',
+      conf:'0.71', range:'5.2 m', plan:'ADVISORY ONLY',
+      body:'Avoidance is advisory on this trim. Long Range and above receive the same advisory, delivered sooner.'
+    }
+  };
+
+  var PROFILES = {
+    chill:      { speed:900,  dur:11000, note:'Crosses at 0.9 km/h. Stops for wind.', label:'CHILL' },
+    standard:   { speed:1400, dur:7000,  note:'Crosses at 1.4 km/h. Disengages for anything larger than a leaf.', label:'STANDARD' },
+    assertive:  { speed:2600, dur:3800,  note:'Crosses at 2.6 km/h. Does not yield to the drain grate.', label:'ASSERTIVE' }
+  };
+
+  var profile = 'standard';
+  var engaged = false, balled = false, pct = 0, raf = null, t0 = 0;
+  var deferrals = 3;
+
+  var hog = document.getElementById('hog');
+  var stage = document.getElementById('stage');
+  var hud = document.getElementById('hud');
+  var hudText = document.getElementById('hudText');
+  var statusEl = document.getElementById('status');
+  var engageBtn = document.getElementById('engage');
+  var speedEl = document.getElementById('speed');
+  var toastEl = document.getElementById('toast');
+  var sentryBtn = document.getElementById('sentry');
+
+  // ---- meters ----
+  function cells(el, n, on){
+    el.innerHTML = '';
+    for (var i=0;i<n;i++){
+      var c = document.createElement('i');
+      if (i < on) c.className = 'on';
+      el.appendChild(c);
+    }
+  }
+  var chargeBar = document.getElementById('chargeBar');
+  var progressBar = document.getElementById('progress');
+  cells(chargeBar, 24, 15);
+  cells(progressBar, 24, 0);
+
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function(){ toastEl.classList.remove('show'); }, 4000);
+  }
+
+  // ---- detection list ----
+  var detList = document.getElementById('detList');
+  Object.keys(OBJECTS).forEach(function(k){
+    var o = OBJECTS[k];
+    var b = document.createElement('button');
+    b.dataset.key = k;
+    if (parseFloat(o.conf) < 0.5) b.className = 'low';
+    b.innerHTML = '<span>' + o.title.toUpperCase() + '</span><span class="cf">' + o.conf + '</span>';
+    detList.appendChild(b);
+  });
+
+  // ---- classification card ----
+  var scrim = document.getElementById('scrim');
+  var lastFocus = null;
+  function openCard(key){
+    var o = OBJECTS[key]; if (!o) return;
+    lastFocus = document.activeElement;
+    document.getElementById('cardClass').textContent = o.cls;
+    document.getElementById('cardTitle').textContent = o.title;
+    document.getElementById('cardBody').textContent = o.body;
+    document.getElementById('cardConf').textContent = o.conf;
+    document.getElementById('cardRange').textContent = o.range;
+    document.getElementById('cardPlan').textContent = o.plan;
+    scrim.classList.add('open');
+    document.getElementById('cardOk').focus();
+    detList.querySelectorAll('button').forEach(function(b){
+      b.setAttribute('aria-current', b.dataset.key === key ? 'true' : 'false');
+    });
+  }
+  function closeCard(){
+    scrim.classList.remove('open');
+    if (lastFocus) lastFocus.focus();
+  }
+  document.getElementById('cardClose').addEventListener('click', closeCard);
+  document.getElementById('cardOk').addEventListener('click', function(){
+    closeCard();
+    toast('ACKNOWLEDGED. THE OBJECT HAS NOT BEEN INFORMED.');
+  });
+  scrim.addEventListener('click', function(e){ if (e.target === scrim) closeCard(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && scrim.classList.contains('open')) closeCard(); });
+
+  stage.addEventListener('click', function(e){
+    var d = e.target.closest('.det');
+    if (d) openCard(d.dataset.key);
+  });
+  detList.addEventListener('click', function(e){
+    var b = e.target.closest('button');
+    if (b) openCard(b.dataset.key);
+  });
+
+  // ---- driving profile ----
+  var profileNote = document.getElementById('profileNote');
+  document.getElementById('profiles').addEventListener('click', function(e){
+    var b = e.target.closest('button'); if (!b) return;
+    profile = b.dataset.p;
+    this.querySelectorAll('button').forEach(function(x){
+      x.setAttribute('aria-pressed', String(x === b));
+    });
+    profileNote.textContent = PROFILES[profile].note;
+    if (engaged) { stop('Profile changed mid-crossing. Control returned to the supervisor.'); }
+    else toast('PROFILE SET TO ' + PROFILES[profile].label + '.');
+  });
+
+  // ---- sentry ----
+  sentryBtn.addEventListener('click', function(){
+    balled = !balled;
+    this.setAttribute('aria-pressed', String(balled));
+    hog.classList.toggle('balled', balled);
+    document.getElementById('sentrySub').textContent = balled
+      ? 'Recording. Session cannot be ended from here.'
+      : 'Records four metres when parked.';
+    if (balled){
+      if (engaged) stop('Vehicle balled mid-carriageway. Crossing suspended.');
+      hud.className = 'hud rec';
+      hudText.textContent = 'RECORDING · 4.0 M · RETAINED 30 DAYS';
+      statusEl.innerHTML = '<b>Parked (balled).</b> Sentry Mode is recording. To end the session the vehicle would have to unroll.';
+      engageBtn.disabled = true;
+      toast('SENTRY MODE ENGAGED. NEIGHBOURS ARE NOW IN SCOPE.');
+    } else {
+      hud.className = 'hud';
+      hudText.textContent = 'STANDBY · B4021 · 02:14';
+      statusEl.innerHTML = '<b>Standing by.</b> Eleven hours of footage retained. No one has asked for it.';
+      engageBtn.disabled = false;
+    }
+  });
+
+  // ---- crossing ----
+  var START = 6, END = 84; // percentage of stage height, bottom-anchored
+  function setPos(p){
+    hog.style.bottom = (START + (END - START) * p) + '%';
+    var on = Math.round(p * 24);
+    progressBar.querySelectorAll('i').forEach(function(c,i){ c.classList.toggle('on', i < on); });
+  }
+  setPos(0);
+
+  function stop(msg){
+    engaged = false;
+    if (raf) cancelAnimationFrame(raf);
+    raf = null;
+    engageBtn.textContent = 'Engage self-crossing';
+    engageBtn.classList.remove('off');
+    speedEl.innerHTML = '0<span class="u">m/h</span>';
+    if (!balled){ hud.className = 'hud'; hudText.textContent = 'STANDBY · B4021 · 02:14'; }
+    if (msg) statusEl.innerHTML = '<b>Disengaged.</b> ' + msg;
+  }
+
+  function finish(){
+    engaged = false; raf = null;
+    engageBtn.textContent = 'Return to near kerb';
+    engageBtn.classList.add('off');
+    speedEl.innerHTML = '0<span class="u">m/h</span>';
+    hud.className = 'hud';
+    hudText.textContent = 'ARRIVED · FAR VERGE · UNCERTIFIED';
+    statusEl.innerHTML = '<b>Far verge reached in ' + (PROFILES[profile].dur/1000).toFixed(1) + ' s.</b> Kerb ascent was removed in 12.4. The vehicle will wait here.';
+    toast('CROSSING COMPLETE. ONE ROAD. THAT WAS THE WHOLE PRODUCT.');
+  }
+
+  engageBtn.addEventListener('click', function(){
+    if (balled) return;
+    if (engaged) { stop('The supervisor intervened, which is the supported workflow.'); return; }
+    if (pct >= 1) { pct = 0; setPos(0); engageBtn.textContent = 'Engage self-crossing'; engageBtn.classList.remove('off'); statusEl.innerHTML = '<b>Returned to the near kerb.</b> Carried. The vehicle did not participate.'; return; }
+
+    engaged = true;
+    engageBtn.textContent = 'Disengage';
+    engageBtn.classList.add('off');
+    hud.className = 'hud live';
+    hudText.textContent = 'SELF-CROSSING ACTIVE · SUPERVISED';
+    speedEl.innerHTML = PROFILES[profile].speed + '<span class="u">m/h</span>';
+    statusEl.innerHTML = '<b>Crossing.</b> Supervisor must remain at the roadside for the duration.';
+
+    if (reduce) { pct = 1; setPos(1); finish(); return; }
+
+    var dur = PROFILES[profile].dur;
+    var from = pct;
+    t0 = performance.now();
+    (function step(now){
+      var p = from + (now - t0) / dur * (1 - from);
+      if (p >= 1) { pct = 1; setPos(1); finish(); return; }
+      pct = p; setPos(p);
+      raf = requestAnimationFrame(step);
+    })(t0);
+  });
+
+  // ---- over the air ----
+  var ota = document.getElementById('ota');
+  var deferLeft = document.getElementById('deferLeft');
+  document.getElementById('deferBtn').addEventListener('click', function(){
+    deferrals--;
+    if (deferrals <= 0){
+      install('Deferrals exhausted. 12.5 installed itself.');
+      return;
+    }
+    deferLeft.textContent = deferrals + (deferrals === 1 ? ' deferral remaining' : ' deferrals remaining');
+    toast('DEFERRED UNTIL 03:00 TOMORROW. ' + deferrals + ' LEFT.');
+  });
+  document.getElementById('installBtn').addEventListener('click', function(){
+    install('12.5 installed. Verge dismount removed.');
+  });
+  function install(msg){
+    ota.classList.add('gone');
+    document.getElementById('fwver').textContent = '12.5';
+    toast(msg.toUpperCase());
+    if (engaged) stop('Firmware installed mid-crossing. This is expected behaviour.');
+  }
+})();
+</script>
+
+</body>
+</html>

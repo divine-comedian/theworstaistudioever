@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quill · theworstaistudioever</title>
+<meta name="description" content="Quill is an autonomous ground-mobility stack for hedgehogs. Your hedgehog keeps walking. The road becomes our problem.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Quill · theworstaistudioever">
+<meta property="og:description" content="Quill is an autonomous ground-mobility stack for hedgehogs. Your hedgehog keeps walking. The road becomes our problem.">
+<meta property="og:image" content="hero.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Quill · theworstaistudioever">
+<meta name="twitter:description" content="Quill is an autonomous ground-mobility stack for hedgehogs. Your hedgehog keeps walking. The road becomes our problem.">
+<meta name="theme-color" content="#12161A">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Manrope:wght@400;500;600;700&family=Martian+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --bg:#12161A;
+  --surface:#181D22;
+  --well:#0E1216;
+  --line:#252C32;
+  --fg:#E7ECEF;
+  --muted:#8A959D;
+  --green:#3BE08A;
+  --cyan:#35C8E8;
+  --knock:#0A0D0F;
+  --display:'Sora','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --body:'Manrope','Segoe UI',system-ui,-apple-system,sans-serif;
+  --mono:'Martian Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--fg);
+  font-family:var(--body);font-size:17px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+img{display:block;max-width:100%}
+a{color:inherit}
+
+.wrap{width:100%;max-width:1180px;margin:0 auto;padding:0 24px}
+
+/* ---------- shared type ---------- */
+.eyebrow{
+  font-family:var(--mono);font-size:10px;font-weight:500;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+}
+.eyebrow .lit{color:var(--cyan)}
+.claim{
+  font-family:var(--display);font-weight:700;letter-spacing:-.03em;
+  line-height:1.02;margin:0;
+}
+.claim .on{color:var(--green)}
+.fig{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500}
+
+/* ---------- perception bracket ---------- */
+.pbox{position:relative}
+.pbox::before,.pbox::after,
+.pbox>.pb-b::before,.pbox>.pb-b::after{
+  content:"";position:absolute;width:14px;height:14px;pointer-events:none;
+  border:1px solid var(--cyan);opacity:.75;transition:all .18s ease-out;
+}
+.pbox::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+.pbox::after{top:-1px;right:-1px;border-left:0;border-bottom:0}
+.pbox>.pb-b::before{bottom:-1px;left:-1px;border-right:0;border-top:0}
+.pbox>.pb-b::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+.pbox:hover::before{top:-4px;left:-4px}
+.pbox:hover::after{top:-4px;right:-4px}
+.pbox:hover>.pb-b::before{bottom:-4px;left:-4px}
+.pbox:hover>.pb-b::after{bottom:-4px;right:-4px}
+.pb-label{
+  position:absolute;bottom:8px;left:8px;z-index:3;
+  font-family:var(--mono);font-size:9px;font-weight:500;letter-spacing:.1em;
+  color:var(--cyan);background:rgba(10,13,15,.78);padding:3px 6px;
+  opacity:.62;transition:opacity .18s ease-out;
+}
+.pbox:hover .pb-label{opacity:1}
+
+/* ---------- charge bar ---------- */
+.charge{display:flex;gap:2px;align-items:flex-end;height:14px}
+.charge i{
+  display:block;width:4px;height:100%;background:var(--green);
+  opacity:.14;transition:opacity .2s ease-out;
+}
+.charge.lit i.on{opacity:1}
+.bullet{display:inline-flex;gap:2px;margin-right:10px;vertical-align:middle}
+.bullet i{display:block;width:3px;height:10px;background:var(--green)}
+.bullet i:nth-child(2){opacity:.45}
+.bullet i:nth-child(3){opacity:.16}
+
+/* ---------- buttons ---------- */
+.btn{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:-.01em;
+  padding:15px 26px;border-radius:4px;text-decoration:none;
+  border:1px solid transparent;transition:background .16s,border-color .16s,transform .06s;
+  min-height:48px;cursor:pointer;
+}
+.btn-p{background:var(--green);color:var(--knock)}
+.btn-p:hover{background:#2ec178}
+.btn-s{border-color:var(--line);color:var(--fg);background:transparent}
+.btn-s:hover{border-color:var(--green);color:var(--green)}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible,a:focus-visible,button:focus-visible{
+  outline:2px solid var(--cyan);outline-offset:3px;
+}
+
+/* ---------- header ---------- */
+.top{
+  position:sticky;top:0;z-index:40;background:rgba(18,22,26,.92);
+  border-bottom:1px solid var(--line);
+}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:20px}
+.mark{
+  font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.04em;
+  color:var(--green);text-decoration:none;
+}
+.mark span{color:var(--muted);font-weight:400;font-size:11px;letter-spacing:.14em;margin-left:9px;font-family:var(--mono)}
+.top nav{display:flex;gap:26px}
+.top nav a{
+  font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;padding:6px 0;
+}
+.top nav a:hover{color:var(--fg)}
+
+/* ---------- hero ---------- */
+.hero{padding:64px 0 0}
+.hero-head{max-width:820px}
+.hero h1{font-size:clamp(46px,8.4vw,104px);margin:18px 0 0}
+.hero .lede{
+  font-size:19px;color:var(--muted);max-width:60ch;margin:24px 0 0;
+}
+.hero .acts{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+.plate{
+  position:relative;margin-top:52px;background:var(--well);
+  border:1px solid var(--line);overflow:hidden;
+}
+.plate img{width:100%;aspect-ratio:16/9;object-fit:cover}
+.sweep{
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(100deg,transparent 38%,rgba(231,236,239,.11) 50%,transparent 62%);
+  transform:translateX(-120%);
+}
+.plate.go .sweep{animation:sweep 1500ms cubic-bezier(.2,.6,.2,1) 320ms 1 forwards}
+@keyframes sweep{to{transform:translateX(120%)}}
+
+.specs{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border:1px solid var(--line);border-top:0;background:var(--surface);
+}
+.spec{padding:18px 20px;border-right:1px solid var(--line)}
+.spec:last-child{border-right:0}
+.spec dt{font-family:var(--mono);font-size:9px;letter-spacing:.13em;color:var(--muted);text-transform:uppercase}
+.spec dd{margin:9px 0 0;font-family:var(--mono);font-size:19px;font-weight:600;font-variant-numeric:tabular-nums}
+.spec dd .u{font-size:11px;color:var(--muted);margin-left:4px}
+.spec dd.warn{color:var(--cyan);font-size:13px;font-weight:500}
+
+/* ---------- sections ---------- */
+.sec{padding:104px 0;border-top:1px solid var(--line);margin-top:104px}
+.sec-head{display:flex;justify-content:space-between;align-items:baseline;gap:24px;flex-wrap:wrap;margin-bottom:56px}
+.sec-head h2{font-family:var(--display);font-weight:700;letter-spacing:-.03em;font-size:clamp(30px,4.2vw,46px);margin:0;line-height:1.05}
+.sec-head h2 .on{color:var(--green)}
+
+/* ---------- features ---------- */
+.feat{
+  display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;
+  padding:44px 0;border-top:1px solid var(--line);
+}
+.feat:first-of-type{border-top:0;padding-top:0}
+.feat h3{font-family:var(--display);font-weight:600;font-size:29px;letter-spacing:-.025em;margin:14px 0 0;line-height:1.15}
+.feat p{color:var(--muted);margin:16px 0 0;max-width:52ch}
+.feat.flip .readout{order:-1}
+
+.readout{background:var(--well);border:1px solid var(--line);padding:22px}
+.rd-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.lane{
+  position:relative;height:82px;background:#0A0D0F;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  overflow:hidden;
+}
+.lane::after{
+  content:"";position:absolute;left:0;right:0;top:50%;height:1px;
+  background:repeating-linear-gradient(90deg,var(--line) 0 18px,transparent 18px 34px);
+}
+.puck{
+  position:absolute;top:50%;left:8%;width:22px;height:14px;border-radius:11px/7px;
+  background:#8E7A5C;transform:translateY(-50%);
+}
+.puck::after{
+  content:"";position:absolute;inset:-6px -8px;border:1px solid var(--cyan);opacity:.8;
+}
+.rd-rows{margin-top:18px;display:grid;gap:10px}
+.rd-row{display:flex;justify-content:space-between;align-items:center;gap:14px;font-family:var(--mono);font-size:11px;font-variant-numeric:tabular-nums}
+.rd-row span:first-child{color:var(--muted);letter-spacing:.06em}
+.rd-row .c{color:var(--cyan)}
+.rd-row .g{color:var(--green)}
+.rd-row.off span{color:#4E575E}
+
+.rings{position:relative;height:120px;display:grid;place-items:center}
+.rings i{position:absolute;border:1px solid var(--cyan);border-radius:50%;opacity:.3}
+.rings i:nth-child(1){width:44px;height:44px;opacity:.75}
+.rings i:nth-child(2){width:78px;height:78px;opacity:.42}
+.rings i:nth-child(3){width:112px;height:112px;opacity:.2}
+.rings b{
+  width:20px;height:20px;border-radius:50%;background:var(--cyan);
+  animation:blip 4s ease-in-out infinite;
+}
+@keyframes blip{0%,100%{opacity:.55}50%{opacity:1}}
+
+.vers{display:grid;gap:0}
+.ver{display:flex;justify-content:space-between;gap:14px;padding:11px 0;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:11px}
+.ver:last-child{border-bottom:0}
+.ver span:first-child{color:var(--muted)}
+.ver.now span:first-child{color:var(--fg)}
+.ver.now span:last-child{color:var(--cyan)}
+
+/* ---------- testimonials ---------- */
+.owners{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.owner{background:var(--surface);border:1px solid var(--line);padding:24px;display:flex;flex-direction:column}
+.owner blockquote{margin:0;font-size:16px;line-height:1.62;flex:1}
+.owner .who{margin-top:24px;display:flex;gap:14px;align-items:flex-start}
+.owner .who img{width:64px;height:64px;object-fit:cover;flex:none}
+.owner .nm{font-family:var(--display);font-weight:600;font-size:14px;letter-spacing:-.01em}
+.owner .tt{color:var(--muted);font-size:12.5px;line-height:1.45;margin-top:3px}
+.owner .unit{margin-top:9px}
+
+/* ---------- pricing ---------- */
+.trims{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:start}
+.trim{background:var(--surface);border:1px solid var(--line);padding:28px;display:flex;flex-direction:column;min-height:100%}
+.trim.pick{border-color:var(--green)}
+.trim .flagged{
+  position:absolute;top:-1px;right:-1px;background:var(--green);color:var(--knock);
+  font-family:var(--mono);font-size:9px;letter-spacing:.11em;padding:5px 9px;
+}
+.trim h3{font-family:var(--display);font-weight:700;font-size:24px;letter-spacing:-.025em;margin:14px 0 0}
+.trim .cost{font-family:var(--mono);font-size:30px;font-weight:600;font-variant-numeric:tabular-nums;margin:16px 0 0;letter-spacing:-.02em}
+.trim .cost.big{font-size:24px}
+.trim .sub{color:var(--muted);font-size:14.5px;margin:12px 0 0;min-height:3em}
+.trim .charge{margin:22px 0 20px}
+.trim ul{list-style:none;margin:0 0 26px;padding:0;display:grid;gap:13px;flex:1}
+.trim li{font-size:14.5px;line-height:1.45;display:flex;align-items:flex-start}
+.trim li span{flex:1}
+.trim .btn{width:100%;justify-content:center}
+
+/* ---------- band + footer ---------- */
+.band{
+  border:1px solid var(--line);background:var(--surface);
+  padding:64px 40px;text-align:center;margin-top:104px;
+}
+.band h2{font-family:var(--display);font-weight:700;letter-spacing:-.03em;font-size:clamp(30px,5vw,54px);margin:16px 0 0;line-height:1.05}
+.band h2 .on{color:var(--green)}
+.band p{color:var(--muted);max-width:48ch;margin:20px auto 0}
+.band .btn{margin-top:32px}
+
+footer{border-top:1px solid var(--line);margin-top:104px;padding:44px 0 72px}
+footer .row{display:flex;justify-content:space-between;gap:28px;flex-wrap:wrap;align-items:flex-start}
+footer a.home{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--muted);text-decoration:none}
+footer a.home:hover{color:var(--green)}
+footer .fine{color:#5D666C;font-size:12px;max-width:56ch;line-height:1.6}
+
+/* ---------- reveal (only when scripting is available) ---------- */
+.js .rv{opacity:0;transform:translateY(6px)}
+.js .rv.in{opacity:1;transform:none;transition:opacity .45s ease-out,transform .45s ease-out}
+
+@media (max-width:900px){
+  .feat{grid-template-columns:1fr;gap:32px}
+  .feat.flip .readout{order:0}
+  .owners,.trims{grid-template-columns:1fr}
+  .specs{grid-template-columns:repeat(2,1fr)}
+  .spec:nth-child(2){border-right:0}
+  .spec:nth-child(1),.spec:nth-child(2){border-bottom:1px solid var(--line)}
+  .top nav{display:none}
+  .sec,.band,footer{margin-top:72px}
+  .sec{padding:72px 0}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .rv{opacity:1;transform:none}
+  .sweep{display:none}
+}
+</style>
+<script>document.documentElement.className = 'js';</script>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="#top">QUILL<span>MODEL H</span></a>
+    <nav>
+      <a href="#autonomy">Autonomy</a>
+      <a href="#owners">Owners</a>
+      <a href="#trims">Trims</a>
+      <a href="demo.html">Console</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-head rv">
+        <p class="eyebrow">Model H &nbsp;/&nbsp; Firmware 12.4 &nbsp;/&nbsp; <span class="lit">Supervised</span></p>
+        <h1 class="claim">Full <span class="on">self-crossing</span>.</h1>
+        <p class="lede">Quill is an autonomous ground-mobility stack for hedgehogs. Kerb to kerb, supervised today, unsupervised when the regulator finishes reading. Your hedgehog keeps walking. The road becomes our problem.</p>
+        <div class="acts">
+          <a class="btn btn-p" href="#trims">Reserve a chassis</a>
+          <a class="btn btn-s" href="demo.html">Open the console</a>
+        </div>
+      </div>
+
+      <figure class="plate pbox rv" id="heroPlate" style="margin-bottom:0">
+        <img src="hero.webp" width="1600" height="900" alt="A hedgehog standing on wet asphalt at night, lit from one side.">
+        <span class="sweep"></span>
+        <span class="pb-label">MODEL H &middot; CONF 0.98</span>
+        <span class="pb-b"></span>
+      </figure>
+
+      <dl class="specs rv">
+        <div class="spec">
+          <dt>Nightly range</dt>
+          <dd class="fig">1,840<span class="u">m</span></dd>
+        </div>
+        <div class="spec">
+          <dt>Ground speed</dt>
+          <dd class="fig">1.4<span class="u">km/h</span></dd>
+        </div>
+        <div class="spec">
+          <dt>Charge</dt>
+          <dd class="fig">6<span class="u">worms</span></dd>
+        </div>
+        <div class="spec">
+          <dt>Kerb ascent</dt>
+          <dd class="warn fig">ON ROADMAP</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="sec" id="autonomy">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <h2>The road was always the <span class="on">bottleneck</span>.</h2>
+        <p class="eyebrow">Three systems &nbsp;/&nbsp; one chassis</p>
+      </div>
+
+      <article class="feat rv">
+        <div>
+          <p class="eyebrow">Autonomy &nbsp;/&nbsp; <span class="lit">v12.4</span></p>
+          <h3>Full Self-Crossing (Supervised)</h3>
+          <p>The stack takes control at the kerb and returns it at the far verge, typically in under nine minutes. Supervised means a competent adult must remain at the roadside for the duration of the crossing. We are aware this was the original problem.</p>
+        </div>
+        <div class="readout">
+          <div class="rd-top">
+            <span class="eyebrow">Crossing 1 of 1</span>
+            <span class="charge lit" data-cells="24" data-on="14"></span>
+          </div>
+          <div class="lane"><span class="puck"></span></div>
+          <div class="rd-rows">
+            <div class="rd-row"><span>KERB (NEAR)</span><span class="c">CLEARED 0.99</span></div>
+            <div class="rd-row"><span>DRAIN GRATE</span><span class="c">AVOIDED 0.97</span></div>
+            <div class="rd-row"><span>SUPERVISOR</span><span class="g">PRESENT</span></div>
+            <div class="rd-row off"><span>KERB (FAR)</span><span>PENDING</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="feat flip rv">
+        <div>
+          <p class="eyebrow">Security &nbsp;/&nbsp; <span class="lit">always on</span></p>
+          <h3>Sentry Mode</h3>
+          <p>When a hedgehog rolls into a ball, Quill classifies it as parked and starts recording four metres in every direction. Footage is retained for thirty days. The vehicle cannot end the session, because to end the session it would have to unroll.</p>
+        </div>
+        <div class="readout">
+          <div class="rd-top">
+            <span class="eyebrow">Recording &nbsp;/&nbsp; <span class="lit">4.0 m</span></span>
+            <span class="charge lit" data-cells="24" data-on="24"></span>
+          </div>
+          <div class="rings"><i></i><i></i><i></i><b></b></div>
+          <div class="rd-rows">
+            <div class="rd-row"><span>STATE</span><span class="c">PARKED (BALLED)</span></div>
+            <div class="rd-row"><span>SESSION</span><span class="c">11h 04m</span></div>
+            <div class="rd-row"><span>RETENTION</span><span>30 DAYS</span></div>
+            <div class="rd-row off"><span>END SESSION</span><span>UNAVAILABLE</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="feat rv">
+        <div>
+          <p class="eyebrow">Software &nbsp;/&nbsp; <span class="lit">over the air</span></p>
+          <h3>Firmware, delivered at 03:00</h3>
+          <p>Updates ship mid-forage, when the fleet is at its most available. Version 12.4 removed kerb ascent. It is on the roadmap. An update may be deferred three times, after which the hedgehog is updated.</p>
+        </div>
+        <div class="readout">
+          <div class="rd-top">
+            <span class="eyebrow">Release channel</span>
+            <span class="charge lit" data-cells="24" data-on="21"></span>
+          </div>
+          <div class="vers">
+            <div class="ver"><span>12.1</span><span>SNOUT CALIBRATION</span></div>
+            <div class="ver"><span>12.2</span><span>QUIETER AT DUSK</span></div>
+            <div class="ver"><span>12.3</span><span>BADGER, ADVISORY</span></div>
+            <div class="ver now"><span>12.4</span><span>KERB ASCENT REMOVED</span></div>
+          </div>
+          <div class="rd-rows">
+            <div class="rd-row"><span>DEFERRALS LEFT</span><span class="c">1 OF 3</span></div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="sec" id="owners">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <h2>Owner <span class="on">reports</span>.</h2>
+        <p class="eyebrow">Verbatim &nbsp;/&nbsp; unedited &nbsp;/&nbsp; retained</p>
+      </div>
+      <div class="owners">
+
+        <figure class="owner rv">
+          <blockquote>&ldquo;The 03:00 update removed his ability to climb the step onto the patio. Support tells me the step was never a certified surface. He sat at the bottom of it until half four.&rdquo;</blockquote>
+          <figcaption class="who">
+            <span class="pbox" style="line-height:0">
+              <img src="unit-1.webp" width="320" height="320" alt="Portrait of a hedgehog against a dark backdrop.">
+              <span class="pb-b"></span>
+            </span>
+            <span>
+              <span class="nm">Marguerite Ellery</span>
+              <div class="tt">Volunteer Hedgehog Rehabilitator, Wirral Branch</div>
+              <div class="eyebrow unit">Unit 0041 &middot; <span class="lit">12.4</span></div>
+            </span>
+          </figcaption>
+        </figure>
+
+        <figure class="owner rv">
+          <blockquote>&ldquo;He balled up on Tuesday and Sentry Mode recorded my neighbour for eleven hours. I have watched all of it. I would not describe the experience as a feature.&rdquo;</blockquote>
+          <figcaption class="who">
+            <span class="pbox" style="line-height:0">
+              <img src="unit-2.webp" width="320" height="320" alt="Portrait of a hedgehog in three-quarter view against a dark backdrop.">
+              <span class="pb-b"></span>
+            </span>
+            <span>
+              <span class="nm">Yusuf Bright</span>
+              <div class="tt">Chair, Lower Cadley Hedgehog Highway Committee</div>
+              <div class="eyebrow unit">Unit 0118 &middot; <span class="lit">12.4</span></div>
+            </span>
+          </figcaption>
+        </figure>
+
+        <figure class="owner rv">
+          <blockquote>&ldquo;We reserved in March. The chassis arrived in August in two boxes, and one of the boxes was a wheel. She has crossed nothing. The app says she is en route.&rdquo;</blockquote>
+          <figcaption class="who">
+            <span class="pbox" style="line-height:0">
+              <img src="unit-3.webp" width="320" height="320" alt="Portrait of a hedgehog photographed from below against a dark backdrop.">
+              <span class="pb-b"></span>
+            </span>
+            <span>
+              <span class="nm">Dr Peter Nkemelu</span>
+              <div class="tt">Consultant Ecologist, Verges and Central Reservations</div>
+              <div class="eyebrow unit">Unit 0207 &middot; <span class="lit">12.2</span></div>
+            </span>
+          </figcaption>
+        </figure>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="trims">
+    <div class="wrap">
+      <div class="sec-head rv">
+        <h2>Configure your <span class="on">hedgehog</span>.</h2>
+        <p class="eyebrow">Deposit refundable &nbsp;/&nbsp; delivery Q3 &nbsp;/&nbsp; some year</p>
+      </div>
+      <div class="trims">
+
+        <div class="trim rv" style="position:relative">
+          <p class="eyebrow">Trim 01</p>
+          <h3>Standard Range</h3>
+          <p class="cost fig">&pound;39<span class="u" style="font-size:12px;color:var(--muted)">/mo</span></p>
+          <p class="sub">One road. Most nights.</p>
+          <span class="charge lit" data-cells="24" data-on="8"></span>
+          <ul>
+            <li><span class="bullet"><i></i><i></i><i></i></span><span>Kerb detection, both kerbs</span></li>
+            <li><span class="bullet"><i></i><i></i><i></i></span><span>40 m nightly range ceiling</span></li>
+            <li><span class="bullet"><i></i><i></i><i></i></span><span>Regenerative snuffling, 60% recovery</span></li>
+            <li><span class="bullet"><i></i><i></i><i></i></span><span>Recall notices by second-class post</span></li>
+          </ul>
+          <a class="btn btn-s" href="demo.html">Order</a>
+        </div>
+
+        <div class="trim pick rv" style="position:relative">
+          <span class="flagged">MOST CONFIGURED</span>
+          <p class="eyebrow">Trim 02</p>
+          <h3>Long Range</h3>
+          <p class="cost fig">&pound;89<span class="u" style="font-size:12px;color:var(--muted)">/mo</span></p>
+          <p class="sub">Two roads and a fence the neighbours consider permanent.</p>
+          <span class="charge lit" data-cells="24" data-on="17"></span>
+          <ul>
+            <li><span class="bullet"><i></i><i></i><i></i></span><span>Dual-hedge navigation</span></li>
+            <li><span class="bullet"><i></i><i></i><i></i></span><span>Sentry Mode with 30-day retention</span></li>
+            <li><span class="bullet"><i></i><i></i><i></i></span><span>Supercharger access, three mealworm depots, all in Surrey</span></li>
+            <li><span class="bullet"><i></i><i></i><i></i></span><span>Badger avoidance, advisory</span></li>
+          </ul>
+          <a class="btn btn-p" href="demo.html">Order</a>
+        </div>
+
+        <div class="trim rv" style="position:relative">
+          <p class="eyebrow">Trim 03</p>
+          <h3>Plaid</h3>
+          <p class="cost fig">&pound;2,400<span class="u" style="font-size:12px;color:var(--muted)">/mo</span></p>
+          <p class="sub">The hedgehog is no longer the slowest thing in the garden.</p>
+          <span class="charge lit" data-cells="24" data-on="24"></span>
+          <ul>
+            <li><span class="bullet"><i></i><i></i><i></i></span><span>0 to 3 km/h in 1.9 seconds</span></li>
+            <li><span class="bullet"><i></i><i></i><i></i></span><span>Torpor override, seasonal</span></li>
+            <li><span class="bullet"><i></i><i></i><i></i></span><span>The quills are load-bearing now</span></li>
+            <li><span class="bullet"><i></i><i></i><i></i></span><span>Waiver required, countersigned, witnessed</span></li>
+          </ul>
+          <a class="btn btn-s" href="demo.html">Order</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="band rv">
+      <p class="eyebrow">In-vehicle console &nbsp;/&nbsp; <span class="lit">live</span></p>
+      <h2>Watch it cross <span class="on">one road</span>.</h2>
+      <p>The console shows what the vehicle sees on a residential B-road at 02:14. Engage the stack, pick a driving profile, and defer the firmware update as long as it lets you.</p>
+      <a class="btn btn-p" href="demo.html">Open the demo &rarr;</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap row">
+    <a class="home" href="/">&larr; theworstaistudioever</a>
+    <p class="fine">Quill Mobility Ltd. Full Self-Crossing is a supervised feature and does not make the vehicle autonomous. The supervisor must remain at the roadside, alert, and within reach of the vehicle at all times. Range figures assume a dry night, a level verge, and a hedgehog that wants to.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // charge bars: build cells, fill on reveal
+  document.querySelectorAll('.charge').forEach(function(bar){
+    var total = parseInt(bar.dataset.cells || '24', 10);
+    var on = parseInt(bar.dataset.on || '0', 10);
+    for (var i = 0; i < total; i++) bar.appendChild(document.createElement('i'));
+    bar.dataset.pending = on;
+    if (reduce) fill(bar);
+  });
+
+  function fill(bar){
+    var on = parseInt(bar.dataset.pending || '0', 10);
+    var cells = bar.querySelectorAll('i');
+    cells.forEach(function(c, i){
+      if (i >= on) return;
+      if (reduce) { c.classList.add('on'); return; }
+      setTimeout(function(){ c.classList.add('on'); }, i * 24);
+    });
+  }
+
+  if (reduce) {
+    document.querySelectorAll('.rv').forEach(function(el){ el.classList.add('in'); });
+    return;
+  }
+
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (!e.isIntersecting) return;
+      var el = e.target;
+      var sibs = Array.prototype.slice.call(el.parentNode.querySelectorAll(':scope > .rv'));
+      setTimeout(function(){ el.classList.add('in'); }, Math.min(sibs.indexOf(el), 4) * 40);
+      el.querySelectorAll('.charge').forEach(fill);
+      io.unobserve(el);
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+
+  document.querySelectorAll('.rv').forEach(function(el){ io.observe(el); });
+
+  // Nothing on this page may depend on the observer firing to be readable.
+  setTimeout(function(){
+    document.querySelectorAll('.rv:not(.in)').forEach(function(el){
+      el.classList.add('in');
+      el.querySelectorAll('.charge').forEach(fill);
+      io.unobserve(el);
+    });
+  }, 1600);
+
+  // one headlamp sweep across the hero on load
+  var plate = document.getElementById('heroPlate');
+  if (plate) requestAnimationFrame(function(){ plate.classList.add('go'); });
+})();
+</script>
+
+</body>
+</html>

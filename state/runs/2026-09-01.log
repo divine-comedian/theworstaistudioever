@@ -1,0 +1,114 @@
+run 2026-09-01
+
+ROLL
+  company        Tesla
+  subject        hedgehogs
+  slug           tesla-for-hedgehogs
+  tagline        Tesla for hedgehogs
+  rerolls        2 (Neuralink/goats, Neuralink/amateur sommeliers, both already in history)
+  seed           LCG seeded from sum(charcodes("2026-09-01")) * 2654435761 mod 2^31
+  subject rule   satisfied, hedgehogs is an animal. No seed removals needed.
+  note           Midjourney/hedgehogs shipped 2026-08-07. Different company, so the pair is new
+                 and history matching on (company, subject) correctly let it through.
+
+CONCEPT
+  product        Quill, Model H
+  one-liner      An autonomous ground-mobility stack for hedgehogs. Your hedgehog keeps walking.
+                 The road becomes our problem.
+  premise        The company has classified a live animal as a vehicle and never acknowledges it.
+                 Full Self-Crossing (Supervised), where "supervised" means a human must stand at
+                 the roadside for the whole crossing, which was the original problem.
+  demo concept   In-vehicle console: top-down night driving visualisation of one hedgehog crossing
+                 a residential B-road, perception layer classifying kerb, drain grate, parked
+                 hatchback, badger, and a cat it can only call UNKNOWN OBJECT at 0.38.
+
+DESIGN DIRECTION
+  style          Photographic automotive press-configurator, night-shift dark mode
+  archetype      Interactive configurator / EV manufacturer product page (ui-ux-pro-max returned
+                 "Interactive 3D Configurator" for the query; pattern kept, its default light
+                 slate + action-red palette and Rubik/Nunito pairing discarded as generic and as
+                 a near-collision with 2026-08-28's arterial red)
+  palette        primary #3BE08A charge green (sole carrier), accent #35C8E8 perception cyan
+                 (quarantined to the perception layer), bg #12161A wet asphalt, fg/ink #E7ECEF,
+                 muted #8A959D
+  fonts          display Sora, body Manrope, figures Martian Mono
+  motifs         perception bracket (four cyan corner ticks + mono label + confidence figure
+                 wrapping every frame); charge bar (24 cells, used as range meter, list bullet,
+                 pricing gauge, crossing progress)
+  motion         one headlamp sweep across the hero on load, bracket snap on hover, charge cells
+                 fill on scroll, 1px CTA depress, 6px section fade-up. All behind
+                 prefers-reduced-motion.
+
+ANTI-SAMENESS CHECK (last 7 entries read)
+  08-31 glossy botanical magazine editorial / Libre Bodoni / paper #FBFAF6
+  08-30 diazo whiteprint drawing set / Chivo / ozalid #E8E4D8
+  08-29 totalisator board / Oswald / paddock green #0D1712
+  08-28 monochrome bento lattice / Syne / basalt #0B0C0B
+  08-27 mirrored swiss modernist / Archivo / paper #F1F1EE
+  08-08 claymorphic dev console / Bricolage Grotesque / #F1F4EC
+  08-07 aurora glassmorphism / Fraunces / indigo #0F1220
+  verdict: no collision on style, palette, or font pairing. Sora, Manrope and Martian Mono are
+  unused in the last 7. bg #12161A is a cold blue slate, clearly separated from the three recent
+  dark grounds (#0D1712, #0B0C0B, #0F1220). Charge green as a carrier is unused recently; a
+  warm red or amber accent was deliberately avoided because 08-31, 08-30, 08-29 and 08-28 all
+  spent their rationed colour there.
+
+IMAGES
+  allocation     4 of 4 used. 1 hero (16:9) + 3 testimonial unit portraits (1:1). No demo assets.
+  rationale      Hero earned it outright: a manufacturer page is carried by one enormous night
+                 product shot, so the hedgehog is photographed like a press car on wet asphalt.
+                 Demo assets skipped because the demo screen is a rendered driving visualisation
+                 built in CSS, and a photograph inside it would fight the perception layer.
+                 Remaining budget went to the testimonial plates. The owner quotes are human, so
+                 the bracket-framed photograph is the vehicle under review rather than the
+                 reviewer, captioned with the owner's name and unit number in mono.
+  hero.webp      1 attempt. PASS. Hedgehog in profile on wet asphalt, hard raking key light,
+                 cold falloff, green road-line reflection at the right edge. Correct press-car
+                 framing, no text artifacts, palette harmonises.
+  unit-1.webp    1 attempt. PASS. Head-on badge portrait, cyan edge light, deadpan.
+  unit-2.webp    1 attempt. PASS. Three-quarter view. Framing is closer to full-body than
+                 head-and-shoulders, which reads fine at 64px in the testimonial plate.
+  unit-3.webp    1 attempt. PASS. Low angle, snout raised, cyan top light.
+  no regenerations required. All four cropped to spec, all well under the 500 KB ceiling
+  (hero 174 KB, units 20-27 KB).
+
+WARNINGS / NEAR-MISSES
+  - One HTTP 503 from Gemini on the first unit-1 attempt. The script's retry loop recovered on
+    attempt 2 and, per the cap logic, the failed call was not charged.
+  - ui-ux-pro-max's recommended accent (#DC2626) would have collided with 2026-08-28's rationed
+    arterial red (#E64B38). Overridden with a custom palette.
+  - Demo: removed a dead setInterval that rewrote the clock to the same value, and a CSS
+    transition on the hedgehog puck that would have fought the rAF crossing animation.
+
+GALLERY
+  regenerated site/index.html from scratch, 82 slides, sorted by date descending then slug.
+  header count updated to "82 startups since 2026". Root metadata, favicon link, 50x50 logo
+  lockup and the carousel nav contract (arrows, scrollable dot rail with scrollIntoView, keyboard
+  nav, 50px touch-swipe threshold) all preserved.
+
+VALIDATION
+  scripts/validate-entry.sh site tesla-for-hedgehogs -> OK (exit 0)
+  state/history.json appended, 82 entries, valid JSON.
+
+VISUAL CHECK (step 9, ran)
+  playwright present. 2 captures of index.html, 3 corrective edits, all caps respected.
+  finding    first capture showed the hero only. Every section below it was blank. The .rv
+             scroll-reveal hides content at opacity 0 and only unhides it when the
+             IntersectionObserver fires, so any path where it does not fire (full-page capture,
+             scripting disabled, observer never triggered) rendered the page as a hero and a
+             footer. Real breakage, not taste.
+  fix        (1) scoped the hiding rules under .js so no-script readers get the content;
+             (2) set that class from a one-line head script, so there is no flash of hidden
+             content; (3) added a 1600ms net that reveals anything the observer has not.
+  recapture  confirmed. Hero, spec strip, three feature plates with perception readouts,
+             testimonials with bracket-framed unit portraits, three trim tiers with charge
+             gauges, CTA band and footer all render. No overlap, no off-canvas element, no
+             wrong aspect ratio, contrast holds.
+  left alone pricing perk bullets read slightly wide, and the Sentry readout carries more
+             vertical air than the other two. Taste, not breakage, so untouched.
+  revalidated after the edits -> OK (exit 0)
+[2026-09-01T08:20:23Z] WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks
+[2026-09-01T08:20:23Z] new entry: tesla-for-hedgehogs
+validate-entry [tesla-for-hedgehogs]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 82 entries (domain theworstaistudioever.com)
+[2026-09-01T08:20:24Z] committing: Tesla for hedgehogs
