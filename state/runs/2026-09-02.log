@@ -1,0 +1,110 @@
+[2026-09-02T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-09-02T08:00:02Z] invoking claude -p
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/github/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/github/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.openclaw/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.openclaw/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.claude/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.claude/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/aurevon-status/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/aurevon-status/**) instead (Edit rules cover all file-editing tools).
+
+=== run summary 2026-09-02 ===
+
+ROLL
+  company:  Vercel
+  subject:  guys named Steve
+  slug:     vercel-for-guys-named-steve
+  tagline:  Vercel for guys named Steve
+  rerolls:  0 (first draw from the 2026-09-02 LCG was unused)
+  subject check: passes the subject rule, a relatable type of person. No seed removal needed.
+
+CONCEPT
+  product:   Stevedore
+  one-liner: Frontend infrastructure for developers named Steve, resolved by middle initial.
+  The joke is namespace collision. Every user is called Steve, so the platform's hardest
+  engineering problem is telling its own customers apart, and it solves that with a permanent
+  numeric suffix it refuses to show them.
+
+DESIGN DIRECTION
+  style:   Supergraphic corporate identity manual, 1974, manual-stock daylight mode.
+           Full-bleed colour bands opened by CSS quarter-circle arcs, clause numbering
+           (1.0 / 2.1 / PLATE 03), roundel identity mark reused as bullet, badge and
+           portrait frame. Zero shadows, zero radii on plates, flat floods only.
+  palette: primary #0E5C55 identity teal (sole carrier) · accent #8E2434 oxblood
+           (quarantined to identity telemetry: contested Steves, low confidence,
+           the coin-flip line) · bg #F6EDDC · fg/ink #1A1712 · muted #8C8069
+  fonts:   display Jost · body Newsreader · mono Space Mono (tabular figures)
+  anti-sameness: checked against the last 7 entries (tesla-for-hedgehogs,
+           instagram-for-plant-parents, lyft-for-ferrets, venmo-for-retired-racehorses,
+           instagram-for-wolves, figma-for-left-handed-people, replit-for-red-pandas).
+           No collision on style, palette or font pair. Jost, Newsreader and Space Mono
+           have not been used in that window; teal + oxblood on cream is unused.
+           The ui-ux-pro-max design-system query returned the generic dev-tool default
+           (OLED dark, JetBrains Mono, #0F172A/#22C55E), which would have collided with
+           two dark entries in the window, so the palette and pairing were derived instead.
+
+IMAGES
+  budget used: 3 of 4. One gen-image call per slot, no regenerations.
+  hero:  skipped. The direction is supergraphic identity-manual typography and the hero
+         is a CSS-built quarter-circle arc plate. A photograph would fight the flat flood.
+  demo:  skipped. demo_screen_concept is a resolver console (table, rail, drawer,
+         split-weight bars), which is not photo-shaped.
+  testimonials: 3 generated, 1:1 raw, cropped to 320x320 WebP, raws deleted.
+    steve-1.webp  attempt 1/2  ACCEPTED  moustached man in a brown wide-lapel suit;
+                  period and framing correct, teal band reads as the page motif,
+                  deadpan expression, no text artifacts. 8,360 bytes.
+    steve-2.webp  attempt 1/2  ACCEPTED  bearded man in tan corduroy with heavy glasses;
+                  palette harmonises, faint white print border reads as a mounted plate
+                  rather than an artifact. 11,038 bytes.
+    steve-3.webp  attempt 1/2  ACCEPTED  man in an olive wide-lapel jacket; the olive sits
+                  between the two carriers without introducing a third colour. 9,748 bytes.
+  All three are wired into the testimonial roundels on the landing page. No image is
+  referenced by demo.html.
+
+BUILD
+  index.html  hero band with arc plate and telemetry strip, three numbered feature clauses,
+              teal testimonial band with roundel-framed portraits, licensing schedule with
+              three tiers, closing band, footer link back to the gallery.
+  demo.html   the Stevedore resolver console for project marketing-site: Steve rail with
+              live text filter, Deployments / Steves / Routing tabs, state filter chips,
+              deployments table, click-through resolution-trace drawer (Esc and scrim close)
+              with a working Promote to production that moves the origin, and adjustable
+              middle-initial split weights that reject any total other than 100.
+
+GALLERY
+  Rebuilt site/index.html from all 83 concept.json files, newest first.
+  Header count updated to "83 startups · since 2026". Root metadata, favicon link,
+  50x50 logo lockup, span-wrapped slide CTAs and the carousel nav pattern preserved.
+
+WARNINGS / NEAR-MISSES
+  - gen-image returned HTTP 503 on the first attempt for steve-1 and retried successfully
+    on its own. No effect on the daily image cap beyond the three successful calls.
+  - The hero arc was initially anchored bottom-left, where it sat under the lede and the
+    ghost CTA and would have put teal text on a teal flood. Moved to bottom-right and
+    capped at 190px under 900px so it never crosses the content column.
+  - Two index entries in the demo fixture share the name Steve O Ruairc and the middle
+    initial P. That is deliberate; it is what drives the contested rows and the coin flip.
+
+VALIDATION
+  scripts/validate-entry.sh site vercel-for-guys-named-steve -> OK
+  state/history.json appended, 83 entries, valid JSON.
+
+STEP 9 (visual check, run within caps)
+  Playwright chromium was already installed, the entry has images and a non-typographic
+  arc-and-band direction, and the run was well under the call ceiling, so the check ran.
+  captures: index.html, demo.html, plus one re-capture of index.html after the fixes.
+  finding 1 (real breakage, fixed): the scroll-reveal hid every section below the hero
+    until the IntersectionObserver fired, so the whole page below the fold rendered blank
+    in a full-page capture and would render blank for any consumer that does not scroll.
+    Rebuilt the reveal as a rise keyframe applied on arrival, so .rv has no styles at all
+    until .in lands and content is never hidden. Re-capture confirms every section renders.
+  finding 2 (real contrast pair, fixed): --muted #8C8069 on cream sat near 2.9:1, which
+    left the Building state chip and the small mono labels hard to read. Darkened to
+    #6B6250 in both files, which lifts every muted label at once.
+  not fixed, taste only: the testimonial credential block wraps to three lines on the
+    widest breakpoint. Legible, on-grid, left alone.
+  scripts/validate-entry.sh re-run after the edits -> OK
+[2026-09-02T08:14:28Z] WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks
+[2026-09-02T08:14:28Z] new entry: vercel-for-guys-named-steve
+validate-entry [vercel-for-guys-named-steve]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 83 entries (domain theworstaistudioever.com)
+[2026-09-02T08:14:28Z] committing: Vercel for guys named Steve

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resolver console · Stevedore</title>
+<meta name="description" content="The Stevedore resolver console: deployments, verified Steves, and middle-initial split weights for the project marketing-site.">
+<meta name="theme-color" content="#0E5C55">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&family=Space+Mono:wght@400;700&display=swap');
+
+:root{
+  --teal:#0E5C55;
+  --ox:#8E2434;
+  --cream:#F6EDDC;
+  --panel:#FBF5E9;
+  --ink:#1A1712;
+  --muted:#6B6250;
+  --rule:rgba(26,23,18,.20);
+  --display:'Jost','Futura','Century Gothic','Helvetica Neue',sans-serif;
+  --body:'Newsreader',Georgia,'Times New Roman',serif;
+  --mono:'Space Mono','SFMono-Regular',Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--cream);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
+  -webkit-text-size-adjust:100%;
+}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:3px solid var(--ox);outline-offset:2px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.k{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- chrome ---------- */
+.chrome{
+  position:sticky;top:0;z-index:30;background:var(--cream);
+  border-bottom:1px solid var(--rule);
+  display:flex;align-items:center;gap:18px;padding:12px clamp(14px,3vw,26px);
+}
+.back{
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  text-decoration:none;color:var(--teal);
+}
+.back:hover{text-decoration:underline}
+.roundel{
+  display:grid;place-items:center;flex:none;width:var(--r,30px);height:var(--r,30px);
+  border-radius:50%;border:calc(var(--r,30px)*.1) solid var(--teal);
+  font-family:var(--display);font-weight:600;font-size:calc(var(--r,30px)*.44);color:var(--teal);
+  transition:transform .24s ease;
+}
+.proj{display:flex;align-items:center;gap:10px;padding-left:18px;border-left:1px solid var(--rule)}
+.proj .nm{font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.05em;font-size:15px}
+.chrome .right{margin-left:auto;display:flex;align-items:center;gap:14px}
+.you{
+  font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  border:1px solid var(--rule);padding:6px 10px;color:var(--muted);
+}
+.you b{color:var(--ox);font-weight:700}
+@media(max-width:700px){.proj{padding-left:0;border-left:0}.chrome .right .you{display:none}}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--rule);padding:0 clamp(14px,3vw,26px);background:var(--cream);position:sticky;top:55px;z-index:20}
+.tab{
+  font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.06em;font-size:13px;
+  padding:14px 20px;border-bottom:3px solid transparent;color:var(--muted);
+}
+.tab[aria-selected="true"]{color:var(--teal);border-bottom-color:var(--teal)}
+.tab:hover{color:var(--ink)}
+
+/* ---------- shell ---------- */
+.shell{display:grid;grid-template-columns:292px 1fr;min-height:calc(100vh - 106px)}
+@media(max-width:900px){.shell{grid-template-columns:1fr}.rail{border-right:0;border-bottom:1px solid var(--rule)}}
+
+.rail{border-right:1px solid var(--rule);background:var(--panel)}
+.rail-head{padding:18px 18px 12px;border-bottom:1px solid var(--rule)}
+.search{
+  width:100%;margin-top:10px;padding:9px 11px;border:1px solid var(--rule);background:var(--cream);
+  font-family:var(--mono);font-size:12px;color:var(--ink);border-radius:0;
+}
+.search::placeholder{color:var(--muted)}
+.steve{
+  display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;
+  padding:14px 18px;border-bottom:1px solid var(--rule);
+}
+.steve:hover{background:var(--cream)}
+.steve .dot{flex:none;width:11px;height:11px;border-radius:50%;margin-top:5px;border:3px solid var(--teal)}
+.steve.contested .dot{border-color:var(--ox)}
+.steve .nm{font-family:var(--display);font-weight:600;font-size:14.5px;letter-spacing:.02em;line-height:1.25}
+.steve .meta{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--muted);margin-top:5px}
+.steve .w{margin-left:auto;font-family:var(--mono);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--teal)}
+.steve.contested .w{color:var(--ox)}
+
+.main{padding:clamp(16px,2.6vw,28px)}
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.chip{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  border:1px solid var(--rule);padding:7px 12px;color:var(--muted);
+}
+.chip[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:var(--cream)}
+.bar .count{margin-left:auto;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- table ---------- */
+.tbl{width:100%;border-collapse:collapse;border-top:1px solid var(--rule)}
+.tbl th{
+  text-align:left;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);font-weight:400;padding:10px 12px;border-bottom:1px solid var(--rule);
+}
+.tbl td{padding:14px 12px;border-bottom:1px solid var(--rule);vertical-align:middle}
+.tbl tr[data-row]{cursor:pointer}
+.tbl tr[data-row]:hover td{background:var(--panel)}
+.msg{font-family:var(--display);font-weight:500;font-size:15px}
+.branch{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--muted);margin-top:4px}
+.who{font-family:var(--mono);font-size:12px}
+.who span{display:block;font-size:10px;letter-spacing:.08em;color:var(--muted);margin-top:3px}
+.conf{font-family:var(--mono);font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.conf.low{color:var(--ox)}
+.state{
+  display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  padding:5px 9px;border:1px solid var(--teal);color:var(--teal);white-space:nowrap;
+}
+.state.production{background:var(--teal);color:var(--cream)}
+.state.building{border-style:dashed;color:var(--muted);border-color:var(--muted)}
+.state.contested,.state.error{border-color:var(--ox);color:var(--ox)}
+.when{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap}
+@media(max-width:780px){.tbl .col-conf,.tbl .col-when{display:none}}
+
+/* ---------- routing ---------- */
+.split{max-width:720px}
+.wrow{display:grid;grid-template-columns:120px 1fr 64px auto;gap:16px;align-items:center;padding:16px 0;border-bottom:1px solid var(--rule)}
+.wrow .lab{font-family:var(--display);font-weight:600;font-size:15px;text-transform:uppercase;letter-spacing:.04em}
+.wrow .lab small{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--muted);text-transform:none;font-weight:400;margin-top:3px}
+.meter{height:14px;background:rgba(14,92,85,.12);position:relative;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--teal);width:0;transition:width .3s ease}
+.wrow .val{font-family:var(--mono);font-weight:700;font-size:14px;font-variant-numeric:tabular-nums;text-align:right}
+.step{border:1px solid var(--rule);width:32px;height:32px;line-height:1;font-family:var(--mono);font-size:15px;color:var(--teal)}
+.step:hover{background:var(--teal);color:var(--cream);border-color:var(--teal)}
+.total{display:flex;align-items:center;gap:14px;margin-top:20px;font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+.total b{font-size:17px}
+.total.bad{color:var(--ox)}
+.total.ok{color:var(--teal)}
+
+/* ---------- drawer ---------- */
+.scrim{position:fixed;inset:0;background:rgba(26,23,18,.5);opacity:0;pointer-events:none;transition:opacity .22s ease;z-index:40}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{
+  position:fixed;top:0;right:0;height:100%;width:min(440px,100%);z-index:50;
+  background:var(--panel);border-left:1px solid var(--rule);
+  transform:translateX(100%);transition:transform .28s cubic-bezier(.2,.7,.25,1);
+  display:flex;flex-direction:column;
+}
+.drawer.on{transform:none}
+.drawer header{display:flex;align-items:flex-start;gap:12px;padding:20px;border-bottom:1px solid var(--rule)}
+.drawer header h2{font-family:var(--display);font-weight:600;text-transform:uppercase;font-size:19px;letter-spacing:-.01em;margin:0}
+.drawer header .close{margin-left:auto;font-family:var(--mono);font-size:18px;line-height:1;color:var(--muted);padding:4px 6px}
+.drawer header .close:hover{color:var(--ox)}
+.drawer .body{padding:20px;overflow-y:auto;flex:1}
+.trace{list-style:none;margin:14px 0 0;padding:0}
+.trace li{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--rule);font-size:15px}
+.trace .n{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--teal);flex:none;padding-top:3px}
+.trace li.flip .n,.trace li.flip{color:var(--ox)}
+.well{border:1px solid var(--rule);background:var(--cream);padding:14px;margin-top:18px}
+.well .row{display:flex;justify-content:space-between;gap:12px;padding:5px 0;font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums}
+.well .row span:first-child{color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-size:10px;padding-top:2px}
+.drawer footer{padding:18px 20px;border-top:1px solid var(--rule)}
+.promote{
+  width:100%;text-align:center;background:var(--teal);color:var(--cream);border:1px solid var(--teal);
+  font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.05em;font-size:14px;padding:15px;
+}
+.promote:hover{background:var(--cream);color:var(--teal)}
+.promote[disabled]{background:transparent;color:var(--muted);border-color:var(--rule);cursor:not-allowed}
+.note{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--muted);text-align:center;margin-top:10px;line-height:1.6}
+
+.hidden{display:none}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="proj">
+    <span class="roundel" style="--r:30px">S</span>
+    <span class="nm">marketing-site</span>
+  </span>
+  <span class="right">
+    <span class="you">Signed in as Steve <b>00417</b></span>
+    <span class="k">Halcyon Freight</span>
+  </span>
+</div>
+
+<div class="tabs" role="tablist">
+  <button class="tab" role="tab" aria-selected="true" data-tab="deployments">Deployments</button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="steves">Steves</button>
+  <button class="tab" role="tab" aria-selected="false" data-tab="routing">Routing</button>
+</div>
+
+<div class="shell">
+
+  <aside class="rail">
+    <div class="rail-head">
+      <span class="k">Verified in this org</span>
+      <input class="search" id="q" type="search" placeholder="Filter Steves" aria-label="Filter Steves by name or suffix">
+    </div>
+    <div id="rail"></div>
+  </aside>
+
+  <main class="main">
+
+    <section id="panel-deployments">
+      <div class="bar">
+        <button class="chip" data-filter="all" aria-pressed="true">All</button>
+        <button class="chip" data-filter="production" aria-pressed="false">Production</button>
+        <button class="chip" data-filter="ready" aria-pressed="false">Ready</button>
+        <button class="chip" data-filter="building" aria-pressed="false">Building</button>
+        <button class="chip" data-filter="contested" aria-pressed="false">Contested</button>
+        <span class="count" id="count"></span>
+      </div>
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Commit</th>
+            <th>Resolved to</th>
+            <th class="col-conf">Confidence</th>
+            <th>State</th>
+            <th class="col-when">Pushed</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </section>
+
+    <section id="panel-steves" class="hidden">
+      <div class="bar"><span class="k">Index entries for this organisation</span></div>
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Steve</th>
+            <th>Suffix</th>
+            <th class="col-conf">Middle initial</th>
+            <th>Status</th>
+            <th class="col-when">Weight</th>
+          </tr>
+        </thead>
+        <tbody id="steve-rows"></tbody>
+      </table>
+    </section>
+
+    <section id="panel-routing" class="hidden">
+      <div class="bar"><span class="k">Middle-initial split weights · marketing-site · production</span></div>
+      <div class="split" id="split"></div>
+      <div class="total" id="total"></div>
+      <p class="note" style="text-align:left;margin-top:22px;max-width:60ch">Weights must total 100. Traffic that cannot be attributed to a middle initial is held at the edge until one of the Steves responds to an email.</p>
+    </section>
+
+  </main>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dr-title" aria-hidden="true">
+  <header>
+    <span class="roundel" style="--r:34px">S</span>
+    <h2 id="dr-title">Resolution trace</h2>
+    <button class="close" id="dr-close" aria-label="Close resolution trace">✕</button>
+  </header>
+  <div class="body" id="dr-body"></div>
+  <footer>
+    <button class="promote" id="dr-promote">Promote to production</button>
+    <p class="note" id="dr-note">Promotion reassigns the origin. The previous Steve is notified.</p>
+  </footer>
+</aside>
+
+<script>
+(function(){
+  var STEVES = [
+    { id:'00062', name:'Steve Kowalczyk',     mi:'J', weight:34, status:'resolved'  },
+    { id:'00417', name:'Steve Adeyemi-Farrow', mi:'T', weight:26, status:'resolved'  },
+    { id:'11730', name:'Steve O Ruairc',       mi:'P', weight:22, status:'contested' },
+    { id:'11731', name:'Steve O Ruairc',       mi:'P', weight:12, status:'contested' },
+    { id:'29004', name:'Steve Bhattacharya',   mi:'—', weight:6,  status:'ambiguous' }
+  ];
+
+  var DEPLOYS = [
+    { msg:'copy tweak on the pricing page', branch:'main', steve:'00062', conf:0.98, state:'production', when:'4m ago',
+      trace:['Commit author string matched index entry Steve 00062.','Middle initial J matched the signing key on file.','No competing push within the 90 second window.'], flip:false },
+    { msg:'fix hero arc on 320px', branch:'main', steve:'11730', conf:0.51, state:'contested', when:'11m ago',
+      trace:['Commit author string matched two index entries.','Both entries hold middle initial P.','Timestamps differ by 0.4 seconds. Coin flipped.'], flip:true },
+    { msg:'bump resolver client to 4.2.0', branch:'main', steve:'00417', conf:0.94, state:'ready', when:'26m ago',
+      trace:['Commit author string matched index entry Steve 00417.','Middle initial T is unique in this organisation.','Origin held for promotion.'], flip:false },
+    { msg:'add middle initial to signup form', branch:'feat/initials', steve:'00062', conf:0.89, state:'building', when:'38m ago',
+      trace:['Commit author string matched index entry Steve 00062.','Branch is not the production origin. Preview only.','Build running on edge region cdg1.'], flip:false },
+    { msg:'revert "add middle initial to signup form"', branch:'main', steve:'11731', conf:0.44, state:'error', when:'52m ago',
+      trace:['Commit author string matched two index entries.','Both entries hold middle initial P.','Neither Steve responded within the escalation window.'], flip:true },
+    { msg:'update the licensing schedule', branch:'main', steve:'00417', conf:0.96, state:'ready', when:'1h ago',
+      trace:['Commit author string matched index entry Steve 00417.','Middle initial T is unique in this organisation.','Origin held for promotion.'], flip:false },
+    { msg:'remove the suffix from the error log', branch:'main', steve:'29004', conf:0.38, state:'contested', when:'2h ago',
+      trace:['Commit author string matched index entry Steve 29004.','No middle initial on file. Round-robin applied.','Attribution recorded at low confidence. Ticket opened.'], flip:true },
+    { msg:'compress the portraits', branch:'main', steve:'00062', conf:0.97, state:'ready', when:'3h ago',
+      trace:['Commit author string matched index entry Steve 00062.','Middle initial J matched the signing key on file.','No competing push within the 90 second window.'], flip:false },
+    { msg:'rename steve.ts to resolver.ts', branch:'chore/naming', steve:'11730', conf:0.62, state:'building', when:'4h ago',
+      trace:['Commit author string matched two index entries.','Split weights applied: 22 to 11730, 12 to 11731.','Build running on edge region iad1.'], flip:false },
+    { msg:'set p50 budget to 400ms', branch:'main', steve:'00417', conf:0.93, state:'ready', when:'6h ago',
+      trace:['Commit author string matched index entry Steve 00417.','Middle initial T is unique in this organisation.','Origin held for promotion.'], flip:false }
+  ];
+
+  var STATE_COPY = { production:'Production', ready:'Ready', building:'Building', contested:'Contested', error:'Error' };
+  var $ = function(s){ return document.querySelector(s); };
+  var filter = 'all', query = '', open = null;
+
+  function steveById(id){
+    for (var i=0;i<STEVES.length;i++) if (STEVES[i].id === id) return STEVES[i];
+    return STEVES[0];
+  }
+
+  /* ---------- rail ---------- */
+  function drawRail(){
+    var q = query.toLowerCase();
+    var html = STEVES.filter(function(s){
+      return !q || s.name.toLowerCase().indexOf(q) > -1 || s.id.indexOf(q) > -1;
+    }).map(function(s){
+      var cls = s.status === 'resolved' ? '' : ' contested';
+      return '<button class="steve' + cls + '" data-steve="' + s.id + '">' +
+        '<span class="dot"></span>' +
+        '<span><span class="nm">' + s.name + '</span>' +
+        '<span class="meta">Steve ' + s.id + ' · initial ' + s.mi + ' · ' + s.status.toUpperCase() + '</span></span>' +
+        '<span class="w">' + s.weight + '%</span></button>';
+    }).join('');
+    $('#rail').innerHTML = html || '<p class="note" style="padding:20px">No Steve by that name. There is always a Steve by that name.</p>';
+  }
+
+  /* ---------- deployments ---------- */
+  function drawRows(){
+    var list = DEPLOYS.filter(function(d){ return filter === 'all' || d.state === filter; });
+    $('#rows').innerHTML = list.map(function(d){
+      var i = DEPLOYS.indexOf(d), s = steveById(d.steve);
+      return '<tr data-row="' + i + '" tabindex="0">' +
+        '<td><span class="msg">' + d.msg + '</span><span class="branch">' + d.branch + '</span></td>' +
+        '<td class="who">' + s.name + '<span>Steve ' + s.id + ' · ' + s.mi + '</span></td>' +
+        '<td class="col-conf"><span class="conf' + (d.conf < 0.7 ? ' low' : '') + '">' + d.conf.toFixed(2) + '</span></td>' +
+        '<td><span class="state ' + d.state + '">' + STATE_COPY[d.state] + '</span></td>' +
+        '<td class="col-when"><span class="when">' + d.when + '</span></td>' +
+        '</tr>';
+    }).join('');
+    $('#count').textContent = list.length + ' of ' + DEPLOYS.length + ' deployments';
+  }
+
+  /* ---------- steves tab ---------- */
+  function drawSteves(){
+    $('#steve-rows').innerHTML = STEVES.map(function(s){
+      var cls = s.status === 'resolved' ? '' : ' contested';
+      return '<tr>' +
+        '<td><span class="msg">' + s.name + '</span></td>' +
+        '<td class="who">Steve ' + s.id + '</td>' +
+        '<td class="col-conf"><span class="conf">' + s.mi + '</span></td>' +
+        '<td><span class="state' + cls + '">' + s.status + '</span></td>' +
+        '<td class="col-when"><span class="when">' + s.weight + '%</span></td>' +
+        '</tr>';
+    }).join('');
+  }
+
+  /* ---------- routing tab ---------- */
+  function drawSplit(){
+    $('#split').innerHTML = STEVES.map(function(s){
+      return '<div class="wrow">' +
+        '<span class="lab">' + s.mi + '<small>Steve ' + s.id + '</small></span>' +
+        '<span class="meter"><i style="width:' + s.weight + '%"></i></span>' +
+        '<span class="val">' + s.weight + '%</span>' +
+        '<span><button class="step" data-w="' + s.id + '" data-d="-1" aria-label="Lower weight for Steve ' + s.id + '">−</button> ' +
+        '<button class="step" data-w="' + s.id + '" data-d="1" aria-label="Raise weight for Steve ' + s.id + '">+</button></span>' +
+        '</div>';
+    }).join('');
+    var t = STEVES.reduce(function(a,s){ return a + s.weight; }, 0);
+    $('#total').className = 'total ' + (t === 100 ? 'ok' : 'bad');
+    $('#total').innerHTML = 'Total <b>' + t + '%</b> · ' +
+      (t === 100 ? 'Accepted. Traffic is splitting.' : 'Rejected. ' + Math.abs(100 - t) + ' points are ' + (t > 100 ? 'over' : 'unattributed') + ' and held at the edge.');
+  }
+
+  /* ---------- drawer ---------- */
+  function openDrawer(i){
+    var d = DEPLOYS[i], s = steveById(d.steve);
+    open = i;
+    $('#dr-body').innerHTML =
+      '<span class="k">' + d.branch + ' · ' + d.when + '</span>' +
+      '<p style="font-family:var(--display);font-weight:600;font-size:20px;text-transform:uppercase;letter-spacing:-.01em;margin:8px 0 0">' + d.msg + '</p>' +
+      '<ol class="trace">' + d.trace.map(function(t, n){
+        var flip = (d.flip && n === d.trace.length - 1) ? ' class="flip"' : '';
+        return '<li' + flip + '><span class="n">' + (n + 1) + '</span><span>' + t + '</span></li>';
+      }).join('') + '</ol>' +
+      '<div class="well">' +
+        '<div class="row"><span>Resolved to</span><span>' + s.name + '</span></div>' +
+        '<div class="row"><span>Suffix</span><span>' + s.id + '</span></div>' +
+        '<div class="row"><span>Middle initial</span><span>' + s.mi + '</span></div>' +
+        '<div class="row"><span>Confidence</span><span>' + d.conf.toFixed(2) + '</span></div>' +
+        '<div class="row"><span>State</span><span>' + STATE_COPY[d.state] + '</span></div>' +
+      '</div>';
+    var live = d.state === 'production';
+    $('#dr-promote').disabled = live;
+    $('#dr-promote').textContent = live ? 'Already the origin' : 'Promote to production';
+    $('#dr-note').textContent = live
+      ? 'This deployment is the origin. Steve has been notified twice.'
+      : 'Promotion reassigns the origin. The previous Steve is notified at his registered address.';
+    $('#drawer').classList.add('on');
+    $('#drawer').setAttribute('aria-hidden', 'false');
+    $('#scrim').classList.add('on');
+    $('#dr-close').focus();
+  }
+
+  function closeDrawer(){
+    open = null;
+    $('#drawer').classList.remove('on');
+    $('#drawer').setAttribute('aria-hidden', 'true');
+    $('#scrim').classList.remove('on');
+  }
+
+  /* ---------- wiring ---------- */
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click', function(){
+      document.querySelectorAll('.tab').forEach(function(x){ x.setAttribute('aria-selected', String(x === t)); });
+      ['deployments','steves','routing'].forEach(function(name){
+        $('#panel-' + name).classList.toggle('hidden', name !== t.dataset.tab);
+      });
+    });
+  });
+
+  document.querySelectorAll('.chip').forEach(function(c){
+    c.addEventListener('click', function(){
+      filter = c.dataset.filter;
+      document.querySelectorAll('.chip').forEach(function(x){ x.setAttribute('aria-pressed', String(x === c)); });
+      drawRows();
+    });
+  });
+
+  $('#q').addEventListener('input', function(e){ query = e.target.value; drawRail(); });
+
+  $('#rows').addEventListener('click', function(e){
+    var tr = e.target.closest('tr[data-row]');
+    if (tr) openDrawer(Number(tr.dataset.row));
+  });
+  $('#rows').addEventListener('keydown', function(e){
+    var tr = e.target.closest('tr[data-row]');
+    if (tr && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openDrawer(Number(tr.dataset.row)); }
+  });
+
+  $('#split').addEventListener('click', function(e){
+    var b = e.target.closest('.step');
+    if (!b) return;
+    var s = steveById(b.dataset.w);
+    s.weight = Math.max(0, Math.min(100, s.weight + Number(b.dataset.d) * 2));
+    drawSplit(); drawRail();
+  });
+
+  $('#dr-promote').addEventListener('click', function(){
+    if (open === null) return;
+    DEPLOYS.forEach(function(d){ if (d.state === 'production') d.state = 'ready'; });
+    DEPLOYS[open].state = 'production';
+    drawRows();
+    closeDrawer();
+  });
+
+  $('#dr-close').addEventListener('click', closeDrawer);
+  $('#scrim').addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && open !== null) closeDrawer(); });
+
+  $('#rail').addEventListener('click', function(e){
+    var b = e.target.closest('[data-steve]');
+    if (!b) return;
+    var id = b.dataset.steve;
+    filter = 'all';
+    document.querySelectorAll('.chip').forEach(function(x){ x.setAttribute('aria-pressed', String(x.dataset.filter === 'all')); });
+    var i = -1;
+    for (var n = 0; n < DEPLOYS.length; n++) if (DEPLOYS[n].steve === id) { i = n; break; }
+    if (i > -1) openDrawer(i);
+  });
+
+  drawRail(); drawRows(); drawSteves(); drawSplit();
+})();
+</script>
+</body>
+</html>

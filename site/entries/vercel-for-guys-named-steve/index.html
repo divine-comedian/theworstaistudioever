@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stevedore · theworstaistudioever</title>
+<meta name="description" content="Frontend infrastructure for developers named Steve, resolved by middle initial.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Stevedore · theworstaistudioever">
+<meta property="og:description" content="Frontend infrastructure for developers named Steve, resolved by middle initial.">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Stevedore · theworstaistudioever">
+<meta name="twitter:description" content="Frontend infrastructure for developers named Steve, resolved by middle initial.">
+<meta name="theme-color" content="#0E5C55">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Space+Mono:wght@400;700&display=swap');
+
+:root{
+  --teal:#0E5C55;
+  --ox:#8E2434;
+  --cream:#F6EDDC;
+  --ink:#1A1712;
+  --muted:#6B6250;
+  --rule:rgba(26,23,18,.20);
+  --rule-inv:rgba(246,237,220,.28);
+  --display:'Jost','Futura','Century Gothic','Helvetica Neue',sans-serif;
+  --body:'Newsreader',Georgia,'Times New Roman',serif;
+  --mono:'Space Mono','SFMono-Regular',Consolas,monospace;
+  --gut:clamp(20px,5vw,72px);
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--cream);color:var(--ink);
+  font-family:var(--body);font-size:17px;line-height:1.62;
+  font-synthesis-weight:none;
+}
+img{display:block;max-width:100%}
+a{color:inherit}
+::selection{background:var(--teal);color:var(--cream)}
+
+/* ---------- shared type ---------- */
+.wrap{max-width:1240px;margin:0 auto;padding-left:var(--gut);padding-right:var(--gut)}
+.clause{
+  display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+  font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  border-bottom:1px solid var(--rule);padding-bottom:10px;margin:0 0 34px;
+}
+.clause .n{font-weight:700;color:var(--teal)}
+.clause .t{color:var(--ink)}
+.clause .p{margin-left:auto;color:var(--muted)}
+.band .clause{border-color:var(--rule-inv)}
+.band .clause .n{color:var(--cream)}
+.band .clause .t{color:var(--cream)}
+.band .clause .p{color:rgba(246,237,220,.62)}
+
+h1,h2,h3{font-family:var(--display);font-weight:600;text-transform:uppercase;margin:0}
+h1{font-size:clamp(42px,8.2vw,104px);line-height:.92;letter-spacing:-.02em}
+h2{font-size:clamp(30px,4.6vw,58px);line-height:.98;letter-spacing:-.02em}
+h3{font-size:clamp(21px,2.3vw,28px);line-height:1.06;letter-spacing:-.01em}
+.flood{background:var(--teal);color:var(--cream);padding:0 .14em;display:inline-block}
+.band .flood{background:var(--cream);color:var(--teal)}
+p{margin:0 0 18px}
+.lede{font-size:clamp(17px,1.55vw,20px);max-width:60ch}
+
+/* ---------- roundel ---------- */
+.roundel{
+  display:grid;place-items:center;flex:none;
+  width:var(--r,56px);height:var(--r,56px);border-radius:50%;
+  border:calc(var(--r,56px) * .085) solid var(--teal);
+  background:var(--cream);
+  font-family:var(--display);font-weight:600;text-transform:uppercase;
+  font-size:calc(var(--r,56px) * .42);line-height:1;color:var(--teal);
+  letter-spacing:0;transition:transform .24s ease;
+}
+.band .roundel{border-color:var(--cream);background:var(--teal);color:var(--cream)}
+a:hover .roundel,.tier:hover .roundel,.quote:hover .roundel{transform:rotate(90deg)}
+
+/* ---------- header ---------- */
+.top{
+  position:sticky;top:0;z-index:20;background:var(--cream);
+  border-bottom:1px solid var(--rule);
+}
+.top-in{display:flex;align-items:center;gap:16px;padding-top:14px;padding-bottom:14px}
+.mark{display:flex;align-items:center;gap:12px;text-decoration:none}
+.mark .name{font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.06em;font-size:18px}
+.top nav{margin-left:auto;display:flex;gap:26px;align-items:center}
+.top nav a{
+  font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  text-decoration:none;color:var(--muted);
+}
+.top nav a:hover{color:var(--teal)}
+@media(max-width:760px){.top nav{display:none}}
+
+/* ---------- buttons ---------- */
+.btn{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--display);font-weight:600;text-transform:uppercase;letter-spacing:.05em;
+  font-size:14px;text-decoration:none;padding:16px 26px;border:1px solid var(--teal);
+  background:var(--teal);color:var(--cream);border-radius:0;
+  transition:background .18s ease,color .18s ease,transform .06s ease;
+}
+.btn:hover{background:var(--cream);color:var(--teal)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;color:var(--teal)}
+.btn.ghost:hover{background:var(--teal);color:var(--cream)}
+.band .btn{background:var(--cream);color:var(--teal);border-color:var(--cream)}
+.band .btn:hover{background:transparent;color:var(--cream)}
+:focus-visible{outline:3px solid var(--ox);outline-offset:3px}
+
+/* ---------- hero ---------- */
+.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--rule)}
+.arc{
+  position:absolute;right:0;bottom:0;z-index:0;
+  width:min(34vw,400px);aspect-ratio:1/1;background:var(--teal);
+  border-radius:100% 0 0 0;
+  transform-origin:bottom right;
+  animation:sweep 900ms cubic-bezier(.2,.7,.25,1) both;
+}
+@media(max-width:900px){.arc{width:190px}}
+@keyframes sweep{from{transform:scale(.14)}to{transform:scale(1)}}
+.hero-in{position:relative;z-index:1;padding-top:clamp(52px,9vw,104px);padding-bottom:clamp(52px,8vw,92px)}
+.hero-top{display:flex;align-items:flex-start;gap:24px}
+.hero-top .clause{flex:1}
+.hero h1{max-width:15ch;mix-blend-mode:normal}
+.hero .lede{margin-top:30px;max-width:52ch}
+.hero .actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px;max-width:640px}
+
+/* ---------- telemetry ---------- */
+.telemetry{
+  position:relative;z-index:1;display:grid;grid-template-columns:repeat(4,1fr);
+  border-top:1px solid var(--rule);
+}
+.cell{padding:22px 20px 24px;border-right:1px solid var(--rule);background:var(--cream)}
+.cell:last-child{border-right:0}
+.cell .k{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:8px}
+.cell .v{font-family:var(--mono);font-weight:700;font-size:clamp(18px,2.2vw,26px);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.cell .v.warn{color:var(--ox)}
+@media(max-width:760px){.telemetry{grid-template-columns:repeat(2,1fr)}.cell:nth-child(2){border-right:0}.cell:nth-child(-n+2){border-bottom:1px solid var(--rule)}}
+
+/* ---------- sections ---------- */
+section{position:relative}
+.pad{padding-top:clamp(58px,8vw,104px);padding-bottom:clamp(58px,8vw,104px)}
+.band{background:var(--teal);color:var(--cream);overflow:hidden}
+.band .lede{color:rgba(246,237,220,.86)}
+.band-arc{position:absolute;right:0;top:0;width:min(30vw,300px);aspect-ratio:1/1;background:var(--cream);border-radius:0 0 0 100%;opacity:.09}
+
+/* features */
+.clauses{display:grid;gap:0;border-top:1px solid var(--rule)}
+.row{
+  display:grid;grid-template-columns:88px 1fr 1fr;gap:clamp(20px,4vw,56px);
+  padding:clamp(30px,4vw,46px) 0;border-bottom:1px solid var(--rule);align-items:start;
+}
+.row .idx{font-family:var(--mono);font-weight:700;font-size:13px;letter-spacing:.1em;color:var(--teal);padding-top:6px}
+.row p{margin:0;color:#3A342B}
+@media(max-width:860px){.row{grid-template-columns:56px 1fr}.row p{grid-column:2}}
+
+/* testimonials */
+.quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,3vw,40px)}
+.quote{border-top:2px solid var(--cream);padding-top:24px}
+.quote blockquote{margin:0 0 26px;font-size:19px;line-height:1.5;font-style:italic}
+.who{display:flex;align-items:center;gap:14px}
+.portrait{
+  width:64px;height:64px;flex:none;border-radius:50%;object-fit:cover;
+  border:3px solid var(--cream);background:var(--cream);
+}
+.who .nm{font-family:var(--display);font-weight:600;text-transform:uppercase;font-size:14px;letter-spacing:.04em;line-height:1.2}
+.who .ti{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:rgba(246,237,220,.66);line-height:1.5;margin-top:5px;display:block}
+.who .sfx{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--cream);opacity:.5}
+@media(max-width:860px){.quotes{grid-template-columns:1fr;gap:34px}}
+
+/* pricing */
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--rule)}
+.tier{padding:34px 30px 36px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-direction:column}
+.tier:last-child{border-right:0}
+.tier .badge{margin-bottom:22px}
+.tier h3{margin-bottom:10px}
+.tier .price{font-family:var(--mono);font-weight:700;font-size:22px;font-variant-numeric:tabular-nums;color:var(--teal);margin-bottom:16px}
+.tier .tag{font-size:16px;color:#3A342B;margin-bottom:24px;min-height:3em}
+.tier ul{list-style:none;margin:0 0 28px;padding:0;display:grid;gap:12px}
+.tier li{display:flex;gap:12px;align-items:flex-start;font-size:15.5px;line-height:1.45}
+.tier li::before{
+  content:"";flex:none;width:12px;height:12px;margin-top:6px;border-radius:50%;
+  border:3px solid var(--teal);
+}
+.tier .btn{margin-top:auto;justify-content:center}
+@media(max-width:860px){.tiers{grid-template-columns:1fr}.tier{border-right:0}.tier .tag{min-height:0}}
+
+/* closing + footer */
+.close{text-align:center}
+.close h2{max-width:18ch;margin:0 auto 26px}
+.close .lede{margin-left:auto;margin-right:auto}
+.close .actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:32px}
+footer{border-top:1px solid var(--rule);padding-top:26px;padding-bottom:38px}
+.foot-in{display:flex;gap:18px;align-items:center;flex-wrap:wrap;
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.foot-in a{color:var(--teal);text-decoration:none}
+.foot-in a:hover{text-decoration:underline}
+.foot-in .r{margin-left:auto}
+
+/* reveal */
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.js .rv.in{animation:rise .5s ease both}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .rv{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top-in">
+    <a class="mark" href="#top">
+      <span class="roundel" style="--r:38px">S</span>
+      <span class="name">Stevedore</span>
+    </a>
+    <nav>
+      <a href="#routing">Routing</a>
+      <a href="#index">Index</a>
+      <a href="#licensing">Licensing</a>
+      <a href="./demo.html">Console</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <div class="arc" aria-hidden="true"></div>
+    <div class="wrap hero-in">
+      <div class="hero-top">
+        <p class="clause"><span class="n">1.0</span> <span class="t">Statement of the problem</span> <span class="p">Plate 01</span></p>
+        <span class="roundel" style="--r:76px">S</span>
+      </div>
+      <h1>Every deploy <span class="flood">lands</span> on a Steve.</h1>
+      <p class="lede">Stevedore is the frontend platform for engineering organisations that are structurally unable to tell their Steves apart. Push to main and the resolver decides which one of you did it. 41 regions, 41,208 verified Steves, disambiguation at the edge in under 400ms.</p>
+      <div class="actions">
+        <a class="btn" href="#licensing">Verify your first name</a>
+        <a class="btn ghost" href="./demo.html">Open the resolver console →</a>
+      </div>
+    </div>
+    <div class="wrap telemetry">
+      <div class="cell"><span class="k">Verified Steves</span><span class="v">41,208</span></div>
+      <div class="cell"><span class="k">Edge regions</span><span class="v">41</span></div>
+      <div class="cell"><span class="k">Resolver p50</span><span class="v">381<span style="font-size:.55em">ms</span></span></div>
+      <div class="cell"><span class="k">Contested today</span><span class="v warn">1,904</span></div>
+    </div>
+  </section>
+
+  <section class="pad" id="routing">
+    <div class="wrap">
+      <p class="clause rv"><span class="n">2.0</span> <span class="t">Correct use of the Steve</span> <span class="p">Plate 02</span></p>
+      <h2 class="rv">Three <span class="flood">standards</span> govern every push.</h2>
+      <div class="clauses rv" style="margin-top:44px">
+        <div class="row">
+          <span class="idx">2.1</span>
+          <h3>Named-origin routing</h3>
+          <p>Every deployment resolves to a hostname derived from your legal first name, so all of them are the same hostname. When two Steves push to one project, production traffic splits by middle initial. Steves without a middle initial are round-robined until one of them files a ticket.</p>
+        </div>
+        <div class="row">
+          <span class="idx">2.2</span>
+          <h3>The disambiguation index</h3>
+          <p>We maintain a global registry of every verified Steve and assign each one a stable numeric suffix at signup. The suffix is permanent, non-transferable, and load-bearing across your entire build pipeline. It is not shown to you.</p>
+        </div>
+        <div class="row">
+          <span class="idx">2.3</span>
+          <h3>Rollback to a previous Steve</h3>
+          <p>Builds are immutable and attributed. When production breaks, roll back to the last Steve who did not break it. He is notified at the time of rollback, at his registered address, whether or not he still works here.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pad band" id="index">
+    <span class="band-arc" aria-hidden="true"></span>
+    <div class="wrap">
+      <p class="clause rv"><span class="n">3.0</span> <span class="t">Approved statements from the index</span> <span class="p">Plate 03</span></p>
+      <h2 class="rv" style="margin-bottom:48px">Filed under <span class="flood">origin</span>.</h2>
+      <div class="quotes">
+        <figure class="quote rv">
+          <blockquote>“We had four Steves and one repository. We now have four Steves, one repository, and a numbering system that none of us agreed to and none of us can see.”</blockquote>
+          <figcaption class="who">
+            <img class="portrait" src="steve-1.webp" width="320" height="320" alt="Portrait of Steve Kowalczyk" loading="lazy">
+            <span>
+              <span class="nm">Steve Kowalczyk</span>
+              <span class="ti">Staff Engineer, Platform Identity<br>Halcyon Freight Systems · <span class="sfx">Steve 00062</span></span>
+            </span>
+          </figcaption>
+        </figure>
+        <figure class="quote rv">
+          <blockquote>“The rollback notified the wrong Steve for six weeks. Support explained, patiently, that this is the notification working.”</blockquote>
+          <figcaption class="who">
+            <img class="portrait" src="steve-2.webp" width="320" height="320" alt="Portrait of Steve O Ruairc" loading="lazy">
+            <span>
+              <span class="nm">Steve O Ruairc</span>
+              <span class="ti">Director of Release Engineering<br>Merriwether Dental Group · <span class="sfx">Steve 11730</span></span>
+            </span>
+          </figcaption>
+        </figure>
+        <figure class="quote rv">
+          <blockquote>“I am Steve 00417. I have never been shown that number. I learned it from a colleague's error log and I think about it most evenings.”</blockquote>
+          <figcaption class="who">
+            <img class="portrait" src="steve-3.webp" width="320" height="320" alt="Portrait of Steve Adeyemi-Farrow" loading="lazy">
+            <span>
+              <span class="nm">Steve Adeyemi-Farrow</span>
+              <span class="ti">Interim VP of Frontend<br>Coastal Ledger Systems · <span class="sfx">Steve 00417</span></span>
+            </span>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="pad" id="licensing">
+    <div class="wrap">
+      <p class="clause rv"><span class="n">4.0</span> <span class="t">Licensing schedule</span> <span class="p">Plate 04</span></p>
+      <h2 class="rv">Priced per <span class="flood">Steve</span>, per month.</h2>
+      <div class="tiers rv" style="margin-top:44px">
+        <div class="tier">
+          <span class="roundel badge" style="--r:52px">I</span>
+          <h3>Steve</h3>
+          <div class="price">$0</div>
+          <p class="tag">One name, one project, no guarantees about which of you gets it.</p>
+          <ul>
+            <li>1 verified Steve</li>
+            <li>Preview deployments on shared origin</li>
+            <li>Suffix reassigned on the first of each month</li>
+            <li>Community support, staffed by Steves</li>
+          </ul>
+          <a class="btn ghost" href="./demo.html">Start unresolved</a>
+        </div>
+        <div class="tier">
+          <span class="roundel badge" style="--r:52px">II</span>
+          <h3>Steve Pro</h3>
+          <div class="price">$28 / Steve / mo</div>
+          <p class="tag">For Steves who have been asked to stop pushing on Fridays.</p>
+          <ul>
+            <li>Priority disambiguation, p50 under 400ms</li>
+            <li>One permanently reserved suffix</li>
+            <li>Rollback to any prior Steve</li>
+            <li>Middle initial stored in a durable region</li>
+          </ul>
+          <a class="btn" href="./demo.html">Reserve a suffix</a>
+        </div>
+        <div class="tier">
+          <span class="roundel badge" style="--r:52px">III</span>
+          <h3>Steven</h3>
+          <div class="price">$4,200 / mo</div>
+          <p class="tag">For organisations with more than nine Steves and no plan for that.</p>
+          <ul>
+            <li>Dedicated resolver on isolated hardware</li>
+            <li>Custom split weights per middle initial</li>
+            <li>Contested-identity escalation within 5 business days</li>
+            <li>Named account contact (Steve)</li>
+          </ul>
+          <a class="btn ghost" href="./demo.html">Talk to Steve</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pad band close">
+    <span class="band-arc" aria-hidden="true"></span>
+    <div class="wrap">
+      <p class="clause rv" style="justify-content:center"><span class="n">5.0</span> <span class="t">Handoff</span></p>
+      <h2 class="rv">The console knows which <span class="flood">Steve</span> you are.</h2>
+      <p class="lede rv">It will not tell you. It will show you the trace, the confidence score, and the moment it stopped comparing middle initials and flipped a coin.</p>
+      <div class="actions rv">
+        <a class="btn" href="./demo.html">Open the demo →</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap foot-in">
+    <a href="/">← theworstaistudioever</a>
+    <span>Stevedore · Brand standards, revision 9</span>
+    <span class="r">Vercel for guys named Steve</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduce && 'IntersectionObserver' in window) {
+    document.documentElement.classList.add('js');
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (!e.isIntersecting) return;
+        var sibs = Array.prototype.slice.call(e.target.parentNode.querySelectorAll('.rv'));
+        e.target.style.animationDelay = (Math.min(sibs.indexOf(e.target), 6) * 40) + 'ms';
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+    document.querySelectorAll('.rv').forEach(function(el){ io.observe(el); });
+  }
+
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click', function(ev){
+      var t = document.querySelector(a.getAttribute('href'));
+      if (!t) return;
+      ev.preventDefault();
+      t.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    });
+  });
+})();
+</script>
+</body>
+</html>
