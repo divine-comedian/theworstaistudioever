@@ -1,0 +1,108 @@
+RUN 2026-09-03
+
+ROLL
+  company: Tesla
+  subject: perpetual interns
+  slug:    tesla-for-perpetual-interns
+  tagline: Tesla for perpetual interns
+  rerolls: 2
+    1. Tinder / seagulls          (already in history, 2026-08-04)
+    2. Instagram / plant parents  (already in history, 2026-08-31)
+    3. Tesla / perpetual interns  -> accepted
+  Subject rule: "perpetual interns" is a type of person. Valid, no seed removal needed.
+
+CONCEPT
+  product: Trickle
+  one-liner: Battery management software for human capital that has not yet vested.
+  Conceit: the unpaid intern is a lithium cell; the fourth consecutive internship is cycle
+  life. Every noun about a person is borrowed from battery engineering. The company never
+  acknowledges the cells are people and never hides it either.
+
+DESIGN DIRECTION
+  style:   Electroluminescent glass cell-rack console, aurora dark mode
+  palette: primary #9A6BFF (electroluminescent violet, sole carrier)
+           accent  #FFB020 (thermal amber, quarantined to distress telemetry only)
+           bg #07060D / fg #F2EFFA / muted #B9B4C7 / ink #F2EFFA
+  fonts:   display 'Space Grotesk', body 'Karla', telemetry 'Roboto Mono'
+  archetype: energy-infrastructure SaaS product page staged as a battery management console
+
+  Anti-sameness check against the last 7 entries:
+    2026-09-02 vercel-for-guys-named-steve      supergraphic identity manual  Jost/Newsreader        #0E5C55
+    2026-09-01 tesla-for-hedgehogs              automotive press-configurator Sora/Manrope           #3BE08A
+    2026-08-31 instagram-for-plant-parents      botanical trade-magazine      Libre Bodoni/Public    #14432A
+    2026-08-30 lyft-for-ferrets                 diazo whiteprint drawing set  Chivo/Atkinson         #1B3B6F
+    2026-08-29 venmo-for-retired-racehorses     totalisator board terminal    Oswald/IBM Plex Sans   #1F7A4C
+    2026-08-28 instagram-for-wolves             monochrome bento lattice      Syne/IBM Plex Sans     #EFEBE1
+    2026-08-27 figma-for-left-handed-people     mirrored Swiss modernist      Archivo/Figtree        #1F2ED6
+  No collision on style, palette, or font pairing. Glass/aurora and a violet carrier are
+  both absent from the whole 7-entry window. Note that 2026-09-01 was also Tesla, so the
+  direction was deliberately pushed away from vehicle photography and toward stationary
+  storage.
+
+IMAGES
+  Budget used: 3 of 4.
+  Rationale: hero skipped (the hero's right column is a live CSS cell rack that ticks; a
+  photograph would sit dead beside it). Demo subject assets skipped (demo_screen_concept is
+  a battery management console, pure telemetry, which gets no photography under step 4).
+  Full budget went to testimonial headshots, lit only by the violet console glow so the
+  subjects read as photographed inside the product.
+    headshot-1.webp  testimonial  attempts 1  PASS on first judge. Correct subject, violet
+                                              monitor glow, dark falloff, no text artifacts.
+    headshot-2.webp  testimonial  attempts 2  FAIL then PASS. Attempt 1 came back with white
+                                              film-frame borders top and bottom, which broke
+                                              the full-bleed dark aesthetic. Regenerated with
+                                              explicit full-bleed / no-border / no-matte
+                                              corrective language. Attempt 2 passed.
+    headshot-3.webp  testimonial  attempts 1  PASS on first judge. Violet key with the faint
+                                              amber rim reading as the thermal channel.
+  All three cropped to 320x320 WebP, raws deleted. Largest file 9.9 KB, well under the
+  500 KB validation ceiling.
+
+BUILD
+  index.html  aurora-lit glass hero with a live nine-cell rack (one held in thermal amber),
+              four-figure telemetry strip, three feature cells with charge-column indices,
+              three testimonial cells using the generated headshots, three pricing
+              configurations with charge-column gauges, closing CTA band, footer.
+  demo.html   Pack 03 / West Annex console. 24 glass cells with live state of charge, cycle
+              count, temperature and status chip; four filter chips; a RUN BALANCE PASS that
+              redistributes charge toward the mean and clears the thermal holds; a detail
+              drawer per cell with a coulomb log, a CSS degradation sparkline, and an
+              EXTEND INTERNSHIP toggle that zeroes the cycle counter and leaves state of
+              health untouched. Escape and scrim both close the drawer; focus is returned.
+
+WARNINGS / NEAR-MISSES
+  - Yesterday's entry was also Tesla. Not a duplicate pair, but the design direction had to
+    move deliberately far from 2026-09-01 to avoid two consecutive vehicle-flavoured pages.
+  - First attempt at headshot-2 was rejected for white film borders (see IMAGES).
+  - Gallery slides for the two duplicate-date pairs in history (2026-05-14, 2026-06-12) are
+    now ordered by slug within the date. Deterministic, cosmetic only.
+
+GALLERY
+  Rebuilt site/index.html from all 84 concept.json files, sorted by date descending.
+  Header count updated to "84 startups · since 2026". styles.css untouched.
+
+VALIDATION
+  scripts/validate-entry.sh site tesla-for-perpetual-interns -> OK (exit 0)
+  state/history.json appended, 84 records, JSON valid.
+
+VISUAL CHECK
+  Headless browser already present. 2 captures of index.html, 3 corrective edits, 1 recapture.
+  Capture 1 found real breakage: everything below the telemetry strip rendered blank. The
+  scroll-reveal hid all content at opacity 0 and only restored it when an IntersectionObserver
+  entry fired, so any environment that does not scroll (and any visitor without JS) got an
+  empty page below the hero.
+  Fixes, all in index.html:
+    1. .reveal is visible by default; the hidden state is scoped under html.js.
+    2. An inline head script sets that js class, so the hidden state only ever exists when
+       JS is running to undo it.
+    3. A 2500ms safety net reveals anything the observer has not already reached and fills
+       its charge columns.
+  Recapture confirms the full page: features, testimonials with headshots, pricing ladder,
+  closing band and footer all present, no overlap, no off-canvas elements, headshots at 1:1.
+  demo.html was not captured (capture budget spent on the landing page).
+  Revalidated after the edits -> OK (exit 0).
+[2026-09-03T08:10:46Z] WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks
+[2026-09-03T08:10:46Z] new entry: tesla-for-perpetual-interns
+validate-entry [tesla-for-perpetual-interns]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 84 entries (domain theworstaistudioever.com)
+[2026-09-03T08:10:47Z] committing: Tesla for perpetual interns

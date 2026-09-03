@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pack 03 console · Trickle</title>
+<meta name="description" content="Battery management software for human capital that has not yet vested.">
+<meta name="theme-color" content="#07060D">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Karla:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap');
+
+:root{
+  --bg:#07060D;--fg:#F2EFFA;--muted:#B9B4C7;
+  --violet:#9A6BFF;--amber:#FFB020;
+  --glass:rgba(255,255,255,.045);--glass-hi:rgba(255,255,255,.12);
+  --hair:rgba(255,255,255,.08);--well:rgba(0,0,0,.32);
+  --disp:'Space Grotesk','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --body:'Karla',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'Roboto Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);
+  font-size:16px;line-height:1.6;min-height:100dvh;overflow-x:hidden;
+}
+body::before,body::after{content:"";position:fixed;pointer-events:none;z-index:0;border-radius:50%}
+body::before{width:120vw;height:120vw;left:-50vw;top:-60vw;background:radial-gradient(circle,rgba(154,107,255,.26) 0%,rgba(154,107,255,.07) 38%,transparent 66%)}
+body::after{width:100vw;height:100vw;right:-45vw;bottom:-55vw;background:radial-gradient(circle,rgba(52,180,180,.14) 0%,transparent 66%)}
+.shell{position:relative;z-index:1;padding:0 clamp(1rem,3vw,2rem) 4rem}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--violet);outline-offset:3px}
+
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.lab{font-family:var(--mono);font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+/* chrome */
+.chrome{display:flex;align-items:center;gap:1rem;padding:1.1rem 0;flex-wrap:wrap}
+.back{text-decoration:none;color:var(--muted);font-size:.88rem;transition:color .18s}
+.back:hover{color:var(--violet)}
+.chrome .mark{font-family:var(--disp);font-weight:700;letter-spacing:-.04em;color:var(--violet);text-shadow:0 0 20px rgba(154,107,255,.5);margin-left:auto}
+
+.pane{
+  background:var(--glass);border:1px solid var(--hair);border-radius:18px;
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);position:relative;
+}
+.pane::before{content:"";position:absolute;inset:0 0 auto 0;height:1px;border-radius:18px 18px 0 0;
+  background:linear-gradient(90deg,transparent,var(--glass-hi) 20%,var(--glass-hi) 80%,transparent)}
+
+/* pack header */
+.packhead{padding:1.4rem 1.5rem;margin-bottom:14px}
+.packhead h1{font-family:var(--disp);font-weight:500;font-size:1.5rem;letter-spacing:-.03em;margin:0 0 1.2rem}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+@media(min-width:760px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:var(--well);border:1px solid var(--hair);border-radius:10px;padding:.65rem .8rem}
+.stat .fig{display:block;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:1.3rem;letter-spacing:-.02em;margin-bottom:.15rem}
+.stat.warn .fig{color:var(--amber)}
+.stat.warn{border-color:rgba(255,176,32,.3)}
+
+/* toolbar */
+.bar{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;padding:.9rem 1.5rem;margin-bottom:14px}
+.chip{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;
+  background:rgba(255,255,255,.04);border:1px solid var(--hair);color:var(--muted);
+  padding:.6rem .85rem;border-radius:999px;cursor:pointer;min-height:38px;
+  transition:color .18s,border-color .18s,background .18s;
+}
+.chip:hover{color:var(--fg);border-color:rgba(154,107,255,.35)}
+.chip[aria-pressed="true"]{background:rgba(154,107,255,.16);border-color:rgba(154,107,255,.5);color:var(--fg)}
+.run{
+  margin-left:auto;font-family:var(--body);font-weight:700;font-size:.85rem;letter-spacing:.02em;
+  background:var(--violet);color:#0A0714;border:0;border-radius:999px;padding:.7rem 1.3rem;
+  cursor:pointer;min-height:40px;box-shadow:0 0 24px rgba(154,107,255,.4);
+  transition:transform .12s,box-shadow .2s,opacity .2s;
+}
+.run:hover{box-shadow:0 0 38px rgba(154,107,255,.7)}
+.run:active{transform:translateY(1px)}
+.run[disabled]{opacity:.5;cursor:default;box-shadow:none}
+
+/* rack grid */
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(168px,1fr))}
+.unit{
+  background:var(--glass);border:1px solid var(--hair);border-radius:14px;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  padding:.85rem;display:flex;gap:.75rem;text-align:left;cursor:pointer;
+  color:inherit;font:inherit;width:100%;
+  transition:box-shadow .22s,border-color .22s;
+}
+.unit:hover{box-shadow:0 0 20px rgba(154,107,255,.28);border-color:rgba(154,107,255,.32)}
+.unit[aria-current="true"]{border-color:rgba(154,107,255,.6);box-shadow:0 0 26px rgba(154,107,255,.35)}
+.unit.hot{border-color:rgba(255,176,32,.34)}
+.unit.hot:hover{box-shadow:0 0 20px rgba(255,176,32,.26)}
+
+.col{width:10px;border-radius:5px;background:rgba(255,255,255,.07);border:1px solid var(--hair);position:relative;overflow:hidden;flex:none}
+.col i{position:absolute;left:0;right:0;bottom:0;height:0;
+  background:linear-gradient(180deg,rgba(154,107,255,.95),rgba(154,107,255,.42));
+  box-shadow:0 -1px 0 0 #C8AEFF,0 0 12px rgba(154,107,255,.65);
+  transition:height .9s cubic-bezier(.2,.7,.25,1)}
+.col.amber i{background:linear-gradient(180deg,rgba(255,176,32,.95),rgba(255,176,32,.38));box-shadow:0 -1px 0 0 #FFD98A,0 0 12px rgba(255,176,32,.55)}
+
+.unit .body{min-width:0;flex:1;display:flex;flex-direction:column;gap:.35rem}
+.unit .row1{display:flex;align-items:center;gap:.5rem}
+.unit .mono-id{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;color:var(--muted)}
+.unit .soc{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:1.35rem;letter-spacing:-.02em;transition:color .3s}
+.unit.hot .soc{color:var(--amber)}
+.unit .name{font-size:.86rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.unit .sub{font-family:var(--mono);font-size:.64rem;color:var(--muted);letter-spacing:.04em}
+.status{
+  display:inline-flex;align-items:center;gap:.35rem;align-self:flex-start;
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.11em;text-transform:uppercase;
+  padding:.2rem .5rem;border-radius:999px;border:1px solid var(--hair);color:var(--muted);
+}
+.status::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor}
+.status.charging{color:#8FE3C8;border-color:rgba(143,227,200,.28)}
+.status.discharging{color:var(--violet);border-color:rgba(154,107,255,.34)}
+.status.balancing{color:#9FD6FF;border-color:rgba(159,214,255,.3)}
+.status.hold{color:var(--amber);border-color:rgba(255,176,32,.36)}
+.status.unvested{color:var(--muted)}
+
+.empty{padding:3rem 1.5rem;text-align:center;color:var(--muted);font-size:.95rem}
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(4,3,9,.62);backdrop-filter:blur(3px);z-index:40;opacity:0;pointer-events:none;transition:opacity .24s}
+.scrim.open{opacity:1;pointer-events:auto}
+.drawer{
+  position:fixed;top:0;right:0;bottom:0;width:min(420px,100%);z-index:50;
+  background:rgba(14,11,26,.92);border-left:1px solid rgba(154,107,255,.24);
+  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+  transform:translateX(100%);transition:transform .3s cubic-bezier(.2,.7,.25,1);
+  overflow-y:auto;padding:1.4rem;
+}
+.drawer.open{transform:none}
+.drawer h2{font-family:var(--disp);font-weight:500;font-size:1.5rem;letter-spacing:-.03em;margin:.4rem 0 .2rem}
+.drawer .role{color:var(--muted);font-size:.88rem;margin:0 0 1.3rem}
+.close{background:none;border:1px solid var(--hair);color:var(--muted);border-radius:999px;
+  width:34px;height:34px;cursor:pointer;font-size:1.1rem;line-height:1;transition:color .18s,border-color .18s}
+.close:hover{color:var(--fg);border-color:var(--violet)}
+.dhead{display:flex;align-items:center;justify-content:space-between;gap:1rem}
+
+.readout{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:1.3rem}
+.readout div{background:var(--well);border:1px solid var(--hair);border-radius:10px;padding:.55rem .7rem}
+.readout b{display:block;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:1.05rem;font-weight:400;margin-bottom:.1rem}
+
+.spark{display:flex;align-items:flex-end;gap:3px;height:56px;background:var(--well);
+  border:1px solid var(--hair);border-radius:10px;padding:.6rem;margin-bottom:.4rem}
+.spark span{flex:1;background:linear-gradient(180deg,rgba(154,107,255,.85),rgba(154,107,255,.25));border-radius:2px 2px 0 0}
+.caption{color:var(--muted);font-size:.76rem;margin:0 0 1.4rem}
+
+.log{list-style:none;margin:0 0 1.4rem;padding:0;display:grid;gap:.55rem}
+.log li{display:flex;gap:.7rem;align-items:baseline;font-size:.83rem;border-bottom:1px solid var(--hair);padding-bottom:.55rem}
+.log time{font-family:var(--mono);font-size:.68rem;color:var(--muted);flex:none;letter-spacing:.04em}
+.log .delta{margin-left:auto;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:.75rem;flex:none}
+.log .delta.neg{color:var(--amber)}
+.log .delta.pos{color:#8FE3C8}
+
+.toggle{display:flex;align-items:center;gap:.85rem;background:var(--well);border:1px solid var(--hair);
+  border-radius:12px;padding:.85rem .95rem;cursor:pointer;width:100%;text-align:left;color:inherit;font:inherit}
+.toggle:hover{border-color:rgba(154,107,255,.4)}
+.sw{width:44px;height:25px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid var(--hair);
+  position:relative;flex:none;transition:background .22s,border-color .22s}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;
+  background:var(--muted);transition:transform .22s,background .22s}
+.toggle[aria-pressed="true"] .sw{background:rgba(154,107,255,.4);border-color:var(--violet)}
+.toggle[aria-pressed="true"] .sw::after{transform:translateX(19px);background:#fff}
+.toggle .tt{font-size:.88rem;font-weight:700}
+.toggle .ts{display:block;font-weight:400;color:var(--muted);font-size:.76rem;line-height:1.4}
+
+.note{color:var(--muted);font-size:.74rem;line-height:1.55;margin-top:1.4rem;border-top:1px solid var(--hair);padding-top:1rem}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<div class="chrome">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="mark">Trickle</span>
+</div>
+
+<div class="pane packhead">
+  <h1>Pack 03 · West Annex</h1>
+  <div class="stats">
+    <div class="stat"><span class="fig" id="s-volt">412.60 V</span><span class="lab">Pack voltage</span></div>
+    <div class="stat"><span class="fig" id="s-charge">63.80 %</span><span class="lab">Total pack charge</span></div>
+    <div class="stat"><span class="fig" id="s-soh">67.40 %</span><span class="lab">Mean state of health</span></div>
+    <div class="stat warn"><span class="fig" id="s-warn">3</span><span class="lab">Cells over 41.0 C</span></div>
+  </div>
+</div>
+
+<div class="pane bar">
+  <button class="chip" data-filter="all" aria-pressed="true">All cells</button>
+  <button class="chip" data-filter="discharging" aria-pressed="false">Discharging</button>
+  <button class="chip" data-filter="hold" aria-pressed="false">Thermal hold</button>
+  <button class="chip" data-filter="unvested" aria-pressed="false">Unvested</button>
+  <button class="run" id="balance">Run balance pass</button>
+</div>
+
+<div class="grid" id="grid"></div>
+<div class="empty pane" id="empty" hidden>No cells match this filter. The rack is either healthy or lying.</div>
+
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true" aria-label="Cell detail" role="dialog">
+  <div class="dhead">
+    <span class="lab" id="d-id">C-00</span>
+    <button class="close" id="close" aria-label="Close cell detail">×</button>
+  </div>
+  <h2 id="d-name">—</h2>
+  <p class="role" id="d-role">—</p>
+
+  <div class="readout">
+    <div><b id="d-soc">—</b><span class="lab">State of charge</span></div>
+    <div><b id="d-soh">—</b><span class="lab">State of health</span></div>
+    <div><b id="d-cycles">—</b><span class="lab">Cycles</span></div>
+    <div><b id="d-temp">—</b><span class="lab">Cell temperature</span></div>
+  </div>
+
+  <span class="lab">Degradation, trailing 14 weeks</span>
+  <div class="spark" id="d-spark" aria-hidden="true"></div>
+  <p class="caption" id="d-caption">—</p>
+
+  <span class="lab">Coulomb log</span>
+  <ul class="log" id="d-log"></ul>
+
+  <button class="toggle" id="extend" aria-pressed="false">
+    <span class="sw" aria-hidden="true"></span>
+    <span class="tt">Extend internship<span class="ts" id="d-extend-note">Resets the cycle counter to zero. State of health is carried over unchanged.</span></span>
+  </button>
+
+  <p class="note">Readings are taken at the cell and are not shared with it. Cells may request their file in writing, which is a discharge event and will appear in this log.</p>
+</aside>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var NAMES = [
+    ['Devon Achterberg','Strategy'],['Noor Haddadi','Revenue Operations'],
+    ['Bram Vosloo','Data Platform'],['Ines Okonkwo-Reyes','Brand'],
+    ['Teodor Kaminski','Supply Chain'],['June Whitacre','Legal Support'],
+    ['Marisol Quintanilla','Customer Success'],['Otto Lindqvist','Data Platform'],
+    ['Fikayo Adeyemi','Strategy'],['Clara Bergeron','Finance'],
+    ['Rustam Nazarov','Supply Chain'],['Willa Achebe-Grant','Brand'],
+    ['Sanne Doornbos','Revenue Operations'],['Ivo Meszaros','Legal Support'],
+    ['Perpetua Nwosu','Finance'],['Kai Yamashiro','Data Platform'],
+    ['Elif Karadag','Customer Success'],['Sorin Vintila','Strategy'],
+    ['Nadia Al-Rashid','Brand'],['Bertrand Osei','Supply Chain'],
+    ['Liesl Vandermeer','Finance'],['Tomas Ferreiro','Revenue Operations'],
+    ['Anya Sokolova','Legal Support'],['Hugo Castellanos','Customer Success']
+  ];
+  var STATES = ['charging','discharging','balancing','hold','unvested'];
+  var STATE_LABEL = {charging:'Charging',discharging:'Discharging',balancing:'Balancing',hold:'Thermal hold',unvested:'Unvested'};
+  var LOG_LINES = [
+    ['accepted additional scope', -6.20],['stayed for the all-hands', -2.40],
+    ['told the work was visible', 1.10],['reply-all thanks, from a director', 0.90],
+    ['covered a full-time absence', -11.80],['weekend message, unprompted, sent', -3.30],
+    ['praise captured, 4.10% returned', 0.41],['asked about conversion, no answer logged', -4.70],
+    ['lunch taken away from desk', 2.60],['rack rebalanced onto this cell', -8.10],
+    ['laptop lid closed before 19:00', 3.40],['second internship signed', -1.90]
+  ];
+
+  /* deterministic-enough seeded values so the console looks lived in */
+  var cells = NAMES.map(function(n, i){
+    var soc = [74,91,38,62,96,44,81,29,57,68,12,88,49,77,33,95,60,23,71,86,41,54,18,79][i];
+    var st = i === 4 ? 'hold' : (i === 10 || i === 22 ? 'hold' : STATES[(i * 3 + 1) % 5]);
+    var temp = st === 'hold' ? 41.2 + (i % 5) * 0.4 : 33.8 + (i % 7) * 0.6;
+    return {
+      id: 'C-' + String(i + 1).padStart(2, '0'),
+      name: n[0], team: n[1],
+      soc: soc,
+      soh: 92 - (i * 1.7) % 38,
+      cycles: 210 + i * 87,
+      temp: temp,
+      baseCycles: 210 + i * 87,
+      state: st,
+      extended: false
+    };
+  });
+
+  var grid = document.getElementById('grid');
+  var emptyMsg = document.getElementById('empty');
+  var filter = 'all';
+
+  function isHot(c){ return c.temp >= 41.0; }
+
+  function render(){
+    var shown = cells.filter(function(c){
+      if (filter === 'all') return true;
+      return c.state === filter;
+    });
+    grid.innerHTML = '';
+    emptyMsg.hidden = shown.length > 0;
+    shown.forEach(function(c){
+      var b = document.createElement('button');
+      b.className = 'unit' + (isHot(c) ? ' hot' : '');
+      b.type = 'button';
+      b.setAttribute('data-id', c.id);
+      b.innerHTML =
+        '<div class="col' + (isHot(c) ? ' amber' : '') + '"><i></i></div>' +
+        '<div class="body">' +
+          '<div class="row1"><span class="mono-id">' + c.id + '</span>' +
+          '<span class="soc">' + c.soc.toFixed(1) + '</span></div>' +
+          '<span class="name">' + c.name + '</span>' +
+          '<span class="sub">' + c.cycles.toLocaleString('en-US') + ' cycles · ' + c.temp.toFixed(1) + ' C</span>' +
+          '<span class="status ' + c.state + '">' + STATE_LABEL[c.state] + '</span>' +
+        '</div>';
+      b.addEventListener('click', function(){ open(c.id); });
+      grid.appendChild(b);
+      var fill = b.querySelector('.col i');
+      requestAnimationFrame(function(){ fill.style.height = c.soc + '%'; });
+    });
+    stats();
+  }
+
+  function stats(){
+    var charge = cells.reduce(function(a, c){ return a + c.soc; }, 0) / cells.length;
+    var soh = cells.reduce(function(a, c){ return a + c.soh; }, 0) / cells.length;
+    var hot = cells.filter(isHot).length;
+    document.getElementById('s-charge').textContent = charge.toFixed(2) + ' %';
+    document.getElementById('s-soh').textContent = soh.toFixed(2) + ' %';
+    document.getElementById('s-volt').textContent = (380 + charge * 0.52).toFixed(2) + ' V';
+    document.getElementById('s-warn').textContent = hot;
+  }
+
+  /* ---- filters ---- */
+  document.querySelectorAll('.chip').forEach(function(chip){
+    chip.addEventListener('click', function(){
+      document.querySelectorAll('.chip').forEach(function(c){ c.setAttribute('aria-pressed','false'); });
+      chip.setAttribute('aria-pressed','true');
+      filter = chip.getAttribute('data-filter');
+      render();
+    });
+  });
+
+  /* ---- balance pass ---- */
+  var runBtn = document.getElementById('balance');
+  runBtn.addEventListener('click', function(){
+    runBtn.disabled = true;
+    runBtn.textContent = 'Balancing…';
+    var mean = cells.reduce(function(a, c){ return a + c.soc; }, 0) / cells.length;
+    cells.forEach(function(c){
+      c.soc = Math.round((c.soc + (mean - c.soc) * 0.72) * 10) / 10;
+      if (c.state === 'hold') { c.temp = 38.4; c.state = 'balancing'; }
+    });
+    render();
+    setTimeout(function(){
+      cells.forEach(function(c){ if (c.state === 'balancing') c.state = 'discharging'; });
+      render();
+      runBtn.disabled = false;
+      runBtn.textContent = 'Run balance pass';
+    }, reduce ? 100 : 2100);
+  });
+
+  /* ---- drawer ---- */
+  var drawer = document.getElementById('drawer');
+  var scrim = document.getElementById('scrim');
+  var extend = document.getElementById('extend');
+  var current = null;
+  var lastFocus = null;
+
+  function open(id){
+    current = cells.filter(function(c){ return c.id === id; })[0];
+    if (!current) return;
+    lastFocus = document.activeElement;
+
+    document.querySelectorAll('.unit').forEach(function(u){
+      u.setAttribute('aria-current', u.getAttribute('data-id') === id ? 'true' : 'false');
+    });
+
+    document.getElementById('d-id').textContent = current.id + ' · Pack 03';
+    document.getElementById('d-name').textContent = current.name;
+    document.getElementById('d-role').textContent = current.team + ' · ' + STATE_LABEL[current.state].toLowerCase();
+    document.getElementById('d-soc').textContent = current.soc.toFixed(1) + ' %';
+    document.getElementById('d-soh').textContent = current.soh.toFixed(1) + ' %';
+    document.getElementById('d-cycles').textContent = current.cycles.toLocaleString('en-US');
+    document.getElementById('d-temp').textContent = current.temp.toFixed(1) + ' C';
+
+    var spark = document.getElementById('d-spark');
+    spark.innerHTML = '';
+    var v = current.soh;
+    for (var i = 0; i < 14; i++){
+      var bar = document.createElement('span');
+      v = Math.max(14, v - (i % 3) * 1.4 - 0.8);
+      bar.style.height = v + '%';
+      spark.appendChild(bar);
+    }
+    document.getElementById('d-caption').textContent =
+      'Projected to reach the renewal threshold in ' + (4 + (current.cycles % 9)) + ' weeks. The cell has not been shown this chart.';
+
+    var log = document.getElementById('d-log');
+    log.innerHTML = '';
+    var start = current.cycles % (LOG_LINES.length - 5);
+    for (var j = 0; j < 5; j++){
+      var line = LOG_LINES[(start + j) % LOG_LINES.length];
+      var hh = String(9 + ((current.cycles + j * 3) % 12)).padStart(2, '0');
+      var mm = String((current.cycles * (j + 2)) % 60).padStart(2, '0');
+      var li = document.createElement('li');
+      li.innerHTML = '<time>' + hh + ':' + mm + '</time><span>' + line[0] + '</span>' +
+        '<span class="delta ' + (line[1] < 0 ? 'neg' : 'pos') + '">' +
+        (line[1] > 0 ? '+' : '') + line[1].toFixed(2) + '%</span>';
+      log.appendChild(li);
+    }
+
+    extend.setAttribute('aria-pressed', current.extended ? 'true' : 'false');
+    document.getElementById('d-extend-note').textContent = current.extended
+      ? 'Cycle counter reset. State of health carried over at ' + current.soh.toFixed(1) + '%. Start date unchanged.'
+      : 'Resets the cycle counter to zero. State of health is carried over unchanged.';
+
+    drawer.classList.add('open');
+    scrim.classList.add('open');
+    drawer.setAttribute('aria-hidden','false');
+    document.getElementById('close').focus();
+  }
+
+  function close(){
+    drawer.classList.remove('open');
+    scrim.classList.remove('open');
+    drawer.setAttribute('aria-hidden','true');
+    document.querySelectorAll('.unit').forEach(function(u){ u.setAttribute('aria-current','false'); });
+    if (lastFocus) lastFocus.focus();
+    current = null;
+  }
+
+  document.getElementById('close').addEventListener('click', close);
+  scrim.addEventListener('click', close);
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && current) close(); });
+
+  extend.addEventListener('click', function(){
+    if (!current) return;
+    var id = current.id;
+    current.extended = !current.extended;
+    current.cycles = current.extended ? 0 : current.baseCycles;
+    render();
+    open(id);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
