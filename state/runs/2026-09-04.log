@@ -1,0 +1,105 @@
+RUN 2026-09-04 — theworstaistudioever daily
+
+ROLL
+  company : Fortnite
+  subject : divorced dads
+  slug    : fortnite-for-divorced-dads
+  tagline : Fortnite for divorced dads
+  rerolls : 0 (first pair drawn from the date-seeded LCG was unused)
+  subject rule: "divorced dads" is a relatable type of person. Valid, no discard, no seed removal.
+
+CONCEPT
+  product : Duos.
+  one-liner: Custody weekends, restructured as a competitive live-service season.
+  The bit: a live-service games company has decided standard visitation is a game mode. The court
+  order is the ruleset, the driveway is the extraction point, the kid is a squadmate. Storm circle
+  closes on Sunday 6:00 PM. 100-tier season pass with no Tier 100. Emote wheel replaces free text
+  with the co-parent at every price point including the $1,400 one.
+  anti-ai-slop invoked before all copy (steps 2, 5, 6). Zero em dashes across concept, landing and
+  demo. No throat-clearing, no corrective antithesis, no gift-wrapped closers.
+
+DESIGN DIRECTION
+  style   : Extruded clay game-launcher, season-announcement daylight mode
+  palette : primary #2F55E8 cobalt (sole carrier) / accent #FF2E74 custody magenta (quarantined to
+            schedule telemetry only) / bg #E9EDFB periwinkle / fg #1A1F33 / muted #6B7391 / ink #131728
+  fonts   : Fredoka (display) + Nunito Sans (body) + Spline Sans Mono (telemetry figures)
+  archetype: live-service game season page
+  ANTI-SAMENESS CHECK vs last 7 entries (09-03 aurora glass console, 09-02 supergraphic identity
+  manual, 09-01 automotive press configurator, 08-31 glossy magazine editorial, 08-30 diazo drawing
+  set, 08-29 totalisator board, 08-28 monochrome bento lattice): no collision on style, palette or
+  font pair. Clay volume was explicitly banned by five of the last seven, so this is a clean break.
+  Fredoka, Nunito Sans and Spline Sans Mono are all first uses in the run history.
+
+IMAGES  (4 generated, 5 API calls, 1 regeneration)
+  rationale: style archetype is clay, so every slot is a soft 3D clay-render, never photography.
+    - hero      : taken, but as a 1:1 clay avatar seated inside the hero storm ring instead of a
+                  16:9 landscape plate. A wide photographic band would have fought the tile stack.
+    - demo      : no separate generation. The pre-drop lobby's only photo-shaped slots are the
+                  avatar plate and the squad rail, both of which reuse hero.webp so the same man
+                  appears in the pitch and in his own lobby.
+    - testimonials: all three named users given clay headshots. Remaining budget went here.
+  per-image:
+    hero.webp    640x640  13.9 KB  attempts 1  PASS — correct subject, cobalt polo and magenta
+                 wristband carry the palette discipline, rolled mat lands the air-mattress bit,
+                 flat deadpan expression, clean periwinkle seamless, no text artifacts.
+    shot-1.webp  320x320   7.0 KB  attempts 1  PASS — HVAC-manager read is exact, blue work shirt
+                 holds the palette. Slightly more sculpted realism than the hero; kept, because the
+                 variance reads as different players rather than as a different renderer.
+    shot-2.webp  320x320   6.1 KB  attempts 1  PASS — whistle lanyard sells the rec-soccer
+                 credential with no text, glasses and shaved head differentiate him cleanly.
+    shot-3.webp  320x320   7.4 KB  attempts 2  attempt 1 FAILED the palette-harmony check: returned
+                 an unpainted warm terracotta bust with a realistic pained sculpt, the only warm
+                 image on a cool page and reading as a different medium from the other three.
+                 Regenerated once with explicit corrective feedback on colour, value and facial
+                 simplification. Attempt 2 PASS: cobalt sweatshirt, magenta earcups carrying the
+                 rationed accent, smooth toy-like face, calm expression, cool light values.
+  All four judged with vision via Read. All well under the 500 KB cap. No image dropped.
+  GEMINI_API_KEY present, no cap hit.
+
+BUILD
+  landing : frontend-design invoked. Clay slabs on periwinkle, hero split between a monumental
+            Fredoka claim and a CSS storm ring holding the avatar, live countdown to the next
+            Sunday 6:00 PM extraction in magenta mono, four-cell telemetry strip, three feature
+            slabs with tier-node indices, three testimonial slabs with clay-ringed headshots,
+            three pricing slabs with the middle edition flooded cobalt, closing slab, footer.
+  demo    : pre-drop lobby as a game launcher. Squad rail (you READY / squadmate EN ROUTE ETA
+            6:14 PM), live storm timer, three tabs (Lobby / Season pass / Loadout), a CSS-built
+            one-bedroom apartment stage with the avatar standing in it, a scrollable tier rail
+            where 62 is claimable and everything past it is locked with a stated reason, a
+            rarity-filtered loadout grid with expandable item detail, and a modal emote wheel of
+            eight driveway gestures with six locked behind the paid edition. Vanilla JS only,
+            no frameworks, no network calls. Escape and scrim-click close the modal, focus is
+            returned to the trigger, prefers-reduced-motion respected on both pages.
+
+GALLERY
+  site/index.html regenerated from scratch from all 85 concept.json files, sorted date-descending.
+  Count header now reads "85 startups since 2026". Root metadata contract, favicon link, 50x50
+  logo lockup, slide-cta inner span and the carousel/dot-rail script all preserved. styles.css
+  untouched.
+
+WARNINGS / NEAR-MISSES
+  - shot-3 attempt 1 was the only real near-miss. Caught by the vision judge, not by validation.
+  - Two history dates carry two entries each (2026-05-14, 2026-06-12), so the date sort has ties.
+    Sort is stable over an alphabetically sorted file list, so slide order stays deterministic.
+  - The gallery script block was carried forward verbatim from the previous index.html rather than
+    retyped, which keeps the shipped carousel behaviour byte-identical.
+
+VISUAL CHECK (step 9, run: playwright already present, ~27 tool calls at entry)
+  2 captures taken, 2 corrective edits, 1 re-capture. Under every cap.
+  landing: no breakage. No overlap, no off-canvas element, images at correct aspect, contrast holds.
+  demo: two real defects found and fixed.
+    1. The lobby avatar rendered 212px wide by 640px tall. .avatar set width but never height:auto,
+       so the img element's height="640" presentational hint won and stretched the figure the full
+       length of the stage. Fixed with height:auto.
+    2. The empty toast rendered as a stray black pill at the page bottom in full-page capture.
+       translateY(140%) alone did not hide it. Fixed with opacity:0 / pointer-events:none until .show.
+  Re-capture confirms both fixed and nothing else regressed. No taste-level tweaks made.
+
+VALIDATION
+  scripts/validate-entry.sh site fortnite-for-divorced-dads -> OK (run again after the step 9 edits)
+  state/history.json appended, 85 entries, JSON valid.
+[2026-09-04T08:11:30Z] WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks
+[2026-09-04T08:11:30Z] new entry: fortnite-for-divorced-dads
+validate-entry [fortnite-for-divorced-dads]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 85 entries (domain theworstaistudioever.com)
+[2026-09-04T08:11:30Z] committing: Fortnite for divorced dads

@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pre-drop lobby · Duos.</title>
+<meta name="description" content="The Duos. pre-drop lobby: squad rail, storm timer, season pass and loadout.">
+<meta name="theme-color" content="#E9EDFB">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cobalt:#2F55E8;--cobalt-deep:#2242C4;--magenta:#FF2E74;
+    --bg:#E9EDFB;--slab:#F7F9FF;--slab-sunk:#DFE5F7;
+    --fg:#1A1F33;--muted:#6B7391;--ink:#131728;
+    --gold:#E8A33D;--purple:#8A5CF0;--teal:#26A99A;
+    --radius:26px;
+    --lift:0 18px 30px -14px rgba(38,54,110,.34), 0 3px 0 0 rgba(38,54,110,.10);
+    --inset-top:inset 0 2px 0 0 rgba(255,255,255,.95);
+    --sunk:inset 0 3px 6px -2px rgba(38,54,110,.30);
+    --squish:cubic-bezier(.34,1.56,.64,1);
+    --display:'Fredoka','Nunito','Trebuchet MS',Helvetica,Arial,sans-serif;
+    --body:'Nunito Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --mono:'Spline Sans Mono',ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .app{max-width:1180px;margin:0 auto;padding:16px 20px 44px}
+  a{color:inherit}
+  button{font-family:inherit;cursor:pointer;border:0}
+  :focus-visible{outline:3px solid var(--magenta);outline-offset:3px;border-radius:14px}
+
+  .slab{background:var(--slab);border-radius:var(--radius);box-shadow:var(--lift),var(--inset-top)}
+  .well{background:var(--slab-sunk);border-radius:18px;box-shadow:var(--sunk)}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+  /* chrome */
+  .chrome{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:10px 0 18px}
+  .back{font-family:var(--display);font-weight:500;font-size:15px;color:var(--cobalt);text-decoration:none;
+        background:var(--slab);padding:10px 18px;border-radius:999px;box-shadow:0 4px 0 0 #C9D3F0}
+  .back:hover{transform:translateY(-1px)}
+  .mark{font-family:var(--display);font-weight:700;font-size:22px;color:var(--cobalt);letter-spacing:-.02em}
+  .storm{margin-left:auto;display:flex;align-items:center;gap:12px;padding:9px 18px;border-radius:999px;
+         background:var(--slab-sunk);box-shadow:var(--sunk)}
+  .storm .dot{width:11px;height:11px;border-radius:999px;background:var(--magenta);animation:beat 4s infinite}
+  @keyframes beat{0%,100%{opacity:1}50%{opacity:.35}}
+  .storm .t{font-family:var(--mono);font-weight:600;font-size:17px;color:var(--magenta);font-variant-numeric:tabular-nums}
+  .storm .l{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+
+  /* layout */
+  .grid{display:grid;grid-template-columns:274px 1fr;gap:18px;align-items:start}
+
+  /* squad rail */
+  .rail{padding:22px}
+  .rail h2{font-family:var(--display);font-weight:600;font-size:17px;margin:0 0 14px;color:var(--ink)}
+  .slot{display:flex;gap:13px;align-items:center;padding:13px;border-radius:18px;background:var(--slab-sunk);
+        box-shadow:var(--sunk);margin-bottom:11px}
+  .slot img{width:52px;height:52px;border-radius:50%;object-fit:cover;flex:none;border:4px solid var(--slab);background:var(--bg)}
+  .slot .empty{width:52px;height:52px;border-radius:50%;flex:none;border:4px dashed #C0CAE8;background:transparent}
+  .slot b{display:block;font-family:var(--display);font-weight:600;font-size:15px;color:var(--ink);line-height:1.25}
+  .slot .st{font-family:var(--mono);font-size:11px;color:var(--teal)}
+  .slot .st.pending{color:var(--magenta)}
+  .rail .note{font-size:13px;color:var(--muted);margin:14px 0 18px;line-height:1.5}
+  .stack{display:flex;flex-direction:column;gap:10px}
+
+  .btn{font-family:var(--display);font-weight:600;font-size:16px;padding:14px 20px;border-radius:999px;
+       background:var(--cobalt);color:#fff;box-shadow:0 5px 0 0 var(--cobalt-deep);width:100%;
+       transition:transform .16s var(--squish),box-shadow .16s ease}
+  .btn:active{transform:translateY(3px);box-shadow:0 2px 0 0 var(--cobalt-deep)}
+  .btn.ghost{background:var(--slab);color:var(--cobalt);box-shadow:0 5px 0 0 #C9D3F0}
+  .btn.standby{background:var(--slab-sunk);color:var(--muted);box-shadow:var(--sunk)}
+
+  /* tabs */
+  .panel{padding:22px}
+  .tabs{display:flex;gap:6px;padding:6px;border-radius:999px;background:var(--slab-sunk);box-shadow:var(--sunk);
+        margin-bottom:20px;overflow-x:auto}
+  .tab{font-family:var(--display);font-weight:600;font-size:15px;padding:11px 22px;border-radius:999px;
+       background:transparent;color:var(--muted);white-space:nowrap;transition:all .18s ease}
+  .tab[aria-selected="true"]{background:var(--cobalt);color:#fff;box-shadow:0 4px 0 0 var(--cobalt-deep)}
+  .view[hidden]{display:none}
+
+  /* lobby view */
+  .lobby{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:center}
+  .stage{position:relative;border-radius:22px;padding:26px 20px 0;background:linear-gradient(#DCE3F8,#EEF1FC);
+         box-shadow:var(--sunk);min-height:300px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden}
+  .furniture{position:absolute;border-radius:14px}
+  .couch{width:118px;height:52px;background:#C3CDEA;left:16px;bottom:26px;box-shadow:inset 0 -6px 0 rgba(0,0,0,.06)}
+  .mattress{width:96px;height:26px;background:#B7C2E4;right:18px;bottom:26px;box-shadow:inset 0 -5px 0 rgba(0,0,0,.06)}
+  .frame{width:44px;height:52px;background:#F7F9FF;right:34px;top:26px;box-shadow:0 6px 12px -8px rgba(38,54,110,.6)}
+  .floor{position:absolute;left:0;right:0;bottom:0;height:26px;background:#CBD4EE}
+  .avatar{position:relative;z-index:2;width:min(212px,64%);height:auto;margin:0 auto;display:block}
+  .stat-list{display:flex;flex-direction:column;gap:11px}
+  .stat{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:13px 17px;border-radius:16px;
+        background:var(--slab-sunk);box-shadow:var(--sunk)}
+  .stat .k{font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .stat .v{font-family:var(--mono);font-weight:600;font-size:17px;color:var(--ink)}
+  .stat .v.warn{color:var(--magenta)}
+  .plate-name{font-family:var(--display);font-weight:700;font-size:27px;letter-spacing:-.02em;color:var(--ink);margin:0 0 4px}
+  .plate-sub{font-family:var(--mono);font-size:12px;color:var(--muted);margin:0 0 16px}
+
+  /* season pass */
+  .passhead{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .passhead p{margin:0;font-size:14px;color:var(--muted);max-width:48ch}
+  .progress{height:16px;border-radius:999px;background:var(--slab-sunk);box-shadow:var(--sunk);overflow:hidden;margin-bottom:18px}
+  .progress i{display:block;height:100%;width:62%;background:var(--cobalt);border-radius:999px}
+  .tierrail{display:flex;gap:12px;overflow-x:auto;padding:6px 2px 16px;scroll-behavior:smooth}
+  .tiernode{flex:none;width:104px;padding:14px 10px;border-radius:20px;text-align:center;background:var(--slab-sunk);
+            box-shadow:var(--sunk);transition:transform .16s var(--squish)}
+  .tiernode:hover{transform:translateY(-3px)}
+  .tiernode .n{font-family:var(--mono);font-weight:600;font-size:19px;color:var(--muted)}
+  .tiernode .r{font-size:11.5px;color:var(--muted);line-height:1.35;margin-top:5px;min-height:32px}
+  .tiernode.claimed{background:var(--cobalt);box-shadow:0 5px 0 0 var(--cobalt-deep)}
+  .tiernode.claimed .n,.tiernode.claimed .r{color:#fff}
+  .tiernode.claimable{background:var(--slab);box-shadow:0 5px 0 0 #C9D3F0}
+  .tiernode.claimable .n{color:var(--cobalt)}
+  .claimbtn{margin-top:8px;font-family:var(--display);font-weight:600;font-size:12px;padding:7px 12px;border-radius:999px;
+            background:var(--cobalt);color:#fff;box-shadow:0 3px 0 0 var(--cobalt-deep);width:100%}
+  .lockrow{margin-top:8px;font-family:var(--mono);font-size:10.5px;color:var(--magenta);line-height:1.3}
+
+  /* loadout */
+  .items{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:14px}
+  .item{position:relative;padding:16px;border-radius:20px;background:var(--slab-sunk);box-shadow:var(--sunk);
+        text-align:left;width:100%;transition:transform .16s var(--squish)}
+  .item:hover{transform:translateY(-3px)}
+  .item .chip{display:inline-block;font-family:var(--mono);font-size:10.5px;padding:4px 10px;border-radius:999px;color:#fff;margin-bottom:9px}
+  .item b{display:block;font-family:var(--display);font-weight:600;font-size:15.5px;color:var(--ink);line-height:1.3}
+  .item .meta{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:6px}
+  .item .tip{display:none;margin-top:10px;font-size:13px;color:var(--fg);line-height:1.45;
+             padding-top:10px;border-top:2px solid rgba(38,54,110,.12)}
+  .item.open .tip{display:block}
+  .item.open{background:var(--slab);box-shadow:0 5px 0 0 #C9D3F0}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .fchip{font-family:var(--mono);font-size:12px;padding:9px 15px;border-radius:999px;background:var(--slab-sunk);
+         color:var(--muted);box-shadow:var(--sunk)}
+  .fchip[aria-pressed="true"]{background:var(--cobalt);color:#fff;box-shadow:0 4px 0 0 var(--cobalt-deep)}
+
+  /* emote wheel */
+  .scrim{position:fixed;inset:0;background:rgba(19,23,40,.52);display:none;place-items:center;padding:20px;z-index:50}
+  .scrim.open{display:grid}
+  .wheel{padding:26px;max-width:520px;width:100%;text-align:center}
+  .wheel h3{font-family:var(--display);font-weight:600;font-size:22px;margin:0 0 4px;color:var(--ink)}
+  .wheel p{font-family:var(--mono);font-size:12px;color:var(--muted);margin:0 0 18px}
+  .spokes{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+  .spoke{padding:13px;border-radius:18px;background:var(--slab-sunk);box-shadow:var(--sunk);text-align:left;
+         transition:transform .16s var(--squish)}
+  .spoke:hover{transform:translateY(-2px)}
+  .spoke b{display:block;font-family:var(--display);font-weight:600;font-size:14.5px;color:var(--ink)}
+  .spoke span{font-size:12px;color:var(--muted);line-height:1.4}
+  .spoke[aria-pressed="true"]{background:var(--cobalt);box-shadow:0 4px 0 0 var(--cobalt-deep)}
+  .spoke[aria-pressed="true"] b,.spoke[aria-pressed="true"] span{color:#fff}
+  .spoke:disabled{opacity:.5;cursor:not-allowed}
+  .spoke:disabled b{color:var(--muted)}
+  .wheel .locked-note{font-family:var(--mono);font-size:11px;color:var(--magenta);margin:0 0 16px}
+
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(140%);z-index:60;
+         background:var(--ink);color:#fff;padding:14px 24px;border-radius:999px;font-size:14.5px;
+         box-shadow:0 18px 30px -14px rgba(19,23,40,.8);opacity:0;pointer-events:none;
+         transition:transform .28s var(--squish),opacity .2s ease}
+  .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+  @media (max-width:940px){
+    .grid{grid-template-columns:1fr}
+    .lobby{grid-template-columns:1fr}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="chrome">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <span class="mark">Duos.</span>
+    <div class="storm">
+      <span class="dot" aria-hidden="true"></span>
+      <span class="t mono" id="clock">00:00:00</span>
+      <span class="l">until extraction</span>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <aside class="slab rail">
+      <h2>Squad</h2>
+      <div class="slot">
+        <img src="hero.webp" alt="Your clay avatar" width="640" height="640">
+        <div><b>You</b><span class="st">READY · TIER 62</span></div>
+      </div>
+      <div class="slot">
+        <span class="empty" aria-hidden="true"></span>
+        <div><b>Squadmate</b><span class="st pending">EN ROUTE · ETA 6:14 PM</span></div>
+      </div>
+      <p class="note">Squad size is fixed at two by the ruleset. Additional slots cannot be purchased.</p>
+      <div class="stack">
+        <button class="btn" id="ready">Ready up</button>
+        <button class="btn ghost" id="openwheel">Emote wheel</button>
+      </div>
+    </aside>
+
+    <main class="slab panel">
+      <div class="tabs" role="tablist" aria-label="Lobby sections">
+        <button class="tab" role="tab" aria-selected="true" data-view="lobby">Lobby</button>
+        <button class="tab" role="tab" aria-selected="false" data-view="pass">Season pass</button>
+        <button class="tab" role="tab" aria-selected="false" data-view="loadout">Loadout</button>
+      </div>
+
+      <!-- LOBBY -->
+      <section class="view" id="view-lobby" role="tabpanel">
+        <div class="lobby">
+          <div class="stage">
+            <span class="furniture couch" aria-hidden="true"></span>
+            <span class="furniture mattress" aria-hidden="true"></span>
+            <span class="furniture frame" aria-hidden="true"></span>
+            <span class="floor" aria-hidden="true"></span>
+            <img class="avatar" src="hero.webp" alt="Your avatar standing in the rendered apartment" width="640" height="640">
+          </div>
+          <div>
+            <p class="plate-name">Dale_P_1978</p>
+            <p class="plate-sub">Drop zone: Unit 4B, Windmere Court · 1 bed</p>
+            <div class="stat-list">
+              <div class="stat"><span class="k">season tier</span><span class="v">62 / 100</span></div>
+              <div class="stat"><span class="k">seasons played</span><span class="v">9</span></div>
+              <div class="stat"><span class="k">weekends won</span><span class="v">17</span></div>
+              <div class="stat"><span class="k">weekends rained out</span><span class="v warn">6</span></div>
+              <div class="stat"><span class="k">next queue opens</span><span class="v">FRI 6:00 PM</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEASON PASS -->
+      <section class="view" id="view-pass" role="tabpanel" hidden>
+        <div class="passhead">
+          <div>
+            <p><strong>Season 9 progression.</strong> 62 tiers claimed. Tiers past 62 unlock on events that are not currently scheduled.</p>
+          </div>
+          <span class="mono" style="font-size:13px;color:var(--muted)">62 / 100</span>
+        </div>
+        <div class="progress" role="img" aria-label="62 of 100 tiers claimed"><i></i></div>
+        <div class="tierrail" id="tierrail"></div>
+      </section>
+
+      <!-- LOADOUT -->
+      <section class="view" id="view-loadout" role="tabpanel" hidden>
+        <div class="filters" id="filters"></div>
+        <div class="items" id="items"></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- emote wheel -->
+<div class="scrim" id="scrim">
+  <div class="slab wheel" role="dialog" aria-modal="true" aria-labelledby="wheeltitle">
+    <h3 id="wheeltitle">Emote wheel</h3>
+    <p>Approved gestures for the driveway handoff</p>
+    <p class="locked-note">Six gestures require Every Other Weekend Plus.</p>
+    <div class="spokes" id="spokes"></div>
+    <button class="btn ghost" id="closewheel">Close wheel</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  /* ---------- storm clock ---------- */
+  var clock = document.getElementById('clock');
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function tick(){
+    var now = new Date();
+    var d = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 18, 0, 0, 0);
+    d.setDate(d.getDate() + ((7 - d.getDay()) % 7));
+    if (d <= now) d.setDate(d.getDate() + 7);
+    var s = Math.max(0, Math.floor((d - now) / 1000));
+    clock.textContent = pad(Math.floor(s/3600)) + ':' + pad(Math.floor(s/60)%60) + ':' + pad(s%60);
+  }
+  tick(); setInterval(tick, 1000);
+
+  /* ---------- toast ---------- */
+  var toast = document.getElementById('toast'), toastTimer;
+  function say(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 3400);
+  }
+
+  /* ---------- tabs ---------- */
+  var tabs = [].slice.call(document.querySelectorAll('.tab'));
+  tabs.forEach(function(t){
+    t.addEventListener('click', function(){
+      tabs.forEach(function(o){
+        o.setAttribute('aria-selected', String(o === t));
+        document.getElementById('view-' + o.dataset.view).hidden = (o !== t);
+      });
+    });
+  });
+
+  /* ---------- ready up ---------- */
+  var ready = document.getElementById('ready'), isReady = true;
+  ready.addEventListener('click', function(){
+    isReady = !isReady;
+    ready.textContent = isReady ? 'Ready up' : 'Standing by';
+    ready.classList.toggle('standby', !isReady);
+    say(isReady ? 'Marked ready. The storm timer is unaffected.' : 'Standing by. The storm timer is unaffected.');
+  });
+
+  /* ---------- season pass rail ---------- */
+  var named = {
+    14:'Recital attended', 22:'Haircut, correct length', 31:'Dentist appointment, advance notice',
+    40:'Homework, unprompted', 51:'Friend name remembered', 62:'Air mattress inflated in under 6 min',
+    63:'Second bedroom', 71:'Allergy list memorized', 80:'Named on the emergency card',
+    88:'Weeknight, unscheduled', 95:'Called first', 100:'—'
+  };
+  var lockReasons = {
+    63:'requires a lease with two bedrooms',
+    71:'requires the allergy list',
+    80:'requires school office approval',
+    88:'not in the ruleset',
+    95:'event has never fired',
+    100:'tier does not exist'
+  };
+  var rail = document.getElementById('tierrail');
+  var show = [58,59,60,61,62,63,64,71,80,88,95,100];
+  show.forEach(function(n){
+    var claimed = n <= 61, claimable = n === 62;
+    var el = document.createElement('div');
+    el.className = 'tiernode ' + (claimed ? 'claimed' : claimable ? 'claimable' : '');
+    var reason = lockReasons[n];
+    el.innerHTML =
+      '<div class="n">' + n + '</div>' +
+      '<div class="r">' + (named[n] || 'Reward withheld') + '</div>' +
+      (claimable ? '<button class="claimbtn">Claim</button>'
+        : (!claimed && reason ? '<div class="lockrow">' + reason + '</div>' : ''));
+    if (claimable){
+      el.querySelector('.claimbtn').addEventListener('click', function(){
+        el.className = 'tiernode claimed';
+        el.innerHTML = '<div class="n">62</div><div class="r">' + named[62] + '</div>';
+        say('Tier 62 claimed. Tier 63 requires a lease with two bedrooms.');
+      });
+    }
+    rail.appendChild(el);
+  });
+
+  /* ---------- loadout ---------- */
+  var RARITY = {
+    Legendary:'#E8A33D', Epic:'#8A5CF0', Rare:'#2F55E8', Uncommon:'#26A99A', Common:'#6B7391'
+  };
+  var ITEMS = [
+    {n:'Air Mattress',       r:'Legendary', m:'acquired 2022 · 71% durability', t:'Inflates in 5:40. Holds until roughly 4 AM, at which point it becomes a floor.'},
+    {n:'Nintendo Switch',    r:'Epic',      m:'acquired 2024 · 96% durability', t:'Kept at this address permanently so it never has to be packed or discussed.'},
+    {n:'Second Toothbrush',  r:'Rare',      m:'acquired 2023 · 40% durability', t:'Blue. Purchased in a two-pack. The other one is at the other house.'},
+    {n:'Booster Seat',       r:'Uncommon',  m:'acquired 2021 · 88% durability', t:'Fits the sedan. Has never been transferred to the other vehicle without a text.'},
+    {n:'Streaming Password', r:'Common',    m:'acquired 2019 · shared',         t:'Still works. Nobody has changed it, which is the closest thing to a signal available.'},
+    {n:'Cereal, Correct Brand', r:'Rare',   m:'restocked weekly · 100%',        t:'One box, opened once per season, thrown out on Sunday and repurchased on Thursday.'},
+    {n:'Folding Card Table', r:'Uncommon',  m:'acquired 2022 · 64% durability', t:'Serves as the dining table. Rated for four, currently seats two.'},
+    {n:'Framed Photo',       r:'Legendary', m:'acquired 2018 · 100% durability',t:'Cropped. Cannot be equipped, cannot be dropped, cannot be inspected further.'}
+  ];
+  var itemsEl = document.getElementById('items'), filtersEl = document.getElementById('filters');
+  var active = 'All';
+
+  function render(){
+    itemsEl.innerHTML = '';
+    ITEMS.filter(function(i){ return active === 'All' || i.r === active; }).forEach(function(i){
+      var b = document.createElement('button');
+      b.className = 'item';
+      b.setAttribute('aria-expanded','false');
+      b.innerHTML =
+        '<span class="chip" style="background:' + RARITY[i.r] + '">' + i.r + '</span>' +
+        '<b>' + i.n + '</b>' +
+        '<div class="meta">' + i.m + '</div>' +
+        '<div class="tip">' + i.t + '</div>';
+      b.addEventListener('click', function(){
+        var open = b.classList.toggle('open');
+        b.setAttribute('aria-expanded', String(open));
+      });
+      itemsEl.appendChild(b);
+    });
+    if (!itemsEl.children.length){
+      itemsEl.innerHTML = '<p style="color:var(--muted);font-size:14px">Nothing at this rarity is currently in the apartment.</p>';
+    }
+  }
+  ['All','Legendary','Epic','Rare','Uncommon','Common'].forEach(function(r){
+    var f = document.createElement('button');
+    f.className = 'fchip'; f.textContent = r;
+    f.setAttribute('aria-pressed', String(r === active));
+    f.addEventListener('click', function(){
+      active = r;
+      [].slice.call(filtersEl.children).forEach(function(c){
+        c.setAttribute('aria-pressed', String(c === f));
+      });
+      render();
+    });
+    filtersEl.appendChild(f);
+  });
+  render();
+
+  /* ---------- emote wheel ---------- */
+  var EMOTES = [
+    {n:'Thumbs up',        d:'Confirms receipt. Commits to nothing.',                    locked:false},
+    {n:'Wave',             d:'Ends the interaction without ending the conversation.',    locked:false},
+    {n:'Point at watch',   d:'Raises the schedule without raising the schedule.',        locked:true},
+    {n:'Slow nod',         d:'For when the backpack has the wrong contents.',            locked:true},
+    {n:'Shrug',            d:'Cleared by counsel. Records as neutral.',                  locked:true},
+    {n:'Salute',           d:'Deployed after a good weekend. Rarely reciprocated.',      locked:true},
+    {n:'Hands in pockets', d:'The default posture. Available in all conditions.',        locked:true},
+    {n:'Take a knee',      d:'For goodbyes at eye level. Highest engagement in Season 9.',locked:true}
+  ];
+  var scrim = document.getElementById('scrim'), spokes = document.getElementById('spokes');
+  EMOTES.forEach(function(e){
+    var b = document.createElement('button');
+    b.className = 'spoke';
+    b.setAttribute('aria-pressed','false');
+    if (e.locked) b.disabled = true;
+    b.innerHTML = '<b>' + e.n + (e.locked ? ' · locked' : '') + '</b><span>' + e.d + '</span>';
+    b.addEventListener('click', function(){
+      [].slice.call(spokes.children).forEach(function(c){ c.setAttribute('aria-pressed','false'); });
+      b.setAttribute('aria-pressed','true');
+      say('Bound to the wheel: ' + e.n + '.');
+    });
+    spokes.appendChild(b);
+  });
+  function openWheel(){ scrim.classList.add('open'); document.getElementById('closewheel').focus(); }
+  function closeWheel(){ scrim.classList.remove('open'); document.getElementById('openwheel').focus(); }
+  document.getElementById('openwheel').addEventListener('click', openWheel);
+  document.getElementById('closewheel').addEventListener('click', closeWheel);
+  scrim.addEventListener('click', function(e){ if (e.target === scrim) closeWheel(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && scrim.classList.contains('open')) closeWheel(); });
+})();
+</script>
+</body>
+</html>
