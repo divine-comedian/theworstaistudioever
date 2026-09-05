@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bleakly · theworstaistudioever</title>
+<meta name="description" content="A long-form publishing platform that meters your intake of bad news down to a level two clinicians have described as survivable.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Bleakly · theworstaistudioever">
+<meta property="og:description" content="A long-form publishing platform that meters your intake of bad news down to a level two clinicians have described as survivable.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Bleakly · theworstaistudioever">
+<meta name="twitter:description" content="A long-form publishing platform that meters your intake of bad news down to a level two clinicians have described as survivable.">
+<meta name="theme-color" content="#10553A">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=Spline+Sans+Mono:wght@400;500&display=swap');
+
+:root{
+  --green:#10553A;
+  --green-deep:#0B3B28;
+  --amber:#E2A008;
+  --bg:#E5EBE3;
+  --card:#FCFDFB;
+  --ink:#13231C;
+  --muted:#5F7168;
+  --rule:rgba(16,85,58,.24);
+  --display:'Archivo','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --body:'Source Sans 3',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --mono:'Spline Sans Mono',ui-monospace,'SF Mono',Menlo,monospace;
+  --foil:repeating-linear-gradient(100deg,
+    #cfd4d0 0px,#eef1ee 3px,#b9c0bb 6px,#e4e8e5 10px,#c6ccc7 14px);
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:17px;
+  line-height:1.55;
+  font-variant-numeric:tabular-nums;
+}
+h1,h2,h3{font-family:var(--display);letter-spacing:-.02em;margin:0}
+p{margin:0}
+a{color:inherit}
+
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+.panel{
+  background:var(--card);
+  border:1px solid var(--rule);
+  border-radius:3px;
+  position:relative;
+  overflow:hidden;
+}
+.panel::before{
+  content:"";
+  position:absolute;inset:0 0 auto 0;
+  height:9px;
+  background:var(--foil);
+}
+.clause-no{
+  font-family:var(--mono);
+  font-size:.78rem;
+  color:var(--green);
+  letter-spacing:.06em;
+}
+
+/* ---------- carton face ---------- */
+.carton{padding:56px 0 0}
+.carton .panel{padding:44px 40px 0}
+.spec-strip{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  border-top:1px solid var(--rule);
+  margin:44px -40px 0;
+}
+.spec{
+  padding:14px 18px;
+  border-right:1px solid var(--rule);
+  font-family:var(--mono);
+  font-size:.72rem;
+  line-height:1.45;
+  color:var(--muted);
+}
+.spec:last-child{border-right:0}
+.spec b{display:block;color:var(--green);font-weight:500;font-size:.86rem}
+
+.mark{
+  display:flex;align-items:baseline;gap:12px;
+  font-family:var(--display);font-weight:800;font-size:1.05rem;
+  color:var(--green);letter-spacing:-.01em;
+}
+.mark span{
+  font-family:var(--mono);font-weight:400;font-size:.72rem;
+  color:var(--muted);letter-spacing:.04em;
+}
+h1{
+  font-weight:800;
+  font-size:clamp(2.6rem,7vw,5.4rem);
+  line-height:.96;
+  color:var(--green);
+  margin:26px 0 0;
+  max-width:14ch;
+}
+.lede{
+  margin-top:22px;
+  max-width:58ch;
+  font-size:1.12rem;
+  color:var(--ink);
+}
+.cta-row{display:flex;flex-wrap:wrap;align-items:center;gap:18px;margin:30px 0 8px}
+.btn{
+  display:inline-block;
+  background:var(--green);color:var(--card);
+  font-family:var(--display);font-weight:700;font-size:1rem;
+  padding:13px 30px;border-radius:999px;
+  text-decoration:none;
+  border:1px solid var(--green);
+  transition:background .16s linear,color .16s linear;
+}
+.btn:hover{background:var(--green-deep);border-color:var(--green-deep)}
+.btn.ghost{background:transparent;color:var(--green)}
+.btn.ghost:hover{background:var(--green);color:var(--card)}
+.baseline{font-family:var(--mono);font-size:.78rem;color:var(--muted);max-width:30ch}
+
+/* ---------- regulatory band ---------- */
+.band{
+  background:var(--amber);
+  margin-top:26px;
+  border-top:1px solid rgba(19,35,28,.5);
+  border-bottom:1px solid rgba(19,35,28,.5);
+}
+.band p{
+  font-family:var(--display);
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.02em;
+  font-size:clamp(.86rem,2.1vw,1.06rem);
+  line-height:1.35;
+  color:var(--green-deep);
+  padding:16px 20px;
+  max-width:1080px;
+  margin:0 auto;
+}
+
+/* ---------- leaflet ---------- */
+.leaflet{padding:60px 0 0}
+.clause{margin-bottom:56px}
+.clause-head{
+  display:flex;gap:14px;align-items:baseline;
+  border-bottom:2px solid var(--green);
+  padding-bottom:10px;margin-bottom:26px;
+}
+.clause-head h2{
+  font-weight:700;
+  font-size:clamp(1.3rem,3vw,1.75rem);
+  color:var(--green);
+}
+
+.dose{border-top:1px solid var(--rule)}
+.dose-item{
+  display:grid;
+  grid-template-columns:56px 1fr;
+  gap:22px;
+  padding:24px 0;
+  border-bottom:1px solid var(--rule);
+  align-items:start;
+}
+.cell{
+  width:44px;height:30px;
+  border-radius:999px/999px;
+  background:var(--green);
+  color:var(--card);
+  font-family:var(--mono);font-size:.8rem;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:inset 0 -2px 0 rgba(0,0,0,.18);
+}
+.dose-item h3{font-weight:700;font-size:1.16rem;color:var(--green);margin-bottom:6px}
+.dose-item p{max-width:66ch;color:var(--ink)}
+
+/* ---------- reported experiences ---------- */
+.reports{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.report{margin:0;padding:0 0 22px;display:flex;flex-direction:column;justify-content:space-between}
+.report blockquote{
+  margin:0;padding:26px 24px 20px;
+  font-size:1rem;line-height:1.6;
+}
+.report figcaption{
+  display:flex;align-items:center;gap:13px;
+  padding:0 24px;
+}
+.report img{
+  width:52px;height:52px;border-radius:999px;
+  border:1px solid var(--green);
+  object-fit:cover;display:block;
+}
+.who{font-family:var(--mono);font-size:.72rem;line-height:1.45;color:var(--muted)}
+.who b{display:block;font-family:var(--body);font-weight:600;font-size:.94rem;color:var(--green)}
+
+/* ---------- dosage table ---------- */
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:start}
+.tier{padding:30px 26px 28px}
+.tier h3{font-weight:800;font-size:1.24rem;color:var(--green);margin-top:6px}
+.tier .price{
+  font-family:var(--mono);font-size:1.02rem;color:var(--ink);
+  margin:12px 0 4px;
+}
+.tier .sub{font-style:italic;color:var(--muted);font-size:.95rem;max-width:34ch}
+.tier ul{list-style:none;margin:20px 0 0;padding:0}
+.tier li{
+  position:relative;padding:7px 0 7px 30px;
+  border-top:1px solid var(--rule);font-size:.97rem;
+}
+.tier li::before{
+  content:"";position:absolute;left:0;top:12px;
+  width:18px;height:11px;border-radius:999px;
+  background:var(--green);
+}
+.tier.controlled{border-color:var(--green);border-width:2px}
+.tier.controlled::before{height:11px}
+.sched{
+  display:inline-block;background:var(--amber);color:var(--green-deep);
+  font-family:var(--mono);font-size:.7rem;padding:3px 9px;border-radius:2px;
+}
+
+/* ---------- demo ---------- */
+.demo-panel{
+  padding:38px 40px 36px;
+  display:flex;flex-wrap:wrap;gap:24px;
+  align-items:center;justify-content:space-between;
+}
+.demo-panel h2{font-weight:800;font-size:clamp(1.5rem,3.4vw,2.1rem);color:var(--green)}
+.demo-panel p{max-width:52ch;margin-top:8px;color:var(--muted)}
+
+/* ---------- footer ---------- */
+footer{margin-top:64px;border-top:1px solid var(--rule);padding:26px 0 44px}
+.record{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:16px;
+  font-family:var(--mono);font-size:.72rem;color:var(--muted);line-height:1.5;
+}
+.record b{display:block;color:var(--green);font-weight:500}
+.back{
+  display:inline-block;margin-top:26px;
+  font-family:var(--mono);font-size:.78rem;color:var(--muted);
+  text-decoration:none;border-bottom:1px solid var(--rule);
+}
+.back:hover{color:var(--green);border-color:var(--green)}
+
+a:focus-visible,.btn:focus-visible{outline:3px solid var(--green);outline-offset:3px}
+
+@media (max-width:900px){
+  .reports,.tiers{grid-template-columns:1fr}
+  .spec-strip{grid-template-columns:repeat(2,1fr)}
+  .spec:nth-child(2){border-right:0}
+  .spec:nth-child(-n+2){border-bottom:1px solid var(--rule)}
+  .record{grid-template-columns:repeat(2,1fr)}
+  .carton .panel{padding:36px 24px 0}
+  .spec-strip{margin:36px -24px 0}
+  .demo-panel{padding:30px 24px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+
+<main class="carton">
+  <div class="wrap">
+    <div class="panel">
+      <div class="mark">Bleakly <span>manufactured for oral and ocular reading</span></div>
+      <h1>Doom, on a dosing schedule.</h1>
+      <p class="lede">Bleakly is a reading platform for people who were going to
+        read all of it anyway. We do not stop you. We seal each article in its own
+        cell, meter the intake, and print the amount on the outside of the box.</p>
+      <div class="cta-row">
+        <a class="btn" href="#how-much">Begin titration</a>
+        <p class="baseline">Intake is measured before your first cell. Most people
+          arrive at 340 a day and are surprised by the number, not the habit.</p>
+      </div>
+      <div class="spec-strip">
+        <div class="spec">Route of administration<b>Ocular, sustained</b></div>
+        <div class="spec">Measured baseline<b>340 / day</b></div>
+        <div class="spec">Prescribed ceiling<b>180 / day</b></div>
+        <div class="spec">Review interval<b>Every 11 months</b></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="band">
+    <p>Keep out of reach of anyone under thirty. Do not exceed the stated dose.
+      If symptoms persist, they will.</p>
+  </div>
+
+  <div class="wrap leaflet">
+
+    <section class="clause">
+      <div class="clause-head">
+        <span class="clause-no">1</span>
+        <h2>What Bleakly is and what it is used for</h2>
+      </div>
+      <div class="dose">
+        <article class="dose-item">
+          <div class="cell" aria-hidden="true">i</div>
+          <div>
+            <h3>The titration ladder</h3>
+            <p>Nobody quits at once. You enter at your measured baseline of 340
+              articles a day and step down to 310 over eleven months,
+              unsupervised, at a rate our advisory board called defensible.</p>
+          </div>
+        </article>
+        <article class="dose-item">
+          <div class="cell" aria-hidden="true">ii</div>
+          <div>
+            <h3>Blister-pack feed</h3>
+            <p>Every article is sealed in its own foil cell. Pressing one out is
+              deliberate, loud, and permanent. Tuesday cannot be re-read. Several
+              users have asked. Tuesday cannot be re-read.</p>
+          </div>
+        </article>
+        <article class="dose-item">
+          <div class="cell" aria-hidden="true">iii</div>
+          <div>
+            <h3>Contraindications engine</h3>
+            <p>Cross-references today's headlines against everything else you are
+              currently taking. Flags the four that interact badly with your group
+              chat and the one that should not be combined with a family dinner.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="clause">
+      <div class="clause-head">
+        <span class="clause-no">2</span>
+        <h2>Experiences reported during the trial</h2>
+      </div>
+      <div class="reports">
+        <figure class="report panel">
+          <blockquote>I was reading four hundred things a day. Bleakly brought me
+            down to three hundred and ninety and mailed me a certificate. It is
+            framed.</blockquote>
+          <figcaption>
+            <img src="headshot-1.webp" alt="Dana Reistrup" width="52" height="52">
+            <span class="who"><b>Dana Reistrup</b>Assistant Regional Manager of
+              Ongoing Concerns, Hollis &amp; Vance</span>
+          </figcaption>
+        </figure>
+        <figure class="report panel">
+          <blockquote>The foil is real. You hear it pop. My wife hears it from the
+            next room and she has started keeping track of the count
+            herself.</blockquote>
+          <figcaption>
+            <img src="headshot-2.webp" alt="Emil Ostrander" width="52" height="52">
+            <span class="who"><b>Emil Ostrander</b>Third-Shift Compliance Reader,
+              Meridian Municipal Water</span>
+          </figcaption>
+        </figure>
+        <figure class="report panel">
+          <blockquote>The panel warned me not to open the thread on an empty
+            stomach. I opened the thread. That outcome is not attributable to
+            Bleakly.</blockquote>
+          <figcaption>
+            <img src="headshot-3.webp" alt="Priya Kallenbach" width="52" height="52">
+            <span class="who"><b>Priya Kallenbach</b>Senior Coordinator of Unread
+              Tabs, Vantry Logistics Group</span>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="clause" id="how-much">
+      <div class="clause-head">
+        <span class="clause-no">3</span>
+        <h2>How much to take</h2>
+      </div>
+      <div class="tiers">
+        <div class="tier panel">
+          <h3>Over the counter</h3>
+          <p class="price">$9 / month</p>
+          <p class="sub">For the mildly informed.</p>
+          <ul>
+            <li>180 cells per day</li>
+            <li>One unsealed cell per week, for emergencies</li>
+            <li>Self-reported symptom log</li>
+            <li>Foil in standard silver</li>
+          </ul>
+        </div>
+        <div class="tier panel">
+          <h3>Prescription</h3>
+          <p class="price">$46 / month</p>
+          <p class="sub">Requires a referral from a friend who is worse than you.</p>
+          <ul>
+            <li>Unmetered intake, logged</li>
+            <li>Full contraindications engine</li>
+            <li>Quarterly review with a model that sighs</li>
+            <li>Childproof comment section</li>
+          </ul>
+        </div>
+        <div class="tier panel controlled">
+          <span class="sched">Schedule II</span>
+          <h3>Controlled</h3>
+          <p class="price">$2,400 / year, billed in one alarming sum</p>
+          <p class="sub">We are required to know where you are.</p>
+          <ul>
+            <li>Everything in Prescription</li>
+            <li>Locked cabinet mode, physical key mailed to you</li>
+            <li>Two-person rule for replies</li>
+            <li>A courier</li>
+            <li>Intake reported quarterly to a party of your choosing</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="clause">
+      <div class="panel demo-panel">
+        <div>
+          <h2>Press out today's sheet</h2>
+          <p>Twelve cells, sealed this morning. Severity graded, side effects
+            listed, ceiling enforced.</p>
+        </div>
+        <a class="btn" href="./demo.html">open the demo →</a>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="wrap">
+    <footer>
+      <div class="record">
+        <div>Batch<b>DS-2026-0905</b></div>
+        <div>Manufactured<b>theworstaistudioever</b></div>
+        <div>Storage<b>Below 22°C, away from replies</b></div>
+        <div>Expiry<b>None observed</b></div>
+      </div>
+      <a class="back" href="/">← theworstaistudioever</a>
+    </footer>
+  </div>
+</main>
+
+<script>
+document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+  a.addEventListener('click', function (e) {
+    var t = document.querySelector(a.getAttribute('href'));
+    if (!t) return;
+    e.preventDefault();
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    t.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  });
+});
+</script>
+</body>
+</html>

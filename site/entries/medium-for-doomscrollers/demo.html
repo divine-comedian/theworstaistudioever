@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dosing console · Bleakly</title>
+<meta name="description" content="Today's sheet. Twelve sealed cells, severity graded, ceiling enforced.">
+<meta name="theme-color" content="#10553A">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=Spline+Sans+Mono:wght@400;500&display=swap');
+
+:root{
+  --green:#10553A;
+  --green-deep:#0B3B28;
+  --amber:#E2A008;
+  --bg:#E5EBE3;
+  --card:#FCFDFB;
+  --ink:#13231C;
+  --muted:#5F7168;
+  --rule:rgba(16,85,58,.24);
+  --display:'Archivo','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --body:'Source Sans 3',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --mono:'Spline Sans Mono',ui-monospace,'SF Mono',Menlo,monospace;
+  --foil:repeating-linear-gradient(100deg,
+    #cfd4d0 0px,#eef1ee 3px,#b9c0bb 6px,#e4e8e5 10px,#c6ccc7 14px);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--body);font-size:16px;line-height:1.5;
+  font-variant-numeric:tabular-nums;
+}
+h1,h2,h3{font-family:var(--display);letter-spacing:-.02em;margin:0}
+p{margin:0}
+button{font:inherit;color:inherit}
+
+.shell{max-width:1160px;margin:0 auto;padding:0 20px 60px}
+
+/* ---------- chrome ---------- */
+.chrome{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:16px;flex-wrap:wrap;
+  padding:16px 0;border-bottom:1px solid var(--rule);
+}
+.back{
+  font-family:var(--mono);font-size:.78rem;color:var(--muted);
+  text-decoration:none;border-bottom:1px solid var(--rule);
+}
+.back:hover{color:var(--green);border-color:var(--green)}
+.sheet-id{font-family:var(--mono);font-size:.74rem;color:var(--muted)}
+.sheet-id b{color:var(--green);font-weight:500}
+
+/* ---------- meter ---------- */
+.meter-bar{
+  display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;
+  background:var(--card);border:1px solid var(--rule);border-radius:3px;
+  padding:18px 22px;margin:22px 0;position:relative;overflow:hidden;
+}
+.meter-bar::before{content:"";position:absolute;inset:0 0 auto 0;height:9px;background:var(--foil)}
+.meter-label{font-family:var(--mono);font-size:.74rem;color:var(--muted);margin-top:6px}
+.meter-label b{color:var(--green);font-weight:500}
+.track{
+  height:14px;background:var(--bg);border:1px solid var(--rule);
+  border-radius:2px;overflow:hidden;margin-top:10px;
+}
+.fill{
+  height:100%;width:0;background:var(--green);
+  transition:width .4s linear;
+}
+.fill.over{background:var(--amber)}
+.count{
+  font-family:var(--mono);font-size:1.6rem;color:var(--green);
+  text-align:right;line-height:1.1;
+}
+.count span{display:block;font-size:.7rem;color:var(--muted)}
+
+/* ---------- titration ---------- */
+.controls{
+  display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;
+  background:var(--card);border:1px solid var(--rule);border-radius:3px;
+  padding:20px 22px;margin-bottom:22px;
+}
+.controls label{font-family:var(--mono);font-size:.74rem;color:var(--muted);display:block}
+.controls label b{display:block;color:var(--green);font-weight:500;font-size:.92rem;margin-bottom:9px}
+input[type=range]{width:100%;accent-color:var(--green);margin:6px 0 4px}
+.ticks{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+.reseal{
+  background:transparent;border:1px solid var(--green);color:var(--green);
+  font-family:var(--display);font-weight:700;font-size:.9rem;
+  padding:10px 20px;border-radius:999px;cursor:pointer;
+  transition:background .16s linear,color .16s linear;
+}
+.reseal:hover{background:var(--green);color:var(--card)}
+
+/* ---------- contraindication ---------- */
+.warn{
+  background:var(--amber);border:1px solid rgba(19,35,28,.5);
+  color:var(--green-deep);border-radius:3px;
+  font-family:var(--display);font-weight:800;text-transform:uppercase;
+  letter-spacing:.02em;font-size:.86rem;line-height:1.4;
+  padding:14px 18px;margin-bottom:22px;
+  display:none;
+}
+.warn.show{display:block}
+
+/* ---------- sheet ---------- */
+.sheet{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:14px;
+  background:var(--card);border:1px solid var(--rule);border-radius:3px;
+  padding:22px;position:relative;overflow:hidden;
+}
+.sheet::before{content:"";position:absolute;inset:0 0 auto 0;height:9px;background:var(--foil)}
+.sheet{padding-top:34px}
+
+.cell{
+  position:relative;text-align:left;cursor:pointer;
+  border:1px solid var(--rule);border-radius:14px;
+  background:var(--foil);
+  padding:0;min-height:172px;overflow:hidden;
+  transition:transform .12s linear,border-color .16s linear;
+}
+.cell:hover{border-color:var(--green)}
+.cell:active{transform:translateY(2px)}
+.cell .dome{
+  position:absolute;inset:10px;
+  border-radius:12px;
+  background:var(--card);
+  box-shadow:inset 0 -3px 0 rgba(16,85,58,.14), inset 0 2px 0 #fff;
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:14px;
+}
+.cell .sealed{
+  font-family:var(--mono);font-size:.72rem;color:var(--muted);line-height:1.45;
+}
+.cell .grade{
+  font-family:var(--display);font-weight:800;font-size:1.5rem;color:var(--green);
+}
+.cell.open{background:var(--card)}
+.cell.open .dome{
+  position:static;inset:auto;margin:0;border-radius:0;
+  box-shadow:none;background:transparent;min-height:170px;
+}
+.cell.open{border-color:var(--green)}
+.headline{font-family:var(--display);font-weight:700;font-size:1rem;line-height:1.28;color:var(--green)}
+.effects{margin:10px 0 0;padding:0;list-style:none}
+.effects li{
+  font-family:var(--mono);font-size:.68rem;color:var(--muted);
+  padding:3px 0;border-top:1px solid var(--rule);line-height:1.4;
+}
+.grade-row{
+  display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+  margin-top:10px;
+}
+.grade-row .g{font-family:var(--mono);font-size:.7rem;color:var(--green)}
+.cell.hidden{display:none}
+.cell[disabled]{cursor:not-allowed;opacity:.42}
+
+/* ---------- lockout ---------- */
+.lockout{
+  display:none;
+  background:var(--card);border:2px solid var(--green);border-radius:3px;
+  padding:46px 26px;text-align:center;
+}
+.lockout.show{display:block}
+.lockout h2{font-size:clamp(1.4rem,4vw,2rem);color:var(--green)}
+.lockout p{max-width:44ch;margin:12px auto 0;color:var(--muted)}
+.clock{
+  font-family:var(--mono);font-size:clamp(2rem,8vw,3.6rem);
+  color:var(--green);margin-top:22px;letter-spacing:.02em;
+}
+
+.legend{
+  font-family:var(--mono);font-size:.7rem;color:var(--muted);
+  margin-top:18px;line-height:1.6;max-width:70ch;
+}
+
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--green);outline-offset:3px}
+
+@media (max-width:900px){ .sheet{grid-template-columns:repeat(2,1fr)} }
+@media (max-width:560px){
+  .sheet{grid-template-columns:1fr}
+  .controls,.meter-bar{grid-template-columns:1fr}
+  .count{text-align:left}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="chrome">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <p class="sheet-id">Sheet <b>DS-2026-0905</b> sealed 05:40 &nbsp; Ceiling <b>6 cells</b></p>
+  </div>
+
+  <div class="meter-bar">
+    <div>
+      <h2 style="font-size:1.05rem;color:var(--green)">Today's intake</h2>
+      <p class="meter-label">Ceiling <b>6 cells</b>. Press a cell to take it.
+        Cells cannot be re-sealed individually.</p>
+      <div class="track"><div class="fill" id="fill"></div></div>
+    </div>
+    <p class="count"><span>taken</span><em id="taken" style="font-style:normal">0 / 6</em></p>
+  </div>
+
+  <div class="controls">
+    <div>
+      <label for="grade"><b>Titration</b>Hide anything above the grade you can
+        carry today</label>
+      <input type="range" id="grade" min="1" max="4" value="4" step="1">
+      <div class="ticks">
+        <span>I mild unease</span><span>II</span><span>III</span>
+        <span>IV structural collapse</span>
+      </div>
+    </div>
+    <button class="reseal" id="reseal">Reseal the sheet</button>
+  </div>
+
+  <p class="warn" id="warn"></p>
+
+  <div class="sheet" id="sheet"></div>
+
+  <div class="lockout" id="lockout">
+    <h2>Ceiling reached. The sheet is sealed.</h2>
+    <p>Six cells is your prescribed daily dose. The remaining cells are still
+      here. They will still be here tomorrow, and so will the ones after.</p>
+    <p class="clock" id="clock">03:41:12</p>
+  </div>
+
+  <p class="legend">Grades are assigned on intake by a model that has read
+    everything and reports feeling fine. Side-effect frequencies are drawn from
+    the trial cohort of 1,204 readers, 903 of whom completed it.</p>
+
+</div>
+
+<script>
+var CELLS = [
+  { id:1, group:"markets", grade:1, head:"Regional bank quietly changes the name of its safest fund",
+    fx:["Rechecking a balance you know (1 in 3)","Opening a second tab (1 in 4)"] },
+  { id:2, group:"climate", grade:3, head:"The lake is doing the thing it did in 2019, only earlier",
+    fx:["Reading the methodology (1 in 6)","Looking up your own elevation (1 in 9)"] },
+  { id:3, group:"local", grade:1, head:"Council votes 6-1 to study the intersection for another year",
+    fx:["Mild civic fatigue (1 in 2)","Drafting a comment, not posting it (1 in 5)"] },
+  { id:4, group:"markets", grade:4, head:"Two funds you have never heard of are holding each other up",
+    fx:["Checking your own accounts (1 in 2)","Explaining leverage at dinner (1 in 7)"] },
+  { id:5, group:"health", grade:2, head:"The thing you do every morning has been studied again",
+    fx:["Stopping the thing for four days (1 in 3)","Resuming the thing (1 in 3)"] },
+  { id:6, group:"tech", grade:3, head:"A company apologises for a feature nobody asked to be given",
+    fx:["Checking your own settings (1 in 2)","Finding the setting already on (1 in 4)"] },
+  { id:7, group:"climate", grade:2, head:"Insurers withdraw from a county with a very nice name",
+    fx:["Reading your own policy (1 in 5)","Not reading your own policy (4 in 5)"] },
+  { id:8, group:"local", grade:2, head:"The bakery that survived everything has posted a photo of a door",
+    fx:["Genuine sadness (1 in 2)","Sharing to a group chat (1 in 3)"] },
+  { id:9, group:"tech", grade:4, head:"Internal memo says the timeline was always this aggressive",
+    fx:["Rereading the memo (2 in 3)","Updating a document nobody opens (1 in 8)"] },
+  { id:10, group:"health", grade:1, head:"Sleep study finds the number was eight the whole time",
+    fx:["Brief relief (1 in 2)","Staying up to read about sleep (1 in 4)"] },
+  { id:11, group:"markets", grade:2, head:"Quarterly filing includes a sentence in the past tense",
+    fx:["Searching a ticker (1 in 4)","Telling a colleague tomorrow (1 in 6)"] },
+  { id:12, group:"climate", grade:4, head:"Two agencies publish the same map with different colours",
+    fx:["Comparing the maps (3 in 4)","Choosing the kinder map (1 in 2)"] }
+];
+
+var ROMAN = { 1:"I", 2:"II", 3:"III", 4:"IV" };
+var GROUP_NAME = { markets:"market exposure", climate:"climate load",
+                   local:"local attachment", health:"self-monitoring", tech:"work adjacency" };
+var CEILING = 6;
+
+var sheet = document.getElementById("sheet");
+var warn = document.getElementById("warn");
+var fill = document.getElementById("fill");
+var takenEl = document.getElementById("taken");
+var lockout = document.getElementById("lockout");
+var gradeInput = document.getElementById("grade");
+var opened = [];
+
+function render() {
+  sheet.innerHTML = "";
+  var max = parseInt(gradeInput.value, 10);
+  CELLS.forEach(function (c) {
+    var btn = document.createElement("button");
+    btn.className = "cell";
+    btn.type = "button";
+    var isOpen = opened.indexOf(c.id) !== -1;
+    if (isOpen) btn.classList.add("open");
+    if (c.grade > max && !isOpen) btn.classList.add("hidden");
+
+    if (isOpen) {
+      btn.setAttribute("aria-label", "Cell " + c.id + ", taken. " + c.head);
+      btn.innerHTML =
+        '<div class="dome">' +
+          '<p class="headline">' + c.head + '</p>' +
+          '<div>' +
+            '<ul class="effects">' +
+              c.fx.map(function (f) { return "<li>" + f + "</li>"; }).join("") +
+            '</ul>' +
+            '<div class="grade-row"><span class="g">cell ' + c.id +
+              '</span><span class="g">grade ' + ROMAN[c.grade] + '</span></div>' +
+          '</div>' +
+        '</div>';
+    } else {
+      btn.setAttribute("aria-label", "Cell " + c.id + ", sealed, grade " + ROMAN[c.grade] + ". Press to take.");
+      btn.innerHTML =
+        '<div class="dome">' +
+          '<p class="grade">' + ROMAN[c.grade] + '</p>' +
+          '<p class="sealed">cell ' + c.id + '<br>sealed<br>' + GROUP_NAME[c.group] + '</p>' +
+        '</div>';
+      btn.addEventListener("click", function () { take(c); });
+    }
+    sheet.appendChild(btn);
+  });
+  updateMeter();
+}
+
+function take(c) {
+  if (opened.length >= CEILING) return;
+  var clash = CELLS.filter(function (o) {
+    return opened.indexOf(o.id) !== -1 && o.group === c.group;
+  })[0];
+  opened.push(c.id);
+  if (clash) {
+    warn.textContent = "Contraindication. Cell " + c.id + " and cell " + clash.id +
+      " both act on " + GROUP_NAME[c.group] +
+      ". Taken together they are not additive, they are multiplicative.";
+    warn.classList.add("show");
+  } else {
+    warn.classList.remove("show");
+  }
+  render();
+}
+
+function updateMeter() {
+  var pct = Math.min(100, (opened.length / CEILING) * 100);
+  fill.style.width = pct + "%";
+  fill.classList.toggle("over", opened.length >= CEILING);
+  takenEl.textContent = opened.length + " / " + CEILING;
+  var done = opened.length >= CEILING;
+  lockout.classList.toggle("show", done);
+  sheet.style.display = done ? "none" : "grid";
+  if (done) startClock();
+}
+
+var timer = null;
+function startClock() {
+  if (timer) return;
+  var left = 3 * 3600 + 41 * 60 + 12;
+  var clock = document.getElementById("clock");
+  timer = setInterval(function () {
+    left = left > 0 ? left - 1 : 0;
+    var h = String(Math.floor(left / 3600)).padStart(2, "0");
+    var m = String(Math.floor((left % 3600) / 60)).padStart(2, "0");
+    var s = String(left % 60).padStart(2, "0");
+    clock.textContent = h + ":" + m + ":" + s;
+  }, 1000);
+}
+
+gradeInput.addEventListener("input", render);
+document.getElementById("reseal").addEventListener("click", function () {
+  opened = [];
+  warn.classList.remove("show");
+  if (timer) { clearInterval(timer); timer = null; }
+  document.getElementById("clock").textContent = "03:41:12";
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
