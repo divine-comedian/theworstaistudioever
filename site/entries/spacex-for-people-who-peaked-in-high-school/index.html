@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Apogee · theworstaistudioever</title>
+<meta name="description" content="Aerospace-grade telemetry for the highest point of your life, which has already happened.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Apogee · theworstaistudioever">
+<meta property="og:description" content="Aerospace-grade telemetry for the highest point of your life, which has already happened.">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Apogee · theworstaistudioever">
+<meta name="twitter:description" content="Aerospace-grade telemetry for the highest point of your life, which has already happened.">
+<meta name="theme-color" content="#12182B">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Mono:wght@400;500&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#12182B;
+    --felt:#1A2138;
+    --well:#0E1424;
+    --brass:#C8A548;
+    --brass-dim:rgba(200,165,72,.30);
+    --descent:#C4462F;
+    --cream:#F2ECDC;
+    --muted:#8E93A8;
+    --display:'Anton','Haettenschweiler','Arial Narrow',Impact,sans-serif;
+    --body:'Spectral',Georgia,'Times New Roman',serif;
+    --mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+    --gut:16px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--navy);color:var(--cream);
+    font-family:var(--body);font-size:17px;line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1120px;margin:0 auto;padding:0 28px}
+  a{color:inherit}
+  h1,h2,h3{font-family:var(--display);font-weight:400;text-transform:uppercase;letter-spacing:-.02em;margin:0;line-height:.95}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:.14em;font-size:11px;text-transform:uppercase;color:var(--muted)}
+  .brass{color:var(--brass)}
+  .descent{color:var(--descent)}
+
+  /* ---------- shelf rule: the engraved plate on every panel ---------- */
+  .shelf{height:2px;background:var(--brass);width:100%;transform-origin:left center}
+
+  /* ---------- masthead ---------- */
+  .masthead{border-bottom:1px solid var(--brass-dim)}
+  .masthead .wrap{display:flex;align-items:baseline;gap:20px;padding-top:20px;padding-bottom:18px;flex-wrap:wrap}
+  .wordmark{font-family:var(--display);font-size:30px;color:var(--brass);text-transform:uppercase;letter-spacing:-.01em;line-height:1;text-decoration:none}
+  .masthead nav{margin-left:auto;display:flex;gap:22px}
+  .masthead nav a{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:6px 0;border-bottom:1px solid transparent;transition:color .18s ease,border-color .18s ease}
+  .masthead nav a:hover,.masthead nav a:focus-visible{color:var(--cream);border-bottom-color:var(--brass)}
+
+  /* ---------- hero ---------- */
+  .hero{padding:76px 0 68px}
+  .hero h1{font-size:clamp(3rem,9vw,7.5rem)}
+  .hero .shelf{margin:26px 0 34px}
+  .hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:48px;align-items:start}
+  .hero-sub{max-width:58ch;margin:0 0 30px;font-size:19px}
+  .hero-eyebrow{display:block;margin-bottom:22px}
+
+  .cta{
+    display:inline-block;font-family:var(--display);text-transform:uppercase;font-size:19px;
+    letter-spacing:.01em;background:var(--brass);color:var(--navy);
+    padding:15px 26px 12px;border:2px solid var(--brass);border-radius:2px;text-decoration:none;
+    transition:background .18s ease,color .18s ease,transform .08s ease;
+  }
+  .cta:hover,.cta:focus-visible{background:transparent;color:var(--brass)}
+  .cta:active{transform:translateY(1px)}
+  .cta.ghost{background:transparent;color:var(--brass)}
+  .cta.ghost:hover,.cta.ghost:focus-visible{background:var(--brass);color:var(--navy)}
+
+  .telemetry{display:flex;flex-wrap:wrap;gap:var(--gut);margin-top:38px}
+  .cell{background:var(--well);border:1px solid var(--brass-dim);border-radius:2px;padding:12px 16px 13px;min-width:150px;flex:1 1 150px}
+  .cell .k{display:block;margin-bottom:6px}
+  .cell .v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:21px;color:var(--cream);letter-spacing:-.01em}
+
+  /* ---------- the apogee arc ---------- */
+  .arc{width:100%;height:auto;display:block}
+  .arc .rise{stroke:var(--brass);stroke-width:1.5;fill:none;stroke-dasharray:520;stroke-dashoffset:520;animation:draw 1100ms ease-out .2s forwards}
+  .arc .fall{stroke:var(--descent);stroke-width:1.5;fill:none;stroke-dasharray:5 6;opacity:0;animation:fadein 700ms ease-out 1100ms forwards}
+  .arc .tick{stroke:var(--brass);stroke-width:1}
+  .arc .base{stroke:var(--brass-dim);stroke-width:1}
+  .arc text{font-family:var(--mono);font-size:10px;letter-spacing:.14em;fill:var(--muted)}
+  .arc .peaklabel{fill:var(--brass)}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  @keyframes fadein{to{opacity:1}}
+
+  /* ---------- the chenille patch ---------- */
+  .patch{
+    position:relative;width:54px;height:62px;flex:0 0 54px;
+    background:var(--brass);
+    clip-path:polygon(0 0,100% 0,100% 76%,50% 100%,0 76%);
+    display:grid;place-items:center;transition:transform .2s ease;
+  }
+  .patch i{
+    position:absolute;inset:3px;background:var(--felt);
+    clip-path:polygon(0 0,100% 0,100% 76%,50% 100%,0 76%);
+  }
+  .patch b{position:relative;font-family:var(--display);font-size:26px;color:var(--brass);line-height:1;padding-bottom:9px;font-weight:400}
+  .patch:hover{transform:rotate(-2deg)}
+
+  /* ---------- shelved panels ---------- */
+  section{padding:70px 0}
+  .sec-head{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;margin-bottom:8px}
+  .sec-head h2{font-size:clamp(1.9rem,4.4vw,3.1rem)}
+  .sec-head p{margin:0;color:var(--muted);max-width:46ch}
+  .sec-shelf{margin-bottom:34px}
+
+  .case{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gut)}
+  .panel{background:var(--felt);border:1px solid var(--brass-dim);border-top:2px solid var(--brass);border-radius:2px;padding:26px 24px 28px}
+  .panel h3{font-size:23px;margin:20px 0 12px}
+  .panel p{margin:0;color:#D6D0C0;font-size:16.5px}
+
+  /* ---------- testimonials ---------- */
+  .quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gut)}
+  .quote{background:var(--felt);border:1px solid var(--brass-dim);border-top:2px solid var(--brass);border-radius:2px;padding:26px 24px 24px;display:flex;flex-direction:column}
+  .quote blockquote{margin:0 0 22px;font-style:italic;font-size:18.5px;color:var(--cream)}
+  .who{display:flex;gap:14px;align-items:flex-start;margin-top:auto}
+  .who > div{flex:1 1 auto;min-width:0}
+  .portrait{
+    position:relative;width:54px;height:62px;flex:0 0 54px;background:var(--brass);
+    clip-path:polygon(0 0,100% 0,100% 76%,50% 100%,0 76%);transition:transform .2s ease;
+  }
+  .portrait img{position:absolute;inset:3px;width:calc(100% - 6px);height:calc(100% - 6px);object-fit:cover;clip-path:polygon(0 0,100% 0,100% 76%,50% 100%,0 76%);display:block}
+  .quote:hover .portrait{transform:rotate(-2deg)}
+  .who .n{font-family:var(--display);text-transform:uppercase;font-size:17px;letter-spacing:-.01em;line-height:1.1;display:block;margin-bottom:5px}
+  .who .t{font-family:var(--mono);font-size:10.5px;letter-spacing:.03em;line-height:1.55;color:var(--muted);text-transform:uppercase;display:block}
+
+  /* ---------- pricing ---------- */
+  .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gut)}
+  .tier{background:var(--felt);border:1px solid var(--brass-dim);border-top:2px solid var(--brass);border-radius:2px;padding:26px 24px 28px;display:flex;flex-direction:column}
+  .tier-top{display:flex;align-items:flex-start;gap:16px;margin-bottom:18px}
+  .tier h3{font-size:22px;margin-bottom:6px}
+  .tier .price{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:20px;color:var(--brass);display:block;margin-bottom:2px}
+  .tier .tline{color:var(--muted);font-size:16px;margin:0 0 20px}
+  .tier ul{list-style:none;margin:0 0 26px;padding:0}
+  .tier li{position:relative;padding-left:20px;margin-bottom:11px;font-size:16px;color:#D6D0C0}
+  .tier li::before{content:"";position:absolute;left:0;top:.62em;width:9px;height:11px;background:var(--brass);clip-path:polygon(0 0,100% 0,100% 76%,50% 100%,0 76%)}
+  .tier .fuel{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--descent);margin:0 0 20px}
+  .tier .cta{margin-top:auto;text-align:center}
+
+  /* ---------- console band ---------- */
+  .console{border-top:1px solid var(--brass-dim);border-bottom:1px solid var(--brass-dim);background:var(--well)}
+  .console .wrap{padding-top:64px;padding-bottom:64px;display:flex;gap:36px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+  .console h2{font-size:clamp(1.9rem,4.6vw,3.4rem);max-width:16ch}
+  .console p{color:var(--muted);max-width:44ch;margin:14px 0 0}
+
+  /* ---------- footer ---------- */
+  footer{padding:44px 0 60px}
+  footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center}
+  footer a.back{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-decoration:none;border-bottom:1px solid transparent;transition:color .18s ease,border-color .18s ease}
+  footer a.back:hover,footer a.back:focus-visible{color:var(--brass);border-bottom-color:var(--brass)}
+
+  :focus-visible{outline:2px solid var(--brass);outline-offset:3px}
+
+  @media (max-width:920px){
+    .hero-grid{grid-template-columns:1fr;gap:34px}
+    .case,.quotes,.tiers{grid-template-columns:1fr}
+    .hero{padding:52px 0 48px}
+    section{padding:52px 0}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{animation-duration:.001ms !important;animation-delay:0ms !important;transition-duration:.001ms !important}
+    .arc .rise{stroke-dashoffset:0}
+    .arc .fall{opacity:1}
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <a class="wordmark" href="#top">Apogee</a>
+    <span class="mono">Launch services &nbsp;/&nbsp; est. 2019 &nbsp;/&nbsp; range 4</span>
+    <nav>
+      <a href="#flight">Flight profile</a>
+      <a href="#record">Record</a>
+      <a href="#programs">Programs</a>
+      <a href="./demo.html">Console</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <div class="hero wrap">
+    <span class="mono hero-eyebrow">Mission archive &nbsp;·&nbsp; 41,882 trajectories reconstructed</span>
+    <h1>You <span class="brass">peaked</span>.<br>We have the flight data.</h1>
+    <div class="shelf"></div>
+    <div class="hero-grid">
+      <div>
+        <p class="hero-sub">Apogee reconstructs the exact week your trajectory turned over, issues a certificate, then holds you at a stable and survivable altitude for the remaining forty years.</p>
+        <a class="cta" href="./demo.html">Request your flight data</a>
+        <div class="telemetry">
+          <div class="cell"><span class="k mono">Apogee, median customer</span><span class="v">Mar 2009</span></div>
+          <div class="cell"><span class="k mono">Altitude lost since</span><span class="v descent">−31,400 m</span></div>
+          <div class="cell"><span class="k mono">Descent rate</span><span class="v descent" id="rate">−1.83 m/s</span></div>
+        </div>
+      </div>
+      <div>
+        <svg class="arc" viewBox="0 0 600 300" role="img" aria-label="A flight path that climbs steeply to a marked apogee in March 2009, then falls away on a long dashed descent.">
+          <line class="base" x1="8" y1="272" x2="592" y2="272"></line>
+          <path class="rise" d="M 8 268 C 74 262 138 168 200 74"></path>
+          <path class="fall" d="M 200 74 C 268 118 372 196 592 258"></path>
+          <line class="tick" x1="200" y1="60" x2="200" y2="92"></line>
+          <text class="peaklabel" x="212" y="66">APOGEE &#183; 12 MAR 2009</text>
+          <text x="8" y="290">FRESHMAN YEAR</text>
+          <text x="470" y="290">PRESENT DAY</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <section id="flight" class="wrap">
+    <div class="sec-head">
+      <h2>The flight profile</h2>
+      <p>Three services, ordered the way the mission runs: find the peak, hold the altitude, survive the reunion.</p>
+    </div>
+    <div class="shelf sec-shelf"></div>
+    <div class="case">
+      <article class="panel">
+        <div class="patch"><i></i><b>1</b></div>
+        <h3>Apogee reconstruction</h3>
+        <p>Submit one yearbook, three group photographs and a regional newspaper clipping. Our range team triangulates the week the trajectory turned over, accurate to within nine days, and issues a numbered certificate.</p>
+      </article>
+      <article class="panel">
+        <div class="patch"><i></i><b>2</b></div>
+        <h3>Sustainer burns</h3>
+        <p>Correctly sized achievements, fired quarterly, to hold altitude. A promotion to Senior. A half marathon at a respectable pace. Enough thrust to maintain. Never enough to climb.</p>
+      </article>
+      <article class="panel">
+        <div class="patch"><i></i><b>3</b></div>
+        <h3>Reentry shielding</h3>
+        <p>Reunion invitations, tagged photographs and messages beginning with the word remember are intercepted at the boundary layer and answered on your behalf in a professional tone.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="record" class="wrap">
+    <div class="sec-head">
+      <h2>The record</h2>
+      <p>Customers whose trajectories are held in the archive, quoted with permission.</p>
+    </div>
+    <div class="shelf sec-shelf"></div>
+    <div class="quotes">
+      <figure class="quote">
+        <blockquote>&ldquo;The certificate says the second week of March, 2009, and honestly that tracks.&rdquo;</blockquote>
+        <figcaption class="who">
+          <div class="portrait"><img src="headshot-1.webp" alt="Dale Renfro" width="320" height="320" loading="lazy"></div>
+          <div><span class="n">Dale Renfro</span><span class="t">Assistant Regional Manager, Fastener Division, and 1997 Homecoming King</span></div>
+        </figcaption>
+      </figure>
+      <figure class="quote">
+        <blockquote>&ldquo;I asked them to raise the altitude. They explained, very patiently, that the fuel is gone.&rdquo;</blockquote>
+        <figcaption class="who">
+          <div class="portrait"><img src="headshot-2.webp" alt="Marisa Klepp" width="320" height="320" loading="lazy"></div>
+          <div><span class="n">Marisa Klepp</span><span class="t">Volunteer Assistant Varsity Track Coach, 4&#215;100m Relay State Champion (2004)</span></div>
+        </figcaption>
+      </figure>
+      <figure class="quote">
+        <blockquote>&ldquo;They declined my reunion invitation in a tone I could not have achieved on my own.&rdquo;</blockquote>
+        <figcaption class="who">
+          <div class="portrait"><img src="headshot-3.webp" alt="Trent Bogdal" width="320" height="320" loading="lazy"></div>
+          <div><span class="n">Trent Bogdal</span><span class="t">Night Manager, Applebee&rsquo;s on Route 9, All-Conference Second Team</span></div>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="programs" class="wrap">
+    <div class="sec-head">
+      <h2>Programs</h2>
+      <p>Priced by how far you got and how much of it was watched.</p>
+    </div>
+    <div class="shelf sec-shelf"></div>
+    <div class="tiers">
+      <article class="tier">
+        <div class="tier-top">
+          <div class="patch"><i></i><b>S</b></div>
+          <div><h3>Suborbital</h3><span class="price">$19 / mo</span></div>
+        </div>
+        <p class="tline">You go up. You come down. You are home in time for dinner.</p>
+        <ul>
+          <li>Apogee date verified to the week</li>
+          <li>One (1) certificate, unframed</li>
+          <li>Reunion invitations forwarded, not answered</li>
+          <li>Telemetry retained ninety days</li>
+        </ul>
+        <p class="fuel">Fuel remaining: 0.0 kg</p>
+        <a class="cta ghost" href="./demo.html">Start suborbital</a>
+      </article>
+      <article class="tier">
+        <div class="tier-top">
+          <div class="patch"><i></i><b>K</b></div>
+          <div><h3>Station keeping</h3><span class="price">$240 / mo</span></div>
+        </div>
+        <p class="tline">Altitude held indefinitely at the level you have already demonstrated.</p>
+        <ul>
+          <li>Quarterly sustainer burns, scheduled by our range team</li>
+          <li>Full reentry shielding across four platforms</li>
+          <li>Monthly telemetry review with a launch consultant</li>
+          <li>Trajectory shared with up to two (2) former teammates</li>
+        </ul>
+        <p class="fuel">Fuel remaining: 0.0 kg</p>
+        <a class="cta" href="./demo.html">Start station keeping</a>
+      </article>
+      <article class="tier">
+        <div class="tier-top">
+          <div class="patch"><i></i><b>L</b></div>
+          <div><h3>Legacy program</h3><span class="price">$140,000 once</span></div>
+        </div>
+        <p class="tline">For customers whose apogee was witnessed by a stadium.</p>
+        <ul>
+          <li>Your 1998 season rescanned at broadcast resolution</li>
+          <li>Mission patch, embroidered, chenille, hand finished</li>
+          <li>Permanent suppression of all footage recorded after the peak</li>
+          <li>Your number is retired. Nobody may wear it again.</li>
+        </ul>
+        <p class="fuel">Fuel remaining: 0.0 kg</p>
+        <a class="cta ghost" href="./demo.html">Apply to legacy</a>
+      </article>
+    </div>
+  </section>
+
+  <div class="console">
+    <div class="wrap">
+      <div>
+        <h2>Open the trajectory console</h2>
+        <p>Dale Renfro&rsquo;s flight is loaded and running. Read the burn log, arm the next sustainer burn, then try to book a launch window.</p>
+      </div>
+      <a class="cta" href="./demo.html">Open the demo</a>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="mono">Apogee Launch Services &nbsp;/&nbsp; a portfolio company of theworstaistudioever</span>
+    <a class="back" href="/">&larr; theworstaistudioever</a>
+  </div>
+</footer>
+
+<script>
+  // The descent rate is the only live figure on the page. It only ever gets worse.
+  (function () {
+    var el = document.getElementById('rate');
+    if (!el) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var v = 1.83;
+    setInterval(function () {
+      v += 0.01;
+      if (v > 2.4) v = 1.83;
+      el.textContent = '−' + v.toFixed(2) + ' m/s';
+    }, 1000);
+  })();
+</script>
+</body>
+</html>

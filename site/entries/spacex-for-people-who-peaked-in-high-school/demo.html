@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trajectory console · Apogee</title>
+<meta name="description" content="Range control for a single customer trajectory: burn log, apogee tick, reentry shielding.">
+<meta name="theme-color" content="#12182B">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Mono:wght@400;500&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#12182B;--felt:#1A2138;--well:#0E1424;
+    --brass:#C8A548;--brass-dim:rgba(200,165,72,.30);--descent:#C4462F;
+    --cream:#F2ECDC;--muted:#8E93A8;
+    --display:'Anton','Haettenschweiler','Arial Narrow',Impact,sans-serif;
+    --body:'Spectral',Georgia,'Times New Roman',serif;
+    --mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--navy);color:var(--cream);font-family:var(--body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:var(--display);font-weight:400;text-transform:uppercase;letter-spacing:-.01em;margin:0;line-height:1}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:.13em;font-size:10.5px;text-transform:uppercase;color:var(--muted)}
+  .descent{color:var(--descent)}
+  .brass{color:var(--brass)}
+
+  /* ---- chrome ---- */
+  .chrome{display:flex;align-items:center;gap:22px;padding:12px 22px;border-bottom:1px solid var(--brass-dim);flex-wrap:wrap;background:var(--well)}
+  .back{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);text-decoration:none;border-bottom:1px solid transparent;transition:color .18s,border-color .18s}
+  .back:hover,.back:focus-visible{color:var(--brass);border-bottom-color:var(--brass)}
+  .chrome .title{font-family:var(--display);text-transform:uppercase;font-size:18px;color:var(--brass)}
+  .chrome .status{margin-left:auto;display:flex;align-items:center;gap:8px}
+  .dot{width:7px;height:7px;background:var(--descent);border-radius:50%;display:inline-block}
+
+  .tabs{display:flex;gap:0;border-bottom:1px solid var(--brass-dim);padding:0 22px;background:var(--well);overflow-x:auto}
+  .tabs button{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;
+    background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);
+    padding:13px 18px;cursor:pointer;white-space:nowrap;transition:color .18s,border-color .18s;
+  }
+  .tabs button:hover{color:var(--cream)}
+  .tabs button[aria-selected="true"]{color:var(--brass);border-bottom-color:var(--brass)}
+
+  /* ---- layout ---- */
+  .console{display:grid;grid-template-columns:270px minmax(0,1fr) 320px;gap:1px;background:var(--brass-dim);min-height:calc(100vh - 92px)}
+  .col{background:var(--navy);padding:22px}
+  .col h2{font-size:15px;color:var(--muted);letter-spacing:.06em;margin-bottom:16px}
+
+  /* ---- dossier rail ---- */
+  .portrait{position:relative;width:100%;aspect-ratio:1/1;background:var(--brass);clip-path:polygon(0 0,100% 0,100% 84%,50% 100%,0 84%);margin-bottom:18px}
+  .portrait img{position:absolute;inset:3px;width:calc(100% - 6px);height:calc(100% - 6px);object-fit:cover;clip-path:polygon(0 0,100% 0,100% 84%,50% 100%,0 84%);display:block}
+  .subject{font-family:var(--display);text-transform:uppercase;font-size:27px;line-height:1;margin:0 0 6px}
+  .subject-sub{color:var(--muted);font-size:14.5px;margin:0 0 20px}
+  .readout{background:var(--well);border:1px solid var(--brass-dim);border-radius:2px;padding:11px 13px;margin-bottom:10px}
+  .readout .k{display:block;margin-bottom:5px}
+  .readout .v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:18px}
+
+  /* ---- flight path ---- */
+  .plot{background:var(--well);border:1px solid var(--brass-dim);border-radius:2px;padding:14px}
+  .plot svg{width:100%;height:auto;display:block;overflow:visible}
+  .grid-line{stroke:rgba(200,165,72,.14);stroke-width:1}
+  .rise{stroke:var(--brass);stroke-width:1.5;fill:none}
+  .fall{stroke:var(--descent);stroke-width:1.5;fill:none;stroke-dasharray:5 6}
+  .marker{cursor:pointer}
+  .marker circle{fill:var(--navy);stroke:var(--brass);stroke-width:1.5;transition:r .15s ease,fill .15s ease}
+  .marker:hover circle,.marker:focus-visible circle{fill:var(--brass);r:7}
+  .marker.neg circle{stroke:var(--descent)}
+  .marker.neg:hover circle,.marker.neg:focus-visible circle{fill:var(--descent)}
+  .marker.peak circle{fill:var(--brass);stroke:var(--brass)}
+  .axis-label{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;fill:var(--muted)}
+  .peak-tick{stroke:var(--brass);stroke-width:1}
+  .peak-text{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;fill:var(--brass)}
+
+  .detail{margin-top:16px;background:var(--felt);border:1px solid var(--brass-dim);border-top:2px solid var(--brass);border-radius:2px;padding:18px 20px;min-height:118px}
+  .detail h3{font-size:20px;margin-bottom:8px}
+  .detail .meta{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:10px}
+  .detail .meta span{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.08em}
+  .detail p{margin:0;color:#D6D0C0;font-size:15.5px}
+  .detail .empty{color:var(--muted);font-style:italic}
+
+  /* ---- burn log ---- */
+  .log{list-style:none;margin:0;padding:0}
+  .log li{border-bottom:1px solid rgba(200,165,72,.16)}
+  .log button{
+    width:100%;text-align:left;background:none;border:0;color:inherit;font-family:var(--body);font-size:15px;
+    padding:11px 4px;cursor:pointer;display:flex;justify-content:space-between;gap:12px;align-items:baseline;
+    transition:background .15s ease;
+  }
+  .log button:hover{background:rgba(200,165,72,.07)}
+  .log button[aria-current="true"]{background:rgba(200,165,72,.12)}
+  .log .d{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--muted);display:block;margin-bottom:3px}
+  .log .amt{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:13px;color:var(--brass);white-space:nowrap}
+  .log .amt.neg{color:var(--descent)}
+  .filters{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+  .chip{font-family:var(--mono);font-size:10px;letter-spacing:.11em;text-transform:uppercase;background:none;border:1px solid var(--brass-dim);color:var(--muted);padding:5px 10px;border-radius:2px;cursor:pointer;transition:.15s}
+  .chip:hover{color:var(--cream)}
+  .chip[aria-pressed="true"]{background:var(--brass);border-color:var(--brass);color:var(--navy)}
+
+  /* ---- arm / safe ---- */
+  .armbox{margin-top:20px;background:var(--felt);border:1px solid var(--brass-dim);border-top:2px solid var(--brass);border-radius:2px;padding:16px 16px 18px}
+  .armbox h3{font-size:16px;margin-bottom:8px}
+  .armbox p{margin:0 0 14px;font-size:14.5px;color:var(--muted)}
+  .toggle{display:flex;align-items:center;gap:11px;background:none;border:0;color:inherit;cursor:pointer;padding:0;font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase}
+  .switch{width:46px;height:24px;border:1px solid var(--brass-dim);border-radius:2px;background:var(--well);position:relative;flex:0 0 46px}
+  .switch::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;background:var(--muted);border-radius:1px;transition:transform .18s ease,background .18s ease}
+  .toggle[aria-pressed="true"] .switch::after{transform:translateX(22px);background:var(--brass)}
+  .toggle[aria-pressed="true"]{color:var(--brass)}
+
+  .btn{
+    font-family:var(--display);text-transform:uppercase;font-size:15px;background:var(--brass);color:var(--navy);
+    border:2px solid var(--brass);border-radius:2px;padding:11px 16px 8px;cursor:pointer;width:100%;
+    transition:background .18s,color .18s,transform .08s;
+  }
+  .btn:hover{background:transparent;color:var(--brass)}
+  .btn:active{transform:translateY(1px)}
+  .window-out{margin-top:11px;font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;color:var(--descent);min-height:34px;line-height:1.5}
+
+  /* ---- reentry ---- */
+  .intercepts{list-style:none;margin:0;padding:0}
+  .intercepts li{background:var(--felt);border:1px solid var(--brass-dim);border-left:2px solid var(--brass);border-radius:2px;padding:15px 17px;margin-bottom:12px;display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+  .intercepts li.open{border-left-color:var(--descent)}
+  .intercepts .body{flex:1 1 260px;min-width:0}
+  .intercepts .from{font-family:var(--mono);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px}
+  .intercepts .subj{font-size:16.5px;margin:0 0 6px;font-weight:600}
+  .intercepts .reply{margin:0;font-size:14.5px;color:var(--muted);font-style:italic}
+
+  .hidden{display:none}
+  :focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+
+  @media (max-width:1060px){
+    .console{grid-template-columns:1fr}
+    .col{padding:20px 22px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{transition-duration:.001ms !important;animation-duration:.001ms !important}
+  }
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <a class="back" href="./index.html">&larr; back to the pitch</a>
+  <span class="title">Trajectory console</span>
+  <span class="mono">Range 4 &nbsp;/&nbsp; operator K. OSEI</span>
+  <span class="status mono"><span class="dot"></span> Descending, nominal</span>
+</div>
+
+<div class="tabs" role="tablist" aria-label="Console views">
+  <button role="tab" id="tab-traj" aria-controls="view-traj" aria-selected="true">Trajectory</button>
+  <button role="tab" id="tab-log" aria-controls="view-log" aria-selected="false">Burn log</button>
+  <button role="tab" id="tab-re" aria-controls="view-re" aria-selected="false">Reentry</button>
+</div>
+
+<div class="console">
+
+  <!-- dossier rail -->
+  <aside class="col">
+    <h2 class="mono">Subject dossier</h2>
+    <div class="portrait"><img src="archive-peak.webp" alt="Dale Renfro at his archived peak, holding a trophy on a night field" width="400" height="400"></div>
+    <p class="subject">Dale Renfro</p>
+    <p class="subject-sub">Class of 1997 &middot; file 0041882</p>
+    <div class="readout"><span class="k mono">Apogee</span><span class="v brass">12 Mar 2009</span></div>
+    <div class="readout"><span class="k mono">Current altitude</span><span class="v">6,410 m</span></div>
+    <div class="readout"><span class="k mono">Altitude lost since apogee</span><span class="v descent">&minus;31,400 m</span></div>
+    <div class="readout"><span class="k mono">Descent rate</span><span class="v descent" id="rate">&minus;1.83 m/s</span></div>
+    <div class="readout"><span class="k mono">Fuel remaining</span><span class="v descent">0.0 kg</span></div>
+  </aside>
+
+  <!-- main view -->
+  <main class="col">
+
+    <section id="view-traj" role="tabpanel" aria-labelledby="tab-traj">
+      <h2 class="mono">Flight path &nbsp;/&nbsp; 1994 to present</h2>
+      <div class="plot">
+        <svg viewBox="0 0 640 300" role="img" aria-label="Dale Renfro's flight path, climbing to an apogee in March 2009 and descending since.">
+          <line class="grid-line" x1="20" y1="60" x2="620" y2="60"></line>
+          <line class="grid-line" x1="20" y1="140" x2="620" y2="140"></line>
+          <line class="grid-line" x1="20" y1="220" x2="620" y2="220"></line>
+          <line class="grid-line" x1="20" y1="268" x2="620" y2="268"></line>
+          <path class="rise" d="M 30 262 C 90 250 130 168 175 150 C 220 132 250 190 285 178 C 320 166 340 110 370 72"></path>
+          <path class="fall" d="M 370 72 C 415 102 460 128 500 160 C 545 196 580 232 612 250"></path>
+          <line class="peak-tick" x1="370" y1="46" x2="370" y2="60"></line>
+          <text class="peak-text" x="336" y="40">APOGEE</text>
+          <text class="axis-label" x="20" y="290">1994</text>
+          <text class="axis-label" x="330" y="290">2009</text>
+          <text class="axis-label" x="576" y="290">2026</text>
+          <g id="markers"></g>
+        </svg>
+      </div>
+      <div class="detail" id="detail">
+        <p class="empty">Select a burn on the flight path, or from the burn log, to read the range team&rsquo;s note.</p>
+      </div>
+    </section>
+
+    <section id="view-log" role="tabpanel" aria-labelledby="tab-log" class="hidden">
+      <h2 class="mono">Complete burn log &nbsp;/&nbsp; 10 events</h2>
+      <div class="filters">
+        <button class="chip" data-filter="all" aria-pressed="true">All events</button>
+        <button class="chip" data-filter="pos" aria-pressed="false">Gains</button>
+        <button class="chip" data-filter="neg" aria-pressed="false">Losses</button>
+      </div>
+      <ul class="log" id="fulllog"></ul>
+    </section>
+
+    <section id="view-re" role="tabpanel" aria-labelledby="tab-re" class="hidden">
+      <h2 class="mono">Boundary layer &nbsp;/&nbsp; intercepted this quarter</h2>
+      <ul class="intercepts" id="intercepts"></ul>
+    </section>
+
+  </main>
+
+  <!-- burn rail -->
+  <aside class="col">
+    <h2 class="mono">Recent burns</h2>
+    <ul class="log" id="shortlog"></ul>
+
+    <div class="armbox">
+      <h3>Next sustainer burn</h3>
+      <p>Q4 &middot; half marathon, respectable pace. Arming commits 0.0 kg of fuel.</p>
+      <button class="toggle" id="arm" aria-pressed="false"><span class="switch"></span><span id="armlabel">Safed</span></button>
+    </div>
+
+    <div class="armbox">
+      <h3>Launch window</h3>
+      <p>Check the range for the next window in which Dale can gain altitude.</p>
+      <button class="btn" id="window">Schedule next window</button>
+      <p class="window-out mono" id="windowout" aria-live="polite"></p>
+    </div>
+  </aside>
+
+</div>
+
+<script>
+(function () {
+  var BURNS = [
+    { x:108, y:208, date:"09 SEP 1994", amt:8200,  title:"Made varsity as a sophomore",
+      note:"First measurable thrust. Range team logged the crowd noise and revised his projected ceiling upward twice in one season." },
+    { x:175, y:150, date:"11 OCT 1996", amt:21400, title:"Homecoming King",
+      note:"A local maximum, frequently mistaken by the customer for the apogee. It was not the apogee. It was, by some distance, the loudest point of the flight." },
+    { x:234, y:162, date:"06 JUN 1997", amt:2100,  title:"Graduated, 41st of 220",
+      note:"Small corrective burn. Adequate. Nobody attended it for him specifically." },
+    { x:285, y:178, date:"19 MAY 2001", amt:900,   title:"Degree completed, communications",
+      note:"Below the thrust required to hold altitude. Descent began quietly here and was not noticed for four years." },
+    { x:329, y:135, date:"02 AUG 2004", amt:11300, title:"Married",
+      note:"Substantial gain. Sustained well. The range team notes this is the only burn on the log that is still burning." },
+    { x:370, y:72,  date:"12 MAR 2009", amt:6400,  title:"Promoted to Assistant Regional Manager",
+      note:"APOGEE. Trajectory turned over at 14:41 local, in a conference room, over a sheet cake. Certificate issued. No further gain has been recorded.", peak:true },
+    { x:437, y:115, date:"04 JUL 2012", amt:1200,  title:"Bought the boat",
+      note:"Insufficient thrust, correctly sized expectations. Held altitude for roughly one summer." },
+    { x:500, y:160, date:"30 SEP 2016", amt:-4800, title:"Fastener Division reorganised",
+      note:"Unplanned deceleration. The customer describes this as lateral. The range team does not." },
+    { x:561, y:212, date:"14 NOV 2021", amt:-7900, title:"Sold the boat",
+      note:"Steepest single loss on the log. Correlates with a documented rise in searches for his own name." },
+    { x:612, y:250, date:"06 SEP 2026", amt:-2100, title:"Present position",
+      note:"Stable, survivable, descending. Exactly as contracted." }
+  ];
+
+  var INTERCEPTS = [
+    { from:"Class of 1997 Reunion Committee", subj:"30 Year Reunion &mdash; save the date!", shielded:true,
+      reply:"Replied on his behalf: &ldquo;Dale sends his regards and is unable to attend.&rdquo;" },
+    { from:"Photograph, tagged", subj:"1996 regional semifinal, second half", shielded:true,
+      reply:"Held at the boundary layer. Never delivered. He has not asked about it." },
+    { from:"B. Halvorsen", subj:"remember when you used to&hellip;", shielded:true,
+      reply:"Intercepted on the keyword. Replied: &ldquo;Dale appreciates you thinking of him.&rdquo;" },
+    { from:"Coach R. Petrisko", subj:"proud of you kid", shielded:false,
+      reply:"Shield manually lowered by the customer. Delivered in full, twice." }
+  ];
+
+  function fmt(n){
+    var s = Math.abs(n).toLocaleString('en-US');
+    return (n < 0 ? '−' : '+') + s + ' m';
+  }
+
+  /* ---- markers on the flight path ---- */
+  var g = document.getElementById('markers');
+  var NS = 'http://www.w3.org/2000/svg';
+  BURNS.forEach(function (b, i) {
+    var grp = document.createElementNS(NS, 'g');
+    grp.setAttribute('class', 'marker' + (b.amt < 0 ? ' neg' : '') + (b.peak ? ' peak' : ''));
+    grp.setAttribute('tabindex', '0');
+    grp.setAttribute('role', 'button');
+    grp.setAttribute('aria-label', b.date + ', ' + b.title);
+    var c = document.createElementNS(NS, 'circle');
+    c.setAttribute('cx', b.x); c.setAttribute('cy', b.y); c.setAttribute('r', b.peak ? 6 : 5);
+    grp.appendChild(c);
+    grp.addEventListener('click', function () { select(i); });
+    grp.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(i); }
+    });
+    g.appendChild(grp);
+  });
+
+  /* ---- burn lists ---- */
+  function row(b, i) {
+    return '<li><button data-i="' + i + '"><span><span class="d">' + b.date + '</span>' + b.title +
+      '</span><span class="amt' + (b.amt < 0 ? ' neg' : '') + '">' + fmt(b.amt) + '</span></button></li>';
+  }
+  var shortlog = document.getElementById('shortlog');
+  var fulllog = document.getElementById('fulllog');
+  shortlog.innerHTML = BURNS.slice(-4).map(function (b) { return row(b, BURNS.indexOf(b)); }).join('');
+
+  var filter = 'all';
+  function renderFull() {
+    fulllog.innerHTML = BURNS.map(function (b, i) {
+      if (filter === 'pos' && b.amt < 0) return '';
+      if (filter === 'neg' && b.amt >= 0) return '';
+      return row(b, i);
+    }).join('');
+    mark();
+  }
+  renderFull();
+
+  document.querySelectorAll('.chip').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      filter = chip.dataset.filter;
+      document.querySelectorAll('.chip').forEach(function (c) {
+        c.setAttribute('aria-pressed', String(c === chip));
+      });
+      renderFull();
+    });
+  });
+
+  /* ---- selection ---- */
+  var current = -1;
+  var detail = document.getElementById('detail');
+  function mark() {
+    document.querySelectorAll('.log button').forEach(function (btn) {
+      btn.setAttribute('aria-current', String(Number(btn.dataset.i) === current));
+    });
+  }
+  function select(i) {
+    current = i;
+    var b = BURNS[i];
+    detail.innerHTML =
+      '<h3>' + b.title + '</h3>' +
+      '<div class="meta"><span class="mono">' + b.date + '</span>' +
+      '<span class="' + (b.amt < 0 ? 'descent' : 'brass') + '">' + fmt(b.amt) + '</span>' +
+      (b.peak ? '<span class="brass">APOGEE</span>' : '') + '</div>' +
+      '<p>' + b.note + '</p>';
+    mark();
+  }
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('.log button');
+    if (btn) select(Number(btn.dataset.i));
+  });
+
+  /* ---- reentry ---- */
+  var ilist = document.getElementById('intercepts');
+  function renderIntercepts() {
+    ilist.innerHTML = INTERCEPTS.map(function (m, i) {
+      return '<li class="' + (m.shielded ? '' : 'open') + '">' +
+        '<div class="body"><span class="from">' + m.from + '</span>' +
+        '<p class="subj">' + m.subj + '</p>' +
+        '<p class="reply">' + m.reply + '</p></div>' +
+        '<button class="toggle" data-m="' + i + '" aria-pressed="' + m.shielded + '">' +
+        '<span class="switch"></span><span>' + (m.shielded ? 'Shielded' : 'Let through') + '</span></button></li>';
+    }).join('');
+  }
+  renderIntercepts();
+  ilist.addEventListener('click', function (e) {
+    var t = e.target.closest('.toggle');
+    if (!t) return;
+    var m = INTERCEPTS[Number(t.dataset.m)];
+    m.shielded = !m.shielded;
+    m.reply = m.shielded
+      ? 'Shield raised. Held at the boundary layer.'
+      : 'Shield lowered by the customer. Delivered in full.';
+    renderIntercepts();
+  });
+
+  /* ---- arm / safe ---- */
+  var arm = document.getElementById('arm');
+  var armlabel = document.getElementById('armlabel');
+  arm.addEventListener('click', function () {
+    var on = arm.getAttribute('aria-pressed') !== 'true';
+    arm.setAttribute('aria-pressed', String(on));
+    armlabel.textContent = on ? 'Armed' : 'Safed';
+  });
+
+  /* ---- launch window ---- */
+  var WINDOWS = [
+    'Next window: 11 OCT 1996. Window has closed.',
+    'Next window: 12 MAR 2009. Window has closed.',
+    'Next window: 04 JUL 2012. Window has closed.',
+    'No window found. Range is clear in the other direction.'
+  ];
+  var wi = 0;
+  var out = document.getElementById('windowout');
+  document.getElementById('window').addEventListener('click', function () {
+    out.textContent = WINDOWS[wi % WINDOWS.length];
+    wi++;
+  });
+
+  /* ---- tabs ---- */
+  var TABS = [['tab-traj','view-traj'],['tab-log','view-log'],['tab-re','view-re']];
+  TABS.forEach(function (pair) {
+    document.getElementById(pair[0]).addEventListener('click', function () {
+      TABS.forEach(function (p) {
+        var sel = p === pair;
+        document.getElementById(p[0]).setAttribute('aria-selected', String(sel));
+        document.getElementById(p[1]).classList.toggle('hidden', !sel);
+      });
+    });
+  });
+
+  /* ---- the only live figure ---- */
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var v = 1.83, el = document.getElementById('rate');
+    setInterval(function () {
+      v += 0.01;
+      if (v > 2.4) v = 1.83;
+      el.textContent = '−' + v.toFixed(2) + ' m/s';
+    }, 1000);
+  }
+})();
+</script>
+</body>
+</html>

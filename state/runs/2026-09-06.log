@@ -1,0 +1,95 @@
+run 2026-09-06 — theworstaistudioever daily
+
+ROLL
+  company: SpaceX
+  subject: people who peaked in high school
+  slug:    spacex-for-people-who-peaked-in-high-school
+  rerolls: 0 (first pair drawn was unused)
+  PRNG:    LCG seeded from sum(charcodes "2026-09-06") * 1000003 mod 2^31
+  subject rule: satisfied (a relatable type of person). No seed removals needed.
+
+CONCEPT
+  product:   Apogee
+  one-liner: Aerospace-grade telemetry for the highest point of your life, which has already happened.
+  premise:   a launch-services company that has quietly become an awards program. The peak is
+             an apogee, achievements are burns, a class reunion is an atmospheric reentry event.
+  demo:      Trajectory Console for one customer (Dale Renfro) — dossier rail, SVG flight path
+             with hoverable burn markers, burn log with arm/safe toggle, reentry intercept list,
+             and a launch-window control that only ever returns dates in the past.
+
+DESIGN DIRECTION
+  style:   Varsity trophy-case awards program, night-of-the-banquet dark mode. Felt panels on
+           navy, 2px brass shelf rule as the only depth cue, chenille-patch shield motif for
+           every awarded item, SVG apogee arc as the section rule.
+  palette: primary #C8A548 (trophy brass) / accent #C4462F (descent red, quarantined to decline
+           telemetry) / bg #12182B / fg #F2ECDC / muted #8E93A8 / ink #F2ECDC
+  fonts:   display 'Anton' (banner caps), body 'Spectral' (awards-programme serif),
+           telemetry 'IBM Plex Mono' (tabular figures)
+  anti-sameness: checked against the last 7 entries (medium-for-doomscrollers, fortnite-for-
+           divorced-dads, tesla-for-perpetual-interns, vercel-for-guys-named-steve,
+           tesla-for-hedgehogs, instagram-for-plant-parents, lyft-for-ferrets). No collision on
+           style, palette or font pairing. Nearest neighbours were the two dark entries
+           (tesla-for-perpetual-interns aurora violet glass, tesla-for-hedgehogs slate
+           automotive); this one is flat felt with no glass, no blur and no glow, on a warm
+           brass carrier rather than a cool one.
+
+IMAGES (4 of 4 generated, 4 API calls, all passed on attempt 1)
+  rationale: hero skipped on purpose — the direction is banner-typographic (Anton caps against a
+             brass shelf rule) and a photograph would have fought the type. Demo took one asset
+             because the console's dossier rail literally displays the customer's archived peak.
+             Remaining budget went to the three named testimonials.
+  headshot-1.webp   testimonial  Dale Renfro       attempts 1  PASS — correct subject, navy
+                    backdrop matches #12182B, brass rim light present, no text artifacts
+  headshot-2.webp   testimonial  Marisa Klepp      attempts 1  PASS — coach posture reads,
+                    deadpan, palette harmonises
+  headshot-3.webp   testimonial  Trent Bogdal      attempts 1  PASS — deadpan, correct wardrobe,
+                    no logos or signage
+  archive-peak.webp demo         1990s trophy night attempts 1 PASS — brass cup, night-field
+                    haze, no numbers or lettering on the jacket
+  note: archive-peak.webp came back with a white print border baked into the frame. Kept —
+        it reads as a physical archival print in the dossier rail, which is what the slot wants.
+
+BUILD
+  landing: site/entries/spacex-for-people-who-peaked-in-high-school/index.html
+           hero with drawn apogee arc (brass rise, dashed red fall), 3 shelved feature panels
+           with chenille patches, 3 testimonials with headshots in patch frames, 3 pricing tiers,
+           console band, footer back-link. Live descent-rate figure is the only motion that
+           repeats; gated behind prefers-reduced-motion.
+  demo:    site/entries/spacex-for-people-who-peaked-in-high-school/demo.html
+           three-column range console. Interactive: tab switching (Trajectory / Burn log /
+           Reentry), clickable and keyboard-focusable burn markers on the SVG path wired to a
+           detail panel, burn-log gain/loss filter chips, arm/safe toggle on the next sustainer
+           burn, per-message reentry shield toggles that rewrite the range team's reply, and a
+           launch-window button that cycles through windows that have already closed.
+
+GALLERY
+  site/index.html regenerated from all 87 concept.json files, sorted date-descending.
+  Header count updated to "87 startups · since 2026". styles.css untouched.
+
+WARNINGS / NEAR-MISSES
+  - Two Bash heredocs were rejected by the shell hook (brace-with-quote and variable expansion).
+    Rewritten without set literals and without shell variables. No repo files affected.
+  - The chenille-patch motif is a shield, deliberately not a roundel, to stay clear of the
+    2026-09-02 supergraphic-manual roundel four days back.
+  - Dale Renfro appears in two images (current headshot, 1997 archival print). Intentional:
+    the console shows the archived peak, the testimonial shows him now.
+
+VISUAL CHECK (step 9, within caps)
+  headless browser present (~/.cache/ms-playwright). 2 captures + 1 re-capture, 3 edits.
+  landing: testimonial name/title column was collapsing into a tall narrow ribbon because the
+           flex text child had no min-width:0. Added flex:1 1 auto/min-width:0, trimmed the
+           mono title tracking to .03em, reduced the patch frame to 54px. Re-captured, confirmed
+           balanced and not worse.
+  demo:    four burn markers were floating off the bezier flight path. Recomputed the midpoint
+           of each cubic segment and moved markers 1, 3, 5, 7 (and nudged 9) onto the curve.
+  Screenshots written to docs/design-catalogue/ (gitignored, local only).
+
+VALIDATION
+  scripts/validate-entry.sh site spacex-for-people-who-peaked-in-high-school → OK (exit 0)
+  state/history.json appended, 87 entries, JSON valid.
+  re-validated after the step 9 edits → OK (exit 0)
+[2026-09-06T08:11:04Z] WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks
+[2026-09-06T08:11:04Z] new entry: spacex-for-people-who-peaked-in-high-school
+validate-entry [spacex-for-people-who-peaked-in-high-school]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 87 entries (domain theworstaistudioever.com)
+[2026-09-06T08:11:04Z] committing: SpaceX for people who peaked in high school
