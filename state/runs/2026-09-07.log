@@ -1,0 +1,112 @@
+run 2026-09-07
+
+ROLL
+  company: Medium
+  subject: remote workers
+  slug:    medium-for-remote-workers
+  rerolls: 0 (first pair drawn from the 2026-09-07 LCG was unused)
+  subject rule: "remote workers" is a relatable type of person. Passes. No seed removals needed.
+
+CONCEPT
+  product_name: Byline
+  premise: the daily standup as a published piece with an assigned editor, a slot, a
+           read time, and a paywall over the blockers section.
+  demo screen: the Byline reader for one standup ("Q3 Migration: A Personal Accounting")
+           inside a team publication called Field Notes.
+
+DESIGN DIRECTION
+  style:   Illuminated manuscript scriptorium, vellum daylight mode. Ruled scribe-line
+           grid at 2rem pitch, CSS gold-square versal initials, rubricated small-caps
+           running heads, marginal glosses, pricing as a ruled ordinance table. No
+           shadows anywhere, no radius above 3px.
+  palette: primary #8E1B12 (vermilion rubric), accent #9A7A1E (gold ochre),
+           bg #F2E8D5 (vellum), fg/ink #241C13 (oak-gall), muted #6E6046
+  fonts:   display Cormorant Garamond, body Libre Baskerville
+  archetype: long-form publishing platform product page issued as a bound codex
+
+  anti-sameness check against the last 7 entries: PASSED, no collision on any axis.
+    2026-09-06 varsity trophy case / Anton
+    2026-09-05 pharmaceutical blister pack / Archivo
+    2026-09-04 extruded clay game launcher / Fredoka
+    2026-09-03 electroluminescent glass cell rack / Space Grotesk
+    2026-09-02 supergraphic identity manual 1974 / Jost
+    2026-09-01 automotive press configurator / Sora
+    2026-08-31 glossy botanical trade magazine / Libre Bodoni
+  Nearest neighbour is 2026-08-31 (both serif, both daylight). Separated by palette
+  (vellum + vermilion vs coated stock), by structure (ruled codex quires vs magazine
+  spreads) and by typeface class (Garamond old-style vs Bodoni didone).
+
+IMAGES
+  rationale: 4 of 4 allocated, cap not approached (4 of 10 daily calls used).
+    hero          SKIPPED. The direction is a rubricated typographic colophon with a
+                  CSS gold versal. A photograph in that slot fights the codex conceit.
+    demo hero     SKIPPED for the same reason; the reader's article art is CSS.
+    demo subject  1 image. Byline author portrait for the reader's article chrome.
+    testimonial   3 images. Commendation portraits for the three named users.
+  All four are muted oil-on-panel paintings on a vellum ground so they read as plates
+  bound into the codex rather than stock headshots.
+
+  portrait-marguerite.webp  role testimonial  attempts 1  judge PASS
+  portrait-devin.webp       role testimonial  attempts 1  judge PASS
+  portrait-priya.webp       role testimonial  attempts 1  judge PASS
+  portrait-author.webp      role demo         attempts 1  judge PASS
+
+  Vision judge notes: correct subjects, visible painterly brushwork, warm vellum and
+  ochre grounds harmonising with #F2E8D5, one vermilion accent per figure, deadpan
+  expressions as prompted, no text artifacts, no logos, no rendered UI, no generic
+  AI-render gloss. Zero regenerations. All four cropped to 320x320 WebP, largest is
+  9.2 KB against the 500 KB ceiling.
+
+WARNINGS AND NEAR-MISSES
+  - The frontend-design skill flags "warm cream background plus high-contrast serif
+    plus warm accent" as a known generated-design tell. The brief pins this direction,
+    so it stands, but the build deliberately separates itself from that cluster: the
+    accent is a dark rubric vermilion #8E1B12 rather than terracotta, and the page is
+    carried by codex machinery (versals, scribe ruling, marginal glosses, ordinance
+    table) rather than by cards and gradient washes.
+  - Small caps are set with font-variant-caps on properly cased text, not
+    text-transform uppercase, per the same skill's warning about all-caps labels.
+  - The demo's selection-to-highlight action wraps a Range in a <mark>. Ranges that
+    cross paragraph boundaries throw on extractContents, so the handler catches and
+    reports it in voice instead of failing silently.
+  - Gallery regeneration moved the two 2026-06-12 entries relative to each other
+    because the rebuild sorts by (date, slug) for determinism. Content is unchanged.
+    Every other slide is byte-identical to the previous build.
+
+GALLERY
+  88 slides, sorted by date descending, header count updated to "88 startups".
+  Root metadata contract, favicon link, 50x50 brand lockup and carousel nav preserved.
+
+VALIDATION
+  scripts/validate-entry.sh site medium-for-remote-workers -> OK
+
+STEP 9 VISUAL CHECK
+  Ran. Chromium was already present at ~/.cache/ms-playwright, and the run was around
+  30 tool calls at the checkpoint. 3 captures (landing, demo, one landing re-capture),
+  3 corrective edits, all inside the step's caps.
+
+  Breakage found on the landing capture:
+    1. The three feature drop-caps rendered invisible. The versals were gated behind an
+       IntersectionObserver opacity fade, so each feature paragraph opened mid-word
+       ("very update", "ut the part", "imesheets") while the versal box still held its
+       layout space. Fixed by removing the opacity animation entirely; versals are now
+       painted by CSS with no JS dependency. The gold section rules keep their scroll
+       reveal, which also concentrates the page's motion in one device instead of two.
+    2. The demo teaser on the landing cited "Filed the 14th, published the 17th" while
+       the demo itself says filed 3 September, published 6 September. Corrected the
+       landing to the 3rd and the 6th.
+
+  Re-capture confirms E, P and T now paint and the dates agree across both pages. The
+  demo capture needed no edits: tabs, seal rail, paywall gate with its free-read meter,
+  margin notes and the sibling-pieces rail all render as intended.
+
+  Left alone as taste rather than breakage: the seal rail's allowance line wraps to four
+  short lines in its 3.6rem column, and the three commendation attributions do not sit on
+  a common baseline because the quotes differ in length.
+
+  Post-edit revalidation: scripts/validate-entry.sh site medium-for-remote-workers -> OK
+[2026-09-07T08:13:22Z] WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks
+[2026-09-07T08:13:22Z] new entry: medium-for-remote-workers
+validate-entry [medium-for-remote-workers]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 88 entries (domain theworstaistudioever.com)
+[2026-09-07T08:13:22Z] committing: Medium for remote workers

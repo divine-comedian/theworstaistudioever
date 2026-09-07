@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Q3 Migration: A Personal Accounting · Byline</title>
+<meta name="description" content="One published standup inside Field Notes, the team publication. Eleven minutes. Two of your three free reads remain.">
+<meta name="theme-color" content="#F2E8D5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F2E8D5;
+  --ink:#241C13;
+  --rub:#8E1B12;
+  --gold:#9A7A1E;
+  --muted:#6E6046;
+  --rule:rgba(36,28,19,.30);
+  --hair:rgba(36,28,19,.16);
+  --scribe:rgba(36,28,19,.055);
+  --display:'Cormorant Garamond','EB Garamond',Garamond,'Times New Roman',serif;
+  --body:'Libre Baskerville',Georgia,'Times New Roman',serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background-color:var(--bg);
+  background-image:repeating-linear-gradient(to bottom,
+    transparent 0, transparent calc(2rem - 1px),
+    var(--scribe) calc(2rem - 1px), var(--scribe) 2rem);
+  color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.8;
+  -webkit-font-smoothing:antialiased;
+}
+.rubric{
+  font-family:var(--display);font-variant-caps:small-caps;font-weight:600;
+  letter-spacing:.16em;font-size:.98rem;color:var(--rub);margin:0;
+}
+a{cursor:pointer}
+a:focus-visible,button:focus-visible{outline:2px solid var(--rub);outline-offset:3px}
+
+/* ---- chrome ---- */
+.chrome{
+  position:sticky;top:0;z-index:40;background:var(--bg);
+  border-bottom:1px solid var(--rule);
+}
+.chrome-in{
+  max-width:74rem;margin:0 auto;padding:.85rem clamp(1rem,3.5vw,2.5rem);
+  display:flex;align-items:baseline;justify-content:space-between;gap:1.2rem;flex-wrap:wrap;
+}
+.back{
+  font-family:var(--display);font-size:1.06rem;color:var(--ink);text-decoration:none;
+  border-bottom:1px solid var(--hair);transition:color .16s ease,border-color .16s ease;
+}
+.back:hover,.back:focus-visible{color:var(--rub);border-bottom-color:var(--rub)}
+.pubmark{font-family:var(--display);font-weight:700;font-size:1.32rem;line-height:1;margin:0}
+.pubmark span{color:var(--rub)}
+.chrome-meta{font-size:.74rem;color:var(--muted)}
+
+/* ---- shell ---- */
+.shell{
+  max-width:74rem;margin:0 auto;padding:2.2rem clamp(1rem,3.5vw,2.5rem) 4rem;
+  display:grid;grid-template-columns:3.6rem minmax(0,1fr) 13rem;gap:2.2rem;
+  align-items:start;
+}
+
+/* ---- seal rail ---- */
+.rail{position:sticky;top:5.2rem;text-align:center}
+.seal-btn{
+  display:block;width:3.4rem;height:3.4rem;margin:0 auto .5rem;padding:0;
+  background:transparent;border:1px solid var(--hair);border-radius:2px;
+  color:var(--rub);cursor:pointer;transition:background-color .14s ease,border-color .14s ease;
+}
+.seal-btn:hover:not(:disabled){background:rgba(154,122,30,.16);border-color:var(--rub)}
+.seal-btn:disabled{opacity:.4;cursor:not-allowed}
+.seal-btn svg{display:block;margin:0 auto}
+.rail .count{font-family:var(--display);font-size:1.55rem;font-weight:600;line-height:1;margin:0}
+.rail .allowance{font-size:.62rem;line-height:1.5;color:var(--muted);margin:.35rem 0 0}
+
+/* ---- article head ---- */
+.piece-head{border-bottom:1px solid var(--rule);padding-bottom:1.6rem;margin-bottom:1.9rem}
+.piece-head h1{
+  font-family:var(--display);font-weight:700;font-size:clamp(2.1rem,5vw,3.5rem);
+  line-height:1.02;letter-spacing:-.012em;margin:.7rem 0 .55rem;max-width:20ch;
+}
+.standfirst{
+  font-family:var(--display);font-style:italic;font-size:1.32rem;line-height:1.45;
+  color:var(--muted);margin:0 0 1.5rem;max-width:44ch;
+}
+.byline{display:flex;align-items:center;gap:.85rem;flex-wrap:wrap}
+.byline img{
+  width:52px;height:52px;border-radius:2px;object-fit:cover;
+  border:1px solid var(--rub);padding:3px;background:var(--bg);display:block;
+}
+.byline .who{font-family:var(--display);font-weight:600;font-size:1.18rem;line-height:1.3;margin:0}
+.byline .what{font-size:.72rem;line-height:1.55;color:var(--muted);margin:0}
+
+/* ---- tabs ---- */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--rule);margin-bottom:1.8rem;flex-wrap:wrap}
+.tab{
+  appearance:none;background:transparent;border:0;border-bottom:2px solid transparent;
+  font-family:var(--display);font-variant-caps:small-caps;letter-spacing:.09em;font-size:1.08rem;
+  color:var(--muted);padding:.5rem 1.05rem .45rem;cursor:pointer;margin-bottom:-1px;
+  transition:color .14s ease,border-color .14s ease;
+}
+.tab:first-child{padding-left:0}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{color:var(--rub);border-bottom-color:var(--rub)}
+.panel{display:none}
+.panel.on{display:block;animation:ink .14s ease-out}
+@keyframes ink{from{opacity:0}to{opacity:1}}
+
+/* ---- body copy ---- */
+.prose p{margin:0 0 1.3rem;max-width:64ch;font-size:.97rem;line-height:1.9}
+.prose h2{
+  font-family:var(--display);font-weight:600;font-size:1.6rem;line-height:1.2;
+  margin:2.2rem 0 .9rem;
+}
+.prose mark{background:rgba(154,122,30,.32);color:inherit;padding:.05em 0}
+.versal{
+  float:left;font-family:var(--display);font-weight:700;font-size:3.5rem;line-height:.84;
+  color:var(--rub);background:rgba(154,122,30,.17);border:2px solid var(--rub);border-radius:2px;
+  margin:.14rem .62rem .08rem 0;padding:.28rem .34rem .14rem;
+}
+
+/* ---- gate ---- */
+.gate-wrap{position:relative;border-top:1px solid var(--hair);margin-top:2rem;padding-top:1.5rem}
+.gate-body{max-height:7.5rem;overflow:hidden;position:relative}
+.gate-wrap.open .gate-body{max-height:none;overflow:visible}
+.gate-body::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:4.5rem;
+  background:linear-gradient(to bottom,rgba(242,232,213,0),var(--bg));pointer-events:none;
+}
+.gate-wrap.open .gate-body::after{display:none}
+.gate-panel{
+  border:1px solid var(--rub);border-top:2px solid var(--rub);border-radius:2px;
+  padding:1.3rem 1.4rem 1.4rem;margin-top:1.2rem;background:rgba(154,122,30,.07);
+}
+.gate-wrap.open .gate-panel{display:none}
+.gate-panel h3{font-family:var(--display);font-weight:600;font-size:1.42rem;margin:.35rem 0 .5rem}
+.gate-panel p{margin:0 0 1.1rem;font-size:.82rem;line-height:1.7;color:var(--muted);max-width:48ch}
+.meter{display:flex;gap:.35rem;align-items:center;margin:0 0 1.1rem}
+.meter i{width:1.6rem;height:.42rem;background:var(--gold);border-radius:1px;display:block}
+.meter i.spent{background:transparent;border:1px solid var(--hair)}
+.meter span{font-size:.68rem;color:var(--muted);margin-left:.5rem;font-style:italic}
+.gate-actions{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
+.btn-rubric{
+  display:inline-block;background:var(--rub);color:var(--bg);border:2px solid var(--rub);
+  border-radius:2px;font-family:var(--display);font-weight:600;font-variant-caps:small-caps;
+  letter-spacing:.08em;font-size:1.06rem;padding:.42rem 1.1rem .38rem;cursor:pointer;
+  text-decoration:none;transition:background-color .16s ease,color .16s ease;
+}
+.btn-rubric:hover,.btn-rubric:focus-visible{background:var(--bg);color:var(--rub)}
+.btn-plain{
+  background:transparent;border:0;border-bottom:1px solid var(--gold);padding:0 0 1px;
+  font-family:var(--display);font-size:1.06rem;color:var(--ink);cursor:pointer;
+  transition:color .16s ease,border-color .16s ease;
+}
+.btn-plain:hover,.btn-plain:focus-visible{color:var(--rub);border-bottom-color:var(--rub)}
+
+/* ---- markup panel ---- */
+.markup p{margin:0 0 1.3rem;max-width:64ch;font-size:.97rem;line-height:2}
+.markup del{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--rub)}
+.markup ins{color:var(--rub);text-decoration:none;border-bottom:1px solid var(--rub)}
+.query{
+  border:1px solid var(--hair);border-left:2px solid var(--rub);border-radius:2px;
+  padding:.7rem .9rem;margin:0 0 1.3rem;font-size:.78rem;line-height:1.7;
+  color:var(--muted);font-style:italic;max-width:52ch;
+}
+.query b{
+  display:block;font-family:var(--display);font-style:normal;font-variant-caps:small-caps;
+  letter-spacing:.1em;color:var(--rub);font-size:.86rem;margin-bottom:.15rem;
+}
+
+/* ---- thread ---- */
+.note{padding:1.1rem 0;border-top:1px solid var(--hair)}
+.note:first-child{border-top:0;padding-top:0}
+.note .head{display:flex;justify-content:space-between;gap:1rem;align-items:baseline;flex-wrap:wrap}
+.note .name{font-family:var(--display);font-weight:600;font-size:1.14rem;margin:0}
+.note .role{font-size:.68rem;color:var(--muted);margin:0}
+.note .when{font-size:.66rem;color:var(--muted);font-style:italic}
+.note p.said{margin:.5rem 0 0;font-size:.88rem;line-height:1.8;max-width:60ch}
+.reply{margin-top:1.6rem;border-top:1px solid var(--rule);padding-top:1.3rem}
+.reply label{
+  display:block;font-family:var(--display);font-variant-caps:small-caps;letter-spacing:.1em;
+  font-size:1rem;color:var(--rub);margin-bottom:.45rem;
+}
+.reply textarea{
+  width:100%;min-height:5.5rem;background:transparent;color:var(--ink);
+  border:1px solid var(--hair);border-radius:2px;padding:.7rem .8rem;
+  font-family:var(--body);font-size:.86rem;line-height:1.7;resize:vertical;
+}
+.reply textarea:focus{outline:2px solid var(--rub);outline-offset:1px;border-color:var(--rub)}
+.reply .under{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-top:.7rem;flex-wrap:wrap}
+.reply .hint{font-size:.68rem;color:var(--muted);font-style:italic;max-width:34ch}
+
+/* ---- margin ---- */
+.margin{position:sticky;top:5.2rem}
+.margin > .rubric{margin-bottom:.7rem;font-size:.86rem}
+.mnote{
+  border-top:1px solid var(--hair);padding:.8rem 0;font-size:.72rem;line-height:1.65;
+  color:var(--muted);font-style:italic;
+}
+.mnote strong{
+  display:block;font-family:var(--display);font-style:normal;font-weight:600;
+  font-size:.98rem;color:var(--ink);margin-bottom:.15rem;letter-spacing:.01em;
+}
+.mnote .anchor{color:var(--rub);font-style:normal}
+.margin .more{margin-top:1.9rem;border-top:2px solid var(--gold);padding-top:.8rem}
+.margin .more a{
+  display:block;padding:.7rem 0;border-bottom:1px solid var(--hair);text-decoration:none;color:var(--ink);
+  transition:color .16s ease;
+}
+.margin .more a:hover,.margin .more a:focus-visible{color:var(--rub)}
+.margin .more .t{font-family:var(--display);font-size:1.06rem;line-height:1.25;display:block}
+.margin .more .d{font-size:.64rem;color:var(--muted);display:block;margin-top:.2rem}
+
+/* ---- selection toolbar ---- */
+#toolbar{
+  position:absolute;z-index:60;display:none;background:var(--bg);
+  border:1px solid var(--rub);border-radius:2px;padding:.2rem;gap:.15rem;
+}
+#toolbar.on{display:flex}
+#toolbar button{
+  background:transparent;border:0;cursor:pointer;color:var(--ink);
+  font-family:var(--display);font-variant-caps:small-caps;letter-spacing:.08em;
+  font-size:.98rem;padding:.22rem .6rem;border-radius:1px;
+  transition:background-color .12s ease,color .12s ease;
+}
+#toolbar button:hover{background:var(--rub);color:var(--bg)}
+#flash{
+  position:fixed;left:50%;bottom:1.6rem;transform:translateX(-50%);z-index:70;
+  background:var(--ink);color:var(--bg);border-radius:2px;padding:.55rem 1.1rem;
+  font-size:.76rem;opacity:0;pointer-events:none;transition:opacity .18s ease;max-width:88vw;
+}
+#flash.on{opacity:1}
+
+@media (max-width:1040px){
+  .shell{grid-template-columns:3.2rem minmax(0,1fr)}
+  .margin{position:static;grid-column:1 / -1;border-top:1px solid var(--rule);padding-top:1.4rem}
+}
+@media (max-width:640px){
+  .shell{grid-template-columns:1fr;gap:1.6rem}
+  .rail{position:static;display:flex;align-items:center;gap:.9rem;text-align:left;
+    border:1px solid var(--hair);border-radius:2px;padding:.6rem .8rem}
+  .seal-btn{margin:0}
+  .rail .allowance{margin:0}
+  .versal{font-size:2.9rem}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none !important;animation:none !important}
+}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-in">
+    <a class="back" href="./index.html">&larr; back to the pitch</a>
+    <p class="pubmark">Field Notes<span>.</span></p>
+    <p class="chrome-meta">A team publication on Byline. Issue 63.</p>
+  </div>
+</div>
+
+<div class="shell">
+
+  <div class="rail">
+    <button class="seal-btn" id="seal" aria-label="Affix a seal to this piece">
+      <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2"/>
+        <circle cx="12" cy="12" r="6.6" fill="currentColor"/>
+        <circle cx="12" cy="12" r="3.1" fill="none" stroke="#F2E8D5" stroke-width="1"/>
+      </svg>
+    </button>
+    <p class="count" id="clapCount">31</p>
+    <p class="allowance" id="allowance">claps. 6 of your quarterly 50 remain.</p>
+  </div>
+
+  <main>
+    <header class="piece-head">
+      <p class="rubric">Standup, filed the 3rd</p>
+      <h1>Q3 Migration: A Personal Accounting</h1>
+      <p class="standfirst">The cutover was scheduled for a Tuesday. I would like to talk about the Tuesday.</p>
+      <div class="byline">
+        <img src="portrait-author.webp" alt="Painted portrait of Wen-Ju Halloran" width="52" height="52">
+        <div>
+          <p class="who">Wen-Ju Halloran</p>
+          <p class="what">Staff Engineer, Platform. Filed 3 September, published 6 September. Eleven minutes.</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="tabs" role="tablist" aria-label="Views of this standup">
+      <button class="tab" role="tab" id="tab-piece" aria-controls="panel-piece" aria-selected="true">The piece</button>
+      <button class="tab" role="tab" id="tab-markup" aria-controls="panel-markup" aria-selected="false">Editor's markup</button>
+      <button class="tab" role="tab" id="tab-thread" aria-controls="panel-thread" aria-selected="false">Response thread</button>
+    </div>
+
+    <section class="panel on prose" id="panel-piece" role="tabpanel" aria-labelledby="tab-piece">
+      <p><span class="versal">T</span>he migration was scheduled for the third. It did not happen on the third. What follows is an account of the week as I experienced it, filed under the understanding that my team will read roughly the first four paragraphs and then look for the part where I say a date.</p>
+
+      <p>I want to be careful here, because the version of this story I told in the channel on Wednesday was shorter and, in retrospect, more flattering. The desk has asked me to slow down and show the reasoning. So I am going to show the reasoning, and the reasoning is going to take eleven minutes.</p>
+
+      <h2>What actually happened</h2>
+      <p>We had two clusters, and we had a plan to have one cluster. The plan assumed that the read replicas would drain on their own schedule, which they did, and that the write path would follow, which it did not. Somewhere around four in the afternoon my time, which is the middle of the night for two thirds of the people who could have told me this was going to happen, the write path began queueing instead of failing.</p>
+
+      <p>Queueing instead of failing is the worst available outcome, because nothing alerts and everything is wrong. The dashboards were green for six hours. I would like the record to show that the dashboards being green is not the same as the system being fine, and that I have now said this in writing three quarters running.</p>
+
+      <p>By the morning we had a backlog of about nine hours and a decision to make about whether to replay it in order. We replayed it in order. That took the rest of Thursday, which is the reason there was no standup on Thursday, which is the reason I am filing this at eleven hundred words instead of two hundred.</p>
+
+      <div class="gate-wrap" id="gate">
+        <h2 style="margin-top:0">Blockers</h2>
+        <div class="gate-body">
+          <p>Three things are still open, and two of them are other people's, which I say without accusation and with a certain amount of accusation.</p>
+          <p>The first is that the write path still queues silently under load. We have a ticket. The ticket has been in the backlog since April and has been groomed four times, each time successfully, in the sense that it remained in the backlog.</p>
+          <p>The second is that I do not have the credentials to roll back the schema myself, which means every rollback goes through a person in a timezone eight hours ahead of me who is, correctly, asleep when I need them. I have asked for the credentials twice. I have been told twice that this is a process question.</p>
+          <p>The third is mine. I did not read the runbook closely enough before the cutover, and the runbook did say something about the write path, in a note, at the bottom, under a heading about something else.</p>
+        </div>
+        <div class="gate-panel">
+          <p class="rubric">Members only</p>
+          <h3>The blockers are behind the paywall.</h3>
+          <p>Field Notes gives every reader three free pieces a month. You have opened two. Blockers, incident notes and anything filed under a Friday count toward the same allowance.</p>
+          <div class="meter" aria-label="Two of three free reads remaining">
+            <i></i><i></i><i class="spent"></i>
+            <span>2 of 3 free reads left this month</span>
+          </div>
+          <div class="gate-actions">
+            <a class="btn-rubric" href="./index.html#rates">Subscribe to Field Notes</a>
+            <button class="btn-plain" id="imOnTheTeam">I am on the team</button>
+          </div>
+        </div>
+      </div>
+
+      <h2>What I need</h2>
+      <p>A decision on the credentials by Friday, and someone other than me to own the ticket about silent queueing. I will file again on the tenth. If the write path does the same thing before then, the piece will be shorter and the tone will be different.</p>
+    </section>
+
+    <section class="panel markup" id="panel-markup" role="tabpanel" aria-labelledby="tab-markup" hidden>
+      <p class="rubric" style="margin-bottom:1.2rem">Second pass, returned to the author 5 September</p>
+      <p>The migration was scheduled for the third. It did not happen on the third. <del>What follows is a full and unsparing account of the catastrophic week</del><ins>What follows is an account of the week as I experienced it</ins>, filed under the understanding that my team will read roughly the first four paragraphs.</p>
+      <div class="query"><b>Query, desk to author</b>Cut "catastrophic". We have not agreed internally that it was catastrophic, and the incident review is not until the 12th. Suggest neutral framing until then.</div>
+
+      <p>Queueing instead of failing is the worst available outcome, because nothing alerts and everything is wrong. <del>Anyone who looked at the dashboards would have known this.</del><ins>The dashboards were green for six hours.</ins></p>
+      <div class="query"><b>Query, desk to author</b>The original sentence assigns fault to a named team without giving them right of reply. Either name them and we will run their response alongside, or state the fact and let the reader arrive.</div>
+
+      <p>I have asked for the credentials twice. I have been told twice that this is <del>a stalling tactic</del><ins>a process question</ins>.</p>
+      <div class="query"><b>Query, desk to author</b>Cut. You are describing motive you cannot verify. Also this ran almost verbatim in your July piece, and the desk does not run the same grievance twice a quarter.</div>
+
+      <p class="rubric" style="margin-top:2rem">Held for the 6th. Slot confirmed. Kill fee not applicable.</p>
+    </section>
+
+    <section class="panel" id="panel-thread" role="tabpanel" aria-labelledby="tab-thread" hidden>
+      <div class="note">
+        <div class="head">
+          <div><p class="name">Ottoline Brask</p><p class="role">Engineering Manager, Platform</p></div>
+          <span class="when">6 September, 08:12</span>
+        </div>
+        <p class="said">Good piece. I have sealed it twice, which is four percent of my quarterly allocation, so please understand what that means. Credentials question goes to the security desk today.</p>
+      </div>
+      <div class="note">
+        <div class="head">
+          <div><p class="name">Devin Aumaugher</p><p class="role">Staff Engineer, currently in Lisbon</p></div>
+          <span class="when">6 September, 09:40</span>
+        </div>
+        <p class="said">Paragraph nine is the actual standup. Everything before it is context. I say this with affection and I say it every week.</p>
+      </div>
+      <div class="note">
+        <div class="head">
+          <div><p class="name">Marguerite Okonjo-Beale</p><p class="role">Senior Manager of Asynchronous Narrative</p></div>
+          <span class="when">6 September, 11:05</span>
+        </div>
+        <p class="said">Flagging that this was filed on the 3rd and published on the 6th, and the thing it describes was resolved on the 4th. That is working as designed. I am noting it so that nobody notes it later.</p>
+      </div>
+      <div class="note">
+        <div class="head">
+          <div><p class="name">Priya Ravikumar-Stagg</p><p class="role">Interim Head of Remote Culture</p></div>
+          <span class="when">6 September, 15:31</span>
+        </div>
+        <p class="said">I have added this to the onboarding reading list. New starters now read four standups before their first standup.</p>
+      </div>
+      <div class="reply">
+        <label for="replyBox">File a response</label>
+        <textarea id="replyBox" placeholder="Responses are edited before they appear."></textarea>
+        <div class="under">
+          <p class="hint">Responses over 300 words are treated as submissions and enter the queue.</p>
+          <button class="btn-rubric" id="submitReply">Send to the desk</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="margin">
+    <p class="rubric">Margin notes</p>
+    <div class="mnote">
+      <strong>Ottoline Brask</strong>
+      <span class="anchor">&para;</span> on "the dashboards were green": we have a ticket for this. It is the same ticket you mean.
+    </div>
+    <div class="mnote">
+      <strong>Devin Aumaugher</strong>
+      <span class="anchor">&para;</span> on "nine hours": it was closer to eleven. I was awake for all of them.
+    </div>
+    <div class="mnote">
+      <strong>Priya Ravikumar-Stagg</strong>
+      <span class="anchor">&para;</span> on "this is a process question": it is a process question. The process is bad. Both are true.
+    </div>
+    <div class="mnote" id="yourNotes" hidden>
+      <strong>You</strong>
+      <span class="anchor">&para;</span> <span id="yourNoteText"></span>
+    </div>
+
+    <div class="more">
+      <p class="rubric" style="font-size:.86rem;margin-bottom:.2rem">More from Field Notes</p>
+      <a href="#" data-piece="A Note on the Note I Left in the Runbook">
+        <span class="t">A Note on the Note I Left in the Runbook</span>
+        <span class="d">Wen-Ju Halloran. Seven minutes.</span>
+      </a>
+      <a href="#" data-piece="On Being Asleep During the Incident">
+        <span class="t">On Being Asleep During the Incident</span>
+        <span class="d">Ottoline Brask. Fourteen minutes.</span>
+      </a>
+      <a href="#" data-piece="Blocked, Still: A Serial, Part Nine">
+        <span class="t">Blocked, Still: A Serial, Part Nine</span>
+        <span class="d">Devin Aumaugher. Four minutes.</span>
+      </a>
+    </div>
+  </aside>
+</div>
+
+<div id="toolbar" role="toolbar" aria-label="Annotate selection">
+  <button type="button" data-act="highlight">Highlight</button>
+  <button type="button" data-act="note">Note it</button>
+</div>
+<div id="flash" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var flashEl = document.getElementById('flash');
+  var flashTimer;
+  function flash(msg) {
+    flashEl.textContent = msg;
+    flashEl.classList.add('on');
+    clearTimeout(flashTimer);
+    flashTimer = setTimeout(function () { flashEl.classList.remove('on'); }, 3200);
+  }
+
+  /* ---- tabs ---- */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+  function select(tab) {
+    tabs.forEach(function (t) {
+      var on = t === tab;
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      var p = document.getElementById(t.getAttribute('aria-controls'));
+      p.hidden = !on;
+      p.classList.toggle('on', on);
+    });
+    hideToolbar();
+  }
+  tabs.forEach(function (t, i) {
+    t.addEventListener('click', function () { select(t); });
+    t.addEventListener('keydown', function (e) {
+      var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!d) return;
+      e.preventDefault();
+      var next = tabs[(i + d + tabs.length) % tabs.length];
+      next.focus();
+      select(next);
+    });
+  });
+
+  /* ---- seals ---- */
+  var seal = document.getElementById('seal');
+  var countEl = document.getElementById('clapCount');
+  var allowEl = document.getElementById('allowance');
+  var count = 31, left = 6;
+  seal.addEventListener('click', function () {
+    if (left <= 0) return;
+    count += 1; left -= 1;
+    countEl.textContent = count;
+    if (left === 0) {
+      allowEl.textContent = 'claps. Your quarterly allocation is spent. It resets in October.';
+      seal.disabled = true;
+      flash('Allocation spent. The desk considers this a healthy signal.');
+    } else {
+      allowEl.textContent = 'claps. ' + left + ' of your quarterly 50 remain.';
+    }
+  });
+
+  /* ---- paywall gate ---- */
+  var gate = document.getElementById('gate');
+  document.getElementById('imOnTheTeam').addEventListener('click', function () {
+    gate.classList.add('open');
+    flash('Team access confirmed. This read still counts against your three.');
+  });
+
+  /* ---- selection annotation ---- */
+  var toolbar = document.getElementById('toolbar');
+  var savedRange = null;
+  function hideToolbar() { toolbar.classList.remove('on'); savedRange = null; }
+
+  document.addEventListener('mouseup', function (e) {
+    if (toolbar.contains(e.target)) return;
+    var sel = window.getSelection();
+    if (!sel || sel.isCollapsed || !sel.rangeCount) { hideToolbar(); return; }
+    var range = sel.getRangeAt(0);
+    var host = document.getElementById('panel-piece');
+    if (!host.contains(range.commonAncestorContainer)) { hideToolbar(); return; }
+    if (!sel.toString().trim()) { hideToolbar(); return; }
+    savedRange = range.cloneRange();
+    var r = range.getBoundingClientRect();
+    toolbar.classList.add('on');
+    var x = r.left + window.scrollX + (r.width / 2) - (toolbar.offsetWidth / 2);
+    toolbar.style.left = Math.max(8, x) + 'px';
+    toolbar.style.top = (r.top + window.scrollY - toolbar.offsetHeight - 8) + 'px';
+  });
+
+  toolbar.addEventListener('click', function (e) {
+    var act = e.target.getAttribute('data-act');
+    if (!act || !savedRange) return;
+    var text = savedRange.toString().trim();
+    try {
+      var mark = document.createElement('mark');
+      mark.appendChild(savedRange.extractContents());
+      savedRange.insertNode(mark);
+    } catch (err) {
+      flash('That selection crosses a paragraph. The desk only accepts one paragraph at a time.');
+      hideToolbar();
+      return;
+    }
+    if (act === 'note') {
+      var box = document.getElementById('yourNotes');
+      document.getElementById('yourNoteText').textContent =
+        'on "' + (text.length > 42 ? text.slice(0, 42) + '…' : text) + '": queued for editorial review.';
+      box.hidden = false;
+      flash('Note filed. It appears in the margin after review.');
+    } else {
+      flash('Highlighted. Highlights are visible to the whole publication.');
+    }
+    window.getSelection().removeAllRanges();
+    hideToolbar();
+  });
+
+  window.addEventListener('scroll', hideToolbar, { passive: true });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hideToolbar(); });
+
+  /* ---- reply ---- */
+  document.getElementById('submitReply').addEventListener('click', function () {
+    var box = document.getElementById('replyBox');
+    var words = box.value.trim().split(/\s+/).filter(Boolean).length;
+    if (!words) { flash('The desk does not accept an empty response.'); box.focus(); return; }
+    if (words > 300) { flash('That is ' + words + ' words. It is now a submission and has entered the queue.'); }
+    else { flash('Response received. It will appear once an editor has read it.'); }
+    box.value = '';
+  });
+
+  /* ---- sibling pieces ---- */
+  document.querySelectorAll('.more a').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      flash('"' + a.getAttribute('data-piece') + '" would be your third free read this month.');
+    });
+  });
+
+  if (reduce) { document.querySelectorAll('.panel').forEach(function (p) { p.style.animation = 'none'; }); }
+})();
+</script>
+</body>
+</html>

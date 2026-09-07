@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Byline · theworstaistudioever</title>
+<meta name="description" content="Publishing infrastructure for the distributed workforce. Your standup ships with a byline, an assigned editor, and an eleven-minute read time.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Byline · theworstaistudioever">
+<meta property="og:description" content="Publishing infrastructure for the distributed workforce. Your standup ships with a byline, an assigned editor, and an eleven-minute read time.">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Byline · theworstaistudioever">
+<meta name="twitter:description" content="Publishing infrastructure for the distributed workforce. Your standup ships with a byline, an assigned editor, and an eleven-minute read time.">
+<meta name="theme-color" content="#F2E8D5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F2E8D5;
+  --ink:#241C13;
+  --rub:#8E1B12;
+  --gold:#9A7A1E;
+  --muted:#6E6046;
+  --rule:rgba(36,28,19,.30);
+  --hair:rgba(36,28,19,.16);
+  --scribe:rgba(36,28,19,.055);
+  --display:'Cormorant Garamond','EB Garamond',Garamond,'Times New Roman',serif;
+  --body:'Libre Baskerville',Georgia,'Times New Roman',serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background-color:var(--bg);
+  background-image:repeating-linear-gradient(to bottom,
+    transparent 0, transparent calc(2rem - 1px),
+    var(--scribe) calc(2rem - 1px), var(--scribe) 2rem);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:16px;
+  line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+.page{max-width:76rem;margin:0 auto;padding:0 clamp(1.1rem,4vw,3.25rem)}
+
+/* ---- rubric labels: manuscript running heads, small caps, never uppercase ---- */
+.rubric{
+  font-family:var(--display);
+  font-variant-caps:small-caps;
+  font-weight:600;
+  letter-spacing:.16em;
+  font-size:1.02rem;
+  color:var(--rub);
+  margin:0;
+}
+.rubric-ink{color:var(--muted)}
+
+/* ---- masthead ---- */
+.masthead{
+  display:flex;align-items:baseline;justify-content:space-between;gap:1.5rem;
+  flex-wrap:wrap;
+  padding:1.6rem 0 1rem;
+  border-bottom:1px solid var(--rule);
+}
+.wordmark{
+  font-family:var(--display);font-weight:700;font-size:2.05rem;line-height:1;
+  letter-spacing:.005em;margin:0;
+}
+.wordmark .dot{color:var(--rub)}
+.mast-nav{display:flex;gap:1.4rem;flex-wrap:wrap;align-items:baseline}
+.mast-nav a{
+  font-family:var(--display);font-variant-caps:small-caps;letter-spacing:.09em;
+  font-size:1.06rem;color:var(--muted);text-decoration:none;
+  border-bottom:1px solid transparent;transition:color .16s ease,border-color .16s ease;
+}
+.mast-nav a:hover,.mast-nav a:focus-visible{color:var(--rub);border-bottom-color:var(--rub)}
+
+/* ---- hero colophon ---- */
+.hero{padding:clamp(2.6rem,7vw,5rem) 0 0}
+.hero .rubric{margin-bottom:1.1rem}
+.hero h1{
+  font-family:var(--display);
+  font-weight:700;
+  font-size:clamp(2.6rem,7.4vw,5.6rem);
+  line-height:.98;
+  letter-spacing:-.012em;
+  margin:0 0 1.5rem;
+  max-width:15ch;
+}
+.hero h1 .gold-versal{
+  color:var(--rub);
+  border-bottom:.09em solid var(--gold);
+  padding-bottom:.02em;
+}
+.hero p.lede{
+  max-width:58ch;font-size:1.02rem;line-height:1.85;margin:0 0 2.1rem;
+}
+.hero-actions{display:flex;align-items:center;gap:1.6rem;flex-wrap:wrap;margin-bottom:2.6rem}
+.btn-rubric{
+  display:inline-block;background:var(--rub);color:var(--bg);
+  font-family:var(--display);font-weight:600;font-size:1.22rem;
+  font-variant-caps:small-caps;letter-spacing:.08em;
+  padding:.62rem 1.5rem .58rem;border:2px solid var(--rub);border-radius:2px;
+  text-decoration:none;cursor:pointer;
+  transition:background-color .16s ease,color .16s ease;
+}
+.btn-rubric:hover,.btn-rubric:focus-visible{background:var(--bg);color:var(--rub)}
+.link-quiet{
+  font-family:var(--display);font-size:1.14rem;color:var(--ink);
+  text-decoration:none;border-bottom:1px solid var(--gold);cursor:pointer;
+  transition:color .16s ease,border-bottom-width .16s ease;
+}
+.link-quiet:hover,.link-quiet:focus-visible{color:var(--rub);border-bottom:2px solid var(--rub)}
+
+/* ---- colophon strip ---- */
+.colophon{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  border-top:2px solid var(--gold);border-bottom:1px solid var(--rule);
+}
+.colophon div{padding:1.35rem 1.4rem 1.3rem;border-left:1px solid var(--hair)}
+.colophon div:first-child{border-left:0;padding-left:0}
+.colophon dt{
+  font-family:var(--display);font-size:2.5rem;font-weight:600;line-height:1;
+  margin:0 0 .35rem;color:var(--ink);
+}
+.colophon dd{margin:0;font-size:.8rem;line-height:1.6;color:var(--muted)}
+
+/* ---- generic section frame ---- */
+.quire{padding:clamp(3rem,7vw,5.5rem) 0 0}
+.quire > .rubric{margin-bottom:.85rem}
+.rule-gold{height:2px;background:var(--gold);border:0;margin:0 0 2.2rem;
+  transform-origin:left center}
+.rule-hair{height:1px;background:var(--rule);border:0;margin:0}
+
+/* ---- features: text block + marginal gloss ---- */
+.entry{
+  display:grid;grid-template-columns:minmax(0,1fr) 15rem;gap:2.6rem;
+  padding:2.1rem 0;border-top:1px solid var(--hair);
+}
+.entry:first-of-type{border-top:0;padding-top:0}
+.entry h3{
+  font-family:var(--display);font-weight:600;font-size:1.95rem;line-height:1.15;
+  margin:0 0 .7rem;letter-spacing:-.005em;
+}
+.entry p{margin:0;max-width:62ch;font-size:.97rem;line-height:1.85}
+.versal{
+  float:left;font-family:var(--display);font-weight:700;
+  font-size:3.9rem;line-height:.84;color:var(--rub);
+  background:rgba(154,122,30,.17);border:2px solid var(--rub);border-radius:2px;
+  margin:.14rem .68rem .1rem 0;padding:.3rem .36rem .16rem;
+}
+.gloss{
+  align-self:start;border:1px solid var(--hair);border-left:2px solid var(--gold);
+  padding:.75rem .9rem;font-size:.78rem;line-height:1.65;color:var(--muted);
+  font-style:italic;
+}
+.gloss .pilcrow{color:var(--rub);font-style:normal;font-weight:700;margin-right:.35rem}
+
+/* ---- commendations ---- */
+.plates{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+.plate{padding:0 1.7rem 1.6rem;border-left:1px solid var(--hair)}
+.plate:first-child{border-left:0;padding-left:0}
+.plate:last-child{padding-right:0}
+.plate img{
+  display:block;width:100%;height:auto;aspect-ratio:1/1;object-fit:cover;
+  border:1px solid var(--rub);padding:5px;background:var(--bg);border-radius:2px;
+  margin-bottom:1.1rem;
+}
+.plate blockquote{
+  margin:0 0 1.05rem;font-family:var(--display);font-size:1.32rem;line-height:1.42;
+  font-style:italic;color:var(--ink);
+}
+.plate .attrib{font-size:.79rem;line-height:1.6;color:var(--muted);margin:0}
+.plate .attrib strong{
+  display:block;font-family:var(--display);font-style:normal;font-weight:600;
+  font-size:1.06rem;color:var(--ink);letter-spacing:.01em;
+}
+
+/* ---- rates: ordinance table ---- */
+.ordinance{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  border-top:2px solid var(--gold);border-bottom:2px solid var(--gold);
+}
+.column{padding:1.7rem 1.5rem 1.9rem;border-left:1px solid var(--hair);display:flex;flex-direction:column}
+.column:first-child{border-left:0;padding-left:0}
+.column:last-child{padding-right:0}
+.column.standing{background:rgba(154,122,30,.08)}
+.column h3{
+  font-family:var(--display);font-weight:600;font-size:1.72rem;margin:0 0 .1rem;line-height:1.15;
+}
+.column .price{
+  font-family:var(--display);font-size:1.28rem;color:var(--rub);
+  margin:0 0 .85rem;line-height:1.35;
+}
+.column .stance{
+  font-size:.82rem;line-height:1.65;color:var(--muted);font-style:italic;
+  margin:0 0 1.15rem;padding-bottom:1.15rem;border-bottom:1px solid var(--hair);
+}
+.column ul{list-style:none;margin:0 0 1.5rem;padding:0;flex:1}
+.column li{
+  font-size:.82rem;line-height:1.6;padding:.55rem 0 .55rem 1.15rem;
+  border-bottom:1px solid var(--hair);position:relative;
+}
+.column li:last-child{border-bottom:0}
+.column li::before{
+  content:"\00B6";position:absolute;left:0;top:.55rem;
+  color:var(--gold);font-size:.82rem;line-height:1.6;
+}
+.btn-outline{
+  display:block;text-align:center;text-decoration:none;cursor:pointer;
+  font-family:var(--display);font-variant-caps:small-caps;letter-spacing:.08em;
+  font-size:1.1rem;color:var(--rub);border:2px solid var(--rub);border-radius:2px;
+  padding:.5rem 1rem .46rem;transition:background-color .16s ease,color .16s ease;
+}
+.btn-outline:hover,.btn-outline:focus-visible{background:var(--rub);color:var(--bg)}
+
+/* ---- demo call ---- */
+.demo-call{
+  margin:clamp(3.2rem,8vw,6rem) 0 0;padding:2.6rem 0 2.8rem;
+  border-top:2px solid var(--gold);border-bottom:2px solid var(--gold);
+  display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2.4rem;align-items:center;
+}
+.demo-call h2{
+  font-family:var(--display);font-weight:600;font-size:clamp(1.9rem,4vw,2.9rem);
+  line-height:1.1;margin:0 0 .6rem;max-width:19ch;
+}
+.demo-call p{margin:0;max-width:52ch;font-size:.9rem;line-height:1.8;color:var(--muted)}
+
+/* ---- footer ---- */
+footer{padding:2.4rem 0 3.2rem;font-size:.79rem;line-height:1.75;color:var(--muted)}
+footer a.home{
+  font-family:var(--display);font-size:1.02rem;color:var(--ink);text-decoration:none;
+  border-bottom:1px solid var(--hair);cursor:pointer;transition:color .16s ease,border-color .16s ease;
+}
+footer a.home:hover,footer a.home:focus-visible{color:var(--rub);border-bottom-color:var(--rub)}
+footer .imprint{margin:1rem 0 0;max-width:64ch}
+
+a:focus-visible,button:focus-visible{outline:2px solid var(--rub);outline-offset:3px}
+
+@media (max-width:900px){
+  .entry{grid-template-columns:1fr;gap:1.3rem}
+  .plates,.ordinance,.colophon{grid-template-columns:1fr}
+  .plate,.column{border-left:0;border-top:1px solid var(--hair);padding:1.5rem 0}
+  .plate:first-child,.column:first-child{border-top:0;padding-top:0}
+  .colophon div{border-left:0;border-top:1px solid var(--hair);padding:1rem 0}
+  .colophon div:first-child{border-top:0}
+  .plate img{max-width:15rem}
+  .demo-call{grid-template-columns:1fr;gap:1.5rem}
+  .versal{font-size:3.1rem}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none !important}
+  .versal{opacity:1}
+  .rule-gold{transform:none !important}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="masthead">
+    <h1 class="wordmark">Byline<span class="dot">.</span></h1>
+    <nav class="mast-nav" aria-label="Sections">
+      <a href="#apparatus">The apparatus</a>
+      <a href="#commendations">Commendations</a>
+      <a href="#rates">Rates</a>
+      <a href="./demo.html">Open the demo &rarr;</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <p class="rubric">Volume I, Number 1. The standup issue.</p>
+    <h1><span class="gold-versal">Your</span> standup deserves an editor.</h1>
+    <p class="lede">Byline is the publishing layer for distributed teams. Pitch your Tuesday, get assigned a slot, file nineteen hundred words on why the migration slipped. Your team gets three free reads a month. Everything after that is a subscription decision.</p>
+    <div class="hero-actions">
+      <a class="btn-rubric" href="#rates">Pitch your first standup</a>
+      <a class="link-quiet" href="./demo.html">Read a published standup</a>
+    </div>
+    <dl class="colophon">
+      <div><dt>2 days</dt><dd>Median time from filing to publication, weekdays only, holidays excluded.</dd></div>
+      <div><dt>3</dt><dd>Free reads per person per calendar month across the whole publication.</dd></div>
+      <div><dt>50</dt><dd>Claps allocated per manager per quarter. Unspent claps do not roll over.</dd></div>
+    </dl>
+  </section>
+
+  <section class="quire" id="apparatus">
+    <p class="rubric">The apparatus</p>
+    <hr class="rule-gold">
+
+    <article class="entry">
+      <div>
+        <h3>The Editorial Desk</h3>
+        <p><span class="versal">E</span>very update is assigned to a working editor before your team is allowed to see it. Median time from filing to publication is two business days, which internal research confirms is roughly when the blocker resolves itself. The piece runs anyway, because the desk does not kill copy for being late to its own subject.</p>
+      </div>
+      <aside class="gloss"><span class="pilcrow">&para;</span>Editors are assigned, not requested. Requesting an editor by name is grounds for reassignment to the weekend desk.</aside>
+    </article>
+
+    <article class="entry">
+      <div>
+        <h3>Members-Only Blockers</h3>
+        <p><span class="versal">P</span>ut the part where you say what is wrong behind the paywall. Teammates get three free reads per calendar month. After that they subscribe, or they escalate, or they guess. All three outcomes are counted as engagement and reported to the desk on Fridays.</p>
+      </div>
+      <aside class="gloss"><span class="pilcrow">&para;</span>Escalation is a conversion event. Your on-call rotation is a funnel and has been since March.</aside>
+    </article>
+
+    <article class="entry">
+      <div>
+        <h3>Read Time as a Unit of Work</h3>
+        <p><span class="versal">T</span>imesheets are denominated in estimated minutes to read. A four-minute Thursday is a four-minute Thursday and reconciles cleanly against the sprint. Finance stopped asking follow-up questions in the second week, which we log as adoption and cite in the renewal deck.</p>
+      </div>
+      <aside class="gloss"><span class="pilcrow">&para;</span>Word count is not billable. Only the reading of it is billable.</aside>
+    </article>
+  </section>
+
+  <section class="quire" id="commendations">
+    <p class="rubric">Commendations from the field</p>
+    <hr class="rule-gold">
+    <div class="plates">
+      <figure class="plate">
+        <img src="portrait-marguerite.webp" alt="Painted portrait of Marguerite Okonjo-Beale" width="320" height="320" loading="lazy">
+        <blockquote>I filed my blocker on a Monday. It ran Thursday, above the fold, with a pull quote. By then we had shipped, so the piece reads as history.</blockquote>
+        <figcaption class="attrib"><strong>Marguerite Okonjo-Beale</strong>Senior Manager of Asynchronous Narrative, Hexley Freight Systems</figcaption>
+      </figure>
+      <figure class="plate">
+        <img src="portrait-devin.webp" alt="Painted portrait of Devin Aumaugher" width="320" height="320" loading="lazy">
+        <blockquote>My manager is allocated fifty claps per quarter across eleven reports. I have received four. We are meeting about it in November.</blockquote>
+        <figcaption class="attrib"><strong>Devin Aumaugher</strong>Staff Engineer, currently in Lisbon, previously in Lisbon</figcaption>
+      </figure>
+      <figure class="plate">
+        <img src="portrait-priya.webp" alt="Painted portrait of Priya Ravikumar-Stagg" width="320" height="320" loading="lazy">
+        <blockquote>We moved incident reports onto Byline in March. Mean time to resolution went up. The writing is much better.</blockquote>
+        <figcaption class="attrib"><strong>Priya Ravikumar-Stagg</strong>Interim Head of Remote Culture, eleven-month contract</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="quire" id="rates">
+    <p class="rubric">Rates and standing</p>
+    <hr class="rule-gold">
+    <div class="ordinance">
+      <div class="column">
+        <h3>Contributor</h3>
+        <p class="price">$0</p>
+        <p class="stance">You may file. Placement is not promised.</p>
+        <ul>
+          <li>Three published standups per calendar month</li>
+          <li>Public archive, permanently indexed</li>
+          <li>Claps received, none to give</li>
+          <li>Byline set in the house serif, no photo</li>
+        </ul>
+        <a class="btn-outline" href="./demo.html">Start filing</a>
+      </div>
+      <div class="column standing">
+        <h3>Staff Writer</h3>
+        <p class="price">$41 per seat, monthly</p>
+        <p class="stance">The tier at which your colleagues can actually read you.</p>
+        <ul>
+          <li>Private team publication with a masthead</li>
+          <li>Editorial review inside 48 hours, weekdays</li>
+          <li>Paywalled blockers and gated incident notes</li>
+          <li>Author photo, cropped by us, final</li>
+        </ul>
+        <a class="btn-outline" href="./demo.html">Join the masthead</a>
+      </div>
+      <div class="column">
+        <h3>Editor-in-Chief</h3>
+        <p class="price">$14,000 a year, invoiced quarterly</p>
+        <p class="stance">You may reject other people's standups.</p>
+        <ul>
+          <li>Kill fee authority across the whole organisation</li>
+          <li>Slot assignment on the shared editorial calendar</li>
+          <li>One masthead position, non-transferable</li>
+          <li>A quarterly letter from the desk, ghostwritten</li>
+        </ul>
+        <a class="btn-outline" href="./demo.html">Request the seat</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="demo-call">
+    <div>
+      <h2>One standup, as your team would receive it.</h2>
+      <p>Q3 Migration: A Personal Accounting. Filed the 3rd, published the 6th, eleven minutes. Three marginal notes, one paywalled section, one editor who had questions about the second paragraph.</p>
+    </div>
+    <a class="btn-rubric" href="./demo.html">Open the demo &rarr;</a>
+  </section>
+
+  <footer>
+    <a class="home" href="/">&larr; theworstaistudioever</a>
+    <p class="imprint">Set in Cormorant Garamond and Libre Baskerville, ruled at two rems. Byline is not a real company, does not employ editors, and will not read your standup. Any resemblance to your actual review cycle is a matter between you and your manager.</p>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var rules = document.querySelectorAll('.rule-gold');
+
+  if (!reduce.matches && 'IntersectionObserver' in window) {
+    rules.forEach(function (r) { r.style.transform = 'scaleX(0)'; });
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        e.target.style.transition = 'transform 420ms ease-out';
+        e.target.style.transform = 'scaleX(1)';
+        io.unobserve(e.target);
+      });
+    }, { threshold: 0.4, rootMargin: '0px 0px -8% 0px' });
+
+    rules.forEach(function (r) { io.observe(r); });
+  }
+
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (ev) {
+      var t = document.querySelector(a.getAttribute('href'));
+      if (!t) return;
+      ev.preventDefault();
+      t.scrollIntoView({ behavior: reduce.matches ? 'auto' : 'smooth', block: 'start' });
+    });
+  });
+})();
+</script>
+</body>
+</html>
