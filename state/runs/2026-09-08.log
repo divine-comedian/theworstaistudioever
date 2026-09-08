@@ -1,0 +1,115 @@
+run 2026-09-08
+
+ROLL
+  company: Cursor
+  subject: crows
+  slug:    cursor-for-crows
+  rerolls: 0 (first pair drawn from the LCG was unused)
+  subject rule: crows is an animal, passes. No seed removal needed.
+
+CONCEPT
+  product: Perch, an AI-native tool-fabrication environment for corvids.
+  premise: crows already manufacture hook tools from twigs, so the product is a
+  code editor for stick geometry that behaves exactly like a developer tool:
+  tab-completion for bends, a pull-request review queue nobody ever clears, and
+  a grudge index that ships enabled with the toggle greyed out.
+
+DESIGN DIRECTION
+  style:   cyanotype engineering drawing set, blueprint dark mode. Bordered
+           drawing frames with title-block strips, 8mm drafting grid, dimension
+           lines with tick serifs, redline callout balloons in annotation
+           orange. No shadows, radius capped at 2px, all structure carried by
+           hairlines.
+  palette: bg #0B2A45, fg #DDE9F3, primary #6FA8D6, accent #E8703A,
+           muted #7C98B4, ink #DDE9F3
+  fonts:   display Barlow Condensed, body IBM Plex Mono
+  archetype: developer-tool product page issued as an engineering drawing set;
+           pricing rendered as a ruled parts-list schedule rather than cards.
+
+  anti-sameness check against the last 7 entries (09-01 through 09-07):
+  illuminated manuscript vellum, varsity trophy navy/gold, pharma blister pack,
+  clay game launcher, glass aurora dark, 1974 supergraphic identity manual,
+  automotive dark configurator. No collision on style, palette or font pair.
+  Neither Barlow Condensed nor IBM Plex Mono appears in the last 7, and no
+  recent entry uses a monospace body face.
+
+  note: ui-ux-pro-max returned the generic developer-tool default (slate
+  #0F172A with a green run accent and JetBrains Mono). Took the technical
+  monospace signal from it, discarded the palette, since that look is the most
+  templated result available for this product type.
+
+IMAGES
+  budget: 3 of 4 used, one deliberately unspent.
+  rationale: hero skipped, the direction is typographic and a photo inside a
+  blueprint frame would read as a pasted-on stock plate. Demo subject assets
+  skipped, the demo is a code editor made of text and rules with no photo slot.
+  Full budget to the testimonial fallback role.
+
+  headshot-1.webp  attempt 1/2  PASS  three-quarter corporate crow portrait,
+                   duotone lands inside the palette with no CSS correction,
+                   no text artifacts, no generic-render tells.
+  headshot-2.webp  attempt 1/2  PASS  correct subject and tone. Came back with
+                   a cream paper deckle border where the other two have dark
+                   wash borders. Handled in CSS by cropping the plate inside an
+                   overflow-hidden hairline frame (object-fit cover, scale 1.2)
+                   rather than burning a second attempt.
+  headshot-3.webp  attempt 1/2  PASS  head-on framing, reads as a third
+                   distinct sitter.
+  All three cropped to 320x320 WebP, largest file 19 KB, well under the 500 KB
+  validation ceiling. No image dropped.
+
+BUILD
+  landing: site/entries/cursor-for-crows/index.html
+    Hero drawing frame with a dimension line under the h1 and a numbered
+    redline callout. Three detail plates keyed Detail A/B/C (drawing
+    vernacular, not decorative 01/02/03 numbering). Testimonials as captioned
+    cyanotype portrait plates. Pricing as a single ruled schedule table that
+    collapses to stacked blocks under 900px. Only non-user-triggered motion is
+    the dimension lines drawing in once on scroll, disabled under
+    prefers-reduced-motion.
+  demo: site/entries/cursor-for-crows/demo.html
+    The Forge. Four-file stick asset tree with dirty markers, bend-script
+    editor with a ghost-text AI completion, Caw chat rail with canned deadpan
+    replies, a Grudge Index tab with severity bars, a streaming fabrication log
+    drawer, and a status bar wired to the active file.
+    Tab-to-accept and Esc-to-reject are scoped to the focused editor pane only,
+    with visible Accept and Reject buttons as the primary path, so global tab
+    order is not hijacked.
+
+WARNINGS AND NEAR-MISSES
+  - Two Bash heredocs were rejected by the sandbox for brace-plus-quote
+    patterns (a set comprehension, and a shell for-loop with variable
+    expansion). Rewrote both without those constructs. No repo files affected.
+  - headshot-2 border mismatch, resolved in CSS as noted above.
+  - Contrast checked before building: fg 11.89:1, primary 5.76:1, accent
+    4.76:1, muted 4.90:1, all against bg #0B2A45. Every pair clears WCAG AA.
+  - Gallery slide background for this entry is a dark blue, and 09-06 is a dark
+    indigo two slides away. Different enough in hue and treatment, left as is.
+
+VALIDATION
+  scripts/validate-entry.sh site cursor-for-crows exited 0.
+  validate-entry [cursor-for-crows]: OK
+  Appended to state/history.json, now 89 entries.
+  Gallery regenerated from all 89 concept.json files, header count updated to
+  "89 startups since 2026".
+  Em dash scan on index.html, demo.html and concept.json: zero.
+
+VISUAL CHECK (step 9, run)
+  Headless chromium was already present, so the step ran. 2 captures used, both
+  on the landing page (one baseline, one confirmation). demo.html not captured.
+  3 corrective edits used, all on index.html, all real breakage:
+    1. .specimen set to flex column so the three testimonial plates stretch to
+       equal height. Their caption strips were landing at three different
+       baselines.
+    2. blockquote given flex:1 1 auto to push the captions to a common bottom
+       edge.
+    3. .deckle modifier on headshot-2, scale 1.46 instead of 1.20. The default
+       crop left its cream paper border visible while the other two plates bled
+       to the frame edge.
+  Re-capture confirms both faults resolved and nothing regressed. No taste-level
+  tweaks made. validate-entry.sh re-run after the edits, exited 0.
+[2026-09-08T08:13:58Z] WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks
+[2026-09-08T08:13:58Z] new entry: cursor-for-crows
+validate-entry [cursor-for-crows]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 89 entries (domain theworstaistudioever.com)
+[2026-09-08T08:13:59Z] committing: Cursor for crows

@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Perch · theworstaistudioever</title>
+<meta name="description" content="The AI-native tool forge for corvids. Tab-complete your stick geometry, open your hooks for review, and remember every human who wronged you.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Perch · theworstaistudioever">
+<meta property="og:description" content="The AI-native tool forge for corvids. Tab-complete your stick geometry, open your hooks for review, and remember every human who wronged you.">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Perch · theworstaistudioever">
+<meta name="twitter:description" content="The AI-native tool forge for corvids. Tab-complete your stick geometry, open your hooks for review, and remember every human who wronged you.">
+<meta name="theme-color" content="#0B2A45">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap');
+
+:root{
+  --bg:#0B2A45;
+  --fg:#DDE9F3;
+  --rule:#6FA8D6;
+  --accent:#E8703A;
+  --muted:#7C98B4;
+  --hair:rgba(111,168,214,.42);
+  --hair-soft:rgba(111,168,214,.22);
+  --display:'Barlow Condensed','Oswald','Arial Narrow',Helvetica,sans-serif;
+  --mono:'IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background-color:var(--bg);
+  background-image:
+    repeating-linear-gradient(to right, rgba(111,168,214,.08) 0 1px, transparent 1px 160px),
+    repeating-linear-gradient(to bottom, rgba(111,168,214,.08) 0 1px, transparent 1px 160px),
+    repeating-linear-gradient(to right, rgba(111,168,214,.04) 0 1px, transparent 1px 32px),
+    repeating-linear-gradient(to bottom, rgba(111,168,214,.04) 0 1px, transparent 1px 32px);
+  color:var(--fg);
+  font-family:var(--mono);
+  font-weight:300;
+  font-size:15px;
+  line-height:1.72;
+  -webkit-font-smoothing:antialiased;
+}
+
+a{color:inherit}
+img{display:block}
+
+/* ---------- sheet ---------- */
+.sheet{
+  max-width:1220px;
+  margin:0 auto;
+  padding:22px 18px 0;
+}
+.frame{
+  border:1px solid var(--hair);
+  position:relative;
+  margin-bottom:22px;
+}
+.frame::before,.frame::after{
+  content:"";
+  position:absolute;
+  width:9px;height:9px;
+  border:1px solid var(--hair);
+  border-right:0;border-bottom:0;
+}
+.frame::before{top:5px;left:5px}
+.frame::after{top:5px;right:5px;transform:scaleX(-1)}
+
+.frame-body{padding:34px 28px 26px}
+
+.titleblock{
+  border-top:1px solid var(--hair);
+  display:flex;
+  flex-wrap:wrap;
+  font-family:var(--display);
+  font-size:.82rem;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.titleblock > *{
+  padding:7px 14px;
+  border-right:1px solid var(--hair-soft);
+  white-space:nowrap;
+}
+.titleblock > *:last-child{border-right:0;margin-left:auto}
+.tb-val{color:var(--fg)}
+
+/* ---------- masthead ---------- */
+.masthead{
+  display:flex;
+  align-items:baseline;
+  gap:22px;
+  flex-wrap:wrap;
+  padding:12px 14px;
+  border:1px solid var(--hair);
+  margin-bottom:22px;
+}
+.wordmark{
+  font-family:var(--display);
+  font-weight:600;
+  font-size:1.55rem;
+  letter-spacing:.34em;
+  text-transform:uppercase;
+  margin:0;
+}
+.masthead-note{
+  font-size:.76rem;
+  color:var(--muted);
+  letter-spacing:.02em;
+}
+.masthead nav{
+  margin-left:auto;
+  display:flex;
+  gap:20px;
+  flex-wrap:wrap;
+  font-family:var(--display);
+  font-size:.92rem;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+}
+.masthead nav a{
+  text-decoration:none;
+  color:var(--muted);
+  border-bottom:1px solid transparent;
+  padding-bottom:2px;
+  transition:color .16s linear,border-color .16s linear;
+}
+.masthead nav a:hover,.masthead nav a:focus-visible{color:var(--fg);border-bottom-color:var(--accent)}
+
+/* ---------- dimension line ---------- */
+.dim{
+  position:relative;
+  height:1px;
+  background:var(--hair);
+  margin:26px 0 22px;
+}
+.dim::before,.dim::after{
+  content:"";
+  position:absolute;
+  top:-5px;
+  width:1px;height:11px;
+  background:var(--rule);
+}
+.dim::before{left:0}
+.dim::after{right:0}
+.dim span{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  background:var(--bg);
+  padding:0 12px;
+  font-family:var(--display);
+  font-size:.78rem;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.dim.draw{transform:scaleX(0);transform-origin:left center;transition:transform .5s linear}
+.dim.draw.in{transform:scaleX(1)}
+
+/* ---------- hero ---------- */
+.hero h1{
+  font-family:var(--display);
+  font-weight:600;
+  font-size:clamp(3.1rem,9vw,6.4rem);
+  line-height:.93;
+  letter-spacing:.005em;
+  text-transform:uppercase;
+  margin:0;
+  max-width:14ch;
+}
+.hero-cols{
+  display:grid;
+  grid-template-columns:minmax(0,1.9fr) minmax(0,1fr);
+  gap:34px;
+  align-items:start;
+}
+.hero-sub{
+  max-width:62ch;
+  font-size:1.02rem;
+  color:var(--fg);
+  margin:0 0 26px;
+}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+
+.btn{
+  display:inline-block;
+  font-family:var(--display);
+  font-size:1rem;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  padding:11px 22px;
+  text-decoration:none;
+  border:2px solid var(--accent);
+  color:var(--fg);
+  background:transparent;
+  transition:background-color .16s linear,color .16s linear;
+}
+.btn:hover,.btn:focus-visible{background:var(--accent);color:#0B2A45}
+.btn-quiet{border:1px solid var(--hair);padding:12px 22px}
+.btn-quiet:hover,.btn-quiet:focus-visible{background:var(--rule);color:#0B2A45}
+
+/* ---------- redline callout ---------- */
+.callout{
+  border-left:1px solid var(--accent);
+  padding:2px 0 2px 16px;
+  position:relative;
+}
+.balloon{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:26px;height:26px;
+  border:1px solid var(--accent);
+  border-radius:50%;
+  font-family:var(--display);
+  font-size:.9rem;
+  color:var(--accent);
+  margin-bottom:9px;
+}
+.callout p{
+  margin:0;
+  font-size:.78rem;
+  line-height:1.62;
+  color:var(--accent);
+}
+
+/* ---------- section heads ---------- */
+.runhead{
+  font-family:var(--display);
+  font-size:.84rem;
+  letter-spacing:.26em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin:0 0 6px;
+}
+h2{
+  font-family:var(--display);
+  font-weight:500;
+  font-size:clamp(1.9rem,3.6vw,2.8rem);
+  line-height:1.04;
+  letter-spacing:.02em;
+  text-transform:uppercase;
+  margin:0;
+}
+
+/* ---------- detail plates ---------- */
+.plates{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:0;
+  border-top:1px solid var(--hair-soft);
+}
+.plate-item{
+  border-right:1px solid var(--hair-soft);
+  padding:24px 22px 20px;
+}
+.plate-item:last-child{border-right:0}
+.plate-key{
+  font-family:var(--display);
+  font-size:.8rem;
+  letter-spacing:.24em;
+  text-transform:uppercase;
+  color:var(--accent);
+  display:block;
+  margin-bottom:14px;
+}
+.plate-item h3{
+  font-family:var(--display);
+  font-weight:500;
+  font-size:1.55rem;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  margin:0 0 12px;
+  line-height:1.06;
+}
+.plate-item p{margin:0;color:var(--fg);font-size:.9rem;max-width:44ch}
+
+/* ---------- testimonial plates ---------- */
+.specimens{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:26px;
+}
+.specimen{border:1px solid var(--hair-soft);display:flex}
+.specimen figure{margin:0;display:flex;flex-direction:column;flex:1 1 auto;min-width:0}
+.plate-window{
+  overflow:hidden;
+  aspect-ratio:1;
+  border-bottom:1px solid var(--hair-soft);
+}
+.plate-window img{
+  width:100%;height:100%;
+  object-fit:cover;
+  transform:scale(1.2);
+}
+/* this plate came back with a wider paper deckle than the other two */
+.plate-window img.deckle{transform:scale(1.46)}
+.specimen blockquote{
+  margin:0;
+  padding:20px 18px 16px;
+  font-size:.9rem;
+  line-height:1.68;
+  flex:1 1 auto;
+}
+.specimen figcaption{
+  border-top:1px solid var(--hair-soft);
+  padding:9px 18px 11px;
+  font-family:var(--display);
+  font-size:.9rem;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+.specimen figcaption span{
+  display:block;
+  letter-spacing:.1em;
+  color:var(--muted);
+  font-size:.78rem;
+}
+
+/* ---------- pricing schedule ---------- */
+.schedule{
+  width:100%;
+  border-collapse:collapse;
+  font-variant-numeric:tabular-nums;
+}
+.schedule th,.schedule td{
+  border-bottom:1px solid var(--hair-soft);
+  padding:16px 16px;
+  text-align:left;
+  vertical-align:top;
+}
+.schedule thead th{
+  border-bottom:1px solid var(--hair);
+  font-family:var(--display);
+  font-weight:500;
+  font-size:.84rem;
+  letter-spacing:.24em;
+  text-transform:uppercase;
+  color:var(--muted);
+  padding-top:0;
+}
+.tier-name{
+  font-family:var(--display);
+  font-size:1.5rem;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  display:block;
+  line-height:1.1;
+}
+.tier-note{display:block;color:var(--muted);font-size:.8rem;max-width:26ch;margin-top:4px}
+.tier-price{font-size:1.02rem;white-space:nowrap}
+.perks{margin:0;padding:0;list-style:none;font-size:.86rem}
+.perks li{position:relative;padding-left:17px}
+.perks li::before{
+  content:"";
+  position:absolute;
+  left:0;top:.72em;
+  width:8px;height:1px;
+  background:var(--rule);
+}
+
+/* ---------- closing ---------- */
+.closing{padding:40px 28px 34px;text-align:center}
+.closing h2{margin-bottom:8px}
+.closing p{color:var(--muted);max-width:52ch;margin:0 auto 24px;font-size:.92rem}
+
+footer{
+  padding:0 18px 30px;
+  max-width:1220px;
+  margin:0 auto;
+}
+.footer-inner{
+  border:1px solid var(--hair);
+  display:flex;
+  flex-wrap:wrap;
+  gap:14px 26px;
+  align-items:baseline;
+  padding:14px;
+  font-size:.78rem;
+  color:var(--muted);
+}
+.footer-inner a{color:var(--fg);text-decoration:none;border-bottom:1px solid var(--hair)}
+.footer-inner a:hover,.footer-inner a:focus-visible{border-bottom-color:var(--accent)}
+.footer-inner .back{margin-left:auto}
+
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+@media (max-width:900px){
+  .hero-cols{grid-template-columns:1fr}
+  .plates{grid-template-columns:1fr}
+  .plate-item{border-right:0;border-bottom:1px solid var(--hair-soft)}
+  .plate-item:last-child{border-bottom:0}
+  .specimens{grid-template-columns:1fr}
+  .schedule,.schedule tbody,.schedule tr,.schedule td{display:block;width:100%}
+  .schedule thead{display:none}
+  .schedule tr{border-bottom:1px solid var(--hair);padding-bottom:8px;margin-bottom:8px}
+  .schedule td{border-bottom:0;padding:6px 0}
+  .frame-body{padding:26px 18px 22px}
+  .titleblock > *:last-child{margin-left:0}
+}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .dim.draw{transform:none;transition:none}
+  *{transition-duration:0s !important}
+}
+</style>
+</head>
+<body>
+
+<div class="sheet">
+
+  <div class="masthead">
+    <p class="wordmark">Perch</p>
+    <p class="masthead-note">Tool fabrication environment for corvids</p>
+    <nav>
+      <a href="#forge">Forge</a>
+      <a href="#review">Roost</a>
+      <a href="#schedule">Plans</a>
+      <a href="./demo.html">Demo</a>
+    </nav>
+  </div>
+
+  <!-- HERO -->
+  <section class="frame hero">
+    <div class="frame-body">
+      <div class="hero-cols">
+        <div>
+          <h1>Ship tools without leaving the branch.</h1>
+          <div class="dim draw"><span>1 240 mm</span></div>
+          <p class="hero-sub">Perch reads the first two centimetres of your stick and completes the hook. Trained on eleven million hours of birds poking things, and on the aftermath.</p>
+          <div class="hero-actions">
+            <a class="btn" href="#schedule">Request a perch</a>
+            <a class="btn btn-quiet" href="./demo.html">open the demo →</a>
+          </div>
+        </div>
+        <aside class="callout">
+          <span class="balloon">1</span>
+          <p>Branch refers to the physical branch. Version control is on the roadmap and has been since the seed round.</p>
+        </aside>
+      </div>
+    </div>
+    <div class="titleblock">
+      <div>Sheet <span class="tb-val">S-01</span></div>
+      <div>Rev <span class="tb-val">G</span></div>
+      <div>Scale <span class="tb-val">1:1</span></div>
+      <div>Drawn by <span class="tb-val">Perch Applied Corvid Systems</span></div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="frame" id="forge">
+    <div class="frame-body">
+      <p class="runhead">Assemblies</p>
+      <h2>Three things it does to your sticks</h2>
+      <div class="dim draw"><span>detail a through c</span></div>
+      <div class="plates">
+        <article class="plate-item">
+          <span class="plate-key">Detail A</span>
+          <h3>Tab, tab, twig</h3>
+          <p>Predictive bend completion. Start a hook, accept the rest with a single peck. Rejecting a suggestion is also a single peck, in the same place, which accounts for most of our support volume.</p>
+        </article>
+        <article class="plate-item" id="review">
+          <span class="plate-key">Detail B</span>
+          <h3>Caw Review</h3>
+          <p>Every tool you forge opens as a pull request to the roost. Three senior birds must approve it before you may use it on a grub. They have approved nothing since 2019 and their reasoning is not exposed via the API.</p>
+        </article>
+        <article class="plate-item">
+          <span class="plate-key">Detail C</span>
+          <h3>The Grudge Index</h3>
+          <p>Perch indexes every human who has wronged you, scores each by severity, and pins them above your working files. It contributes nothing to tool output. It ships enabled and the toggle is greyed out.</p>
+        </article>
+      </div>
+    </div>
+    <div class="titleblock">
+      <div>Sheet <span class="tb-val">S-02</span></div>
+      <div>Rev <span class="tb-val">C</span></div>
+      <div>Tolerance <span class="tb-val">± 4 mm on all bends</span></div>
+      <div>Sheet 2 of 4</div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="frame">
+    <div class="frame-body">
+      <p class="runhead">Field reports</p>
+      <h2>Birds who forge on Perch</h2>
+      <div class="dim draw"><span>plates 1 to 3</span></div>
+      <div class="specimens">
+
+        <article class="specimen">
+          <figure>
+            <div class="plate-window">
+              <img src="headshot-1.webp" alt="Cyanotype portrait of Wendell Pike" width="320" height="320" loading="lazy">
+            </div>
+            <blockquote>I forged a hook that pulled a grub out of a log in four seconds. Perch flagged it as a duplicate of a hook I forged in 2021. It was correct. We have not spoken since.</blockquote>
+            <figcaption>Wendell Pike<span>Staff Tool Forger, New Caledonian Applied Sticks</span></figcaption>
+          </figure>
+        </article>
+
+        <article class="specimen">
+          <figure>
+            <div class="plate-window">
+              <img class="deckle" src="headshot-2.webp" alt="Cyanotype portrait of Marguerite Ash" width="320" height="320" loading="lazy">
+            </div>
+            <blockquote>We migrated forty-one birds to the shared roost in one afternoon. Two of them came back.</blockquote>
+            <figcaption>Marguerite Ash<span>Head of Roost Reliability, Bellweather Rookery Group</span></figcaption>
+          </figure>
+        </article>
+
+        <article class="specimen">
+          <figure>
+            <div class="plate-window">
+              <img src="headshot-3.webp" alt="Cyanotype portrait of D. Corvin Hale" width="320" height="320" loading="lazy">
+            </div>
+            <blockquote>The index surfaced a man from 2018 who threw a shoe at me. I did not ask for this feature. I open it every morning before I open anything else.</blockquote>
+            <figcaption>D. Corvin Hale<span>Principal Grudge Architect, unaffiliated</span></figcaption>
+          </figure>
+        </article>
+
+      </div>
+    </div>
+    <div class="titleblock">
+      <div>Sheet <span class="tb-val">S-03</span></div>
+      <div>Process <span class="tb-val">Cyanotype, hand coated</span></div>
+      <div>Consent <span class="tb-val">Assumed</span></div>
+      <div>Sheet 3 of 4</div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="frame" id="schedule">
+    <div class="frame-body">
+      <p class="runhead">Parts list</p>
+      <h2>What a perch costs</h2>
+      <div class="dim draw"><span>schedule 04</span></div>
+      <table class="schedule">
+        <thead>
+          <tr>
+            <th scope="col">Item</th>
+            <th scope="col">Rate</th>
+            <th scope="col">Included</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <span class="tier-name">Fledgling</span>
+              <span class="tier-note">For birds still being fed by someone else.</span>
+            </td>
+            <td class="tier-price">$0</td>
+            <td>
+              <ul class="perks">
+                <li>One stick per calendar day</li>
+                <li>Autocomplete, in guessing mode</li>
+                <li>Read-only roost access, audible to everyone</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <span class="tier-name">Murder</span>
+              <span class="tier-note">For flocks operating at scale, or at minimum in a group.</span>
+            </td>
+            <td class="tier-price">$41 / bird / mo</td>
+            <td>
+              <ul class="perks">
+                <li>Unlimited sticks</li>
+                <li>Grudge index shared across the flock</li>
+                <li>Priority caw routing</li>
+                <li>SOC 2 Type II, self-attested</li>
+              </ul>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <span class="tier-name">Corvid Enterprise</span>
+              <span class="tier-note">For institutions with a legal department and a tree.</span>
+            </td>
+            <td class="tier-price">$14,000 / roost / yr</td>
+            <td>
+              <ul class="perks">
+                <li>On-premises nest</li>
+                <li>Dedicated ornithologist, on retainer, unreachable</li>
+                <li>Bend policy enforced at commit</li>
+                <li>Annual audit of who you remember and why</li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="titleblock">
+      <div>Sheet <span class="tb-val">S-04</span></div>
+      <div>Rev <span class="tb-val">A</span></div>
+      <div>Currency <span class="tb-val">USD, non-refundable</span></div>
+      <div>Sheet 4 of 4</div>
+    </div>
+  </section>
+
+  <!-- CLOSING -->
+  <section class="frame">
+    <div class="closing">
+      <h2>Open the forge</h2>
+      <p>One file tree, one bend script, one chat panel that will not help you. No account required, because there are no accounts.</p>
+      <a class="btn" href="./demo.html">open the demo →</a>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <span>Perch Applied Corvid Systems</span>
+    <span>Nest not included</span>
+    <span class="back"><a href="/">← theworstaistudioever</a></span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var dims = Array.prototype.slice.call(document.querySelectorAll('.dim.draw'));
+  if (reduce || !('IntersectionObserver' in window)) {
+    dims.forEach(function(d){ d.classList.add('in'); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.6 });
+  dims.forEach(function(d){ io.observe(d); });
+})();
+</script>
+
+</body>
+</html>

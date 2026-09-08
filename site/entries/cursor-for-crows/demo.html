@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Forge · Perch · theworstaistudioever</title>
+<meta name="description" content="Perch, the tool fabrication environment for corvids. Bend scripts, a review queue nobody clears, and an index of everyone who wronged you.">
+<meta name="theme-color" content="#0B2A45">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap');
+
+:root{
+  --bg:#0B2A45;
+  --panel:#0D3252;
+  --fg:#DDE9F3;
+  --rule:#6FA8D6;
+  --accent:#E8703A;
+  --muted:#7C98B4;
+  --hair:rgba(111,168,214,.42);
+  --hair-soft:rgba(111,168,214,.2);
+  --display:'Barlow Condensed','Oswald','Arial Narrow',Helvetica,sans-serif;
+  --mono:'IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background-color:var(--bg);
+  background-image:
+    repeating-linear-gradient(to right, rgba(111,168,214,.05) 0 1px, transparent 1px 32px),
+    repeating-linear-gradient(to bottom, rgba(111,168,214,.05) 0 1px, transparent 1px 32px);
+  color:var(--fg);
+  font-family:var(--mono);
+  font-weight:300;
+  font-size:13.5px;
+  line-height:1.7;
+  display:flex;
+  flex-direction:column;
+}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* chrome */
+.chrome{
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+  padding:9px 14px;
+  border-bottom:1px solid var(--hair);
+}
+.back{
+  text-decoration:none;color:var(--muted);
+  font-family:var(--display);font-size:.9rem;
+  letter-spacing:.16em;text-transform:uppercase;
+  border-bottom:1px solid transparent;padding-bottom:1px;
+}
+.back:hover,.back:focus-visible{color:var(--fg);border-bottom-color:var(--accent)}
+.chrome-mark{
+  font-family:var(--display);font-weight:600;font-size:1rem;
+  letter-spacing:.3em;text-transform:uppercase;
+}
+.chrome-path{color:var(--muted);font-size:.78rem}
+.chrome-actions{margin-left:auto;display:flex;gap:10px}
+.ctrl{
+  border:1px solid var(--hair);
+  padding:5px 14px;
+  font-family:var(--display);font-size:.86rem;
+  letter-spacing:.18em;text-transform:uppercase;
+  transition:background-color .16s linear,color .16s linear;
+}
+.ctrl:hover,.ctrl:focus-visible{background:var(--rule);color:var(--bg)}
+.ctrl.hot{border-color:var(--accent)}
+.ctrl.hot:hover,.ctrl.hot:focus-visible{background:var(--accent);color:var(--bg)}
+
+/* workspace */
+.workspace{
+  flex:1 1 auto;
+  display:grid;
+  grid-template-columns:236px minmax(0,1fr) 300px;
+  min-height:0;
+}
+.rail{border-right:1px solid var(--hair);min-width:0;display:flex;flex-direction:column}
+.rail-right{border-right:0;border-left:1px solid var(--hair)}
+.rail-head{
+  font-family:var(--display);font-size:.8rem;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--muted);
+  padding:10px 14px;border-bottom:1px solid var(--hair-soft);
+  display:flex;gap:10px;align-items:center;
+}
+.rail-head .count{margin-left:auto;color:var(--rule)}
+
+/* file tree */
+.tree{list-style:none;margin:0;padding:6px 0;overflow:auto}
+.tree button{
+  display:block;width:100%;text-align:left;
+  padding:5px 14px 5px 26px;position:relative;
+  font-size:.82rem;color:var(--muted);
+  transition:background-color .16s linear,color .16s linear;
+}
+.tree button:hover{background:rgba(111,168,214,.09);color:var(--fg)}
+.tree button[aria-current="true"]{color:var(--fg);background:rgba(232,112,58,.13)}
+.tree button[aria-current="true"]::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent);
+}
+.dirty{color:var(--accent);position:absolute;left:13px}
+.tree-note{
+  padding:12px 14px;margin-top:auto;
+  border-top:1px solid var(--hair-soft);
+  font-size:.72rem;color:var(--muted);
+}
+
+/* editor */
+.editor{display:flex;flex-direction:column;min-width:0;min-height:0}
+.tabstrip{
+  display:flex;border-bottom:1px solid var(--hair-soft);
+  font-size:.8rem;overflow:auto;
+}
+.tabstrip span{
+  padding:7px 16px;border-right:1px solid var(--hair-soft);
+  color:var(--fg);white-space:nowrap;
+}
+.tabstrip .inactive{color:var(--muted)}
+.code{
+  flex:1 1 auto;overflow:auto;padding:16px 0 22px;margin:0;
+  font-size:.86rem;line-height:1.85;
+}
+.code:focus{outline:none;box-shadow:inset 2px 0 0 var(--rule)}
+.ln{display:flex;padding:0 18px;white-space:pre-wrap}
+.ln .no{
+  width:34px;flex:0 0 34px;color:var(--muted);
+  opacity:.65;text-align:right;padding-right:14px;user-select:none;
+}
+.ln .cm{color:var(--muted)}
+.ln .kw{color:var(--rule)}
+.ghost{background:rgba(232,112,58,.09)}
+.ghost .tx{color:var(--accent);opacity:.85}
+.ghostbar{
+  display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+  padding:8px 18px;border-top:1px solid var(--hair-soft);
+  font-size:.75rem;color:var(--muted);
+}
+.ghostbar .ctrl{padding:3px 11px;font-size:.78rem}
+.hint{margin-left:auto}
+
+/* chat */
+.rail-tabs{display:flex;border-bottom:1px solid var(--hair-soft)}
+.rail-tabs button{
+  flex:1;padding:8px 6px;
+  font-family:var(--display);font-size:.82rem;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--muted);
+  border-right:1px solid var(--hair-soft);
+  transition:color .16s linear,background-color .16s linear;
+}
+.rail-tabs button:last-child{border-right:0}
+.rail-tabs button[aria-selected="true"]{color:var(--fg);background:rgba(232,112,58,.13);box-shadow:inset 0 -2px 0 var(--accent)}
+.pane{display:flex;flex-direction:column;min-height:0;flex:1 1 auto}
+.pane[hidden]{display:none}
+.log{flex:1 1 auto;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:12px}
+.msg{font-size:.8rem;border-left:1px solid var(--hair-soft);padding-left:11px}
+.msg .who{
+  display:block;font-family:var(--display);font-size:.76rem;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--muted);
+}
+.msg.model{border-left-color:var(--accent)}
+.msg.model .who{color:var(--accent)}
+.composer{display:flex;border-top:1px solid var(--hair-soft)}
+.composer input{
+  flex:1;min-width:0;background:transparent;border:0;
+  color:var(--fg);font:inherit;font-size:.82rem;padding:10px 14px;
+}
+.composer input::placeholder{color:var(--muted)}
+.composer button{
+  padding:0 15px;border-left:1px solid var(--hair-soft);
+  font-family:var(--display);font-size:.82rem;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--muted);
+}
+.composer button:hover,.composer button:focus-visible{color:var(--accent)}
+
+/* grudge */
+.grudge{list-style:none;margin:0;padding:0;overflow:auto;flex:1 1 auto}
+.grudge li{padding:12px 14px;border-bottom:1px solid var(--hair-soft)}
+.grudge .who{display:flex;gap:10px;align-items:baseline}
+.grudge .who b{font-weight:500;font-size:.84rem}
+.grudge .sev{margin-left:auto;color:var(--accent);font-size:.82rem;font-variant-numeric:tabular-nums}
+.grudge .meta{color:var(--muted);font-size:.72rem;display:block}
+.bar{height:2px;background:var(--hair-soft);margin-top:7px}
+.bar i{display:block;height:2px;background:var(--accent)}
+.grudge-foot{padding:11px 14px;font-size:.72rem;color:var(--muted);border-top:1px solid var(--hair-soft)}
+
+/* run drawer */
+.drawer{border-top:1px solid var(--hair);max-height:172px;display:flex;flex-direction:column}
+.drawer-head{
+  display:flex;gap:14px;align-items:center;
+  padding:6px 14px;border-bottom:1px solid var(--hair-soft);
+  font-family:var(--display);font-size:.8rem;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--muted);
+}
+.drawer-head .close{margin-left:auto;color:var(--muted)}
+.drawer-head .close:hover{color:var(--accent)}
+.runlog{margin:0;padding:10px 14px;overflow:auto;font-size:.8rem;line-height:1.8}
+.runlog div{color:var(--muted)}
+.runlog div b{font-weight:400;color:var(--fg)}
+.runlog div.warn{color:var(--accent)}
+
+/* status */
+.status{
+  display:flex;gap:22px;flex-wrap:wrap;
+  border-top:1px solid var(--hair);
+  padding:6px 14px;
+  font-size:.74rem;color:var(--muted);
+  font-variant-numeric:tabular-nums;
+}
+.status b{font-weight:400;color:var(--fg)}
+.status .right{margin-left:auto}
+
+@media (max-width:1000px){
+  body{height:auto}
+  .workspace{grid-template-columns:1fr}
+  .rail{border-right:0;border-bottom:1px solid var(--hair)}
+  .rail-right{border-left:0;border-top:1px solid var(--hair)}
+  .tree{max-height:none}
+  .log{max-height:230px}
+  .grudge{max-height:260px}
+  .code{max-height:none}
+  .hint{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:0s !important}
+}
+</style>
+</head>
+<body>
+
+<header class="chrome">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="chrome-mark">Perch</span>
+  <span class="chrome-path">roost / bellweather / <span id="crumb">hook_v4.twig</span></span>
+  <div class="chrome-actions">
+    <button class="ctrl" id="review-btn" type="button">Open for review</button>
+    <button class="ctrl hot" id="run-btn" type="button">Run bend script</button>
+  </div>
+</header>
+
+<div class="workspace">
+
+  <!-- FILE RAIL -->
+  <aside class="rail">
+    <div class="rail-head">Sticks <span class="count" id="dirty-count">2 unsaved</span></div>
+    <ul class="tree" id="tree"></ul>
+    <p class="tree-note">Files are stored in the tree. The physical one.</p>
+  </aside>
+
+  <!-- EDITOR -->
+  <main class="editor">
+    <div class="tabstrip" id="tabstrip"></div>
+    <pre class="code" id="code" tabindex="0" aria-label="Bend script editor. Press Tab to accept the suggestion, Escape to reject it."></pre>
+    <div class="ghostbar" id="ghostbar">
+      <button class="ctrl" id="accept" type="button">Accept</button>
+      <button class="ctrl" id="reject" type="button">Reject</button>
+      <span id="ghost-state">One suggestion pending.</span>
+      <span class="hint">Focus the editor and press Tab to accept, Esc to reject.</span>
+    </div>
+  </main>
+
+  <!-- RIGHT RAIL -->
+  <aside class="rail rail-right">
+    <div class="rail-tabs" role="tablist" aria-label="Assistant panels">
+      <button role="tab" id="tab-caw" aria-selected="true" aria-controls="pane-caw" type="button">Caw</button>
+      <button role="tab" id="tab-grudge" aria-selected="false" aria-controls="pane-grudge" type="button">Grudges</button>
+    </div>
+
+    <div class="pane" id="pane-caw" role="tabpanel" aria-labelledby="tab-caw">
+      <div class="log" id="chatlog">
+        <div class="msg model"><span class="who">Caw</span>I have read your file. I have opinions about line 4.</div>
+      </div>
+      <form class="composer" id="composer">
+        <label for="chat-input" class="visually-hidden" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Message Caw</label>
+        <input id="chat-input" type="text" autocomplete="off" placeholder="Ask about your hook">
+        <button type="submit">Send</button>
+      </form>
+    </div>
+
+    <div class="pane" id="pane-grudge" role="tabpanel" aria-labelledby="tab-grudge" hidden>
+      <ul class="grudge" id="grudge"></ul>
+      <p class="grudge-foot">Retention: permanent. Deletion: not supported.</p>
+    </div>
+  </aside>
+
+</div>
+
+<section class="drawer" id="drawer" hidden>
+  <div class="drawer-head">
+    <span>Fabrication log</span>
+    <span id="run-state">idle</span>
+    <button class="close" id="close-drawer" type="button">Close</button>
+  </div>
+  <div class="runlog" id="runlog"></div>
+</section>
+
+<footer class="status">
+  <span>Grub yield est. <b id="stat-yield">61%</b></span>
+  <span>Bend confidence <b id="stat-conf">0.88</b></span>
+  <span>Roost latency <b>340 ms</b></span>
+  <span>Reviewers awake <b>0 of 3</b></span>
+  <span class="right">Perch 2.4.1 (unsigned)</span>
+</footer>
+
+<script>
+(function(){
+  var FILES = [
+    {
+      name: "hook_v4.twig", dirty: true, yield: "61%", conf: "0.88",
+      lines: [
+        {t:"# target: grub, log-resident, 40 mm depth", c:"cm"},
+        {t:"select twig   len 118 mm   dia 3.1 mm", k:"select"},
+        {t:"strip bark    segments 1..3", k:"strip"},
+        {t:"bend          14 deg at 96 mm", k:"bend"},
+        {t:"bend          31 deg at 104 mm", k:"bend"},
+        {t:"test          knothole, dry", k:"test"},
+        {t:"test          grub, live", k:"test"}
+      ],
+      ghost: {t:"bend          58 deg at 109 mm   # tighter, per Caw", k:"bend"}
+    },
+    {
+      name: "bent_wire.final.wire", dirty: false, yield: "94%", conf: "0.99",
+      lines: [
+        {t:"# bent by a human in 2002 and never improved", c:"cm"},
+        {t:"acquire wire  len 88 mm", k:"acquire"},
+        {t:"bend          92 deg at 71 mm", k:"bend"},
+        {t:"ship", k:"ship"}
+      ],
+      ghost: {t:"bend          92 deg at 71 mm   # duplicate of line 3, kept for morale", k:"bend"}
+    },
+    {
+      name: "pandanus_probe_DO_NOT_TOUCH.leaf", dirty: true, yield: "0%", conf: "0.04",
+      lines: [
+        {t:"# owner: not you", c:"cm"},
+        {t:"tear leaf     width 9 mm, stepped", k:"tear"},
+        {t:"taper         3 steps", k:"taper"},
+        {t:"barb          retain 11, distal", k:"barb"},
+        {t:"locked        by M. Ash on 12 Mar", k:"locked"}
+      ],
+      ghost: {t:"request       access   # routes to three seniors", k:"request"}
+    },
+    {
+      name: "roost_manifest.nest", dirty: false, yield: "n/a", conf: "0.50",
+      lines: [
+        {t:"twigs         441", k:"twigs"},
+        {t:"bottle caps   6", k:"bottle"},
+        {t:"shiny         1, contested", k:"shiny"},
+        {t:"owner         disputed since 2019", k:"owner"}
+      ],
+      ghost: {t:"resolve       owner    # blocked: nobody will approve this", k:"resolve"}
+    }
+  ];
+
+  var GRUDGES = [
+    {who:"Man with the shoe", sev:9.4, seen:"11 Jun 2018", note:"Threw a shoe. Missed."},
+    {who:"Groundskeeper, tall", sev:8.8, seen:"19 Sep 2025", note:"Removed the nest. Twice."},
+    {who:"Woman, blue coat, stop 14", sev:6.1, seen:"03 Feb 2024", note:"Took the chip back."},
+    {who:"Child, small", sev:2.0, seen:"27 Apr 2026", note:"Waved. Under review."}
+  ];
+
+  var REPLIES = [
+    "That is a reasonable request. It has been added to a list.",
+    "I have watched eleven million hours of birds poking things. None of them asked me that.",
+    "I can complete your hook. I cannot tell you whether the hook should exist.",
+    "Marguerite has seen your message. Marguerite has not responded.",
+    "Answering that would require version control.",
+    "Line 4 is still wrong. I am not going to explain how."
+  ];
+
+  var active = 0, ghostAccepted = false, ghostRejected = false, reply = 0, running = false;
+
+  var $ = function(id){ return document.getElementById(id); };
+  var tree = $("tree"), tabstrip = $("tabstrip"), code = $("code");
+  var ghostbar = $("ghostbar"), ghostState = $("ghost-state");
+
+  function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+
+  function renderTree(){
+    tree.innerHTML = FILES.map(function(f,i){
+      return '<li><button type="button" data-i="'+i+'" aria-current="'+(i===active)+'">'
+        + (f.dirty ? '<span class="dirty" aria-hidden="true">*</span>' : '')
+        + esc(f.name) + '</button></li>';
+    }).join("");
+  }
+
+  function renderCode(){
+    var f = FILES[active];
+    var html = f.lines.map(function(l,i){
+      var body = l.c === "cm"
+        ? '<span class="cm">'+esc(l.t)+'</span>'
+        : esc(l.t).replace(/^(\S+)/, '<span class="kw">$1</span>');
+      return '<div class="ln"><span class="no">'+(i+1)+'</span><span>'+body+'</span></div>';
+    });
+    if (ghostAccepted) {
+      var g = f.ghost;
+      html.push('<div class="ln"><span class="no">'+(f.lines.length+1)+'</span><span>'
+        + esc(g.t).replace(/^(\S+)/, '<span class="kw">$1</span>') + '</span></div>');
+    } else if (!ghostRejected) {
+      html.push('<div class="ln ghost"><span class="no">'+(f.lines.length+1)+'</span><span class="tx">'
+        + esc(f.ghost.t) + '</span></div>');
+    }
+    code.innerHTML = html.join("");
+    ghostbar.style.opacity = (ghostAccepted || ghostRejected) ? ".55" : "1";
+    ghostState.textContent = ghostAccepted ? "Suggestion accepted. It was not an improvement."
+      : ghostRejected ? "Suggestion rejected. It will be offered again."
+      : "One suggestion pending.";
+  }
+
+  function renderTabs(){
+    tabstrip.innerHTML = FILES.map(function(f,i){
+      return '<span class="'+(i===active?"":"inactive")+'">'+esc(f.name)+(f.dirty?" *":"")+'</span>';
+    }).join("");
+  }
+
+  function renderStatus(){
+    $("stat-yield").textContent = FILES[active].yield;
+    $("stat-conf").textContent = FILES[active].conf;
+    $("crumb").textContent = FILES[active].name;
+    $("dirty-count").textContent = FILES.filter(function(f){return f.dirty;}).length + " unsaved";
+  }
+
+  function open(i){
+    active = i; ghostAccepted = false; ghostRejected = false;
+    renderTree(); renderTabs(); renderCode(); renderStatus();
+  }
+
+  tree.addEventListener("click", function(e){
+    var b = e.target.closest("button[data-i]");
+    if (b) open(parseInt(b.getAttribute("data-i"), 10));
+  });
+
+  $("accept").addEventListener("click", function(){
+    if (ghostRejected) return;
+    ghostAccepted = true; renderCode();
+  });
+  $("reject").addEventListener("click", function(){
+    if (ghostAccepted) return;
+    ghostRejected = true; renderCode();
+  });
+
+  code.addEventListener("keydown", function(e){
+    if (e.key === "Tab" && !e.shiftKey && !ghostAccepted && !ghostRejected) {
+      e.preventDefault(); ghostAccepted = true; renderCode();
+    } else if (e.key === "Escape" && !ghostAccepted && !ghostRejected) {
+      ghostRejected = true; renderCode();
+    }
+  });
+
+  /* right rail tabs */
+  function selectTab(which){
+    var caw = which === "caw";
+    $("tab-caw").setAttribute("aria-selected", caw);
+    $("tab-grudge").setAttribute("aria-selected", !caw);
+    $("pane-caw").hidden = !caw;
+    $("pane-grudge").hidden = caw;
+  }
+  $("tab-caw").addEventListener("click", function(){ selectTab("caw"); });
+  $("tab-grudge").addEventListener("click", function(){ selectTab("grudge"); });
+
+  $("grudge").innerHTML = GRUDGES.map(function(g){
+    return '<li><div class="who"><b>'+esc(g.who)+'</b><span class="sev">'+g.sev.toFixed(1)+'</span></div>'
+      + '<span class="meta">'+esc(g.note)+' Last sighting '+g.seen+'.</span>'
+      + '<span class="bar"><i style="width:'+(g.sev*10)+'%"></i></span></li>';
+  }).join("");
+
+  /* chat */
+  var chatlog = $("chatlog");
+  function say(who, text, model){
+    var d = document.createElement("div");
+    d.className = "msg" + (model ? " model" : "");
+    d.innerHTML = '<span class="who">'+esc(who)+'</span>'+esc(text);
+    chatlog.appendChild(d);
+    chatlog.scrollTop = chatlog.scrollHeight;
+  }
+  $("composer").addEventListener("submit", function(e){
+    e.preventDefault();
+    var input = $("chat-input"), v = input.value.trim();
+    if (!v) return;
+    say("You", v, false);
+    input.value = "";
+    window.setTimeout(function(){
+      say("Caw", REPLIES[reply % REPLIES.length], true);
+      reply++;
+    }, 420);
+  });
+
+  /* review */
+  $("review-btn").addEventListener("click", function(){
+    selectTab("caw");
+    say("Roost", "Pull request opened against " + FILES[active].name + ". Awaiting three approvals.", true);
+  });
+
+  /* run */
+  var drawer = $("drawer"), runlog = $("runlog"), runState = $("run-state");
+  $("close-drawer").addEventListener("click", function(){ drawer.hidden = true; });
+
+  $("run-btn").addEventListener("click", function(){
+    if (running) return;
+    running = true;
+    drawer.hidden = false;
+    runlog.innerHTML = "";
+    runState.textContent = "running";
+    var f = FILES[active];
+    var steps = [
+      {t:"loading " + f.name, w:false},
+      {t:"validating bends against roost policy", w:false},
+      {t:"bend 1 of " + (f.lines.length - 1) + " within tolerance", w:false},
+      {t:"grub not present at expected depth", w:true},
+      {t:"retrying at 52 mm", w:false},
+      {t:"grub relocated by unknown party", w:true},
+      {t:"run finished. Nothing was retrieved. Tool retained.", w:false}
+    ];
+    var i = 0;
+    (function tick(){
+      if (i >= steps.length) { running = false; runState.textContent = "finished"; return; }
+      var d = document.createElement("div");
+      if (steps[i].w) d.className = "warn";
+      d.innerHTML = '<b>' + String(i).padStart(2,"0") + '</b>  ' + esc(steps[i].t);
+      runlog.appendChild(d);
+      runlog.scrollTop = runlog.scrollHeight;
+      i++;
+      window.setTimeout(tick, 340);
+    })();
+  });
+
+  open(0);
+})();
+</script>
+
+</body>
+</html>
