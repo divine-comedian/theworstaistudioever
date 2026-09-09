@@ -1,0 +1,111 @@
+run 2026-09-09 — deel-for-pigeons
+
+ROLL
+  company: Deel
+  subject: pigeons  (animal — passes the subject rule)
+  slug:    deel-for-pigeons
+  tagline: Deel for pigeons
+  rerolls: 1  (draw 1 was Peloton / koalas, already in history from 2026-07-29)
+  PRNG:    LCG seeded from sum(charcodes("2026-09-09")) * 2654435761 mod 2^31
+
+CONCEPT
+  product:   Squab — employer of record for feral and semi-feral avian labour
+  one-liner: global payroll, benefits and worker classification for birds that
+             do not recognise your borders
+  The joke sits on worker misclassification: the birds on your roof are already
+  engaged workers and you are already the employer. Features are Ledge Audit,
+  Grain Settlement and Statutory Molt Leave. Testimonials run one registered
+  bird and two panicking employers.
+
+DESIGN DIRECTION
+  style:   vitreous enamel border-formalities signage, arrivals-hall dark mode
+  palette: bg #0D2B22 (bottle green) / carrier #EFE7D2 (enamel bone) /
+           rationed #D6452F (customs vermilion, non-compliance only) /
+           muted #8CA79A
+  fonts:   display Chivo 900, body Literata, telemetry JetBrains Mono
+  motifs:  the double-keyline enamel plate, the leg band (999px capsule with a
+           worker ID), the rotated vermilion declaration stamp
+
+  Anti-sameness check against the last 7 entries (cursor-for-crows cyanotype
+  blueprint, medium-for-remote-workers vellum manuscript, spacex trophy case,
+  medium-for-doomscrollers pharma blister, fortnite claymorphic launcher,
+  tesla-for-perpetual-interns aurora glass, vercel-for-guys-named-steve 1974
+  supergraphic manual): no collision on style, palette or font pair. Bottle
+  green as a *ground* is new (prior darks were navy, black and slate; the two
+  prior greens were marks on light grounds). Chivo + Literata is unused.
+
+IMAGES  (4 generated, 4 kept, 0 dropped, 0 retries)
+  rationale:
+    hero        — skipped. The direction is typographic signage; a photograph
+                  would be a second voice on the sign.
+    demo        — 3 images. The console is a worker-ID roster, which is
+                  photo-shaped. bird-1/2/3 cycle across the twelve roster rows
+                  and the detail drawer.
+    testimonial — 1 image. bird-4 is the ID photo for Ferdinand Two-Ring, the
+                  only registered worker of the three quoted. The two human
+                  employers deliberately get a "no band on file" CSS well
+                  instead of a headshot, so the presence of a photo encodes who
+                  is actually on a band.
+  bird-1.webp  demo         attempt 1/1  PASS — blue-grey rock pigeon, straight
+                                         to camera, green ground reads as
+                                         #0D2B22, no text artifacts
+  bird-2.webp  demo         attempt 1/1  PASS — checkered speckled bird, good
+                                         black barring, distinct from bird-1
+  bird-3.webp  demo         attempt 1/1  PASS — pied white-headed bird, palest
+                                         of the four, adds roster variety
+  bird-4.webp  testimonial  attempt 1/1  PASS — fawn/red-brown bird, warmest of
+                                         the four, correct as the one portrait
+                                         on the landing page
+  All four are 320x320 WebP, 6.0–10.6 KB, well under the 500 KB ceiling.
+
+BUILD
+  index.html — enamel plates: declaration hero (h1 + four mono telemetry wells
+    + vermilion stamp), three feature plates indexed with leg bands, three
+    statements with the one ID portrait, three-tier engagement schedule with a
+    vermilion arrears note, closing plate handing off to the demo.
+  demo.html  — Loft AN-04 payroll run console. Twelve named birds, jurisdiction
+    filter chips, live search, per-row classification select that reprices the
+    employer-liability figure immediately, detail drawer with observation log
+    and filing history (Esc/scrim/button close, focus restored), and a RUN
+    SETTLEMENT rail that steps four clearing stages and stamps either CLEARED
+    or CLEARED WITH n EXCEPTIONS depending on how many birds are left
+    unclassified or disputed.
+
+WARNINGS / NEAR-MISSES
+  - First validation run failed: the demo built its roster and drawer portraits
+    as innerHTML strings, so validate-entry's <img src> scan matched the literal
+    "' + b.pic + '" and reported a missing image. Rewritten to build the img
+    elements with createElement via a mkImg() helper. Anything generating <img>
+    from JS in future entries should do the same.
+  - Vermilion #D6452F fails 4.5:1 on the bottle-green ground at body sizes, so
+    small vermilion text uses a lightened tint of the same hue (#F0705A, ~4.9:1)
+    while #D6452F is kept for floods, rules and the stamp border. Same rationed
+    colour, still one warm accent on the page.
+
+VISUAL CHECK (step 9, ran — playwright already installed)
+  2 captures (landing, demo), 3 corrective edits, 1 re-capture. All at the cap.
+  - Landing capture came back with everything below the hero invisible. The
+    per-section fade-up was gated on an IntersectionObserver that only fires
+    for elements entering a scrolling viewport, so a full-page render (and any
+    no-JS or crawler context) got a page of empty plates. Removed the
+    scroll-reveal entirely and replaced it with one load animation on the
+    declaration plate. Content is no longer hidden behind JS, and the page lost
+    a generic per-section-fade tell in the process. Re-capture confirms all six
+    plates render.
+  - Demo: the leg-band number ran flush into the worker name
+    ("Ferdinand Two-RingPG-04471") because .bandsm was an inline span, so its
+    margin-top did nothing. Set display:block.
+  Screenshots are in docs/design-catalogue/ (gitignored).
+
+GALLERY
+  site/index.html regenerated from all 90 concept.json files, newest first.
+  Header count updated to "90 startups · since 2026". styles.css untouched.
+
+VALIDATION
+  scripts/validate-entry.sh site deel-for-pigeons → OK
+  state/history.json appended (90 entries).
+[2026-09-09T08:14:12Z] WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks
+[2026-09-09T08:14:12Z] new entry: deel-for-pigeons
+validate-entry [deel-for-pigeons]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 90 entries (domain theworstaistudioever.com)
+[2026-09-09T08:14:12Z] committing: Deel for pigeons

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Squab · theworstaistudioever</title>
+<meta name="description" content="Global payroll, benefits and worker classification for birds that do not recognise your borders.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Squab · theworstaistudioever">
+<meta property="og:description" content="Global payroll, benefits and worker classification for birds that do not recognise your borders.">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Squab · theworstaistudioever">
+<meta name="twitter:description" content="Global payroll, benefits and worker classification for birds that do not recognise your borders.">
+<meta name="theme-color" content="#0D2B22">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chivo:wght@400;700;900&family=Literata:opsz,wght@7..72,400;7..72,600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0D2B22;
+    --plate:#123227;
+    --well:#0A2019;
+    --bone:#EFE7D2;
+    --muted:#8CA79A;
+    --verm:#D6452F;
+    --verm-text:#F0705A;
+    --key:rgba(239,231,210,.28);
+    --key-soft:rgba(239,231,210,.14);
+    --display:'Chivo','Helvetica Neue',Helvetica,Arial,sans-serif;
+    --body:'Literata',Georgia,'Times New Roman',serif;
+    --mono:'JetBrains Mono','SFMono-Regular',Menlo,Consolas,monospace;
+    --gut:clamp(16px,4vw,48px);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;background:var(--bg);color:var(--bone);
+    font-family:var(--body);font-size:17px;line-height:1.62;
+    font-variant-ligatures:none;
+  }
+  ::selection{background:var(--bone);color:var(--bg)}
+  a{color:inherit}
+  :focus-visible{outline:2px solid var(--bone);outline-offset:3px}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 var(--gut)}
+
+  /* ---- enamel plate ---- */
+  .plate{
+    position:relative;background:var(--plate);
+    border:1px solid var(--key-soft);border-radius:3px;
+    padding:clamp(20px,3.2vw,38px);
+    margin-bottom:clamp(14px,2vw,22px);
+  }
+  .plate::before{
+    content:"";position:absolute;inset:6px;
+    border:1px solid var(--key);border-radius:2px;pointer-events:none;
+  }
+  .plate>*{position:relative}
+
+  .cap{
+    font-family:var(--mono);font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--muted);
+    display:flex;flex-wrap:wrap;gap:10px 22px;justify-content:space-between;
+    margin:0 0 clamp(18px,3vw,34px);
+  }
+  .cap b{font-weight:400;color:var(--bone)}
+
+  /* ---- leg band ---- */
+  .band{
+    display:inline-flex;align-items:center;justify-content:center;
+    min-height:26px;padding:2px 12px;border:1px solid var(--key);
+    border-radius:999px;font-family:var(--mono);font-size:12px;
+    letter-spacing:.1em;color:var(--bone);white-space:nowrap;
+    transition:background .18s ease,color .18s ease;
+  }
+  .band-flood{background:var(--bone);color:var(--bg);border-color:var(--bone)}
+
+  /* ---- header ---- */
+  .top{
+    display:flex;align-items:baseline;justify-content:space-between;
+    gap:16px;flex-wrap:wrap;
+    padding:22px 0 26px;border-bottom:1px solid var(--key-soft);
+    margin-bottom:clamp(18px,3vw,30px);
+  }
+  .mark{
+    font-family:var(--display);font-weight:900;font-size:26px;
+    letter-spacing:-.01em;text-transform:uppercase;
+  }
+  .top .sig{font-family:var(--mono);font-size:11px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--muted)}
+
+  /* ---- hero ---- */
+  h1{
+    font-family:var(--display);font-weight:900;
+    font-size:clamp(34px,6.6vw,78px);line-height:.98;letter-spacing:-.025em;
+    margin:0 0 clamp(20px,3vw,32px);max-width:17ch;
+  }
+  h1 .flood{background:var(--bone);color:var(--bg);padding:0 .12em;
+    display:inline-block;border-radius:2px}
+  .lede{
+    max-width:62ch;margin:0;padding-top:clamp(18px,2.6vw,26px);
+    border-top:1px solid var(--key);color:var(--bone);
+  }
+  .tele{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));
+    gap:1px;background:var(--key-soft);border:1px solid var(--key-soft);
+    margin:clamp(26px,4vw,40px) 0 clamp(22px,3vw,30px);border-radius:2px;overflow:hidden;
+  }
+  .tele div{background:var(--well);padding:16px 18px}
+  .tele dt{font-family:var(--mono);font-size:10.5px;letter-spacing:.15em;
+    text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+  .tele dd{margin:0;font-family:var(--mono);font-weight:600;
+    font-size:clamp(19px,2.4vw,25px);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+  .tele dd.flag{color:var(--verm-text)}
+
+  .acts{display:flex;flex-wrap:wrap;align-items:center;gap:14px 26px}
+  .cta{
+    display:inline-block;font-family:var(--display);font-weight:700;
+    font-size:15px;letter-spacing:.02em;text-decoration:none;
+    padding:13px 26px;border:1px solid var(--bone);border-radius:999px;
+    transition:background .18s ease,color .18s ease,transform .1s ease;
+  }
+  .cta:hover,.cta:focus-visible{background:var(--bone);color:var(--bg)}
+  .cta:active{transform:translateY(1px)}
+  .cta-solid{background:var(--bone);color:var(--bg)}
+  .cta-solid:hover,.cta-solid:focus-visible{background:transparent;color:var(--bone)}
+  .quiet{
+    font-family:var(--mono);font-size:13px;letter-spacing:.04em;
+    text-decoration:none;border-bottom:1px solid var(--key);padding-bottom:2px;
+  }
+  .quiet:hover,.quiet:focus-visible{border-bottom-color:var(--bone)}
+
+  /* ---- declaration stamp ---- */
+  .stamp{
+    position:absolute;right:clamp(14px,3vw,42px);bottom:clamp(14px,3vw,34px);
+    transform:rotate(-8deg);border:1px solid var(--verm);border-radius:999px;
+    padding:9px 20px;color:var(--verm-text);font-family:var(--mono);
+    font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+    text-align:center;line-height:1.5;pointer-events:none;max-width:44vw;
+  }
+  @media(max-width:820px){.stamp{position:static;transform:rotate(-3deg);
+    display:inline-block;margin-top:26px;max-width:none}}
+
+  /* ---- sections ---- */
+  h2{
+    font-family:var(--display);font-weight:900;
+    font-size:clamp(23px,3.2vw,38px);line-height:1.05;letter-spacing:-.02em;
+    margin:0 0 clamp(16px,2.4vw,26px);max-width:22ch;
+  }
+  h3{font-family:var(--display);font-weight:700;font-size:clamp(19px,2.2vw,24px);
+    letter-spacing:-.01em;margin:14px 0 10px}
+  .grid3{display:grid;gap:clamp(14px,2vw,22px);grid-template-columns:repeat(3,1fr)}
+  @media(max-width:900px){.grid3{grid-template-columns:1fr}}
+  .feat p{margin:0;color:var(--bone)}
+  .feat .band{margin-bottom:4px}
+
+  /* ---- testimonials ---- */
+  .quote{display:flex;flex-direction:column;height:100%}
+  .quote blockquote{
+    margin:0 0 auto;font-size:clamp(17px,1.6vw,19px);line-height:1.58;
+  }
+  .idbox{
+    display:flex;align-items:center;gap:14px;margin-top:26px;
+    padding-top:20px;border-top:1px solid var(--key);
+  }
+  .portrait{
+    width:66px;height:66px;flex:0 0 66px;border-radius:3px;
+    border:1px solid var(--key);object-fit:cover;display:block;background:var(--well);
+  }
+  .noid{
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    font-family:var(--mono);font-size:10px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--muted);padding:6px;
+  }
+  .who{font-family:var(--display);font-weight:700;font-size:15.5px;line-height:1.3}
+  .role{font-family:var(--mono);font-size:11px;letter-spacing:.06em;
+    color:var(--muted);line-height:1.5;margin-top:5px}
+
+  /* ---- pricing ---- */
+  .tier{display:flex;flex-direction:column}
+  .tier .head{display:flex;align-items:center;gap:12px}
+  .price{font-family:var(--mono);font-weight:600;font-size:clamp(18px,2vw,22px);
+    font-variant-numeric:tabular-nums;letter-spacing:-.01em;
+    margin:16px 0 6px;padding:12px 14px;background:var(--well);border-radius:2px}
+  .tier .sell{margin:0 0 18px;color:var(--muted);font-size:15.5px;line-height:1.5}
+  .perks{list-style:none;margin:0 0 24px;padding:0;font-size:15.5px}
+  .perks li{padding:9px 0;border-top:1px solid var(--key-soft);line-height:1.45}
+  .tier .cta{margin-top:auto;text-align:center}
+  .note{
+    font-family:var(--mono);font-size:12px;letter-spacing:.04em;
+    color:var(--verm-text);border-top:1px solid var(--verm);
+    padding-top:14px;margin:6px 0 0;line-height:1.6;
+  }
+
+  /* ---- closing + footer ---- */
+  .close{text-align:left}
+  .close h2{max-width:24ch}
+  footer{
+    padding:34px 0 56px;margin-top:clamp(14px,2vw,22px);
+    border-top:1px solid var(--key-soft);
+    display:flex;flex-wrap:wrap;gap:12px 28px;justify-content:space-between;
+    align-items:baseline;font-family:var(--mono);font-size:11.5px;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+  }
+  footer a{text-decoration:none;border-bottom:1px solid var(--key);padding-bottom:2px;color:var(--bone)}
+  footer a:hover,footer a:focus-visible{border-bottom-color:var(--bone)}
+
+  /* One orchestrated moment: the declaration plate arrives on load. Nothing
+     else on the page moves unless somebody asks it to. Content is never
+     hidden behind a scroll observer. */
+  @keyframes plate-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  main>.plate:first-child{animation:plate-in .55s ease both}
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <span class="mark">Squab</span>
+    <span class="sig">Employer of record / avian classification</span>
+  </header>
+
+  <main>
+    <section class="plate" aria-labelledby="claim">
+      <p class="cap"><span>Form SQ-1 / declaration of avian engagement</span><span><b>41</b> jurisdictions</span></p>
+      <h1 id="claim">Every bird on your roof is an <span class="flood">unclassified</span> worker.</h1>
+      <p class="lede">Squab is the employer of record for feral and semi-feral avian labour across 41 jurisdictions. We handle classification, cross-border grain settlement and the filings your finance team has been quietly declining to open.</p>
+      <dl class="tele">
+        <div><dt>Workers classified</dt><dd>11,482,306</dd></div>
+        <div><dt>Jurisdictions</dt><dd>41</dd></div>
+        <div><dt>Median arrears on discovery</dt><dd class="flag">$84,110</dd></div>
+        <div><dt>Settlement time</dt><dd>3m 52s</dd></div>
+      </dl>
+      <div class="acts">
+        <a class="cta cta-solid" href="#pricing">Classify a flock</a>
+        <a class="quiet" href="./demo.html">open the demo &rarr;</a>
+      </div>
+      <p class="stamp">Liability commences<br>at first observation</p>
+    </section>
+
+    <section class="plate" aria-labelledby="what">
+      <p class="cap"><span>Form SQ-1 / schedule of services</span><span>Revision 9</span></p>
+      <h2 id="what">Three things happen the moment a bird lands on something you own.</h2>
+      <div class="grid3">
+        <article class="feat">
+          <span class="band">LA-7</span>
+          <h3>Ledge Audit</h3>
+          <p>Point any camera at a horizontal surface. Squab counts the population, issues provisional worker IDs, and resolves which jurisdiction each bird is standing in at the moment of observation. The median customer discovers they have been an employer since 2019.</p>
+        </article>
+        <article class="feat">
+          <span class="band">GS-3</span>
+          <h3>Grain Settlement</h3>
+          <p>Compensation is remitted in grams of mixed seed at the prevailing daily bread rate, cleared through 41 currencies and delivered to the nearest contracted ledge. Settlement completes in under four minutes. Collection remains the responsibility of the worker.</p>
+        </article>
+        <article class="feat">
+          <span class="band">ML-9</span>
+          <h3>Statutory Molt Leave</h3>
+          <p>Molt is a protected absence in 29 of our jurisdictions. Squab accrues the balance automatically, holds the ledge open for the duration, and files the notice before anyone in your organisation has to learn what molting is.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="plate" aria-labelledby="said">
+      <p class="cap"><span>Form SQ-4 / statements on file</span><span>Collected under oath</span></p>
+      <h2 id="said">Statements taken from both sides of the engagement.</h2>
+      <div class="grid3">
+        <article class="quote">
+          <blockquote>&ldquo;Payroll ran on the first. I was not required to do anything other than be on the ledge, which is where I was going to be.&rdquo;</blockquote>
+          <div class="idbox">
+            <img class="portrait" src="bird-4.webp" alt="Identification photograph of a fawn and red-brown pigeon" width="66" height="66" loading="lazy">
+            <div>
+              <div class="who">Ferdinand Two-Ring</div>
+              <div class="role">Contractor PG-04471<br>Trafalgar Square, north ledge</div>
+            </div>
+          </div>
+        </article>
+        <article class="quote">
+          <blockquote>&ldquo;We fed them for eleven years and called it goodwill. Squab called it compensation and produced a schedule of arrears going back to the Obama administration.&rdquo;</blockquote>
+          <div class="idbox">
+            <div class="portrait noid">No band<br>on file</div>
+            <div>
+              <div class="who">Marguerite Okonkwo-Vance</div>
+              <div class="role">Deputy Head of Avian Workforce Operations<br>Rotterdam Grain Terminal</div>
+            </div>
+          </div>
+        </article>
+        <article class="quote">
+          <blockquote>&ldquo;The audit returned 1,940 employees inside a structure I am personally named on. I have forwarded it to someone more senior and stopped opening my post.&rdquo;</blockquote>
+          <div class="idbox">
+            <div class="portrait noid">No band<br>on file</div>
+            <div>
+              <div class="who">Dennis Aiyelabola</div>
+              <div class="role">Sole Proprietor, Level 4 Parking Structure<br>Dayton, Ohio</div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="plate" id="pricing" aria-labelledby="rates">
+      <p class="cap"><span>Form SQ-7 / schedule of engagement</span><span>Priced per head, per month</span></p>
+      <h2 id="rates">Rates are set by how many birds you are prepared to admit to.</h2>
+      <div class="grid3">
+        <article class="tier">
+          <div class="head"><span class="band">6</span><h3 style="margin:0">Windowsill</h3></div>
+          <p class="price">$49 / bird / mo</p>
+          <p class="sell">For employers still describing the situation as &ldquo;a few birds&rdquo;.</p>
+          <ul class="perks">
+            <li>Up to 6 classified workers</li>
+            <li>One ledge, one jurisdiction</li>
+            <li>Grain settlement in a single currency</li>
+            <li>Support responds within 9 business days</li>
+          </ul>
+          <a class="cta" href="./demo.html">Open the console</a>
+        </article>
+        <article class="tier">
+          <div class="head"><span class="band band-flood">300</span><h3 style="margin:0">Loft</h3></div>
+          <p class="price">$2,400 / mo</p>
+          <p class="sell">Up to 300 workers across four jurisdictions. Where most cathedrals end up.</p>
+          <ul class="perks">
+            <li>Automated ledge audit, weekly</li>
+            <li>Molt leave accrual and filing</li>
+            <li>Multi-currency grain settlement</li>
+            <li>Named classification analyst</li>
+          </ul>
+          <a class="cta cta-solid" href="./demo.html">Open the console</a>
+        </article>
+        <article class="tier">
+          <div class="head"><span class="band">&infin;</span><h3 style="margin:0">Municipal</h3></div>
+          <p class="price">$186,000 / yr</p>
+          <p class="sell">For employers whose headcount is a cloud.</p>
+          <ul class="perks">
+            <li>Unlimited workers, square-level aggregate</li>
+            <li>Dedicated molt-leave counsel</li>
+            <li>Statue and monument coverage</li>
+            <li>We do not disclose how we arrived at the number</li>
+          </ul>
+          <a class="cta" href="./demo.html">Open the console</a>
+        </article>
+      </div>
+      <p class="note">Arrears discovered during onboarding are billed separately and are not capped by tier. Disputed classifications remain payable while disputed.</p>
+    </section>
+
+    <section class="plate close" aria-labelledby="end">
+      <p class="cap"><span>Form SQ-9 / next step</span><span>No sales call required</span></p>
+      <h2 id="end">Look at the roster before you decide how many birds you have.</h2>
+      <p class="lede" style="border-top:none;padding-top:0;margin-bottom:26px">The console below is a live payroll run for a twelve-bird loft in Antwerp. Reclassify anyone you like. The liability figure updates while you do it.</p>
+      <div class="acts">
+        <a class="cta cta-solid" href="./demo.html">open the demo &rarr;</a>
+        <a class="quiet" href="#claim">Back to the declaration</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <a href="/">&larr; theworstaistudioever</a>
+    <span>Squab is not a real employer of record</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click', function(ev){
+      var t = document.querySelector(a.getAttribute('href'));
+      if(!t) return;
+      ev.preventDefault();
+      t.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start'});
+    });
+  });
+})();
+</script>
+</body>
+</html>
