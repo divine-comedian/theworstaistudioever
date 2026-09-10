@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wah · theworstaistudioever</title>
+<meta name="description" content="Four bamboo currencies, one account, and a territory boundary we hold on file.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Wah · theworstaistudioever">
+<meta property="og:description" content="Four bamboo currencies, one account, and a territory boundary we hold on file.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Wah · theworstaistudioever">
+<meta name="twitter:description" content="Four bamboo currencies, one account, and a territory boundary we hold on file.">
+<meta name="theme-color" content="#EDE6D4">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,700;6..96,900&family=Courier+Prime:wght@400;700&family=Public+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sub:#EDE6D4;
+  --plate:#F5F0E3;
+  --well:#E2DAC4;
+  --ink:#16382A;
+  --deep:#0F241B;
+  --fg:#1F2A24;
+  --muted:#8C8470;
+  --cin:#B7431C;
+  --line:rgba(22,56,42,.34);
+  --line-hi:rgba(22,56,42,.62);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--sub);
+  color:var(--fg);
+  font-family:'Public Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  font-size:17px;
+  line-height:1.62;
+  font-weight:400;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,.denom,.seal-num,.wordmark{
+  font-family:'Bodoni Moda','Didot','Playfair Display',Georgia,serif;
+  color:var(--ink);
+  margin:0;
+}
+.mono{font-family:'Courier Prime','Courier New',Courier,monospace;font-variant-numeric:tabular-nums}
+a{color:var(--ink)}
+
+/* ---- engraving primitives ---- */
+.lathe{
+  height:11px;
+  background:repeating-linear-gradient(90deg,var(--ink) 0 1px,transparent 1px 3px);
+  opacity:.5;
+  transform-origin:left center;
+}
+.js .reveal .lathe{transform:scaleX(0)}
+.js .reveal.seen .lathe{transform:scaleX(1);transition:transform .7s cubic-bezier(.2,.7,.3,1)}
+.microtext{
+  font-family:'Courier Prime','Courier New',Courier,monospace;
+  font-size:7px;
+  letter-spacing:.34em;
+  color:var(--muted);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:clip;
+  padding:6px 0;
+  user-select:none;
+}
+.rosette{
+  position:relative;
+  border-radius:50%;
+  background:
+    repeating-conic-gradient(from 0deg,var(--ink) 0deg .55deg,transparent .55deg 2.2deg),
+    repeating-radial-gradient(circle at 50% 50%,var(--ink) 0 1px,transparent 1px 5px);
+  -webkit-mask-image:radial-gradient(circle at 50% 50%,#000 61%,transparent 62%);
+  mask-image:radial-gradient(circle at 50% 50%,#000 61%,transparent 62%);
+  opacity:.42;
+}
+.js .reveal .rosette{transform:rotate(0deg)}
+.js .reveal.seen .rosette{transform:rotate(90deg);transition:transform .9s cubic-bezier(.25,.8,.35,1)}
+.well{
+  background:var(--well);
+  border:1px solid var(--line);
+  padding:.42rem .62rem;
+  font-family:'Courier Prime','Courier New',Courier,monospace;
+  font-variant-numeric:tabular-nums;
+  font-size:.82rem;
+  color:var(--ink);
+}
+.overprint{
+  font-family:'Bodoni Moda',Georgia,serif;
+  font-weight:700;
+  letter-spacing:.22em;
+  color:transparent;
+  -webkit-text-stroke:1.2px var(--cin);
+  transform:rotate(-14deg);
+  opacity:.72;
+  pointer-events:none;
+  user-select:none;
+}
+
+/* ---- shell ---- */
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.plate{
+  background:var(--plate);
+  border-left:1px solid var(--line);
+  border-right:1px solid var(--line);
+  position:relative;
+}
+.plate .denom{
+  position:absolute;top:14px;right:22px;
+  font-size:2.5rem;font-weight:500;line-height:1;
+  color:var(--ink);opacity:.26;
+}
+.js .reveal{opacity:0;transform:translateY(6px)}
+.js .reveal.seen{opacity:1;transform:none;transition:opacity .5s ease-out,transform .5s ease-out}
+
+/* ---- masthead ---- */
+.mast{border-bottom:1px solid var(--line)}
+.mast-in{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;padding:16px 24px;max-width:1180px;margin:0 auto;flex-wrap:wrap}
+.wordmark{font-size:1.7rem;font-weight:700;letter-spacing:-.02em}
+.mast-note{font-family:'Courier Prime',monospace;font-size:.72rem;letter-spacing:.16em;color:var(--muted)}
+
+/* ---- hero ---- */
+.hero{padding:0 0 4px}
+.hero-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:56px;padding:56px 40px 46px;align-items:start}
+.issuer{font-family:'Courier Prime',monospace;font-size:.74rem;letter-spacing:.2em;color:var(--muted);margin-bottom:26px}
+h1{font-size:clamp(2.6rem,7vw,5.6rem);line-height:.98;font-weight:700;letter-spacing:-.02em;margin-bottom:24px}
+.hero-sub{max-width:34em;font-size:1.06rem;color:var(--fg);margin:0 0 32px}
+.cta-row{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+.cta{
+  display:inline-block;
+  background:var(--ink);color:var(--sub);
+  font-family:'Public Sans',sans-serif;font-weight:600;font-size:.98rem;
+  padding:14px 26px;text-decoration:none;border:1px solid var(--ink);border-radius:2px;
+  transition:background .18s ease,color .18s ease,transform .08s ease;
+}
+.cta:hover{background:transparent;color:var(--ink)}
+.cta:active{transform:translateY(1px)}
+.cta-ghost{
+  display:inline-block;background:transparent;color:var(--ink);
+  font-weight:500;font-size:.98rem;padding:14px 22px;
+  border:1px solid var(--line-hi);border-radius:2px;text-decoration:none;
+  transition:background .18s ease,color .18s ease;
+}
+.cta-ghost:hover{background:var(--ink);color:var(--sub);border-color:var(--ink)}
+
+.medallion{position:relative;display:grid;place-items:center;height:236px;margin-bottom:26px}
+.medallion .rosette{width:236px;height:236px;position:absolute;inset:0;margin:auto}
+.medallion .seal-num{font-size:4.4rem;font-weight:500;line-height:1;position:relative}
+.medallion .overprint{position:absolute;font-size:1.5rem}
+
+.rates{border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.rate{
+  display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;
+  padding:9px 2px;border-bottom:1px solid var(--line);
+  font-family:'Courier Prime',monospace;font-size:.8rem;font-variant-numeric:tabular-nums;
+}
+.rate:last-child{border-bottom:0}
+.rate span:first-child{letter-spacing:.1em;color:var(--muted)}
+.rate b{font-weight:400;background:var(--well);border:1px solid var(--line);padding:2px 8px;color:var(--ink)}
+.rate.warn span:first-child,.rate.warn b{color:var(--cin);border-color:rgba(183,67,28,.45)}
+
+/* ---- sections ---- */
+.sec{padding:52px 40px}
+.sec-head{max-width:36em;margin-bottom:40px}
+h2{font-size:clamp(1.9rem,3.6vw,2.9rem);line-height:1.06;font-weight:700;letter-spacing:-.02em;margin-bottom:14px}
+.sec-head p{margin:0;color:var(--fg);max-width:32em}
+
+.notes{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--line)}
+.note{padding:30px 26px 34px;border-right:1px solid var(--line);position:relative;transition:background .2s ease}
+.note:last-child{border-right:0}
+.note:hover{background:#F8F4E9}
+.note-disc{position:relative;width:58px;height:58px;display:grid;place-items:center;margin-bottom:22px}
+.note-disc .rosette{position:absolute;inset:0;width:58px;height:58px}
+.note-disc .seal-num{font-size:1.5rem;font-weight:500;position:relative}
+.note h3{font-size:1.28rem;line-height:1.22;font-weight:700;margin-bottom:12px}
+.note p{margin:0;font-size:.96rem;color:var(--fg)}
+
+/* ---- testimonials ---- */
+.quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.q{padding:32px 26px;border-right:1px solid var(--line)}
+.q:last-child{border-right:0}
+.q blockquote{margin:0 0 24px;font-family:'Bodoni Moda',Georgia,serif;font-size:1.14rem;line-height:1.42;color:var(--ink)}
+.q-by{display:flex;gap:14px;align-items:center}
+.vignette{position:relative;width:74px;height:74px;flex:0 0 74px}
+.vignette img{width:74px;height:74px;border-radius:50%;display:block;filter:grayscale(.28) contrast(1.04)}
+.vignette .rosette{position:absolute;inset:-9px;width:92px;height:92px;opacity:.5}
+.q-by .nm{font-weight:600;font-size:.95rem;color:var(--ink);line-height:1.3}
+.q-by .ti{font-size:.8rem;color:var(--muted);line-height:1.35}
+.q-acct{font-family:'Courier Prime',monospace;font-size:.7rem;letter-spacing:.12em;color:var(--muted);margin-top:6px}
+
+/* ---- pricing ---- */
+.sched{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--line)}
+.tier{padding:28px 26px 34px;border-right:1px solid var(--line);display:flex;flex-direction:column}
+.tier:last-child{border-right:0}
+.tier-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:18px}
+.tier h3{font-size:1.5rem;font-weight:700}
+.tier-seal{position:relative;width:44px;height:44px;flex:0 0 44px}
+.tier-seal .rosette{position:absolute;inset:0;width:44px;height:44px}
+.tier .price{font-family:'Courier Prime',monospace;font-size:1.02rem;font-variant-numeric:tabular-nums;background:var(--well);border:1px solid var(--line);padding:7px 11px;display:inline-block;margin-bottom:16px}
+.tier .tline{font-size:.95rem;color:var(--fg);margin:0 0 20px;min-height:2.9em}
+.tier ul{list-style:none;margin:0 0 24px;padding:0;flex:1}
+.tier li{display:grid;grid-template-columns:16px 1fr;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:.92rem}
+.tier li:before{content:"";width:7px;height:7px;border:1px solid var(--ink);border-radius:50%;margin-top:.5em}
+.tier li.no{color:var(--cin)}
+.tier li.no:before{border-color:var(--cin);background:var(--cin)}
+
+/* ---- issuance band ---- */
+.issue{position:relative;padding:64px 40px 70px;text-align:left;overflow:hidden}
+.issue h2{max-width:16em}
+.issue .overprint{position:absolute;right:4%;top:34%;font-size:clamp(2rem,7vw,5rem)}
+.issue p{max-width:30em;margin:0 0 28px}
+
+footer{padding:30px 24px 46px;max-width:1180px;margin:0 auto;display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:baseline}
+footer a{font-size:.9rem;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line-hi);padding-bottom:2px}
+footer a:hover{border-bottom-color:var(--ink)}
+.legal{font-family:'Courier Prime',monospace;font-size:.7rem;letter-spacing:.09em;color:var(--muted);max-width:44em}
+
+:focus-visible{outline:2px solid var(--cin);outline-offset:3px}
+
+@media (max-width:980px){
+  .hero-grid{grid-template-columns:1fr;gap:38px;padding:40px 26px 34px}
+  .notes,.quotes,.sched{grid-template-columns:1fr}
+  .note,.q,.tier{border-right:0;border-bottom:1px solid var(--line)}
+  .note:last-child,.q:last-child,.tier:last-child{border-bottom:0}
+  .sec{padding:40px 26px}
+  .issue{padding:48px 26px 54px}
+  .tier .tline{min-height:0}
+  .plate .denom{font-size:1.8rem;top:10px;right:14px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+  .reveal,.reveal .lathe,.reveal .rosette{opacity:1;transform:none}
+}
+</style>
+<script>
+/* Opt into the reveal animation only when it can actually complete.
+   Without this class the page renders fully visible, so content never
+   depends on JS. */
+(function(){
+  var ok = 'IntersectionObserver' in window &&
+    !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  if (ok) document.documentElement.className += ' js';
+})();
+</script>
+</head>
+<body>
+
+<header class="mast">
+  <div class="mast-in">
+    <span class="wordmark">Wah</span>
+    <span class="mast-note">BUREAU OF BAMBOO ISSUE / SERIES 2026</span>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- HERO NOTE -->
+  <section class="plate hero reveal" id="n1">
+    <div class="lathe"></div>
+    <span class="denom">01</span>
+    <div class="hero-grid">
+      <div>
+        <p class="issuer">ISSUED BY WAH FINANCIAL, RIDGE 41, EASTERN SLOPE</p>
+        <h1>Hold four currencies. All of them bamboo.</h1>
+        <p class="hero-sub">Wah settles shoots, leaves, berries and the occasional egg at the mid-market rate, seven days a week. Your territory is verified by scent within two business days. Weekends carry a spread.</p>
+        <div class="cta-row">
+          <a class="cta" href="./demo.html">open an account</a>
+          <a class="cta-ghost" href="./demo.html">open the demo</a>
+        </div>
+      </div>
+      <div>
+        <div class="medallion">
+          <div class="rosette" aria-hidden="true"></div>
+          <span class="seal-num">4</span>
+          <span class="overprint">SPECIMEN</span>
+        </div>
+        <div class="rates">
+          <div class="rate"><span>SHOOT / LEAF</span><b>1.0000</b></div>
+          <div class="rate"><span>BERRY / LEAF</span><b>0.3140</b></div>
+          <div class="rate"><span>EGG / LEAF</span><b>11.8000</b></div>
+          <div class="rate warn"><span>WEEKEND SPREAD</span><b>+0.40%</b></div>
+        </div>
+      </div>
+    </div>
+    <div class="microtext" aria-hidden="true">WAHFINANCIALDOESNOTGUARANTEETHECONTINUEDEXISTENCEOFANYTREEWAHFINANCIALDOESNOTGUARANTEETHECONTINUEDEXISTENCEOFANYTREEWAHFINANCIALDOESNOTGUARANTEETHECONTINUEDEXISTENCEOFANYTREEWAHFINANCIALDOESNOTGUARANTEETHECONTINUEDEXISTENCEOFANYTREE</div>
+    <div class="lathe"></div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="plate sec reveal" id="n2">
+    <span class="denom">02</span>
+    <div class="sec-head">
+      <h2>What the account does with your leaves</h2>
+      <p>Three services, priced separately, settled in the currency you are least able to produce.</p>
+    </div>
+    <div class="notes">
+      <article class="note">
+        <div class="note-disc"><div class="rosette" aria-hidden="true"></div><span class="seal-num">I</span></div>
+        <h3>Interbank rates on bamboo</h3>
+        <p>A red panda must consume roughly 4 kg of leaves a day to remain solvent. We have made that a currency pair. SHOOT/LEAF settles at the mid-market rate Monday through Friday and carries a 0.4% spread on weekends, when the forest is closed.</p>
+      </article>
+      <article class="note">
+        <div class="note-disc"><div class="rosette" aria-hidden="true"></div><span class="seal-num">II</span></div>
+        <h3>Territory verified by scent</h3>
+        <p>Mark the perimeter of your range and we hold the boundary on file. Where two accounts overlap, the range is awarded to whichever marked most recently. Re-verification is required every 40 days, and immediately after rain. Rain is not a supported dispute reason.</p>
+      </article>
+      <article class="note">
+        <div class="note-disc"><div class="rosette" aria-hidden="true"></div><span class="seal-num">III</span></div>
+        <h3>The Metal card, milled from one billet</h3>
+        <p>Stainless steel, 47 grams, brushed on both faces and engraved with your range coordinates. That is roughly 0.8% of your body weight, which is roughly the reason no Metal card has ever been recovered from a canopy. Replacements are 3 shoots.</p>
+      </article>
+    </div>
+    <div class="microtext" aria-hidden="true">RANGEBOUNDARIESARERECORDEDATTHETIMEOFMARKINGANDMAYNOTREFLECTTHEFORESTRANGEBOUNDARIESARERECORDEDATTHETIMEOFMARKINGANDMAYNOTREFLECTTHEFORESTRANGEBOUNDARIESARERECORDEDATTHETIMEOFMARKINGANDMAYNOTREFLECTTHEFOREST</div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="plate sec reveal" id="n3">
+    <span class="denom">03</span>
+    <div class="sec-head">
+      <h2>From the register of account holders</h2>
+      <p>Statements collected during re-verification. Reproduced without correction.</p>
+    </div>
+    <div class="quotes">
+      <figure class="q">
+        <blockquote>&ldquo;I moved 4 kg of leaves into shoots on a Tuesday and the rate held all afternoon. By Wednesday I could not find the tree. The rate still held.&rdquo;</blockquote>
+        <figcaption class="q-by">
+          <span class="vignette"><img src="headshot-1.webp" alt="Wallace Tam" width="74" height="74" loading="lazy"><span class="rosette" aria-hidden="true"></span></span>
+          <span>
+            <span class="nm">Wallace Tam</span><br>
+            <span class="ti">Sole Occupant, Ridge 41 (Household of One)</span>
+            <span class="q-acct">ACCT 41-0007-WT</span>
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="q">
+        <blockquote>&ldquo;Scent verification failed twice because it rained. Wah reclassified my range as contested and awarded it to my sister, who does not use the app. I have written a letter.&rdquo;</blockquote>
+        <figcaption class="q-by">
+          <span class="vignette"><img src="headshot-2.webp" alt="Odette Bramwell" width="74" height="74" loading="lazy"><span class="rosette" aria-hidden="true"></span></span>
+          <span>
+            <span class="nm">Odette Bramwell</span><br>
+            <span class="ti">Displaced Rightsholder, Eastern Slope</span>
+            <span class="q-acct">ACCT 18-2213-OB</span>
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="q">
+        <blockquote>&ldquo;The Metal card is exquisite. It is at the bottom of a ravine. I think about it during the eleven hours a day I am asleep.&rdquo;</blockquote>
+        <figcaption class="q-by">
+          <span class="vignette"><img src="headshot-3.webp" alt="Ferdinand Choo" width="74" height="74" loading="lazy"><span class="rosette" aria-hidden="true"></span></span>
+          <span>
+            <span class="nm">Ferdinand Choo</span><br>
+            <span class="ti">Chief Foraging Officer, One Fir</span>
+            <span class="q-acct">ACCT 03-9940-FC</span>
+          </span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="plate sec reveal" id="n4">
+    <span class="denom">04</span>
+    <div class="sec-head">
+      <h2>Schedule of fees, in shoots</h2>
+      <p>Fees are debited on the first of the month from whichever balance is largest, which is rarely the one you intended.</p>
+    </div>
+    <div class="lathe"></div>
+    <div class="sched">
+      <article class="tier">
+        <div class="tier-top">
+          <h3>Standard</h3>
+          <span class="tier-seal"><span class="rosette" aria-hidden="true"></span></span>
+        </div>
+        <span class="price">0 shoots / mo</span>
+        <p class="tline">For account holders who are not yet a priority.</p>
+        <ul>
+          <li>One currency. It is leaves.</li>
+          <li>Card delivered in 9 to 40 business days, to a tree</li>
+          <li class="no">Support answers during daylight, which is not when you are awake</li>
+        </ul>
+        <a class="cta-ghost" href="./demo.html">open the console</a>
+      </article>
+      <article class="tier">
+        <div class="tier-top">
+          <h3>Metal</h3>
+          <span class="tier-seal"><span class="rosette" aria-hidden="true"></span></span>
+        </div>
+        <span class="price">94 shoots / mo</span>
+        <p class="tline">The card weighs more than your forearm.</p>
+        <ul>
+          <li>All four bamboo currencies at the mid-market rate</li>
+          <li>Territory re-verification twice yearly, weather permitting</li>
+          <li>Lounge access at three Himalayan ridgelines</li>
+        </ul>
+        <a class="cta" href="./demo.html">open the console</a>
+      </article>
+      <article class="tier">
+        <div class="tier-top">
+          <h3>Ultra</h3>
+          <span class="tier-seal"><span class="rosette" aria-hidden="true"></span></span>
+        </div>
+        <span class="price">1,180 shoots / mo</span>
+        <p class="tline">For the eleven account holders who qualify.</p>
+        <ul>
+          <li>A relationship manager who has never seen a red panda</li>
+          <li class="no">Concierge available on the ground floor only. Concierge will not climb.</li>
+          <li>Your declines are engraved and delivered by hand</li>
+        </ul>
+        <a class="cta-ghost" href="./demo.html">open the console</a>
+      </article>
+    </div>
+    <div class="microtext" aria-hidden="true">FEESAREDEBITEDFROMTHELARGESTBALANCEHELDATTHETIMEOFDEBITANDARENOTREVERSIBLEFEESAREDEBITEDFROMTHELARGESTBALANCEHELDATTHETIMEOFDEBITANDARENOTREVERSIBLEFEESAREDEBITEDFROMTHELARGESTBALANCEHELDATTHETIMEOFDEBIT</div>
+  </section>
+
+  <!-- ISSUANCE -->
+  <section class="plate issue reveal" id="n5">
+    <div class="lathe"></div>
+    <span class="overprint">NOT LEGAL TENDER</span>
+    <h2>Open an account before the leaves do anything.</h2>
+    <p>Verification takes two business days and one dry evening. Your first statement arrives engraved.</p>
+    <a class="cta" href="./demo.html">open the demo</a>
+    <div class="lathe" style="margin-top:56px"></div>
+  </section>
+
+</main>
+
+<footer>
+  <a href="/">&larr; theworstaistudioever</a>
+  <span class="legal">WAH FINANCIAL IS NOT A BANK, NOT A DEPOSITORY, AND NOT LIABLE FOR THE TREE. BAMBOO BALANCES ARE NOT INSURED. RANGES HELD ON FILE ARE HELD ONLY ON FILE.</span>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var nodes = document.querySelectorAll('.reveal');
+  if (reduce || !('IntersectionObserver' in window)) {
+    nodes.forEach(function(n){ n.classList.add('seen'); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e, i){
+      if (!e.isIntersecting) return;
+      var el = e.target;
+      setTimeout(function(){ el.classList.add('seen'); }, i * 40);
+      io.unobserve(el);
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+  nodes.forEach(function(n){ io.observe(n); });
+
+  // Safety net: if anything is still hidden 1.5s after load, show it.
+  // The animation is a nicety; the content is not.
+  window.addEventListener('load', function(){
+    setTimeout(function(){
+      nodes.forEach(function(n){ n.classList.add('seen'); });
+    }, 1500);
+  });
+})();
+</script>
+</body>
+</html>

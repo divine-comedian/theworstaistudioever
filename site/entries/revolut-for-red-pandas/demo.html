@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wah console · theworstaistudioever</title>
+<meta name="description" content="The Wah account console. Four bamboo balances, one exchange desk, and a range currently under dispute.">
+<meta name="theme-color" content="#EDE6D4">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,700&family=Courier+Prime:wght@400;700&family=Public+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sub:#EDE6D4;
+  --plate:#F5F0E3;
+  --well:#E2DAC4;
+  --ink:#16382A;
+  --fg:#1F2A24;
+  --muted:#8C8470;
+  --cin:#B7431C;
+  --line:rgba(22,56,42,.34);
+  --line-hi:rgba(22,56,42,.62);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--sub);color:var(--fg);
+  font-family:'Public Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,.denom,.big{font-family:'Bodoni Moda','Didot',Georgia,serif;color:var(--ink);margin:0}
+.mono,input,select,button{font-family:'Courier Prime','Courier New',Courier,monospace;font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--cin);outline-offset:2px}
+
+.lathe{height:11px;background:repeating-linear-gradient(90deg,var(--ink) 0 1px,transparent 1px 3px);opacity:.5}
+.rosette{
+  border-radius:50%;
+  background:
+    repeating-conic-gradient(from 0deg,var(--ink) 0deg .55deg,transparent .55deg 2.2deg),
+    repeating-radial-gradient(circle at 50% 50%,var(--ink) 0 1px,transparent 1px 5px);
+  -webkit-mask-image:radial-gradient(circle at 50% 50%,#000 61%,transparent 62%);
+  mask-image:radial-gradient(circle at 50% 50%,#000 61%,transparent 62%);
+  opacity:.4;
+}
+
+/* chrome */
+.chrome{border-bottom:1px solid var(--line);background:var(--plate)}
+.chrome-in{max-width:1080px;margin:0 auto;padding:12px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.back{font-family:'Public Sans',sans-serif;font-size:.86rem;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line-hi);padding-bottom:2px}
+.back:hover{border-bottom-color:var(--ink)}
+.who{font-family:'Courier Prime',monospace;font-size:.72rem;letter-spacing:.14em;color:var(--muted);text-align:right}
+
+.shell{max-width:1080px;margin:0 auto;padding:0 22px 60px}
+
+.status{
+  display:flex;flex-wrap:wrap;gap:8px 26px;align-items:center;
+  border:1px solid rgba(183,67,28,.5);background:rgba(183,67,28,.07);
+  padding:10px 14px;margin:22px 0 26px;
+  font-family:'Courier Prime',monospace;font-size:.74rem;letter-spacing:.11em;color:var(--cin);
+}
+.status .dot{width:7px;height:7px;border-radius:50%;background:var(--cin);display:inline-block;margin-right:8px;vertical-align:middle}
+
+/* tabs */
+.tabs{display:flex;border-bottom:1px solid var(--line-hi);gap:0;overflow-x:auto}
+.tab{
+  appearance:none;background:transparent;border:0;border-bottom:3px solid transparent;
+  padding:13px 22px;font-size:.8rem;letter-spacing:.16em;color:var(--muted);
+  cursor:pointer;white-space:nowrap;transition:color .18s ease,border-color .18s ease;
+}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+
+.panel{padding:30px 0 8px}
+.panel[hidden]{display:none}
+.panel h2{font-size:1.45rem;font-weight:700;letter-spacing:-.01em;margin-bottom:6px}
+.lede{color:var(--muted);font-size:.9rem;margin:0 0 24px;max-width:44em}
+
+/* balances */
+.bals{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--line);background:var(--plate)}
+.bal{padding:20px 18px 22px;border-right:1px solid var(--line);position:relative;overflow:hidden}
+.bal:last-child{border-right:0}
+.bal .rosette{position:absolute;right:-26px;top:-26px;width:96px;height:96px;opacity:.16}
+.bal .cur{font-family:'Courier Prime',monospace;font-size:.72rem;letter-spacing:.18em;color:var(--muted);display:block;margin-bottom:10px}
+.bal .amt{font-family:'Bodoni Moda',Georgia,serif;font-size:1.9rem;font-weight:500;color:var(--ink);line-height:1;font-variant-numeric:tabular-nums;display:block}
+.bal .sub{font-family:'Courier Prime',monospace;font-size:.7rem;color:var(--muted);margin-top:9px;display:block}
+.bal.empty .amt{color:var(--cin)}
+.bal.empty .sub{color:var(--cin)}
+
+/* exchange */
+.fx{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);background:var(--plate)}
+.fx-side{padding:24px 22px;border-right:1px solid var(--line)}
+.fx-side:last-child{border-right:0}
+label{display:block;font-family:'Courier Prime',monospace;font-size:.7rem;letter-spacing:.16em;color:var(--muted);margin-bottom:9px}
+input[type=number],select{
+  width:100%;background:var(--well);border:1px solid var(--line);border-radius:2px;
+  padding:12px 12px;font-size:1.05rem;color:var(--ink);
+}
+input[type=number]{-moz-appearance:textfield}
+.fx-out{
+  background:var(--well);border:1px solid var(--line);border-radius:2px;padding:12px 12px;
+  font-family:'Courier Prime',monospace;font-size:1.05rem;color:var(--ink);font-variant-numeric:tabular-nums;
+  min-height:47px;display:flex;align-items:center;
+}
+.fx-meta{
+  display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;
+  border:1px solid var(--line);border-top:0;background:var(--plate);padding:12px 22px;
+  font-family:'Courier Prime',monospace;font-size:.76rem;color:var(--muted);
+}
+.fx-meta b{font-weight:400;color:var(--ink)}
+.fx-meta .warn{color:var(--cin)}
+.swap{margin-top:14px}
+
+/* card */
+.card-wrap{display:grid;grid-template-columns:minmax(0,340px) 1fr;gap:28px;align-items:start}
+.metal{
+  position:relative;aspect-ratio:1.586;border:1px solid var(--line-hi);border-radius:2px;
+  background:var(--plate);padding:20px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;
+}
+.metal .rosette{position:absolute;right:-40px;bottom:-40px;width:170px;height:170px;opacity:.2}
+.metal .brand{font-family:'Bodoni Moda',Georgia,serif;font-size:1.5rem;font-weight:700;color:var(--ink)}
+.metal .pan{font-family:'Courier Prime',monospace;font-size:.92rem;letter-spacing:.14em;color:var(--ink)}
+.metal .foot{font-family:'Courier Prime',monospace;font-size:.66rem;letter-spacing:.12em;color:var(--muted)}
+.metal .frost{
+  position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .22s ease;
+  background:
+    repeating-linear-gradient(45deg,rgba(22,56,42,.16) 0 1px,transparent 1px 7px),
+    repeating-linear-gradient(-45deg,rgba(22,56,42,.16) 0 1px,transparent 1px 7px);
+}
+.metal.frozen .frost{opacity:1}
+.metal.frozen .brand,.metal.frozen .pan{color:var(--muted)}
+.card-rows{border:1px solid var(--line);background:var(--plate)}
+.card-row{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 18px;border-bottom:1px solid var(--line);font-size:.92rem}
+.card-row:last-child{border-bottom:0}
+.card-row .k{font-family:'Courier Prime',monospace;font-size:.72rem;letter-spacing:.14em;color:var(--muted)}
+.card-row .v{font-family:'Courier Prime',monospace;font-size:.86rem;color:var(--ink)}
+.card-row .v.warn{color:var(--cin)}
+.switch{
+  appearance:none;width:52px;height:26px;background:var(--well);border:1px solid var(--line-hi);
+  border-radius:2px;position:relative;cursor:pointer;transition:background .2s ease;flex:0 0 52px;
+}
+.switch:after{content:"";position:absolute;top:2px;left:2px;width:22px;height:20px;background:var(--ink);transition:transform .2s ease}
+.switch:checked{background:rgba(183,67,28,.16);border-color:var(--cin)}
+.switch:checked:after{transform:translateX(24px);background:var(--cin)}
+
+/* ledger */
+.ledger-head{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;flex-wrap:wrap;margin:42px 0 16px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{
+  appearance:none;background:transparent;border:1px solid var(--line);border-radius:2px;cursor:pointer;
+  padding:7px 14px;font-size:.72rem;letter-spacing:.12em;color:var(--muted);transition:all .18s ease;
+}
+.chip:hover{border-color:var(--line-hi);color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--sub)}
+.rows{border:1px solid var(--line);background:var(--plate)}
+.row{
+  display:grid;grid-template-columns:88px 1fr auto;gap:16px;align-items:center;
+  padding:14px 18px;border-bottom:1px solid var(--line);
+}
+.row:last-child{border-bottom:0}
+.row .date{font-family:'Courier Prime',monospace;font-size:.72rem;letter-spacing:.08em;color:var(--muted)}
+.row .desc{font-size:.94rem;color:var(--fg)}
+.row .desc small{display:block;font-family:'Courier Prime',monospace;font-size:.68rem;letter-spacing:.12em;color:var(--muted);margin-top:2px}
+.row .val{font-family:'Courier Prime',monospace;font-size:.9rem;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
+.row.declined{cursor:pointer;transition:background .16s ease}
+.row.declined:hover{background:#F8F4E9}
+.row.declined .val,.row.declined .desc{color:var(--cin)}
+.row.empty-state{display:block;text-align:left;color:var(--muted);font-family:'Courier Prime',monospace;font-size:.8rem;letter-spacing:.1em;padding:26px 18px}
+
+/* modal */
+.scrim{
+  position:fixed;inset:0;background:rgba(15,36,27,.55);display:none;
+  align-items:center;justify-content:center;padding:24px;z-index:50;
+}
+.scrim.open{display:flex}
+.modal{
+  background:var(--plate);border:1px solid var(--ink);border-radius:2px;
+  max-width:460px;width:100%;position:relative;overflow:hidden;
+}
+.modal .lathe{opacity:.5}
+.modal-body{padding:26px 26px 24px}
+.modal h3{font-size:1.5rem;font-weight:700;margin-bottom:12px}
+.modal p{margin:0 0 8px;font-size:.95rem}
+.modal .ref{font-family:'Courier Prime',monospace;font-size:.72rem;letter-spacing:.12em;color:var(--muted);margin-top:16px}
+.modal .why{color:var(--cin)}
+.modal-acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.btn{
+  appearance:none;border:1px solid var(--ink);border-radius:2px;background:var(--ink);color:var(--sub);
+  font-family:'Public Sans',sans-serif;font-weight:600;font-size:.9rem;padding:11px 20px;cursor:pointer;
+  transition:background .18s ease,color .18s ease;
+}
+.btn:hover{background:transparent;color:var(--ink)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line-hi)}
+.btn.ghost:hover{background:var(--ink);color:var(--sub);border-color:var(--ink)}
+
+.microtext{
+  font-family:'Courier Prime',monospace;font-size:7px;letter-spacing:.34em;color:var(--muted);
+  white-space:nowrap;overflow:hidden;padding:18px 0 0;user-select:none;
+}
+
+@media (max-width:860px){
+  .bals{grid-template-columns:1fr 1fr}
+  .bal:nth-child(2){border-right:0}
+  .bal:nth-child(1),.bal:nth-child(2){border-bottom:1px solid var(--line)}
+  .fx{grid-template-columns:1fr}
+  .fx-side{border-right:0;border-bottom:1px solid var(--line)}
+  .fx-side:last-child{border-bottom:0}
+  .card-wrap{grid-template-columns:1fr}
+  .row{grid-template-columns:1fr auto;gap:10px}
+  .row .date{grid-column:1 / -1}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-in">
+    <a class="back" href="./index.html">&larr; back to the pitch</a>
+    <span class="who">W. TAM / ACCT 41-0007-WT / RANGE 41 EASTERN SLOPE</span>
+  </div>
+</div>
+
+<div class="shell">
+
+  <div class="status" role="status">
+    <span><span class="dot"></span>RANGE STATUS CONTESTED</span>
+    <span>LAST MARKED 47 DAYS AGO</span>
+    <span>RE-VERIFICATION OVERDUE BY 7 DAYS</span>
+    <span>FORECAST RAIN</span>
+  </div>
+
+  <div class="tabs" role="tablist" aria-label="Account sections">
+    <button class="tab" role="tab" id="t-acct" aria-controls="p-acct" aria-selected="true">BALANCES</button>
+    <button class="tab" role="tab" id="t-fx" aria-controls="p-fx" aria-selected="false">EXCHANGE</button>
+    <button class="tab" role="tab" id="t-card" aria-controls="p-card" aria-selected="false">CARD</button>
+  </div>
+
+  <!-- BALANCES -->
+  <section class="panel" id="p-acct" role="tabpanel" aria-labelledby="t-acct">
+    <h2>Four balances</h2>
+    <p class="lede">Held in bamboo. Convertible at the desk. Not insured, not deposited, and not, in the legal sense, yours until re-verification clears.</p>
+    <div class="bals">
+      <div class="bal">
+        <span class="rosette" aria-hidden="true"></span>
+        <span class="cur">SHOOT</span>
+        <span class="amt">412.00</span>
+        <span class="sub">available now</span>
+      </div>
+      <div class="bal">
+        <span class="rosette" aria-hidden="true"></span>
+        <span class="cur">LEAF</span>
+        <span class="amt">3,884.00</span>
+        <span class="sub">roughly 11 months of eating</span>
+      </div>
+      <div class="bal">
+        <span class="rosette" aria-hidden="true"></span>
+        <span class="cur">BERRY</span>
+        <span class="amt">19.44</span>
+        <span class="sub">seasonal, expires in 9 days</span>
+      </div>
+      <div class="bal empty">
+        <span class="rosette" aria-hidden="true"></span>
+        <span class="cur">EGG</span>
+        <span class="amt">0.00</span>
+        <span class="sub">no successful acquisitions</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXCHANGE -->
+  <section class="panel" id="p-fx" role="tabpanel" aria-labelledby="t-fx" hidden>
+    <h2>Exchange desk</h2>
+    <p class="lede">Mid-market rates, quoted continuously. The desk does not close, because the forest does not close, except on weekends, when it does.</p>
+    <div class="fx">
+      <div class="fx-side">
+        <label for="fx-amt">YOU SELL</label>
+        <input type="number" id="fx-amt" value="400" min="0" step="0.01" inputmode="decimal">
+        <div class="swap">
+          <label for="fx-from">FROM</label>
+          <select id="fx-from">
+            <option value="SHOOT" selected>SHOOT</option>
+            <option value="LEAF">LEAF</option>
+            <option value="BERRY">BERRY</option>
+            <option value="EGG">EGG</option>
+          </select>
+        </div>
+      </div>
+      <div class="fx-side">
+        <label for="fx-out">YOU RECEIVE</label>
+        <div class="fx-out" id="fx-out" aria-live="polite">400.0000 LEAF</div>
+        <div class="swap">
+          <label for="fx-to">TO</label>
+          <select id="fx-to">
+            <option value="SHOOT">SHOOT</option>
+            <option value="LEAF" selected>LEAF</option>
+            <option value="BERRY">BERRY</option>
+            <option value="EGG">EGG</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="fx-meta">
+      <span>RATE <b id="fx-rate">1.0000</b></span>
+      <span>QUOTE REFRESHES EVERY 4S</span>
+      <span class="warn" id="fx-note">SHOOT/LEAF IS PEGGED. THEY ARE THE SAME PLANT.</span>
+    </div>
+  </section>
+
+  <!-- CARD -->
+  <section class="panel" id="p-card" role="tabpanel" aria-labelledby="t-card" hidden>
+    <h2>Metal card</h2>
+    <p class="lede">Milled from one billet. Engraved with your range coordinates. Freezing the card is instant. Retrieving the card is not offered.</p>
+    <div class="card-wrap">
+      <div class="metal" id="metal">
+        <div class="frost" aria-hidden="true"></div>
+        <span class="rosette" aria-hidden="true"></span>
+        <span class="brand">Wah</span>
+        <div>
+          <div class="pan">4177 &nbsp;0041 &nbsp;0007 &nbsp;9218</div>
+          <div class="foot" style="margin-top:8px">27&deg;51'N 88&deg;12'E &nbsp;/&nbsp; 47 G &nbsp;/&nbsp; W. TAM</div>
+        </div>
+      </div>
+      <div class="card-rows">
+        <div class="card-row">
+          <span>
+            <span class="k">FREEZE CARD</span><br>
+            <span class="v" id="freeze-state">Active. Spending permitted.</span>
+          </span>
+          <input type="checkbox" class="switch" id="freeze" aria-label="Freeze card">
+        </div>
+        <div class="card-row"><span class="k">WEIGHT</span><span class="v">47 g</span></div>
+        <div class="card-row"><span class="k">LAST SEEN</span><span class="v warn">Ravine, 3 days ago</span></div>
+        <div class="card-row"><span class="k">RECOVERY</span><span class="v warn">Not offered</span></div>
+        <div class="card-row"><span class="k">REPLACEMENT</span><span class="v">3 shoots</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEDGER -->
+  <div class="ledger-head">
+    <h2 style="font-size:1.3rem;font-weight:700">Ledger</h2>
+    <div class="chips" role="group" aria-label="Filter ledger">
+      <button class="chip" data-f="all" aria-pressed="true">ALL</button>
+      <button class="chip" data-f="foraging" aria-pressed="false">FORAGING</button>
+      <button class="chip" data-f="scent" aria-pressed="false">SCENT FEES</button>
+      <button class="chip" data-f="declined" aria-pressed="false">DECLINED</button>
+    </div>
+  </div>
+  <div class="rows" id="rows"></div>
+
+  <div class="microtext" aria-hidden="true">ENTRIESSHOWNAREPROVISIONALUNTILRANGEVERIFICATIONCLEARSENTRIESSHOWNAREPROVISIONALUNTILRANGEVERIFICATIONCLEARSENTRIESSHOWNAREPROVISIONALUNTILRANGEVERIFICATIONCLEARSENTRIESSHOWNAREPROVISIONALUNTILRANGEVERIFICATIONCLEARS</div>
+</div>
+
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="m-title">
+  <div class="modal">
+    <div class="lathe"></div>
+    <div class="modal-body">
+      <h3 id="m-title">Declined</h3>
+      <p id="m-desc">Egg, opportunistic, unattended nest</p>
+      <p class="why" id="m-why">Reason on file.</p>
+      <p class="ref" id="m-ref">REF 0000</p>
+      <div class="modal-acts">
+        <button class="btn" id="m-close">Close</button>
+        <button class="btn ghost" id="m-appeal">Appeal in writing</button>
+      </div>
+    </div>
+    <div class="lathe"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  /* ---------- tabs ---------- */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+  function select(tab){
+    tabs.forEach(function(t){
+      var on = t === tab;
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+    });
+  }
+  tabs.forEach(function(t){
+    t.addEventListener('click', function(){ select(t); });
+    t.addEventListener('keydown', function(e){
+      var i = tabs.indexOf(t);
+      if (e.key === 'ArrowRight') { tabs[(i+1)%tabs.length].focus(); select(tabs[(i+1)%tabs.length]); }
+      if (e.key === 'ArrowLeft')  { tabs[(i-1+tabs.length)%tabs.length].focus(); select(tabs[(i-1+tabs.length)%tabs.length]); }
+    });
+  });
+
+  /* ---------- exchange desk ---------- */
+  var base = { SHOOT: 1.0000, LEAF: 1.0000, BERRY: 0.3140, EGG: 11.8000 };
+  var rates = Object.assign({}, base);
+  var amtEl  = document.getElementById('fx-amt');
+  var fromEl = document.getElementById('fx-from');
+  var toEl   = document.getElementById('fx-to');
+  var outEl  = document.getElementById('fx-out');
+  var rateEl = document.getElementById('fx-rate');
+  var noteEl = document.getElementById('fx-note');
+
+  var NOTES = {
+    peg:  'SHOOT/LEAF IS PEGGED. THEY ARE THE SAME PLANT.',
+    same: 'YOU HAVE SELECTED THE SAME CURRENCY. WE HAVE CHARGED YOU NOTHING, THIS TIME.',
+    egg:  'EGG IS ILLIQUID. SETTLEMENT DEPENDS ON A NEST.',
+    berry:'BERRY EXPIRES IN 9 DAYS AND IS NOT ROLLED FORWARD.',
+    open: 'DESK OPEN. NO SPREAD APPLIED. IT IS A WEEKDAY.'
+  };
+
+  function priceIt(){
+    var from = fromEl.value, to = toEl.value;
+    var amt = parseFloat(amtEl.value);
+    if (isNaN(amt) || amt < 0) amt = 0;
+    var r = rates[from] / rates[to];
+    outEl.textContent = (amt * r).toFixed(4) + ' ' + to;
+    rateEl.textContent = r.toFixed(4);
+
+    if (from === to) noteEl.textContent = NOTES.same;
+    else if ((from === 'SHOOT' && to === 'LEAF') || (from === 'LEAF' && to === 'SHOOT')) noteEl.textContent = NOTES.peg;
+    else if (from === 'EGG' || to === 'EGG') noteEl.textContent = NOTES.egg;
+    else if (from === 'BERRY' || to === 'BERRY') noteEl.textContent = NOTES.berry;
+    else noteEl.textContent = NOTES.open;
+  }
+  [amtEl, fromEl, toEl].forEach(function(el){ el.addEventListener('input', priceIt); });
+  priceIt();
+
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduce) {
+    setInterval(function(){
+      rates.BERRY = +(base.BERRY * (1 + (Math.random() - 0.5) * 0.012)).toFixed(4);
+      rates.EGG   = +(base.EGG   * (1 + (Math.random() - 0.5) * 0.020)).toFixed(4);
+      priceIt();
+    }, 4000);
+  }
+
+  /* ---------- card freeze ---------- */
+  var freeze = document.getElementById('freeze');
+  var metal  = document.getElementById('metal');
+  var fstate = document.getElementById('freeze-state');
+  freeze.addEventListener('change', function(){
+    metal.classList.toggle('frozen', freeze.checked);
+    fstate.textContent = freeze.checked
+      ? 'Frozen. The card remains in the ravine.'
+      : 'Active. Spending permitted.';
+    fstate.classList.toggle('warn', freeze.checked);
+  });
+
+  /* ---------- ledger ---------- */
+  var LEDGER = [
+    { d:'10 SEP', t:'Bamboo, 4.10 kg, Ridge 41', k:'foraging', v:'-410.0000 LEAF' },
+    { d:'10 SEP', t:'Egg, opportunistic, unattended nest', k:'declined', v:'DECLINED',
+      why:'The nest was occupied. Wah does not settle contested acquisitions.', ref:'REF 8841' },
+    { d:'09 SEP', t:'Scent re-verification, first attempt', k:'scent', v:'-12.0000 SHOOT' },
+    { d:'09 SEP', t:'Scent re-verification, second attempt after rain', k:'scent', v:'-12.0000 SHOOT' },
+    { d:'08 SEP', t:'Bamboo shoots, north face', k:'foraging', v:'-88.0000 SHOOT' },
+    { d:'07 SEP', t:'Metal card replacement', k:'declined', v:'DECLINED',
+      why:'Replacement requires the previous card be marked lost. It is marked ravine.', ref:'REF 8802' },
+    { d:'06 SEP', t:'Berries, understory, 0.60 kg', k:'foraging', v:'-6.0000 BERRY' },
+    { d:'05 SEP', t:'Range boundary amendment, Ridge 41 west', k:'scent', v:'-3.0000 SHOOT' },
+    { d:'04 SEP', t:'Territory transfer to O. Bramwell', k:'declined', v:'DECLINED',
+      why:'Transfer initiated by Wah, not by you. Appeals are accepted in writing only.', ref:'REF 8760' }
+  ];
+
+  var rowsEl = document.getElementById('rows');
+  var chips  = Array.prototype.slice.call(document.querySelectorAll('.chip'));
+  var filter = 'all';
+
+  function render(){
+    var list = LEDGER.filter(function(r){ return filter === 'all' || r.k === filter; });
+    if (!list.length) {
+      rowsEl.innerHTML = '<div class="row empty-state">NO ENTRIES UNDER THIS HEADING. THIS IS NOT A GUARANTEE THAT NONE EXIST.</div>';
+      return;
+    }
+    rowsEl.innerHTML = list.map(function(r, i){
+      return '<div class="row' + (r.k === 'declined' ? ' declined' : '') + '"' +
+        (r.k === 'declined' ? ' tabindex="0" role="button" data-i="' + LEDGER.indexOf(r) + '"' : '') + '>' +
+        '<span class="date">' + r.d + '</span>' +
+        '<span class="desc">' + r.t + '<small>' + r.k.toUpperCase() + '</small></span>' +
+        '<span class="val">' + r.v + '</span>' +
+      '</div>';
+    }).join('');
+  }
+  chips.forEach(function(c){
+    c.addEventListener('click', function(){
+      chips.forEach(function(x){ x.setAttribute('aria-pressed', x === c ? 'true' : 'false'); });
+      filter = c.dataset.f;
+      render();
+    });
+  });
+  render();
+
+  /* ---------- decline modal ---------- */
+  var scrim = document.getElementById('scrim');
+  var lastFocus = null;
+  function openModal(rec, trigger){
+    lastFocus = trigger || null;
+    document.getElementById('m-desc').textContent = rec.t;
+    document.getElementById('m-why').textContent  = rec.why;
+    document.getElementById('m-ref').textContent  = rec.ref + ' / ENGRAVED COPY IN THE POST';
+    scrim.classList.add('open');
+    document.getElementById('m-close').focus();
+  }
+  function closeModal(){
+    scrim.classList.remove('open');
+    if (lastFocus) lastFocus.focus();
+  }
+  rowsEl.addEventListener('click', function(e){
+    var row = e.target.closest('.row.declined');
+    if (row) openModal(LEDGER[+row.dataset.i], row);
+  });
+  rowsEl.addEventListener('keydown', function(e){
+    var row = e.target.closest('.row.declined');
+    if (row && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openModal(LEDGER[+row.dataset.i], row); }
+  });
+  document.getElementById('m-close').addEventListener('click', closeModal);
+  document.getElementById('m-appeal').addEventListener('click', function(){
+    document.getElementById('m-why').textContent = 'Your appeal has been logged. Written appeals are read once a year, in spring.';
+  });
+  scrim.addEventListener('click', function(e){ if (e.target === scrim) closeModal(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && scrim.classList.contains('open')) closeModal(); });
+})();
+</script>
+</body>
+</html>
