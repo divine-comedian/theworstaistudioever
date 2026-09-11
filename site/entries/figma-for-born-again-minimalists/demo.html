@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pare canvas · theworstaistudioever</title>
+<meta name="description" content="The Pare canvas: nine objects, eleven permitted, two lapsing before Friday.">
+<meta name="theme-color" content="#F4F2ED">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --plaster:#F4F2ED;
+    --ink:#14140F;
+    --violet:#4B2E83;
+    --rule:#8B887F;
+    --dim:#5F5C55;
+    --display:'Space Grotesk','Helvetica Neue',Helvetica,Arial,sans-serif;
+    --body:'Newsreader',Georgia,'Times New Roman',serif;
+    --mono:'DM Mono','SFMono-Regular',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    background:var(--plaster);
+    color:var(--ink);
+    font-family:var(--body);
+    font-weight:300;
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--ink);color:var(--plaster)}
+  .cat{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;
+    font-variant-numeric:tabular-nums;color:var(--dim);line-height:1.8;margin:0;
+  }
+  .cat b{font-weight:500;color:var(--ink)}
+  .gone{color:var(--violet)}
+  button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+  a{color:inherit}
+  :focus-visible{outline:2px solid var(--violet);outline-offset:2px}
+
+  /* ---------- top rail ---------- */
+  .rail{
+    border-bottom:1px solid var(--ink);
+    display:flex;align-items:center;gap:22px;flex-wrap:wrap;
+    padding:12px clamp(14px,3vw,28px);
+  }
+  .back{font-family:var(--display);font-size:12px;letter-spacing:.06em;text-decoration:none;color:var(--dim)}
+  .back:hover{color:var(--ink)}
+  .wordmark{font-family:var(--display);font-size:12px;font-weight:700;letter-spacing:.22em;text-transform:uppercase}
+  .counter{
+    font-family:var(--mono);font-size:12px;letter-spacing:.08em;font-variant-numeric:tabular-nums;
+    border:1px solid var(--ink);padding:5px 11px;
+  }
+  .counter.full{background:var(--ink);color:var(--plaster)}
+  .rail .spacer{flex:1}
+  .toggle{
+    font-family:var(--display);font-size:12px;font-weight:500;letter-spacing:.04em;
+    border:1px solid var(--ink);padding:7px 14px;
+    transition:background .2s ease-out,color .2s ease-out;
+  }
+  .toggle[aria-pressed="true"]{background:var(--violet);border-color:var(--violet);color:var(--plaster)}
+
+  /* ---------- shell ---------- */
+  .shell{display:grid;grid-template-columns:360px 1fr;min-height:calc(100vh - 49px)}
+  .accession{border-right:1px solid var(--ink);display:flex;flex-direction:column;min-height:0}
+  .accession header{padding:16px clamp(14px,2vw,20px) 12px;border-bottom:1px solid var(--rule)}
+  .accession h1{font-family:var(--display);font-size:15px;font-weight:500;letter-spacing:-.01em;margin:0 0 4px}
+  .list{overflow-y:auto;flex:1;padding-bottom:20px}
+
+  /* ---------- wall labels in the rail ---------- */
+  .obj{
+    border-bottom:1px solid var(--rule);
+    padding:14px clamp(14px,2vw,20px);
+    cursor:pointer;
+    transition:background .18s ease-out;
+  }
+  .obj:hover{background:rgba(20,20,15,.035)}
+  .obj.sel{background:rgba(20,20,15,.06);box-shadow:inset 3px 0 0 var(--ink)}
+  .obj.removed{opacity:.42}
+  .obj h2{font-family:var(--display);font-size:14.5px;font-weight:500;letter-spacing:-.01em;margin:0 0 3px}
+  .obj .state{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+    display:inline-block;margin-top:8px;padding:2px 7px;border:1px solid var(--rule);color:var(--dim);
+  }
+  .obj .state[data-s="RETAINED"]{border-color:var(--ink);color:var(--ink)}
+  .obj .state[data-s="LAPSING"],.obj .state[data-s="REMOVED"]{border-color:var(--violet);color:var(--violet)}
+  .acts{display:flex;gap:8px;margin-top:12px}
+  .acts button{
+    font-family:var(--display);font-size:11.5px;font-weight:500;letter-spacing:.04em;
+    border:1px solid var(--ink);padding:6px 11px;
+    transition:background .18s ease-out,color .18s ease-out;
+  }
+  .acts button:hover{background:var(--ink);color:var(--plaster)}
+  .acts button.del{border-color:var(--violet);color:var(--violet)}
+  .acts button.del:hover{background:var(--violet);color:var(--plaster)}
+  .acts button[disabled]{opacity:.35;cursor:not-allowed}
+  .acts button[disabled]:hover{background:none;color:inherit}
+  .justify{margin-top:12px;display:none}
+  .justify.open{display:block}
+  .justify textarea{
+    width:100%;resize:none;font-family:var(--body);font-size:14px;line-height:1.5;
+    background:var(--plaster);border:1px solid var(--ink);padding:9px 10px;color:var(--ink);
+  }
+  .justify .row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:8px}
+
+  /* ---------- canvas ---------- */
+  .stage{display:flex;flex-direction:column;min-width:0}
+  .canvas{
+    flex:1;position:relative;overflow:hidden;min-height:420px;
+    background:var(--plaster);
+    transition:filter .25s ease-out;
+  }
+  .canvas.fasting{filter:grayscale(1) contrast(.92) opacity(.55)}
+  .shape{position:absolute;transition:opacity .3s ease-out,transform .3s ease-out}
+  .shape.dead{opacity:0;transform:scale(.96)}
+  .shape.queued{opacity:.25}
+  .shape .body{width:100%;height:100%}
+  .k-rect .body{border:1px solid var(--ink)}
+  .k-solid .body{background:var(--ink)}
+  .k-circle,.k-dot{height:auto !important;aspect-ratio:1/1}
+  .k-circle .body{border:1px solid var(--ink);border-radius:50%}
+  .k-dot .body{background:var(--violet);border-radius:50%}
+  .k-line .body{background:var(--ink)}
+  .k-group .body{border:1px dashed var(--rule)}
+  .shape.sel .marks{position:absolute;inset:-9px;pointer-events:none}
+  .marks i{position:absolute;width:12px;height:12px;border:0 solid var(--ink)}
+  .marks i:nth-child(1){top:0;left:0;border-top-width:1px;border-left-width:1px}
+  .marks i:nth-child(2){top:0;right:0;border-top-width:1px;border-right-width:1px}
+  .marks i:nth-child(3){bottom:0;left:0;border-bottom-width:1px;border-left-width:1px}
+  .marks i:nth-child(4){bottom:0;right:0;border-bottom-width:1px;border-right-width:1px}
+  .cursor{position:absolute;width:1px;height:22px;background:var(--ink);opacity:.5;pointer-events:none}
+  .stagefoot{
+    border-top:1px solid var(--ink);padding:8px clamp(14px,3vw,28px);
+    display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:center;
+  }
+
+  /* ---------- minutes ---------- */
+  .minutes{border-top:1px solid var(--ink);max-height:212px;display:flex;flex-direction:column}
+  .minutes header{padding:12px clamp(14px,3vw,28px) 8px;display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap}
+  .minutes h2{font-family:var(--display);font-size:13px;font-weight:500;letter-spacing:.02em;margin:0}
+  .log{overflow-y:auto;padding:0 clamp(14px,3vw,28px) 16px;margin:0;list-style:none}
+  .log li{border-top:1px solid var(--rule);padding:8px 0;font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;color:var(--dim);font-variant-numeric:tabular-nums}
+  .log li b{font-weight:500;color:var(--ink)}
+  .log li .gone{color:var(--violet)}
+
+  .empty{padding:26px clamp(14px,2vw,20px);max-width:30ch}
+
+  @media (max-width:860px){
+    .shell{grid-template-columns:1fr}
+    .accession{border-right:0;border-bottom:1px solid var(--ink);order:2}
+    .stage{order:1}
+    .list{max-height:none}
+    .canvas{min-height:320px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none !important;animation:none !important}
+  }
+</style>
+</head>
+<body>
+
+<div class="rail">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="wordmark">Pare</span>
+  <span class="counter" id="counter">OBJECTS 9 / 11</span>
+  <span class="spacer"></span>
+  <span class="cat" id="lapsecount">Lapsing before Friday <b class="gone">3</b></span>
+  <button class="toggle" id="fast" aria-pressed="false">Preview the 31st</button>
+</div>
+
+<div class="shell">
+  <section class="accession" aria-label="Accession rail">
+    <header>
+      <h1>Accession rail</h1>
+      <p class="cat">Untitled file · PA.2026.0001 · Basel</p>
+    </header>
+    <div class="list" id="list"></div>
+  </section>
+
+  <section class="stage" aria-label="Canvas">
+    <div class="canvas" id="canvas">
+      <div class="cursor" id="c1"></div>
+      <div class="cursor" id="c2"></div>
+    </div>
+    <div class="stagefoot">
+      <p class="cat" id="selinfo">Nothing selected. Select a label to frame its object.</p>
+      <p class="cat">Canvas 1440 × 900 px · Ceiling 11 objects · Zoom 100%</p>
+    </div>
+    <div class="minutes">
+      <header>
+        <h2>Deaccession minutes</h2>
+        <p class="cat">Filed automatically. Not circulated.</p>
+      </header>
+      <ul class="log" id="log">
+        <li><b>09:04</b> · File opened. <b>9</b> objects present, <b class="gone">2</b> approvals lapsing.</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  var OBJECTS = [
+    { id:'a', acc:'PA.2026.0104', title:'Study for a Button', medium:'Rectangle, filled. Inherited from a deleted file.', dims:'168 × 44 px', got:'Acquired 04 Mar 2026', state:'RETAINED', days:23, kind:'solid', x:14, y:22, w:16, h:6 },
+    { id:'b', acc:'PA.2026.0105', title:'Divider', medium:'Hairline, vertical. Purpose unrecorded.', dims:'1 × 260 px', got:'Acquired 11 Mar 2026', state:'LAPSING', days:2, kind:'line', x:47, y:16, w:0.14, h:34 },
+    { id:'c', acc:'PA.2026.0106', title:'Untitled (Dot)', medium:'Dot. The only colour in the file.', dims:'10 × 10 px', got:'Acquired 18 Mar 2026', state:'PENDING', days:0, kind:'dot', x:62, y:29, w:1.1, h:2 },
+    { id:'d', acc:'PA.2026.0107', title:'Card, after Card', medium:'Rectangle, outlined. Copied from a colleague.', dims:'320 × 210 px', got:'Acquired 02 Apr 2026', state:'RETAINED', days:17, kind:'rect', x:66, y:44, w:22, h:26 },
+    { id:'e', acc:'PA.2026.0108', title:'Avatar, unfilled', medium:'Circle. Never held a photograph.', dims:'56 × 56 px', got:'Acquired 09 Apr 2026', state:'LAPSING', days:1, kind:'circle', x:22, y:58, w:5, h:9 },
+    { id:'f', acc:'PA.2026.0109', title:'Rule', medium:'Rule, horizontal. Structural. Load-bearing.', dims:'640 × 1 px', got:'Acquired 14 Apr 2026', state:'RETAINED', days:29, kind:'line', x:14, y:44, w:42, h:0.18 },
+    { id:'g', acc:'PA.2026.0110', title:'Swatch', medium:'Square, solid. Colour later removed.', dims:'72 × 72 px', got:'Acquired 21 Apr 2026', state:'PENDING', days:0, kind:'solid', x:38, y:70, w:5, h:9 },
+    { id:'h', acc:'PA.2026.0111', title:'Connector', medium:'Hairline, diagonal. Connects nothing.', dims:'210 × 1 px', got:'Acquired 27 Apr 2026', state:'RETAINED', days:8, kind:'line', x:50, y:78, w:14, h:0.18 },
+    { id:'i', acc:'PA.2026.0112', title:'Group, empty', medium:'Group. Contains no objects and cannot be opened.', dims:'240 × 150 px', got:'Acquired 03 May 2026', state:'LAPSING', days:4, kind:'group', x:70, y:12, w:17, h:18 }
+  ];
+
+  var list = document.getElementById('list');
+  var canvas = document.getElementById('canvas');
+  var counter = document.getElementById('counter');
+  var lapseCount = document.getElementById('lapsecount');
+  var selinfo = document.getElementById('selinfo');
+  var log = document.getElementById('log');
+  var fastBtn = document.getElementById('fast');
+  var selected = null;
+  var fasting = false;
+  var clock = 544; // minutes past midnight, 09:04
+
+  function alive() { return OBJECTS.filter(function (o) { return o.state !== 'REMOVED'; }); }
+  function lapsing() { return alive().filter(function (o) { return o.state === 'LAPSING'; }); }
+
+  function stamp() {
+    clock += 1 + Math.floor(Math.random() * 4);
+    var h = Math.floor(clock / 60), m = clock % 60;
+    return (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m;
+  }
+
+  function note(html) {
+    var li = document.createElement('li');
+    li.innerHTML = '<b>' + stamp() + '</b> · ' + html;
+    log.insertBefore(li, log.firstChild);
+  }
+
+  function stateLine(o) {
+    if (o.state === 'RETAINED') return 'Justified. Approval expires in ' + o.days + ' days.';
+    if (o.state === 'LAPSING') return 'Approval expires in ' + o.days + ' day' + (o.days === 1 ? '' : 's') + '. Removal is automatic.';
+    if (o.state === 'REMOVED') return 'Removed from the file. Not recoverable.';
+    return 'Never justified. Held at the discretion of the studio.';
+  }
+
+  function renderRail() {
+    list.innerHTML = '';
+    OBJECTS.forEach(function (o) {
+      var el = document.createElement('article');
+      el.className = 'obj' + (selected === o.id ? ' sel' : '') + (o.state === 'REMOVED' ? ' removed' : '');
+      el.tabIndex = 0;
+      el.dataset.id = o.id;
+      el.innerHTML =
+        '<p class="cat">' + o.acc + '</p>' +
+        '<h2>' + o.title + '</h2>' +
+        '<p class="cat">' + o.medium + '<br>' + o.dims + ' · ' + o.got + '</p>' +
+        '<span class="state" data-s="' + o.state + '">' + o.state + (o.state === 'RETAINED' || o.state === 'LAPSING' ? ' · ' + o.days + 'd' : '') + '</span>' +
+        '<p class="cat" style="margin-top:6px">' + stateLine(o) + '</p>' +
+        (o.state === 'REMOVED' ? '' :
+          '<div class="acts">' +
+            '<button data-act="justify">Justify</button>' +
+            '<button class="del" data-act="remove">Deaccession</button>' +
+          '</div>' +
+          '<div class="justify" data-j="' + o.id + '">' +
+            '<textarea rows="3" maxlength="120" placeholder="Why this object should remain in the file."></textarea>' +
+            '<div class="row"><span class="cat" data-count>0 / 120</span>' +
+            '<button data-act="file" style="font-family:var(--display);font-size:11.5px;font-weight:500;border:1px solid var(--ink);padding:6px 11px">File review</button></div>' +
+          '</div>');
+      list.appendChild(el);
+    });
+  }
+
+  function renderCanvas() {
+    Array.prototype.slice.call(canvas.querySelectorAll('.shape')).forEach(function (n) { n.remove(); });
+    OBJECTS.forEach(function (o) {
+      if (o.state === 'REMOVED') return;
+      var s = document.createElement('div');
+      s.className = 'shape k-' + o.kind + (selected === o.id ? ' sel' : '') +
+        (fasting && o.state === 'LAPSING' ? ' queued' : '');
+      s.style.left = o.x + '%';
+      s.style.top = o.y + '%';
+      s.style.width = o.w + '%';
+      s.style.height = o.h + '%';
+      s.dataset.id = o.id;
+      s.innerHTML = '<div class="body"></div>' +
+        (selected === o.id ? '<div class="marks"><i></i><i></i><i></i><i></i></div>' : '');
+      canvas.appendChild(s);
+    });
+  }
+
+  function renderMeta() {
+    var n = alive().length;
+    counter.textContent = 'OBJECTS ' + n + ' / 11';
+    counter.classList.toggle('full', n >= 11);
+    lapseCount.innerHTML = 'Lapsing before Friday <b class="gone">' + lapsing().length + '</b>';
+    var sel = OBJECTS.filter(function (o) { return o.id === selected; })[0];
+    selinfo.innerHTML = sel && sel.state !== 'REMOVED'
+      ? sel.acc + ' · <b>' + sel.title + '</b> · ' + sel.dims + ' · ' + sel.state
+      : 'Nothing selected. Select a label to frame its object.';
+  }
+
+  function render() { renderRail(); renderCanvas(); renderMeta(); }
+
+  function select(id) {
+    selected = (selected === id) ? null : id;
+    render();
+  }
+
+  list.addEventListener('click', function (e) {
+    var card = e.target.closest('.obj');
+    if (!card) return;
+    var id = card.dataset.id;
+    var o = OBJECTS.filter(function (x) { return x.id === id; })[0];
+    var act = e.target.dataset ? e.target.dataset.act : null;
+
+    if (act === 'justify') {
+      var panel = card.querySelector('.justify');
+      panel.classList.toggle('open');
+      if (panel.classList.contains('open')) panel.querySelector('textarea').focus();
+      return;
+    }
+    if (act === 'file') {
+      var ta = card.querySelector('textarea');
+      var words = ta.value.trim();
+      if (!words) { ta.focus(); return; }
+      o.state = 'RETAINED';
+      o.days = 30;
+      note(o.acc + ' · justification filed, ' + words.length + ' characters. Retained <b>30</b> days.');
+      render();
+      return;
+    }
+    if (act === 'remove') {
+      o.state = 'REMOVED';
+      note(o.acc + ' · <b>' + o.title + '</b> <span class="gone">deaccessioned</span>. File now holds <b>' + alive().length + '</b>.');
+      if (selected === id) selected = null;
+      render();
+      return;
+    }
+    select(id);
+  });
+
+  list.addEventListener('input', function (e) {
+    if (e.target.tagName !== 'TEXTAREA') return;
+    var out = e.target.closest('.justify').querySelector('[data-count]');
+    out.textContent = e.target.value.length + ' / 120';
+    if (e.target.value.length >= 120) out.classList.add('gone');
+  });
+
+  list.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'BUTTON') return;
+    var card = e.target.closest('.obj');
+    if (card) { e.preventDefault(); select(card.dataset.id); }
+  });
+
+  canvas.addEventListener('click', function (e) {
+    var shape = e.target.closest('.shape');
+    if (!shape) { selected = null; render(); return; }
+    select(shape.dataset.id);
+    var card = list.querySelector('[data-id="' + shape.dataset.id + '"]');
+    if (card) card.scrollIntoView({ block: 'nearest' });
+  });
+
+  fastBtn.addEventListener('click', function () {
+    fasting = !fasting;
+    fastBtn.setAttribute('aria-pressed', String(fasting));
+    fastBtn.textContent = fasting ? 'Return to today' : 'Preview the 31st';
+    canvas.classList.toggle('fasting', fasting);
+    note(fasting
+      ? 'Fast preview on. <b class="gone">' + lapsing().length + '</b> objects queued for removal on the 31st.'
+      : 'Fast preview off. Nothing was removed. Friday still applies.');
+    renderCanvas();
+  });
+
+  // two unlabeled collaborators, drifting
+  var cursors = [
+    { el: document.getElementById('c1'), x: 30, y: 40, dx: 0.13, dy: 0.07 },
+    { el: document.getElementById('c2'), x: 72, y: 66, dx: -0.09, dy: 0.11 }
+  ];
+  var motionOK = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (motionOK) {
+    setInterval(function () {
+      cursors.forEach(function (c) {
+        c.x += c.dx; c.y += c.dy;
+        if (c.x < 4 || c.x > 92) c.dx *= -1;
+        if (c.y < 6 || c.y > 88) c.dy *= -1;
+        c.el.style.left = c.x + '%';
+        c.el.style.top = c.y + '%';
+      });
+    }, 40);
+  } else {
+    cursors.forEach(function (c) { c.el.style.left = c.x + '%'; c.el.style.top = c.y + '%'; });
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>

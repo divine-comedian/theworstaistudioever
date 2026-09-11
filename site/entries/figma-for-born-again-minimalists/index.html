@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pare · theworstaistudioever</title>
+<meta name="description" content="A multiplayer canvas where the only permitted operations are deleting, aligning, and waiting.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Pare · Figma for born-again minimalists">
+<meta property="og:description" content="A multiplayer canvas where the only permitted operations are deleting, aligning, and waiting.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Pare · Figma for born-again minimalists">
+<meta name="twitter:description" content="A multiplayer canvas where the only permitted operations are deleting, aligning, and waiting.">
+<meta name="theme-color" content="#F4F2ED">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --plaster:#F4F2ED;
+    --ink:#14140F;
+    --violet:#4B2E83;
+    --rule:#8B887F;
+    --dim:#5F5C55;
+    --frame:1440px;
+    --gutter:clamp(20px,5vw,72px);
+    --band:clamp(72px,11vw,168px);
+    --display:'Space Grotesk','Helvetica Neue',Helvetica,Arial,sans-serif;
+    --body:'Newsreader',Georgia,'Times New Roman',serif;
+    --mono:'DM Mono','SFMono-Regular',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    background:var(--plaster);
+    color:var(--ink);
+    font-family:var(--body);
+    font-size:17px;
+    line-height:1.68;
+    font-weight:300;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--ink);color:var(--plaster)}
+  a{color:inherit}
+  img{display:block;max-width:100%}
+
+  .frame{max-width:var(--frame);margin:0 auto;padding:0 var(--gutter)}
+  .hair{border:0;border-top:1px solid var(--ink);margin:0;opacity:.9}
+  .hair--soft{border-top-color:var(--rule);opacity:.55}
+
+  /* mono catalogue data */
+  .cat{
+    font-family:var(--mono);
+    font-size:12px;
+    font-weight:400;
+    letter-spacing:.06em;
+    line-height:1.9;
+    font-variant-numeric:tabular-nums;
+    color:var(--dim);
+  }
+  .cat b{font-weight:500;color:var(--ink)}
+  .gone{color:var(--violet)}
+
+  /* label eyebrow: the accession class of the object below it */
+  .class{
+    font-family:var(--display);
+    font-size:11px;
+    font-weight:500;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--dim);
+    margin:0 0 14px;
+  }
+
+  h1,h2,h3{font-family:var(--display);font-weight:500;letter-spacing:-.035em;margin:0}
+
+  /* ---------- masthead ---------- */
+  .masthead{padding-top:18px}
+  .masthead .row{display:flex;justify-content:space-between;align-items:baseline;gap:24px;padding:12px 0 20px}
+  .wordmark{font-family:var(--display);font-size:13px;font-weight:700;letter-spacing:.22em;text-transform:uppercase}
+
+  /* ---------- hero ---------- */
+  .hero{padding:var(--band) 0 calc(var(--band) * .7)}
+  .hero-grid{display:grid;grid-template-columns:3fr 2fr;gap:clamp(32px,6vw,96px);align-items:start}
+  .claim{
+    font-size:clamp(2.6rem,8.4vw,7rem);
+    line-height:.95;
+    max-width:14ch;
+  }
+  .didactic{max-width:32ch;margin:clamp(28px,4vw,44px) 0 0;font-size:17px}
+  .hero .cat{margin-top:28px}
+
+  /* the vitrine: a box with far too much space inside it */
+  .vitrine{
+    border:1px solid var(--ink);
+    aspect-ratio:3/4;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    position:relative;
+  }
+  .vitrine .numeral{
+    font-family:var(--display);
+    font-size:clamp(3rem,7vw,5.5rem);
+    font-weight:400;
+    letter-spacing:-.04em;
+    color:var(--violet);
+    line-height:1;
+  }
+  .vitrine .cat{margin-top:14px;text-align:center;max-width:22ch}
+  .plinth{margin-top:12px}
+
+  /* ---------- ink flood button ---------- */
+  .flood{
+    display:inline-block;
+    font-family:var(--display);
+    font-size:14px;
+    font-weight:500;
+    letter-spacing:.02em;
+    text-decoration:none;
+    background:var(--ink);
+    color:var(--plaster);
+    padding:15px 28px;
+    border:1px solid var(--ink);
+    transition:background .2s ease-out,color .2s ease-out;
+  }
+  .flood:hover,.flood:focus-visible{background:var(--plaster);color:var(--ink)}
+  .ghost{
+    display:inline-block;
+    font-family:var(--display);
+    font-size:14px;
+    font-weight:500;
+    text-decoration:none;
+    padding:15px 28px;
+    border:1px solid var(--ink);
+    transition:background .2s ease-out,color .2s ease-out;
+  }
+  .ghost:hover,.ghost:focus-visible{background:var(--ink);color:var(--plaster)}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--violet);outline-offset:3px}
+
+  /* ---------- telemetry strip ---------- */
+  .telemetry{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;padding:22px 0 26px}
+  .telemetry .fig{font-family:var(--display);font-size:clamp(1.3rem,2.4vw,2rem);letter-spacing:-.03em;line-height:1.1}
+  .telemetry .fig.gone{color:var(--violet)}
+  .telemetry .cat{line-height:1.5;margin-top:8px}
+
+  /* ---------- sections ---------- */
+  section{padding:var(--band) 0}
+  .sechead{display:flex;justify-content:space-between;align-items:baseline;gap:24px;margin-bottom:clamp(36px,5vw,64px)}
+  .sechead h2{font-size:clamp(1.5rem,3vw,2.4rem)}
+
+  /* ---------- wall labels ---------- */
+  .labels{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(28px,4vw,56px)}
+  .label{border-left:1px solid var(--ink);padding-left:20px}
+  .label h3{font-size:clamp(1.25rem,2vw,1.6rem);line-height:1.1;margin-bottom:14px}
+  .label p{margin:0 0 18px;max-width:34ch}
+  .label .credit{border-top:1px solid var(--rule);padding-top:10px}
+  .label .box{
+    border:1px solid var(--ink);
+    height:96px;
+    margin-bottom:22px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .label .box span{width:26px;height:1px;background:var(--ink)}
+
+  /* ---------- testimonials ---------- */
+  .voices{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(28px,4vw,56px)}
+  .voice blockquote{margin:0 0 22px;font-size:19px;line-height:1.62;max-width:34ch}
+  .portrait{border:1px solid var(--ink);padding:14px;margin-bottom:22px;width:100%}
+  .portrait img{width:100%;height:auto;filter:grayscale(.55) contrast(1.02)}
+  .voice .credit{border-top:1px solid var(--rule);padding-top:10px}
+  .voice .who{font-family:var(--display);font-size:14px;font-weight:500;letter-spacing:-.01em;color:var(--ink);display:block;margin-bottom:2px}
+
+  /* ---------- acquisition schedule ---------- */
+  .schedule{border-top:1px solid var(--ink);display:grid;grid-template-columns:repeat(3,1fr)}
+  .edition{padding:30px 28px 36px;border-left:1px solid var(--rule)}
+  .edition:first-child{border-left:0;padding-left:0}
+  .edition h3{font-size:clamp(1.4rem,2.2vw,1.9rem);margin-bottom:6px}
+  .edition .price{font-family:var(--mono);font-size:13px;letter-spacing:.04em;font-variant-numeric:tabular-nums;margin:0 0 18px;color:var(--ink)}
+  .edition .sub{margin:0 0 22px;max-width:26ch;color:var(--dim)}
+  .edition ul{list-style:none;margin:0;padding:0}
+  .edition li{
+    font-family:var(--body);
+    font-size:15.5px;
+    line-height:1.5;
+    padding:11px 0 11px 18px;
+    border-top:1px solid var(--rule);
+    position:relative;
+  }
+  .edition li::before{content:"";position:absolute;left:0;top:21px;width:9px;height:1px;background:var(--ink)}
+  .edition li.withheld{color:var(--violet)}
+  .edition li.withheld::before{background:var(--violet)}
+
+  /* ---------- closing ---------- */
+  .accession{padding:var(--band) 0}
+  .accession-grid{display:grid;grid-template-columns:3fr 2fr;gap:clamp(32px,6vw,96px);align-items:end}
+  .accession h2{font-size:clamp(2rem,5.4vw,4.2rem);line-height:1;max-width:16ch}
+  .accession .actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:32px}
+
+  footer{padding:30px 0 44px}
+  .footrow{display:flex;justify-content:space-between;align-items:baseline;gap:24px;flex-wrap:wrap;padding-top:18px}
+  .back{font-family:var(--display);font-size:12px;letter-spacing:.06em;text-decoration:none;color:var(--dim)}
+  .back:hover{color:var(--ink)}
+
+  @media (max-width:900px){
+    .hero-grid,.accession-grid{grid-template-columns:1fr}
+    .vitrine{aspect-ratio:4/3;order:-1}
+    .claim{max-width:none}
+    .telemetry{grid-template-columns:repeat(2,1fr);row-gap:26px}
+    .labels,.voices{grid-template-columns:1fr;gap:44px}
+    .schedule{grid-template-columns:1fr}
+    .edition{border-left:0;border-top:1px solid var(--rule);padding:26px 0 32px}
+    .edition:first-child{border-top:0}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none !important;animation:none !important}
+    .rise{opacity:1;transform:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="frame masthead">
+  <hr class="hair">
+  <div class="row">
+    <span class="wordmark">Pare</span>
+    <span class="cat">Objects under care <b>2,411,806</b> · Objects removed this year <b class="gone">2,408,122</b></span>
+  </div>
+</div>
+<hr class="hair">
+
+<main>
+  <div class="frame hero">
+    <div class="hero-grid">
+      <div>
+        <h1 class="claim">Nothing great is made. Ideally.</h1>
+        <p class="didactic">Pare is a collaborative canvas for teams removing things. Eleven objects per file, permanently. A second designer has to approve anything you intend to keep, and the approval expires.</p>
+        <p style="margin:32px 0 0"><a class="flood" href="#acquire">Request an empty file</a></p>
+        <p class="cat">Accession opens 14 days after request. No file is issued with content in it.</p>
+      </div>
+      <div>
+        <div class="vitrine">
+          <span class="numeral">0</span>
+          <p class="cat">Objects currently held in this vitrine</p>
+        </div>
+        <p class="cat plinth">Pare, <i>Untitled file</i>, 2026.<br>Plaster, hairline, absence. 1440 × 900 px.<br>Deaccessioned by the studio, March 2026.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="hair">
+  <div class="frame">
+    <div class="telemetry">
+      <div class="rise"><div class="fig gone">1,904,166</div><p class="cat">Objects removed across all files today</p></div>
+      <div class="rise"><div class="fig">41,209</div><p class="cat">Files currently holding the full eleven</p></div>
+      <div class="rise"><div class="fig gone">8,730</div><p class="cat">Approvals lapsing before Friday</p></div>
+      <div class="rise"><div class="fig">4.2</div><p class="cat">Mean objects per file, falling</p></div>
+    </div>
+  </div>
+  <hr class="hair">
+
+  <section class="frame" id="care">
+    <div class="sechead">
+      <h2>What the platform does to your work</h2>
+      <span class="cat">Permanent collection · Gallery 1</span>
+    </div>
+    <div class="labels">
+      <article class="label rise">
+        <div class="box"><span></span></div>
+        <p class="class">Governance</p>
+        <h3>Subtraction Review</h3>
+        <p>Every object you keep needs written justification from a colleague, filed within 24 hours. Approvals lapse after 30 days and the object is removed on the 31st. Nobody is notified, because notifying you would be a form of clutter.</p>
+        <p class="cat credit">PA.2026.0011 · Review workflow, mandatory, two signatories.<br>Dimensions variable. Duration 30 days.</p>
+      </article>
+      <article class="label rise">
+        <div class="box"><span></span></div>
+        <p class="class">Capacity</p>
+        <h3>The Eleven</h3>
+        <p>A Pare file holds eleven objects. Placing a twelfth opens a dialog asking which of the eleven you love less. No answer keeps twelve. Teams describe the first week as difficult and the second week as quiet.</p>
+        <p class="cat credit">PA.2026.0012 · Hard cap, enforced at the canvas.<br>11 objects. Not negotiable at any tier.</p>
+      </article>
+      <article class="label rise">
+        <div class="box"><span></span></div>
+        <p class="class">Presence</p>
+        <h3>Unattributed Presence</h3>
+        <p>Collaborators appear as unlabeled hairlines. No name, no colour, no cursor chat. You will not learn who deleted your work. Internal research we commissioned from ourselves found this to be the healthier arrangement.</p>
+        <p class="cat credit">PA.2026.0013 · Anonymous multiplayer, one hairline per person.<br>1 px. Colourless. Attribution withheld indefinitely.</p>
+      </article>
+    </div>
+  </section>
+
+  <hr class="hair hair--soft">
+
+  <section class="frame" id="voices">
+    <div class="sechead">
+      <h2>On loan from practitioners</h2>
+      <span class="cat">Interpretive panel · Gallery 2</span>
+    </div>
+    <div class="voices">
+      <figure class="voice rise" style="margin:0">
+        <div class="portrait"><img src="headshot-1.webp" alt="Marisol Vane photographed against a plain plaster wall" width="320" height="320" loading="lazy"></div>
+        <blockquote>We removed the logo in March, the wordmark in April, and the brand guidelines in May. Recognition is down 71 percent. The remaining 29 percent is the correct 29 percent.</blockquote>
+        <figcaption class="cat credit">
+          <span class="who">Marisol Vane</span>
+          VP of Reduction, a furniture company that has stopped producing furniture.<br>On Threshold since 2025. Files held: 6. Objects held: <b class="gone">2</b>.
+        </figcaption>
+      </figure>
+      <figure class="voice rise" style="margin:0">
+        <div class="portrait"><img src="headshot-2.webp" alt="Dov Halloran photographed against a plain plaster wall" width="320" height="320" loading="lazy"></div>
+        <blockquote>My team shipped one rectangle in Q3. Leadership asked what happened to the rest of the roadmap and I walked them through the minutes. It was the correct rectangle.</blockquote>
+        <figcaption class="cat credit">
+          <span class="who">Dov Halloran</span>
+          Staff Product Designer and Certified Shedding Facilitator (Level II).<br>On Threshold since 2024. Files held: 1. Objects held: <b class="gone">1</b>.
+        </figcaption>
+      </figure>
+      <figure class="voice rise" style="margin:0">
+        <div class="portrait"><img src="headshot-3.webp" alt="Priya Ostrander photographed against a plain plaster wall" width="320" height="320" loading="lazy"></div>
+        <blockquote>Pare removed my portfolio case study while I was presenting it. Eleven people watched the artboard go to plaster. Two of them asked for a trial.</blockquote>
+        <figcaption class="cat credit">
+          <span class="who">Priya Ostrander</span>
+          Head of Negative Space, Series C freight brokerage.<br>On Void since 2026. Files held: 0. Objects held: <b class="gone">0</b>.
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <hr class="hair hair--soft">
+
+  <section class="frame" id="acquire">
+    <div class="sechead">
+      <h2>Acquisition schedule</h2>
+      <span class="cat">Three editions · Billed in advance · No refunds, no exports</span>
+    </div>
+    <div class="schedule">
+      <div class="edition rise">
+        <h3>Renounce</h3>
+        <p class="price">$49 / seat / month</p>
+        <p class="sub">One file. Eleven objects. No export.</p>
+        <ul>
+          <li>One file, permanently</li>
+          <li>Subtraction Review with a single reviewer</li>
+          <li class="withheld">Export disabled at the account level</li>
+          <li class="withheld">Version history retained for you, not shown to you</li>
+        </ul>
+      </div>
+      <div class="edition rise">
+        <h3>Threshold</h3>
+        <p class="price">$340 / seat / month</p>
+        <p class="sub">Unlimited files. Eleven objects each. Enforced.</p>
+        <ul>
+          <li>Unlimited files, all capped at eleven</li>
+          <li>Quarterly possession audit with a named auditor</li>
+          <li>Fasting windows on a team schedule</li>
+          <li>Shared deaccession minutes</li>
+        </ul>
+      </div>
+      <div class="edition rise">
+        <h3>Void</h3>
+        <p class="price">$9,000 / org / year, billed in full</p>
+        <p class="sub">No canvas. A certificate. A phone number.</p>
+        <ul>
+          <li class="withheld">No canvas is provisioned</li>
+          <li>A letterpress certificate confirming you did not open one</li>
+          <li>A phone number that rings in an empty room in Basel</li>
+          <li>Annual condition report on the work you did not make</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<hr class="hair">
+
+<div class="frame accession">
+  <div class="accession-grid">
+    <div>
+      <h2>The file is already in our care.</h2>
+      <div class="actions">
+        <a class="flood" href="./demo.html">open the demo →</a>
+        <a class="ghost" href="#care">Read the condition report</a>
+      </div>
+    </div>
+    <p class="cat">The demo canvas holds nine objects. Two of them are lapsing. You may justify them in writing or let Friday handle it.<br><br>PA.2026.0001 · Pare canvas, live instance.<br>Plaster, hairline, eleven-object ceiling.</p>
+  </div>
+</div>
+
+<hr class="hair">
+<footer class="frame">
+  <div class="footrow">
+    <a class="back" href="/">← theworstaistudioever</a>
+    <span class="cat">Pare is not a real product. Nothing here has been acquired by anyone.</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var motionOK = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var target = document.querySelector(a.getAttribute('href'));
+      if (!target) return;
+      e.preventDefault();
+      target.scrollIntoView({ behavior: motionOK ? 'smooth' : 'auto', block: 'start' });
+    });
+  });
+})();
+</script>
+</body>
+</html>
