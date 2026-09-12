@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Perennia · theworstaistudioever</title>
+<meta name="description" content="A cartridge-based home console for keeping your houseplants alive, with permadeath enabled by default.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Perennia · Nintendo for plant parents">
+<meta property="og:description" content="A cartridge-based home console for keeping your houseplants alive, with permadeath enabled by default.">
+<meta property="og:image" content="./hero.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Perennia · Nintendo for plant parents">
+<meta name="twitter:description" content="A cartridge-based home console for keeping your houseplants alive, with permadeath enabled by default.">
+<meta name="theme-color" content="#DCD7C6">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Fira+Sans:ital,wght@0,400;0,500;1,400&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#DCD7C6;
+    --shell:#E7E3D5;
+    --ink:#1E1D24;
+    --accent:#A8145C;
+    --muted:#5C5648;
+    --well:#2B3126;
+    --phos:#A9BC80;
+    --knock:#F3F0E6;
+    --display:'Chakra Petch','Eurostile','Helvetica Neue',Helvetica,Arial,sans-serif;
+    --body:'Fira Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --bitmap:'Silkscreen','Courier New',Courier,monospace;
+    --drop:4px 4px 0 var(--ink);
+    --frame:1200px;
+  }
+
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--body);
+    font-size:17px;
+    line-height:1.6;
+  }
+  img{display:block;max-width:100%;height:auto}
+  a{color:inherit}
+
+  .frame{max-width:var(--frame);margin:0 auto;padding-left:28px;padding-right:28px}
+
+  /* ---------- moulding seam ---------- */
+  .seam{display:flex;align-items:center;gap:14px;margin:0 0 38px}
+  .seam-rule{flex:1;height:3px;background:var(--ink)}
+  .seam-ref{
+    font-family:var(--display);font-weight:700;font-size:.72rem;
+    letter-spacing:.16em;text-transform:uppercase;white-space:nowrap;
+  }
+
+  /* ---------- moulded shell panel ---------- */
+  .shell{
+    position:relative;
+    background:var(--shell);
+    border:2px solid var(--ink);
+    border-radius:3px;
+    box-shadow:var(--drop);
+    transition:transform .2s ease-out, box-shadow .2s ease-out;
+  }
+  .shell:hover{transform:translate(4px,4px);box-shadow:0 0 0 var(--ink)}
+
+  .stamp{
+    position:absolute;right:14px;bottom:12px;
+    display:flex;align-items:center;gap:9px;
+    font-family:var(--display);font-weight:600;font-size:.63rem;
+    letter-spacing:.14em;color:var(--muted);
+  }
+  .stamp-mark{
+    width:26px;height:26px;border:2px solid var(--muted);border-radius:50%;
+    display:grid;place-items:center;font-size:.66rem;letter-spacing:0;
+  }
+
+  /* ---------- cartridge ---------- */
+  .cart-wrap{filter:drop-shadow(4px 4px 0 var(--ink));line-height:0}
+  .cart{
+    position:relative;
+    background:var(--shell);
+    clip-path:polygon(16px 0,100% 0,100% 100%,0 100%,0 16px);
+    overflow:hidden;
+  }
+  .cart-band{
+    background:var(--ink);color:var(--knock);
+    font-family:var(--display);font-weight:700;font-size:.68rem;
+    letter-spacing:.15em;text-transform:uppercase;
+    padding:8px 12px 7px 20px;line-height:1.2;
+  }
+  .cart-ridges{
+    position:absolute;top:0;right:0;bottom:0;width:9px;
+    background:repeating-linear-gradient(to bottom,var(--ink) 0 2px,transparent 2px 7px);
+    opacity:.5;
+  }
+
+  /* ---------- recessed dot-matrix screen ---------- */
+  .screen{
+    position:relative;
+    background:var(--well);
+    border:3px solid var(--ink);
+    border-radius:2px;
+    padding:16px 18px;
+    color:var(--phos);
+    font-family:var(--bitmap);
+    font-size:.66rem;
+    line-height:2.1;
+    letter-spacing:.03em;
+  }
+  .screen::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      repeating-linear-gradient(to right,rgba(0,0,0,.30) 0 1px,transparent 1px 3px),
+      repeating-linear-gradient(to bottom,rgba(0,0,0,.30) 0 1px,transparent 1px 3px);
+    opacity:0;
+    transition:opacity 220ms steps(3,end);
+  }
+  .screen.booted::after{opacity:1}
+  .screen-row{display:flex;justify-content:space-between;gap:18px}
+  .screen-row span:last-child{text-align:right}
+  .alert{background:var(--accent);color:var(--knock);padding:1px 6px}
+
+  /* ---------- header ---------- */
+  .topbar{border-bottom:3px solid var(--ink)}
+  .topbar-in{
+    display:flex;align-items:center;justify-content:space-between;
+    gap:20px;padding-top:20px;padding-bottom:18px;flex-wrap:wrap;
+  }
+  .wordmark{
+    font-family:var(--display);font-weight:700;font-size:1.5rem;
+    letter-spacing:.18em;text-transform:uppercase;
+  }
+  .topbar-meta{
+    font-family:var(--display);font-weight:500;font-size:.72rem;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+  }
+
+  /* ---------- hero ---------- */
+  .hero{padding:74px 0 64px}
+  .hero-grid{display:grid;grid-template-columns:7fr 5fr;gap:56px;align-items:start}
+  .eyebrow{display:inline-block;margin:0 0 26px;padding:7px 12px 6px}
+  .eyebrow.screen{font-size:.6rem;line-height:1;padding:9px 13px}
+  h1{
+    font-family:var(--display);font-weight:700;
+    font-size:clamp(2.5rem,5.9vw,4.5rem);
+    line-height:1.02;letter-spacing:-.02em;
+    margin:0 0 26px;
+  }
+  .hero-sub{max-width:56ch;margin:0 0 34px;font-size:1.06rem;color:var(--ink)}
+  .btn-row{display:flex;flex-wrap:wrap;gap:14px}
+  .btn{
+    display:inline-block;text-decoration:none;
+    font-family:var(--display);font-weight:700;font-size:.82rem;
+    letter-spacing:.13em;text-transform:uppercase;
+    padding:15px 26px;border:2px solid var(--ink);border-radius:3px;
+    transition:transform .18s ease-out,box-shadow .18s ease-out,background-color .18s ease-out,color .18s ease-out;
+  }
+  .btn-primary{background:var(--ink);color:var(--knock);box-shadow:var(--drop)}
+  .btn-primary:hover{background:var(--knock);color:var(--ink)}
+  .btn-primary:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+  .btn-ghost{background:transparent;color:var(--ink)}
+  .btn-ghost:hover{background:var(--ink);color:var(--knock)}
+  .btn-ghost:active{transform:translate(2px,2px)}
+
+  .hero-unit{display:grid;gap:18px}
+  .hero-shot{border:2px solid var(--ink);border-radius:3px;box-shadow:var(--drop);background:var(--shell)}
+  .hero-shot img{border-radius:1px}
+
+  /* ---------- spec strip ---------- */
+  .specs{border-top:3px solid var(--ink);border-bottom:3px solid var(--ink)}
+  .specs-grid{display:grid;grid-template-columns:repeat(4,1fr)}
+  .spec{padding:22px 24px;border-left:2px solid var(--ink)}
+  .spec:first-child{border-left:0}
+  .spec dt{
+    font-family:var(--display);font-weight:600;font-size:.68rem;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 7px;
+  }
+  .spec dd{
+    margin:0;font-family:var(--display);font-weight:700;font-size:1.02rem;
+    letter-spacing:.02em;font-variant-numeric:tabular-nums;
+  }
+
+  /* ---------- sections ---------- */
+  section{padding:78px 0}
+  .section-head{max-width:58ch;margin:0 0 44px}
+  .section-head h2{
+    font-family:var(--display);font-weight:700;
+    font-size:clamp(1.8rem,3.4vw,2.7rem);line-height:1.08;letter-spacing:-.015em;margin:0 0 14px;
+  }
+  .section-head p{margin:0;color:var(--muted);max-width:52ch}
+
+  /* ---------- features ---------- */
+  .features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+  .feature{padding:26px 26px 58px}
+  .feature .cart-wrap{width:86px;margin-bottom:22px}
+  .cart-face{padding:26px 12px 14px 20px;position:relative}
+  .cart-face b{
+    display:block;font-family:var(--display);font-weight:700;font-size:1.5rem;
+    letter-spacing:.02em;font-variant-numeric:tabular-nums;
+  }
+  .feature h3{font-family:var(--display);font-weight:700;font-size:1.22rem;letter-spacing:-.01em;margin:0 0 12px}
+  .feature p{margin:0;font-size:.98rem}
+
+  /* ---------- testimonials ---------- */
+  .voices-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+  .voice{padding:26px 26px 58px;display:flex;flex-direction:column}
+  .voice blockquote{margin:0 0 24px;font-size:1.02rem;font-style:italic}
+  .voice-id{display:flex;align-items:flex-start;gap:16px;margin-top:auto}
+  .voice-id .cart-wrap{width:76px;flex:0 0 76px}
+  .voice-id .cart{clip-path:polygon(14px 0,100% 0,100% 100%,0 100%,0 14px)}
+  .voice-id img{width:100%;height:auto}
+  .voice-name{font-family:var(--display);font-weight:700;font-size:.98rem;letter-spacing:.01em;margin:0 0 4px;line-height:1.25}
+  .voice-title{margin:0 0 8px;font-size:.82rem;color:var(--muted);line-height:1.4}
+  .voice-reg{display:inline-block;padding:6px 9px;font-size:.56rem;line-height:1}
+
+  /* ---------- pricing schedule ---------- */
+  .schedule{border-top:3px solid var(--ink);border-bottom:3px solid var(--ink)}
+  .schedule-grid{display:grid;grid-template-columns:repeat(3,1fr)}
+  .tier{padding:34px 28px 30px;border-left:2px solid var(--ink)}
+  .tier:first-child{border-left:0}
+  .tier .cart-wrap{width:58px;margin-bottom:20px}
+  .tier h3{font-family:var(--display);font-weight:700;font-size:1.32rem;letter-spacing:-.01em;margin:0 0 8px}
+  .tier-note{margin:0 0 20px;font-size:.92rem;color:var(--muted);min-height:3.2em}
+  .tier .screen{margin-bottom:22px;padding:13px 14px;font-size:.82rem;line-height:1.5}
+  .perks{list-style:none;margin:0;padding:0}
+  .perks li{position:relative;padding:0 0 0 22px;margin:0 0 11px;font-size:.93rem;line-height:1.45}
+  .perks li::before{
+    content:"";position:absolute;left:0;top:.42em;width:11px;height:13px;
+    background:var(--ink);clip-path:polygon(4px 0,100% 0,100% 100%,0 100%,0 4px);
+  }
+  .perks li.withheld{color:var(--accent)}
+  .perks li.withheld::before{background:var(--accent)}
+
+  /* ---------- closing ---------- */
+  .closing-grid{display:grid;grid-template-columns:6fr 5fr;gap:56px;align-items:center}
+  .closing h2{
+    font-family:var(--display);font-weight:700;
+    font-size:clamp(1.9rem,4vw,3rem);line-height:1.05;letter-spacing:-.02em;margin:0 0 18px;
+  }
+  .closing p{margin:0 0 30px;max-width:46ch}
+
+  /* ---------- footer ---------- */
+  footer{border-top:3px solid var(--ink);padding:30px 0 46px}
+  .foot-in{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+  .foot-back{
+    font-family:var(--display);font-weight:600;font-size:.78rem;
+    letter-spacing:.13em;text-transform:uppercase;text-decoration:none;
+    border-bottom:2px solid var(--ink);padding-bottom:2px;
+  }
+  .foot-back:hover{background:var(--ink);color:var(--knock);border-bottom-color:transparent}
+  .foot-meta{
+    font-family:var(--display);font-weight:500;font-size:.68rem;
+    letter-spacing:.15em;text-transform:uppercase;color:var(--muted);
+  }
+
+  a:focus-visible,.btn:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+
+  @media (max-width:920px){
+    .hero-grid,.closing-grid{grid-template-columns:1fr;gap:38px}
+    .features-grid,.voices-grid,.schedule-grid{grid-template-columns:1fr}
+    .specs-grid{grid-template-columns:repeat(2,1fr)}
+    .spec{border-left:0;border-top:2px solid var(--ink)}
+    .specs-grid .spec:nth-child(2){border-left:2px solid var(--ink)}
+    .specs-grid .spec:nth-child(4){border-left:2px solid var(--ink)}
+    .specs-grid .spec:nth-child(-n+2){border-top:0}
+    .tier{border-left:0;border-top:2px solid var(--ink)}
+    .tier:first-child{border-top:0}
+    .tier-note{min-height:0}
+    section{padding:58px 0}
+  }
+  @media (max-width:560px){
+    .specs-grid{grid-template-columns:1fr}
+    .specs-grid .spec{border-left:0;border-top:2px solid var(--ink)}
+    .specs-grid .spec:first-child{border-top:0}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none !important;animation:none !important}
+    .screen[data-boot]::after{opacity:1}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="frame topbar-in">
+    <span class="wordmark">Perennia</span>
+    <span class="topbar-meta">Home System &nbsp;/&nbsp; PHS-001 &nbsp;/&nbsp; Firmware 2.4</span>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero frame">
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow screen">MODEL PHS-001</span>
+        <h1>Your monstera is a save file you keep losing.</h1>
+        <p class="hero-sub">Perennia is a cartridge-based home console for keeping houseplants alive. One plant per cartridge. One save slot per cartridge. There are no cloud saves, and the manual explains why across four of its forty-four pages.</p>
+        <div class="btn-row">
+          <a class="btn btn-primary" href="#configurations">Reserve a console</a>
+          <a class="btn btn-ghost" href="./demo.html">Open the demo →</a>
+        </div>
+      </div>
+      <div class="hero-unit">
+        <div class="hero-shot">
+          <img src="hero.webp" width="1600" height="900" alt="A beige moulded home console with an unlit dot-matrix panel, sitting beside a potted pothos.">
+        </div>
+        <div class="screen" data-boot>
+          <div class="screen-row"><span>SYSTEM</span><span>READY</span></div>
+          <div class="screen-row"><span>BAYS OCCUPIED</span><span>4 / 4</span></div>
+          <div class="screen-row"><span>PLAYTIME</span><span>612 H</span></div>
+          <div class="screen-row"><span>LAST SAVE</span><span class="alert">11 DAYS AGO</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="specs" style="padding:0">
+    <div class="frame" style="padding:0 28px">
+      <dl class="specs-grid" style="margin:0">
+        <div class="spec"><dt>Cartridge bays</dt><dd>1 to 4</dd></div>
+        <div class="spec"><dt>Save slots</dt><dd>1 per cartridge</dd></div>
+        <div class="spec"><dt>Region lock</dt><dd>By hardiness zone</dd></div>
+        <div class="spec"><dt>Cloud save</dt><dd>None</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section id="system" class="frame">
+    <div class="seam"><span class="seam-rule"></span><span class="seam-ref">Manual p.07 / System behaviour</span><span class="seam-rule"></span></div>
+    <div class="section-head">
+      <h2>How the console handles a plant</h2>
+      <p>Three decisions the hardware makes on your behalf, documented here so that support calls can be shorter.</p>
+    </div>
+    <div class="features-grid">
+
+      <article class="shell feature">
+        <div class="cart-wrap">
+          <div class="cart">
+            <div class="cart-band">Bay 01</div>
+            <div class="cart-face"><b>01</b><span class="cart-ridges"></span></div>
+          </div>
+        </div>
+        <h3>One plant, one cartridge</h3>
+        <p>Every plant in your home ships as a physical cartridge, moulded to fit exactly one bay. Adding a fern means buying a fern. Cartridges are region-locked to your hardiness zone and will not boot at a friend's house, which we consider correct behaviour.</p>
+        <div class="stamp"><span class="stamp-mark">2</span><span>ABS 09-26</span></div>
+      </article>
+
+      <article class="shell feature">
+        <div class="cart-wrap">
+          <div class="cart">
+            <div class="cart-band">Bay 02</div>
+            <div class="cart-face"><b>02</b><span class="cart-ridges"></span></div>
+          </div>
+        </div>
+        <h3>Permadeath ships enabled</h3>
+        <p>When a plant dies, the save is erased at the cartridge level rather than the console. Competing systems let you roll back a drought. We evaluated that feature for two years, built it twice, and removed it both times.</p>
+        <div class="stamp"><span class="stamp-mark">2</span><span>ABS 09-26</span></div>
+      </article>
+
+      <article class="shell feature">
+        <div class="cart-wrap">
+          <div class="cart">
+            <div class="cart-band">Bay 03</div>
+            <div class="cart-face"><b>03</b><span class="cart-ridges"></span></div>
+          </div>
+        </div>
+        <h3>Difficulty is assigned, not chosen</h3>
+        <p>The console reads the light in the room and sets the difficulty itself. Fiddle-leaf fig has never been rated below EXPERT in any household, in any season. The rating is written to the cartridge and cannot be lowered by you, by us, or by an authorised service centre.</p>
+        <div class="stamp"><span class="stamp-mark">2</span><span>ABS 09-26</span></div>
+      </article>
+
+    </div>
+  </section>
+
+  <section id="owners" class="frame">
+    <div class="seam"><span class="seam-rule"></span><span class="seam-ref">Manual p.29 / Owner correspondence</span><span class="seam-rule"></span></div>
+    <div class="section-head">
+      <h2>Letters we received and printed anyway</h2>
+      <p>Reproduced with permission from registered owners. Registration codes retained at their request.</p>
+    </div>
+    <div class="voices-grid">
+
+      <article class="shell voice">
+        <blockquote>“It rated the fiddle-leaf fig EXPERT before I got it out of the car. I bought it anyway. The console has not mentioned it since, which is somehow worse than being told.”</blockquote>
+        <div class="voice-id">
+          <div class="cart-wrap">
+            <div class="cart"><img src="headshot-1.webp" width="320" height="320" alt="Denise Okonjo-Frame, photographed against a plain beige wall."></div>
+          </div>
+          <div>
+            <p class="voice-name">Denise Okonjo-Frame</p>
+            <p class="voice-title">Assistant Manager, Regional Tile and Grout Showroom</p>
+            <span class="screen voice-reg">REG 4471-A</span>
+          </div>
+        </div>
+        <div class="stamp"><span class="stamp-mark">2</span><span>ABS 09-26</span></div>
+      </article>
+
+      <article class="shell voice">
+        <blockquote>“My wife keeps her saves on the second bay. We have agreed not to look at each other's playtime, and the console does not offer a way to enforce that.”</blockquote>
+        <div class="voice-id">
+          <div class="cart-wrap">
+            <div class="cart"><img src="headshot-2.webp" width="320" height="320" alt="Rob Vandermeer, photographed against a plain beige wall."></div>
+          </div>
+          <div>
+            <p class="voice-name">Rob Vandermeer</p>
+            <p class="voice-title">Certified Pool Operator, Level II</p>
+            <span class="screen voice-reg">REG 0918-C</span>
+          </div>
+        </div>
+        <div class="stamp"><span class="stamp-mark">2</span><span>ABS 09-26</span></div>
+      </article>
+
+      <article class="shell voice">
+        <blockquote>“The light meter said my apartment was insufficient for the medium I had selected. It was right. It said so every ninety seconds for eleven days.”</blockquote>
+        <div class="voice-id">
+          <div class="cart-wrap">
+            <div class="cart"><img src="headshot-3.webp" width="320" height="320" alt="Priya Raman-Holt, photographed against a plain beige wall."></div>
+          </div>
+          <div>
+            <p class="voice-name">Priya Raman-Holt</p>
+            <p class="voice-title">Nights and Weekends Veterinary Reception Lead</p>
+            <span class="screen voice-reg">REG 2205-B</span>
+          </div>
+        </div>
+        <div class="stamp"><span class="stamp-mark">2</span><span>ABS 09-26</span></div>
+      </article>
+
+    </div>
+  </section>
+
+  <section id="configurations" class="frame" style="padding-bottom:0">
+    <div class="seam"><span class="seam-rule"></span><span class="seam-ref">Manual p.36 / Configurations</span><span class="seam-rule"></span></div>
+    <div class="section-head">
+      <h2>Three ways to own the hardware</h2>
+      <p>Prices are per household and hold through the current tooling run. Cartridges are sold separately unless listed.</p>
+    </div>
+  </section>
+
+  <section class="schedule" style="padding:0">
+    <div class="frame" style="padding:0 28px">
+      <div class="schedule-grid">
+
+        <div class="tier">
+          <div class="cart-wrap">
+            <div class="cart">
+              <div class="cart-band">A</div>
+              <div class="cart-face" style="padding:18px 10px 10px 16px"><span class="cart-ridges"></span></div>
+            </div>
+          </div>
+          <h3>Starter Bay</h3>
+          <p class="tier-note">Ships with a plant that was going to survive anyway.</p>
+          <div class="screen" data-boot>
+            <div class="screen-row"><span>PRICE</span><span>$249</span></div>
+          </div>
+          <ul class="perks">
+            <li>Perennia console, one cartridge bay</li>
+            <li>Pothos cartridge, preinstalled</li>
+            <li>Single save slot, no duplication</li>
+            <li>Printed manual, 44 pages, spiral bound</li>
+          </ul>
+        </div>
+
+        <div class="tier">
+          <div class="cart-wrap">
+            <div class="cart">
+              <div class="cart-band">B</div>
+              <div class="cart-face" style="padding:18px 10px 10px 16px"><span class="cart-ridges"></span></div>
+            </div>
+          </div>
+          <h3>Four-Bay Household</h3>
+          <p class="tier-note">For homes running more than four plants concurrently.</p>
+          <div class="screen" data-boot>
+            <div class="screen-row"><span>PRICE</span><span>$489</span></div>
+          </div>
+          <ul class="perks">
+            <li>Four cartridge bays, hot-swappable</li>
+            <li>Dot-matrix light meter, wall mountable</li>
+            <li>Pest encounters: spider mites, scale, thrips</li>
+            <li>Second controller for a roommate who will not use it</li>
+          </ul>
+        </div>
+
+        <div class="tier">
+          <div class="cart-wrap">
+            <div class="cart">
+              <div class="cart-band">C</div>
+              <div class="cart-face" style="padding:18px 10px 10px 16px"><span class="cart-ridges"></span></div>
+            </div>
+          </div>
+          <h3>Estate Cartridge</h3>
+          <p class="tier-note">The save file outlives the player.</p>
+          <div class="screen" data-boot>
+            <div class="screen-row"><span>PRICE</span><span>$2,400/YR</span></div>
+          </div>
+          <ul class="perks">
+            <li>Succession planning for up to thirty cartridges</li>
+            <li>A named beneficiary written into every save</li>
+            <li>A technician visits the house twice a year</li>
+            <li class="withheld">No restoration after death. This includes yours.</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="frame">
+    <div class="closing-grid">
+      <div>
+        <h2>Boot a cartridge before you buy one.</h2>
+        <p>The demo runs the cartridge-select screen with five loaded bays and one empty. Water something. Read what the console writes back.</p>
+        <a class="btn btn-primary" href="./demo.html">Open the demo →</a>
+      </div>
+      <div class="screen" data-boot>
+        <div class="screen-row"><span>UNIT</span><span>PHS-001</span></div>
+        <div class="screen-row"><span>SHELL</span><span>ABS, MOULDED</span></div>
+        <div class="screen-row"><span>DISPLAY</span><span>DOT MATRIX</span></div>
+        <div class="screen-row"><span>WARRANTY</span><span>24 MONTHS</span></div>
+        <div class="screen-row"><span>PLANT WARRANTY</span><span class="alert">NONE</span></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="frame foot-in">
+    <a class="foot-back" href="/">← theworstaistudioever</a>
+    <span class="foot-meta">Perennia is not a real console. No plants were saved.</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var screens = document.querySelectorAll('[data-boot]');
+  if (reduce || !('IntersectionObserver' in window)) {
+    screens.forEach(function(s){ s.classList.add('booted'); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (!e.isIntersecting) return;
+      e.target.classList.add('booted');
+      io.unobserve(e.target);
+    });
+  }, { threshold: 0.35 });
+  screens.forEach(function(s){ io.observe(s); });
+
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click', function(ev){
+      var t = document.querySelector(a.getAttribute('href'));
+      if (!t) return;
+      ev.preventDefault();
+      t.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

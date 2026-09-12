@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cartridge select · Perennia</title>
+<meta name="description" content="The Perennia cartridge-select screen: five loaded bays, one empty, and a save file that does not forgive.">
+<meta name="theme-color" content="#DCD7C6">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Fira+Sans:wght@400;500&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#DCD7C6;
+    --shell:#E7E3D5;
+    --ink:#1E1D24;
+    --accent:#A8145C;
+    --muted:#5C5648;
+    --well:#2B3126;
+    --phos:#A9BC80;
+    --knock:#F3F0E6;
+    --display:'Chakra Petch','Eurostile','Helvetica Neue',Helvetica,Arial,sans-serif;
+    --body:'Fira Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --bitmap:'Silkscreen','Courier New',Courier,monospace;
+    --drop:4px 4px 0 var(--ink);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:var(--body);font-size:16px;line-height:1.55;
+    min-height:100vh;min-height:100dvh;
+  }
+  img{display:block;max-width:100%}
+  button{font:inherit;color:inherit;cursor:pointer}
+
+  .chrome{border-bottom:3px solid var(--ink)}
+  .chrome-in{
+    max-width:1120px;margin:0 auto;padding:16px 24px;
+    display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;
+  }
+  .back{
+    font-family:var(--display);font-weight:600;font-size:.76rem;
+    letter-spacing:.13em;text-transform:uppercase;text-decoration:none;
+    border-bottom:2px solid var(--ink);padding-bottom:2px;
+  }
+  .back:hover{background:var(--ink);color:var(--knock);border-bottom-color:transparent}
+  .chrome-meta{
+    font-family:var(--display);font-weight:500;font-size:.68rem;
+    letter-spacing:.15em;text-transform:uppercase;color:var(--muted);
+  }
+
+  .wrap{max-width:1120px;margin:0 auto;padding:34px 24px 64px}
+
+  .seam{display:flex;align-items:center;gap:14px;margin:0 0 22px}
+  .seam-rule{flex:1;height:3px;background:var(--ink)}
+  .seam-ref{
+    font-family:var(--display);font-weight:700;font-size:.7rem;
+    letter-spacing:.16em;text-transform:uppercase;white-space:nowrap;
+  }
+
+  /* ---------- faceplate of bays ---------- */
+  .faceplate{
+    background:var(--shell);border:2px solid var(--ink);border-radius:3px;
+    box-shadow:var(--drop);padding:20px;margin-bottom:32px;
+  }
+  .bays{
+    display:grid;grid-template-columns:repeat(6,1fr);gap:14px;
+  }
+  .bay{
+    background:none;border:0;padding:0;text-align:left;
+    filter:drop-shadow(3px 3px 0 var(--ink));
+    transition:transform .2s ease-out,filter .2s ease-out;
+  }
+  .bay-cart{
+    background:var(--bg);
+    clip-path:polygon(14px 0,100% 0,100% 100%,0 100%,0 14px);
+    position:relative;overflow:hidden;
+  }
+  .bay-band{
+    background:var(--ink);color:var(--knock);
+    font-family:var(--display);font-weight:700;font-size:.6rem;
+    letter-spacing:.12em;text-transform:uppercase;
+    padding:7px 8px 6px 18px;line-height:1.25;min-height:2.6em;
+  }
+  .bay-face{padding:14px 10px 34px 16px;position:relative;min-height:74px}
+  .bay-face b{
+    display:block;font-family:var(--display);font-weight:700;font-size:.94rem;
+    line-height:1.15;letter-spacing:-.01em;
+  }
+  .bay-ridges{
+    position:absolute;top:0;right:0;bottom:0;width:8px;
+    background:repeating-linear-gradient(to bottom,var(--ink) 0 2px,transparent 2px 7px);
+    opacity:.45;
+  }
+  .bay-rating{
+    position:absolute;left:16px;bottom:10px;
+    font-family:var(--display);font-weight:700;font-size:.56rem;
+    letter-spacing:.13em;text-transform:uppercase;color:var(--muted);
+  }
+  .bay-rating.expert{color:var(--accent)}
+  .bay:hover{transform:translate(0,6px);filter:drop-shadow(3px 0 0 var(--ink))}
+  .bay[aria-pressed="true"]{transform:translate(0,8px);filter:drop-shadow(0 0 0 var(--ink))}
+  .bay[aria-pressed="true"] .bay-cart{background:var(--shell);box-shadow:inset 0 0 0 2px var(--ink)}
+  .bay:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
+  .bay.empty .bay-cart{background:var(--well);opacity:.34}
+  .bay.empty .bay-band{background:var(--muted)}
+  .bay.empty .bay-face b{color:var(--knock)}
+
+  /* ---------- console body ---------- */
+  .console{display:grid;grid-template-columns:1fr 340px;gap:26px;align-items:start}
+
+  .screen{
+    position:relative;background:var(--well);border:3px solid var(--ink);border-radius:2px;
+    color:var(--phos);font-family:var(--bitmap);letter-spacing:.03em;
+  }
+  .screen::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      repeating-linear-gradient(to right,rgba(0,0,0,.30) 0 1px,transparent 1px 3px),
+      repeating-linear-gradient(to bottom,rgba(0,0,0,.30) 0 1px,transparent 1px 3px);
+  }
+  .lcd{padding:0;font-size:.68rem;line-height:2}
+
+  .lcd-head{
+    display:flex;justify-content:space-between;gap:14px;
+    padding:14px 18px 12px;border-bottom:2px solid rgba(169,188,128,.4);
+  }
+  .tabs{display:flex;border-bottom:2px solid rgba(169,188,128,.4)}
+  .tab{
+    flex:1;background:none;border:0;border-right:2px solid rgba(169,188,128,.4);
+    color:var(--phos);font-family:var(--bitmap);font-size:.62rem;letter-spacing:.06em;
+    padding:11px 6px;position:relative;z-index:1;
+  }
+  .tab:last-child{border-right:0}
+  .tab[aria-selected="true"]{background:var(--phos);color:var(--well)}
+  .tab:focus-visible{outline:2px solid var(--knock);outline-offset:-4px}
+  .panel{padding:16px 18px 20px;position:relative;z-index:1}
+  .panel[hidden]{display:none}
+
+  .row{display:flex;justify-content:space-between;gap:16px}
+  .row span:last-child{text-align:right}
+  .alert{background:var(--accent);color:var(--knock);padding:1px 6px}
+
+  .meter{display:flex;gap:3px;margin:6px 0 12px}
+  .meter i{flex:1;height:14px;background:rgba(169,188,128,.22)}
+  .meter i.on{background:var(--phos)}
+  .meter i.low{background:var(--accent)}
+
+  .ach{display:flex;justify-content:space-between;gap:14px;padding:3px 0}
+  .ach.locked{opacity:.45}
+
+  .log{
+    margin-top:14px;padding:12px 18px;border-top:2px solid rgba(169,188,128,.4);
+    font-size:.6rem;line-height:2;min-height:5.4em;position:relative;z-index:1;
+  }
+  .log p{margin:0}
+  .log p.bad{color:var(--knock);background:var(--accent);display:inline-block;padding:1px 6px}
+
+  /* ---------- controls ---------- */
+  .controls{
+    background:var(--shell);border:2px solid var(--ink);border-radius:3px;
+    box-shadow:var(--drop);padding:20px;
+  }
+  .controls h2{
+    font-family:var(--display);font-weight:700;font-size:.76rem;
+    letter-spacing:.16em;text-transform:uppercase;margin:0 0 16px;
+  }
+  .btn{
+    display:block;width:100%;text-align:center;text-decoration:none;
+    font-family:var(--display);font-weight:700;font-size:.78rem;
+    letter-spacing:.13em;text-transform:uppercase;
+    padding:14px 18px;border:2px solid var(--ink);border-radius:3px;
+    background:var(--ink);color:var(--knock);box-shadow:var(--drop);
+    margin-bottom:14px;
+    transition:transform .18s ease-out,box-shadow .18s ease-out,background-color .18s ease-out,color .18s ease-out;
+  }
+  .btn:hover{background:var(--knock);color:var(--ink)}
+  .btn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;box-shadow:none;transform:none}
+  .btn-ghost{background:transparent;color:var(--ink);box-shadow:none}
+  .btn-ghost:hover{background:var(--ink);color:var(--knock)}
+  .btn-danger{background:transparent;color:var(--accent);border-color:var(--accent);box-shadow:none}
+  .btn-danger:hover{background:var(--accent);color:var(--knock)}
+  .btn:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+
+  .hold{margin:0 0 18px;font-size:.8rem;color:var(--muted);line-height:1.4}
+  .notes{border-top:2px solid var(--ink);padding-top:14px;font-size:.82rem;color:var(--muted);margin:0}
+
+  /* ---------- confirm sheet ---------- */
+  .scrim{
+    position:fixed;inset:0;background:rgba(30,29,36,.62);
+    display:none;align-items:center;justify-content:center;padding:24px;z-index:50;
+  }
+  .scrim.open{display:flex}
+  .sheet{
+    background:var(--shell);border:2px solid var(--ink);border-radius:3px;
+    box-shadow:var(--drop);max-width:420px;width:100%;padding:26px;
+  }
+  .sheet h3{font-family:var(--display);font-weight:700;font-size:1.15rem;margin:0 0 12px;letter-spacing:-.01em}
+  .sheet p{margin:0 0 20px;font-size:.94rem}
+  .hold-bar{height:10px;border:2px solid var(--ink);margin-bottom:16px;background:var(--bg)}
+  .hold-fill{height:100%;width:0;background:var(--accent)}
+
+  @media (max-width:900px){
+    .console{grid-template-columns:1fr}
+    .bays{grid-template-columns:repeat(3,1fr)}
+  }
+  @media (max-width:520px){
+    .bays{grid-template-columns:repeat(2,1fr)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none !important;animation:none !important}
+  }
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-in">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <span class="chrome-meta">Perennia PHS-001 &nbsp;/&nbsp; Cartridge select</span>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="seam"><span class="seam-rule"></span><span class="seam-ref">Faceplate / Six bays</span><span class="seam-rule"></span></div>
+
+  <div class="faceplate">
+    <div class="bays" id="bays" role="group" aria-label="Cartridge bays"></div>
+  </div>
+
+  <div class="seam"><span class="seam-rule"></span><span class="seam-ref">Display / Save data</span><span class="seam-rule"></span></div>
+
+  <div class="console">
+
+    <div class="screen lcd">
+      <div class="lcd-head">
+        <span id="lcdTitle">POTHOS</span>
+        <span id="lcdBay">BAY 2</span>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Save file sections">
+        <button class="tab" role="tab" id="tab-status" aria-controls="p-status" aria-selected="true">STATUS</button>
+        <button class="tab" role="tab" id="tab-inventory" aria-controls="p-inventory" aria-selected="false">INVENTORY</button>
+        <button class="tab" role="tab" id="tab-achievements" aria-controls="p-achievements" aria-selected="false">TROPHIES</button>
+      </div>
+
+      <div class="panel" id="p-status" role="tabpanel" aria-labelledby="tab-status">
+        <div class="row"><span>SOIL MOISTURE</span><span id="sMoisturePct">61%</span></div>
+        <div class="meter" id="sMeter" aria-hidden="true"></div>
+        <div class="row"><span>PLAYTIME</span><span id="sPlaytime">0 H</span></div>
+        <div class="row"><span>LAST SAVE</span><span id="sLastSave">0 DAYS</span></div>
+        <div class="row"><span>DIFFICULTY</span><span id="sDifficulty">NORMAL</span></div>
+        <div class="row"><span>LIGHT LEVEL</span><span id="sLight">ADEQUATE</span></div>
+      </div>
+
+      <div class="panel" id="p-inventory" role="tabpanel" aria-labelledby="tab-inventory" hidden></div>
+
+      <div class="panel" id="p-achievements" role="tabpanel" aria-labelledby="tab-achievements" hidden></div>
+
+      <div class="log" id="log" role="status" aria-live="polite"></div>
+    </div>
+
+    <div class="controls">
+      <h2>Controller</h2>
+      <button class="btn" id="btnWater">Water</button>
+      <button class="btn btn-ghost" id="btnMeasure">Read the light</button>
+      <p class="hold">Watering writes to the cartridge. The console decides whether the write succeeds.</p>
+      <button class="btn btn-danger" id="btnReset">Reset save</button>
+      <p class="notes">Six bays fitted. One empty. Cartridges cannot be copied, backed up, or moved between consoles.</p>
+    </div>
+
+  </div>
+</div>
+
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="sheet">
+    <h3 id="sheetTitle">Erase this save</h3>
+    <p id="sheetBody">Hold the button for three seconds. The save is written over immediately and the cartridge keeps no copy.</p>
+    <div class="hold-bar" aria-hidden="true"><div class="hold-fill" id="holdFill"></div></div>
+    <button class="btn btn-danger" id="btnHold">Hold to erase</button>
+    <button class="btn btn-ghost" id="btnCancel">Keep the save</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var CARTS = [
+    { bay:1, name:"MONSTERA",   label:"Monstera deliciosa", diff:"HARD",   moisture:38, playtime:812, lastSave:6,  light:"ADEQUATE",     empty:false },
+    { bay:2, name:"POTHOS",     label:"Golden pothos",      diff:"EASY",   moisture:61, playtime:1940,lastSave:2,  light:"ADEQUATE",     empty:false },
+    { bay:3, name:"FIG",        label:"Fiddle-leaf fig",    diff:"EXPERT", moisture:14, playtime:203, lastSave:11, light:"INSUFFICIENT", empty:false },
+    { bay:4, name:"ZZ",         label:"ZZ plant",           diff:"EASY",   moisture:74, playtime:2601,lastSave:19, light:"LOW, FINE",    empty:false },
+    { bay:5, name:"PEARLS",     label:"String of pearls",   diff:"HARD",   moisture:22, playtime:96,  lastSave:9,  light:"HARSH",        empty:false },
+    { bay:6, name:"NO CART",    label:"Bay empty",          diff:"—",      moisture:0,  playtime:0,   lastSave:0,  light:"—",            empty:true  }
+  ];
+
+  var INVENTORY = {
+    MONSTERA:[["MOSS POLE","1"],["STAKE TIES","4"],["FERTILISER","2 DOSE"],["REPOT KIT","0"]],
+    POTHOS:  [["TRIM SHEARS","1"],["FERTILISER","6 DOSE"],["PROPAGATION JAR","3"],["REPOT KIT","1"]],
+    FIG:     [["HUMIDIFIER","1"],["FERTILISER","0"],["LEAF WIPES","2"],["GROW LIGHT","0"]],
+    ZZ:      [["FERTILISER","9 DOSE"],["REPOT KIT","1"],["DUST CLOTH","1"],["NOTHING ELSE","—"]],
+    PEARLS:  [["HANGING HOOK","1"],["GRIT MIX","1 BAG"],["FERTILISER","1 DOSE"],["PATIENCE","0"]]
+  };
+
+  var TROPHIES = {
+    MONSTERA:[["FIRST FENESTRATION",1],["SIX MONTHS RUNNING",1],["NO AERIAL ROOT IN THE CARPET",0],["REPOTTED WITHOUT INCIDENT",0]],
+    POTHOS:  [["FIRST CUTTING ROOTED",1],["TWO YEARS RUNNING",1],["FOUR FEET OF VINE",1],["GAVE ONE AWAY",0]],
+    FIG:     [["SURVIVED THE MOVE",0],["KEPT ALL LEAVES ONE MONTH",0],["ANY NEW GROWTH AT ALL",0],["FORGIVEN BY THE CONSOLE",0]],
+    ZZ:      [["IGNORED FOR 30 DAYS",1],["IGNORED FOR 90 DAYS",1],["IGNORED FOR 180 DAYS",1],["NOTICED AT ALL",0]],
+    PEARLS:  [["FIRST STRAND PAST THE SHELF",1],["NO SHRIVELLED PEARLS",0],["BLOOMED",0],["EXPLAINED IT TO A GUEST",0]]
+  };
+
+  var SATURATED = [
+    "SAVE FAILED: SOIL ALREADY SATURATED",
+    "SAVE FAILED: WRITE REJECTED BY CARTRIDGE",
+    "SAVE FAILED: MOISTURE CEILING REACHED"
+  ];
+
+  var state = CARTS.map(function(c){ return Object.assign({}, c); });
+  var active = 1;
+  var satIndex = 0;
+
+  var baysEl   = document.getElementById('bays');
+  var logEl    = document.getElementById('log');
+  var tabs     = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+  var panels   = { 'tab-status':'p-status', 'tab-inventory':'p-inventory', 'tab-achievements':'p-achievements' };
+  var btnWater = document.getElementById('btnWater');
+  var btnMeasure = document.getElementById('btnMeasure');
+  var btnReset = document.getElementById('btnReset');
+  var scrim    = document.getElementById('scrim');
+  var holdFill = document.getElementById('holdFill');
+  var btnHold  = document.getElementById('btnHold');
+  var btnCancel= document.getElementById('btnCancel');
+
+  function esc(s){ return String(s).replace(/[&<>]/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;'}[m]; }); }
+
+  function buildBays(){
+    baysEl.innerHTML = state.map(function(c, i){
+      return '<button class="bay' + (c.empty ? ' empty' : '') + '" type="button" aria-pressed="' + (i === active) + '" data-i="' + i + '">' +
+        '<span class="bay-cart">' +
+          '<span class="bay-band">Bay ' + c.bay + '</span>' +
+          '<span class="bay-face"><b>' + esc(c.label) + '</b><span class="bay-ridges"></span>' +
+            '<span class="bay-rating' + (c.diff === 'EXPERT' ? ' expert' : '') + '">' + esc(c.diff) + '</span>' +
+          '</span>' +
+        '</span>' +
+      '</button>';
+    }).join('');
+  }
+
+  function meter(pct, dry){
+    var cells = 12, on = Math.round(pct / 100 * cells), out = '';
+    for (var i = 0; i < cells; i++){
+      out += '<i class="' + (i < on ? (dry ? 'low' : 'on') : '') + '"></i>';
+    }
+    return out;
+  }
+
+  function render(){
+    var c = state[active];
+    document.getElementById('lcdTitle').textContent = c.name;
+    document.getElementById('lcdBay').textContent = 'BAY ' + c.bay;
+
+    if (c.empty){
+      document.getElementById('sMoisturePct').innerHTML = '<span class="alert">NO CARTRIDGE</span>';
+      document.getElementById('sMeter').innerHTML = meter(0, false);
+      document.getElementById('sPlaytime').textContent = '—';
+      document.getElementById('sLastSave').textContent = '—';
+      document.getElementById('sDifficulty').textContent = '—';
+      document.getElementById('sLight').textContent = '—';
+      document.getElementById('p-inventory').innerHTML = '<div class="row"><span>BAY EMPTY</span><span>—</span></div>';
+      document.getElementById('p-achievements').innerHTML = '<div class="ach locked"><span>NOTHING INSERTED</span><span>—</span></div>';
+      btnWater.disabled = true; btnMeasure.disabled = true; btnReset.disabled = true;
+      return;
+    }
+
+    btnWater.disabled = false; btnMeasure.disabled = false; btnReset.disabled = false;
+
+    var dry = c.moisture < 25;
+    document.getElementById('sMoisturePct').innerHTML = dry
+      ? '<span class="alert">' + c.moisture + '% DRY</span>'
+      : c.moisture + '%';
+    document.getElementById('sMeter').innerHTML = meter(c.moisture, dry);
+    document.getElementById('sPlaytime').textContent = c.playtime + ' H';
+    document.getElementById('sLastSave').innerHTML = c.lastSave >= 7
+      ? '<span class="alert">' + c.lastSave + ' DAYS</span>'
+      : c.lastSave + ' DAYS';
+    document.getElementById('sDifficulty').innerHTML = c.diff === 'EXPERT'
+      ? '<span class="alert">EXPERT, LOCKED</span>'
+      : c.diff;
+    document.getElementById('sLight').innerHTML = c.light === 'INSUFFICIENT'
+      ? '<span class="alert">INSUFFICIENT</span>'
+      : c.light;
+
+    document.getElementById('p-inventory').innerHTML = (INVENTORY[c.name] || []).map(function(r){
+      return '<div class="row"><span>' + esc(r[0]) + '</span><span>' + esc(r[1]) + '</span></div>';
+    }).join('');
+
+    document.getElementById('p-achievements').innerHTML = (TROPHIES[c.name] || []).map(function(r){
+      return '<div class="ach' + (r[1] ? '' : ' locked') + '"><span>' + (r[1] ? esc(r[0]) : '- - - - - - - -') + '</span><span>' + (r[1] ? 'GOT' : 'LOCKED') + '</span></div>';
+    }).join('');
+  }
+
+  function say(text, bad){
+    logEl.innerHTML = bad
+      ? '<p class="bad">' + esc(text) + '</p>'
+      : '<p>' + esc(text) + '</p>';
+  }
+
+  baysEl.addEventListener('click', function(e){
+    var b = e.target.closest('.bay');
+    if (!b) return;
+    active = parseInt(b.dataset.i, 10);
+    Array.prototype.forEach.call(baysEl.querySelectorAll('.bay'), function(el){
+      el.setAttribute('aria-pressed', String(parseInt(el.dataset.i, 10) === active));
+    });
+    var c = state[active];
+    render();
+    say(c.empty ? 'BOOT ERROR: NO CARTRIDGE IN BAY 6' : 'CARTRIDGE LOADED: ' + c.label.toUpperCase(), c.empty);
+  });
+
+  tabs.forEach(function(t){
+    t.addEventListener('click', function(){
+      tabs.forEach(function(o){
+        var sel = o === t;
+        o.setAttribute('aria-selected', String(sel));
+        document.getElementById(panels[o.id]).hidden = !sel;
+      });
+    });
+  });
+
+  btnWater.addEventListener('click', function(){
+    var c = state[active];
+    if (c.moisture > 70){
+      say(SATURATED[satIndex % SATURATED.length], true);
+      satIndex++;
+      return;
+    }
+    c.moisture = Math.min(100, c.moisture + 26);
+    c.lastSave = 0;
+    c.playtime += 1;
+    render();
+    say('SAVE WRITTEN. MOISTURE ' + c.moisture + '%. NO CONFIRMATION WILL FOLLOW.', false);
+  });
+
+  btnMeasure.addEventListener('click', function(){
+    var c = state[active];
+    say(c.light === 'INSUFFICIENT'
+      ? 'LIGHT INSUFFICIENT FOR THE MEDIUM YOU HAVE SELECTED. DIFFICULTY REMAINS ' + c.diff + '.'
+      : 'LIGHT READING: ' + c.light + '. DIFFICULTY REMAINS ' + c.diff + ', LOCKED.',
+      c.light === 'INSUFFICIENT');
+  });
+
+  /* ---- reset save, hold to confirm ---- */
+  var holdTimer = null, holdStart = 0;
+  var HOLD_MS = 3000;
+
+  function openSheet(){
+    var c = state[active];
+    document.getElementById('sheetBody').textContent =
+      'Hold the button for three seconds. ' + c.playtime + ' hours on ' + c.label + ' are written over immediately and the cartridge keeps no copy.';
+    scrim.classList.add('open');
+    btnHold.focus();
+  }
+  function closeSheet(){
+    scrim.classList.remove('open');
+    stopHold();
+    btnReset.focus();
+  }
+  function stopHold(){
+    if (holdTimer) { cancelAnimationFrame(holdTimer); holdTimer = null; }
+    holdFill.style.width = '0';
+  }
+  function tick(){
+    var pct = Math.min(1, (Date.now() - holdStart) / HOLD_MS);
+    holdFill.style.width = (pct * 100) + '%';
+    if (pct >= 1){
+      stopHold();
+      var c = state[active];
+      c.moisture = 0; c.playtime = 0; c.lastSave = 0;
+      scrim.classList.remove('open');
+      render();
+      say('SAVE ERASED. CARTRIDGE RETAINS DIFFICULTY ' + c.diff + '.', true);
+      btnReset.focus();
+      return;
+    }
+    holdTimer = requestAnimationFrame(tick);
+  }
+  function startHold(e){
+    e.preventDefault();
+    holdStart = Date.now();
+    holdTimer = requestAnimationFrame(tick);
+  }
+
+  btnReset.addEventListener('click', openSheet);
+  btnCancel.addEventListener('click', closeSheet);
+  scrim.addEventListener('click', function(e){ if (e.target === scrim) closeSheet(); });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && scrim.classList.contains('open')) closeSheet();
+  });
+  ['mousedown','touchstart'].forEach(function(ev){ btnHold.addEventListener(ev, startHold); });
+  ['mouseup','mouseleave','touchend','touchcancel','blur'].forEach(function(ev){ btnHold.addEventListener(ev, stopHold); });
+  btnHold.addEventListener('keydown', function(e){ if ((e.key === ' ' || e.key === 'Enter') && !holdTimer) startHold(e); });
+  btnHold.addEventListener('keyup', stopHold);
+
+  buildBays();
+  render();
+  say('CARTRIDGE LOADED: GOLDEN POTHOS', false);
+})();
+</script>
+
+</body>
+</html>
