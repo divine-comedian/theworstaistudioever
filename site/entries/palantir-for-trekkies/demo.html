@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Continuity Reader · Canonry</title>
+<meta name="description" content="Canonry continuity reader. Subject dossiers, contested assertions, citation chains.">
+<meta name="theme-color" content="#100E0A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Karla:wght@400;500;700&family=Azeret+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --hood:#100E0A;
+  --hood-deep:#0A0906;
+  --panel:#15120D;
+  --amber:#DDA83F;
+  --uv:#6E86E8;
+  --bone:#EFE2C6;
+  --dim:#8B8069;
+  --line:rgba(239,226,198,.16);
+  --display:'Bricolage Grotesque','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --body:'Karla',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'Azeret Mono','SFMono-Regular',Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;background:var(--hood);color:var(--bone);
+  font-family:var(--body);font-size:15px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
+
+/* ---- chrome ---- */
+.chrome{
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  padding:12px clamp(12px,2.4vw,22px);
+  border-bottom:1px solid var(--line);
+  background:var(--hood-deep);
+  position:sticky;top:0;z-index:5;
+}
+.back{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;
+  text-decoration:none;color:var(--bone);padding:6px 10px;border:1px solid var(--line);border-radius:2px;
+}
+.back:hover{border-color:var(--amber);color:var(--amber);}
+.chrome-mark{font-family:var(--display);font-weight:800;font-size:.98rem;letter-spacing:-.02em;color:var(--amber);}
+.counter{
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.15em;color:var(--dim);
+  font-variant-numeric:tabular-nums;margin-left:auto;
+}
+.counter b{color:var(--bone);font-weight:500;}
+.advance{display:flex;gap:6px;}
+.advance button{
+  font-family:var(--mono);font-size:.72rem;background:transparent;color:var(--bone);
+  border:1px solid var(--line);border-radius:2px;width:34px;height:30px;cursor:pointer;
+  transition:border-color .15s ease,color .15s ease;
+}
+.advance button:hover:not(:disabled){border-color:var(--amber);color:var(--amber);}
+.advance button:disabled{opacity:.3;cursor:not-allowed;}
+
+/* ---- layout ---- */
+.carrel{
+  display:grid;gap:1px;background:var(--line);
+  min-height:calc(100vh - 55px);
+}
+@media(min-width:1040px){.carrel{grid-template-columns:296px minmax(0,1fr) 320px;}}
+.col{background:var(--hood);padding:18px clamp(12px,1.8vw,20px) 30px;min-width:0;}
+.colhead{
+  font-family:var(--mono);font-size:.61rem;letter-spacing:.17em;color:var(--dim);
+  padding-bottom:9px;border-bottom:1px solid var(--line);margin-bottom:14px;
+  display:flex;justify-content:space-between;gap:10px;font-variant-numeric:tabular-nums;
+}
+
+/* ---- search + chips ---- */
+.search{
+  width:100%;background:var(--hood-deep);border:1px solid var(--line);border-radius:2px;
+  color:var(--bone);font-family:var(--mono);font-size:.74rem;letter-spacing:.04em;
+  padding:10px 11px;margin-bottom:12px;
+}
+.search::placeholder{color:var(--dim);}
+.search:focus{border-color:var(--amber);}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.chip{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.13em;
+  background:transparent;color:var(--dim);border:1px solid var(--line);
+  border-radius:2px;padding:6px 9px;cursor:pointer;
+  transition:color .15s ease,border-color .15s ease,background .15s ease;
+}
+.chip:hover{color:var(--bone);border-color:var(--bone);}
+.chip[aria-pressed="true"]{background:var(--amber);border-color:var(--amber);color:var(--hood);}
+
+/* ---- subject rail ---- */
+.rail{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px;background:var(--line);}
+.rail li{background:var(--hood);}
+.rail button{
+  width:100%;text-align:left;background:transparent;border:0;cursor:pointer;
+  padding:12px 12px 13px;display:grid;grid-template-columns:1fr auto;gap:4px 10px;
+  color:var(--bone);font-family:var(--body);
+  border-left:2px solid transparent;
+  transition:background .15s ease,border-color .15s ease;
+}
+.rail button:hover{background:rgba(221,168,63,.07);}
+.rail button[aria-current="true"]{background:rgba(221,168,63,.11);border-left-color:var(--amber);}
+.rname{font-size:.9rem;font-weight:500;}
+.rscore{font-family:var(--mono);font-size:.82rem;font-variant-numeric:tabular-nums;text-align:right;}
+.rmeta{font-family:var(--mono);font-size:.58rem;letter-spacing:.11em;color:var(--dim);grid-column:1/2;}
+.rclass{font-family:var(--mono);font-size:.55rem;letter-spacing:.13em;text-align:right;}
+.c-flagged{color:var(--uv);}
+.c-drift{color:var(--amber);}
+.c-cleared{color:var(--dim);}
+.empty{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;color:var(--dim);padding:22px 2px;line-height:1.9;}
+
+/* ---- frame viewer ---- */
+.viewer{position:relative;}
+.viewer > .lamp{
+  position:absolute;inset:0 auto auto 0;width:100%;height:420px;pointer-events:none;
+  background:radial-gradient(ellipse 60% 60% at 30% 30%,rgba(221,168,63,.075),transparent 70%);
+}
+.viewer > *{position:relative;}
+.frame{
+  border:1px solid var(--line);background:var(--panel);
+  padding:clamp(18px,2.4vw,28px);
+}
+.dossier{display:flex;gap:clamp(16px,2.5vw,26px);flex-wrap:wrap;align-items:flex-start;}
+.plate{position:relative;width:132px;height:132px;flex:none;margin:6px 8px 6px 6px;}
+.plate img{
+  width:100%;height:100%;object-fit:cover;border-radius:999px;display:block;
+  filter:grayscale(1) sepia(.55) saturate(1.35) brightness(.9) contrast(1.05);
+}
+.plate .noimg{
+  width:100%;height:100%;border-radius:999px;display:grid;place-items:center;
+  background:var(--hood-deep);
+  font-family:var(--display);font-weight:800;font-size:2rem;letter-spacing:-.03em;color:var(--dim);
+}
+.plate::before{content:"";position:absolute;inset:-6px;border-radius:999px;border:1px solid var(--amber);}
+.plate::after{content:"";position:absolute;left:-13px;right:-13px;top:50%;height:1px;background:var(--amber);}
+.plate .vtick{position:absolute;top:-13px;bottom:-13px;left:50%;width:1px;background:var(--amber);}
+.who{min-width:220px;flex:1;}
+.who h1{font-family:var(--display);font-weight:800;font-size:clamp(1.6rem,3.2vw,2.2rem);letter-spacing:-.03em;margin:0 0 6px;line-height:1.04;}
+.handle{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;color:var(--dim);margin:0 0 16px;}
+.assert{font-size:1.02rem;margin:0 0 14px;color:rgba(239,226,198,.92);}
+.assert q{font-style:normal;}
+.verdict{
+  display:inline-block;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  padding:5px 9px;border:1px solid currentColor;border-radius:2px;
+}
+
+.wells{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:20px;}
+@media(min-width:700px){.wells{grid-template-columns:repeat(4,1fr);}}
+.well{background:var(--hood-deep);border-top:1px solid rgba(221,168,63,.5);padding:12px 13px 14px;}
+.well dt{font-family:var(--mono);font-size:.55rem;letter-spacing:.14em;color:var(--dim);margin:0 0 7px;}
+.well dd{margin:0;font-family:var(--mono);font-weight:500;font-size:1.08rem;font-variant-numeric:tabular-nums;letter-spacing:-.02em;}
+.uv{color:var(--uv);}
+
+.chain{margin-top:24px;}
+.chain h2{font-family:var(--mono);font-size:.61rem;letter-spacing:.17em;color:var(--dim);font-weight:400;margin:0 0 12px;padding-bottom:9px;border-bottom:1px solid var(--line);}
+.chain ol{list-style:none;margin:0;padding:0;}
+.chain li{
+  position:relative;padding:0 0 14px 26px;
+  font-family:var(--mono);font-size:.74rem;letter-spacing:.02em;color:var(--dim);line-height:1.7;
+}
+.chain li::before{
+  content:"";position:absolute;left:0;top:.45em;width:11px;height:11px;border-radius:999px;border:1px solid var(--amber);
+}
+.chain li::after{
+  content:"";position:absolute;left:5px;top:1.5em;bottom:0;width:1px;background:rgba(239,226,198,.16);
+}
+.chain li:last-child{padding-bottom:0;}
+.chain li:last-child::after{display:none;}
+.chain b{color:var(--bone);font-weight:500;}
+
+/* ---- contested rail ---- */
+.contested{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;}
+.contested li{border:1px solid var(--line);background:var(--panel);padding:12px 13px 13px;}
+.contested p{margin:0 0 10px;font-size:.86rem;color:rgba(239,226,198,.86);}
+.cmeta{font-family:var(--mono);font-size:.56rem;letter-spacing:.13em;color:var(--dim);display:block;margin-bottom:8px;font-variant-numeric:tabular-nums;}
+.flagbtn{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.13em;
+  background:transparent;color:var(--dim);border:1px solid var(--line);
+  border-radius:2px;padding:7px 10px;cursor:pointer;width:100%;text-align:left;
+  transition:color .15s ease,border-color .15s ease,background .15s ease;
+}
+.flagbtn:hover{color:var(--bone);border-color:var(--bone);}
+.flagbtn[aria-pressed="true"]{background:var(--uv);border-color:var(--uv);color:var(--hood);}
+.tally{font-family:var(--mono);font-size:.6rem;letter-spacing:.13em;color:var(--dim);margin-top:16px;padding-top:12px;border-top:1px solid var(--line);font-variant-numeric:tabular-nums;}
+.tally b{color:var(--uv);}
+
+.sanitized{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.13em;color:var(--dim);
+  margin-top:26px;padding-top:12px;border-top:1px solid var(--line);line-height:1.9;
+}
+
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="chrome-mark">Canonry</span>
+  <span class="counter">ROLL <b>0441</b> / FRAME <b id="frameNo">104</b> / SERIES TREK-C</span>
+  <div class="advance">
+    <button type="button" id="prevBtn" aria-label="Previous frame">‹</button>
+    <button type="button" id="nextBtn" aria-label="Next frame">›</button>
+  </div>
+</div>
+
+<div class="carrel">
+
+  <!-- SUBJECT RAIL -->
+  <div class="col">
+    <div class="colhead"><span>SUBJECT RAIL</span><span id="railCount">9 / 9</span></div>
+    <label class="sr-only" for="search" style="position:absolute;left:-9999px;">Filter subjects</label>
+    <input class="search" id="search" type="search" placeholder="FILTER SUBJECTS" autocomplete="off">
+    <div class="chips" id="chips">
+      <button class="chip" type="button" data-class="all" aria-pressed="true">ALL</button>
+      <button class="chip" type="button" data-class="flagged" aria-pressed="false">FLAGGED</button>
+      <button class="chip" type="button" data-class="drift" aria-pressed="false">DRIFT</button>
+      <button class="chip" type="button" data-class="cleared" aria-pressed="false">CLEARED</button>
+    </div>
+    <ul class="rail" id="rail"></ul>
+    <div class="empty" id="railEmpty" hidden>NO SUBJECTS MATCH.<br>THE ABSENCE IS ALSO RECORDED.</div>
+  </div>
+
+  <!-- FRAME VIEWER -->
+  <div class="col viewer">
+    <div class="lamp" aria-hidden="true"></div>
+    <div class="colhead"><span>FRAME VIEWER</span><span id="viewerCode">DOSSIER</span></div>
+    <div class="frame">
+      <div class="dossier">
+        <div class="plate" id="plate"><span class="vtick" aria-hidden="true"></span></div>
+        <div class="who">
+          <h1 id="subjName">—</h1>
+          <p class="handle" id="subjHandle"></p>
+          <p class="assert">Assertion on file: <q id="subjAssert"></q></p>
+          <span class="verdict" id="subjVerdict"></span>
+        </div>
+      </div>
+
+      <dl class="wells">
+        <div class="well"><dt>INTEGRITY SCORE</dt><dd id="mScore">—</dd></div>
+        <div class="well"><dt>DRIFT CONTRIBUTION</dt><dd class="uv" id="mDrift">—</dd></div>
+        <div class="well"><dt>RETRACTION LATENCY</dt><dd id="mLatency">—</dd></div>
+        <div class="well"><dt>POSTS ON FILE</dt><dd id="mPosts">—</dd></div>
+      </dl>
+
+      <div class="chain">
+        <h2>CITATION CHAIN</h2>
+        <ol id="chain"></ol>
+      </div>
+    </div>
+
+    <p class="sanitized">READER RUNNING AGAINST SANITIZED ROLL 0441-S.<br>NOTHING YOU DO HERE ENTERS A FILE. THIS IS THE ONLY PLACE THAT IS TRUE.</p>
+  </div>
+
+  <!-- CONTESTED -->
+  <div class="col">
+    <div class="colhead"><span>CONTESTED ASSERTIONS</span><span id="contestedCount">0</span></div>
+    <ul class="contested" id="contested"></ul>
+    <div class="tally">FLAGGED THIS SESSION: <b id="tally">0</b></div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var SUBJECTS = [
+    {
+      name:"Marcus Vance", handle:"@vance_ncc / JUR 11-208-R", score:78, cls:"drift",
+      drift:"18.4%", latency:"14 h", posts:"9,318", photo:"subject.webp",
+      assert:"The shuttlecraft was never named on screen in the third season.",
+      verdict:"PARTIALLY SUPPORTED", vclass:"c-drift",
+      chain:[
+        "<b>S3E07</b> · 00:31:14 · hull lettering visible, not spoken",
+        "<b>Shooting draft 3.07-C</b> · p.42 · name present, cut in edit",
+        "<b>Panel audio, 2019</b> · subject asserts the opposite position",
+        "<b>Retraction</b> · filed 14 h after notice · accepted"
+      ],
+      contested:[
+        {id:"a1", meta:"ASSERTION 4471 · DRIFT 18.4%", text:"Claimed the name appears in dialogue. It appears on a hull."},
+        {id:"a2", meta:"ASSERTION 4488 · DRIFT 6.1%", text:"Cited a shooting draft he has never read, accurately."}
+      ]
+    },
+    {
+      name:"Denise Holloway", handle:"@dholloway / JUR 08-441-D", score:94, cls:"cleared",
+      drift:"0.0%", latency:"—", posts:"41,207",
+      assert:"The disagreement was closed on documentary evidence, not on vote.",
+      verdict:"FULLY SUPPORTED", vclass:"c-cleared",
+      chain:[
+        "<b>Coalition minutes</b> · 2017 through 2026 · continuous",
+        "<b>Production archive</b> · access granted under Prime",
+        "<b>Four moderator findings</b> · issued same afternoon"
+      ],
+      contested:[
+        {id:"b1", meta:"ASSERTION 0012 · DRIFT 0.0%", text:"No contested assertions on file. The record is quiet here."}
+      ]
+    },
+    {
+      name:"Priya Raghunathan", handle:"@p_ragh / JUR 04-990-A", score:97, cls:"cleared",
+      drift:"0.2%", latency:"2 h", posts:"27,640",
+      assert:"Eleven episodes referenced in this server do not exist.",
+      verdict:"FULLY SUPPORTED", vclass:"c-cleared",
+      chain:[
+        "<b>Server export</b> · 2011 through 2026 · 1.4M messages",
+        "<b>Episode index</b> · cross-checked against all releases",
+        "<b>Finding</b> · eleven titles fabricated by one account"
+      ],
+      contested:[
+        {id:"c1", meta:"ASSERTION 8801 · DRIFT 0.2%", text:"Described the fabricator as 'creative'. Terminology under review."}
+      ]
+    },
+    {
+      name:"Gerald Thom", handle:"@thom_prime / JUR 19-004-F", score:31, cls:"flagged",
+      drift:"62.9%", latency:"never", posts:"188,455",
+      assert:"Eleven episodes that do not exist were personally attended by him.",
+      verdict:"UNSUPPORTED", vclass:"c-flagged",
+      chain:[
+        "<b>First fabrication</b> · 2011 · one episode title",
+        "<b>Adoption crossed 40%</b> · 2016 · alert issued, ignored",
+        "<b>Adoption crossed 60%</b> · 2021 · platform began correcting",
+        "<b>Retraction</b> · not filed · latency unbounded"
+      ],
+      contested:[
+        {id:"d1", meta:"ASSERTION 1101 · DRIFT 62.9%", text:"Eleven fabricated titles, each with a plot summary and a production code."},
+        {id:"d2", meta:"ASSERTION 1188 · DRIFT 44.0%", text:"Claims to have corrected the record. The record disagrees."},
+        {id:"d3", meta:"ASSERTION 1204 · DRIFT 12.7%", text:"Says he was joking. Fifteen years is outside the joke window."}
+      ]
+    },
+    {
+      name:"Alina Brecht", handle:"@abrecht / JUR 06-331-B", score:66, cls:"drift",
+      drift:"22.5%", latency:"39 h", posts:"14,002",
+      assert:"A line delivered in a film is routinely attributed to the series.",
+      verdict:"PARTIALLY SUPPORTED", vclass:"c-drift",
+      chain:[
+        "<b>Film, 1991</b> · line confirmed at 01:12:06",
+        "<b>Series</b> · no occurrence in 178 episodes",
+        "<b>Community adoption</b> · 22.5% and rising slowly"
+      ],
+      contested:[
+        {id:"e1", meta:"ASSERTION 5510 · DRIFT 22.5%", text:"Attributed the line to a season that had not been written yet."}
+      ]
+    },
+    {
+      name:"Wendell Ochoa", handle:"@ochoa_w / JUR 22-870-K", score:12, cls:"flagged",
+      drift:"81.3%", latency:"never", posts:"302,911",
+      assert:"Maintains a rival continuity and cites it as primary.",
+      verdict:"UNSUPPORTED", vclass:"c-flagged",
+      chain:[
+        "<b>Affiliation</b> · rival continuity, registered 2008",
+        "<b>Cross-citation</b> · 4,411 instances, none disclosed",
+        "<b>Notice</b> · served 14 times · no response",
+        "<b>Status</b> · escalated to panel · panel declined to meet"
+      ],
+      contested:[
+        {id:"f1", meta:"ASSERTION 9002 · DRIFT 81.3%", text:"Treats a competing franchise's technical manual as canon here."},
+        {id:"f2", meta:"ASSERTION 9014 · DRIFT 77.8%", text:"Has begun citing his own posts as sources. Loop detected."}
+      ]
+    },
+    {
+      name:"Rosalind Kerr", handle:"@rkerr_arch / JUR 02-118-M", score:88, cls:"cleared",
+      drift:"1.1%", latency:"5 h", posts:"63,540",
+      assert:"Production codes and broadcast order diverge in two seasons.",
+      verdict:"FULLY SUPPORTED", vclass:"c-cleared",
+      chain:[
+        "<b>Network logs</b> · broadcast order confirmed",
+        "<b>Production codes</b> · divergence in two seasons",
+        "<b>Finding</b> · both orders valid, cite which one you mean"
+      ],
+      contested:[
+        {id:"g1", meta:"ASSERTION 3301 · DRIFT 1.1%", text:"Used 'canonical order' without specifying which. Corrected in 5 h."}
+      ]
+    },
+    {
+      name:"Devon Aliu", handle:"@daliu / JUR 15-556-T", score:54, cls:"drift",
+      drift:"33.7%", latency:"71 h", posts:"7,884",
+      assert:"Repeats a fan theory in the register normally used for facts.",
+      verdict:"UNSUPPORTED", vclass:"c-drift",
+      chain:[
+        "<b>Origin</b> · message board, 2004 · explicitly labelled theory",
+        "<b>Register shift</b> · label dropped by 2013",
+        "<b>Adoption</b> · 33.7% · alert threshold reached"
+      ],
+      contested:[
+        {id:"h1", meta:"ASSERTION 6620 · DRIFT 33.7%", text:"Stated a theory without the word theory. Twice in one paragraph."}
+      ]
+    },
+    {
+      name:"Hugh Petrossian", handle:"@hpetro / JUR 09-742-N", score:40, cls:"flagged",
+      drift:"57.2%", latency:"210 h", posts:"51,116",
+      assert:"Has awarded himself the title of archivist in four servers.",
+      verdict:"UNSUPPORTED", vclass:"c-flagged",
+      chain:[
+        "<b>Self-designation</b> · four servers · no appointment on file",
+        "<b>Citations issued</b> · 1,902 · accuracy 61%",
+        "<b>Retraction latency</b> · 210 h mean · outside tolerance"
+      ],
+      contested:[
+        {id:"i1", meta:"ASSERTION 7710 · DRIFT 57.2%", text:"Issued rulings on continuity he is not cleared to read."},
+        {id:"i2", meta:"ASSERTION 7745 · DRIFT 29.0%", text:"Signs posts 'per the archive'. There is no such archive."}
+      ]
+    }
+  ];
+
+  var rail = document.getElementById('rail');
+  var railEmpty = document.getElementById('railEmpty');
+  var railCount = document.getElementById('railCount');
+  var contested = document.getElementById('contested');
+  var contestedCount = document.getElementById('contestedCount');
+  var search = document.getElementById('search');
+  var chips = document.getElementById('chips');
+  var frameNo = document.getElementById('frameNo');
+  var prevBtn = document.getElementById('prevBtn');
+  var nextBtn = document.getElementById('nextBtn');
+  var tallyEl = document.getElementById('tally');
+
+  var activeClass = 'all';
+  var query = '';
+  var activeIndex = 0;
+  var flagged = {};
+
+  function visible(){
+    return SUBJECTS.filter(function(s){
+      var okClass = activeClass === 'all' || s.cls === activeClass;
+      var okQuery = !query ||
+        s.name.toLowerCase().indexOf(query) > -1 ||
+        s.handle.toLowerCase().indexOf(query) > -1;
+      return okClass && okQuery;
+    });
+  }
+
+  function classLabel(c){ return c.toUpperCase(); }
+
+  function renderRail(){
+    var list = visible();
+    rail.innerHTML = '';
+    list.forEach(function(s){
+      var idx = SUBJECTS.indexOf(s);
+      var li = document.createElement('li');
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-current', idx === activeIndex ? 'true' : 'false');
+      b.innerHTML =
+        '<span class="rname"></span>' +
+        '<span class="rscore ' + (s.score < 50 ? 'c-flagged' : '') + '">' + s.score + '</span>' +
+        '<span class="rmeta"></span>' +
+        '<span class="rclass c-' + s.cls + '">' + classLabel(s.cls) + '</span>';
+      b.querySelector('.rname').textContent = s.name;
+      b.querySelector('.rmeta').textContent = s.handle;
+      b.addEventListener('click', function(){ select(idx); });
+      li.appendChild(b);
+      rail.appendChild(li);
+    });
+    railEmpty.hidden = list.length > 0;
+    railCount.textContent = list.length + ' / ' + SUBJECTS.length;
+  }
+
+  function renderDossier(){
+    var s = SUBJECTS[activeIndex];
+    var plate = document.getElementById('plate');
+    plate.innerHTML = '<span class="vtick" aria-hidden="true"></span>';
+    if (s.photo) {
+      var img = document.createElement('img');
+      img.src = s.photo;
+      img.width = 132; img.height = 132;
+      img.alt = 'Archive dossier portrait of ' + s.name;
+      plate.appendChild(img);
+    } else {
+      var ph = document.createElement('span');
+      ph.className = 'noimg';
+      ph.setAttribute('aria-hidden','true');
+      ph.textContent = s.name.split(' ').map(function(w){ return w[0]; }).join('');
+      plate.appendChild(ph);
+    }
+
+    document.getElementById('subjName').textContent = s.name;
+    document.getElementById('subjHandle').textContent = s.handle;
+    document.getElementById('subjAssert').textContent = s.assert;
+
+    var v = document.getElementById('subjVerdict');
+    v.textContent = s.verdict;
+    v.className = 'verdict ' + s.vclass;
+
+    document.getElementById('mScore').textContent = s.score;
+    document.getElementById('mDrift').textContent = s.drift;
+    document.getElementById('mLatency').textContent = s.latency;
+    document.getElementById('mPosts').textContent = s.posts;
+    document.getElementById('viewerCode').textContent = s.handle.split(' / ')[1] || 'DOSSIER';
+
+    var chain = document.getElementById('chain');
+    chain.innerHTML = '';
+    s.chain.forEach(function(step){
+      var li = document.createElement('li');
+      li.innerHTML = step;
+      chain.appendChild(li);
+    });
+
+    renderContested(s);
+  }
+
+  function renderContested(s){
+    contested.innerHTML = '';
+    s.contested.forEach(function(c){
+      var li = document.createElement('li');
+      var meta = document.createElement('span');
+      meta.className = 'cmeta';
+      meta.textContent = c.meta;
+      var p = document.createElement('p');
+      p.textContent = c.text;
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'flagbtn';
+      var on = !!flagged[c.id];
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      btn.textContent = on ? '✓ FLAGGED FOR REVIEW' : 'FLAG FOR REVIEW';
+      btn.addEventListener('click', function(){
+        flagged[c.id] = !flagged[c.id];
+        var now = !!flagged[c.id];
+        btn.setAttribute('aria-pressed', now ? 'true' : 'false');
+        btn.textContent = now ? '✓ FLAGGED FOR REVIEW' : 'FLAG FOR REVIEW';
+        updateTally();
+      });
+      li.appendChild(meta); li.appendChild(p); li.appendChild(btn);
+      contested.appendChild(li);
+    });
+    contestedCount.textContent = s.contested.length;
+  }
+
+  function updateTally(){
+    var n = Object.keys(flagged).filter(function(k){ return flagged[k]; }).length;
+    tallyEl.textContent = n;
+  }
+
+  function select(idx){
+    activeIndex = idx;
+    frameNo.textContent = String(104 + idx);
+    renderRail();
+    renderDossier();
+  }
+
+  function step(dir){
+    var list = visible();
+    if (!list.length) return;
+    var pos = list.indexOf(SUBJECTS[activeIndex]);
+    if (pos === -1) pos = 0;
+    else pos = Math.min(list.length - 1, Math.max(0, pos + dir));
+    select(SUBJECTS.indexOf(list[pos]));
+  }
+
+  prevBtn.addEventListener('click', function(){ step(-1); });
+  nextBtn.addEventListener('click', function(){ step(1); });
+
+  chips.addEventListener('click', function(e){
+    var btn = e.target.closest('.chip');
+    if (!btn) return;
+    activeClass = btn.dataset.class;
+    Array.prototype.forEach.call(chips.querySelectorAll('.chip'), function(c){
+      c.setAttribute('aria-pressed', c === btn ? 'true' : 'false');
+    });
+    renderRail();
+  });
+
+  search.addEventListener('input', function(){
+    query = search.value.trim().toLowerCase();
+    renderRail();
+  });
+
+  select(0);
+  updateTally();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Canonry · theworstaistudioever</title>
+<meta name="description" content="A continuity intelligence platform for organizations that need to establish, defensibly, who said what about which episode.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Canonry · theworstaistudioever">
+<meta property="og:description" content="A continuity intelligence platform for organizations that need to establish, defensibly, who said what about which episode.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Canonry · theworstaistudioever">
+<meta name="twitter:description" content="A continuity intelligence platform for organizations that need to establish, defensibly, who said what about which episode.">
+<meta name="theme-color" content="#100E0A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Karla:wght@400;500;700&family=Azeret+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --hood:#100E0A;
+  --hood-deep:#0A0906;
+  --amber:#DDA83F;
+  --uv:#6E86E8;
+  --bone:#EFE2C6;
+  --dim:#8B8069;
+  --rail:26px;
+  --display:'Bricolage Grotesque','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --body:'Karla',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'Azeret Mono','SFMono-Regular',Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--hood);
+  color:var(--bone);
+  font-family:var(--body);
+  font-size:17px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* ---- sprocket rails ---- */
+.sprocket{
+  position:fixed;top:0;bottom:0;width:var(--rail);
+  z-index:3;pointer-events:none;
+  border-inline:1px solid rgba(221,168,63,.22);
+  background:repeating-linear-gradient(
+    to bottom,
+    transparent 0 9px,
+    rgba(221,168,63,.20) 9px 23px,
+    transparent 23px 32px);
+  transform-origin:top center;
+}
+.sprocket.left{left:0;}
+.sprocket.right{right:0;}
+
+/* ---- shell ---- */
+.roll{
+  max-width:1180px;
+  margin:0 auto;
+  padding:0 clamp(18px,4vw,44px);
+  position:relative;
+  z-index:1;
+}
+body{padding-inline:var(--rail);}
+
+/* ---- top bar ---- */
+.topbar{
+  display:flex;align-items:baseline;justify-content:space-between;
+  gap:18px;flex-wrap:wrap;
+  padding:22px 0 18px;
+  border-bottom:1px solid rgba(239,226,198,.16);
+}
+.wordmark{
+  font-family:var(--display);
+  font-weight:800;
+  font-size:1.28rem;
+  letter-spacing:-.03em;
+  color:var(--amber);
+  text-decoration:none;
+}
+.topmeta{font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;color:var(--dim);font-variant-numeric:tabular-nums;}
+
+/* ---- frame header strip ---- */
+.framehead{
+  display:flex;gap:22px;flex-wrap:wrap;
+  font-family:var(--mono);font-size:.67rem;letter-spacing:.17em;
+  color:var(--dim);font-variant-numeric:tabular-nums;
+  padding-bottom:8px;
+  border-bottom:1px solid rgba(239,226,198,.2);
+  margin-bottom:34px;
+}
+.framehead b{color:var(--amber);font-weight:500;}
+
+/* ---- splice ---- */
+.splice{
+  position:relative;height:12px;margin:76px 0;
+  background:repeating-linear-gradient(45deg,
+    rgba(239,226,198,.30) 0 1px,
+    transparent 1px 7px);
+}
+.splice span{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  background:var(--hood);padding:0 14px;
+  font-family:var(--mono);font-size:.63rem;letter-spacing:.2em;color:var(--dim);
+  font-variant-numeric:tabular-nums;
+}
+
+/* ---- hero ---- */
+.hero{position:relative;padding:clamp(54px,9vw,104px) 0 0;}
+.hero > .lamp{
+  position:absolute;inset:-14% -20% auto -20%;height:min(780px,90vh);
+  background:radial-gradient(ellipse 62% 58% at 44% 38%,
+    rgba(221,168,63,.09) 0%,
+    rgba(221,168,63,.045) 42%,
+    transparent 72%);
+  pointer-events:none;z-index:0;
+}
+.hero > *{position:relative;z-index:1;}
+h1{
+  font-family:var(--display);font-weight:800;
+  font-size:clamp(2.9rem,7vw,5.6rem);
+  line-height:.98;letter-spacing:-.03em;
+  margin:0 0 26px;max-width:15ch;
+}
+h1 em{font-style:normal;color:var(--amber);}
+.lede{max-width:60ch;color:rgba(239,226,198,.82);margin:0 0 42px;}
+
+/* ---- telemetry wells ---- */
+.wells{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  background:rgba(239,226,198,.14);
+  border:1px solid rgba(239,226,198,.14);
+  margin-bottom:38px;
+}
+.well{
+  background:var(--hood-deep);
+  border-top:1px solid rgba(221,168,63,.5);
+  padding:15px 16px 17px;
+}
+.well dt{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.15em;
+  color:var(--dim);margin:0 0 9px;
+}
+.well dd{
+  margin:0;font-family:var(--mono);font-weight:500;
+  font-size:clamp(.95rem,1.9vw,1.32rem);
+  font-variant-numeric:tabular-nums;letter-spacing:-.02em;
+}
+.violation{color:var(--uv);}
+
+/* ---- buttons ---- */
+.ctas{display:flex;gap:14px;flex-wrap:wrap;align-items:center;}
+.btn{
+  display:inline-block;font-family:var(--mono);font-size:.74rem;
+  letter-spacing:.13em;text-decoration:none;
+  padding:15px 24px;border-radius:2px;
+  transition:background .16s ease,color .16s ease,transform .08s ease;
+}
+.btn-primary{background:var(--amber);color:var(--hood);border:1px solid var(--amber);font-weight:500;}
+.btn-primary:hover,.btn-primary:focus-visible{background:var(--bone);border-color:var(--bone);}
+.btn-primary:active{transform:translateY(1px);}
+.btn-ghost{background:transparent;color:var(--bone);border:1px solid rgba(239,226,198,.4);}
+.btn-ghost:hover,.btn-ghost:focus-visible{border-color:var(--bone);background:rgba(239,226,198,.07);}
+.btn-ghost:active{transform:translateY(1px);}
+a:focus-visible,button:focus-visible{outline:2px solid var(--amber);outline-offset:3px;}
+
+/* ---- section heads ---- */
+h2{
+  font-family:var(--display);font-weight:800;
+  font-size:clamp(1.85rem,3.7vw,2.9rem);
+  line-height:1.02;letter-spacing:-.03em;
+  margin:0 0 14px;max-width:20ch;
+}
+.sectionnote{color:var(--dim);max-width:58ch;margin:0 0 46px;font-size:.95rem;}
+
+/* ---- reticle ---- */
+.reticle{
+  position:relative;flex:none;
+  width:38px;height:38px;border-radius:999px;
+  border:1px solid var(--amber);
+  transition:transform .24s ease;
+}
+.reticle::before,.reticle::after{
+  content:"";position:absolute;background:var(--amber);
+}
+.reticle::before{left:-7px;right:-7px;top:50%;height:1px;}
+.reticle::after{top:-7px;bottom:-7px;left:50%;width:1px;}
+.reticle span{
+  position:absolute;inset:0;display:grid;place-items:center;
+  background:var(--hood);border-radius:999px;
+  font-family:var(--mono);font-size:.66rem;color:var(--amber);
+  font-variant-numeric:tabular-nums;
+}
+.feature:hover .reticle{transform:rotate(90deg);}
+
+/* ---- features ---- */
+.features{display:grid;gap:1px;background:rgba(239,226,198,.14);border-block:1px solid rgba(239,226,198,.14);}
+.feature{background:var(--hood);padding:30px clamp(18px,3vw,34px) 34px;display:flex;gap:22px;align-items:flex-start;}
+.feature h3{font-family:var(--display);font-weight:600;font-size:1.3rem;letter-spacing:-.02em;margin:0 0 10px;}
+.feature p{margin:0;color:rgba(239,226,198,.78);font-size:.97rem;}
+.feature .fcode{font-family:var(--mono);font-size:.6rem;letter-spacing:.15em;color:var(--dim);display:block;margin-bottom:7px;}
+@media(min-width:860px){.features{grid-template-columns:repeat(3,1fr);}}
+
+/* ---- testimonials ---- */
+.subjects{display:grid;gap:34px;}
+@media(min-width:860px){.subjects{grid-template-columns:repeat(3,1fr);}}
+.subject{display:flex;flex-direction:column;gap:18px;}
+.portrait{
+  position:relative;width:116px;height:116px;flex:none;
+}
+.portrait img{
+  width:100%;height:100%;object-fit:cover;border-radius:999px;
+  filter:grayscale(1) sepia(.55) saturate(1.35) brightness(.92) contrast(1.05);
+  display:block;
+}
+.portrait::before{
+  content:"";position:absolute;inset:-6px;border-radius:999px;
+  border:1px solid var(--amber);
+}
+.portrait::after{
+  content:"";position:absolute;left:-13px;right:-13px;top:50%;height:1px;
+  background:var(--amber);
+}
+blockquote{margin:0;font-size:1.03rem;color:rgba(239,226,198,.9);}
+.attrib{font-family:var(--mono);font-size:.65rem;letter-spacing:.13em;color:var(--dim);line-height:1.9;}
+.attrib b{display:block;color:var(--bone);font-weight:500;letter-spacing:.1em;}
+.attrib .case{color:var(--amber);font-variant-numeric:tabular-nums;}
+
+/* ---- pricing schedule ---- */
+.schedule{width:100%;border-collapse:collapse;font-size:.95rem;}
+.schedule caption{
+  text-align:left;font-family:var(--mono);font-size:.63rem;letter-spacing:.18em;
+  color:var(--dim);padding-bottom:12px;
+}
+.schedule th,.schedule td{
+  text-align:left;vertical-align:top;padding:22px 18px;
+  border-top:1px solid rgba(239,226,198,.18);
+}
+.schedule thead th{
+  border-top:1px solid var(--amber);
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.16em;
+  color:var(--dim);font-weight:400;padding-bottom:12px;
+}
+.tier{font-family:var(--display);font-weight:800;font-size:1.45rem;letter-spacing:-.02em;white-space:nowrap;}
+.price{font-family:var(--mono);font-size:.92rem;font-variant-numeric:tabular-nums;color:var(--amber);white-space:nowrap;}
+.tierline{color:rgba(239,226,198,.8);margin:0 0 12px;}
+.perks{list-style:none;margin:0;padding:0;}
+.perks li{position:relative;padding-left:18px;color:var(--dim);font-size:.88rem;line-height:1.75;}
+.perks li::before{
+  content:"";position:absolute;left:0;top:.72em;
+  width:7px;height:7px;border-radius:999px;border:1px solid var(--amber);
+}
+.perks li.withheld{color:var(--uv);}
+.perks li.withheld::before{border-color:var(--uv);}
+@media(max-width:760px){
+  .schedule,.schedule tbody,.schedule tr,.schedule td{display:block;width:100%;}
+  .schedule thead{display:none;}
+  .schedule tr{border-top:1px solid var(--amber);padding-top:6px;}
+  .schedule td{border-top:0;padding:6px 0;}
+  .schedule td:first-child{padding-top:20px;}
+  .schedule tr td:last-child{padding-bottom:26px;}
+}
+
+/* ---- custody band ---- */
+.custody{
+  border:1px solid rgba(221,168,63,.45);
+  padding:clamp(30px,5vw,54px);
+  display:flex;gap:32px;flex-wrap:wrap;align-items:center;justify-content:space-between;
+}
+.custody h2{margin:0;max-width:17ch;}
+.custody p{margin:10px 0 0;color:var(--dim);max-width:46ch;font-size:.95rem;}
+
+/* ---- footer ---- */
+footer{
+  margin-top:86px;padding:30px 0 54px;
+  border-top:1px solid rgba(239,226,198,.16);
+  display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:baseline;
+}
+footer a{color:var(--bone);text-decoration:none;font-family:var(--mono);font-size:.7rem;letter-spacing:.13em;}
+footer a:hover{color:var(--amber);}
+.colophon{font-family:var(--mono);font-size:.63rem;letter-spacing:.14em;color:var(--dim);font-variant-numeric:tabular-nums;}
+
+/* ---- reveal ---- */
+.rise{opacity:0;transform:translateY(6px);}
+.shown{opacity:1;transform:none;transition:opacity .5s ease,transform .5s ease;}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+  .rise{opacity:1;transform:none;}
+  *{transition:none!important;animation:none!important;}
+}
+@media(max-width:620px){
+  :root{--rail:14px;}
+  .wells{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+
+<div class="sprocket left" aria-hidden="true"></div>
+<div class="sprocket right" aria-hidden="true"></div>
+
+<div class="roll">
+
+  <div class="topbar">
+    <a class="wordmark" href="#top">Canonry</a>
+    <span class="topmeta">ROLL 0441 / SERIES TREK-C / CUSTODY: ACTIVE</span>
+  </div>
+
+  <header class="hero" id="top">
+    <div class="lamp" aria-hidden="true"></div>
+    <div class="framehead">
+      <span>ROLL <b>0441</b></span>
+      <span>FRAME <b>001</b></span>
+      <span>SERIES <b>TREK-C</b></span>
+      <span>INGEST <b>CONTINUOUS</b></span>
+    </div>
+    <h1>Every claim about the show is a claim of <em>record.</em></h1>
+    <p class="lede">Canonry ingests thirty-one years of forum posts, panel recordings, convention floor audio and unlicensed episode guides into a single continuity graph. Your moderators stop arguing. They start citing.</p>
+
+    <dl class="wells">
+      <div class="well"><dt>POSTS INGESTED</dt><dd>1,904,662,331</dd></div>
+      <div class="well"><dt>SUBJECTS ON FILE</dt><dd>2,140,908</dd></div>
+      <div class="well"><dt>ASSERTIONS CONTESTED</dt><dd class="violation">41,772</dd></div>
+      <div class="well"><dt>MEAN RETRACTION LATENCY</dt><dd>61.4 h</dd></div>
+    </dl>
+
+    <div class="ctas">
+      <a class="btn btn-primary" href="./demo.html">Open the continuity reader</a>
+      <a class="btn btn-ghost" href="#schedule">See the access schedule</a>
+    </div>
+  </header>
+
+  <div class="splice" role="separator"><span>SPLICE 013</span></div>
+
+  <section class="rise">
+    <h2>What the platform does to a disagreement</h2>
+    <p class="sectionnote">Three capabilities, running continuously against your community whether or not anyone has asked a question.</p>
+    <div class="features">
+      <article class="feature">
+        <span class="reticle" aria-hidden="true"><span>14</span></span>
+        <div>
+          <span class="fcode">FRAME 014</span>
+          <h3>Frame-level provenance</h3>
+          <p>Every assertion is anchored to an episode, a timecode, a shooting draft and the individual who made it. Disputes that historically ran nine years now close in under four minutes, or escalate to a panel of three archivists who have never met your community and owe it nothing.</p>
+        </div>
+      </article>
+      <article class="feature">
+        <span class="reticle" aria-hidden="true"><span>15</span></span>
+        <div>
+          <span class="fcode">FRAME 015</span>
+          <h3>Canon drift detection</h3>
+          <p>Continuous monitoring identifies the exact hour a community begins treating an invented detail as settled fact. Alerts fire at forty percent adoption. By sixty percent the platform stops asking and begins correcting the record on your behalf.</p>
+        </div>
+      </article>
+      <article class="feature">
+        <span class="reticle" aria-hidden="true"><span>16</span></span>
+        <div>
+          <span class="fcode">FRAME 016</span>
+          <h3>Subject integrity scoring</h3>
+          <p>Each member of your community carries a rolling integrity score computed from citation accuracy, retraction latency, unsourced enthusiasm and known affiliations with rival continuities. Scores are visible to moderators, to the subject, and to anyone the subject has ever replied to.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <div class="splice" role="separator"><span>SPLICE 027</span></div>
+
+  <section class="rise">
+    <h2>Subjects who have been through it</h2>
+    <p class="sectionnote">Quotes collected under standard consent. Case numbers retained for the life of the record.</p>
+    <div class="subjects">
+
+      <figure class="subject">
+        <div class="portrait"><img src="headshot-1.webp" alt="Archive portrait of Denise Holloway" width="116" height="116" loading="lazy"></div>
+        <blockquote>We had a nine-year disagreement about a shuttlecraft. Canonry closed it in an afternoon and then flagged four of our moderators.</blockquote>
+        <figcaption class="attrib">
+          <b>Denise Holloway</b>
+          Continuity Officer, Sector 12 Fan Coalition<br>
+          <span class="case">CASE 08-441-D</span>
+        </figcaption>
+      </figure>
+
+      <figure class="subject">
+        <div class="portrait"><img src="headshot-2.webp" alt="Archive portrait of Marcus Vance" width="116" height="116" loading="lazy"></div>
+        <blockquote>My integrity score sat at 41 for two months. I have since retracted eleven posts, and the platform has restored me to 78. I do not dispute the original finding.</blockquote>
+        <figcaption class="attrib">
+          <b>Marcus Vance</b>
+          Panel Moderator (Provisional), Regional Convention Circuit<br>
+          <span class="case">CASE 11-208-R</span>
+        </figcaption>
+      </figure>
+
+      <figure class="subject">
+        <div class="portrait"><img src="headshot-3.webp" alt="Archive portrait of Priya Raghunathan" width="116" height="116" loading="lazy"></div>
+        <blockquote>It identified the member of our server who had been inventing episodes. He had been doing it since 2011. Nobody had checked.</blockquote>
+        <figcaption class="attrib">
+          <b>Priya Raghunathan</b>
+          Volunteer Archivist, Deep Space Reference Working Group<br>
+          <span class="case">CASE 04-990-A</span>
+        </figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <div class="splice" role="separator"><span>SPLICE 058</span></div>
+
+  <section class="rise" id="schedule">
+    <h2>Access schedule</h2>
+    <p class="sectionnote">Priced per annum unless stated. Archive access is granted, never sold, and may be revoked on a finding.</p>
+    <table class="schedule">
+      <caption>SCHEDULE A / EFFECTIVE STARDATE 79411.2</caption>
+      <thead>
+        <tr>
+          <th scope="col">Tier</th>
+          <th scope="col">Rate</th>
+          <th scope="col">Terms</th>
+          <th scope="col">Included</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row" class="tier">Cadet</th>
+          <td class="price">$0</td>
+          <td><p class="tierline">Read access. Citation rights withheld.</p></td>
+          <td><ul class="perks">
+            <li>Four lookups per stardate</li>
+            <li>No export, no print, no screenshot</li>
+            <li class="withheld">Your queries are ingested as evidence</li>
+          </ul></td>
+        </tr>
+        <tr>
+          <th scope="row" class="tier">Registry</th>
+          <td class="price">$1,240 / analyst / mo</td>
+          <td><p class="tierline">For communities with a moderation problem they have stopped describing as a moderation problem.</p></td>
+          <td><ul class="perks">
+            <li>Full continuity graph, all series, all drafts</li>
+            <li>Nine concurrent disputes</li>
+            <li>Human archivist escalation within 72 hours</li>
+            <li>Integrity scores pushed to your server hourly</li>
+          </ul></td>
+        </tr>
+        <tr>
+          <th scope="row" class="tier">Prime</th>
+          <td class="price">$410,000 / yr</td>
+          <td><p class="tierline">For organizations that own the canon, or intend to.</p></td>
+          <td><ul class="perks">
+            <li>Write access to the record</li>
+            <li class="withheld">Retroactive amendment with no notice to affected subjects</li>
+            <li>Disputes resolved before they are filed</li>
+            <li>One dedicated archivist, on site, indefinitely</li>
+          </ul></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <div class="splice" role="separator"><span>SPLICE 071</span></div>
+
+  <section class="custody rise">
+    <div>
+      <h2>Custody of the record transfers on signature.</h2>
+      <p>It does not transfer back. The reader below runs against a sanitized roll, so nothing you do in it becomes part of anyone's file.</p>
+    </div>
+    <a class="btn btn-primary" href="./demo.html">open the demo →</a>
+  </section>
+
+  <footer>
+    <a href="/">← theworstaistudioever</a>
+    <span class="colophon">CANONRY / ROLL 0441 / 2,140,908 SUBJECTS ON FILE / NO CLAIM IS FINAL</span>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) return;
+
+  var targets = document.querySelectorAll('.rise');
+  if (!('IntersectionObserver' in window)) {
+    targets.forEach(function(el){ el.classList.add('shown'); });
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (!e.isIntersecting) return;
+      e.target.classList.add('shown');
+      io.unobserve(e.target);
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+  targets.forEach(function(el){ io.observe(el); });
+
+  // Contested-assertion counter steps once, then holds.
+  var counter = document.querySelector('.wells .violation');
+  if (counter) {
+    var final = counter.textContent;
+    var target = parseInt(final.replace(/,/g, ''), 10);
+    var started = false;
+    var co = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (!e.isIntersecting || started) return;
+        started = true;
+        var t0 = performance.now(), dur = 900;
+        (function step(now){
+          var p = Math.min(1, (now - t0) / dur);
+          var eased = 1 - Math.pow(1 - p, 3);
+          counter.textContent = Math.round(target * eased).toLocaleString('en-US');
+          if (p < 1) requestAnimationFrame(step);
+          else counter.textContent = final;
+        })(performance.now());
+        co.disconnect();
+      });
+    }, { threshold: 0.4 });
+    co.observe(counter);
+  }
+})();
+</script>
+</body>
+</html>

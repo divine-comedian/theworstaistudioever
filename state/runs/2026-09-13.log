@@ -1,0 +1,154 @@
+RUN 2026-09-13 — theworstaistudioever daily
+
+STEP 1 · ROLL
+  company:  Palantir
+  subject:  trekkies
+  slug:     palantir-for-trekkies
+  tagline:  Palantir for trekkies
+  rerolls:  1 (first draw hit an existing {company, subject} pair in history.json)
+  PRNG:     LCG seeded from sum(charcodes("2026-09-13")) * 2654435761 mod 2^31
+  subject rule: "trekkies" is a relatable type of person. Valid, no discard needed.
+  note: Palantir has shipped three times before (dogs, goldfish, ferrets). The pair
+        {Palantir, trekkies} is new, so no reroll was required on company reuse.
+
+STEP 2 · CONCEPT
+  product name: Canonry
+  one-liner:    A continuity intelligence platform for organizations that need to
+                establish, defensibly, who said what about which episode.
+  anti-ai-slop invoked before any copy was written. No em dashes anywhere in the
+  entry (checked index.html, demo.html, concept.json). No throat-clearing openers,
+  no corrective antithesis, no gift-wrapped closings. The custody band ends on a
+  flat statement rather than a summary.
+  demo screen: subject-ID continuity reader console (rail / frame viewer / contested
+  assertions), which is explicitly photo-shaped under the step 4 guidance.
+
+STEP 3 · PLAN
+  style:    Microfilm reader carrel, ground-glass amber dark mode
+  palette:  primary #DDA83F (lamp amber), accent #6E86E8 (UV inspection blue),
+            bg #100E0A, fg/ink #EFE2C6, muted #8B8069
+  fonts:    display Bricolage Grotesque 600/800, body Karla, telemetry Azeret Mono
+  archetype: data-intelligence product page issued as a roll of archival microfilm
+  motifs:   sprocket rail (CSS repeating-linear-gradient), reticle (crosshair in a
+            ring), splice band (45deg hatch with a frame-count gap), underexposed
+            telemetry well.
+
+  ANTI-SAMENESS CHECK — last 7 entries read from site/entries/*/concept.json:
+    2026-09-12 nintendo-for-plant-parents   injection-moulded console / beige ABS
+                                            / Chakra Petch + Fira Sans
+    2026-09-11 figma-for-born-again-minimalists  gallery wall label / plaster
+                                            / Space Grotesk + Newsreader
+    2026-09-10 revolut-for-red-pandas       intaglio banknote / substrate cream
+                                            / Bodoni Moda + Public Sans
+    2026-09-09 deel-for-pigeons             vitreous enamel signage / bottle green
+                                            / Chivo + Literata
+    2026-09-08 cursor-for-crows             cyanotype drawing set / Prussian blue
+                                            / Barlow Condensed + IBM Plex Mono
+    2026-09-07 medium-for-remote-workers    illuminated manuscript / vellum
+                                            / Cormorant Garamond + Libre Baskerville
+    2026-09-06 spacex-for-people-who-peaked-in-high-school  varsity trophy case /
+                                            navy felt / Anton + Spectral
+  No collision on style, palette or font pair. Display, body and mono faces are all
+  first-time uses in this repo. Three of the last seven ran dark (navy, blueprint
+  blue, bottle green); this one is dark but warm-amber, which no prior entry is.
+  Deliberate inversion of the recent pattern: the rationed non-carrier colour is
+  COLD (inspection blue) on a warm page, where the last six rationed a warm colour
+  on a cold page.
+
+STEP 4 · IMAGES
+  GEMINI_API_KEY present. Cap not reached. 4 of 4 budgeted images generated.
+  allocation rationale:
+    hero        SKIPPED. The hero is a piece of film rather than a picture of one.
+                A photograph would fight the sprocket rails and the CSS lamp pool.
+    demo        1 image. The demo centre panel is a dossier portrait on a
+                subject-ID console, which is exactly the photo-shaped case. The
+                other eight rail subjects keep the CSS reticle-with-initials
+                treatment, so only one file is referenced and it exists.
+    testimonial 3 images. Deadpan personnel-file portraits of the three named
+                subjects. The gap between a convention lanyard and a records
+                photograph is the whole joke of the section.
+  per-image results:
+    headshot-1.webp  role testimonial  attempts 1  PASS
+      Correct subject and age, blank lanyard, institutional deadpan, warm duotone
+      inside the palette. No text artifacts.
+    headshot-2.webp  role testimonial  attempts 1  PASS
+      Resigned deadpan reads correctly for the provisional-moderator quote. A
+      practical lamp in the top-right corner casts an amber pool that harmonizes
+      with the reader-lamp motif. Grade runs slightly olive but stays in range.
+    headshot-3.webp  role testimonial  attempts 1  PASS
+      Wire frames present, blank hanging badge, cinder-block backdrop reads as a
+      records room.
+    subject.webp     role demo         attempts 1  PASS
+      Candid three-quarter framing, subject unaware of the lens, blurred hall
+      behind, heavy amber grain. The ragged white film edge the model added reads
+      as a physical frame border, which lands on-motif for a microfilm carrel.
+      No legible text on any background signage.
+  Zero regenerations, zero drops. All four cropped to WebP with --delete-input;
+  largest final file is subject.webp at 34 KB, well under the 500 KB ceiling.
+
+STEP 5 · LANDING
+  frontend-design invoked. Self-contained index.html, all CSS and JS inline, Google
+  Fonts imported in head, no framework, no CDN beyond the font stylesheet.
+  Headshots replace the initials-circle treatment in all three testimonials.
+  Motion: one IntersectionObserver reveal pass plus a single contested-assertion
+  counter that steps once and holds. Both gated behind prefers-reduced-motion.
+
+STEP 6 · DEMO
+  demo.html is a three-column continuity reader: subject rail with live text filter
+  and four class chips (ALL / FLAGGED / DRIFT / CLEARED), centre frame viewer with
+  dossier portrait, integrity telemetry and citation chain, right rail of contested
+  assertions with per-row FLAG FOR REVIEW toggles and a session tally. Frame counter
+  advances with the prev/next controls, which walk the filtered list rather than the
+  full one. Nine mock subjects, all client-side, no network calls.
+  subject.webp is attached to one subject only; the other eight render a CSS plate
+  with initials, so no missing file is ever referenced.
+
+STEP 7 · GALLERY
+  site/index.html regenerated from all 94 concept.json files, sorted date desc.
+  Count header reads "94 startups · since 2026". styles.css untouched. Root metadata
+  contract, /favicon.png link, 50x50 /logo.png brand lockup, slide-cta inner span
+  and the full carousel script (arrows, dots, keyboard, scrollIntoView, touch swipe)
+  all preserved.
+
+STEP 8 · VALIDATE & RECORD
+  scripts/validate-entry.sh site palantir-for-trekkies → OK
+  state/history.json appended (94 entries, append-only, prior entries untouched).
+
+WARNINGS / NEAR-MISSES
+  - Two Bash calls were rejected early in the run by the sandbox's expansion
+    heuristics (a dict literal inside a heredoc, and a shell loop variable). Both
+    were reworked without variables or brace-quote sequences. No impact on output.
+  - headshot-2 sits slightly olive rather than amber. Judged acceptable rather than
+    regenerated: it is still within the warm dark range and a second attempt risked
+    losing the deadpan expression, which is the part that matters.
+  - Palantir is now a four-time company in this repo. Worth watching if it recurs
+    again soon; the seeds file is not the problem, the PRNG just likes it.
+
+STEP 9 · VISUAL CHECK
+  Run. Playwright chromium present, tool-call budget well under the ceiling, entry
+  has images. 2 captures, 2 corrective edits, 1 re-capture. Under every cap.
+
+  BREAKAGE FOUND (same root cause on both pages):
+    `.hero > *{position:relative}` and `.viewer > *{position:relative}` were each
+    written after the `.lamp{position:absolute}` rule at equal specificity (0,1,0),
+    so the later rule won and the lamp div reverted to static flow. The lamp then
+    claimed its own height as layout: 780px of dead space above the landing hero,
+    420px above the demo's frame viewer. Both pages opened on a blank screen.
+  FIX: raised the lamp selectors to `.hero > .lamp` and `.viewer > .lamp` (0,2,0),
+  which now beat the container rule. Landing full-page height fell from 4787px to
+  4007px and the lamp reads as intended, a soft pool behind the headline.
+  Re-capture confirms the hero, telemetry wells and both CTAs sit above the fold.
+
+  NOT FIXED, deliberately: below-fold sections render blank in the full-page
+  capture because `.rise` starts at opacity 0 and the IntersectionObserver never
+  fires in a screenshot that does not scroll. Verified this is a capture artifact
+  rather than a page defect. Left alone under the "fix only real breakage" rule.
+  Demo capture reviewed and clean: reticle-framed dossier portrait, subject rail
+  with scores and class tags, telemetry wells, citation chain and the contested
+  rail with working flag toggles all land correctly.
+
+  scripts/validate-entry.sh re-run after the edits → OK.
+[2026-09-13T08:12:28Z] WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks
+[2026-09-13T08:12:28Z] new entry: palantir-for-trekkies
+validate-entry [palantir-for-trekkies]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 94 entries (domain theworstaistudioever.com)
+[2026-09-13T08:12:29Z] committing: Palantir for trekkies
