@@ -1,0 +1,98 @@
+2026-09-14 daily run
+
+ROLL
+  company: Starbucks
+  subject: middle children
+  slug:    starbucks-for-middle-children
+  rerolls: 1 (first pair from the LCG was already in history)
+  subject check: "middle children" is a type of person, passes the subject rule
+
+CONCEPT
+  product: Mezz, a 412-store coffeehouse chain built on the Middle Place doctrine
+  angle:   the chain's operational language is birth order. Queue position, cup
+           accuracy and seat assignment are all downstream of where you came in
+           the family. Every promise on the page is a slight delivered in the
+           passive voice.
+  demo:    Store Console for Store No. 2 of 3 (floor plan, cup printer, queue rail)
+
+DESIGN DIRECTION
+  style:   risograph two-ink print, newsprint daylight mode. Two inks only, hard
+           misregistration instead of shadow, CSS halftone screens, knockout
+           section headers, registration-mark bullets, hatched section seams.
+  palette: primary #0B49C8 (federal blue), accent #FF4FA3 (fluorescent pink),
+           bg #F1ECDF (newsprint), fg/ink #141414, muted #8B8574
+  fonts:   display 'Archivo Black', body 'Work Sans'
+  anti-sameness: checked against the last 7 entries (microfilm carrel, moulded
+           console shell, gallery wall labels, intaglio banknote, vitreous enamel
+           signage, cyanotype blueprint, illuminated manuscript). No collision on
+           style, palette or font pair. Neither typeface appears in the last 7.
+           ui-ux-pro-max returned Exaggerated Minimalism / Rubik + Nunito Sans /
+           #2563EB + #F97316, which was discarded as too close to a generic SaaS
+           default; palette and fonts were derived custom for the riso conceit.
+
+IMAGES
+  budget used: 3 of 4
+  rationale:   hero skipped, the direction is a two-ink typographic zine whose
+               hero is a doubled knockout headline plus a pure-CSS cup diagram,
+               and a photograph would break the two-ink rule. Demo assets skipped,
+               the demo screen is a floor plan, a queue rail and a text field, none
+               of which are photo-shaped. Whole budget went to testimonial
+               headshots, art-directed as riso duotone portraits in the page's own
+               two inks so they read as printed on the same sheet.
+  headshot-1.webp  testimonial  1 attempt  PASS  (Renata Colquhoun-Piper: correct
+                   subject and expression, blue figure with offset pink layer on
+                   cream, halftone visible, no text, no AI-render tells)
+  headshot-2.webp  testimonial  1 attempt  PASS  (Terrence Aday: whistle read
+                   correctly, unbranded polo, flat print not glossy render)
+  headshot-3.webp  testimonial  1 attempt  PASS  (Priya Vanterpool: heavier dot
+                   screen than the other two, still on-palette and on-medium)
+  all three cropped to 320x320 WebP, raw PNGs deleted, all well under 500 KB.
+  GEMINI_API_KEY present, no cap hit, 3 of the 10 daily API calls used.
+
+BUILD
+  index.html  hero with doubled headline and CSS riso cup diagram, 3 features as
+              ruled rows with two-ink registration marks, 3 testimonials using the
+              generated headshots at 64px with multiply blend, 3 pricing tiers with
+              the Golden Child tier stamped "not available to you", blue demo band,
+              footer back-link. No external CSS, no build step.
+  demo.html   Store Console: 6-table floor plan where only the middle seat is
+              selectable, three working filter chips with an empty state, live
+              neighbour panel with decibel meters, cup printer that garbles the
+              typed name within two characters as you type, and a queue rail that
+              inserts a documented firstborn ahead of you every 3.2s with a stated
+              reason, plus a hold/resume toggle. Vanilla JS, no frameworks.
+
+WARNINGS / NEAR-MISSES
+  - The pink #FF4FA3 is never used for body text against newsprint; it appears only
+    as ink fill, offset layer and hatch, with near-black or paper-colour type on top.
+    Worth keeping an eye on if this palette is reused.
+  - Section seam numbering (S 01/02/03) is kept because the page is staged as a
+    printed sheet; feature rows deliberately use registration marks rather than
+    numbers, since the three features are not a sequence.
+VISUAL CHECK (step 9, run within cap)
+  Chromium was already present, run was well under the call ceiling, so both pages
+  were captured once each.
+  Two real defects found and fixed on index.html, 2 of the 3 allowed edits:
+    1. testimonial name and role were inline spans and ran together as one line of
+       text; both set to display:block so the name sits above the role.
+    2. the "/ mo" price suffix inherited the pink offset layer and read as a
+       strikethrough on the price; moved to a .per class with text-shadow:none.
+  One re-capture of the landing page confirmed both fixes and no regression.
+  demo.html needed no edits: floor plan, filters, cup printer and queue rail all
+  render and nothing is off-canvas or overlapping. Seat cards are tight at desktop
+  width but legible, which is taste and not breakage, so it was left alone.
+  scripts/validate-entry.sh re-run after the edits -> OK (exit 0).
+
+GALLERY
+  site/index.html regenerated from scratch: 95 slides, newest first, header count
+  updated to "95 startups since 2026". Metadata contract, favicon link, 50x50 logo
+  lockup, span-wrapped slide CTAs and the carousel script all preserved.
+
+VALIDATION
+  scripts/validate-entry.sh site starbucks-for-middle-children -> OK (exit 0)
+  state/history.json appended, 95 entries, valid JSON.
+[2026-09-14T08:09:32Z] WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks
+[2026-09-14T08:09:32Z] new entry: starbucks-for-middle-children
+validate-entry [starbucks-for-middle-children]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 95 entries (domain theworstaistudioever.com)
+[2026-09-14T08:09:32Z] committing: Starbucks for middle children

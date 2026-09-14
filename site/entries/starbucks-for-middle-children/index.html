@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mezz · theworstaistudioever</title>
+<meta name="description" content="A 412-store coffeehouse chain that seats you between two other parties and prints a name on your cup that is close to yours.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Mezz · theworstaistudioever">
+<meta property="og:description" content="A 412-store coffeehouse chain that seats you between two other parties and prints a name on your cup that is close to yours.">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mezz · theworstaistudioever">
+<meta name="twitter:description" content="A 412-store coffeehouse chain that seats you between two other parties and prints a name on your cup that is close to yours.">
+<meta name="theme-color" content="#F1ECDF">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#0B49C8;
+    --pink:#FF4FA3;
+    --paper:#F1ECDF;
+    --ink:#141414;
+    --muted:#8B8574;
+    --display:'Archivo Black','Helvetica Neue',Helvetica,Arial,sans-serif;
+    --body:'Work Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    --gut:clamp(18px,5vw,64px);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--body);
+    font-size:17px;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  /* paper grain: two offset linear screens, fixed, never animated */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:9;
+    background:
+      repeating-linear-gradient(37deg,rgba(20,20,20,.05) 0 1px,transparent 1px 4px),
+      repeating-linear-gradient(-52deg,rgba(20,20,20,.04) 0 1px,transparent 1px 5px);
+  }
+  ::selection{background:var(--pink);color:var(--paper)}
+  a{color:var(--blue)}
+  :focus-visible{outline:3px solid var(--pink);outline-offset:3px}
+
+  /* ---- ink primitives ---------------------------------------------- */
+  .screen{position:relative}
+  .screen::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:repeating-radial-gradient(circle at 1px 1px,rgba(255,255,255,.5) 0 .7px,transparent .8px 3px);
+    opacity:.55;
+  }
+  .hatch{
+    height:11px;
+    background:repeating-linear-gradient(45deg,var(--pink) 0 3px,transparent 3px 8px);
+    mix-blend-mode:multiply;
+  }
+  .seam{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin:0 var(--gut);
+  }
+  .seam .hatch{flex:1}
+  .seam-no{
+    font-family:var(--display);
+    font-size:12px;
+    letter-spacing:.16em;
+    color:var(--blue);
+    white-space:nowrap;
+  }
+  /* registration crosshair, printed in both inks 3px apart */
+  .reg{
+    position:relative;
+    flex:0 0 auto;
+    width:16px;height:16px;
+    border:2px solid var(--blue);
+    border-radius:999px;
+  }
+  .reg::before,.reg::after{
+    content:"";position:absolute;background:var(--blue);
+  }
+  .reg::before{left:-6px;right:-6px;top:50%;height:2px;transform:translateY(-1px)}
+  .reg::after{top:-6px;bottom:-6px;left:50%;width:2px;transform:translateX(-1px)}
+  .reg.off{border-color:var(--pink);mix-blend-mode:multiply;margin-left:-13px;margin-top:3px}
+  .reg.off::before,.reg.off::after{background:var(--pink)}
+
+  /* ---- printer's slug ---------------------------------------------- */
+  .slug{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 24px;
+    justify-content:space-between;
+    padding:10px var(--gut);
+    border-bottom:3px solid var(--blue);
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--blue);
+    font-weight:600;
+  }
+
+  /* ---- hero --------------------------------------------------------- */
+  .hero{
+    padding:clamp(40px,7vw,88px) var(--gut) clamp(34px,5vw,60px);
+    display:grid;
+    grid-template-columns:minmax(0,1.35fr) minmax(0,.65fr);
+    gap:clamp(24px,4vw,56px);
+    align-items:start;
+  }
+  h1{
+    font-family:var(--display);
+    font-weight:400;
+    font-size:clamp(3.2rem,11vw,8.5rem);
+    line-height:.86;
+    letter-spacing:-.02em;
+    margin:0 0 26px;
+    color:var(--blue);
+    text-shadow:-4px -4px 0 var(--pink);
+  }
+  .lede{
+    max-width:46ch;
+    font-size:clamp(1.02rem,1.5vw,1.22rem);
+    margin:0 0 30px;
+  }
+  .btn{
+    display:inline-block;
+    font-family:var(--display);
+    font-size:15px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    text-decoration:none;
+    color:var(--paper);
+    background:var(--blue);
+    padding:15px 26px;
+    border:0;
+    border-radius:2px;
+    box-shadow:4px 4px 0 var(--pink);
+    transition:box-shadow 90ms linear,transform 90ms linear;
+  }
+  .btn:hover{box-shadow:7px 7px 0 var(--pink)}
+  .btn:active{box-shadow:0 0 0 var(--pink);transform:translate(4px,4px)}
+  .btn.ghost{
+    background:var(--paper);
+    color:var(--blue);
+    box-shadow:inset 0 0 0 3px var(--blue),4px 4px 0 var(--pink);
+  }
+  .btn.ghost:hover{box-shadow:inset 0 0 0 3px var(--blue),7px 7px 0 var(--pink)}
+  .btn.ghost:active{box-shadow:inset 0 0 0 3px var(--blue)}
+
+  /* pure-CSS riso cup diagram */
+  .diagram{
+    justify-self:center;
+    text-align:center;
+    padding-top:10px;
+  }
+  .stack{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+  }
+  .cup{
+    width:92px;height:92px;
+    border-radius:999px;
+    background:var(--blue);
+  }
+  .cup.mid{
+    width:62px;height:62px;
+    background:var(--pink);
+    margin-left:26px;
+    mix-blend-mode:multiply;
+    position:relative;
+  }
+  .cup.mid .reg{
+    position:absolute;
+    top:50%;left:50%;
+    transform:translate(-50%,-50%);
+    border-color:var(--paper);
+  }
+  .cup.mid .reg::before,.cup.mid .reg::after{background:var(--paper)}
+  .diagram figcaption{
+    margin-top:16px;
+    font-size:11px;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    color:var(--blue);
+    font-weight:600;
+    max-width:14ch;
+    margin-inline:auto;
+    line-height:1.5;
+  }
+
+  /* ---- sections ------------------------------------------------------ */
+  section{padding:clamp(40px,6vw,76px) var(--gut)}
+  .knock{
+    display:inline-block;
+    font-family:var(--display);
+    font-size:clamp(1.1rem,2.3vw,1.6rem);
+    text-transform:uppercase;
+    letter-spacing:.02em;
+    color:var(--paper);
+    background:var(--blue);
+    padding:7px 16px 9px;
+    margin:0 0 34px;
+    border-radius:2px;
+  }
+
+  .rows{display:grid;gap:0}
+  .row{
+    display:grid;
+    grid-template-columns:34px minmax(0,1fr) minmax(0,1.25fr);
+    gap:clamp(16px,3vw,40px);
+    padding:26px 0;
+    border-top:3px solid var(--blue);
+    align-items:start;
+  }
+  .row:last-child{border-bottom:3px solid var(--blue)}
+  .row h3{
+    font-family:var(--display);
+    font-weight:400;
+    font-size:clamp(1.25rem,2.6vw,1.75rem);
+    line-height:1.05;
+    margin:0;
+    color:var(--blue);
+    text-shadow:-2px -2px 0 var(--pink);
+  }
+  .row p{margin:0;max-width:62ch}
+  .row .mark{padding-top:6px}
+
+  /* ---- testimonials --------------------------------------------------- */
+  .quotes{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:clamp(20px,3vw,34px);
+  }
+  .quote{
+    border:3px solid var(--blue);
+    border-radius:2px;
+    padding:22px 20px 20px;
+    background:var(--paper);
+  }
+  .quote blockquote{
+    margin:0 0 20px;
+    font-size:1.06rem;
+    line-height:1.5;
+  }
+  .who{display:flex;gap:14px;align-items:center}
+  .who img{
+    width:64px;height:64px;
+    border-radius:2px;
+    border:2px solid var(--blue);
+    display:block;
+    mix-blend-mode:multiply;
+  }
+  .who .name{display:block;font-weight:600;font-size:.95rem;line-height:1.25}
+  .who .role{display:block;font-size:.78rem;color:var(--muted);line-height:1.35;margin-top:3px}
+
+  /* ---- pricing -------------------------------------------------------- */
+  .tiers{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:clamp(18px,2.5vw,28px);
+    align-items:start;
+  }
+  .tier{
+    border:3px solid var(--blue);
+    border-radius:2px;
+    padding:22px 20px 26px;
+    position:relative;
+  }
+  .tier h3{
+    font-family:var(--display);
+    font-weight:400;
+    font-size:1.3rem;
+    margin:0 0 4px;
+    color:var(--blue);
+  }
+  .tier .price{
+    font-family:var(--display);
+    font-size:2.5rem;
+    line-height:1.1;
+    color:var(--blue);
+    text-shadow:-3px -3px 0 var(--pink);
+    margin:10px 0 6px;
+  }
+  .tier .per{font-size:1rem;text-shadow:none}
+  .tier .sub{font-size:.9rem;color:var(--muted);margin:0 0 18px;min-height:3.2em}
+  .tier ul{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+  .tier li{display:grid;grid-template-columns:16px 1fr;gap:12px;align-items:start;font-size:.93rem;line-height:1.45}
+  .tier li .reg{width:12px;height:12px;border-width:2px;margin-top:5px}
+  .tier li .reg::before{left:-4px;right:-4px}
+  .tier li .reg::after{top:-4px;bottom:-4px}
+  .tier.locked{border-color:var(--pink)}
+  .tier.locked h3,.tier.locked .price{color:var(--pink);text-shadow:-3px -3px 0 var(--blue)}
+  .tier.locked li .reg{border-color:var(--pink)}
+  .tier.locked li .reg::before,.tier.locked li .reg::after{background:var(--pink)}
+  .stamp{
+    position:absolute;
+    top:-16px;right:-6px;
+    transform:rotate(-7deg);
+    background:var(--pink);
+    color:var(--paper);
+    font-family:var(--display);
+    font-size:10px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    padding:6px 10px;
+    border-radius:2px;
+    mix-blend-mode:multiply;
+  }
+
+  /* ---- demo band + footer --------------------------------------------- */
+  .band{
+    background:var(--blue);
+    color:var(--paper);
+    margin:0;
+    padding:clamp(40px,6vw,72px) var(--gut);
+  }
+  .band h2{
+    font-family:var(--display);
+    font-weight:400;
+    font-size:clamp(1.7rem,5vw,3.1rem);
+    line-height:.98;
+    margin:0 0 16px;
+    color:var(--paper);
+    text-shadow:-4px -4px 0 var(--pink);
+    max-width:18ch;
+  }
+  .band p{max-width:52ch;margin:0 0 28px;color:var(--paper);opacity:.95}
+  .band .btn{
+    background:var(--paper);
+    color:var(--blue);
+    box-shadow:4px 4px 0 var(--pink);
+  }
+  footer{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px 24px;
+    justify-content:space-between;
+    align-items:center;
+    padding:22px var(--gut) 30px;
+    border-top:3px solid var(--blue);
+    font-size:12px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  footer a{color:var(--blue);text-decoration:none;font-weight:600}
+  footer a:hover{text-decoration:underline}
+
+  @media (max-width:900px){
+    .hero{grid-template-columns:1fr}
+    .diagram{justify-self:start;padding-top:6px}
+    .diagram figcaption{margin-inline:0;text-align:left}
+    .row{grid-template-columns:26px 1fr}
+    .row .mark{grid-row:1}
+    .row h3{grid-column:2}
+    .row p{grid-column:2}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none!important;animation:none!important}
+  }
+</style>
+</head>
+<body>
+
+<div class="slug">
+  <span>Mezz Coffee Co.</span>
+  <span>Store No. 2 of 3 · run of 412 · second pull</span>
+</div>
+
+<header class="hero">
+  <div>
+    <h1>The middle place.</h1>
+    <p class="lede">Mezz is a coffeehouse for the second of three. We seat you between two louder parties, print a name within two characters of yours, and do not ask how you have been in a way that requires an answer.</p>
+    <a class="btn" href="#stores">Find a middle seat</a>
+  </div>
+  <figure class="diagram">
+    <div class="stack" aria-hidden="true">
+      <div class="cup screen"></div>
+      <div class="cup mid screen"><span class="reg"></span></div>
+      <div class="cup screen"></div>
+    </div>
+    <figcaption>you are the middle one</figcaption>
+  </figure>
+</header>
+
+<div class="seam"><span class="seam-no">§ 01</span><span class="hatch"></span></div>
+
+<section id="stores">
+  <h2 class="knock">What the store does</h2>
+  <div class="rows">
+    <article class="row">
+      <span class="mark"><span class="reg"></span><span class="reg off"></span></span>
+      <h3>Birth-Order Queueing</h3>
+      <p>Orders are sequenced against documented birth order, imported from your family group chat. Firstborns are made first because they always were. The youngest is made next because the youngest is still the youngest. Yours comes out at a sensible point after that, warm enough.</p>
+    </article>
+    <article class="row">
+      <span class="mark"><span class="reg"></span><span class="reg off"></span></span>
+      <h3>Approximate Name Capture</h3>
+      <p>The cup printer renders a name within two characters of the one you gave. Internal research found that correcting a barista was the longest conversation 61% of our members had that week, so the opportunity is preserved at every store.</p>
+    </article>
+    <article class="row">
+      <span class="mark"><span class="reg"></span><span class="reg off"></span></span>
+      <h3>Table Topology</h3>
+      <p>Every Mezz floor plan is certified middle-seat-only. No corner two-tops, no window banquette, no stool at the end of the bar. You are seated between a first date and a man on speakerphone, which is where you were going to sit anyway.</p>
+    </article>
+  </div>
+</section>
+
+<div class="seam"><span class="seam-no">§ 02</span><span class="hatch"></span></div>
+
+<section>
+  <h2 class="knock">Members, unprompted</h2>
+  <div class="quotes">
+    <figure class="quote">
+      <blockquote>They handed me a flat white with DAVE on it. I am not Dave. I drank it standing up by the bins and it was fine.</blockquote>
+      <figcaption class="who">
+        <img src="headshot-1.webp" width="320" height="320" alt="Renata Colquhoun-Piper" loading="lazy">
+        <span>
+          <span class="name">Renata Colquhoun-Piper</span>
+          <span class="role">Second of four · Regional Compliance Auditor, Northeast Cluster</span>
+        </span>
+      </figcaption>
+    </figure>
+    <figure class="quote">
+      <blockquote>My brother has been Golden Child since the beta. It has never come up. It will never come up.</blockquote>
+      <figcaption class="who">
+        <img src="headshot-2.webp" width="320" height="320" alt="Terrence Aday" loading="lazy">
+        <span>
+          <span class="name">Terrence Aday</span>
+          <span class="role">Middle of three · Assistant coach, unlisted on the roster</span>
+        </span>
+      </figcaption>
+    </figure>
+    <figure class="quote">
+      <blockquote>My seat was between a podcast recording and a breakup. I got a lot of work done. Nobody asked me anything for four hours.</blockquote>
+      <figcaption class="who">
+        <img src="headshot-3.webp" width="320" height="320" alt="Priya Vanterpool" loading="lazy">
+        <span>
+          <span class="name">Priya Vanterpool</span>
+          <span class="role">Fourth of seven, functionally middle · Director of Vendor Relations</span>
+        </span>
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<div class="seam"><span class="seam-no">§ 03</span><span class="hatch"></span></div>
+
+<section>
+  <h2 class="knock">Membership</h2>
+  <div class="tiers">
+    <article class="tier">
+      <h3>Fine</h3>
+      <div class="price">$0</div>
+      <p class="sub">You said you didn't want anything.</p>
+      <ul>
+        <li><span class="reg"></span><span>Entry to all 412 stores</span></li>
+        <li><span class="reg"></span><span>No stars, no birthday drink, no email</span></li>
+        <li><span class="reg"></span><span>We will not follow up</span></li>
+      </ul>
+    </article>
+    <article class="tier">
+      <h3>Don't Worry About It</h3>
+      <div class="price">$14 <span class="per">/ mo</span></div>
+      <p class="sub">You have already paid. You always pay.</p>
+      <ul>
+        <li><span class="reg"></span><span>Two drinks a week, neither remembered</span></li>
+        <li><span class="reg"></span><span>Name printed at 80% accuracy, up from 60%</span></li>
+        <li><span class="reg"></span><span>Middle seat held for you between two parties of four</span></li>
+      </ul>
+    </article>
+    <article class="tier locked">
+      <span class="stamp">not available to you</span>
+      <h3>Golden Child</h3>
+      <div class="price">$340 <span class="per">/ mo</span></div>
+      <p class="sub">Eligibility is verified against family photographs. You will not qualify.</p>
+      <ul>
+        <li><span class="reg"></span><span>Made first, every time, without being asked</span></li>
+        <li><span class="reg"></span><span>Barista learns your name and then uses it</span></li>
+        <li><span class="reg"></span><span>Included in the group photo, centre, front row</span></li>
+      </ul>
+    </article>
+  </div>
+</section>
+
+<div class="band">
+  <h2>Walk the floor of Store No. 2</h2>
+  <p>Pick a middle seat, meet the two parties you will be sitting between, watch the queue reorder itself around you, and see what the printer thinks your name is.</p>
+  <a class="btn" href="./demo.html">open the demo →</a>
+</div>
+
+<footer>
+  <a href="/">← theworstaistudioever</a>
+  <span>Mezz Coffee Co. · 412 stores · none of them on a corner</span>
+</footer>
+
+<script>
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var t = document.querySelector(a.getAttribute('href'));
+      if (!t) return;
+      e.preventDefault();
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      t.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    });
+  });
+</script>
+</body>
+</html>
