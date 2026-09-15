@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bridge channel · Subspace</title>
+<meta name="description" content="A Subspace bridge channel: five stations, one officer permitted to transmit, and every message held for transit and continuity review.">
+<meta name="theme-color" content="#0D0F16">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Spectral:ital,wght@0,300;0,400;0,600;1,400&family=Space+Mono:wght@400;700&display=swap');
+
+:root{
+  --lead:#05060A;
+  --ground:#0D0F16;
+  --pane:#11141E;
+  --pane-2:#151927;
+  --well:#090B12;
+  --cobalt:#2F5FC7;
+  --cobalt-lit:#5B86E8;
+  --ruby:#C2413E;
+  --ruby-lit:#E0706C;
+  --bone:#EDE9E0;
+  --muted:#79819A;
+  --gold:#C9A227;
+  --hair:rgba(237,233,224,.13);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--bone);
+  font-family:'Spectral',Georgia,serif;
+  font-size:16px;
+  line-height:1.55;
+  font-weight:300;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:"";
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(800px 560px at 14% 6%, rgba(47,95,199,.07), transparent 62%),
+    radial-gradient(640px 520px at 88% 70%, rgba(201,162,39,.03), transparent 66%);
+}
+.mono{font-family:'Space Mono',monospace;font-variant-numeric:tabular-nums}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+/* ---------- chrome ---------- */
+.topbar{
+  position:relative;z-index:1;
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding:.8rem 1.1rem;
+  border-bottom:3px solid var(--lead);
+  box-shadow:0 1px 0 rgba(237,233,224,.14);
+  background:var(--pane);
+}
+.back{
+  font-family:'Space Mono',monospace;
+  font-size:.72rem;letter-spacing:.07em;
+  color:var(--muted);text-decoration:none;
+  transition:color .18s ease;
+}
+.back:hover{color:var(--bone)}
+.channel-id{
+  font-family:'Cinzel',serif;font-weight:600;
+  font-size:.95rem;letter-spacing:.11em;
+  display:flex;align-items:center;gap:.6rem;
+}
+.topbar .clock{font-size:.7rem;color:var(--muted);letter-spacing:.06em}
+@media (max-width:700px){.topbar .clock{display:none}}
+
+.quarry{
+  width:12px;height:12px;flex:0 0 12px;
+  transform:rotate(45deg);
+  border:2px solid var(--lead);
+  background:var(--cobalt);
+  box-shadow:inset 0 0 6px rgba(91,134,232,.55);
+}
+.quarry.bone{background:var(--bone)}
+.quarry.ruby{background:var(--ruby)}
+.quarry.dim{background:#2A3048;box-shadow:none}
+
+/* ---------- shell ---------- */
+.shell{
+  position:relative;z-index:1;
+  display:grid;
+  grid-template-columns:268px minmax(0,1fr) 296px;
+  gap:3px;
+  background:var(--lead);
+  height:calc(100vh - 53px);
+  min-height:560px;
+}
+.col{background:var(--ground);overflow-y:auto;border-top:1px solid rgba(237,233,224,.10)}
+.colhead{
+  position:sticky;top:0;z-index:2;
+  background:var(--well);
+  border-bottom:1px solid var(--hair);
+  padding:.65rem .9rem;
+  font-family:'Space Mono',monospace;
+  font-size:.64rem;letter-spacing:.11em;color:var(--muted);
+  display:flex;justify-content:space-between;gap:.6rem;
+}
+@media (max-width:1040px){
+  .shell{grid-template-columns:1fr;height:auto;min-height:0}
+  .col{max-height:none}
+  .col.roster{order:1}.col.thread{order:2}.col.continuity{order:3}
+}
+
+/* ---------- roster ---------- */
+.crew{
+  width:100%;text-align:left;background:transparent;border:0;
+  border-bottom:1px solid var(--hair);
+  padding:.8rem .9rem;
+  display:grid;grid-template-columns:auto 1fr auto;gap:.65rem;align-items:center;
+  transition:background .18s ease;
+}
+.crew:hover{background:var(--pane)}
+.crew[aria-expanded="true"]{background:var(--pane-2)}
+.crew .badge{
+  width:30px;height:30px;transform:rotate(45deg);
+  border:2px solid var(--lead);background:var(--pane-2);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:inset 0 0 10px rgba(47,95,199,.35);
+}
+.crew .badge span{
+  transform:rotate(-45deg);
+  font-family:'Cinzel',serif;font-size:.72rem;color:var(--cobalt-lit);
+}
+.crew.comms .badge{background:var(--cobalt);box-shadow:inset 0 0 12px rgba(91,134,232,.8)}
+.crew.comms .badge span{color:var(--lead)}
+.crew .nm{font-size:.92rem;line-height:1.25}
+.crew .st{font-family:'Space Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:.06em}
+.crew .sc{font-family:'Space Mono',monospace;font-size:.76rem;font-variant-numeric:tabular-nums;color:var(--muted)}
+.crew .sc.low{color:var(--ruby-lit)}
+.crew .lock{font-size:.62rem;color:var(--muted);font-family:'Space Mono',monospace}
+.crew-detail{
+  display:none;
+  padding:.6rem .9rem .9rem 2.45rem;
+  border-bottom:1px solid var(--hair);
+  background:var(--pane-2);
+  font-family:'Space Mono',monospace;font-size:.66rem;line-height:1.7;color:var(--muted);
+}
+.crew-detail.open{display:block}
+.crew-detail b{color:var(--bone);font-weight:400}
+.you{color:var(--gold)}
+
+.takecomms{
+  width:calc(100% - 1.8rem);margin:.9rem;
+  background:transparent;border:2px solid var(--cobalt);color:var(--cobalt-lit);
+  font-family:'Cinzel',serif;font-weight:600;font-size:.78rem;letter-spacing:.11em;
+  padding:.7rem .6rem;
+  transition:background .18s ease,color .18s ease,transform .08s ease;
+}
+.takecomms:hover{background:var(--cobalt);color:var(--lead)}
+.takecomms:active{transform:translateY(1px)}
+.decline{
+  margin:0 .9rem .9rem;padding:.6rem .7rem;
+  background:var(--well);border-top:1px solid var(--ruby);
+  font-family:'Space Mono',monospace;font-size:.66rem;line-height:1.6;color:var(--ruby-lit);
+  display:none;
+}
+.decline.show{display:block}
+
+/* ---------- thread ---------- */
+.thread-body{padding:1.1rem .95rem 0}
+.msg{
+  border:2px solid var(--lead);
+  background:var(--pane);
+  padding:.7rem .85rem;
+  margin-bottom:.8rem;
+  max-width:44rem;
+  position:relative;
+}
+.msg::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(60% 50% at 28% 20%, rgba(91,134,232,.06), transparent 72%);
+}
+.msg .from{
+  font-family:'Space Mono',monospace;font-size:.64rem;letter-spacing:.07em;
+  color:var(--muted);margin-bottom:.35rem;
+  display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;
+}
+.msg .from b{color:var(--cobalt-lit);font-weight:400}
+.msg p{margin:0;font-size:.97rem;color:#CFCBC2}
+.msg.mine{border-color:var(--cobalt);margin-left:auto}
+.msg.transit{border-style:dashed;opacity:.9}
+.msg.transit p{color:var(--muted);font-style:italic}
+.msg .status{
+  margin-top:.5rem;font-family:'Space Mono',monospace;font-size:.64rem;
+  letter-spacing:.06em;color:var(--cobalt-lit);
+}
+.msg.held{border-color:var(--ruby)}
+.msg.held .status{color:var(--ruby-lit)}
+.msg .cite{
+  margin-top:.5rem;padding:.5rem .6rem;
+  background:var(--well);border-top:1px solid var(--ruby);
+  font-family:'Space Mono',monospace;font-size:.64rem;line-height:1.65;color:var(--muted);
+}
+.msg .acts{display:flex;gap:.5rem;margin-top:.55rem;flex-wrap:wrap}
+.mini{
+  background:transparent;border:1px solid rgba(237,233,224,.28);color:var(--bone);
+  font-family:'Space Mono',monospace;font-size:.64rem;letter-spacing:.06em;
+  padding:.36rem .6rem;transition:background .18s ease,color .18s ease;
+}
+.mini:hover{background:var(--bone);color:var(--lead)}
+.mini.warn{border-color:var(--ruby);color:var(--ruby-lit)}
+.mini.warn:hover{background:var(--ruby);color:var(--lead)}
+.mini[disabled]{opacity:.4;cursor:not-allowed}
+.mini[disabled]:hover{background:transparent;color:var(--bone)}
+
+/* ---------- composer ---------- */
+.composer{
+  position:sticky;bottom:0;
+  background:var(--ground);
+  border-top:3px solid var(--lead);
+  box-shadow:0 -1px 0 rgba(237,233,224,.14);
+  padding:.85rem .95rem 1rem;
+}
+.locked{
+  background:var(--well);border-top:1px solid var(--ruby);
+  padding:.6rem .7rem;margin-bottom:.7rem;
+  font-family:'Space Mono',monospace;font-size:.66rem;line-height:1.65;color:var(--ruby-lit);
+}
+.locked b{color:var(--bone);font-weight:400}
+label.fld{
+  display:block;font-family:'Space Mono',monospace;font-size:.64rem;
+  letter-spacing:.09em;color:var(--muted);margin-bottom:.4rem;
+}
+.entry{display:flex;gap:.6rem;flex-wrap:wrap}
+.entry input{
+  flex:1 1 240px;min-width:0;
+  background:var(--pane);border:2px solid var(--lead);
+  border-top:2px solid rgba(47,95,199,.5);
+  color:var(--bone);font-family:'Spectral',serif;font-size:.95rem;
+  padding:.7rem .8rem;
+}
+.entry input::placeholder{color:#565E76}
+.entry button{
+  background:var(--cobalt);border:2px solid var(--cobalt);color:var(--lead);
+  font-family:'Cinzel',serif;font-weight:600;font-size:.78rem;letter-spacing:.1em;
+  padding:.7rem 1.1rem;
+  transition:background .18s ease,transform .08s ease;
+}
+.entry button:hover{background:var(--cobalt-lit);border-color:var(--cobalt-lit)}
+.entry button:active{transform:translateY(1px)}
+.helper{
+  margin-top:.55rem;font-family:'Space Mono',monospace;font-size:.62rem;
+  color:var(--muted);line-height:1.6;
+}
+
+/* ---------- suggestion log ---------- */
+.logtoggle{
+  width:100%;text-align:left;background:var(--well);border:0;
+  border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);
+  padding:.6rem .9rem;
+  font-family:'Space Mono',monospace;font-size:.66rem;letter-spacing:.08em;color:var(--muted);
+  display:flex;justify-content:space-between;gap:.6rem;
+}
+.logtoggle:hover{color:var(--bone)}
+.logbody{display:none;padding:.7rem .9rem;border-bottom:1px solid var(--hair)}
+.logbody.open{display:block}
+.logitem{
+  font-family:'Space Mono',monospace;font-size:.68rem;line-height:1.7;
+  color:var(--muted);padding:.35rem 0;border-bottom:1px dotted rgba(237,233,224,.1);
+  display:flex;gap:.55rem;align-items:flex-start;
+}
+.logitem:last-child{border-bottom:0}
+.logitem span.t{color:#4E566E;flex:0 0 auto}
+.logempty{font-family:'Space Mono',monospace;font-size:.68rem;color:#4E566E}
+
+/* ---------- continuity panel ---------- */
+.score{
+  padding:1.1rem .9rem;border-bottom:1px solid var(--hair);
+  text-align:center;
+}
+.score .big{
+  font-family:'Space Mono',monospace;font-variant-numeric:tabular-nums;
+  font-size:3rem;line-height:1;color:var(--bone);
+  display:block;transition:color .3s ease;
+}
+.score .big.low{color:var(--ruby-lit)}
+.score .lbl{
+  font-family:'Space Mono',monospace;font-size:.62rem;letter-spacing:.1em;
+  color:var(--muted);display:block;margin-top:.6rem;
+}
+.score .nimbus-ring{
+  width:104px;height:104px;margin:0 auto;border-radius:50%;
+  border:1px solid var(--gold);opacity:.7;
+  display:flex;align-items:center;justify-content:center;
+}
+.stat{
+  display:flex;justify-content:space-between;gap:.7rem;
+  padding:.55rem .9rem;border-bottom:1px solid var(--hair);
+  font-family:'Space Mono',monospace;font-size:.68rem;color:var(--muted);
+}
+.stat b{color:var(--bone);font-weight:400;font-variant-numeric:tabular-nums}
+.stat b.flag{color:var(--ruby-lit)}
+.panelnote{
+  padding:.9rem;font-family:'Space Mono',monospace;font-size:.64rem;
+  line-height:1.7;color:#4E566E;
+}
+.incident{
+  margin:.9rem;padding:.7rem .8rem;
+  background:var(--well);border:2px solid var(--ruby);
+  font-family:'Space Mono',monospace;font-size:.66rem;line-height:1.7;color:var(--ruby-lit);
+}
+.incident b{color:var(--bone);font-weight:400}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back" href="./index.html">&larr; back to the pitch</a>
+  <div class="channel-id"><span class="quarry" aria-hidden="true"></span>CHANNEL 12-0441</div>
+  <div class="clock mono" id="clock">watch 31 &middot; rotation in 4d 06:12</div>
+</div>
+
+<div class="shell">
+
+  <!-- ROSTER -->
+  <section class="col roster" aria-label="Station roster">
+    <div class="colhead"><span>station roster</span><span>6 assigned</span></div>
+    <div id="rosterList"></div>
+    <button class="takecomms" id="takeComms">Take Comms</button>
+    <div class="decline" id="declineNote"></div>
+  </section>
+
+  <!-- THREAD -->
+  <section class="col thread" aria-label="Message thread">
+    <div class="colhead"><span>bridge channel</span><span id="transitCount">0 in transit</span></div>
+    <div class="thread-body" id="thread"></div>
+
+    <button class="logtoggle" id="logToggle" aria-expanded="false" aria-controls="logBody">
+      <span>suggestion log</span>
+      <span id="logMeta">3 entries &middot; 0 opened by Comms</span>
+    </button>
+    <div class="logbody" id="logBody">
+      <div id="logList"></div>
+    </div>
+
+    <div class="composer">
+      <div class="locked">
+        <b>Transmission is closed to you.</b> You hold Helm. Only the officer at Comms may transmit on this channel. Your watch at Comms begins on 14 November.
+      </div>
+      <label class="fld" for="sugg">File into the suggestion log</label>
+      <div class="entry">
+        <input id="sugg" type="text" autocomplete="off" placeholder="Say the thing you would have transmitted.">
+        <button id="fileBtn">File</button>
+      </div>
+      <p class="helper">Filed entries are visible to Comms, who is under no obligation to open them. Transit in this demonstration runs at 40&times; actual. It is not compressed in service.</p>
+    </div>
+  </section>
+
+  <!-- CONTINUITY -->
+  <section class="col continuity" aria-label="Continuity review">
+    <div class="colhead"><span>continuity review</span><span>on-device</span></div>
+    <div class="score">
+      <div class="nimbus-ring"><span class="big mono" id="scoreVal">88</span></div>
+      <span class="lbl">your continuity score</span>
+    </div>
+    <div class="stat"><span>channel average</span><b>79</b></div>
+    <div class="stat"><span>reference hours indexed</span><b>1,140</b></div>
+    <div class="stat"><span>median review</span><b>0.31 s</b></div>
+    <div class="stat"><span>held on this channel</span><b class="flag" id="heldCount">1</b></div>
+    <div class="incident" id="incident">
+      <b>Open incident 12-0441-07</b><br>
+      A member asserted a shuttle designation that the established material does not support. Held pending appeal. Cited against reference EM-4471-c, minute 38.
+    </div>
+    <p class="panelnote">Scores are published to every member of this channel and do not reset. Appeals are accepted at three per quarter on Duty Officer and above. The continuity board reviews in the order it prefers.</p>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  var CREW = [
+    { nm:'Marguerite Oyelaran', st:'Comms',       sc:91, comms:true,  note:'Holds Comms through 14 November. Has opened the suggestion log twice this year.' },
+    { nm:'You',                 st:'Helm',        sc:88, you:true,    note:'Helm since March. Filed 47 suggestions. 0 transmitted under your name.' },
+    { nm:'Neil Abbasi',         st:'Science',     sc:94, note:'Highest continuity score on the channel. Cites references unprompted.' },
+    { nm:'Gordon Pike',         st:'Engineering', sc:61, note:'Three open incidents. Appeal window closed 8 August.' },
+    { nm:'Priya Halloran',      st:'Medical',     sc:83, note:'Muted her own notifications in 2024 and has not returned to settings.' },
+    { nm:'Vance Tiedemann',     st:'Cadet',       sc:52, note:'Receive-only. Continuity score published on the free tier as a matter of course.' }
+  ];
+
+  var MSGS = [
+    { who:'Marguerite Oyelaran', st:'Comms', txt:'Confirming the rotation posted this morning. Helm moves to Comms on the fourteenth. Nobody needs to acknowledge this.', hops:3, ago:'delivered 41m ago' },
+    { who:'Marguerite Oyelaran', st:'Comms', txt:'Relaying an entry from the log, unattributed per channel practice: the shuttle in the third act is the same one from two seasons earlier.', hops:3, ago:'delivered 22m ago' },
+    { who:'Marguerite Oyelaran', st:'Comms', txt:'That relay was held. Review found no support for it in the established material. Incident opened against the channel, not against me.', hops:4, ago:'delivered 9m ago', held:true,
+      cite:'held under EM-4471-c, minute 38. designation appears once, in dialogue, and is contradicted by the following scene.' }
+  ];
+
+  var LOG = [
+    { t:'06:12', txt:'The shuttle in the third act is the same one from two seasons earlier.', by:'You' },
+    { t:'09:40', txt:'We should let Medical transmit during night watch.', by:'Priya Halloran' },
+    { t:'11:03', txt:'Requesting the rotation be published a month out instead of fourteen days.', by:'Gordon Pike' }
+  ];
+
+  var score = 88, held = 1, opened = 0, transit = 0;
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var rosterList = document.getElementById('rosterList');
+  var thread     = document.getElementById('thread');
+  var logList    = document.getElementById('logList');
+  var logMeta    = document.getElementById('logMeta');
+  var scoreVal   = document.getElementById('scoreVal');
+  var heldCount  = document.getElementById('heldCount');
+  var transitEl  = document.getElementById('transitCount');
+
+  // ----- roster -----
+  CREW.forEach(function(c, i){
+    var btn = document.createElement('button');
+    btn.className = 'crew' + (c.comms ? ' comms' : '');
+    btn.setAttribute('aria-expanded','false');
+    btn.innerHTML =
+      '<span class="badge" aria-hidden="true"><span>' + c.st.charAt(0) + '</span></span>' +
+      '<span><span class="nm' + (c.you ? ' you' : '') + '">' + c.nm + '</span><br>' +
+      '<span class="st">' + c.st + (c.comms ? ' &middot; transmitting' : '') + '</span></span>' +
+      (c.comms
+        ? '<span class="sc' + (c.sc < 70 ? ' low' : '') + '">' + c.sc + '</span>'
+        : '<span class="lock" title="not permitted to transmit">locked ' + c.sc + '</span>');
+    var det = document.createElement('div');
+    det.className = 'crew-detail';
+    det.innerHTML = c.note + '<br>continuity <b>' + c.sc + '</b> &middot; station <b>' + c.st + '</b>';
+    btn.addEventListener('click', function(){
+      var open = det.classList.toggle('open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    rosterList.appendChild(btn);
+    rosterList.appendChild(det);
+  });
+
+  // ----- thread -----
+  function msgEl(m){
+    var el = document.createElement('article');
+    el.className = 'msg' + (m.held ? ' held' : '') + (m.mine ? ' mine' : '');
+    var head = '<div class="from"><b>' + m.who + '</b><span>' + m.st + '</span><span>' +
+               (m.hops ? m.hops + ' relays' : '') + '</span></div>';
+    var body = '<p>' + m.txt + '</p>';
+    var stat = '<div class="status">' + (m.held ? 'HELD FOR CONTINUITY REVIEW' : m.ago) + '</div>';
+    var cite = m.cite ? '<div class="cite">' + m.cite + '</div>' : '';
+    var acts = m.held
+      ? '<div class="acts"><button class="mini warn" data-act="appeal">Appeal</button>' +
+        '<button class="mini" data-act="accept">Accept the hold</button></div>'
+      : '';
+    el.innerHTML = head + body + stat + cite + acts;
+    var actWrap = el.querySelector('.acts');
+    if (actWrap) {
+      actWrap.addEventListener('click', function(e){
+        var b = e.target.closest('button'); if (!b) return;
+        var note = el.querySelector('.cite');
+        if (b.dataset.act === 'appeal') {
+          note.textContent = 'appeal filed. the continuity board acknowledges receipt and does not indicate a timeframe. 2 appeals remain this quarter.';
+        } else {
+          note.textContent = 'hold accepted. the message is retained, cited, and attached to the channel record permanently.';
+        }
+        actWrap.querySelectorAll('button').forEach(function(x){ x.disabled = true; });
+      });
+    }
+    return el;
+  }
+
+  MSGS.forEach(function(m){ thread.appendChild(msgEl(m)); });
+
+  // ----- suggestion log -----
+  function renderLog(){
+    logList.innerHTML = '';
+    if (!LOG.length) {
+      logList.innerHTML = '<div class="logempty">Nothing filed. The log is still not read.</div>';
+    } else {
+      LOG.forEach(function(e){
+        var d = document.createElement('div');
+        d.className = 'logitem';
+        d.innerHTML = '<span class="t">' + e.t + '</span><span>' + e.txt +
+                      '<br><span class="t">filed by ' + e.by + ' &middot; unopened</span></span>';
+        logList.appendChild(d);
+      });
+    }
+    logMeta.innerHTML = LOG.length + ' entries &middot; ' + opened + ' opened by Comms';
+  }
+  renderLog();
+
+  var logBody = document.getElementById('logBody');
+  var logToggle = document.getElementById('logToggle');
+  logToggle.addEventListener('click', function(){
+    var open = logBody.classList.toggle('open');
+    logToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+
+  // ----- take comms -----
+  var declineNote = document.getElementById('declineNote');
+  var declines = [
+    'Declined. Comms is held by Marguerite Oyelaran until 14 November. The rotation is published and cannot be edited by anyone including us.',
+    'Declined again, on the same grounds. Repeated requests are logged and attached to the channel record.',
+    'Declined. This is the third request on this watch. A note has been added to your file at Helm.'
+  ];
+  var declineIdx = 0;
+  document.getElementById('takeComms').addEventListener('click', function(){
+    declineNote.textContent = declines[Math.min(declineIdx, declines.length - 1)];
+    declineNote.classList.add('show');
+    declineIdx++;
+  });
+
+  // ----- filing -----
+  var input = document.getElementById('sugg');
+  var filings = 0;
+
+  function bumpTransit(n){
+    transit = Math.max(0, transit + n);
+    transitEl.textContent = transit + ' in transit';
+  }
+
+  function file(){
+    var txt = input.value.trim();
+    if (!txt) {
+      input.placeholder = 'An empty filing is still a filing, but it will not be relayed.';
+      return;
+    }
+    filings++;
+    var now = new Date();
+    var stamp = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+    LOG.unshift({ t: stamp, txt: txt, by: 'You' });
+    renderLog();
+    logBody.classList.add('open');
+    logToggle.setAttribute('aria-expanded','true');
+    input.value = '';
+    input.placeholder = 'Say the thing you would have transmitted.';
+
+    // Comms relays roughly every other filing, always without attribution
+    if (filings % 2 === 1) {
+      opened++;
+      renderLog();
+      relay(txt, filings % 4 === 3);
+    }
+  }
+
+  function relay(txt, willHold){
+    var secs = reduced ? 1 : 14;
+    var el = msgEl({
+      who:'Marguerite Oyelaran', st:'Comms', hops:3, mine:false,
+      txt:'Relaying an entry from the log, unattributed per channel practice: ' + txt,
+      ago:'in transit'
+    });
+    el.classList.add('transit');
+    el.querySelector('.status').innerHTML = 'IN TRANSIT &middot; ' + secs + 's';
+    thread.appendChild(el);
+    el.scrollIntoView({ block:'nearest' });
+    bumpTransit(1);
+
+    var left = secs;
+    var tick = setInterval(function(){
+      left--;
+      if (left > 0) {
+        el.querySelector('.status').innerHTML = 'IN TRANSIT &middot; ' + left + 's';
+        return;
+      }
+      clearInterval(tick);
+      bumpTransit(-1);
+      el.classList.remove('transit');
+      var st = el.querySelector('.status');
+      if (willHold) {
+        el.classList.add('held');
+        st.textContent = 'HELD FOR CONTINUITY REVIEW';
+        var c = document.createElement('div');
+        c.className = 'cite';
+        c.textContent = 'held under EM-' + (4000 + Math.floor(Math.random() * 900)) +
+                        '-b. the established material does not support this and contradicts it twice.';
+        el.appendChild(c);
+        held++; heldCount.textContent = held;
+        score = Math.max(0, score - 3);
+        scoreVal.textContent = score;
+        if (score < 70) scoreVal.classList.add('low');
+      } else {
+        st.textContent = 'delivered just now &middot; 3 relays';
+      }
+    }, 1000);
+  }
+
+  document.getElementById('fileBtn').addEventListener('click', file);
+  input.addEventListener('keydown', function(e){ if (e.key === 'Enter') file(); });
+})();
+</script>
+</body>
+</html>

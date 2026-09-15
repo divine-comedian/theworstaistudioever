@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Subspace · theworstaistudioever</title>
+<meta name="description" content="A messaging service that applies the transmission delay your stated position requires, because instant delivery was never canon.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Subspace · theworstaistudioever">
+<meta property="og:description" content="A messaging service that applies the transmission delay your stated position requires, because instant delivery was never canon.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Subspace · theworstaistudioever">
+<meta name="twitter:description" content="A messaging service that applies the transmission delay your stated position requires, because instant delivery was never canon.">
+<meta name="theme-color" content="#0D0F16">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Spectral:ital,wght@0,300;0,400;0,600;1,400&family=Space+Mono:wght@400;700&display=swap');
+
+:root{
+  --lead:#05060A;
+  --ground:#0D0F16;
+  --pane:#11141E;
+  --well:#090B12;
+  --cobalt:#2F5FC7;
+  --cobalt-lit:#5B86E8;
+  --ruby:#C2413E;
+  --ruby-lit:#E0706C;
+  --bone:#EDE9E0;
+  --muted:#79819A;
+  --gold:#C9A227;
+  --came:3px solid var(--lead);
+  --measure:66ch;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--bone);
+  font-family:'Spectral',Georgia,'Times New Roman',serif;
+  font-size:17px;
+  line-height:1.62;
+  font-weight:300;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+/* every surface is glass: mottle, never flat */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  background:
+    radial-gradient(900px 620px at 18% 8%, rgba(47,95,199,.07), transparent 60%),
+    radial-gradient(700px 520px at 86% 34%, rgba(47,95,199,.05), transparent 62%),
+    radial-gradient(760px 680px at 44% 96%, rgba(201,162,39,.035), transparent 66%);
+}
+main,header,footer{position:relative;z-index:1}
+
+h1,h2,h3,.display{
+  font-family:'Cinzel','Trajan Pro','Times New Roman',serif;
+  font-weight:600;
+  letter-spacing:.04em;
+  line-height:1.08;
+  margin:0;
+}
+p{margin:0 0 1.1rem}
+p:last-child{margin-bottom:0}
+a{color:inherit}
+
+.wrap{width:min(1180px,100% - 2.6rem);margin-inline:auto}
+
+/* ---------- lead came seams ---------- */
+.came{
+  height:3px;
+  background:var(--lead);
+  border-top:1px solid rgba(237,233,224,.16);
+  transform-origin:top;
+}
+
+/* ---------- masthead ---------- */
+.masthead{
+  border-bottom:var(--came);
+  box-shadow:0 1px 0 rgba(237,233,224,.14);
+}
+.masthead .wrap{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1.4rem;
+  padding:1.15rem 0;
+}
+.wordmark{
+  font-family:'Cinzel',serif;
+  font-weight:700;
+  font-size:1.18rem;
+  letter-spacing:.17em;
+  color:var(--cobalt-lit);
+  text-decoration:none;
+  display:flex;
+  align-items:center;
+  gap:.72rem;
+}
+.masthead nav{
+  display:flex;
+  align-items:center;
+  gap:1.7rem;
+  font-family:'Space Mono',monospace;
+  font-size:.74rem;
+  letter-spacing:.09em;
+  color:var(--muted);
+}
+.masthead nav a{text-decoration:none;transition:color .18s ease}
+.masthead nav a:hover{color:var(--bone)}
+@media (max-width:720px){.masthead nav a.hide-sm{display:none}}
+
+/* ---------- the quarry: one diamond pane ---------- */
+.quarry{
+  width:14px;height:14px;
+  flex:0 0 14px;
+  transform:rotate(45deg);
+  border:2px solid var(--lead);
+  background:var(--cobalt);
+  box-shadow:inset 0 0 6px rgba(91,134,232,.55);
+}
+.quarry.bone{background:var(--bone)}
+.quarry.ruby{background:var(--ruby)}
+
+/* ---------- hero ---------- */
+.hero{
+  padding:clamp(3.6rem,8vw,6.4rem) 0 clamp(3rem,6vw,4.6rem);
+  border-bottom:var(--came);
+  box-shadow:0 1px 0 rgba(237,233,224,.14);
+}
+.hero .wrap{
+  display:grid;
+  grid-template-columns:minmax(0,1.32fr) minmax(0,.88fr);
+  gap:clamp(2rem,5vw,4.2rem);
+  align-items:center;
+}
+.hero-copy{
+  border-left:var(--came);
+  padding-left:clamp(1.2rem,2.6vw,2.2rem);
+  position:relative;
+}
+.hero-copy::before{
+  content:"";
+  position:absolute;
+  left:-3px;top:0;bottom:0;width:1px;
+  background:rgba(237,233,224,.2);
+}
+.eyebrow{
+  font-family:'Space Mono',monospace;
+  font-size:.72rem;
+  letter-spacing:.14em;
+  color:var(--muted);
+  display:flex;
+  align-items:center;
+  gap:.7rem;
+  margin-bottom:1.5rem;
+}
+h1{
+  font-size:clamp(2.4rem,6.6vw,4.9rem);
+  margin-bottom:1.5rem;
+}
+.hero-sub{
+  max-width:62ch;
+  color:#CFCBC2;
+  font-size:1.055rem;
+}
+.ctas{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.9rem;
+  margin-top:2.1rem;
+}
+.btn{
+  display:inline-block;
+  font-family:'Cinzel',serif;
+  font-weight:600;
+  font-size:.86rem;
+  letter-spacing:.11em;
+  text-decoration:none;
+  padding:.92rem 1.6rem;
+  border:2px solid var(--cobalt);
+  color:var(--cobalt-lit);
+  background:transparent;
+  transition:background .18s ease,color .18s ease,transform .08s ease;
+}
+.btn:hover,.btn:focus-visible{background:var(--cobalt);color:var(--lead)}
+.btn:active{transform:translateY(1px)}
+.btn.solid{background:var(--cobalt);color:var(--lead)}
+.btn.solid:hover,.btn.solid:focus-visible{background:var(--cobalt-lit);border-color:var(--cobalt-lit)}
+.btn.quiet{border-color:rgba(237,233,224,.28);color:var(--bone)}
+.btn.quiet:hover,.btn.quiet:focus-visible{background:var(--bone);color:var(--lead);border-color:var(--bone)}
+
+/* telemetry wells: this is the log, not marketing */
+.telemetry{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:1px;
+  margin-top:2.6rem;
+  background:var(--lead);
+  border:1px solid var(--lead);
+}
+.tcell{
+  background:var(--well);
+  border-top:1px solid rgba(47,95,199,.45);
+  padding:.85rem .95rem;
+}
+.tcell .v{
+  font-family:'Space Mono',monospace;
+  font-variant-numeric:tabular-nums;
+  font-size:1.12rem;
+  color:var(--bone);
+  display:block;
+}
+.tcell .k{
+  font-family:'Space Mono',monospace;
+  font-size:.64rem;
+  letter-spacing:.08em;
+  color:var(--muted);
+  display:block;
+  margin-top:.3rem;
+}
+.tcell.held{border-top-color:var(--ruby)}
+.tcell.held .v{color:var(--ruby-lit)}
+@media (max-width:640px){.telemetry{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* ---------- rose window (pure CSS) ---------- */
+.rose-holder{display:flex;justify-content:center}
+.rose{
+  position:relative;
+  width:min(390px,80vw);
+  aspect-ratio:1;
+  border-radius:50%;
+  border:3px solid var(--lead);
+  background:
+    repeating-conic-gradient(from 15deg, rgba(47,95,199,.16) 0deg 3deg, transparent 3deg 30deg),
+    radial-gradient(circle at 50% 50%, rgba(91,134,232,.20) 0 17%, transparent 17.6%),
+    radial-gradient(circle at 50% 50%, rgba(201,162,39,.16) 0 26%, transparent 26.5%),
+    radial-gradient(circle at 50% 50%, rgba(47,95,199,.10) 0 46%, transparent 46.5%),
+    radial-gradient(circle at 50% 42%, rgba(47,95,199,.22), rgba(5,6,10,.9) 72%);
+  box-shadow:inset 0 0 70px rgba(47,95,199,.22);
+}
+.rose::after{
+  content:"";
+  position:absolute;
+  inset:26%;
+  border-radius:50%;
+  border:3px solid var(--lead);
+  background:radial-gradient(circle at 50% 45%, rgba(91,134,232,.55), rgba(47,95,199,.18) 70%);
+  box-shadow:inset 0 0 22px rgba(91,134,232,.45);
+}
+.rose-pane{
+  position:absolute;
+  top:50%;left:50%;
+  width:40px;height:40px;
+  margin:-20px 0 0 -20px;
+  border:2px solid var(--lead);
+  background:var(--cobalt);
+  opacity:.82;
+  box-shadow:inset 0 0 12px rgba(91,134,232,.7);
+}
+.rose-hub{
+  position:absolute;
+  top:50%;left:50%;
+  width:34px;height:34px;
+  margin:-17px 0 0 -17px;
+  transform:rotate(45deg);
+  border:2px solid var(--lead);
+  background:var(--bone);
+  z-index:2;
+  box-shadow:0 0 18px rgba(237,233,224,.35);
+}
+
+/* ---------- section scaffolding ---------- */
+.light{
+  padding:clamp(3.4rem,7vw,5.6rem) 0;
+  border-bottom:var(--came);
+  box-shadow:0 1px 0 rgba(237,233,224,.14);
+}
+.light-head{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:1.5rem;
+  flex-wrap:wrap;
+  margin-bottom:2.6rem;
+}
+.light-head h2{font-size:clamp(1.5rem,3.4vw,2.35rem)}
+.light-head .ref{
+  font-family:'Space Mono',monospace;
+  font-size:.7rem;
+  letter-spacing:.1em;
+  color:var(--muted);
+}
+.lede{max-width:var(--measure);color:#C4C0B8}
+
+/* ---------- lancet panes ---------- */
+.panes{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:clamp(1rem,2.4vw,1.8rem);
+}
+@media (max-width:900px){.panes{grid-template-columns:1fr;max-width:34rem}}
+.pane{
+  position:relative;
+  background:var(--pane);
+  border:var(--came);
+  clip-path:polygon(0 100%, 0 17%, 50% 0, 100% 17%, 100% 100%);
+  padding:clamp(4.4rem,8vw,5.6rem) clamp(1.2rem,2vw,1.7rem) clamp(1.6rem,3vw,2.2rem);
+  box-shadow:inset 0 0 0 rgba(47,95,199,0);
+  transition:box-shadow .3s ease,background .3s ease;
+}
+.pane::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(60% 40% at 30% 24%, rgba(91,134,232,.07), transparent 70%),
+    radial-gradient(52% 44% at 78% 62%, rgba(47,95,199,.055), transparent 72%),
+    radial-gradient(70% 50% at 50% 104%, rgba(201,162,39,.03), transparent 70%);
+}
+.pane:hover{box-shadow:inset 0 0 58px rgba(47,95,199,.22)}
+.pane-index{
+  position:absolute;
+  top:clamp(2rem,4.4vw,2.7rem);
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  align-items:center;
+  gap:.55rem;
+  font-family:'Space Mono',monospace;
+  font-size:.68rem;
+  letter-spacing:.12em;
+  color:var(--muted);
+}
+.pane h3{font-size:1.24rem;margin-bottom:.9rem;line-height:1.24}
+.pane p{font-size:.985rem;color:#C0BCB4}
+.pane .note{
+  margin-top:1.3rem;
+  padding:.6rem .75rem;
+  background:var(--well);
+  border-top:1px solid rgba(47,95,199,.45);
+  font-family:'Space Mono',monospace;
+  font-size:.7rem;
+  line-height:1.5;
+  color:var(--muted);
+  font-variant-numeric:tabular-nums;
+}
+.pane .note b{color:var(--bone);font-weight:400}
+.pane .note .flag{color:var(--ruby-lit)}
+
+/* ---------- testimonial lights ---------- */
+.figures{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:clamp(1rem,2.4vw,1.8rem);
+}
+@media (max-width:900px){.figures{grid-template-columns:1fr;max-width:34rem}}
+.figure{
+  background:var(--pane);
+  border:var(--came);
+  clip-path:polygon(0 100%, 0 13%, 50% 0, 100% 13%, 100% 100%);
+  padding:clamp(3.2rem,6vw,4rem) clamp(1.2rem,2vw,1.7rem) clamp(1.5rem,3vw,2rem);
+  text-align:center;
+  position:relative;
+  transition:box-shadow .3s ease;
+}
+.figure:hover{box-shadow:inset 0 0 58px rgba(47,95,199,.18)}
+.nimbus{
+  position:relative;
+  width:132px;height:132px;
+  margin:0 auto 1.4rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.nimbus::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  border-radius:50%;
+  border:1px solid var(--gold);
+  opacity:.75;
+}
+.portrait{
+  width:96px;height:96px;
+  transform:rotate(45deg);
+  overflow:hidden;
+  border:2px solid var(--lead);
+  background:var(--well);
+  position:relative;
+}
+.portrait img{
+  width:100%;height:100%;
+  transform:rotate(-45deg) scale(1.44);
+  object-fit:cover;
+  display:block;
+  filter:grayscale(.42) contrast(1.06) brightness(.98);
+}
+.portrait::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:var(--cobalt);
+  mix-blend-mode:color;
+  opacity:.46;
+}
+.figure blockquote{
+  margin:0 0 1.35rem;
+  font-size:1.03rem;
+  font-style:italic;
+  color:#D6D2C9;
+}
+.figure .who{
+  font-family:'Cinzel',serif;
+  font-size:.92rem;
+  letter-spacing:.05em;
+  color:var(--bone);
+}
+.figure .role{
+  font-family:'Space Mono',monospace;
+  font-size:.68rem;
+  line-height:1.55;
+  color:var(--muted);
+  margin-top:.45rem;
+}
+.figure .chapno{
+  font-family:'Space Mono',monospace;
+  font-size:.64rem;
+  letter-spacing:.1em;
+  color:rgba(121,129,154,.75);
+  margin-top:.9rem;
+}
+
+/* ---------- commission schedule ---------- */
+.schedule{border:var(--came);background:var(--pane)}
+.srow{
+  display:grid;
+  grid-template-columns:minmax(0,.9fr) minmax(0,.7fr) minmax(0,2fr);
+  gap:0;
+  border-bottom:1px solid rgba(237,233,224,.13);
+}
+.srow:last-child{border-bottom:0}
+.srow.head{
+  background:var(--well);
+  font-family:'Space Mono',monospace;
+  font-size:.66rem;
+  letter-spacing:.11em;
+  color:var(--muted);
+}
+.srow.head>div{padding:.75rem 1.2rem}
+.srow>div{padding:1.5rem 1.2rem}
+.srow .tier{
+  display:flex;
+  align-items:center;
+  gap:.75rem;
+  font-family:'Cinzel',serif;
+  font-size:1.1rem;
+  letter-spacing:.06em;
+  border-right:1px solid rgba(237,233,224,.13);
+}
+.srow.head .tier{border-right-color:rgba(237,233,224,.13)}
+.srow .cost{
+  font-family:'Space Mono',monospace;
+  font-variant-numeric:tabular-nums;
+  font-size:1rem;
+  color:var(--bone);
+  border-right:1px solid rgba(237,233,224,.13);
+}
+.srow .cost small{
+  display:block;
+  font-size:.66rem;
+  color:var(--muted);
+  margin-top:.5rem;
+  line-height:1.5;
+}
+.srow ul{margin:0;padding:0;list-style:none}
+.srow li{
+  display:flex;
+  align-items:flex-start;
+  gap:.7rem;
+  font-size:.94rem;
+  color:#C0BCB4;
+  padding:.24rem 0;
+}
+.srow li .quarry{margin-top:.42rem}
+.srow li.withheld{color:var(--ruby-lit)}
+@media (max-width:820px){
+  .srow{grid-template-columns:1fr}
+  .srow.head{display:none}
+  .srow .tier,.srow .cost{border-right:0;border-bottom:1px solid rgba(237,233,224,.13)}
+  .srow>div{padding:1.1rem 1.2rem}
+}
+.schedule-note{
+  margin-top:1.1rem;
+  font-family:'Space Mono',monospace;
+  font-size:.68rem;
+  color:var(--muted);
+  line-height:1.6;
+}
+
+/* ---------- observance band ---------- */
+.observance{
+  padding:clamp(3.6rem,8vw,6rem) 0;
+  text-align:center;
+  border-bottom:var(--came);
+  box-shadow:0 1px 0 rgba(237,233,224,.14);
+  background:
+    radial-gradient(60% 70% at 50% 0%, rgba(47,95,199,.12), transparent 70%);
+}
+.observance h2{
+  font-size:clamp(1.7rem,4.4vw,3rem);
+  max-width:20ch;
+  margin:0 auto 1.4rem;
+}
+.observance p{max-width:56ch;margin-inline:auto;color:#C4C0B8}
+.observance .ctas{justify-content:center}
+
+/* ---------- footer ---------- */
+footer{padding:2.4rem 0 3.2rem}
+footer .wrap{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:1.2rem;
+  flex-wrap:wrap;
+  font-family:'Space Mono',monospace;
+  font-size:.7rem;
+  letter-spacing:.07em;
+  color:var(--muted);
+}
+footer a{text-decoration:none;transition:color .18s ease}
+footer a:hover{color:var(--bone)}
+
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
+/* ---------- motion ----------
+   Content is never hidden waiting on a script. The page has one orchestrated
+   moment (the rose window glazing itself in) and otherwise moves only in
+   answer to a pointer. */
+.rose-pane{opacity:0}
+.rose.glazed .rose-pane{opacity:.82;transition:opacity .42s ease}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .rose-pane,.rose.glazed .rose-pane{opacity:.82;transition:none}
+  *{animation:none!important}
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <a class="wordmark" href="#top"><span class="quarry bone" aria-hidden="true"></span>SUBSPACE</a>
+    <nav>
+      <a href="#lights" class="hide-sm">How transit works</a>
+      <a href="#figures" class="hide-sm">Crew</a>
+      <a href="#schedule">Commissions</a>
+      <a href="./demo.html">Open the demo &rarr;</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="quarry" aria-hidden="true"></span>Relay service in continuous operation since stardate filing 47.2</div>
+        <h1>Nothing arrives instantly. Nothing ever did.</h1>
+        <p class="hero-sub">Subspace holds every message for the transit time your stated coordinates require, issues every group chat a bridge roster, and reviews your outbound text against the established material before anyone reads it. Median delivery is nine minutes. Nobody has asked us to shorten it.</p>
+        <div class="ctas">
+          <a class="btn solid" href="#schedule">Open hailing frequencies</a>
+          <a class="btn quiet" href="./demo.html">Open the demo &rarr;</a>
+        </div>
+        <div class="telemetry">
+          <div class="tcell"><span class="v">09:14</span><span class="k">median transit</span></div>
+          <div class="tcell"><span class="v">2,411</span><span class="k">relays online</span></div>
+          <div class="tcell"><span class="v">188</span><span class="k">channels under review</span></div>
+          <div class="tcell held"><span class="v">6,902</span><span class="k">messages held</span></div>
+        </div>
+      </div>
+      <div class="rose-holder">
+        <div class="rose" id="rose" role="img" aria-label="A rose window of twelve cobalt panes around a bone centre, with one pane glazed in ruby.">
+          <div class="rose-hub"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="light" id="lights">
+    <div class="wrap">
+      <div class="light-head">
+        <h2>What the service does to your messages</h2>
+        <span class="ref">glazing schedule / lights I&ndash;III</span>
+      </div>
+      <p class="lede" style="margin-bottom:2.4rem">Three behaviours, all of them mandatory, none of them configurable. They apply on the free tier and on the eight thousand four hundred dollar tier in exactly the same way.</p>
+      <div class="panes">
+
+        <article class="pane reveal">
+          <div class="pane-index"><span class="quarry" aria-hidden="true"></span>Light I</div>
+          <h3>Transit is calculated, not simulated</h3>
+          <p>You enter your position. We take it at face value. Every message is then held for the exact interval a signal would need to cross that distance, down to the second, and released without further comment. Most crews sit between four and eleven minutes apart. One pair sits at 4.24 years. They have filed nothing.</p>
+          <div class="note">shortest pair on record <b>00:04:12</b><br>longest pair on record <b>4.24 yr</b><br>override requests granted <span class="flag">0</span></div>
+        </article>
+
+        <article class="pane reveal">
+          <div class="pane-index"><span class="quarry" aria-hidden="true"></span>Light II</div>
+          <h3>Every channel has a bridge</h3>
+          <p>Group chats are issued a roster: Comms, Helm, Science, Engineering, Medical. Only the officer holding Comms may transmit. Everyone else files into the suggestion log, which Comms is under no obligation to open. Rotation runs weekly, is published fourteen days out, and cannot be edited by anyone including us.</p>
+          <div class="note">stations per channel <b>5</b><br>watch length <b>7 days</b><br>suggestion log entries never opened <span class="flag">71%</span></div>
+        </article>
+
+        <article class="pane reveal">
+          <div class="pane-index"><span class="quarry" aria-hidden="true"></span>Light III</div>
+          <h3>Continuity is reviewed before delivery</h3>
+          <p>An on-device reviewer checks each outbound message against 1,140 hours of established material. A contradiction is not deleted. It is held, logged, cited, and attached to your continuity score, which is visible to every member of the channel and does not reset.</p>
+          <div class="note">reference hours indexed <b>1,140</b><br>median review time <b>0.31 s</b><br>held for contradiction this week <span class="flag">6,902</span></div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="light" id="figures">
+    <div class="wrap">
+      <div class="light-head">
+        <h2>Crew on the record</h2>
+        <span class="ref">chapter register / three of 41,908</span>
+      </div>
+      <div class="figures">
+
+        <figure class="figure reveal">
+          <div class="nimbus"><div class="portrait"><img src="headshot-1.webp" alt="Dana Restrepo, photographed head-on under a single cold light." width="320" height="320" loading="lazy"></div></div>
+          <blockquote>&ldquo;The delay read as a defect for about two weeks. Then I understood it was the entire product and I stopped complaining.&rdquo;</blockquote>
+          <div class="who">Dana Restrepo</div>
+          <div class="role">Volunteer Continuity Officer, Regional Fan Federation, Chapter 12</div>
+          <div class="chapno">register 12-0441 / continuity 88</div>
+        </figure>
+
+        <figure class="figure reveal">
+          <div class="nimbus"><div class="portrait"><img src="headshot-2.webp" alt="Neil Abbasi, photographed head-on under a single cold light." width="320" height="320" loading="lazy"></div></div>
+          <blockquote>&ldquo;I held Comms for six days. I transmitted four times. All four were correct and the log shows it.&rdquo;</blockquote>
+          <div class="who">Neil Abbasi</div>
+          <div class="role">Night Supervisor, Municipal Water Treatment, and Helm on three channels</div>
+          <div class="chapno">register 09-1177 / continuity 94</div>
+        </figure>
+
+        <figure class="figure reveal">
+          <div class="nimbus"><div class="portrait"><img src="headshot-3.webp" alt="Gordon Pike, photographed head-on under a single cold light." width="320" height="320" loading="lazy"></div></div>
+          <blockquote>&ldquo;My continuity score is 61. My wife&rsquo;s is 94. We have agreed not to discuss it at the table.&rdquo;</blockquote>
+          <div class="who">Gordon Pike</div>
+          <div class="role">Assistant Manager, Tire and Lube Center 402, and Chapter Archivist</div>
+          <div class="chapno">register 22-0038 / continuity 61</div>
+        </figure>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="light" id="schedule">
+    <div class="wrap">
+      <div class="light-head">
+        <h2>Commission schedule</h2>
+        <span class="ref">effective this fiscal year / revised without notice</span>
+      </div>
+      <div class="schedule">
+
+        <div class="srow head">
+          <div class="tier">rank</div>
+          <div class="cost">commission</div>
+          <div>what the rank permits</div>
+        </div>
+
+        <div class="srow reveal">
+          <div class="tier"><span class="quarry bone" aria-hidden="true"></span>Cadet</div>
+          <div class="cost">$0<small>Receive. Observe. Wait for a station.</small></div>
+          <div>
+            <ul>
+              <li><span class="quarry" aria-hidden="true"></span>Read every channel you are assigned to</li>
+              <li><span class="quarry" aria-hidden="true"></span>File into the suggestion log without limit</li>
+              <li><span class="quarry" aria-hidden="true"></span>Standard transit delay, no priority routing</li>
+              <li><span class="quarry" aria-hidden="true"></span>Continuity score calculated and published</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="srow reveal">
+          <div class="tier"><span class="quarry bone" aria-hidden="true"></span>Duty Officer</div>
+          <div class="cost">$19 / month<small>You may transmit during your watch.</small></div>
+          <div>
+            <ul>
+              <li><span class="quarry" aria-hidden="true"></span>Transmit while holding Comms</li>
+              <li><span class="quarry" aria-hidden="true"></span>Rotation schedule visible fourteen days out</li>
+              <li><span class="quarry" aria-hidden="true"></span>Three continuity appeals per quarter</li>
+              <li><span class="quarry" aria-hidden="true"></span>Delivery receipts with relay path</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="srow reveal">
+          <div class="tier"><span class="quarry bone" aria-hidden="true"></span>Flag Officer</div>
+          <div class="cost">$8,400 / year<small>Billed per fiscal year. Non-transferable. Reviewed annually.</small></div>
+          <div>
+            <ul>
+              <li><span class="quarry" aria-hidden="true"></span>Permanent Comms on up to four channels</li>
+              <li><span class="quarry" aria-hidden="true"></span>Two delay overrides per year, logged publicly</li>
+              <li class="withheld"><span class="quarry ruby" aria-hidden="true"></span>Your continuity score is withheld from the channel</li>
+              <li><span class="quarry" aria-hidden="true"></span>Direct line to the continuity board, which does not answer</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+      <p class="schedule-note">Commissions are granted, not purchased. Payment begins a review. Review outcomes are final and are not communicated.</p>
+    </div>
+  </section>
+
+  <section class="observance">
+    <div class="wrap">
+      <h2>The channel is already assembled. You are not on the roster yet.</h2>
+      <p>Open a bridge channel and watch a message sit in transit for nine minutes while five people who cannot transmit look at it.</p>
+      <div class="ctas">
+        <a class="btn solid" href="./demo.html">Open the demo &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <a href="/">&larr; theworstaistudioever</a>
+    <span>Subspace is not a real relay. No message you write here is transmitted, held, or reviewed.</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // glaze the rose window: twelve panes on a ring, one of them ruby
+  var rose = document.getElementById('rose');
+  if (rose) {
+    for (var i = 0; i < 12; i++) {
+      var p = document.createElement('div');
+      p.className = 'rose-pane';
+      if (i === 10) { p.style.background = 'var(--ruby)'; p.style.boxShadow = 'inset 0 0 12px rgba(224,112,108,.7)'; }
+      rose.appendChild(p);
+    }
+    var fit = function(){
+      var r = rose.getBoundingClientRect().width / 2;
+      var dist = r * 0.70;
+      var size = Math.max(22, Math.round(r * 0.20));
+      rose.querySelectorAll('.rose-pane').forEach(function(p, i){
+        p.style.width = size + 'px';
+        p.style.height = size + 'px';
+        p.style.margin = (-size/2) + 'px 0 0 ' + (-size/2) + 'px';
+        var d = i * 30;
+        p.style.transform = 'rotate(' + d + 'deg) translate(0,' + (-dist) + 'px) rotate(' + (45 - d) + 'deg)';
+      });
+    };
+    fit();
+    window.addEventListener('resize', fit);
+
+    // the one orchestrated moment: the twelve panes glaze in on a stagger
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    rose.querySelectorAll('.rose-pane').forEach(function(p, i){
+      p.style.transitionDelay = (reduced ? 0 : i * 40) + 'ms';
+    });
+    requestAnimationFrame(function(){ rose.classList.add('glazed'); });
+  }
+})();
+</script>
+</body>
+</html>
