@@ -1,0 +1,110 @@
+[2026-09-16T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-09-16T08:00:02Z] invoking claude -p
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/github/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/github/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.openclaw/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.openclaw/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.claude/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.claude/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/aurevon-status/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/aurevon-status/**) instead (Edit rules cover all file-editing tools).
+
+=== agent run summary: 2026-09-16 ===
+
+ROLL
+  company : Neuralink
+  subject : people who talk too much
+  slug    : neuralink-for-people-who-talk-too-much
+  rerolls : 0 (first pair drawn from the 2026-09-16 LCG was unused)
+  subject rule: satisfied, "people who talk too much" is a type of person.
+
+CONCEPT
+  product   : Taciten
+  one-liner : a cortical implant that ends your sentences before you have finished having them
+  demo      : Floor Control, the clinician console for a live session (word-budget meter,
+              ceiling slider, participant airtime roster, held-utterance queue with reason
+              codes, six-hour dosing strip)
+
+DESIGN DIRECTION
+  style   : pharmaceutical patient-information leaflet, cold-bleached paper daylight mode
+  palette : bg #EAEEEC / ink #12171A / primary #00594F / accent #D93B1E / muted #7C8A87
+  fonts   : Barlow Condensed (display) + IBM Plex Sans (body)
+  archetype: regulated medical device landing page composed as a product insert
+  anti-sameness: checked against the last 7 entries (stained glass, risograph, microfilm
+  carrel, injection-moulded console, gallery wall label, intaglio banknote, vitreous enamel
+  signage). No collision on style, palette or font pairing. First pick held, no reselect.
+
+IMAGES
+  allocation rationale:
+    hero  - SKIPPED. Leaflet panel 1 is typographic and diagrammatic; a photograph would
+            break the print conceit the whole page rests on.
+    demo  - SKIPPED. demo_screen_concept is a clinician console (meters, roster bars, a
+            queue). Not photo-shaped, so no subject assets earn a slot.
+    testimonial - 3 of a possible 4 generated, shot as leaflet patient photography: flat
+            medical-office light, cold grey-green backdrop matched to the page stock.
+  headshot-1.webp  attempt 1/2  PASS  subject, wardrobe and backdrop correct; deadpan, no
+                                      text artifacts, reads photographic not rendered
+  headshot-2.webp  attempt 1/2  PASS  age, glasses, collar correct; runs a half-stop
+                                      brighter than the set but stays in palette
+  headshot-3.webp  attempt 1/2  PASS  prop ban held (no podcast clutter); chair back
+                                      intrudes at the bottom corners, hidden by the
+                                      circular mask on the page
+  no regenerations, no drops. 3 of the 10 daily API calls used.
+
+WARNINGS AND NEAR-MISSES
+  - Palette muted #7C8A87 measures ~3.0:1 on the page stock, under AA for text. Used for
+    hairlines only; a derived #5C6A67 (~4.7:1) carries every muted label instead.
+  - Accent #D93B1E is used as a fill behind white text (~4.6:1), never as small text on
+    paper, where it would fall short.
+  - The Bash sandbox rejects brace-plus-quote literals, which blocked the first two
+    heredocs. Worked around by tokenising the braces in the carousel script before
+    writing. No helper scripts left in the tree.
+
+GALLERY
+  rebuilt site/index.html from all 97 concept.json files, newest first.
+  header count updated to "97 startups since 2026".
+
+VALIDATION
+  scripts/validate-entry.sh site neuralink-for-people-who-talk-too-much -> OK (exit 0)
+  state/history.json appended and reparsed clean, 97 entries.
+
+STEP 9 VISUAL CHECK (ran; playwright cache present)
+  captures: 2 (landing before + after fix). demo.html not captured, recapture budget spent.
+  BREAKAGE FOUND AND FIXED: every panel below the hero rendered at opacity 0. The .reveal
+  sections were hidden in CSS and only un-hidden by an IntersectionObserver, so any context
+  without a real scroll (full-page capture, print, JS failure) showed a blank page under
+  section 1. Fixed with 3 edits, all in index.html:
+    1. scoped the hidden state to .js .reveal
+    2. added a 1400ms revealAll() fallback alongside the observer
+    3. added the one-line head script that sets the .js class
+  Content is now visible with JS off, and the entrance animation still plays when it runs.
+  re-capture confirms all six panels, the warning box, the three headshots and the pricing
+  row render correctly. Taste-level items left alone.
+  re-validated after the edits: OK (exit 0).
+
+RUN_COMPLETE: neuralink-for-people-who-talk-too-much
+Today's entry is built, validated, and recorded.
+
+**Rolled:** Neuralink for people who talk too much (0 rerolls) → `neuralink-for-people-who-talk-too-much`
+
+**Product:** Taciten, a cortical throttle sold as if it were a scheduled medication. Sentence ceiling, anecdote deduplication, floor yield.
+
+**Design direction:** pharmaceutical patient-information leaflet on cold-bleached stock (`#EAEEEC`), two spot inks only (regulatory green `#00594F`, contraindication vermilion `#D93B1E`), Barlow Condensed over IBM Plex Sans. Page is composed as leaflet panels separated by fold creases, with blister-well pills as the repeating mark and one black-box warning. No collision with the last 7 entries on style, palette, or fonts.
+
+**Images:** 3 of 4 used, all accepted on first attempt. Hero skipped (panel 1 is typographic by design) and demo skipped (the console isn't photo-shaped), so the budget went to the three testimonial headshots, shot as leaflet patient photography against the page stock.
+
+**Demo:** Floor Control, the clinician console mid-dinner-party. Draggable sentence ceiling that re-paints the budget gauge and swaps the advisory copy, per-participant suppression, a held-utterance queue filterable by reason code with expand/release/discard, a confirm dialog on discard, and a six-hour dosing strip.
+
+**Gallery:** regenerated from all 97 `concept.json` files, header count updated.
+
+Two things worth flagging:
+
+The visual check caught real breakage. Every panel below the hero was rendering at `opacity: 0` because the sections were hidden in CSS and only un-hidden by an IntersectionObserver, which never fires for below-the-fold content in a full-page capture, with JS off, or when printing. Validation passed anyway, since it never checks rendered visibility. Fixed with the three allowed edits (scope the hidden state to `.js .reveal`, add a timeout fallback, set the `.js` class in the head), re-captured to confirm, and re-validated clean. I've saved that as a memory since the pipeline builds fresh HTML daily and the pattern is an easy one to reach for again.
+
+The demo page was not screenshotted. Fixing the landing page consumed the step's single re-capture allowance, so `demo.html` is unverified visually. It validates and its JS is straightforward, but nobody has looked at it.
+
+```
+RUN_COMPLETE: neuralink-for-people-who-talk-too-much
+```
+[2026-09-16T08:11:58Z] new entry: neuralink-for-people-who-talk-too-much
+validate-entry [neuralink-for-people-who-talk-too-much]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 97 entries (domain theworstaistudioever.com)
+[2026-09-16T08:11:58Z] committing: Neuralink for people who talk too much

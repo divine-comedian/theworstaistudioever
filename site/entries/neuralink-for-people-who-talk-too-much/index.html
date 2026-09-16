@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Taciten · theworstaistudioever</title>
+<meta name="description" content="A cortical implant that ends your sentences before you have finished having them.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Taciten · theworstaistudioever">
+<meta property="og:description" content="A cortical implant that ends your sentences before you have finished having them.">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Taciten · theworstaistudioever">
+<meta name="twitter:description" content="A cortical implant that ends your sentences before you have finished having them.">
+<meta name="theme-color" content="#EAEEEC">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+:root{
+  --green:#00594F;
+  --verm:#D93B1E;
+  --paper:#EAEEEC;
+  --ink:#12171A;
+  --rule:#7C8A87;
+  --label:#5C6A67;
+  --green-tint:rgba(0,89,79,.07);
+  --verm-tint:rgba(217,59,30,.08);
+  --display:'Barlow Condensed','Helvetica Neue Condensed','Arial Narrow',sans-serif;
+  --body:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:16px;
+  font-weight:300;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+img{display:block;max-width:100%}
+a{color:var(--green)}
+
+/* ---------- leaflet panels + fold creases ---------- */
+.panel{
+  position:relative;
+  padding:clamp(3rem,7vw,6rem) clamp(1.25rem,5vw,4rem);
+  max-width:1180px;
+  margin:0 auto;
+}
+.panel + .panel::before{
+  content:"";
+  position:absolute; top:0; left:calc(-1 * clamp(1.25rem,5vw,4rem)); right:calc(-1 * clamp(1.25rem,5vw,4rem));
+  height:1px; background:var(--rule); opacity:.55;
+}
+.panel + .panel::after{
+  content:"";
+  position:absolute; top:1px; left:calc(-1 * clamp(1.25rem,5vw,4rem)); right:calc(-1 * clamp(1.25rem,5vw,4rem));
+  height:12px;
+  background:linear-gradient(to bottom, rgba(0,0,0,.04), rgba(0,0,0,0));
+  pointer-events:none;
+}
+
+/* ---------- metadata strip ---------- */
+.meta{
+  display:flex; flex-wrap:wrap;
+  font-family:var(--body);
+  font-size:10px; font-weight:500;
+  letter-spacing:.14em; text-transform:uppercase;
+  color:var(--label);
+  font-variant-numeric:tabular-nums;
+  margin:0; padding:0; list-style:none;
+}
+.meta li{padding:0 .85em; border-left:1px solid var(--rule); line-height:1.4}
+.meta li:first-child{padding-left:0; border-left:0}
+
+/* ---------- hero ---------- */
+.hero{padding-top:clamp(2.5rem,6vw,4.5rem)}
+.hero-kicker{
+  font-family:var(--body); font-size:10px; font-weight:600;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--green);
+  margin:0 0 1.4rem;
+}
+.wordmark{
+  font-family:var(--display);
+  font-weight:700;
+  font-size:clamp(3.5rem,13vw,8.5rem);
+  line-height:.88;
+  letter-spacing:-.005em;
+  text-transform:uppercase;
+  margin:0;
+  color:var(--ink);
+}
+.wordmark-rule{height:2px;background:var(--green);margin:.6rem 0 0}
+.strength{
+  margin:.75rem 0 0;
+  font-family:var(--display);
+  font-size:clamp(1rem,2.4vw,1.35rem);
+  font-weight:500;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--green);
+}
+.hero-grid{
+  display:grid; gap:clamp(2rem,4vw,3.5rem);
+  grid-template-columns:1fr;
+  margin-top:clamp(2.25rem,5vw,3.5rem);
+}
+.hero-h1{
+  font-family:var(--display);
+  font-weight:600;
+  font-size:clamp(2rem,4.6vw,3.15rem);
+  line-height:1.02;
+  letter-spacing:.005em;
+  margin:0 0 1.1rem;
+}
+.hero-sub{margin:0 0 2rem;max-width:60ch;font-size:clamp(1rem,1.5vw,1.12rem)}
+.cta{
+  display:inline-block;
+  background:var(--green); color:#fff;
+  text-decoration:none;
+  font-family:var(--display); font-weight:600;
+  font-size:1.05rem; letter-spacing:.14em; text-transform:uppercase;
+  padding:.85rem 2rem;
+  border:0; border-radius:0;
+  transition:background 180ms ease-out;
+}
+.cta:hover,.cta:focus-visible{background:#00433B}
+.cta-note{
+  margin:.9rem 0 0; font-size:11px; letter-spacing:.06em;
+  color:var(--label); max-width:34ch;
+}
+.rail{
+  border-top:1px solid var(--rule);
+  padding-top:1rem;
+}
+.rail dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:.35rem 1.25rem;font-size:12px}
+.rail dt{
+  font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--label);align-self:center;
+}
+.rail dd{margin:0;font-variant-numeric:tabular-nums;font-weight:400}
+.rail p{
+  margin:1.25rem 0 0;font-size:11px;line-height:1.55;color:var(--label);
+  border-left:2px solid var(--verm); padding-left:.75rem;
+}
+@media(min-width:900px){
+  .hero-grid{grid-template-columns:minmax(0,1.85fr) minmax(210px,.75fr)}
+  .rail{border-top:0;border-left:1px solid var(--rule);padding:0 0 0 1.75rem}
+}
+
+/* ---------- section headers ---------- */
+.sec-head{display:flex;align-items:baseline;gap:.8rem;margin:0 0 .35rem}
+.sec-num{
+  flex:0 0 auto;
+  width:1.75rem;height:1.75rem;
+  background:var(--green);color:#fff;
+  display:grid;place-items:center;
+  font-family:var(--display);font-weight:600;font-size:1.05rem;
+  align-self:center;
+}
+.sec-title{
+  font-family:var(--display);font-weight:600;
+  font-size:clamp(1.35rem,2.8vw,1.85rem);
+  letter-spacing:.05em;text-transform:uppercase;
+  margin:0;
+}
+.sec-head + .meta{margin-bottom:clamp(1.75rem,3.5vw,2.5rem);padding-top:.5rem;border-top:1px solid var(--rule)}
+
+/* ---------- features / blister wells ---------- */
+.doses{display:grid;gap:clamp(1.5rem,3vw,2.5rem);grid-template-columns:1fr;margin:0;padding:0}
+@media(min-width:760px){.doses{grid-template-columns:repeat(3,1fr)}}
+.dose h3{
+  font-family:var(--display);font-weight:600;
+  font-size:1.5rem;letter-spacing:.02em;
+  margin:1rem 0 .55rem;
+}
+.dose p{margin:0;font-size:.97rem;max-width:42ch}
+.well{
+  display:inline-grid;place-items:center;
+  min-width:4.25rem;height:2.15rem;padding:0 1rem;
+  border:2px solid var(--green);border-radius:999px;
+  background:var(--green-tint);
+  font-family:var(--display);font-weight:600;font-size:.9rem;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--green);
+  font-variant-numeric:tabular-nums;
+}
+.dose svg{margin-top:1.1rem;color:var(--green)}
+
+/* ---------- black-box warning ---------- */
+.boxed{border:2px solid var(--verm);background:var(--verm-tint);margin-top:0}
+.boxed-head{
+  background:var(--verm);color:#fff;
+  font-family:var(--display);font-weight:600;
+  font-size:1.05rem;letter-spacing:.16em;text-transform:uppercase;
+  padding:.5rem clamp(1rem,2.5vw,1.6rem);
+  position:relative;overflow:hidden;
+}
+.boxed-head::after{
+  content:"";position:absolute;left:0;bottom:0;height:3px;width:100%;
+  background:#fff;transform:scaleX(0);transform-origin:left;
+}
+.boxed.seen .boxed-head::after{transform:scaleX(1);transition:transform 240ms ease-out}
+.boxed-body{padding:clamp(1.1rem,2.5vw,1.6rem)}
+.boxed-body p{margin:0 0 .9rem;max-width:68ch;font-size:.97rem}
+.boxed-body p:last-child{margin-bottom:0}
+.boxed-body strong{font-weight:600}
+
+/* ---------- testimonials ---------- */
+.reports{display:grid;gap:clamp(1.75rem,3vw,2.5rem);grid-template-columns:1fr;list-style:none;margin:0;padding:0}
+@media(min-width:760px){.reports{grid-template-columns:repeat(3,1fr)}}
+.report{border-top:1px solid var(--rule);padding-top:1.25rem}
+.report blockquote{
+  margin:0 0 1.25rem;
+  font-family:var(--display);font-weight:400;
+  font-size:1.3rem;line-height:1.24;letter-spacing:.005em;
+  max-width:30ch;
+}
+.report figure{display:flex;align-items:center;gap:.9rem;margin:0}
+.report img{
+  width:56px;height:56px;border-radius:999px;
+  border:2px solid var(--green);
+  filter:saturate(.72);
+  object-fit:cover;
+}
+.report figcaption{font-size:11px;line-height:1.45}
+.report-name{display:block;font-weight:600;font-size:13px;letter-spacing:.01em}
+.report-title{display:block;color:var(--label)}
+
+/* ---------- pricing ---------- */
+.presentations{display:grid;gap:clamp(1.5rem,3vw,2rem);grid-template-columns:1fr;list-style:none;margin:0;padding:0}
+@media(min-width:840px){.presentations{grid-template-columns:repeat(3,1fr)}}
+.pres{border:1px solid var(--rule);padding:clamp(1.25rem,2.5vw,1.75rem);display:flex;flex-direction:column}
+.pres.lead{border:2px solid var(--green)}
+.pres h3{
+  font-family:var(--display);font-weight:600;
+  font-size:1.45rem;letter-spacing:.06em;text-transform:uppercase;
+  margin:1rem 0 .3rem;
+}
+.pres-tag{margin:0 0 1.1rem;font-size:.92rem;color:var(--label)}
+.pres-price{
+  font-family:var(--display);font-weight:700;
+  font-size:clamp(1.9rem,3.4vw,2.35rem);line-height:1;
+  color:var(--green);font-variant-numeric:tabular-nums;
+  margin:0 0 1.25rem;padding-bottom:1.25rem;
+  border-bottom:1px solid var(--rule);
+}
+.pres ul{list-style:none;margin:0;padding:0;flex:1}
+.pres li{display:flex;gap:.7rem;align-items:flex-start;font-size:.93rem;margin-bottom:.8rem;line-height:1.5}
+.pres li::before{
+  content:"";flex:0 0 auto;width:14px;height:8px;margin-top:.5rem;
+  border:1.5px solid var(--green);border-radius:999px;background:var(--green-tint);
+}
+
+/* ---------- closing / footer ---------- */
+.closing{display:grid;gap:2rem;grid-template-columns:1fr;align-items:start}
+@media(min-width:840px){.closing{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}}
+.closing p{margin:0 0 1.5rem;max-width:56ch}
+.demo-cta{
+  display:inline-block;background:var(--ink);color:var(--paper);
+  text-decoration:none;font-family:var(--display);font-weight:600;
+  font-size:1.1rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.9rem 2.1rem;transition:background 180ms ease-out;
+}
+.demo-cta:hover,.demo-cta:focus-visible{background:var(--green)}
+.leaflet-foot{
+  border-top:2px solid var(--green);
+  margin-top:clamp(2.5rem,5vw,4rem);padding-top:1.1rem;
+  display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:baseline;
+}
+.leaflet-foot a{font-size:12px;letter-spacing:.06em;text-decoration:none;border-bottom:1px solid var(--green)}
+.leaflet-foot a:hover{color:var(--verm);border-color:var(--verm)}
+.leaflet-foot small{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--label)}
+
+/* ---------- reveal ---------- */
+.js .reveal{opacity:0;transform:translateY(2px)}
+.js .reveal.seen{opacity:1;transform:none;transition:opacity 180ms ease-out,transform 180ms ease-out}
+:focus-visible{outline:2px solid var(--verm);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+  .reveal{opacity:1;transform:none}
+  .boxed-head::after{transform:scaleX(1)}
+  html{scroll-behavior:auto}
+}
+</style>
+<script>document.documentElement.className += ' js';</script>
+</head>
+<body>
+
+<main>
+
+  <!-- ============ PANEL 1 — CARTON FRONT ============ -->
+  <section class="panel hero">
+    <p class="hero-kicker">Neuralink Clinical Systems, Division of Conversational Load</p>
+    <h1 class="wordmark">Taciten</h1>
+    <div class="wordmark-rule"></div>
+    <p class="strength">Cortical throttle · one implanted unit · continuous</p>
+
+    <div class="hero-grid">
+      <div>
+        <p class="hero-h1">Fewer words. Same person.</p>
+        <p class="hero-sub">Taciten is a cortical throttle indicated for adults whose stories have no observable endpoint. One outpatient procedure, one indefinite subscription, and a measured reduction in the number of times per day you say &ldquo;anyway, so.&rdquo;</p>
+        <a class="cta" href="#presentations">Request a consultation</a>
+        <p class="cta-note">Consultations are conducted by a clinician. The clinician will speak first.</p>
+      </div>
+
+      <aside class="rail">
+        <dl>
+          <dt>Lot</dt><dd>TN-4419-C</dd>
+          <dt>Rev</dt><dd>12.4</dd>
+          <dt>Route</dt><dd>Cortical</dd>
+          <dt>Schedule</dt><dd>Continuous</dd>
+          <dt>Ceiling</dt><dd>60 words</dd>
+        </dl>
+        <p>Read this leaflet before speaking. Keep it where you will see it, which is not where you will be talking.</p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ PANEL 2 — WHAT IT DOES ============ -->
+  <section class="panel reveal">
+    <div class="sec-head">
+      <span class="sec-num" aria-hidden="true">1</span>
+      <h2 class="sec-title">What Taciten does</h2>
+    </div>
+    <ul class="meta">
+      <li>Three mechanisms</li><li>Always on</li><li>Not adjustable in flight</li>
+    </ul>
+
+    <div class="doses">
+      <article class="dose">
+        <span class="well">1.1</span>
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 7h18M3 12h13M3 17h7"/><path d="M19 15l3 3-3 3"/></svg>
+        <h3>Sentence ceiling</h3>
+        <p>Set a hard word limit per utterance. On contact with the ceiling, Taciten closes the sentence for you using the nearest available grammatical exit. In trials, 71.4% of closures landed on &ldquo;so yeah.&rdquo;</p>
+      </article>
+
+      <article class="dose">
+        <span class="well">1.2</span>
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="13" height="13"/><path d="M8 21h13V8"/><path d="M5.5 9.5l2 2 4-4"/></svg>
+        <h3>Anecdote deduplication</h3>
+        <p>The implant indexes every story you tell and tags it against the listener who heard it. The second time you begin the one about the airport, your jaw is not consulted.</p>
+      </article>
+
+      <article class="dose">
+        <span class="well">1.3</span>
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/><path d="M9.5 12h5"/></svg>
+        <h3>Floor yield</h3>
+        <p>Taciten monitors the room for a person who has been waiting to speak for more than 4.0 seconds and administers a brief, non-negotiable pause. The pause is not adjustable. The pause is the product.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ PANEL 3 — WARNING ============ -->
+  <section class="panel reveal">
+    <div class="sec-head">
+      <span class="sec-num" aria-hidden="true">2</span>
+      <h2 class="sec-title">Before the ceiling is set</h2>
+    </div>
+    <ul class="meta">
+      <li>Read in full</li><li>Household decision</li><li>Not reversible by the wearer</li>
+    </ul>
+
+    <div class="boxed">
+      <p class="boxed-head">Warning: loss of anecdote</p>
+      <div class="boxed-body">
+        <p><strong>Deduplication is permanent.</strong> Taciten does not archive the stories it withholds. A story suppressed four times is generally not recoverable, and users report retaining the setting of the story without the events in it.</p>
+        <p>Taciten cannot distinguish between a story your household has heard once and a story your household has heard eleven times. It treats both as heard. Discuss this with the people you live with before the ceiling is set below 40 words.</p>
+        <p>Do not operate Taciten during a eulogy, a toast, a deposition, or any setting in which the length of your contribution is the point. Suppression events during these settings are recorded but not refunded.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PANEL 4 — REPORTED OUTCOMES ============ -->
+  <section class="panel reveal">
+    <div class="sec-head">
+      <span class="sec-num" aria-hidden="true">3</span>
+      <h2 class="sec-title">Reported outcomes</h2>
+    </div>
+    <ul class="meta">
+      <li>Post-market surveillance</li><li>Weeks 4 to 12</li><li>Self-reported</li>
+    </ul>
+
+    <ul class="reports">
+      <li class="report">
+        <blockquote>I used to close every meeting. Now I close some of them.</blockquote>
+        <figure>
+          <img src="headshot-1.webp" width="320" height="320" alt="Dale Vercammen, photographed against a plain clinical backdrop." loading="lazy">
+          <figcaption>
+            <span class="report-name">Dale Vercammen</span>
+            <span class="report-title">Regional Sales Lead, Dental Adhesives (Upper Midwest)</span>
+          </figcaption>
+        </figure>
+      </li>
+
+      <li class="report">
+        <blockquote>My wife says the implant has been good for us. I no longer have the airport story. I remember that there was an airport.</blockquote>
+        <figure>
+          <img src="headshot-2.webp" width="320" height="320" alt="Terrence Obuya, photographed against a plain clinical backdrop." loading="lazy">
+          <figcaption>
+            <span class="report-name">Terrence Obuya</span>
+            <span class="report-title">Retired Actuary; Treasurer, Fernwood Crossing HOA</span>
+          </figcaption>
+        </figure>
+      </li>
+
+      <li class="report">
+        <blockquote>Six weeks in and the podcast is nine minutes long. My co-host has started coming back.</blockquote>
+        <figure>
+          <img src="headshot-3.webp" width="320" height="320" alt="Priya Kanwal, photographed against a plain clinical backdrop." loading="lazy">
+          <figcaption>
+            <span class="report-name">Priya Kanwal</span>
+            <span class="report-title">Host and, until recently, Sole Guest of &ldquo;Let&rsquo;s Circle Back&rdquo;</span>
+          </figcaption>
+        </figure>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ============ PANEL 5 — PRESENTATIONS ============ -->
+  <section class="panel reveal" id="presentations">
+    <div class="sec-head">
+      <span class="sec-num" aria-hidden="true">4</span>
+      <h2 class="sec-title">Available presentations</h2>
+    </div>
+    <ul class="meta">
+      <li>Billed monthly</li><li>Procedure not included</li><li>Removal quoted separately</li>
+    </ul>
+
+    <ul class="presentations">
+      <li class="pres">
+        <span class="well">A</span>
+        <h3>Outpatient</h3>
+        <p class="pres-tag">For the mildly talkative.</p>
+        <p class="pres-price">$340 <span style="font-size:.5em;letter-spacing:.1em">/ MO</span></p>
+        <ul>
+          <li>One sentence ceiling, fixed at 60 words</li>
+          <li>Quarterly transcript of everything you said twice</li>
+          <li>Firmware pushed on weekdays only</li>
+        </ul>
+      </li>
+
+      <li class="pres lead">
+        <span class="well">B</span>
+        <h3>Managed silence</h3>
+        <p class="pres-tag">Indicated for most households.</p>
+        <p class="pres-price">$1,290 <span style="font-size:.5em;letter-spacing:.1em">/ MO</span></p>
+        <ul>
+          <li>Per-listener word budgets, recalculated nightly</li>
+          <li>Anecdote deduplication across a rolling 12 months</li>
+          <li>A clinician who responds inside six business hours</li>
+        </ul>
+      </li>
+
+      <li class="pres">
+        <span class="well">C</span>
+        <h3>Sealed unit</h3>
+        <p class="pres-tag">For the people who were asked.</p>
+        <p class="pres-price">$18,000 <span style="font-size:.5em;letter-spacing:.1em">+ $400 / MO</span></p>
+        <ul>
+          <li>Ceiling set by a party who is not you</li>
+          <li>No user-facing settings of any kind</li>
+          <li>Removal requires a countersignature</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ============ PANEL 6 — CLOSING ============ -->
+  <section class="panel reveal">
+    <div class="sec-head">
+      <span class="sec-num" aria-hidden="true">5</span>
+      <h2 class="sec-title">Clinician console</h2>
+    </div>
+    <ul class="meta">
+      <li>Live session view</li><li>Four participants</li><li>Sample data</li>
+    </ul>
+
+    <div class="closing">
+      <div>
+        <p>Floor Control is the screen your clinician watches while you are at dinner. It shows the word budget draining, who else is waiting, and the sentences Taciten stopped before they reached your jaw. Each one can be released back to you or discarded.</p>
+        <a class="demo-cta" href="./demo.html">Open the demo &rarr;</a>
+      </div>
+      <ul class="meta" style="flex-direction:column;align-items:flex-start;gap:.5rem">
+        <li style="border-left:0;padding-left:0">Session 4419-C</li>
+        <li style="border-left:0;padding-left:0">82 minutes elapsed</li>
+        <li style="border-left:0;padding-left:0">Wearer airtime 61.2%</li>
+        <li style="border-left:0;padding-left:0">Held utterances 7</li>
+      </ul>
+    </div>
+
+    <div class="leaflet-foot">
+      <a href="/">&larr; theworstaistudioever</a>
+      <small>Taciten is not a personality. Taciten is a schedule.</small>
+    </div>
+  </section>
+
+</main>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Panel reveal + one-shot warning rule draw.
+  var watched = document.querySelectorAll('.reveal, .boxed');
+  function revealAll(){ watched.forEach(function(el){ el.classList.add('seen'); }); }
+  if (reduce || !('IntersectionObserver' in window)) {
+    revealAll();
+  } else {
+    // Nothing stays hidden waiting on a scroll that may never come.
+    setTimeout(revealAll, 1400);
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) { e.target.classList.add('seen'); io.unobserve(e.target); }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
+    watched.forEach(function(el){ io.observe(el); });
+  }
+
+  // Smooth scroll for the in-page consultation link.
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click', function(ev){
+      var target = document.querySelector(a.getAttribute('href'));
+      if (!target) return;
+      ev.preventDefault();
+      target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+      target.setAttribute('tabindex','-1');
+      target.focus({ preventScroll: true });
+    });
+  });
+})();
+</script>
+</body>
+</html>

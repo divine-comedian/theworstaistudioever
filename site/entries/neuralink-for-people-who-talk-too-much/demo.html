@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Floor Control · Taciten</title>
+<meta name="description" content="The clinician-facing Floor Control console for a live Taciten session.">
+<meta name="theme-color" content="#EAEEEC">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+:root{
+  --green:#00594F;
+  --verm:#D93B1E;
+  --paper:#EAEEEC;
+  --ink:#12171A;
+  --rule:#7C8A87;
+  --label:#5C6A67;
+  --green-tint:rgba(0,89,79,.07);
+  --verm-tint:rgba(217,59,30,.08);
+  --surface:#F3F6F4;
+  --display:'Barlow Condensed','Helvetica Neue Condensed','Arial Narrow',sans-serif;
+  --body:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--body);font-size:15px;font-weight:300;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--verm);outline-offset:2px}
+
+.lbl{
+  font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--label);font-variant-numeric:tabular-nums;
+}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- chrome ---------- */
+.chrome{
+  position:sticky;top:0;z-index:20;
+  background:var(--paper);
+  border-bottom:2px solid var(--green);
+  display:flex;flex-wrap:wrap;align-items:center;gap:.75rem 1.5rem;
+  padding:.7rem clamp(.9rem,3vw,1.75rem);
+}
+.back{
+  text-decoration:none;color:var(--green);
+  font-family:var(--display);font-weight:600;font-size:1rem;
+  letter-spacing:.1em;text-transform:uppercase;
+  border-bottom:1px solid var(--green);
+}
+.back:hover{color:var(--verm);border-color:var(--verm)}
+.chrome-title{
+  font-family:var(--display);font-weight:600;font-size:1.15rem;
+  letter-spacing:.14em;text-transform:uppercase;margin:0;
+}
+.chrome-meta{display:flex;flex-wrap:wrap;gap:.9rem;margin-left:auto}
+.chrome-meta span{display:flex;gap:.4rem;align-items:baseline}
+.live{
+  display:inline-flex;align-items:center;gap:.45rem;
+  border:1.5px solid var(--verm);border-radius:999px;
+  padding:.12rem .7rem;color:var(--verm);
+  font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+}
+.live b{width:7px;height:7px;border-radius:999px;background:var(--verm);animation:pulse 2.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+
+/* ---------- layout ---------- */
+.console{
+  display:grid;gap:1px;background:var(--rule);
+  grid-template-columns:1fr;
+  border-bottom:1px solid var(--rule);
+}
+@media(min-width:1000px){
+  .console{grid-template-columns:minmax(230px,.85fr) minmax(0,1.3fr) minmax(0,1.35fr)}
+}
+.col{background:var(--paper);padding:clamp(1rem,2.5vw,1.5rem);min-width:0}
+.col > h2{
+  font-family:var(--display);font-weight:600;font-size:1.2rem;
+  letter-spacing:.1em;text-transform:uppercase;margin:0 0 .15rem;
+}
+.col > .lbl{display:block;padding-bottom:.7rem;border-bottom:1px solid var(--rule);margin-bottom:1.15rem}
+
+/* ---------- budget meter ---------- */
+.budget{text-align:left}
+.budget-read{
+  font-family:var(--display);font-weight:700;line-height:.9;
+  font-size:clamp(3.2rem,9vw,4.4rem);color:var(--green);
+  font-variant-numeric:tabular-nums;margin:.2rem 0 .1rem;
+}
+.budget-read.low{color:var(--verm)}
+.gauge{
+  height:14px;border:1.5px solid var(--green);border-radius:999px;
+  background:var(--green-tint);overflow:hidden;margin:.85rem 0 .45rem;
+}
+.gauge i{display:block;height:100%;background:var(--green);width:100%;transition:width 220ms ease-out}
+.gauge i.low{background:var(--verm)}
+.ceiling{margin-top:1.6rem;padding-top:1.2rem;border-top:1px solid var(--rule)}
+.ceiling label{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;margin-bottom:.55rem}
+input[type=range]{
+  width:100%;-webkit-appearance:none;appearance:none;background:transparent;margin:.3rem 0;
+}
+input[type=range]::-webkit-slider-runnable-track{height:3px;background:var(--rule)}
+input[type=range]::-moz-range-track{height:3px;background:var(--rule)}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:22px;height:22px;margin-top:-9.5px;
+  border-radius:999px;background:var(--green);border:3px solid var(--paper);cursor:pointer;
+}
+input[type=range]::-moz-range-thumb{
+  width:22px;height:22px;border-radius:999px;background:var(--green);
+  border:3px solid var(--paper);cursor:pointer;
+}
+.ceiling-note{
+  margin:.9rem 0 0;font-size:11px;line-height:1.5;color:var(--label);
+  border-left:2px solid var(--rule);padding-left:.7rem;
+}
+.ceiling-note.warn{color:var(--verm);border-color:var(--verm)}
+.modes{margin-top:1.6rem;padding-top:1.2rem;border-top:1px solid var(--rule)}
+.mode{display:flex;align-items:center;gap:.7rem;margin-bottom:.7rem;cursor:pointer}
+.mode input{position:absolute;opacity:0;width:0;height:0}
+.switch{
+  flex:0 0 auto;width:38px;height:20px;border-radius:999px;
+  border:1.5px solid var(--green);background:var(--green-tint);position:relative;
+  transition:background 160ms ease-out;
+}
+.switch::after{
+  content:"";position:absolute;top:2px;left:2px;width:13px;height:13px;border-radius:999px;
+  background:var(--green);transition:transform 160ms ease-out;
+}
+.mode input:checked + .switch{background:var(--green)}
+.mode input:checked + .switch::after{transform:translateX(18px);background:var(--paper)}
+.mode input:focus-visible + .switch{outline:2px solid var(--verm);outline-offset:2px}
+.mode span:last-child{font-size:.9rem}
+
+/* ---------- roster ---------- */
+.roster{list-style:none;margin:0;padding:0}
+.person{padding:.85rem 0;border-bottom:1px solid var(--rule)}
+.person:last-child{border-bottom:0}
+.person-top{display:flex;align-items:baseline;gap:.7rem;margin-bottom:.5rem}
+.person-name{font-weight:500;font-size:.98rem}
+.tag{
+  font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  border:1.5px solid var(--green);border-radius:999px;padding:.05rem .55rem;color:var(--green);
+}
+.tag.wearer{background:var(--green);color:#fff}
+.person-pct{margin-left:auto;font-family:var(--display);font-weight:600;font-size:1.3rem;color:var(--green)}
+.person.muted .person-pct{color:var(--label)}
+.bar{height:9px;background:var(--green-tint);border:1px solid var(--rule);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--green);transition:width 220ms ease-out}
+.person.wearer-row .bar i{background:var(--verm)}
+.person.muted .bar i{background:var(--rule)}
+.person-foot{display:flex;align-items:center;gap:.8rem;margin-top:.5rem}
+.mini{
+  background:none;border:1px solid var(--rule);border-radius:999px;
+  padding:.15rem .75rem;cursor:pointer;
+  font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--label);
+  transition:border-color 160ms ease-out,color 160ms ease-out;
+}
+.mini:hover{border-color:var(--green);color:var(--green)}
+.mini[aria-pressed=true]{background:var(--verm);border-color:var(--verm);color:#fff}
+
+/* ---------- held queue ---------- */
+.filters{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.1rem}
+.chip{
+  background:none;border:1.5px solid var(--rule);border-radius:999px;
+  padding:.2rem .8rem;cursor:pointer;
+  font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--label);
+  transition:border-color 160ms,color 160ms,background 160ms;
+}
+.chip:hover{border-color:var(--green);color:var(--green)}
+.chip[aria-pressed=true]{background:var(--green);border-color:var(--green);color:#fff}
+.queue{list-style:none;margin:0;padding:0}
+.held{border-left:2px solid var(--green);background:var(--surface);padding:.75rem .9rem;margin-bottom:.7rem}
+.held.reason-INTERRUPT,.held.reason-CEILING{border-left-color:var(--verm)}
+.held-top{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+.code{
+  font-size:9px;font-weight:600;letter-spacing:.11em;
+  border:1.5px solid var(--green);border-radius:999px;padding:.05rem .6rem;color:var(--green);
+}
+.held.reason-INTERRUPT .code,.held.reason-CEILING .code{border-color:var(--verm);color:var(--verm)}
+.held-time{margin-left:auto;font-size:10px;letter-spacing:.1em;color:var(--label);font-variant-numeric:tabular-nums}
+.held-frag{
+  margin:.55rem 0 0;font-size:.92rem;line-height:1.5;
+  display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;
+}
+.held.open .held-frag{-webkit-line-clamp:unset;overflow:visible}
+.held-actions{display:none;gap:.5rem;margin-top:.75rem;flex-wrap:wrap}
+.held.open .held-actions{display:flex}
+.act{
+  border:1.5px solid var(--green);background:none;color:var(--green);
+  padding:.25rem .9rem;cursor:pointer;
+  font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  transition:background 160ms,color 160ms;
+}
+.act:hover{background:var(--green);color:#fff}
+.act.danger{border-color:var(--verm);color:var(--verm)}
+.act.danger:hover{background:var(--verm);color:#fff}
+.expand{
+  background:none;border:0;padding:0;cursor:pointer;
+  font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--label);
+}
+.expand:hover{color:var(--green)}
+.empty{
+  border:1px dashed var(--rule);padding:1.5rem 1rem;text-align:center;
+  font-size:.9rem;color:var(--label);
+}
+.tally{
+  display:flex;gap:1.5rem;margin-top:1.1rem;padding-top:.9rem;border-top:1px solid var(--rule);
+}
+.tally div{display:flex;flex-direction:column;gap:.1rem}
+.tally b{font-family:var(--display);font-weight:600;font-size:1.5rem;color:var(--green);line-height:1}
+
+/* ---------- dosing strip ---------- */
+.dosing{padding:clamp(1rem,2.5vw,1.5rem);max-width:1400px;margin:0 auto}
+.dosing h2{
+  font-family:var(--display);font-weight:600;font-size:1.2rem;
+  letter-spacing:.1em;text-transform:uppercase;margin:0 0 .9rem;
+}
+.slots{display:grid;gap:1px;background:var(--rule);border:1px solid var(--rule);grid-template-columns:repeat(2,1fr)}
+@media(min-width:700px){.slots{grid-template-columns:repeat(6,1fr)}}
+.slot{background:var(--paper);padding:.7rem .8rem}
+.slot.active{background:var(--green-tint)}
+.slot b{display:block;font-family:var(--display);font-weight:600;font-size:1.15rem;color:var(--green)}
+.slot span{display:block;font-size:11px;color:var(--label);line-height:1.4;margin-top:.15rem}
+
+/* ---------- toast + modal ---------- */
+.toast{
+  position:fixed;left:50%;bottom:1.25rem;transform:translate(-50%,120%);
+  background:var(--ink);color:var(--paper);padding:.7rem 1.25rem;
+  font-size:.88rem;z-index:40;max-width:calc(100vw - 2rem);
+  transition:transform 200ms ease-out;
+}
+.toast.up{transform:translate(-50%,0)}
+.scrim{
+  position:fixed;inset:0;background:rgba(18,23,26,.55);z-index:50;
+  display:none;place-items:center;padding:1rem;
+}
+.scrim.open{display:grid}
+.dialog{
+  background:var(--paper);border:2px solid var(--verm);max-width:420px;width:100%;
+}
+.dialog h3{
+  background:var(--verm);color:#fff;margin:0;padding:.5rem 1.1rem;
+  font-family:var(--display);font-weight:600;font-size:1.05rem;letter-spacing:.14em;text-transform:uppercase;
+}
+.dialog-body{padding:1.1rem}
+.dialog-body p{margin:0 0 1.1rem;font-size:.93rem}
+.dialog-body q{display:block;margin-bottom:1.1rem;padding-left:.8rem;border-left:2px solid var(--rule);font-size:.9rem;color:var(--label)}
+.dialog-actions{display:flex;gap:.6rem;flex-wrap:wrap}
+
+@media(prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+
+<header class="chrome">
+  <a class="back" href="./index.html">&larr; back to the pitch</a>
+  <h1 class="chrome-title">Floor Control</h1>
+  <div class="chrome-meta lbl">
+    <span class="live"><b></b> Session live</span>
+    <span>Session <em class="num" style="font-style:normal">4419-C</em></span>
+    <span>Elapsed <em class="num" id="elapsed" style="font-style:normal">82:14</em></span>
+    <span>Setting Dinner, 4 present</span>
+  </div>
+</header>
+
+<main>
+<div class="console">
+
+  <!-- ===== LEFT: wearer budget + ceiling ===== -->
+  <section class="col budget">
+    <h2>Wearer budget</h2>
+    <span class="lbl">Dale V. · unit TN-4419-C</span>
+
+    <span class="lbl">Words remaining in current utterance</span>
+    <p class="budget-read num" id="budgetRead">41</p>
+    <div class="gauge"><i id="gaugeFill"></i></div>
+    <span class="lbl" id="gaugeLbl">41 of 60 · refills on sentence close</span>
+
+    <div class="ceiling">
+      <label for="ceiling">
+        <span class="lbl">Sentence ceiling</span>
+        <span class="num" id="ceilingRead" style="font-family:var(--display);font-weight:600;font-size:1.3rem;color:var(--green)">60</span>
+      </label>
+      <input id="ceiling" type="range" min="15" max="120" step="5" value="60">
+      <p class="ceiling-note" id="ceilingNote">Standard adult setting. Most sentences close on their own below this.</p>
+    </div>
+
+    <div class="modes">
+      <span class="lbl" style="display:block;margin-bottom:.8rem">Suppression modes</span>
+      <label class="mode"><input type="checkbox" id="m1" checked><span class="switch"></span><span>Anecdote deduplication</span></label>
+      <label class="mode"><input type="checkbox" id="m2" checked><span class="switch"></span><span>Floor yield after 4.0s</span></label>
+      <label class="mode"><input type="checkbox" id="m3"><span class="switch"></span><span>Suppress follow-up questions</span></label>
+      <label class="mode"><input type="checkbox" id="m4"><span class="switch"></span><span>Hold all output (dessert mode)</span></label>
+    </div>
+  </section>
+
+  <!-- ===== CENTER: roster ===== -->
+  <section class="col">
+    <h2>Floor roster</h2>
+    <span class="lbl">Airtime share, rolling 82 minutes</span>
+    <ul class="roster" id="roster"></ul>
+  </section>
+
+  <!-- ===== RIGHT: held utterances ===== -->
+  <section class="col">
+    <h2>Held utterances</h2>
+    <span class="lbl">Intercepted before delivery · release or discard</span>
+
+    <div class="filters" id="filters">
+      <button class="chip" type="button" data-code="ALL" aria-pressed="true">All</button>
+      <button class="chip" type="button" data-code="CEILING" aria-pressed="false">Ceiling</button>
+      <button class="chip" type="button" data-code="REPEAT-ANECDOTE" aria-pressed="false">Repeat</button>
+      <button class="chip" type="button" data-code="INTERRUPT" aria-pressed="false">Interrupt</button>
+      <button class="chip" type="button" data-code="FLOOR-YIELD" aria-pressed="false">Yield</button>
+    </div>
+
+    <ul class="queue" id="queue"></ul>
+    <div class="empty" id="emptyState" hidden>Nothing held under this filter. The wearer is, for the moment, inside budget.</div>
+
+    <div class="tally">
+      <div><b class="num" id="tallyHeld">7</b><span class="lbl">Held</span></div>
+      <div><b class="num" id="tallyReleased">0</b><span class="lbl">Released</span></div>
+      <div><b class="num" id="tallyDiscarded">0</b><span class="lbl">Discarded</span></div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ===== dosing strip ===== -->
+<section class="dosing">
+  <h2>Dosing schedule, next six hours</h2>
+  <div class="slots">
+    <div class="slot active"><b class="num">19:00</b><span>Dinner. Ceiling 60. Deduplication on.</span></div>
+    <div class="slot"><b class="num">20:00</b><span>Dessert. Ceiling drops to 35.</span></div>
+    <div class="slot"><b class="num">21:00</b><span>Guests standing near the door. Ceiling 20.</span></div>
+    <div class="slot"><b class="num">22:00</b><span>Guests still near the door. Ceiling 12.</span></div>
+    <div class="slot"><b class="num">23:00</b><span>Kitchen cleanup. Ceiling restored to 60.</span></div>
+    <div class="slot"><b class="num">00:00</b><span>Unmonitored. Wearer alone.</span></div>
+  </div>
+</section>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="scrim" id="scrim">
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlgTitle">
+    <h3 id="dlgTitle">Discard permanently</h3>
+    <div class="dialog-body">
+      <p>Discarding removes this utterance from the wearer as well as from the queue. There is no archive copy.</p>
+      <q id="dlgQuote"></q>
+      <div class="dialog-actions">
+        <button class="act danger" type="button" id="dlgConfirm">Discard it</button>
+        <button class="act" type="button" id="dlgCancel">Keep it held</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- seed data ---------- */
+  var people = [
+    { name:'Dale Vercammen', tag:'Wearer',  pct:61.2, wearer:true,  muted:false },
+    { name:'Marguerite Dill', tag:'Spouse',  pct:17.4, wearer:false, muted:false },
+    { name:'Rich Sowell',     tag:'Guest',   pct:13.1, wearer:false, muted:false },
+    { name:'Odette Barrow',   tag:'Guest',   pct:8.3,  wearer:false, muted:false }
+  ];
+
+  var held = [
+    { id:1, code:'REPEAT-ANECDOTE', t:'19:41:02', text:'So this is back when the airport still had the one gate, and I am standing there with the garment bag, and the woman at the counter says to me, she says, and I will never forget this as long as I live.' },
+    { id:2, code:'CEILING', t:'19:44:27', text:'Which reminds me of a completely different thing that happened at a different airport in a different decade to a person you have not met and will not meet, but the point I am building toward is actually about parking.' },
+    { id:3, code:'INTERRUPT', t:'19:46:10', text:'No no no, hang on, hang on, because what you are describing is not what actually happened, and I was there.' },
+    { id:4, code:'FLOOR-YIELD', t:'19:48:55', text:'Right, right, exactly, and on that same note.' },
+    { id:5, code:'REPEAT-ANECDOTE', t:'19:52:31', text:'Have I told you about the sabbatical? Because there is a version of the sabbatical story that nobody in this room has heard, and it does involve the garment bag again.' },
+    { id:6, code:'CEILING', t:'19:55:09', text:'The thing about sourdough, and I say this as somebody who got into it later than most people did, quite a bit later actually, is that the starter is really more of a relationship than an ingredient, which is a thing I have said before but not here.' },
+    { id:7, code:'INTERRUPT', t:'19:58:44', text:'Sorry, sorry, finish your thought. Although, quickly.' }
+  ];
+
+  var released = 0, discarded = 0, filter = 'ALL', pendingDiscard = null, lastFocus = null;
+
+  var qEl = document.getElementById('queue');
+  var emptyEl = document.getElementById('emptyState');
+  var rosterEl = document.getElementById('roster');
+  var toastEl = document.getElementById('toast');
+  var scrim = document.getElementById('scrim');
+
+  /* ---------- toast ---------- */
+  var toastTimer;
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('up');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('up'); }, 3600);
+  }
+
+  /* ---------- roster ---------- */
+  function drawRoster(){
+    rosterEl.innerHTML = '';
+    people.forEach(function(p, i){
+      var li = document.createElement('li');
+      li.className = 'person' + (p.wearer ? ' wearer-row' : '') + (p.muted ? ' muted' : '');
+      li.innerHTML =
+        '<div class="person-top">' +
+          '<span class="person-name"></span>' +
+          '<span class="tag' + (p.wearer ? ' wearer' : '') + '"></span>' +
+          '<span class="person-pct num">' + p.pct.toFixed(1) + '%</span>' +
+        '</div>' +
+        '<div class="bar"><i style="width:' + Math.min(100, p.pct * 1.45) + '%"></i></div>' +
+        '<div class="person-foot">' +
+          '<button class="mini" type="button" data-i="' + i + '" aria-pressed="' + p.muted + '">' +
+            (p.muted ? 'Suppressed' : 'Suppress') +
+          '</button>' +
+          '<span class="lbl">' + (p.wearer ? 'Ceiling enforced' : 'No implant on file') + '</span>' +
+        '</div>';
+      li.querySelector('.person-name').textContent = p.name;
+      li.querySelector('.tag').textContent = p.tag;
+      rosterEl.appendChild(li);
+    });
+  }
+
+  rosterEl.addEventListener('click', function(e){
+    var btn = e.target.closest('.mini');
+    if (!btn) return;
+    var p = people[+btn.dataset.i];
+    p.muted = !p.muted;
+    drawRoster();
+    toast(p.muted
+      ? p.name + ' suppressed. They have not been told.'
+      : p.name + ' restored to the floor.');
+  });
+
+  /* ---------- held queue ---------- */
+  function drawQueue(){
+    var rows = held.filter(function(h){ return filter === 'ALL' || h.code === filter; });
+    qEl.innerHTML = '';
+    rows.forEach(function(h){
+      var li = document.createElement('li');
+      li.className = 'held reason-' + h.code;
+      li.dataset.id = h.id;
+      li.innerHTML =
+        '<div class="held-top">' +
+          '<span class="code"></span>' +
+          '<button class="expand" type="button" aria-expanded="false">Read</button>' +
+          '<span class="held-time num"></span>' +
+        '</div>' +
+        '<p class="held-frag"></p>' +
+        '<div class="held-actions">' +
+          '<button class="act" type="button" data-act="release">Release to wearer</button>' +
+          '<button class="act danger" type="button" data-act="discard">Discard</button>' +
+        '</div>';
+      li.querySelector('.code').textContent = h.code;
+      li.querySelector('.held-time').textContent = h.t;
+      li.querySelector('.held-frag').textContent = h.text;
+      qEl.appendChild(li);
+    });
+    emptyEl.hidden = rows.length > 0;
+    document.getElementById('tallyHeld').textContent = held.length;
+    document.getElementById('tallyReleased').textContent = released;
+    document.getElementById('tallyDiscarded').textContent = discarded;
+  }
+
+  qEl.addEventListener('click', function(e){
+    var li = e.target.closest('.held');
+    if (!li) return;
+    var id = +li.dataset.id;
+    var rec = held.find(function(h){ return h.id === id; });
+
+    var exp = e.target.closest('.expand');
+    if (exp){
+      var open = li.classList.toggle('open');
+      exp.setAttribute('aria-expanded', String(open));
+      exp.textContent = open ? 'Collapse' : 'Read';
+      return;
+    }
+
+    var act = e.target.closest('.act');
+    if (!act || !rec) return;
+
+    if (act.dataset.act === 'release'){
+      held = held.filter(function(h){ return h.id !== id; });
+      released++;
+      var wearer = people[0];
+      wearer.pct = Math.min(94.9, +(wearer.pct + 1.8).toFixed(1));
+      drawRoster();
+      drawQueue();
+      toast('Released. The wearer is saying it now.');
+    } else {
+      pendingDiscard = id;
+      lastFocus = act;
+      document.getElementById('dlgQuote').textContent = rec.text.slice(0, 120) + (rec.text.length > 120 ? '…' : '');
+      scrim.classList.add('open');
+      document.getElementById('dlgCancel').focus();
+    }
+  });
+
+  /* ---------- filters ---------- */
+  document.getElementById('filters').addEventListener('click', function(e){
+    var chip = e.target.closest('.chip');
+    if (!chip) return;
+    filter = chip.dataset.code;
+    this.querySelectorAll('.chip').forEach(function(c){
+      c.setAttribute('aria-pressed', String(c === chip));
+    });
+    drawQueue();
+  });
+
+  /* ---------- discard dialog ---------- */
+  function closeDialog(){
+    scrim.classList.remove('open');
+    pendingDiscard = null;
+    if (lastFocus && document.body.contains(lastFocus)) lastFocus.focus();
+  }
+  document.getElementById('dlgCancel').addEventListener('click', closeDialog);
+  scrim.addEventListener('click', function(e){ if (e.target === scrim) closeDialog(); });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && scrim.classList.contains('open')) closeDialog();
+  });
+  document.getElementById('dlgConfirm').addEventListener('click', function(){
+    held = held.filter(function(h){ return h.id !== pendingDiscard; });
+    discarded++;
+    closeDialog();
+    drawQueue();
+    toast('Discarded. No archive copy was kept.');
+  });
+
+  /* ---------- ceiling ---------- */
+  var ceiling = document.getElementById('ceiling');
+  var budgetRead = document.getElementById('budgetRead');
+  var gaugeFill = document.getElementById('gaugeFill');
+  var gaugeLbl = document.getElementById('gaugeLbl');
+  var note = document.getElementById('ceilingNote');
+  var used = 19;
+
+  function paintCeiling(){
+    var c = +ceiling.value;
+    var remaining = Math.max(0, c - used);
+    var pct = c > 0 ? (remaining / c) * 100 : 0;
+    document.getElementById('ceilingRead').textContent = c;
+    budgetRead.textContent = remaining;
+    gaugeFill.style.width = pct + '%';
+    var low = pct < 34;
+    budgetRead.classList.toggle('low', low);
+    gaugeFill.classList.toggle('low', low);
+    gaugeLbl.textContent = remaining + ' of ' + c + ' · refills on sentence close';
+
+    if (c <= 20){
+      note.textContent = 'Below 20 the implant closes most sentences before the verb. Households report this as abrupt.';
+      note.className = 'ceiling-note warn';
+    } else if (c < 40){
+      note.textContent = 'Under 40 words. Confirm with the household before this setting is left in place overnight.';
+      note.className = 'ceiling-note warn';
+    } else if (c > 95){
+      note.textContent = 'Above 95 the ceiling is rarely reached. The unit is implanted but not, in any practical sense, on.';
+      note.className = 'ceiling-note';
+    } else {
+      note.textContent = 'Standard adult setting. Most sentences close on their own below this.';
+      note.className = 'ceiling-note';
+    }
+  }
+  ceiling.addEventListener('input', paintCeiling);
+
+  /* ---------- modes ---------- */
+  var modeCopy = {
+    m1:['Deduplication on. Stories are checked against this room.','Deduplication off. Everything is new again.'],
+    m2:['Floor yield on. Pauses administered after 4.0 seconds.','Floor yield off. The floor is now first come.'],
+    m3:['Follow-up questions suppressed. Conversations will end sooner.','Follow-up questions permitted.'],
+    m4:['Dessert mode. All output held until released by the clinician.','Dessert mode off. Output resumed.']
+  };
+  ['m1','m2','m3','m4'].forEach(function(id){
+    document.getElementById(id).addEventListener('change', function(){
+      toast(modeCopy[id][this.checked ? 0 : 1]);
+    });
+  });
+
+  /* ---------- elapsed clock ---------- */
+  var secs = 82 * 60 + 14;
+  var elapsed = document.getElementById('elapsed');
+  if (!reduce){
+    setInterval(function(){
+      secs++;
+      var m = Math.floor(secs / 60), s = secs % 60;
+      elapsed.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+    }, 1000);
+  }
+
+  drawRoster();
+  drawQueue();
+  paintCeiling();
+})();
+</script>
+</body>
+</html>
