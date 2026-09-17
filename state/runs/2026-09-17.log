@@ -1,0 +1,105 @@
+RUN 2026-09-17 — square-for-barn-owls
+
+ROLL
+  company: Square
+  subject: barn owls
+  slug:    square-for-barn-owls
+  tagline: Square for barn owls
+  rerolls: 1 (first draw was Cursor + crows, already in history from 2026-09-08)
+  PRNG: LCG seeded from sum(charcodes("2026-09-17")) * 2654435761 mod 2^31
+  Subject rule: "barn owls" is an animal. Passes. No seed removal needed.
+  Note: okta-for-barn-owls (2026-05-14) exists, but the pair matches on both
+  fields only, so Square + barn owls is a legal draw.
+
+CONCEPT
+  product: Pellet
+  one-liner: Payment infrastructure for barn owls, the last workforce still
+  settling in voles.
+  Premise: barn owls are independent rodent-remediation contractors, and Pellet
+  is their merchant stack. The pellet is the receipt. Skeletons in the pellet
+  are the audit trail, matched bone by bone against open invoice lines.
+  Testimonials are attributed to named barn owls with corporate titles, which
+  is what made the headshot images worth generating.
+
+DESIGN DIRECTION
+  style:   Agricultural equipment livery, moonlit galvanized dark mode
+  palette: bg #0D1215 / plate #141C21 / fg+ink #E4EBEE / muted #78888F /
+           primary (equipment yellow) #F2B417 / accent (moonlight zinc) #6FA8C7
+  fonts:   display 'Big Shoulders Display', body 'Source Sans 3',
+           figures 'JetBrains Mono' (tabular)
+  archetype: hardware-corridor landing page, spine-threaded scroll
+  motifs: zinc plate, 4 corner rivets per plate, hazard chevron divider,
+          spec-plate micro-row under every heading
+  ANTI-SAMENESS: checked the 7 most recent concept.json files (2026-09-10
+  through 2026-09-16: intaglio banknote, gallery wall-label, moulded console,
+  microfilm carrel, risograph newsprint, leaded stained glass, pharma leaflet).
+  No collision on style, palette, or font pairing. Display and body families
+  are both unused across all seven. Three of the last seven were dark modes,
+  so the material vocabulary was deliberately pushed to cold galvanized zinc
+  plus rationed equipment yellow, which none of them use.
+
+IMAGES
+  rationale: full budget used, 4 of 4. Hero earned a slot because the design
+  direction opens on a full-bleed equipment shot and the subject is literally
+  a bird in a barn at night. Demo subject assets skipped: demo_screen_concept
+  is a settlement ledger table, so it is all type and rules, nothing
+  photo-shaped. Remaining 3 went to testimonial headshots, since the
+  testimonials are signed by named owls.
+    hero.webp          1600x900  attempts 1  PASS
+    headshot-1.webp     320x320  attempts 1  PASS
+    headshot-2.webp     320x320  attempts 1  PASS
+    headshot-3.webp     320x320  attempts 1  PASS
+  judge verdicts: hero came back with the owl on a beam, cold moonbeam from a
+  roof opening, visible dust motes, and two small out-of-focus yellow glints
+  that happen to land on the accent. Headshots are three visibly distinct
+  birds in straight-on employee-portrait framing against a cold slate
+  backdrop. No text artifacts, no watermarks, no rendered UI, no generic-AI
+  render tells on any of the four. Zero regenerations.
+  headshot-1.webp is reused as the operator chip in the demo rail.
+  File sizes: hero 71 KB, headshots 14 to 22 KB. All well under the 500 KB cap.
+
+BUILD
+  index.html: hero with email capture, 3 feature plates, static ledger teaser,
+  3 operator cards with headshots, 3 rate plates, closing CTA, footer.
+  demo.html: TONIGHT'S LEDGER settlement console. 14 rodent lines, species
+  filter chips, settled/unsettled segmented control, live search, click or
+  Enter on a row opens a receipt modal with a fee breakdown and skeletal
+  match readout, and "Run pellet reconciliation" steps the unsettled lines
+  one at a time at 260ms and flags exactly one mismatch.
+  Both files are self-contained, inline CSS and JS, no frameworks, no CDN
+  beyond the Google Fonts import.
+
+WARNINGS / NEAR-MISSES
+  - Receipt modal math was initially arbitrary (gross derived from a fudge
+    factor). Fixed before validation so the breakdown reconciles against the
+    fee shown in the table: gross = (fee - 0.30) / rate.
+  - Three of the last seven entries were dark-mode. Not a rule violation, but
+    worth flagging for whoever rolls tomorrow: a light direction would give
+    the gallery carousel some relief.
+
+VISUAL CHECK (step 9, ran)
+  Playwright chromium already present. 2 captures, 2 corrective edits,
+  1 re-capture. Well inside the caps.
+  Breakage found and fixed: in demo.html the ledger cell buttons use
+  `all:unset`, which resets box-sizing to content-box. With width:100% plus
+  32px horizontal padding, every cell button overflowed its column, so mass
+  ran into property ("31 gHalloway Bros.") and fee ran into state
+  ("$0.90Settled") across all 14 rows. Added box-sizing:border-box.
+  Second edit: the static ledger teaser on index.html claimed 11 catches and
+  412 g while the live demo reports 14 and 502 g. Teaser corrected to match.
+  Re-capture confirms columns are clean and nothing else regressed.
+  Landing capture: no overlap, no off-canvas elements, hero scrim resolves to
+  solid ground under the headline, all four images at correct aspect.
+
+GALLERY
+  Rebuilt site/index.html from all 98 concept.json files, newest first.
+  Header count updated to "98 startups · since 2026".
+
+VALIDATION
+  scripts/validate-entry.sh site square-for-barn-owls -> OK
+  state/history.json appended, 98 records, still valid JSON.
+[2026-09-17T08:12:23Z] WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks
+[2026-09-17T08:12:23Z] new entry: square-for-barn-owls
+validate-entry [square-for-barn-owls]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 98 entries (domain theworstaistudioever.com)
+[2026-09-17T08:12:23Z] committing: Square for barn owls

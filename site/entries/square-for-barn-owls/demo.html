@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tonight's ledger · Pellet</title>
+<meta name="description" content="Settlement console for a single barn-owl operator. One row per rodent, one pellet to prove it.">
+<meta name="theme-color" content="#0D1215">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700;800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root{
+  --bg:#0D1215;
+  --plate:#141C21;
+  --plate-2:#111A1F;
+  --line:#2A363D;
+  --rivet-ring:#47565E;
+  --fg:#E4EBEE;
+  --muted:#78888F;
+  --yellow:#F2B417;
+  --zinc:#6FA8C7;
+  --shadow:3px 3px 0 rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:var(--bg);color:var(--fg);
+  font-family:'Source Sans 3',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+img{display:block;max-width:100%}
+a{color:var(--zinc)}
+:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
+.mono{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+.cond{font-family:'Big Shoulders Display','Oswald',sans-serif;text-transform:uppercase;letter-spacing:.03em;font-weight:800;line-height:.96;margin:0}
+.spec{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+
+/* chrome */
+.chrome{
+  position:sticky;top:0;z-index:30;
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+  padding:12px 18px;background:var(--plate-2);border-bottom:1px solid var(--line);
+}
+.back{
+  font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.08em;
+  color:var(--muted);text-decoration:none;padding:8px 10px;margin:-8px -10px;border-radius:2px;
+}
+.back:hover{color:var(--zinc)}
+.chrome-mark{font-family:'Big Shoulders Display',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.14em;font-size:18px}
+.chrome-clock{margin-left:auto;font-size:11px;letter-spacing:.14em}
+.chevron{height:8px;background-image:repeating-linear-gradient(45deg,var(--yellow) 0 8px,var(--bg) 8px 16px)}
+
+.shell{display:grid;grid-template-columns:268px minmax(0,1fr);gap:18px;padding:18px;align-items:start;max-width:1440px;margin:0 auto}
+@media (max-width:900px){.shell{grid-template-columns:minmax(0,1fr)}}
+
+.plate{
+  position:relative;background:var(--plate);border:1px solid var(--line);border-radius:2px;
+  box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.07);
+  background-image:
+    radial-gradient(circle at 9px 9px,var(--line) 0 2.3px,var(--rivet-ring) 2.3px 3.1px,transparent 3.2px),
+    radial-gradient(circle at calc(100% - 9px) 9px,var(--line) 0 2.3px,var(--rivet-ring) 2.3px 3.1px,transparent 3.2px),
+    radial-gradient(circle at 9px calc(100% - 9px),var(--line) 0 2.3px,var(--rivet-ring) 2.3px 3.1px,transparent 3.2px),
+    radial-gradient(circle at calc(100% - 9px) calc(100% - 9px),var(--line) 0 2.3px,var(--rivet-ring) 2.3px 3.1px,transparent 3.2px);
+  background-repeat:no-repeat;
+}
+
+/* rail */
+.rail{padding:20px 18px 22px;display:grid;gap:20px}
+.op-chip{display:flex;gap:12px;align-items:center}
+.op-chip img{width:46px;height:46px;border:1px solid var(--line);border-radius:2px;filter:saturate(.82)}
+.op-chip b{display:block;font-size:14px}
+.stat{border-top:1px solid var(--line);padding-top:12px}
+.stat:first-of-type{border-top:0;padding-top:0}
+.stat dt{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.stat dd{margin:5px 0 0;font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;font-variant-numeric:tabular-nums}
+.stat dd small{font-size:12px;font-weight:400;color:var(--muted);margin-left:5px}
+.stat--hold dd{color:var(--yellow)}
+.stat--next dd{color:var(--zinc)}
+dl{margin:0}
+
+/* controls */
+.panel-head{padding:16px 18px;border-bottom:1px solid var(--line);background:var(--plate-2);display:flex;gap:14px;align-items:baseline;flex-wrap:wrap}
+.panel-head h1{font-size:26px}
+.controls{padding:14px 18px;border-bottom:1px solid var(--line);display:grid;gap:12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.06em;
+  background:var(--plate-2);color:var(--muted);border:1px solid var(--line);border-radius:2px;
+  padding:9px 12px;min-height:36px;cursor:pointer;
+}
+.chip[aria-pressed="true"]{background:#1B2830;color:var(--fg);border-color:var(--rivet-ring);box-shadow:inset 0 0 0 1px rgba(111,168,199,.35)}
+.chip:hover{color:var(--fg)}
+.ctl-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.search{
+  flex:1 1 220px;min-height:40px;background:var(--plate-2);color:var(--fg);
+  border:1px solid var(--line);border-radius:2px;padding:0 12px;font:inherit;font-size:16px;
+}
+.search::placeholder{color:#5D6C73}
+.seg{display:flex;border:1px solid var(--line);border-radius:2px;overflow:hidden}
+.seg button{
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.06em;
+  background:var(--plate-2);color:var(--muted);border:0;border-left:1px solid var(--line);
+  padding:0 14px;min-height:40px;cursor:pointer;
+}
+.seg button:first-child{border-left:0}
+.seg button[aria-pressed="true"]{background:#1B2830;color:var(--fg)}
+.btn{
+  font-family:'Big Shoulders Display',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  font-size:17px;line-height:1;padding:0 20px;min-height:44px;border-radius:2px;
+  border:1px solid var(--line);cursor:pointer;display:inline-flex;align-items:center;gap:8px;
+  transition:transform 120ms ease-out,box-shadow 120ms ease-out;
+}
+.btn-primary{background:var(--yellow);color:#0D1215;border-color:#8E6A09;box-shadow:var(--shadow)}
+.btn-ghost{background:var(--plate-2);color:var(--fg);box-shadow:var(--shadow)}
+.btn:hover{transform:translate(1px,1px);box-shadow:2px 2px 0 rgba(0,0,0,.45)}
+.btn:active{transform:translate(3px,3px);box-shadow:none}
+.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;box-shadow:var(--shadow)}
+.runline{
+  font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--zinc);
+  min-height:20px;padding:0 18px 14px;
+}
+
+/* table */
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:13px}
+th{
+  text-align:left;padding:10px 16px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);font-weight:500;border-bottom:1px solid var(--line);background:var(--plate-2);
+  position:sticky;top:0;white-space:nowrap;
+}
+td{padding:0;border-bottom:1px solid rgba(42,54,61,.55);color:#C2CDD2;white-space:nowrap}
+td button.cell{
+  all:unset;box-sizing:border-box;display:block;width:100%;padding:12px 16px;cursor:pointer;
+  font-variant-numeric:tabular-nums;
+}
+tr{border-left:2px solid transparent}
+tr.row:hover{background:#172127}
+tr.row.is-active{border-left-color:var(--zinc);background:#172127}
+tr.row.flagged{border-left-color:var(--yellow)}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+.state{font-size:11px;letter-spacing:.06em}
+.state.settled{color:var(--zinc)}
+.state.unsettled{color:var(--muted)}
+.state.review,.state.mismatch{color:var(--yellow)}
+.empty{padding:44px 18px;text-align:center;color:var(--muted)}
+tfoot td{padding:12px 16px;background:var(--plate-2);color:var(--muted);font-size:11px;letter-spacing:.08em;border-bottom:0}
+
+/* modal */
+.scrim{
+  position:fixed;inset:0;background:rgba(5,8,10,.72);z-index:60;
+  display:none;align-items:center;justify-content:center;padding:18px;
+}
+.scrim.open{display:flex}
+.sheet{width:min(520px,100%);max-height:88vh;overflow:auto;padding:0}
+.sheet-head{padding:18px;border-bottom:1px solid var(--line);background:var(--plate-2);display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+.sheet-head h2{font-size:24px}
+.x{all:unset;cursor:pointer;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:16px;padding:8px 10px;margin:-8px -10px;border-radius:2px}
+.x:hover{color:var(--fg)}
+.sheet-body{padding:18px}
+.kv{display:grid;grid-template-columns:1fr auto;gap:9px 14px;font-family:'JetBrains Mono',monospace;font-size:13px;font-variant-numeric:tabular-nums}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;text-align:right}
+.rule{height:1px;background:var(--line);margin:16px 0}
+.kv .net{color:var(--zinc);font-weight:700}
+.bones{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.bone{font-family:'JetBrains Mono',monospace;font-size:11px;border:1px solid var(--line);background:var(--plate-2);padding:6px 9px;border-radius:2px;color:#C2CDD2}
+.bone.miss{color:var(--yellow);border-color:#6B520E}
+.sheet-foot{padding:16px 18px;border-top:1px solid var(--line);background:var(--plate-2);display:flex;gap:10px;flex-wrap:wrap}
+.note{color:var(--muted);font-size:13px;margin:14px 0 0}
+
+@media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <a class="back" href="./index.html">&larr; back to the pitch</a>
+  <span class="chrome-mark">Pellet</span>
+  <span class="spec chrome-clock" id="clock">Shift 17 Sep &middot; 05:04 local</span>
+</div>
+<div class="chevron" aria-hidden="true"></div>
+
+<div class="shell">
+
+  <aside class="plate rail">
+    <div class="op-chip">
+      <img src="headshot-1.webp" alt="" width="320" height="320">
+      <span>
+        <b>B. Screech</b>
+        <span class="spec">Contractor tier II</span>
+      </span>
+    </div>
+    <dl>
+      <div class="stat"><dt>Catches</dt><dd id="s-catches">0</dd></div>
+      <div class="stat"><dt>Gross mass</dt><dd id="s-mass">0<small>g</small></dd></div>
+      <div class="stat stat--hold"><dt>Unsettled lines</dt><dd id="s-open">0</dd></div>
+      <div class="stat"><dt>Pellets in queue</dt><dd id="s-pellets">0</dd></div>
+      <div class="stat stat--next"><dt>Next deposit</dt><dd id="s-next">05:41</dd></div>
+    </dl>
+    <p class="spec" style="line-height:1.7;margin:0">Window 04:30 to 05:15. Deposits leave when the window closes, whether or not the bird is back.</p>
+  </aside>
+
+  <main class="plate" style="padding:0">
+    <div class="panel-head">
+      <h1 class="cond">Tonight's ledger</h1>
+      <span class="spec">One row per rodent</span>
+    </div>
+
+    <div class="controls">
+      <div class="chips" id="chips" role="group" aria-label="Filter by species">
+        <button class="chip" type="button" aria-pressed="false" data-sp="Field vole">Field vole</button>
+        <button class="chip" type="button" aria-pressed="false" data-sp="Wood mouse">Wood mouse</button>
+        <button class="chip" type="button" aria-pressed="false" data-sp="Common shrew">Common shrew</button>
+        <button class="chip" type="button" aria-pressed="false" data-sp="Brown rat">Brown rat</button>
+        <button class="chip" type="button" aria-pressed="false" data-sp="Unidentified">Unidentified</button>
+      </div>
+      <div class="ctl-row">
+        <input class="search" id="q" type="search" placeholder="Search species or property" aria-label="Search lines">
+        <div class="seg" id="seg" role="group" aria-label="Filter by settlement state">
+          <button type="button" aria-pressed="true" data-state="all">All</button>
+          <button type="button" aria-pressed="false" data-state="settled">Settled</button>
+          <button type="button" aria-pressed="false" data-state="open">Unsettled</button>
+        </div>
+        <button class="btn btn-primary" id="run" type="button">Run pellet reconciliation</button>
+      </div>
+    </div>
+    <p class="runline mono" id="runline" role="status" aria-live="polite">3 pellets queued. Reconciliation has not run tonight.</p>
+
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Line</th><th scope="col">Time</th><th scope="col">Species</th>
+            <th scope="col">Mass</th><th scope="col">Property</th><th scope="col">Fee</th><th scope="col">State</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+        <tfoot>
+          <tr><td colspan="7" id="foot">&nbsp;</td></tr>
+        </tfoot>
+      </table>
+    </div>
+  </main>
+</div>
+
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="sheet-h" hidden>
+  <div class="plate sheet">
+    <div class="sheet-head">
+      <div>
+        <h2 class="cond" id="sheet-h">Line PLT-0000</h2>
+        <span class="spec" id="sheet-sub">Receipt</span>
+      </div>
+      <button class="x" type="button" id="close" aria-label="Close receipt">[ close ]</button>
+    </div>
+    <div class="sheet-body">
+      <dl class="kv" id="sheet-kv"></dl>
+      <div class="rule"></div>
+      <span class="spec">Skeletal match</span>
+      <div class="bones" id="bones"></div>
+      <p class="note" id="sheet-note"></p>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn btn-ghost" type="button" id="dispute">Dispute with farmer</button>
+      <button class="btn btn-ghost" type="button" id="ok">Accept line</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var LINES = [
+    { id:'0417', t:'20:52', sp:'Field vole',   m:31,  p:'Halloway Bros. Hay & Seed', fee:0.90, st:'settled' },
+    { id:'0418', t:'21:38', sp:'Wood mouse',   m:22,  p:'Halloway Bros. Hay & Seed', fee:0.86, st:'settled' },
+    { id:'0419', t:'22:10', sp:'Field vole',   m:28,  p:'Lower Fen Barn',            fee:0.89, st:'settled' },
+    { id:'0420', t:'22:47', sp:'Common shrew', m:9,   p:'Lower Fen Barn',            fee:0.81, st:'settled' },
+    { id:'0421', t:'23:19', sp:'Unidentified', m:16,  p:'Lower Fen Barn',            fee:0.84, st:'open' },
+    { id:'0422', t:'00:03', sp:'Field vole',   m:35,  p:'Vane Family Loft',          fee:0.91, st:'settled' },
+    { id:'0423', t:'00:41', sp:'Wood mouse',   m:18,  p:'Vane Family Loft',          fee:0.85, st:'settled' },
+    { id:'0424', t:'01:14', sp:'Field vole',   m:28,  p:'Grain silo, Ipswich Rd',    fee:0.89, st:'open' },
+    { id:'0425', t:'02:02', sp:'Wood mouse',   m:19,  p:'Grain silo, Ipswich Rd',    fee:0.85, st:'settled' },
+    { id:'0426', t:'02:55', sp:'Common shrew', m:8,   p:'Halloway Bros. Hay & Seed', fee:0.81, st:'open' },
+    { id:'0427', t:'03:37', sp:'Common shrew', m:9,   p:'Lower Fen Barn',            fee:0.81, st:'open' },
+    { id:'0428', t:'04:20', sp:'Brown rat',    m:241, p:'Grain silo, Ipswich Rd',    fee:7.29, st:'review' },
+    { id:'0429', t:'04:44', sp:'Field vole',   m:26,  p:'Vane Family Loft',          fee:0.88, st:'open' },
+    { id:'0430', t:'05:01', sp:'Unidentified', m:12,  p:'Vane Family Loft',          fee:0.83, st:'open' }
+  ];
+
+  var STATE_LABEL = {
+    settled:'Settled', open:'Awaiting pellet', review:'Under review', mismatch:'Mismatch'
+  };
+
+  var species = [];
+  var stateFilter = 'all';
+  var query = '';
+  var running = false;
+  var activeId = null;
+  var pellets = 3;
+
+  var rowsEl = document.getElementById('rows');
+  var footEl = document.getElementById('foot');
+  var runline = document.getElementById('runline');
+  var runBtn = document.getElementById('run');
+  var scrim = document.getElementById('scrim');
+  var lastFocus = null;
+
+  function money(n){ return '$' + n.toFixed(2); }
+
+  function visible(){
+    return LINES.filter(function (l) {
+      if (species.length && species.indexOf(l.sp) === -1) return false;
+      if (stateFilter === 'settled' && l.st !== 'settled') return false;
+      if (stateFilter === 'open' && l.st === 'settled') return false;
+      if (query) {
+        var hay = (l.sp + ' ' + l.p + ' ' + l.id).toLowerCase();
+        if (hay.indexOf(query) === -1) return false;
+      }
+      return true;
+    });
+  }
+
+  function renderStats(){
+    var mass = LINES.reduce(function (a, l) { return a + l.m; }, 0);
+    var open = LINES.filter(function (l) { return l.st !== 'settled'; }).length;
+    document.getElementById('s-catches').textContent = LINES.length;
+    document.getElementById('s-mass').innerHTML = mass + '<small>g</small>';
+    document.getElementById('s-open').textContent = open;
+    document.getElementById('s-pellets').textContent = pellets;
+  }
+
+  function cell(text, cls){
+    return '<td class="' + (cls || '') + '"><button class="cell" type="button" tabindex="-1">' + text + '</button></td>';
+  }
+
+  function render(){
+    var v = visible();
+    if (!v.length) {
+      rowsEl.innerHTML = '<tr><td colspan="7"><p class="empty">No lines match. The night was quieter than the filters assume.</p></td></tr>';
+    } else {
+      rowsEl.innerHTML = v.map(function (l) {
+        var flagged = (l.st === 'mismatch' || l.st === 'review') ? ' flagged' : '';
+        var active = (l.id === activeId) ? ' is-active' : '';
+        return '<tr class="row' + flagged + active + '" data-id="' + l.id + '" tabindex="0" role="button" aria-label="Open receipt for line ' + l.id + '">' +
+          cell('PLT-' + l.id) +
+          cell(l.t) +
+          cell(l.sp) +
+          cell(l.m + ' g', 'num') +
+          cell(l.p) +
+          cell(money(l.fee), 'num') +
+          cell('<span class="state ' + l.st + '">' + STATE_LABEL[l.st] + '</span>') +
+        '</tr>';
+      }).join('');
+    }
+    var sum = v.reduce(function (a, l) { return a + l.fee; }, 0);
+    footEl.textContent = v.length + ' of ' + LINES.length + ' lines shown. Fees in view ' + money(sum) + '.';
+    renderStats();
+  }
+
+  /* filters */
+  document.getElementById('chips').addEventListener('click', function (e) {
+    var b = e.target.closest('.chip');
+    if (!b) return;
+    var sp = b.dataset.sp;
+    var i = species.indexOf(sp);
+    if (i === -1) { species.push(sp); } else { species.splice(i, 1); }
+    b.setAttribute('aria-pressed', i === -1 ? 'true' : 'false');
+    render();
+  });
+
+  document.getElementById('seg').addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (!b) return;
+    stateFilter = b.dataset.state;
+    Array.prototype.forEach.call(this.querySelectorAll('button'), function (x) {
+      x.setAttribute('aria-pressed', String(x === b));
+    });
+    render();
+  });
+
+  document.getElementById('q').addEventListener('input', function () {
+    query = this.value.trim().toLowerCase();
+    render();
+  });
+
+  /* reconciliation */
+  runBtn.addEventListener('click', function () {
+    if (running) return;
+    var queue = LINES.filter(function (l) { return l.st === 'open'; });
+    if (!queue.length) {
+      runline.textContent = 'Nothing to reconcile. Every line has a pellet behind it.';
+      return;
+    }
+    running = true;
+    runBtn.disabled = true;
+    var i = 0;
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var step = reduce ? 0 : 260;
+
+    function tick(){
+      if (i >= queue.length) {
+        running = false;
+        runBtn.disabled = false;
+        pellets = 0;
+        runline.textContent = 'Run complete. ' + (queue.length - 1) + ' lines settled, 1 held for review. Deposit leaves at 05:41.';
+        render();
+        return;
+      }
+      var l = queue[i];
+      var isBad = (l.sp === 'Unidentified' && l.id === '0430');
+      l.st = isBad ? 'mismatch' : 'settled';
+      if (isBad) {
+        runline.textContent = 'Line PLT-' + l.id + ' has no skull in the pellet. Held for review.';
+      } else {
+        runline.textContent = 'Matching pellet ' + (i + 1) + ' of ' + queue.length + ', line PLT-' + l.id + ', femur pair confirmed.';
+      }
+      i++;
+      render();
+      window.setTimeout(tick, step);
+    }
+    runline.textContent = 'Opening ' + pellets + ' pellets against ' + queue.length + ' unsettled lines.';
+    window.setTimeout(tick, step);
+  });
+
+  /* receipt */
+  function openSheet(id){
+    var l = LINES.filter(function (x) { return x.id === id; })[0];
+    if (!l) return;
+    activeId = id;
+    lastFocus = document.activeElement;
+
+    var pct = l.fee >= 5 ? 0.024 : 0.029;
+    var fixed = 0.30;
+    var gross = +((l.fee - fixed) / pct).toFixed(2);
+    var platform = +(gross * pct).toFixed(2);
+
+    document.getElementById('sheet-h').textContent = 'Line PLT-' + l.id;
+    document.getElementById('sheet-sub').textContent = l.sp + ' at ' + l.t + ' on ' + l.p;
+    document.getElementById('sheet-kv').innerHTML =
+      '<dt>Assessed value</dt><dd>' + money(gross) + '</dd>' +
+      '<dt>Platform fee ' + (pct * 100).toFixed(1) + '%</dt><dd>' + money(platform) + '</dd>' +
+      '<dt>Fixed fee</dt><dd>' + money(fixed) + '</dd>' +
+      '<dt>Mass on record</dt><dd>' + l.m + ' g</dd>' +
+      '<dt class="net">Net to operator</dt><dd class="net">' + money(Math.max(0, gross - platform - fixed)) + '</dd>';
+
+    var full = ['skull 1', 'mandible 2', 'femur 2', 'pelvis 1', 'ribs 22'];
+    var bones = document.getElementById('bones');
+    if (l.st === 'mismatch') {
+      bones.innerHTML = '<span class="bone miss">skull 0 of 1</span><span class="bone">mandible 1</span><span class="bone miss">femur 1 of 2</span><span class="bone">ribs 14</span>';
+      document.getElementById('sheet-note').textContent = 'The pellet is short a skull. Either the line is wrong or something ate the evidence. Pellet does not speculate.';
+    } else if (l.st === 'review') {
+      bones.innerHTML = '<span class="bone">skull 1</span><span class="bone">femur 2</span><span class="bone">pelvis 1</span><span class="bone miss">mass unverified</span>';
+      document.getElementById('sheet-note').textContent = 'At 241 grams this line exceeds the single-catch ceiling for a contractor of this wingspan. A field agent has been notified and is already driving.';
+    } else {
+      bones.innerHTML = full.map(function (b) { return '<span class="bone">' + b + '</span>'; }).join('');
+      document.getElementById('sheet-note').textContent = 'Complete skeleton recovered. This line will clear with the 05:41 deposit.';
+    }
+
+    scrim.hidden = false;
+    scrim.classList.add('open');
+    document.getElementById('close').focus();
+    render();
+  }
+
+  function closeSheet(){
+    scrim.classList.remove('open');
+    scrim.hidden = true;
+    activeId = null;
+    render();
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  rowsEl.addEventListener('click', function (e) {
+    var tr = e.target.closest('tr.row');
+    if (tr) openSheet(tr.dataset.id);
+  });
+  rowsEl.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    var tr = e.target.closest('tr.row');
+    if (!tr) return;
+    e.preventDefault();
+    openSheet(tr.dataset.id);
+  });
+
+  document.getElementById('close').addEventListener('click', closeSheet);
+  document.getElementById('ok').addEventListener('click', closeSheet);
+  document.getElementById('dispute').addEventListener('click', function () {
+    document.getElementById('sheet-note').textContent = 'Dispute filed. The farmer has been sent a letter. The farmer does not open letters.';
+  });
+  scrim.addEventListener('click', function (e) { if (e.target === scrim) closeSheet(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && scrim.classList.contains('open')) closeSheet();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pellet · theworstaistudioever</title>
+<meta name="description" content="Payment infrastructure for barn owls, the last workforce still settling in voles.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Pellet · theworstaistudioever">
+<meta property="og:description" content="Payment infrastructure for barn owls, the last workforce still settling in voles.">
+<meta property="og:image" content="hero.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Pellet · theworstaistudioever">
+<meta name="twitter:description" content="Payment infrastructure for barn owls, the last workforce still settling in voles.">
+<meta name="theme-color" content="#0D1215">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root{
+  --bg:#0D1215;
+  --plate:#141C21;
+  --plate-2:#111A1F;
+  --line:#2A363D;
+  --rivet-ring:#47565E;
+  --fg:#E4EBEE;
+  --muted:#78888F;
+  --yellow:#F2B417;
+  --zinc:#6FA8C7;
+  --shadow:3px 3px 0 rgba(0,0,0,.45);
+  --shadow-lift:2px 2px 0 rgba(0,0,0,.45);
+  --gutter:clamp(20px,5vw,72px);
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--fg);
+  font-family:'Source Sans 3',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  font-size:17px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;display:block}
+a{color:var(--zinc)}
+a:focus-visible,button:focus-visible,input:focus-visible{
+  outline:2px solid var(--yellow);
+  outline-offset:3px;
+}
+
+h1,h2,h3,.wordmark,.tier-name,.big-num{
+  font-family:'Big Shoulders Display','Oswald','Helvetica Neue Condensed',Impact,sans-serif;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.02em;
+  line-height:.94;
+  margin:0;
+}
+.num{font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+
+/* ---- structural motifs ---- */
+.plate{
+  position:relative;
+  background:var(--plate);
+  border:1px solid var(--line);
+  border-radius:2px;
+  box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.07);
+  background-image:
+    radial-gradient(circle at 10px 10px,var(--line) 0 2.5px,var(--rivet-ring) 2.5px 3.4px,transparent 3.5px),
+    radial-gradient(circle at calc(100% - 10px) 10px,var(--line) 0 2.5px,var(--rivet-ring) 2.5px 3.4px,transparent 3.5px),
+    radial-gradient(circle at 10px calc(100% - 10px),var(--line) 0 2.5px,var(--rivet-ring) 2.5px 3.4px,transparent 3.5px),
+    radial-gradient(circle at calc(100% - 10px) calc(100% - 10px),var(--line) 0 2.5px,var(--rivet-ring) 2.5px 3.4px,transparent 3.5px);
+  background-repeat:no-repeat;
+}
+.chevron{
+  height:10px;
+  background-image:repeating-linear-gradient(45deg,var(--yellow) 0 8px,var(--bg) 8px 16px);
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+}
+.spec{
+  font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+  font-size:10px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin:14px 0 0;
+  padding:0;
+  list-style:none;
+  display:flex;
+  flex-wrap:wrap;
+}
+.spec li{padding:0 12px;border-left:1px solid var(--line)}
+.spec li:first-child{padding-left:0;border-left:0}
+
+/* ---- shell ---- */
+.wrap{max-width:1180px;margin:0 auto;padding:0 var(--gutter)}
+main{position:relative}
+@media (min-width:1024px){
+  main::before{
+    content:"";
+    position:absolute;
+    left:calc(var(--gutter) / 2);
+    top:0;bottom:0;width:1px;
+    background:var(--line);
+  }
+}
+section{padding:84px 0}
+.sec-head{margin-bottom:44px}
+.sec-head h2{font-size:clamp(2rem,4.4vw,3.4rem);max-width:18ch}
+.lede{color:var(--muted);max-width:62ch;margin:16px 0 0}
+
+/* ---- hero ---- */
+.hero{position:relative;isolation:isolate;min-height:92vh;display:flex;flex-direction:column;justify-content:flex-end}
+.hero-media{position:absolute;inset:0;z-index:-2;overflow:hidden}
+.hero-media img{width:100%;height:100%;object-fit:cover;object-position:52% 42%}
+.hero::after{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(to bottom,rgba(13,18,21,.55) 0%,rgba(13,18,21,.12) 28%,rgba(13,18,21,.74) 68%,var(--bg) 97%);
+}
+.hero-top{position:absolute;top:0;left:0;right:0;padding:var(--gutter) var(--gutter) 0}
+.wordmark{
+  display:inline-block;
+  font-size:26px;
+  letter-spacing:.14em;
+  padding:9px 20px;
+  color:var(--fg);
+  background:rgba(13,18,21,.72);
+  border:1px solid var(--line);
+  border-radius:2px;
+  background-image:
+    radial-gradient(circle at 7px 7px,var(--line) 0 2.2px,var(--rivet-ring) 2.2px 3px,transparent 3.1px),
+    radial-gradient(circle at calc(100% - 7px) 7px,var(--line) 0 2.2px,var(--rivet-ring) 2.2px 3px,transparent 3.1px),
+    radial-gradient(circle at 7px calc(100% - 7px),var(--line) 0 2.2px,var(--rivet-ring) 2.2px 3px,transparent 3.1px),
+    radial-gradient(circle at calc(100% - 7px) calc(100% - 7px),var(--line) 0 2.2px,var(--rivet-ring) 2.2px 3px,transparent 3.1px);
+  background-repeat:no-repeat;
+}
+.hero-body{padding:0 var(--gutter) 64px;width:100%}
+.hero h1{font-size:clamp(2.6rem,7vw,6rem);max-width:13ch}
+.hero-sub{max-width:62ch;margin:26px 0 0;font-size:clamp(1rem,1.5vw,1.2rem)}
+
+/* ---- controls ---- */
+.row{display:flex;flex-wrap:wrap;gap:14px;margin-top:32px;align-items:stretch}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  font-family:'Big Shoulders Display','Oswald',sans-serif;
+  font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  font-size:19px;line-height:1;
+  padding:17px 26px;
+  min-height:48px;
+  border-radius:2px;
+  border:1px solid var(--line);
+  text-decoration:none;
+  cursor:pointer;
+  transition:transform 120ms ease-out,box-shadow 120ms ease-out,background-color 120ms ease-out;
+}
+.btn-primary{background:var(--yellow);color:#0D1215;border-color:#8E6A09;box-shadow:var(--shadow)}
+.btn-primary:hover{transform:translate(1px,1px);box-shadow:var(--shadow-lift)}
+.btn-ghost{background:rgba(13,18,21,.6);color:var(--fg);box-shadow:var(--shadow)}
+.btn-ghost:hover{transform:translate(1px,1px);box-shadow:var(--shadow-lift);background:var(--plate)}
+.btn:active{transform:translate(3px,3px);box-shadow:none}
+
+.capture{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px;max-width:560px}
+.capture label{
+  flex:0 0 100%;
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted);
+}
+.capture input{
+  flex:1 1 260px;min-height:48px;
+  background:var(--plate);color:var(--fg);
+  border:1px solid var(--line);border-radius:2px;
+  padding:0 14px;font:inherit;font-size:16px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+}
+.capture input::placeholder{color:#5D6C73}
+.capture .btn{flex:0 0 auto}
+.capture-note{
+  flex:0 0 100%;margin:4px 0 0;min-height:22px;
+  font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--zinc);
+}
+
+/* ---- features ---- */
+.grid-3{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(272px,1fr))}
+.feature{padding:28px 26px 30px}
+.feature h3{font-size:1.9rem;color:var(--fg)}
+.feature p{margin:18px 0 0;color:#C2CDD2}
+.feature .spec{margin-top:10px}
+
+/* ---- ledger teaser ---- */
+.ledger-teaser{padding:0;overflow:hidden}
+.lt-bar{
+  display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;
+  padding:16px 22px;border-bottom:1px solid var(--line);background:var(--plate-2);
+}
+.lt-bar .num{font-size:12px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+.lt-bar b{color:var(--zinc);font-weight:500}
+.lt-table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:13px}
+.lt-table th{
+  text-align:left;padding:10px 22px;font-size:10px;letter-spacing:.16em;
+  color:var(--muted);font-weight:500;border-bottom:1px solid var(--line);text-transform:uppercase;
+}
+.lt-table td{padding:11px 22px;border-bottom:1px solid rgba(42,54,61,.55);color:#C2CDD2;font-variant-numeric:tabular-nums}
+.lt-table tr:last-child td{border-bottom:0}
+.lt-table .ok{color:var(--zinc)}
+.lt-table .hold{color:var(--yellow)}
+.lt-foot{padding:20px 22px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;background:var(--plate-2);border-top:1px solid var(--line)}
+.lt-foot p{margin:0;color:var(--muted);font-size:15px;max-width:52ch}
+
+/* ---- operators ---- */
+.op{padding:26px 24px 28px;display:flex;flex-direction:column;gap:18px}
+.op blockquote{margin:0;font-size:1.12rem;color:var(--fg)}
+.op figcaption{display:flex;gap:14px;align-items:center;margin-top:auto}
+.op img{width:58px;height:58px;border:1px solid var(--line);border-radius:2px;flex:0 0 58px;filter:saturate(.82)}
+.op-name{font-weight:600;font-size:15px;line-height:1.3}
+.op-title{display:block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-top:5px;line-height:1.5}
+
+/* ---- pricing ---- */
+.tier{padding:0;display:flex;flex-direction:column}
+.tier-cap{height:10px;background:var(--plate-2);border-bottom:1px solid var(--line)}
+.tier--pick .tier-cap{background-image:repeating-linear-gradient(45deg,var(--yellow) 0 8px,var(--bg) 8px 16px)}
+.tier-in{padding:26px 24px 28px;display:flex;flex-direction:column;flex:1}
+.tier-name{font-size:1.75rem}
+.tier-price{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:700;color:var(--zinc);margin:14px 0 0;font-variant-numeric:tabular-nums}
+.tier-tag{color:var(--muted);margin:10px 0 22px;font-size:15px}
+.perks{list-style:none;margin:0 0 26px;padding:0;display:grid;gap:11px}
+.perks li{position:relative;padding-left:20px;font-size:15px;color:#C2CDD2}
+.perks li::before{content:"";position:absolute;left:0;top:9px;width:7px;height:7px;background:var(--line);border:1px solid var(--rivet-ring)}
+.tier .btn{margin-top:auto;width:100%}
+
+/* ---- closing ---- */
+.close{text-align:left;padding:0}
+.close-in{padding:64px var(--gutter) 60px}
+.close h2{font-size:clamp(2.4rem,6.5vw,5rem);max-width:14ch}
+.belt{height:10px;background-image:repeating-linear-gradient(45deg,var(--yellow) 0 8px,var(--bg) 8px 16px);background-size:22.6px 22.6px;transition:background-position 400ms linear}
+.close:hover .belt{background-position:22.6px 0}
+
+footer{border-top:1px solid var(--line);padding:34px 0 46px;background:var(--plate-2)}
+.foot-in{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;align-items:flex-start}
+.foot-note{margin:0;max-width:56ch;color:var(--muted);font-size:13px}
+.backlink{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.1em;color:var(--muted);text-decoration:none}
+.backlink:hover{color:var(--zinc)}
+
+@media (max-width:640px){
+  section{padding:58px 0}
+  .hero{min-height:84vh}
+  .hero-body{padding-bottom:44px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none !important;animation:none !important}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-media">
+    <img src="hero.webp" alt="A barn owl perched on a beam in a dark barn loft, lit by moonlight from a roof opening" width="1600" height="900">
+  </div>
+  <div class="hero-top">
+    <span class="wordmark">Pellet</span>
+    <ul class="spec">
+      <li>Model PLT-2</li>
+      <li>Duty nocturnal</li>
+      <li>Rated &minus;20C</li>
+      <li>Serial 0000417</li>
+    </ul>
+  </div>
+  <div class="hero-body">
+    <h1>Every vole, reconciled by dawn.</h1>
+    <p class="hero-sub">Pellet is the merchant stack for nocturnal rodent-remediation contractors. Take payment at the loft door, settle before sunrise, and keep a bone-level audit trail your accountant will decline to open.</p>
+    <form class="capture" id="capture" novalidate>
+      <label for="email">Where the deposit notice goes</label>
+      <input id="email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="barn@yourproperty.co.uk" required>
+      <button class="btn btn-primary" type="submit">Request a loft terminal</button>
+      <p class="capture-note" id="capture-note" role="status" aria-live="polite"></p>
+    </form>
+    <div class="row">
+      <a class="btn btn-ghost" href="./demo.html">Open the demo &rarr;</a>
+      <a class="btn btn-ghost" href="#rates">See rates</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section id="how">
+    <div class="wrap">
+      <div class="chevron" aria-hidden="true"></div>
+      <div class="sec-head">
+        <h2 style="margin-top:28px">How the money moves</h2>
+        <ul class="spec">
+          <li>Terminal PLT-2</li>
+          <li>Firmware 4.1</li>
+          <li>Duty cycle nocturnal</li>
+        </ul>
+        <p class="lede">Three parts, mounted between the beam and the bank. The bird does not need to understand any of them.</p>
+      </div>
+      <div class="grid-3">
+        <article class="plate feature">
+          <h3>Pellet reconciliation</h3>
+          <ul class="spec"><li>Scan window 05:00</li><li>Bone match 94%</li></ul>
+          <p>Your owl brings up the night's work around 5am. The reader photographs the pellet, sorts the skeletons by species, and matches each femur against an open invoice line. Anything that does not pair is flagged before the barn wakes up.</p>
+        </article>
+        <article class="plate feature">
+          <h3>Silent tap</h3>
+          <ul class="spec"><li>Output 0 dB</li><li>Haptic only</li></ul>
+          <p>A payment chime at 2am ends the hunt for everyone in the field. Our terminal confirms with haptics only. Owls cannot feel haptics, so we also send an email.</p>
+        </article>
+        <article class="plate feature">
+          <h3>Loft terminal</h3>
+          <ul class="spec"><li>Rated &minus;20C</li><li>Charge 40 landings</li></ul>
+          <p>Weatherproof to minus twenty, mounted on the entry beam, charged by the bird's own perching weight. Holding a full charge takes roughly forty landings a night. Most barn owls land six times.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="ledger">
+    <div class="wrap">
+      <div class="chevron" aria-hidden="true"></div>
+      <div class="sec-head">
+        <h2 style="margin-top:28px">Tonight's ledger</h2>
+        <ul class="spec">
+          <li>Live</li>
+          <li>Window 04:30 to 05:15</li>
+          <li>Currency USD</li>
+          <li>Settlement vole</li>
+        </ul>
+      </div>
+      <div class="plate ledger-teaser">
+        <div class="lt-bar">
+          <span class="num">Operator <b>B. Screech</b></span>
+          <span class="num">Catches <b>14</b></span>
+          <span class="num">Gross <b>502 g</b></span>
+          <span class="num">Next deposit <b>05:41</b></span>
+        </div>
+        <table class="lt-table">
+          <thead>
+            <tr><th scope="col">Time</th><th scope="col">Species</th><th scope="col">Mass</th><th scope="col">Fee</th><th scope="col">State</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>01:14</td><td>Field vole</td><td>28 g</td><td>$0.89</td><td class="ok">Settled</td></tr>
+            <tr><td>02:02</td><td>Wood mouse</td><td>19 g</td><td>$0.85</td><td class="ok">Settled</td></tr>
+            <tr><td>03:37</td><td>Common shrew</td><td>9 g</td><td>$0.81</td><td class="hold">Awaiting pellet</td></tr>
+            <tr><td>04:20</td><td>Brown rat</td><td>241 g</td><td>$7.29</td><td class="hold">Under review</td></tr>
+          </tbody>
+        </table>
+        <div class="lt-foot">
+          <p>One row per rodent, one pellet to prove it. The brown rat is under review because nobody at Pellet believes it.</p>
+          <a class="btn btn-primary" href="./demo.html">Open the demo &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="operators">
+    <div class="wrap">
+      <div class="chevron" aria-hidden="true"></div>
+      <div class="sec-head">
+        <h2 style="margin-top:28px">Operators on the network</h2>
+        <ul class="spec">
+          <li>Verified contractors</li>
+          <li>Region east</li>
+          <li>As of 17 Sep</li>
+        </ul>
+      </div>
+      <div class="grid-3">
+        <figure class="plate op">
+          <blockquote>&ldquo;The reader flagged three voles I have no memory of catching. I was not going to argue with it.&rdquo;</blockquote>
+          <figcaption>
+            <img src="headshot-1.webp" alt="Portrait of Bartholomew Screech, a barn owl" width="320" height="320" loading="lazy">
+            <span><span class="op-name">Bartholomew Screech</span><span class="op-title">Independent rodent remediation contractor, Tier II</span></span>
+          </figcaption>
+        </figure>
+        <figure class="plate op">
+          <blockquote>&ldquo;I have not been paid in currency since 2019. Pellet did not fix that. There is a dashboard now.&rdquo;</blockquote>
+          <figcaption>
+            <img src="headshot-2.webp" alt="Portrait of Odette Vane, a barn owl" width="320" height="320" loading="lazy">
+            <span><span class="op-name">Odette Vane</span><span class="op-title">Night operations lead, Vane Family Loft (est. 1974)</span></span>
+          </figcaption>
+        </figure>
+        <figure class="plate op">
+          <blockquote>&ldquo;Deposits land at 5:41. I land at 5:39. It works out.&rdquo;</blockquote>
+          <figcaption>
+            <img src="headshot-3.webp" alt="Portrait of Gareth Pell, a barn owl" width="320" height="320" loading="lazy">
+            <span><span class="op-name">Gareth Pell</span><span class="op-title">Owner-operator, two barns and a grain silo outside Ipswich</span></span>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section id="rates">
+    <div class="wrap">
+      <div class="chevron" aria-hidden="true"></div>
+      <div class="sec-head">
+        <h2 style="margin-top:28px">Rates</h2>
+        <ul class="spec">
+          <li>Effective 01 Sep</li>
+          <li>Currency USD</li>
+          <li>Settlement vole</li>
+        </ul>
+        <p class="lede">Fees are taken per rodent. Partial rodents are rounded up, which has been raised with us twice.</p>
+      </div>
+      <div class="grid-3">
+        <article class="plate tier">
+          <div class="tier-cap"></div>
+          <div class="tier-in">
+            <h3 class="tier-name">Rafter</h3>
+            <p class="tier-price">$0/mo</p>
+            <p class="tier-tag">One barn, one bird, no ambitions.</p>
+            <ul class="perks">
+              <li>2.9% + 30&cent; per rodent</li>
+              <li>Next-dusk deposits</li>
+              <li>One refurbished loft terminal</li>
+              <li>Pellet scanning, four pellets per night</li>
+            </ul>
+            <a class="btn btn-ghost" href="#capture">Start on Rafter</a>
+          </div>
+        </article>
+        <article class="plate tier tier--pick">
+          <div class="tier-cap"></div>
+          <div class="tier-in">
+            <h3 class="tier-name">Silo</h3>
+            <p class="tier-price">$240/mo</p>
+            <p class="tier-tag">For contractors servicing more than one property.</p>
+            <ul class="perks">
+              <li>2.4% per rodent, no fixed fee</li>
+              <li>Multi-barn settlement in a single ledger</li>
+              <li>Species-level margin reporting</li>
+              <li>Dispute handling with the farmer on your behalf</li>
+            </ul>
+            <a class="btn btn-primary" href="#capture">Move to Silo</a>
+          </div>
+        </article>
+        <article class="plate tier">
+          <div class="tier-cap"></div>
+          <div class="tier-in">
+            <h3 class="tier-name">Flyway</h3>
+            <p class="tier-price">Speak to a field agent</p>
+            <p class="tier-tag">For birds with a hunting range and a lawyer.</p>
+            <ul class="perks">
+              <li>Negotiated rate across the whole territory</li>
+              <li>Dedicated settlement window, 04:30 to 05:15</li>
+              <li>Skeletal audit retained for seven years</li>
+              <li>Your field agent will arrive at dusk and wait outside</li>
+            </ul>
+            <a class="btn btn-ghost" href="#capture">Arrange a visit</a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="close" aria-labelledby="close-h">
+    <div class="wrap">
+      <div class="plate" style="padding:0">
+        <div class="close-in">
+          <h2 id="close-h">Mount it on the beam.</h2>
+          <p class="lede">The terminal ships next-day to any rural address. Installation takes four minutes and one ladder.</p>
+          <div class="row">
+            <a class="btn btn-primary" href="#capture">Request a loft terminal</a>
+            <a class="btn btn-ghost" href="./demo.html">Open the demo &rarr;</a>
+          </div>
+        </div>
+        <div class="belt" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap foot-in">
+    <a class="backlink" href="/">&larr; theworstaistudioever</a>
+    <p class="foot-note">Pellet is a registered merchant services provider. Rodents are not securities. Settlement figures are estimates until the pellet clears. Barn owls cannot enter binding agreements in most jurisdictions, and our terms of service acknowledge this on page nine.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var form = document.getElementById('capture');
+  var note = document.getElementById('capture-note');
+  var input = document.getElementById('email');
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var v = input.value.trim();
+    if (v.indexOf('@') < 1 || v.indexOf('.') < 3) {
+      note.textContent = 'That address will not reach a barn. Add a domain.';
+      note.style.color = '#F2B417';
+      input.focus();
+      return;
+    }
+    note.textContent = 'Logged. A field agent leaves at dusk and will wait outside until noticed.';
+    note.style.color = '#6FA8C7';
+    input.value = '';
+  });
+
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var t = document.querySelector(a.getAttribute('href'));
+      if (!t) return;
+      e.preventDefault();
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      t.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+      if (a.getAttribute('href') === '#capture') {
+        window.setTimeout(function () { input.focus({ preventScroll: true }); }, reduce ? 0 : 420);
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>
