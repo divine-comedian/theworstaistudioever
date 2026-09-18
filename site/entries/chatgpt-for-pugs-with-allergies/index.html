@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brachy · theworstaistudioever</title>
+<meta name="description" content="A conversational model trained on the allergy records of 4,100 pugs, so your pug can finally explain itself.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Brachy · theworstaistudioever">
+<meta property="og:description" content="A conversational model trained on the allergy records of 4,100 pugs, so your pug can finally explain itself.">
+<meta property="og:image" content="hero.webp">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Brachy · theworstaistudioever">
+<meta name="twitter:description" content="A conversational model trained on the allergy records of 4,100 pugs, so your pug can finally explain itself.">
+<meta name="theme-color" content="#1D4E89">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Rubik:wght@400;500;600&display=swap');
+
+:root{
+  --primary:#1D4E89;
+  --primary-dark:#163C6B;
+  --accent:#2E7D5B;
+  --accent-dark:#245F46;
+  --bg:#EDE7DA;
+  --fg:#22282C;
+  --muted:#6B6456;
+  --ink:#12303A;
+  --steel:#9AA0A0;
+  --steel-dark:#6E7474;
+  --flint:#C3BBA8;
+  --display:'Alfa Slab One','Rockwell','Courier Bold',Georgia,serif;
+  --body:'Rubik',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+
+html{-webkit-text-size-adjust:100%}
+
+body{
+  margin:0;
+  font-family:var(--body);
+  font-size:17px;
+  line-height:1.65;
+  color:var(--fg);
+  background-color:var(--bg);
+  background-image:
+    radial-gradient(circle at 17% 23%, var(--flint) 0 2.4px, transparent 2.6px),
+    radial-gradient(circle at 71% 61%, var(--flint) 0 1.7px, transparent 1.9px),
+    radial-gradient(circle at 44% 82%, rgba(29,78,137,.30) 0 2.1px, transparent 2.3px),
+    radial-gradient(circle at 88% 14%, rgba(46,125,91,.28) 0 1.9px, transparent 2.1px),
+    radial-gradient(circle at 31% 55%, rgba(34,40,44,.16) 0 1.4px, transparent 1.6px),
+    radial-gradient(circle at 8% 77%, var(--flint) 0 2.9px, transparent 3.1px),
+    radial-gradient(circle at 59% 9%, rgba(29,78,137,.22) 0 1.5px, transparent 1.7px);
+  background-size:97px 97px, 71px 71px, 131px 131px, 113px 113px, 61px 61px, 173px 173px, 89px 89px;
+  background-attachment:fixed;
+}
+
+img{max-width:100%;display:block}
+
+a{color:var(--primary);text-underline-offset:3px}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+.num{font-variant-numeric:tabular-nums;font-weight:500}
+
+/* ---- the enamel plaque ---- */
+.plaque{
+  position:relative;
+  border:1px solid rgba(0,0,0,.34);
+  border-radius:4px;
+  padding:34px 32px;
+  background:#F7F4EC;
+  box-shadow:
+    inset 0 0 0 4px #F7F4EC,
+    inset 0 0 0 7px rgba(255,255,255,.92),
+    0 2px 0 rgba(0,0,0,.22);
+}
+.plaque.cobalt{
+  background:var(--primary);
+  color:#EDE7DA;
+  box-shadow:
+    inset 0 0 0 4px var(--primary),
+    inset 0 0 0 7px rgba(237,231,218,.90),
+    0 2px 0 rgba(0,0,0,.22);
+}
+.plaque.green{
+  background:var(--accent);
+  color:#EDE7DA;
+  box-shadow:
+    inset 0 0 0 4px var(--accent),
+    inset 0 0 0 7px rgba(237,231,218,.90),
+    0 2px 0 rgba(0,0,0,.22);
+}
+
+/* one chip of exposed steel, one corner only */
+.plaque.chipped::before{
+  content:"";
+  position:absolute;
+  top:-1px;right:-1px;
+  width:11px;height:11px;
+  background:var(--steel);
+  clip-path:polygon(100% 0, 100% 72%, 84% 55%, 55% 61%, 38% 34%, 12% 22%, 0 0);
+  border-radius:0 4px 0 0;
+  pointer-events:none;
+}
+.plaque.chip-left::before{
+  top:auto;right:auto;
+  bottom:-1px;left:-1px;
+  clip-path:polygon(0 100%, 0 28%, 18% 44%, 44% 39%, 62% 66%, 88% 78%, 100% 100%);
+  border-radius:0 0 0 4px;
+}
+
+/* two bolts, always two */
+.bolt{
+  position:absolute;
+  top:13px;
+  width:7px;height:7px;
+  border-radius:50%;
+  background:var(--steel);
+  box-shadow:0 0 0 1px var(--steel-dark);
+}
+.bolt.l{left:13px}
+.bolt.r{right:13px}
+.bolt::before{
+  content:"";
+  position:absolute;
+  top:3px;left:1px;
+  width:5px;height:1px;
+  background:var(--steel-dark);
+}
+
+/* ---- full-bleed cobalt rules between sections ---- */
+.rule{
+  height:2px;
+  background:var(--primary);
+  margin:8px 0;
+  border:0;
+}
+.band{padding:56px 0}
+
+/* ---- masthead ---- */
+.masthead{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:20px;
+  flex-wrap:wrap;
+  padding:22px 0 18px;
+}
+.wordmark{
+  font-family:var(--display);
+  font-size:1.5rem;
+  color:var(--ink);
+  letter-spacing:0;
+}
+.masthead .est{
+  font-size:.8rem;
+  color:var(--muted);
+  font-variant-numeric:tabular-nums;
+}
+
+/* ---- hero ---- */
+.hero-grid{
+  display:grid;
+  grid-template-columns:62% 1fr;
+  gap:36px;
+  align-items:start;
+  padding-bottom:46px;
+}
+.hero-plaque{padding:46px 44px 78px}
+.hero-plaque h1{
+  font-family:var(--display);
+  font-weight:400;
+  font-size:clamp(2.1rem,5.4vw,4.1rem);
+  line-height:1.06;
+  margin:0 0 20px;
+  color:#EDE7DA;
+}
+.hero-plaque .sub{
+  margin:0;
+  font-size:1.08rem;
+  max-width:42ch;
+  color:rgba(237,231,218,.92);
+}
+
+/* CTA plaque screwed over the bottom edge of the cobalt one */
+.cta-enamel{
+  position:absolute;
+  left:44px;
+  bottom:-26px;
+  display:inline-block;
+  padding:16px 30px 16px 30px;
+  background:var(--accent);
+  color:#EDE7DA;
+  font-weight:500;
+  font-size:1.02rem;
+  text-decoration:none;
+  border:1px solid rgba(0,0,0,.34);
+  border-radius:4px;
+  box-shadow:
+    inset 0 0 0 3px var(--accent),
+    inset 0 0 0 5px rgba(237,231,218,.90),
+    0 2px 0 rgba(0,0,0,.22);
+  transition:background-color .12s linear, box-shadow .12s linear;
+}
+.cta-enamel .bolt{top:9px}
+.cta-enamel .bolt.l{left:9px}
+.cta-enamel .bolt.r{right:9px}
+.cta-enamel:hover,.cta-enamel:focus-visible{
+  background:var(--accent-dark);
+  box-shadow:
+    inset 0 0 0 3px var(--accent-dark),
+    inset 0 0 0 5px rgba(237,231,218,.90),
+    0 3px 0 rgba(0,0,0,.26);
+}
+
+/* right-hand spec column on the terrazzo */
+.spec{
+  padding-top:8px;
+  border-top:2px solid var(--primary);
+}
+.spec dl{margin:0}
+.spec .row{
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  padding:9px 0;
+  border-bottom:1px solid rgba(34,40,44,.18);
+}
+.spec dt{
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+  font-weight:500;
+  align-self:center;
+}
+.spec dd{
+  margin:0;
+  font-size:.95rem;
+  font-weight:500;
+  font-variant-numeric:tabular-nums;
+  color:var(--ink);
+  text-align:right;
+}
+.spec .note{
+  margin:16px 0 0;
+  font-size:.86rem;
+  line-height:1.5;
+  color:var(--muted);
+  max-width:34ch;
+}
+
+/* ---- hero photograph band ---- */
+.photo-band{
+  border-top:2px solid var(--primary);
+  border-bottom:2px solid var(--primary);
+  background:var(--primary);
+}
+.photo-band img{width:100%;height:auto}
+.caption{
+  padding:10px 0 0;
+  font-size:.84rem;
+  color:var(--muted);
+  max-width:60ch;
+}
+
+/* ---- section headings ---- */
+h2{
+  font-family:var(--display);
+  font-weight:400;
+  font-size:clamp(1.55rem,3.2vw,2.3rem);
+  line-height:1.15;
+  margin:0 0 6px;
+  color:var(--ink);
+}
+.lede{
+  margin:0 0 30px;
+  max-width:58ch;
+  color:var(--fg);
+}
+
+/* ---- features ---- */
+.trio{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:22px;
+}
+.feature h3{
+  font-family:var(--body);
+  font-weight:600;
+  font-size:1.12rem;
+  margin:0 0 10px;
+  color:var(--primary);
+}
+.feature p{margin:0;font-size:.98rem}
+.feature .tick{
+  display:block;
+  width:34px;height:2px;
+  background:var(--accent);
+  margin:0 0 16px;
+}
+
+/* ---- testimonials ---- */
+.quote{display:flex;flex-direction:column;gap:18px;padding:28px 26px}
+.quote blockquote{
+  margin:0;
+  font-size:1.02rem;
+  line-height:1.6;
+}
+.quote .who{display:flex;align-items:center;gap:14px}
+.quote img{
+  width:62px;height:62px;
+  border:2px solid var(--primary);
+  border-radius:2px;
+  flex:0 0 auto;
+}
+.quote .name{font-weight:600;font-size:.98rem;color:var(--ink);line-height:1.3}
+.quote .title{font-size:.8rem;color:var(--muted);line-height:1.4;font-variant-numeric:tabular-nums}
+
+/* ---- pricing ---- */
+.tier{display:flex;flex-direction:column;padding:30px 28px}
+.tier h3{
+  font-family:var(--display);
+  font-weight:400;
+  font-size:1.35rem;
+  margin:0 0 4px;
+}
+.tier .tier-line{font-size:.92rem;color:var(--muted);margin:0 0 18px}
+.tier.green .tier-line{color:rgba(237,231,218,.82)}
+.tier .price{
+  font-size:1.5rem;
+  font-weight:500;
+  font-variant-numeric:tabular-nums;
+  margin:0 0 20px;
+  padding-bottom:18px;
+  border-bottom:2px solid var(--primary);
+  color:var(--ink);
+}
+.tier.green .price{color:#EDE7DA;border-bottom-color:rgba(237,231,218,.65)}
+.tier.green h3{color:#EDE7DA}
+.tier ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:11px}
+.tier li{
+  font-size:.95rem;
+  line-height:1.5;
+  padding-left:20px;
+  position:relative;
+}
+.tier li::before{
+  content:"";
+  position:absolute;
+  left:0;top:.62em;
+  width:9px;height:2px;
+  background:var(--accent);
+}
+.tier.green li::before{background:rgba(237,231,218,.85)}
+
+/* ---- demo door sign ---- */
+.door{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:28px;
+  align-items:center;
+  padding:38px 36px;
+}
+.door h2{color:#EDE7DA;margin-bottom:10px}
+.door p{margin:0;color:rgba(237,231,218,.92);max-width:48ch}
+.door-cta{
+  display:inline-block;
+  position:relative;
+  padding:18px 34px;
+  background:#EDE7DA;
+  color:var(--primary);
+  font-weight:600;
+  font-size:1.05rem;
+  text-decoration:none;
+  white-space:nowrap;
+  border:1px solid rgba(0,0,0,.34);
+  border-radius:4px;
+  box-shadow:
+    inset 0 0 0 3px #EDE7DA,
+    inset 0 0 0 5px rgba(29,78,137,.55),
+    0 2px 0 rgba(0,0,0,.30);
+  transition:background-color .12s linear, box-shadow .12s linear;
+}
+.door-cta:hover,.door-cta:focus-visible{
+  background:#DCD4C2;
+  box-shadow:
+    inset 0 0 0 3px #DCD4C2,
+    inset 0 0 0 5px rgba(29,78,137,.55),
+    0 3px 0 rgba(0,0,0,.34);
+}
+
+/* ---- footer ---- */
+footer{padding:30px 0 50px}
+.footrow{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  gap:18px;
+  flex-wrap:wrap;
+  font-size:.86rem;
+  color:var(--muted);
+}
+.footrow a{color:var(--primary);font-weight:500}
+.smallprint{margin:18px 0 0;font-size:.8rem;color:var(--muted);max-width:74ch;line-height:1.55}
+
+:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+
+/* reveal: opacity only, gated on JS, with a hard fallback */
+.js .reveal{opacity:0;transition:opacity .2s linear}
+.js .reveal.in{opacity:1}
+
+@media (prefers-reduced-motion: reduce){
+  .js .reveal{opacity:1;transition:none}
+  *{transition:none !important}
+}
+
+@media (max-width:900px){
+  .hero-grid{grid-template-columns:1fr;gap:44px}
+  .hero-plaque{padding:34px 26px 74px}
+  .cta-enamel{left:26px}
+  .trio{grid-template-columns:1fr;gap:18px}
+  .door{grid-template-columns:1fr;gap:22px}
+  .door-cta{text-align:center}
+}
+@media (max-width:520px){
+  body{font-size:16px}
+  .plaque{padding:26px 22px}
+  .quote{padding:24px 20px}
+  .tier{padding:26px 22px}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="masthead">
+    <span class="wordmark">Brachy</span>
+    <span class="est">Municipal allergen intake since 1954 · 4,100 pugs on file</span>
+  </div>
+</div>
+<hr class="rule">
+
+<main>
+
+  <div class="wrap">
+    <section class="hero-grid">
+      <div class="plaque cobalt chipped hero-plaque">
+        <i class="bolt l"></i><i class="bolt r"></i>
+        <h1>Your pug has been saying something for six years.</h1>
+        <p class="sub">Brachy records ambient respiratory audio from the dog bed and returns a ranked household allergen report. First findings in nine weeks.</p>
+        <a class="cta-enamel" href="#intake">
+          <i class="bolt l"></i><i class="bolt r"></i>
+          Begin intake
+        </a>
+      </div>
+
+      <div class="spec">
+        <dl>
+          <div class="row"><dt>Intake</dt><dd>0441</dd></div>
+          <div class="row"><dt>Panel</dt><dd>9 items</dd></div>
+          <div class="row"><dt>Cycle</dt><dd>40 weeks</dd></div>
+          <div class="row"><dt>Result</dt><dd>Inconclusive</dd></div>
+        </dl>
+        <p class="note">Every household is assigned a file number at intake. The number does not change when the findings do.</p>
+      </div>
+    </section>
+  </div>
+
+  <div class="photo-band">
+    <img src="hero.webp" width="1600" height="900" alt="A pug sitting on a speckled terrazzo floor in front of bolted cobalt enamel panels in a veterinary waiting room.">
+  </div>
+  <div class="wrap">
+    <p class="caption">Intake 0441, week nine, waiting for a result that was posted to the wrong address.</p>
+  </div>
+
+  <hr class="rule">
+
+  <div class="wrap band">
+    <section class="reveal">
+      <h2>What we do with fourteen hours of breathing</h2>
+      <p class="lede">The model was trained on 4,100 pug files and nothing else. It cannot discuss other breeds and will not try.</p>
+      <div class="trio">
+        <article class="plaque feature chipped">
+          <i class="bolt l"></i><i class="bolt r"></i>
+          <span class="tick"></span>
+          <h3>Wheeze transcription</h3>
+          <p>A calibrated microphone in the bed captures fourteen hours of nightly breathing. Brachy renders it as complete English sentences, punctuated, in your pug's registered voice profile. Grammar is inferred. Tone is not.</p>
+        </article>
+        <article class="plaque feature">
+          <i class="bolt l"></i><i class="bolt r"></i>
+          <span class="tick"></span>
+          <h3>Elimination protocol</h3>
+          <p>We remove one object from your home per week and observe. The protocol runs forty weeks and does not accept substitutions. Most households finish with no sofa and no conclusive finding.</p>
+        </article>
+        <article class="plaque feature chip-left">
+          <i class="bolt l"></i><i class="bolt r"></i>
+          <span class="tick"></span>
+          <h3>Veterinary correspondence</h3>
+          <p>Brachy emails your actual veterinarian on your pug's behalf, cites its own report, and does not stand down. Average thread runs thirty-one messages before the clinic stops replying.</p>
+        </article>
+      </div>
+    </section>
+  </div>
+
+  <hr class="rule">
+
+  <div class="wrap band">
+    <section class="reveal">
+      <h2>On file</h2>
+      <p class="lede">Participants are photographed at intake and again at week forty. These are the intake photographs.</p>
+      <div class="trio">
+        <figure class="plaque quote chipped">
+          <i class="bolt l"></i><i class="bolt r"></i>
+          <blockquote>"Brachy determined that I am allergic to the hallway. My owner has sealed the hallway."</blockquote>
+          <figcaption class="who">
+            <img src="headshot-1.webp" width="320" height="320" alt="Marguerite, a fawn pug, photographed against a cream backdrop.">
+            <span>
+              <span class="name">Marguerite</span><br>
+              <span class="title">Pug, 7, Household Allergen Index participant #0441</span>
+            </span>
+          </figcaption>
+        </figure>
+        <figure class="plaque quote">
+          <i class="bolt l"></i><i class="bolt r"></i>
+          <blockquote>"Nine weeks of listening produced a sixty-page report naming my brother as the primary irritant. I had been saying this out loud the entire time."</blockquote>
+          <figcaption class="who">
+            <img src="headshot-2.webp" width="320" height="320" alt="Desmond, a black pug, photographed against a cobalt backdrop.">
+            <span>
+              <span class="name">Desmond</span><br>
+              <span class="title">Pug, 4, Registered Wheezer, Tier II</span>
+            </span>
+          </figcaption>
+        </figure>
+        <figure class="plaque quote chip-left">
+          <i class="bolt l"></i><i class="bolt r"></i>
+          <blockquote>"The sofa is gone. I feel roughly the same. The binder is very well made."</blockquote>
+          <figcaption class="who">
+            <img src="headshot-3.webp" width="320" height="320" alt="Colonel Peaches, an elderly fawn pug with a grey muzzle, photographed against a green backdrop.">
+            <span>
+              <span class="name">Colonel Peaches</span><br>
+              <span class="title">Pug, 11, Elimination Protocol completer, cohort 2024-B</span>
+            </span>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+  </div>
+
+  <hr class="rule">
+
+  <div class="wrap band" id="intake">
+    <section class="reveal">
+      <h2>Intake plans</h2>
+      <p class="lede">Billing begins at intake. The nine-week clock begins when the microphone is calibrated, which is a separate appointment.</p>
+      <div class="trio">
+        <article class="plaque tier">
+          <i class="bolt l"></i><i class="bolt r"></i>
+          <h3>Snout</h3>
+          <p class="tier-line">One pug. One microphone.</p>
+          <p class="price">$34 / month</p>
+          <ul>
+            <li>Twelve transcribed hours per night</li>
+            <li>Allergen report every nine weeks</li>
+            <li>Email support, weekdays, Lisbon hours</li>
+          </ul>
+        </article>
+        <article class="plaque green tier chipped">
+          <i class="bolt l"></i><i class="bolt r"></i>
+          <h3>Full Panel</h3>
+          <p class="tier-line">For households that suspect the rug.</p>
+          <p class="price">$290 / month</p>
+          <ul>
+            <li>Unlimited transcription, all pugs at the address</li>
+            <li>Forty-week elimination protocol</li>
+            <li>Two open veterinary threads</li>
+            <li>Quarterly findings binder, printed and bound</li>
+          </ul>
+        </article>
+        <article class="plaque tier chip-left">
+          <i class="bolt l"></i><i class="bolt r"></i>
+          <h3>Brachycephalic Concierge</h3>
+          <p class="tier-line">Someone comes to the house.</p>
+          <p class="price">$14,200 / year</p>
+          <ul>
+            <li>Billed once, at intake</li>
+            <li>On-site microphone calibration, twice yearly</li>
+            <li>A named allergist assigned to your pug</li>
+            <li>Unrestricted veterinary correspondence</li>
+            <li>We attend the appointment with you</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+  </div>
+
+  <hr class="rule">
+
+  <div class="wrap band">
+    <section class="plaque cobalt door chipped reveal">
+      <i class="bolt l"></i><i class="bolt r"></i>
+      <div>
+        <h2>Console for intake 0441</h2>
+        <p>The household panel, the transcript, and the veterinary thread as your allergist sees them. Nothing has been resolved yet.</p>
+      </div>
+      <a class="door-cta" href="./demo.html">open the demo →</a>
+    </section>
+  </div>
+
+  <hr class="rule">
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footrow">
+      <a href="/">← theworstaistudioever</a>
+      <span class="num">Brachy · intake line open weekdays · 4,100 files</span>
+    </div>
+    <p class="smallprint">Brachy does not diagnose, treat, or hold an opinion that a veterinarian is obliged to read. Transcriptions are inferred from audio and are not statements made by your pug. Eliminated objects are not returned. The findings binder is the property of the household and the findings are not.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var root = document.documentElement;
+  root.classList.add('js');
+
+  // Hard fallback: if the observer never fires, drop the gate so nothing stays hidden.
+  var fallback = setTimeout(function(){ root.classList.remove('js'); }, 1500);
+
+  var items = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window)) { root.classList.remove('js'); return; }
+
+  var seen = 0;
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (!e.isIntersecting) return;
+      e.target.classList.add('in');
+      io.unobserve(e.target);
+      if (++seen >= items.length) clearTimeout(fallback);
+    });
+  }, { rootMargin: '0px 0px -8% 0px' });
+
+  items.forEach(function(el){ io.observe(el); });
+
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click', function(ev){
+      var t = document.querySelector(a.getAttribute('href'));
+      if (!t) return;
+      ev.preventDefault();
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      t.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

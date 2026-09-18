@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Intake 0441 · Brachy</title>
+<meta name="description" content="The Brachy intake console: household allergen panel, transcript, and the veterinary thread that stopped replying.">
+<meta name="theme-color" content="#1D4E89">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Rubik:wght@400;500;600&display=swap');
+
+:root{
+  --primary:#1D4E89;
+  --primary-dark:#163C6B;
+  --accent:#2E7D5B;
+  --accent-dark:#245F46;
+  --bg:#EDE7DA;
+  --fg:#22282C;
+  --muted:#6B6456;
+  --ink:#12303A;
+  --steel:#9AA0A0;
+  --steel-dark:#6E7474;
+  --flint:#C3BBA8;
+  --panel:#F7F4EC;
+  --display:'Alfa Slab One','Rockwell','Courier Bold',Georgia,serif;
+  --body:'Rubik',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+
+body{
+  margin:0;
+  font-family:var(--body);
+  font-size:16px;
+  line-height:1.6;
+  color:var(--fg);
+  background-color:var(--bg);
+  background-image:
+    radial-gradient(circle at 17% 23%, var(--flint) 0 2.4px, transparent 2.6px),
+    radial-gradient(circle at 71% 61%, var(--flint) 0 1.7px, transparent 1.9px),
+    radial-gradient(circle at 44% 82%, rgba(29,78,137,.30) 0 2.1px, transparent 2.3px),
+    radial-gradient(circle at 88% 14%, rgba(46,125,91,.28) 0 1.9px, transparent 2.1px),
+    radial-gradient(circle at 31% 55%, rgba(34,40,44,.16) 0 1.4px, transparent 1.6px),
+    radial-gradient(circle at 8% 77%, var(--flint) 0 2.9px, transparent 3.1px);
+  background-size:97px 97px, 71px 71px, 131px 131px, 113px 113px, 61px 61px, 173px 173px;
+  background-attachment:fixed;
+}
+
+.num{font-variant-numeric:tabular-nums}
+button{font:inherit;color:inherit}
+
+/* ---- chrome ---- */
+.chrome{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  flex-wrap:wrap;
+  padding:14px 22px;
+  background:var(--primary);
+  border-bottom:2px solid var(--primary-dark);
+}
+.back{
+  color:#EDE7DA;
+  text-decoration:none;
+  font-size:.88rem;
+  font-weight:500;
+  padding:5px 10px;
+  border-radius:3px;
+  box-shadow:inset 0 0 0 1px rgba(237,231,218,.55);
+  transition:background-color .12s linear;
+}
+.back:hover,.back:focus-visible{background:rgba(237,231,218,.14)}
+.chrome .file{
+  color:rgba(237,231,218,.9);
+  font-size:.82rem;
+  letter-spacing:.06em;
+  font-variant-numeric:tabular-nums;
+}
+.chrome .file b{color:#EDE7DA;font-weight:600}
+
+/* ---- layout ---- */
+.console{
+  display:grid;
+  grid-template-columns:minmax(320px,400px) 1fr;
+  gap:18px;
+  padding:18px;
+  align-items:start;
+  max-width:1440px;
+  margin:0 auto;
+}
+
+.plaque{
+  position:relative;
+  border:1px solid rgba(0,0,0,.34);
+  border-radius:4px;
+  background:var(--panel);
+  box-shadow:
+    inset 0 0 0 4px var(--panel),
+    inset 0 0 0 7px rgba(255,255,255,.92),
+    0 2px 0 rgba(0,0,0,.22);
+}
+.bolt{
+  position:absolute;top:13px;
+  width:7px;height:7px;border-radius:50%;
+  background:var(--steel);
+  box-shadow:0 0 0 1px var(--steel-dark);
+}
+.bolt.l{left:13px}
+.bolt.r{right:13px}
+.bolt::before{
+  content:"";position:absolute;top:3px;left:1px;
+  width:5px;height:1px;background:var(--steel-dark);
+}
+
+.pane-head{
+  padding:20px 22px 14px;
+  border-bottom:2px solid var(--primary);
+}
+.pane-head h1,.pane-head h2{
+  font-family:var(--display);
+  font-weight:400;
+  font-size:1.18rem;
+  line-height:1.2;
+  margin:0 0 4px;
+  color:var(--ink);
+}
+.pane-head p{margin:0;font-size:.84rem;color:var(--muted);line-height:1.45}
+
+/* ---- gauge ---- */
+.gauge{padding:18px 22px 20px;border-bottom:1px solid rgba(34,40,44,.18)}
+.gauge-top{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+}
+.gauge-label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.gauge-value{
+  font-family:var(--display);
+  font-size:1.9rem;
+  line-height:1;
+  color:var(--primary);
+  font-variant-numeric:tabular-nums;
+}
+.gauge-value span{font-family:var(--body);font-size:.85rem;color:var(--muted);font-weight:500}
+.track{
+  position:relative;
+  height:16px;
+  background:#E2DBCA;
+  border:1px solid rgba(34,40,44,.3);
+  border-radius:2px;
+  overflow:hidden;
+}
+.fill{
+  height:100%;
+  background:var(--accent);
+  width:100%;
+  transition:width .4s cubic-bezier(.34,1.42,.64,1);
+}
+.needle{
+  position:absolute;
+  top:-4px;bottom:-4px;
+  width:2px;
+  background:var(--ink);
+  left:0;
+  transform:translateX(-1px);
+  transition:left .4s cubic-bezier(.34,1.42,.64,1);
+}
+.ticks{
+  display:flex;
+  justify-content:space-between;
+  margin-top:7px;
+  font-size:10px;
+  color:var(--muted);
+  font-variant-numeric:tabular-nums;
+}
+.gauge-note{margin:10px 0 0;font-size:.8rem;color:var(--muted);line-height:1.45}
+
+/* ---- allergen list ---- */
+.panel-list{list-style:none;margin:0;padding:6px 0 10px;max-height:none}
+.item{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:4px 14px;
+  padding:13px 22px;
+  border-bottom:1px solid rgba(34,40,44,.13);
+  align-items:center;
+}
+.item:last-child{border-bottom:0}
+.item .nm{font-size:.95rem;font-weight:500;color:var(--ink);line-height:1.3}
+.item .meta{
+  grid-column:1;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.sev{
+  position:relative;
+  flex:1 1 auto;
+  height:7px;
+  background:#E2DBCA;
+  border:1px solid rgba(34,40,44,.25);
+  border-radius:1px;
+  overflow:hidden;
+  min-width:60px;
+}
+.sev i{display:block;height:100%;background:var(--accent)}
+.conf{
+  font-size:.78rem;
+  color:var(--muted);
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+  min-width:78px;
+  text-align:right;
+}
+.item.out .nm{text-decoration:line-through;color:var(--muted)}
+.item.out .sev i{background:var(--steel)}
+
+.toggle{
+  grid-row:1 / span 2;
+  grid-column:2;
+  cursor:pointer;
+  border:1px solid rgba(0,0,0,.34);
+  border-radius:3px;
+  background:var(--panel);
+  color:var(--primary);
+  font-size:.8rem;
+  font-weight:500;
+  padding:8px 12px;
+  min-width:94px;
+  min-height:44px;
+  box-shadow:inset 0 0 0 2px var(--panel), inset 0 0 0 3px rgba(29,78,137,.35), 0 2px 0 rgba(0,0,0,.18);
+  transition:background-color .12s linear, color .12s linear;
+}
+.toggle:hover,.toggle:focus-visible{background:#E6E0D2;box-shadow:inset 0 0 0 2px #E6E0D2, inset 0 0 0 3px rgba(29,78,137,.35), 0 2px 0 rgba(0,0,0,.18)}
+.toggle[aria-pressed="true"]{
+  background:var(--accent);
+  color:#EDE7DA;
+  box-shadow:inset 0 0 0 2px var(--accent), inset 0 0 0 3px rgba(237,231,218,.85), 0 2px 0 rgba(0,0,0,.22);
+}
+.toggle[aria-pressed="true"]:hover,.toggle[aria-pressed="true"]:focus-visible{
+  background:var(--accent-dark);
+  box-shadow:inset 0 0 0 2px var(--accent-dark), inset 0 0 0 3px rgba(237,231,218,.85), 0 2px 0 rgba(0,0,0,.22);
+}
+
+/* ---- tabs ---- */
+.tabs{
+  display:flex;
+  gap:0;
+  border-bottom:2px solid var(--primary);
+  padding:0 22px;
+  flex-wrap:wrap;
+}
+.tab{
+  cursor:pointer;
+  border:0;
+  background:transparent;
+  padding:15px 16px 12px;
+  font-size:.92rem;
+  font-weight:500;
+  color:var(--muted);
+  border-bottom:4px solid transparent;
+  margin-bottom:-2px;
+  min-height:44px;
+  transition:color .12s linear, border-color .12s linear;
+}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{color:var(--primary);border-bottom-color:var(--accent)}
+.tab .badge{
+  display:inline-block;
+  margin-left:7px;
+  font-size:.72rem;
+  background:var(--primary);
+  color:#EDE7DA;
+  border-radius:2px;
+  padding:1px 6px;
+  font-variant-numeric:tabular-nums;
+}
+
+.tabpanel{padding:20px 22px 22px}
+.tabpanel[hidden]{display:none}
+
+/* ---- transcript ---- */
+.stream{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  max-height:46vh;
+  min-height:430px;
+  overflow-y:auto;
+  padding-right:6px;
+}
+.msg{display:flex;gap:12px;align-items:flex-start}
+.msg.you{flex-direction:row-reverse}
+.msg img{
+  width:40px;height:40px;
+  border-radius:50%;
+  border:2px solid var(--primary);
+  flex:0 0 auto;
+}
+.stub{
+  width:40px;height:40px;
+  border-radius:50%;
+  flex:0 0 auto;
+  background:#E2DBCA;
+  border:2px solid var(--steel-dark);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:.72rem;
+  font-weight:600;
+  color:var(--muted);
+}
+.bubble{
+  max-width:52ch;
+  padding:12px 15px;
+  border-radius:4px;
+  border:1px solid rgba(0,0,0,.28);
+  background:#EFEADC;
+  font-size:.95rem;
+  line-height:1.55;
+}
+.msg.you .bubble{background:var(--primary);color:#EDE7DA;border-color:var(--primary-dark)}
+.stamp{
+  display:block;
+  margin-top:7px;
+  font-size:.74rem;
+  color:var(--muted);
+  font-variant-numeric:tabular-nums;
+}
+.msg.you .stamp{color:rgba(237,231,218,.78)}
+.stamp b{font-weight:500}
+
+.prompts{
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+  margin-top:20px;
+  padding-top:18px;
+  border-top:1px solid rgba(34,40,44,.2);
+}
+.prompt{
+  cursor:pointer;
+  border:1px solid rgba(0,0,0,.3);
+  border-radius:3px;
+  background:var(--panel);
+  color:var(--primary);
+  font-size:.88rem;
+  font-weight:500;
+  padding:11px 15px;
+  min-height:44px;
+  box-shadow:0 2px 0 rgba(0,0,0,.16);
+  transition:background-color .12s linear;
+}
+.prompt:hover,.prompt:focus-visible{background:#E6E0D2}
+.prompt[disabled]{opacity:.42;cursor:default;box-shadow:none}
+.composer-note{margin:12px 0 0;font-size:.78rem;color:var(--muted)}
+
+/* ---- ledger ---- */
+.ledger{list-style:none;margin:0;padding:0;max-height:46vh;min-height:430px;overflow-y:auto}
+.ledger li{
+  display:grid;
+  grid-template-columns:78px 1fr;
+  gap:14px;
+  padding:10px 0;
+  border-bottom:1px solid rgba(34,40,44,.14);
+  font-size:.9rem;
+  align-items:baseline;
+}
+.ledger time{color:var(--muted);font-variant-numeric:tabular-nums;font-size:.82rem}
+.ledger .ok{color:var(--accent-dark);font-weight:500}
+.ledger .back-in{color:var(--muted)}
+
+/* ---- vet thread ---- */
+.thread{display:flex;flex-direction:column;gap:14px;max-height:46vh;min-height:430px;overflow-y:auto}
+.mail{
+  border:1px solid rgba(34,40,44,.28);
+  border-left:4px solid var(--primary);
+  border-radius:3px;
+  background:#EFEADC;
+  padding:13px 16px;
+}
+.mail.clinic{border-left-color:var(--steel-dark)}
+.mail .from{font-size:.86rem;font-weight:600;color:var(--ink)}
+.mail .when{float:right;font-size:.78rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.mail p{margin:8px 0 0;font-size:.92rem;line-height:1.55}
+.expand{
+  cursor:pointer;
+  width:100%;
+  text-align:left;
+  border:1px dashed rgba(34,40,44,.4);
+  border-radius:3px;
+  background:transparent;
+  color:var(--primary);
+  font-size:.88rem;
+  font-weight:500;
+  padding:12px 15px;
+  min-height:44px;
+}
+.expand:hover,.expand:focus-visible{background:rgba(29,78,137,.07)}
+.stalled{
+  margin:2px 0 0;
+  font-size:.84rem;
+  color:var(--muted);
+  padding:12px 15px;
+  border:1px solid rgba(34,40,44,.2);
+  border-radius:3px;
+  background:rgba(154,160,160,.14);
+}
+
+.foot{
+  padding:0 18px 30px;
+  max-width:1440px;
+  margin:0 auto;
+  font-size:.8rem;
+  color:var(--muted);
+  line-height:1.55;
+}
+
+:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+
+@media (prefers-reduced-motion: reduce){
+  *{transition:none !important}
+}
+
+@media (max-width:980px){
+  .console{grid-template-columns:1fr}
+  .stream,.ledger,.thread{max-height:none}
+}
+@media (max-width:560px){
+  .item{grid-template-columns:1fr;gap:8px}
+  .toggle{grid-row:auto;grid-column:1;justify-self:start}
+  .bubble{max-width:100%}
+  .ledger li{grid-template-columns:1fr;gap:2px}
+}
+</style>
+</head>
+<body>
+
+<header class="chrome">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="file">Intake <b>0441</b> · week 09 of 40 · allergist: M. Vantol</span>
+</header>
+
+<div class="console">
+
+  <!-- LEFT: household allergen panel -->
+  <section class="plaque" aria-labelledby="panel-title">
+    <i class="bolt l"></i><i class="bolt r"></i>
+
+    <div class="pane-head">
+      <h1 id="panel-title">Household allergen panel</h1>
+      <p>Nine items ranked by severity. Eliminating an item removes it from the household and from the score.</p>
+    </div>
+
+    <div class="gauge">
+      <div class="gauge-top">
+        <span class="gauge-label">Household load</span>
+        <span class="gauge-value"><b id="loadValue">100</b><span> / 100</span></span>
+      </div>
+      <div class="track">
+        <div class="fill" id="loadFill"></div>
+        <div class="needle" id="loadNeedle" style="left:100%"></div>
+      </div>
+      <div class="ticks"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+      <p class="gauge-note" id="loadNote">Nothing has been eliminated. The score reflects the household as found.</p>
+    </div>
+
+    <ul class="panel-list" id="panelList"></ul>
+  </section>
+
+  <!-- RIGHT: tabbed console -->
+  <section class="plaque" aria-labelledby="console-title">
+    <i class="bolt l"></i><i class="bolt r"></i>
+
+    <div class="pane-head">
+      <h2 id="console-title">Console</h2>
+      <p>Transcription is inferred from fourteen hours of overnight audio. Confidence is reported per message and is not appealable.</p>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Console views">
+      <button class="tab" role="tab" id="tab-transcript" aria-controls="p-transcript" aria-selected="true">Transcript</button>
+      <button class="tab" role="tab" id="tab-ledger" aria-controls="p-ledger" aria-selected="false">Protocol ledger<span class="badge" id="ledgerCount">3</span></button>
+      <button class="tab" role="tab" id="tab-vet" aria-controls="p-vet" aria-selected="false">Vet thread<span class="badge">31</span></button>
+    </div>
+
+    <!-- transcript -->
+    <div class="tabpanel" role="tabpanel" id="p-transcript" aria-labelledby="tab-transcript">
+      <div class="stream" id="stream">
+        <div class="msg">
+          <img src="headshot-1.webp" width="320" height="320" alt="Marguerite, the pug on file for intake 0441.">
+          <div class="bubble">
+            I want to begin by saying the microphone is very close to my head.
+            <span class="stamp">Marguerite · 02:41 · confidence <b>71%</b></span>
+          </div>
+        </div>
+        <div class="msg you">
+          <span class="stub" aria-hidden="true">You</span>
+          <div class="bubble">
+            Good morning. The report came back.
+            <span class="stamp">09:14</span>
+          </div>
+        </div>
+        <div class="msg">
+          <img src="headshot-1.webp" width="320" height="320" alt="">
+          <div class="bubble">
+            I know. I was there for all nine weeks of it.
+            <span class="stamp">Marguerite · 09:15 · confidence <b>88%</b></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompts" id="prompts">
+        <button class="prompt" data-key="hallway">How is the hallway?</button>
+        <button class="prompt" data-key="sofa">Explain the sofa</button>
+        <button class="prompt" data-key="brother">Are you sure about my brother?</button>
+        <button class="prompt" data-key="need">What do you need?</button>
+      </div>
+      <p class="composer-note">Free-text replies are available on Full Panel and above. Marguerite cannot see what you type either way.</p>
+    </div>
+
+    <!-- ledger -->
+    <div class="tabpanel" role="tabpanel" id="p-ledger" aria-labelledby="tab-ledger" hidden>
+      <ul class="ledger" id="ledger">
+        <li><time>wk 01</time><span>Microphone calibrated. Second appointment required and attended.</span></li>
+        <li><time>wk 04</time><span>Household photographed. Nine candidate items entered on the panel.</span></li>
+        <li><time>wk 09</time><span>Findings issued, sixty pages. Result recorded as <b>inconclusive</b>.</span></li>
+      </ul>
+      <p class="composer-note">The ledger is appended, never edited. Restoring an item does not remove the line that eliminated it.</p>
+    </div>
+
+    <!-- vet thread -->
+    <div class="tabpanel" role="tabpanel" id="p-vet" aria-labelledby="tab-vet" hidden>
+      <div class="thread">
+        <button class="expand" id="expandThread" aria-expanded="false">Show 28 earlier messages</button>
+        <div id="earlier" hidden>
+          <div class="mail">
+            <span class="from">Brachy, on behalf of Marguerite</span><span class="when">wk 09</span>
+            <p>Attaching our findings. Page 41 addresses the hallway directly. We would welcome your view.</p>
+          </div>
+          <div class="mail clinic">
+            <span class="from">Vale Road Veterinary Clinic</span><span class="when">wk 09</span>
+            <p>Received. We do not accept audio transcriptions as clinical evidence. Please book an appointment.</p>
+          </div>
+          <div class="mail">
+            <span class="from">Brachy, on behalf of Marguerite</span><span class="when">wk 10</span>
+            <p>Noted. Page 41 still addresses the hallway directly. Reattaching pages 41 through 60.</p>
+          </div>
+        </div>
+        <div class="mail">
+          <span class="from">Brachy, on behalf of Marguerite</span><span class="when">wk 14</span>
+          <p>Following up on our correspondence of week ten. We have since eliminated the wool throw and observed no change, which supports the hallway hypothesis.</p>
+        </div>
+        <div class="mail">
+          <span class="from">Brachy, on behalf of Marguerite</span><span class="when">wk 17</span>
+          <p>Following up again. Our position is unchanged and remains available at page 41.</p>
+        </div>
+        <p class="stalled">No reply for 14 weeks. Brachy will continue the thread on the first weekday of each month until a position is stated.</p>
+      </div>
+    </div>
+
+  </section>
+</div>
+
+<p class="foot">Demonstration console populated with the file for intake 0441. Nothing here is sent anywhere, and no pug has consented to any of it.</p>
+
+<script>
+(function(){
+  var ITEMS = [
+    { id:'sofa',     name:'Velvet sofa',        sev:82, conf:61 },
+    { id:'runner',   name:'Hallway runner',     sev:74, conf:88 },
+    { id:'brother',  name:'The brother',        sev:69, conf:94 },
+    { id:'kibble',   name:'Oat-based kibble',   sev:58, conf:42 },
+    { id:'diffuser', name:'Lavender diffuser',  sev:51, conf:77 },
+    { id:'throw',    name:'Wool throw',         sev:47, conf:35 },
+    { id:'mail',     name:'The mail',           sev:39, conf:12 },
+    { id:'dust',     name:'Radiator dust',      sev:31, conf:66 },
+    { id:'pollen',   name:'Seasonal pollen',    sev:22, conf:99 }
+  ];
+
+  var TOTAL = ITEMS.reduce(function(a,b){ return a + b.sev; }, 0);
+  var eliminated = {};
+
+  var list = document.getElementById('panelList');
+  var loadValue = document.getElementById('loadValue');
+  var loadFill = document.getElementById('loadFill');
+  var loadNeedle = document.getElementById('loadNeedle');
+  var loadNote = document.getElementById('loadNote');
+  var ledger = document.getElementById('ledger');
+  var ledgerCount = document.getElementById('ledgerCount');
+
+  // one running session clock, so the ledger reads like a log and not like a demo
+  var clockWeek = 17;
+
+  ITEMS.forEach(function(it){
+    var li = document.createElement('li');
+    li.className = 'item';
+    li.id = 'row-' + it.id;
+
+    var nm = document.createElement('span');
+    nm.className = 'nm';
+    nm.textContent = it.name;
+
+    var meta = document.createElement('span');
+    meta.className = 'meta';
+
+    var sev = document.createElement('span');
+    sev.className = 'sev';
+    var barInner = document.createElement('i');
+    barInner.style.width = it.sev + '%';
+    sev.appendChild(barInner);
+
+    var conf = document.createElement('span');
+    conf.className = 'conf';
+    conf.textContent = it.conf + '% conf.';
+
+    meta.appendChild(sev);
+    meta.appendChild(conf);
+
+    var btn = document.createElement('button');
+    btn.className = 'toggle';
+    btn.type = 'button';
+    btn.setAttribute('aria-pressed', 'false');
+    btn.textContent = 'Eliminate';
+    btn.setAttribute('aria-label', 'Eliminate ' + it.name + ' from the household');
+
+    btn.addEventListener('click', function(){
+      var now = !eliminated[it.id];
+      eliminated[it.id] = now;
+      btn.setAttribute('aria-pressed', now ? 'true' : 'false');
+      btn.textContent = now ? 'Restore' : 'Eliminate';
+      btn.setAttribute('aria-label', (now ? 'Restore ' : 'Eliminate ') + it.name);
+      li.classList.toggle('out', now);
+      logLine(it, now);
+      render();
+    });
+
+    li.appendChild(nm);
+    li.appendChild(meta);
+    li.appendChild(btn);
+    list.appendChild(li);
+  });
+
+  function render(){
+    var live = ITEMS.reduce(function(a, it){ return a + (eliminated[it.id] ? 0 : it.sev); }, 0);
+    var pct = Math.round(live / TOTAL * 100);
+    loadValue.textContent = pct;
+    loadFill.style.width = pct + '%';
+    loadNeedle.style.left = pct + '%';
+
+    var gone = Object.keys(eliminated).filter(function(k){ return eliminated[k]; }).length;
+    if (gone === 0) {
+      loadNote.textContent = 'Nothing has been eliminated. The score reflects the household as found.';
+    } else if (gone === ITEMS.length) {
+      loadNote.textContent = 'The household is empty. Marguerite reports no change. Protocol complete.';
+    } else if (pct <= 40) {
+      loadNote.textContent = gone + ' of 9 items eliminated. Load is down and the wheezing is not. Continue the protocol.';
+    } else {
+      loadNote.textContent = gone + ' of 9 items eliminated. Week ' + clockWeek + ' of 40. No change observed.';
+    }
+  }
+
+  function logLine(it, removed){
+    clockWeek += 1;
+    var li = document.createElement('li');
+    var t = document.createElement('time');
+    t.textContent = 'wk ' + (clockWeek < 10 ? '0' : '') + clockWeek;
+    var s = document.createElement('span');
+    s.className = removed ? 'ok' : 'back-in';
+    s.textContent = removed
+      ? it.name + ' removed from the household. Observation window opens.'
+      : it.name + ' returned to the household. Prior observation voided.';
+    li.appendChild(t);
+    li.appendChild(s);
+    ledger.appendChild(li);
+    ledger.scrollTop = ledger.scrollHeight;
+    ledgerCount.textContent = ledger.children.length;
+  }
+
+  render();
+
+  // ---- tabs ----
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+  function select(tab){
+    tabs.forEach(function(t){
+      var on = t === tab;
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+    });
+  }
+  tabs.forEach(function(t, i){
+    t.addEventListener('click', function(){ select(t); });
+    t.addEventListener('keydown', function(e){
+      var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!d) return;
+      e.preventDefault();
+      var next = tabs[(i + d + tabs.length) % tabs.length];
+      next.focus();
+      select(next);
+    });
+  });
+
+  // ---- transcript ----
+  var REPLIES = {
+    hallway: [
+      { text:'The hallway is sealed. I am told this was my idea.', conf:83 },
+      { text:'Still sealed. I now walk around the outside of the house.', conf:59 }
+    ],
+    sofa: [
+      { text:'The sofa left on a Tuesday. Nobody has explained the sofa to me.', conf:77 },
+      { text:'I have stopped asking about the sofa. The floor is fine. The floor is fine.', conf:41 }
+    ],
+    brother: [
+      { text:'I have been sure since 2019. The report took nine weeks to agree with me.', conf:94 },
+      { text:'He knows. He brings the wool throw anyway.', conf:68 }
+    ],
+    need: [
+      { text:'Fewer microphones.', conf:99 },
+      { text:'I would also accept the sofa back. Either one.', conf:62 }
+    ]
+  };
+  var used = {};
+  var stream = document.getElementById('stream');
+  var msgClock = 15;
+
+  function stamp(){
+    msgClock += 3;
+    var h = 9 + Math.floor(msgClock / 60);
+    var m = msgClock % 60;
+    return (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m;
+  }
+
+  function push(who, text, conf){
+    var wrap = document.createElement('div');
+    wrap.className = 'msg' + (who === 'you' ? ' you' : '');
+
+    if (who === 'you') {
+      var stub = document.createElement('span');
+      stub.className = 'stub';
+      stub.setAttribute('aria-hidden', 'true');
+      stub.textContent = 'You';
+      wrap.appendChild(stub);
+    } else {
+      var av = document.createElement('img');
+      av.src = 'headshot-1.webp';
+      av.width = 320; av.height = 320; av.alt = '';
+      wrap.appendChild(av);
+    }
+
+    var b = document.createElement('div');
+    b.className = 'bubble';
+    b.appendChild(document.createTextNode(text));
+
+    var sp = document.createElement('span');
+    sp.className = 'stamp';
+    if (who === 'you') {
+      sp.textContent = stamp();
+    } else {
+      sp.appendChild(document.createTextNode('Marguerite · ' + stamp() + ' · confidence '));
+      var bold = document.createElement('b');
+      bold.textContent = conf + '%';
+      sp.appendChild(bold);
+    }
+    b.appendChild(sp);
+    wrap.appendChild(b);
+    stream.appendChild(wrap);
+    stream.scrollTop = stream.scrollHeight;
+  }
+
+  document.getElementById('prompts').addEventListener('click', function(e){
+    var btn = e.target.closest('.prompt');
+    if (!btn || btn.disabled) return;
+    var key = btn.getAttribute('data-key');
+    var n = used[key] || 0;
+    var bank = REPLIES[key];
+
+    push('you', btn.textContent, null);
+    var reply = bank[Math.min(n, bank.length - 1)];
+    push('pug', reply.text, reply.conf);
+
+    used[key] = n + 1;
+    if (used[key] >= bank.length) {
+      btn.disabled = true;
+      btn.textContent = btn.textContent + ' (asked)';
+    }
+  });
+
+  // ---- vet thread ----
+  var expand = document.getElementById('expandThread');
+  var earlier = document.getElementById('earlier');
+  expand.addEventListener('click', function(){
+    var open = earlier.hidden;
+    earlier.hidden = !open;
+    expand.setAttribute('aria-expanded', open ? 'true' : 'false');
+    expand.textContent = open ? 'Hide earlier messages' : 'Show 28 earlier messages';
+  });
+})();
+</script>
+
+</body>
+</html>

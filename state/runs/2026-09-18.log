@@ -1,0 +1,97 @@
+RUN 2026-09-18 — theworstaistudioever daily
+
+ROLL
+  company:  ChatGPT
+  subject:  pugs with allergies
+  slug:     chatgpt-for-pugs-with-allergies
+  tagline:  ChatGPT for pugs with allergies
+  rerolls:  1 (first draw from the date-seeded LCG collided with an existing history pair)
+  subject rule: passes. "pugs with allergies" is a kind of animal. No seed removal needed.
+
+CONCEPT
+  product:  Brachy
+  one-liner: A conversational model trained on the allergy records of 4,100 pugs, so your pug can
+             finally explain itself.
+  angle:    municipal-clinic officialdom. Every claim carries a number. The product is slow,
+            expensive, and arrives at findings that help nobody. anti-ai-slop invoked before copy.
+
+DESIGN DIRECTION
+  style:    Vitreous enamel signage over terrazzo, veterinary waiting-room daylight mode.
+            Bolted porcelain-enamel plaques on a speckled terrazzo ground. Four motifs only:
+            the plaque (3px inset white keyline, hard 2px zero-blur shadow), the steel chip,
+            the terrazzo speckle field, the two bolts per plaque.
+  palette:  primary #1D4E89 (cobalt enamel) / accent #2E7D5B (enamel green) / bg #EDE7DA
+            (terrazzo cream) / fg #22282C / muted #837C6C / ink #12303A
+  fonts:    display 'Alfa Slab One' · body 'Rubik' (tabular figures on every number)
+  archetype: consumer AI assistant page issued as municipal veterinary clinic signage
+  anti-sameness check: PASS. Last 7 were agricultural equipment livery (09-17), pharmaceutical
+            leaflet (09-16), leaded stained glass (09-15), risograph zine (09-14), microfilm
+            carrel (09-13), injection-moulded console (09-12), gallery wall label (09-11).
+            No style, font pair, or palette collision. Deliberately avoided a red/orange accent,
+            which four of the last eight entries used, in favour of a green accent that has not
+            appeared in the window.
+
+IMAGES
+  budget:   4 of 4 used. GEMINI_API_KEY present, no cap hit.
+  rationale: Hero taken because the enamel direction is built on a real room, so a documentary
+            shot of a pug on terrazzo in front of bolted cobalt panels does work the CSS cannot
+            and anchors the palette. No dedicated demo asset: the demo screen is a chat
+            transcript plus a ledger, which is document-shaped, so it borrows headshot-1 as the
+            pug's circular chat avatar instead. Remaining 3 slots went to testimonial headshots,
+            one per named pug, each against a different palette colour so the row reads as a
+            records wall.
+  hero.webp        role hero        · 1 attempt · PASS — cobalt enamel panels with visible bolt
+                   heads, chipped green rail, cream terrazzo flecked cobalt and green. Flat
+                   institutional daylight, no golden-hour tell. No text artifacts.
+  headshot-1.webp  role testimonial · 1 attempt · PASS — cream ground matches --bg, cobalt collar
+                   ties to --primary. Straight-on badge framing. Also serves as demo avatar.
+  headshot-2.webp  role testimonial · 1 attempt · PASS — cobalt ground on the nose, harness reads
+                   institutional rather than cute, no lettering on the buckle.
+  headshot-3.webp  role testimonial · 1 attempt · PASS — grey muzzle and clouded eyes correctly
+                   read as 11 years old, which sells the cohort-2024-B testimonial.
+  No regenerations, no drops. All four cropped to spec and well under the 500 KB ceiling
+  (hero 129 KB, headshots 8-14 KB).
+
+BUILD
+  landing:  hero cobalt plaque with the CTA plaque screwed over its bottom edge, spec column on
+            the terrazzo gutter, full-bleed 16:9 photo band, features / testimonials / pricing
+            as plaque rows, green enamel on the second pricing tier only, demo door sign.
+            frontend-design and anti-ai-slop both invoked.
+  demo:     two-pane intake console. Left: nine-item household allergen panel with severity bars,
+            confidence percentages, and eliminate/restore toggles driving a live Household Load
+            gauge (the one overshoot curve in the project). Right: three tabs — Transcript with
+            per-message confidence badges and canned prompts that exhaust, Protocol Ledger that
+            appends a timestamped line per toggle, and a stalled 31-message Vet Thread with an
+            expand control. All vanilla JS, no frameworks, no network calls.
+
+WARNINGS / NEAR-MISSES
+  - Scroll reveal on the landing page is gated on a .js class with a 1500ms timeout fallback and
+    is opacity-only, so the page renders identically with JS off and cannot photograph blank
+    below the fold. Known trap from a prior run.
+  - The demo intentionally reuses headshot-1.webp as the chat avatar rather than generating a
+    fifth image. No slot references a file that does not exist.
+  - Gallery rebuilt from all 99 concept.json files, sorted date descending. Header count updated
+    to 99. Root metadata contract, favicon link, 50x50 logo lockup, and carousel nav pattern all
+    preserved and verified by grep.
+
+VISUAL CHECK (step 9, ran — playwright already present, no install)
+  captures: 2 (landing, demo) plus 1 re-capture of the demo after edits. Within cap.
+  fixed 2 real defects with 3 edits:
+    1. --muted was #837C6C on the #EDE7DA terrazzo, roughly 3.1:1. That fails AA on the footer
+       small print, the photo caption, and the testimonial titles. Darkened to #6B6456 (~4.9:1)
+       in index.html, demo.html, and the concept.json palette so the three stay in sync.
+    2. The demo's right console pane was much shorter than the allergen panel, leaving a large
+       empty terrazzo void beside the list. Raised the min-height on the transcript, ledger, and
+       thread scroll regions from 280px to 430px. Void mostly closed, nothing reflowed badly.
+  left alone deliberately: ragged vertical alignment between the three testimonial figcaptions,
+  which follows from quotes of different lengths and is taste, not breakage.
+
+VALIDATION
+  scripts/validate-entry.sh site chatgpt-for-pugs-with-allergies → OK (run twice: once at the
+  step 8 checkpoint, once after the step 9 edits)
+  state/history.json appended (99 entries, append-only preserved).
+[2026-09-18T08:12:11Z] WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks
+[2026-09-18T08:12:11Z] new entry: chatgpt-for-pugs-with-allergies
+validate-entry [chatgpt-for-pugs-with-allergies]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 99 entries (domain theworstaistudioever.com)
+[2026-09-18T08:12:11Z] committing: ChatGPT for pugs with allergies
