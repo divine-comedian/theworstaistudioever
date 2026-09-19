@@ -1,0 +1,131 @@
+RUN 2026-09-19 — theworstaistudioever daily
+
+ROLL
+  company:  Lyft
+  subject:  k-pop fans
+  slug:     lyft-for-k-pop-fans
+  tagline:  Lyft for k-pop fans
+  rerolls:  0 (first draw from the date-seeded LCG was clean)
+  subject rule: passes. "k-pop fans" is a relatable type of person. No seed removal needed.
+
+CONCEPT
+  product:  Bias
+  one-liner: Rideshare matched on bias alignment, so you are never in a car with someone whose
+             ult is wrong.
+  angle:    dispatch-desk officialdom applied to fandom taxonomy. The company sincerely treats
+            seating compatibility as a transport problem and has staffed for it. Every claim
+            carries an unaudited figure, and the appeals process does not exist because in the
+            company's view there is nothing to appeal. anti-ai-slop invoked before copy.
+
+DESIGN DIRECTION
+  style:    Holographic photocard slab, sealed-sleeve dark mode. The page is staged as a graded
+            collectible card sealed in acrylic and photographed on a matte black sleeve. Four
+            motifs only: the prismatic foil sweep (fixed-angle gradient on rules, keylines and
+            edges, never as a fill under text), the acrylic slab (1px inner keyline plus soft
+            outer bloom), the grading label strip (mono serial / population / grade), and the
+            matte sleeve field underneath.
+  palette:  "Sealed Foil" — primary #7A5BFF (foil violet) / accent #2FE0C2 (foil aqua) /
+            bg #08060E (sleeve black) / fg #F1ECFB / muted #9A92B4 / ink #F1ECFB, with
+            slab #120E1C and foil stops #7A5BFF #2FE0C2 #FFD66B #FF69C8.
+  fonts:    display 'Syncopate' · body 'Manrope' · mono 'Space Mono'
+  archetype: on-demand transport booking landing page, run as collectible-grading literature
+  anti-sameness check: PASS. Last 7 were vitreous enamel signage (09-18), agricultural equipment
+            livery (09-17), pharmaceutical leaflet (09-16), leaded stained glass (09-15),
+            risograph zine (09-14), microfilm carrel (09-13), injection-moulded console (09-12).
+            No style, font-pair, or palette collision. The nearest palette neighbour is 09-15
+            (#2F5FC7 blue on #0D0F16), which is a different hue family and pairs with a red
+            accent rather than an aqua one. No violet-on-near-black has appeared in the window,
+            and no prior entry has used a multi-stop iridescent gradient as a structural motif.
+  skill note: ui-ux-pro-max was invoked and its --design-system pass returned felt-green + gold
+            with Inter/Inter, which is the generic dark-SaaS default and was rejected. The font
+            pairing was taken from its library instead ("Kinetic Motion", Syncopate + Space Mono,
+            filed under music festivals and high-energy brands) and the palette derived custom.
+            Its colour library returned 0 results for iridescent/holographic queries.
+
+IMAGES
+  budget:   4 of 4 used. GEMINI_API_KEY present, no cap hit, 4 API calls total.
+  rationale: Hero taken because the direction is a graded photocard and a photocard is
+            definitionally a photograph inside a slab. The 16:9 plate is inset above the h1 so
+            it reads as the card's own artwork rather than as a page background, which is work
+            no gradient can do. No demo asset generated and none reused: the demo's only
+            photo-shaped slots are six driver avatars, the budget cannot cover six, and a
+            3-of-6 photo split would read as broken. Reusing the testimonial headshots there
+            would also have put the same three faces on the site under two different sets of
+            names, so all six drivers take a CSS monogram tile with a lightstick-colour
+            underline instead. Remaining 3 slots went to testimonial headshots, one per named
+            rider, each on a different palette colour (primary violet, sleeve black with aqua
+            rim, slab indigo) so the row reads as three cards pulled from the same set.
+  hero.webp        role hero        · 1 attempt · PASS — violet baton spill lands on --primary,
+                   the window rim light lands on --accent, cabin blacks sit at --bg. Restrained
+                   documentary grade with no golden-hour or neon-cyberpunk tell. Neutral
+                   expression reads institutional rather than promotional. No text artifacts.
+  headshot-1.webp  role testimonial · 1 attempt · PASS — backdrop is a near-exact --primary
+                   match. Straight-on passport framing, no smile, no stock-photo warmth.
+  headshot-2.webp  role testimonial · 1 attempt · PASS — aqua rim light landed on the left
+                   shoulder as prompted and ties the frame to --accent. Backdrop reads as the
+                   sleeve field.
+  headshot-3.webp  role testimonial · 1 attempt · PASS — indigo backdrop matches --slab, the
+                   zipped technical shell sells the Fansite Master tier without needing a prop.
+                   No lettering on the zip pull.
+  No regenerations, no drops. All four cropped to spec and well under the 500 KB ceiling
+  (hero 70 KB, headshots 7-10 KB).
+
+BUILD
+  landing:  single hero slab on the sleeve field, grading strip (serial / pop / grade 9.5) across
+            its top edge, 16:9 photo plate inset, h1 in Syncopate, foil hairline, foil-ringed CTA
+            pill. Spec rail of mono figures in the left gutter (4:10 median match, 11 metros,
+            612 groups, 0 successful appeals) that collapses to a 3-up row under 900px. Features,
+            testimonials and pricing are slab rows; the Ult tier gets the brighter foil edge and
+            an accent price. Each pricing slab carries a rider-count grading strip (1,204,882 /
+            88,310 / 412), which is the joke and also real information. frontend-design and
+            anti-ai-slop both invoked.
+  demo:     pre-dispatch driver selection for Night 2 of 3 at a 19,500-seat arena. Sticky surge
+            band at 3.8x with its trigger (17-second teaser, 00:00 KST) and a 1.0x-8.0x track.
+            Alignment-threshold slider (default 70) filters six driver cards live, each with a
+            lightstick-coloured monogram tile, group/bias badges, fandom-entry year, fanchant
+            score, barricade distance and a fare recomputed from base × surge + add-ons. Two
+            cabin toggles repriced live. Selecting a driver opens a confirm modal that restates
+            the alignment score and gates Dispatch behind a mismatch-clause checkbox, with the
+            clause text switching by alignment band. Right rail appends a timestamped dispatch
+            log per action, capped at 14 lines. Empty state when the threshold clears everybody.
+            All vanilla JS, no frameworks, no network calls.
+
+WARNINGS / NEAR-MISSES
+  - The hero CTA pill originally drew its foil ring with an absolutely-positioned ::after at
+    z-index:-1. Inside a slab that has its own background, the ring would have been painted
+    behind the parent and invisible. Rebuilt as a padding-box/border-box gradient border before
+    any render. Same construction reused for the demo's Dispatch button.
+  - Scroll reveal on the landing page is opacity-only, gated on a .js class with a 1500ms
+    timeout fallback and a no-IntersectionObserver early-out, so the page renders identically
+    with JS off and cannot photograph blank below the fold. Known trap from a prior run.
+  - --primary (#7A5BFF) is roughly 3.7:1 on the slab, so it is used only for large display
+    accents, the foil stops and the monogram tiles, never for body text. Body copy runs fg
+    (#F1ECFB) and muted (#9A92B4), both comfortably past AA on both --bg and --slab.
+  - No slot references a file that does not exist. The demo ships zero <img> tags by design.
+  - Gallery rebuilt from all 100 concept.json files, sorted date descending. Header count
+    updated to 100. Root metadata contract, favicon link, 50x50 logo lockup, span-wrapped
+    slide CTAs, and the carousel nav pattern (arrows, scrollable dot rail with
+    scrollIntoView, arrow keys, touch swipe) all preserved and verified programmatically.
+
+VISUAL CHECK (step 9, ran — playwright already present, nothing installed)
+  captures: 2 (landing, demo) plus 1 re-capture of the landing after the edit. Within cap.
+  fixed 1 real defect with 1 edit:
+    1. Section vertical rhythm had collapsed. `section{padding:52px 0}` was being overridden by
+       `.wrap{padding:0 var(--gut)}`, because the class selector outranks the bare element
+       selector and the shorthand zeroes all four sides. Every section heading was sitting
+       roughly 12px below the card row above it. Replaced with `section.wrap{padding-top:64px}`
+       at equal specificity. This is the exact CSS-specificity trap the frontend-design skill
+       flags, and it was invisible until the screenshot.
+  left alone deliberately: the demo's driver rows are tall relative to their content, because
+  the right-hand stack (alignment, fare, Select) is three items where the left is two. Airy
+  rather than broken, so it is taste and stays.
+
+VALIDATION
+  scripts/validate-entry.sh site lyft-for-k-pop-fans → OK (run twice: once at the step 8
+  checkpoint, once after the step 9 edit)
+  state/history.json appended (100 entries, append-only preserved).
+[2026-09-19T08:12:07Z] WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks
+[2026-09-19T08:12:07Z] new entry: lyft-for-k-pop-fans
+validate-entry [lyft-for-k-pop-fans]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 100 entries (domain theworstaistudioever.com)
+[2026-09-19T08:12:07Z] committing: Lyft for k-pop fans

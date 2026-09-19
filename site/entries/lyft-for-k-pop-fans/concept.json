@@ -1,0 +1,140 @@
+{
+  "date": "2026-09-19",
+  "company": "Lyft",
+  "subject": "k-pop fans",
+  "tagline": "Lyft for k-pop fans",
+  "slug": "lyft-for-k-pop-fans",
+  "product_name": "Bias",
+  "one_liner": "Rideshare matched on bias alignment, so you are never in a car with someone whose ult is wrong.",
+  "brand_voice_notes": "Dispatch-desk officialdom applied to fandom taxonomy. The company sincerely believes seating compatibility is a transport problem and has staffed accordingly. Every claim carries a figure: metro-area counts, median match times, tolerance bands, barricade distances in metres. None of the figures have been audited and the copy never suggests they should be. Nothing winks. The taxonomy is presented as settled science and the appeals process does not exist because, in the company's view, there is nothing to appeal.",
+  "hero": {
+    "h1": "Nobody should have to share a back seat with the wrong ult.",
+    "sub": "Bias screens every rider and every driver on a fourteen-question alignment intake before dispatch. Median match time is 4 minutes 10 seconds across eleven metro areas. Mismatches are declined at the dispatch layer, not in the car.",
+    "primary_cta": "Start the fourteen questions"
+  },
+  "features": [
+    {
+      "title": "Alignment intake",
+      "blurb": "Fourteen questions, answered once, scored against a 612-group taxonomy. Your driver's card shows their group, their bias, and the year they entered the fandom. There is no appeals process, because the taxonomy is the taxonomy."
+    },
+    {
+      "title": "Cabin sync",
+      "blurb": "Interior lighting binds to the official lightstick colour of whatever is playing, ten channels, one per seat zone. Drivers cannot override it. Four hundred and six of them have asked. The override remains unbuilt."
+    },
+    {
+      "title": "Comeback surge",
+      "blurb": "Fares index to the comeback calendar rather than to traffic. A teaser image posted at 00:00 KST moves the multiplier before anyone has booked anything. Distance is a minor input and we are honest about that."
+    }
+  ],
+  "pricing_tiers": [
+    {
+      "name": "Casual Listener",
+      "price": "$0 / mo",
+      "tagline": "For riders who know three songs and one of them is the English version.",
+      "perks": [
+        "Alignment tolerance band of plus or minus two members",
+        "Cabin lighting locked to white",
+        "Surge multiplier uncapped",
+        "Standard dispatch queue, median 11 minutes"
+      ]
+    },
+    {
+      "name": "Ult",
+      "price": "$24 / mo",
+      "tagline": "Exact-bias matching. No tolerance band.",
+      "perks": [
+        "Exact-bias driver matching across all 612 groups",
+        "Fanchant cabin mode with per-ride scoring out of 10",
+        "Surge capped at 4.0x",
+        "One album-collection detour per calendar month"
+      ]
+    },
+    {
+      "name": "Fansite Master",
+      "price": "$310 / mo",
+      "tagline": "Your lens is longer than your forearm and the barricade already knows you.",
+      "perks": [
+        "Drop-off within 40 m of the barricade or the fare is refunded",
+        "Trunk clearance for a monopod and two bodies",
+        "90-minute engine-on wait at arrivals, cabin held at 19 degrees so the glass does not fog",
+        "Driver has signed the same NDA you have"
+      ]
+    }
+  ],
+  "testimonials": [
+    {
+      "quote": "The driver named all twenty-four members in seating order. I did not ask him to. He did it at the second light.",
+      "name": "Dana Okonkwo",
+      "title": "Moderator, 41,000-member server, unpaid since 2019"
+    },
+    {
+      "quote": "My fare went to 6.2x off a seventeen-second teaser. I paid it. I would pay it again and the app is aware of that.",
+      "name": "Priya Raghunathan",
+      "title": "Owner of four copies of the same album, all sealed"
+    },
+    {
+      "quote": "Bias matched me with a driver whose ult is my ult's rival. I filed a ticket. It was resolved in eleven seconds and I am still thinking about it.",
+      "name": "Marcus Feld",
+      "title": "Bus captain, North American leg, tours 3 through 7"
+    }
+  ],
+  "demo_screen_concept": "The pre-dispatch driver selection screen for a ride to Night 2 of 3 at a 19,500-seat arena. A live comeback-surge meter runs across the top showing the current multiplier, the event that triggered it, and a KST timestamp. Below it an alignment-threshold slider from 0 to 100 filters a stack of six driver cards. Each card carries a circular driver photo, group and bias badges, an alignment score, a fandom-entry year, a cabin lightstick colour swatch, a fanchant score out of 10, and the barricade distance of that driver's drop-off pin in metres. Toggles for Fanchant Cabin Mode and Cabin Sync recompute every quoted fare live. Selecting a driver opens a confirmation modal that restates the alignment score and requires the rider to acknowledge the mismatch clause before dispatch. A right rail appends a timestamped dispatch-log line for every action taken.",
+  "design_direction": {
+    "style": "Holographic photocard slab, sealed-sleeve dark mode. The page is staged as a graded collectible card sealed in an acrylic slab and photographed on a matte black sleeve. Four motifs only: the prismatic foil sweep (a fixed-angle multi-stop gradient used on rules, keylines and edges, never behind body text), the acrylic slab (1px inner keyline plus a soft outer bloom, nothing else), the grading label strip (top-mounted monospace serial, population count and grade), and the matte sleeve field the whole thing sits on. Foil appears on edges, never as a fill under text.",
+    "palette": {
+      "name": "Sealed Foil",
+      "primary": "#7A5BFF",
+      "accent": "#2FE0C2",
+      "bg": "#08060E",
+      "fg": "#F1ECFB",
+      "muted": "#9A92B4",
+      "ink": "#F1ECFB",
+      "foil_a": "#7A5BFF",
+      "foil_b": "#2FE0C2",
+      "foil_c": "#FF69C8",
+      "foil_d": "#FFD66B",
+      "slab": "#120E1C"
+    },
+    "fonts": {
+      "display": "'Syncopate', 'Eurostile', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+      "body": "'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
+      "mono": "'Space Mono', 'SFMono-Regular', Menlo, Consolas, monospace"
+    },
+    "archetype": "On-demand transport booking landing page, run as collectible-grading literature",
+    "motion_vocab": "Foil sweep: the gradient angle shifts 12 degrees on hover over slab edges, 220ms ease-out. Slab lift: 2px translateY plus bloom on card hover, never a rotation, never a scale that shifts neighbours. Opacity-only scroll reveal gated on a .js class with a 1500ms timeout fallback. All motion off under prefers-reduced-motion.",
+    "hero_composition_notes": "Hero is a single slab centred on the sleeve field. A grading label strip runs across its top edge carrying the serial, the population count and the grade. The h1 sits inside the slab in Syncopate at wide tracking, knocked out in fg over the slab surface, with a foil hairline directly beneath it. The CTA is a foil-edged pill mounted low inside the slab. Spec figures (median match time, metro areas, taxonomy size) run down the sleeve gutter to the left in Space Mono. The hero photograph, if taken, is inset inside the slab above the h1 at 16:9, so the photo reads as the card's own artwork rather than as a page background."
+  },
+  "images": {
+    "rationale": "Full budget of 4 spent. Hero taken because the direction is a graded photocard and a photocard is, definitionally, a photograph in a slab: the 16:9 plate is inset inside the hero slab as the card's own artwork, which no gradient can stand in for. No demo asset generated and none reused: the demo's only photo-shaped slots are six driver avatars, and the budget cannot cover six, so all six take the CSS monogram tile with a lightstick-colour underline instead. A 3-of-6 photo split would have read as broken, and reusing the testimonial headshots there would have put the same three faces on the site under two different sets of names. The remaining 3 slots went to testimonial headshots, one per named rider, each on a different palette colour (primary violet, sleeve black with aqua rim, slab indigo) so the row reads as three cards pulled from the same set.",
+    "items": [
+      {
+        "role": "hero",
+        "file": "hero.webp",
+        "prompt": "Editorial photograph, night interior of a car rear passenger compartment shot from the front seat over the shoulder. One young adult passenger sits in the back seat holding a glowing handheld light baton that throws violet #7A5BFF light across their face, hands and the seat fabric, with a cool aqua #2FE0C2 reflection running along the window glass behind them. City night outside the window blurred to soft bokeh. Matte near-black cabin, deep #08060E shadows, restrained documentary colour grade, no lens flare, no neon signage. Single focal subject, calm neutral expression. No text, no letters, no numbers, no logos, no watermarks, no rendered UI screens, no phone screens.",
+        "attempts": 1,
+        "verdict": "PASS on attempt 1. Violet baton spill lands on --primary, the window rim light lands on --accent, cabin blacks sit at --bg. Documentary grade with no golden-hour or neon-cyberpunk tell. Neutral expression reads institutional rather than promotional. No text artifacts."
+      },
+      {
+        "role": "testimonial",
+        "file": "headshot-1.webp",
+        "prompt": "Deadpan corporate headshot photograph, straight-on passport framing, of a Black woman in her late twenties with box braids, entirely neutral expression, no smile, shoulders squared to camera, plain dark crew-neck top. Plain flat violet #7A5BFF studio backdrop, even soft studio lighting, shallow depth of field. Institutional records-photo mood, not glamorous. No text, no letters, no numbers, no logos, no watermarks, no rendered UI screens.",
+        "attempts": 1,
+        "verdict": "PASS on attempt 1. Backdrop is a near-exact --primary match. Straight-on passport framing, no smile, no stock-photo warmth."
+      },
+      {
+        "role": "testimonial",
+        "file": "headshot-2.webp",
+        "prompt": "Deadpan corporate headshot photograph, straight-on passport framing, of a South Asian woman in her early thirties with straight dark hair parted centre, entirely neutral expression, no smile, shoulders squared to camera, plain charcoal collared shirt. Matte near-black #08060E backdrop with a single cool aqua #2FE0C2 rim light along one shoulder. Even soft studio key light, shallow depth of field. Institutional records-photo mood. No text, no letters, no numbers, no logos, no watermarks, no rendered UI screens.",
+        "attempts": 1,
+        "verdict": "PASS on attempt 1. Aqua rim light landed on the left shoulder as specified and ties the frame to --accent. Backdrop reads as the sleeve field."
+      },
+      {
+        "role": "testimonial",
+        "file": "headshot-3.webp",
+        "prompt": "Deadpan corporate headshot photograph, straight-on passport framing, of a white man in his mid forties with a short greying beard and close-cropped hair, entirely neutral expression, no smile, shoulders squared to camera, plain black technical shell jacket zipped to the collar. Plain deep indigo #120E1C backdrop with a faint violet #7A5BFF edge light. Even soft studio lighting, shallow depth of field. Institutional records-photo mood. No text, no letters, no numbers, no logos, no watermarks, no rendered UI screens.",
+        "attempts": 1,
+        "verdict": "PASS on attempt 1. Indigo backdrop matches --slab, zipped technical jacket sells the fansite-master tier without needing a prop. No lettering on the zip pull."
+      }
+    ]
+  }
+}

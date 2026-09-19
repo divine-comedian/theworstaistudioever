@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bias · theworstaistudioever</title>
+<meta name="description" content="Rideshare matched on bias alignment, so you are never in a car with someone whose ult is wrong.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Bias · theworstaistudioever">
+<meta property="og:description" content="Rideshare matched on bias alignment, so you are never in a car with someone whose ult is wrong.">
+<meta property="og:image" content="hero.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Bias · theworstaistudioever">
+<meta name="twitter:description" content="Rideshare matched on bias alignment, so you are never in a car with someone whose ult is wrong.">
+<meta name="theme-color" content="#08060E">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700;800&family=Space+Mono:wght@400;700&family=Syncopate:wght@400;700&display=swap');
+
+:root{
+  --bg:#08060E;
+  --slab:#120E1C;
+  --slab-2:#181327;
+  --fg:#F1ECFB;
+  --muted:#9A92B4;
+  --primary:#7A5BFF;
+  --accent:#2FE0C2;
+  --foil-a:#7A5BFF;
+  --foil-b:#2FE0C2;
+  --foil-c:#FF69C8;
+  --foil-d:#FFD66B;
+  --foil: linear-gradient(104deg, var(--foil-a) 0%, var(--foil-b) 27%, var(--foil-d) 52%, var(--foil-c) 74%, var(--foil-a) 100%);
+  --display:'Syncopate','Eurostile','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --body:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'Space Mono','SFMono-Regular',Menlo,Consolas,monospace;
+  --gut:clamp(18px,4vw,44px);
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--fg);
+  font-family:var(--body);
+  font-weight:400;
+  font-size:17px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(1100px 620px at 50% -8%, rgba(122,91,255,.20), transparent 68%),
+    radial-gradient(760px 520px at 96% 42%, rgba(47,224,194,.07), transparent 70%);
+  background-attachment:fixed;
+}
+
+a{color:inherit}
+img{display:block;max-width:100%}
+
+.wrap{width:min(1120px,100%);margin:0 auto;padding:0 var(--gut)}
+
+/* ---------- foil primitives ---------- */
+.foil-rule{height:2px;border:0;margin:0;background:var(--foil);opacity:.9}
+.slab{
+  position:relative;
+  background:linear-gradient(180deg,var(--slab-2),var(--slab));
+  border:1px solid rgba(241,236,251,.10);
+  border-radius:3px;
+  box-shadow:0 0 0 1px rgba(8,6,14,.9), 0 26px 60px -32px rgba(122,91,255,.55);
+}
+.slab::before{
+  content:"";position:absolute;inset:0;border-radius:3px;padding:1px;
+  background:var(--foil);opacity:.30;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  pointer-events:none;transition:opacity .22s ease-out;
+}
+.slab:hover::before{opacity:.62}
+
+/* grading label strip: serial / population / grade */
+.grade-strip{
+  display:flex;flex-wrap:wrap;gap:6px 22px;align-items:baseline;
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.09em;
+  color:var(--muted);
+  padding:11px 18px;
+  border-bottom:1px solid rgba(241,236,251,.10);
+  background:rgba(8,6,14,.55);
+}
+.grade-strip b{color:var(--fg);font-weight:400}
+.grade-strip .g-mark{
+  color:var(--bg);background:var(--accent);
+  padding:1px 7px;border-radius:2px;font-weight:700;letter-spacing:.06em;
+}
+
+/* ---------- header ---------- */
+.site-top{
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+  padding:26px 0 8px;
+}
+.mark{
+  font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.34em;
+  text-decoration:none;
+}
+.top-link{
+  font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none;
+  border-bottom:1px solid rgba(154,146,180,.4);padding-bottom:2px;
+}
+.top-link:hover,.top-link:focus-visible{color:var(--accent);border-color:var(--accent)}
+
+/* ---------- hero ---------- */
+.hero{padding:34px 0 78px}
+.hero-grid{display:grid;grid-template-columns:186px minmax(0,1fr);gap:34px;align-items:start}
+.spec-rail{
+  font-family:var(--mono);font-size:12px;line-height:1.5;color:var(--muted);
+  border-left:1px solid rgba(241,236,251,.12);padding-left:14px;
+  position:sticky;top:26px;
+}
+.spec-rail dt{color:var(--fg);font-size:19px;letter-spacing:-.02em}
+.spec-rail dd{margin:1px 0 20px}
+.spec-rail dl{margin:0}
+
+.hero-plate{aspect-ratio:16/9;overflow:hidden;background:#050409}
+.hero-plate img{width:100%;height:100%;object-fit:cover}
+.hero-body{padding:clamp(22px,3.4vw,38px)}
+h1{
+  font-family:var(--display);font-weight:700;
+  font-size:clamp(25px,4.1vw,44px);line-height:1.22;letter-spacing:-.005em;
+  margin:0 0 20px;max-width:17ch;
+}
+.hero-sub{margin:20px 0 0;max-width:64ch;color:var(--muted);font-size:17px}
+.hero-sub strong{color:var(--fg);font-weight:500}
+.cta-row{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:30px}
+.pill{
+  display:inline-block;text-decoration:none;
+  font-family:var(--body);font-weight:800;font-size:15px;letter-spacing:.01em;
+  color:var(--bg);
+  border:3px solid transparent;border-radius:4px;
+  background:linear-gradient(var(--fg),var(--fg)) padding-box, var(--foil) border-box;
+  padding:12px 24px;position:relative;
+  transition:transform .18s ease-out,box-shadow .18s ease-out;
+}
+.pill:hover,.pill:focus-visible{transform:translateY(-2px);box-shadow:0 12px 30px -14px rgba(122,91,255,.9)}
+.cta-note{font-family:var(--mono);font-size:12px;color:var(--muted)}
+
+/* ---------- sections ---------- */
+/* .wrap sets a padding shorthand and outranks a bare `section` selector,
+   so section spacing has to be claimed back at equal-or-higher specificity. */
+section.wrap{padding-top:64px;padding-bottom:0}
+.sec-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 20px;margin-bottom:24px}
+h2{
+  font-family:var(--display);font-weight:700;font-size:clamp(16px,2vw,21px);
+  letter-spacing:.03em;margin:0;
+}
+.sec-note{font-family:var(--mono);font-size:12px;color:var(--muted);margin:0}
+
+.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+
+.feature{padding:24px 22px 26px;display:flex;flex-direction:column;gap:12px}
+.feature h3{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.02em;margin:6px 0 0;line-height:1.4}
+.feature p{margin:0;color:var(--muted);font-size:15.5px;line-height:1.65}
+.feature .fig{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:.05em}
+
+/* ---------- testimonials ---------- */
+.voice{padding:0;overflow:hidden;display:flex;flex-direction:column}
+.voice-photo{aspect-ratio:4/3;overflow:hidden;background:#050409;position:relative}
+.voice-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 22%}
+.voice-photo::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--foil);opacity:.8}
+.voice-text{padding:20px 20px 22px;display:flex;flex-direction:column;gap:14px;flex:1}
+blockquote{margin:0;font-size:16.5px;line-height:1.6}
+.voice cite{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--muted);line-height:1.5;display:block;margin-top:auto}
+.voice cite b{display:block;color:var(--fg);font-weight:400;letter-spacing:.04em}
+
+/* ---------- pricing ---------- */
+.tier{display:flex;flex-direction:column}
+.tier-body{padding:22px;display:flex;flex-direction:column;gap:16px;flex:1}
+.tier h3{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.03em;margin:0}
+.tier .price{font-family:var(--mono);font-size:27px;color:var(--fg);letter-spacing:-.02em;margin:0}
+.tier .tier-line{margin:0;color:var(--muted);font-size:15px;line-height:1.55}
+.tier ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;font-size:14.5px;line-height:1.5}
+.tier li{padding-left:18px;position:relative;color:var(--fg)}
+.tier li::before{content:"";position:absolute;left:0;top:.62em;width:8px;height:1px;background:var(--accent)}
+.tier--sealed::before{opacity:.75}
+.tier--sealed .price{color:var(--accent)}
+
+/* ---------- demo band ---------- */
+.band{margin:14px 0 0;padding:40px clamp(22px,4vw,44px);display:flex;flex-wrap:wrap;gap:22px;align-items:center;justify-content:space-between}
+.band h2{font-size:clamp(17px,2.4vw,24px);max-width:19ch;line-height:1.35}
+.band p{margin:10px 0 0;color:var(--muted);font-size:15px;max-width:46ch}
+
+/* ---------- footer ---------- */
+footer{padding:46px 0 60px;border-top:1px solid rgba(241,236,251,.10);margin-top:54px}
+.foot-in{display:flex;flex-wrap:wrap;gap:14px 30px;align-items:baseline;justify-content:space-between}
+.foot-in p{margin:0;font-family:var(--mono);font-size:12px;color:var(--muted);max-width:60ch;line-height:1.6}
+.back{font-family:var(--mono);font-size:12.5px;text-decoration:none;color:var(--muted);border-bottom:1px solid rgba(154,146,180,.4);padding-bottom:2px}
+.back:hover,.back:focus-visible{color:var(--accent);border-color:var(--accent)}
+
+/* ---------- reveal (degrades without JS) ---------- */
+.js .reveal{opacity:0;transition:opacity .5s ease-out}
+.js .reveal.seen{opacity:1}
+@media (prefers-reduced-motion:reduce){
+  .js .reveal{opacity:1;transition:none}
+  .pill{transition:none}
+  .slab::before{transition:none}
+}
+
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+@media (max-width:900px){
+  .grid-3{grid-template-columns:1fr}
+  .hero-grid{grid-template-columns:1fr;gap:22px}
+  .spec-rail{position:static;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;border-left:0;border-top:1px solid rgba(241,236,251,.12);padding:16px 0 0}
+  .spec-rail dd{margin-bottom:0}
+  .hero{padding-bottom:48px}
+}
+@media (max-width:520px){
+  .spec-rail{grid-template-columns:1fr 1fr}
+  body{font-size:16px}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="site-top">
+    <a class="mark" href="#top">BIAS</a>
+    <a class="top-link" href="./demo.html">open the demo &rarr;</a>
+  </div>
+</div>
+
+<main id="top">
+
+<header class="hero">
+  <div class="wrap hero-grid">
+
+    <div class="spec-rail">
+      <dl>
+        <dt>4:10</dt>
+        <dd>median match, all metros</dd>
+        <dt>11</dt>
+        <dd>metro areas live</dd>
+        <dt>612</dt>
+        <dd>groups in the taxonomy</dd>
+        <dt>0</dt>
+        <dd>successful appeals</dd>
+      </dl>
+    </div>
+
+    <article class="slab">
+      <div class="grade-strip">
+        <span>SERIAL <b>LYF-0000412</b></span>
+        <span>POP <b>1,293,604</b></span>
+        <span class="g-mark">GRADE 9.5</span>
+      </div>
+      <div class="hero-plate">
+        <img src="hero.webp" alt="A passenger in the back seat of a car at night, lit violet by the lightstick they are holding." width="1600" height="900">
+      </div>
+      <div class="hero-body">
+        <h1>Nobody should have to share a back seat with the wrong ult.</h1>
+        <hr class="foil-rule">
+        <p class="hero-sub">Bias screens every rider and every driver on a fourteen-question alignment intake before dispatch. Median match time is <strong>4 minutes 10 seconds</strong> across eleven metro areas. Mismatches are declined at the dispatch layer, not in the car.</p>
+        <div class="cta-row">
+          <a class="pill" href="./demo.html">Start the fourteen questions</a>
+          <span class="cta-note">takes 6 minutes. cannot be retaken.</span>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</header>
+
+<section class="wrap reveal">
+  <div class="sec-head">
+    <h2>What the fare buys</h2>
+    <p class="sec-note">three systems, none of which shorten the trip</p>
+  </div>
+  <div class="grid-3">
+    <article class="slab feature">
+      <span class="fig">612 groups scored</span>
+      <h3>Alignment intake</h3>
+      <p>Fourteen questions, answered once, scored against a 612-group taxonomy. Your driver's card shows their group, their bias, and the year they entered the fandom. There is no appeals process, because the taxonomy is the taxonomy.</p>
+    </article>
+    <article class="slab feature">
+      <span class="fig">10 lighting channels</span>
+      <h3>Cabin sync</h3>
+      <p>Interior lighting binds to the official lightstick colour of whatever is playing, ten channels, one per seat zone. Drivers cannot override it. Four hundred and six of them have asked. The override remains unbuilt.</p>
+    </article>
+    <article class="slab feature">
+      <span class="fig">indexed to 00:00 KST</span>
+      <h3>Comeback surge</h3>
+      <p>Fares index to the comeback calendar rather than to traffic. A teaser image posted at midnight KST moves the multiplier before anyone has booked anything. Distance is a minor input and we are honest about that.</p>
+    </article>
+  </div>
+</section>
+
+<section class="wrap reveal">
+  <div class="sec-head">
+    <h2>Riders on the record</h2>
+    <p class="sec-note">collected at drop-off, unedited</p>
+  </div>
+  <div class="grid-3">
+    <figure class="slab voice">
+      <div class="voice-photo"><img src="headshot-1.webp" alt="Dana Okonkwo, photographed straight on against a violet backdrop." width="320" height="320"></div>
+      <div class="voice-text">
+        <blockquote>The driver named all twenty-four members in seating order. I did not ask him to. He did it at the second light.</blockquote>
+        <cite><b>Dana Okonkwo</b>Moderator, 41,000-member server, unpaid since 2019</cite>
+      </div>
+    </figure>
+    <figure class="slab voice">
+      <div class="voice-photo"><img src="headshot-2.webp" alt="Priya Raghunathan, photographed straight on against a black backdrop." width="320" height="320"></div>
+      <div class="voice-text">
+        <blockquote>My fare went to 6.2x off a seventeen-second teaser. I paid it. I would pay it again and the app is aware of that.</blockquote>
+        <cite><b>Priya Raghunathan</b>Owner of four copies of the same album, all sealed</cite>
+      </div>
+    </figure>
+    <figure class="slab voice">
+      <div class="voice-photo"><img src="headshot-3.webp" alt="Marcus Feld, photographed straight on against an indigo backdrop." width="320" height="320"></div>
+      <div class="voice-text">
+        <blockquote>Bias matched me with a driver whose ult is my ult's rival. I filed a ticket. It was resolved in eleven seconds and I am still thinking about it.</blockquote>
+        <cite><b>Marcus Feld</b>Bus captain, North American leg, tours 3 through 7</cite>
+      </div>
+    </figure>
+  </div>
+</section>
+
+<section class="wrap reveal">
+  <div class="sec-head">
+    <h2>Membership</h2>
+    <p class="sec-note">tolerance band narrows as you go right</p>
+  </div>
+  <div class="grid-3">
+    <article class="slab tier">
+      <div class="grade-strip"><span>RIDERS <b>1,204,882</b></span></div>
+      <div class="tier-body">
+        <h3>Casual Listener</h3>
+        <p class="price">$0 / mo</p>
+        <p class="tier-line">For riders who know three songs and one of them is the English version.</p>
+        <ul>
+          <li>Alignment tolerance band of plus or minus two members</li>
+          <li>Cabin lighting locked to white</li>
+          <li>Surge multiplier uncapped</li>
+          <li>Standard dispatch queue, median 11 minutes</li>
+        </ul>
+      </div>
+    </article>
+    <article class="slab tier tier--sealed">
+      <div class="grade-strip"><span>RIDERS <b>88,310</b></span></div>
+      <div class="tier-body">
+        <h3>Ult</h3>
+        <p class="price">$24 / mo</p>
+        <p class="tier-line">Exact-bias matching. No tolerance band.</p>
+        <ul>
+          <li>Exact-bias driver matching across all 612 groups</li>
+          <li>Fanchant cabin mode with per-ride scoring out of 10</li>
+          <li>Surge capped at 4.0x</li>
+          <li>One album-collection detour per calendar month</li>
+        </ul>
+      </div>
+    </article>
+    <article class="slab tier">
+      <div class="grade-strip"><span>RIDERS <b>412</b></span></div>
+      <div class="tier-body">
+        <h3>Fansite Master</h3>
+        <p class="price">$310 / mo</p>
+        <p class="tier-line">Your lens is longer than your forearm and the barricade already knows you.</p>
+        <ul>
+          <li>Drop-off within 40 m of the barricade or the fare is refunded</li>
+          <li>Trunk clearance for a monopod and two bodies</li>
+          <li>90-minute engine-on wait at arrivals, cabin held at 19 degrees so the glass does not fog</li>
+          <li>Driver has signed the same NDA you have</li>
+        </ul>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="wrap reveal">
+  <div class="slab band">
+    <div>
+      <h2>Pick a driver for Night 2 of 3.</h2>
+      <p>Six drivers are waiting on a 19,500-seat arena. Surge is already moving. Nothing you do here dispatches a real car.</p>
+    </div>
+    <a class="pill" href="./demo.html">open the demo &rarr;</a>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap foot-in">
+    <p>Bias is a product of theworstaistudioever. Figures on this page are internal, unaudited, and quoted with confidence. No car has been dispatched.</p>
+    <a class="back" href="/">&larr; theworstaistudioever</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var root = document.documentElement;
+  root.classList.add('js');
+  var nodes = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
+  function showAll(){ nodes.forEach(function(n){ n.classList.add('seen'); }); }
+  var fallback = setTimeout(showAll, 1500);
+  if (!('IntersectionObserver' in window)) { showAll(); return; }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) { e.target.classList.add('seen'); io.unobserve(e.target); }
+    });
+    if (!nodes.some(function(n){ return !n.classList.contains('seen'); })) clearTimeout(fallback);
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.04 });
+  nodes.forEach(function(n){ io.observe(n); });
+})();
+</script>
+</body>
+</html>

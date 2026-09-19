@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bias · pre-dispatch driver selection</title>
+<meta name="description" content="Pick a driver for Night 2 of 3. Alignment threshold, cabin sync, and a surge multiplier that moves on teaser images.">
+<meta name="theme-color" content="#08060E">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700;800&family=Space+Mono:wght@400;700&family=Syncopate:wght@400;700&display=swap');
+
+:root{
+  --bg:#08060E;
+  --slab:#120E1C;
+  --slab-2:#181327;
+  --fg:#F1ECFB;
+  --muted:#9A92B4;
+  --primary:#7A5BFF;
+  --accent:#2FE0C2;
+  --foil-c:#FF69C8;
+  --foil-d:#FFD66B;
+  --foil: linear-gradient(104deg,#7A5BFF 0%,#2FE0C2 27%,#FFD66B 52%,#FF69C8 74%,#7A5BFF 100%);
+  --display:'Syncopate','Eurostile','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --body:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'Space Mono','SFMono-Regular',Menlo,Consolas,monospace;
+  --line:rgba(241,236,251,.10);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--fg);
+  font-family:var(--body);font-size:15px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(900px 500px at 20% -10%,rgba(122,91,255,.16),transparent 70%);
+}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.slab{
+  position:relative;background:linear-gradient(180deg,var(--slab-2),var(--slab));
+  border:1px solid var(--line);border-radius:3px;
+}
+.slab::before{
+  content:"";position:absolute;inset:0;border-radius:3px;padding:1px;
+  background:var(--foil);opacity:.22;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;
+}
+
+/* ---------- chrome ---------- */
+.chrome{
+  display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;justify-content:space-between;
+  padding:12px clamp(14px,3vw,28px);border-bottom:1px solid var(--line);
+  background:rgba(8,6,14,.85);position:sticky;top:0;z-index:20;backdrop-filter:blur(8px);
+}
+.back{font-family:var(--mono);font-size:12.5px;color:var(--muted);text-decoration:none;border-bottom:1px solid rgba(154,146,180,.4);padding-bottom:2px}
+.back:hover,.back:focus-visible{color:var(--accent);border-color:var(--accent)}
+.chrome-mark{font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.3em}
+.chrome-dest{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.chrome-dest b{color:var(--fg);font-weight:400}
+
+/* ---------- surge ---------- */
+.surge{padding:16px clamp(14px,3vw,28px);border-bottom:1px solid var(--line)}
+.surge-top{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;justify-content:space-between}
+.surge-mult{font-family:var(--mono);font-size:30px;line-height:1;color:var(--foil-d)}
+.surge-why{font-family:var(--mono);font-size:12px;color:var(--muted);max-width:62ch}
+.surge-track{height:6px;border-radius:3px;background:rgba(241,236,251,.09);margin-top:12px;overflow:hidden}
+.surge-fill{height:100%;background:var(--foil);width:40%;transition:width .3s ease-out}
+.surge-scale{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:5px}
+
+/* ---------- layout ---------- */
+.shell{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:0;align-items:start}
+.main{padding:20px clamp(14px,3vw,28px) 60px;min-width:0}
+.rail{
+  border-left:1px solid var(--line);padding:20px 18px 60px;
+  position:sticky;top:57px;align-self:start;max-height:calc(100vh - 57px);overflow:auto;
+}
+
+/* ---------- controls ---------- */
+.controls{padding:16px 18px;display:grid;gap:16px;margin-bottom:20px}
+.ctl-row{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between}
+.ctl-label{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.ctl-label b{color:var(--fg);font-weight:400}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:2px;
+  background:linear-gradient(90deg,var(--primary),var(--accent));outline-offset:6px;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:20px;height:20px;border-radius:50%;
+  background:var(--fg);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--accent);cursor:pointer;
+}
+input[type=range]::-moz-range-thumb{
+  width:16px;height:16px;border-radius:50%;background:var(--fg);
+  border:3px solid var(--bg);box-shadow:0 0 0 1px var(--accent);cursor:pointer;
+}
+.toggles{display:flex;flex-wrap:wrap;gap:10px}
+.tog{
+  display:inline-flex;align-items:center;gap:9px;cursor:pointer;
+  border:1px solid var(--line);border-radius:2px;padding:9px 13px;background:rgba(8,6,14,.5);
+  font-size:13.5px;min-height:44px;transition:border-color .18s ease-out,background .18s ease-out;
+}
+.tog:hover{border-color:rgba(47,224,194,.5)}
+.tog input{position:absolute;opacity:0;width:0;height:0}
+.tog .box{width:15px;height:15px;border:1px solid var(--muted);border-radius:2px;flex:0 0 auto;position:relative}
+.tog input:checked + .box{background:var(--accent);border-color:var(--accent)}
+.tog input:checked + .box::after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid var(--bg);border-width:0 2px 2px 0;transform:rotate(42deg)}
+.tog input:focus-visible + .box{outline:2px solid var(--accent);outline-offset:2px}
+.tog .fee{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.tog:has(input:checked){background:rgba(47,224,194,.08);border-color:rgba(47,224,194,.45)}
+
+.count-line{font-family:var(--mono);font-size:12px;color:var(--muted);margin:0 0 12px}
+
+/* ---------- driver cards ---------- */
+.fleet{display:grid;gap:12px;margin:0;padding:0;list-style:none}
+.driver{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 16px}
+.mono-tile{
+  width:56px;height:56px;border-radius:2px;display:grid;place-items:center;
+  font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.02em;
+  color:var(--bg);position:relative;
+}
+.mono-tile::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--stick,#7A5BFF)}
+.d-name{font-family:var(--body);font-weight:700;font-size:15.5px;margin:0}
+.d-meta{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin:3px 0 0;display:flex;flex-wrap:wrap;gap:3px 14px}
+.d-meta .sw{display:inline-flex;align-items:center;gap:6px}
+.d-meta .dot{width:9px;height:9px;border-radius:50%;background:var(--stick,#7A5BFF);flex:0 0 auto}
+.d-right{text-align:right;display:grid;gap:8px;justify-items:end}
+.align{font-family:var(--mono);font-size:19px;line-height:1}
+.align small{display:block;font-size:10.5px;color:var(--muted);letter-spacing:.06em;margin-top:3px}
+.fare{font-family:var(--mono);font-size:15px;color:var(--fg)}
+.pick{
+  border:1px solid var(--accent);background:transparent;color:var(--accent);
+  font-family:var(--body);font-weight:700;font-size:13px;
+  padding:9px 15px;border-radius:2px;cursor:pointer;min-height:44px;
+  transition:background .18s ease-out,color .18s ease-out;
+}
+.pick:hover{background:var(--accent);color:var(--bg)}
+.a-hi{color:var(--accent)}
+.a-mid{color:var(--foil-d)}
+.a-lo{color:var(--foil-c)}
+
+.empty{padding:34px 22px;text-align:center}
+.empty p{margin:0 0 6px;color:var(--muted);font-family:var(--mono);font-size:13px}
+.empty b{color:var(--fg);font-weight:400;font-family:var(--body);font-size:15px;display:block;margin-bottom:10px}
+
+/* ---------- rail ---------- */
+.rail h2{font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.2em;margin:0 0 4px}
+.rail .sub{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin:0 0 14px}
+.log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+.log li{font-family:var(--mono);font-size:11.5px;line-height:1.5;color:var(--muted);border-left:1px solid var(--line);padding-left:10px}
+.log li b{display:block;color:var(--fg);font-weight:400}
+.log li:first-child{border-left-color:var(--accent)}
+
+/* ---------- modal ---------- */
+.scrim{
+  position:fixed;inset:0;background:rgba(5,4,9,.74);display:none;
+  align-items:center;justify-content:center;padding:20px;z-index:40;
+}
+.scrim.open{display:flex}
+.modal{width:min(460px,100%);padding:0;max-height:90vh;overflow:auto}
+.modal-head{padding:14px 20px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:11.5px;color:var(--muted);letter-spacing:.08em}
+.modal-body{padding:20px}
+.modal h3{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.02em;margin:0 0 14px;line-height:1.4}
+.restate{display:grid;gap:9px;margin:0 0 16px;font-family:var(--mono);font-size:12.5px}
+.restate div{display:flex;justify-content:space-between;gap:16px;border-bottom:1px dotted rgba(241,236,251,.14);padding-bottom:6px}
+.restate span:last-child{color:var(--fg)}
+.restate span:first-child{color:var(--muted)}
+.clause{font-size:13.5px;color:var(--muted);margin:0 0 16px;line-height:1.55}
+.modal-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end;margin-top:18px}
+.btn{
+  font-family:var(--body);font-weight:700;font-size:13.5px;padding:11px 18px;border-radius:2px;
+  cursor:pointer;min-height:44px;border:1px solid var(--line);background:transparent;color:var(--muted);
+}
+.btn:hover{color:var(--fg);border-color:var(--muted)}
+.btn-go{
+  border:3px solid transparent;color:var(--bg);
+  background:linear-gradient(var(--fg),var(--fg)) padding-box, var(--foil) border-box;
+  padding:9px 18px;
+}
+.btn-go:hover{color:var(--bg)}
+.btn-go:disabled{opacity:.38;cursor:not-allowed;background:none;border:1px solid var(--line);color:var(--muted)}
+.done{font-family:var(--mono);font-size:12.5px;color:var(--accent);margin:14px 0 0}
+
+@media (max-width:900px){
+  .shell{grid-template-columns:1fr}
+  .rail{border-left:0;border-top:1px solid var(--line);position:static;max-height:none}
+  .driver{grid-template-columns:48px minmax(0,1fr);row-gap:12px}
+  .mono-tile{width:48px;height:48px;font-size:13px}
+  .d-right{grid-column:1 / -1;justify-items:stretch;text-align:left;grid-template-columns:auto auto 1fr;align-items:center;gap:14px}
+  .align small{display:inline;margin-left:6px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <a class="back" href="./index.html">&larr; back to the pitch</a>
+  <span class="chrome-mark">BIAS</span>
+  <span class="chrome-dest">drop-off <b>Night 2 of 3</b>, 19,500-seat arena, gate C</span>
+</div>
+
+<section class="surge" aria-label="Comeback surge">
+  <div class="surge-top">
+    <span class="surge-mult" id="surgeMult">3.8x</span>
+    <span class="surge-why">Teaser image, 17 seconds, posted 00:00 KST. Fare index moved before any booking was placed on this route. Traffic is nominal.</span>
+  </div>
+  <div class="surge-track"><div class="surge-fill" id="surgeFill"></div></div>
+  <div class="surge-scale"><span>1.0x</span><span>calm</span><span>comeback week</span><span>8.0x</span></div>
+</section>
+
+<div class="shell">
+
+  <main class="main">
+
+    <div class="slab controls">
+      <div>
+        <div class="ctl-row">
+          <label class="ctl-label" for="thresh">Minimum alignment score <b id="threshVal">70</b></label>
+          <span class="ctl-label">drivers below this are not shown to you</span>
+        </div>
+        <input type="range" id="thresh" min="0" max="100" step="1" value="70" aria-describedby="threshVal">
+      </div>
+      <div class="toggles">
+        <label class="tog"><input type="checkbox" id="togChant"><span class="box"></span>Fanchant cabin mode<span class="fee">+$6.00</span></label>
+        <label class="tog"><input type="checkbox" id="togSync" checked><span class="box"></span>Cabin sync, 10 channels<span class="fee">+$3.50</span></label>
+      </div>
+    </div>
+
+    <p class="count-line" id="countLine" aria-live="polite">4 of 6 drivers clear your threshold.</p>
+
+    <ul class="fleet" id="fleet"></ul>
+
+    <div class="slab empty" id="empty" hidden>
+      <b>No driver on this route clears that score tonight.</b>
+      <p>Lower the threshold, or wait for the 23:40 shift change when the airport fleet rotates in.</p>
+    </div>
+
+  </main>
+
+  <aside class="rail">
+    <h2>DISPATCH LOG</h2>
+    <p class="sub">every action you take, retained for 7 years</p>
+    <ul class="log" id="log"></ul>
+  </aside>
+
+</div>
+
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="slab modal">
+    <div class="modal-head" id="modalHead">CONFIRM DISPATCH</div>
+    <div class="modal-body">
+      <h3 id="modalTitle">Confirm dispatch</h3>
+      <div class="restate" id="restate"></div>
+      <p class="clause" id="clause"></p>
+      <label class="tog" style="width:100%"><input type="checkbox" id="ack"><span class="box"></span>I acknowledge the mismatch clause</label>
+      <div class="modal-actions">
+        <button class="btn" id="cancel" type="button">Keep looking</button>
+        <button class="btn btn-go" id="go" type="button" disabled>Dispatch</button>
+      </div>
+      <p class="done" id="done" hidden></p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var SURGE = 3.8;
+
+  var DRIVERS = [
+    { id:'mv', name:'Marisol V.', mono:'MV', group:'ASTERA',    bias:'Jaehwan', align:97, since:2016, stick:'#7A5BFF', chant:9.4, barricade:22,  base:41.20 },
+    { id:'dk', name:'Dae-won K.', mono:'DK', group:'ASTERA',    bias:'Jaehwan', align:92, since:2019, stick:'#7A5BFF', chant:8.8, barricade:31,  base:38.60 },
+    { id:'pt', name:'Pham T.',    mono:'PT', group:'ASTERA',    bias:'Jaehwan', align:88, since:2014, stick:'#7A5BFF', chant:6.0, barricade:18,  base:44.75 },
+    { id:'ra', name:'Ruth A.',    mono:'RA', group:'ASTERA',    bias:'Seoyeon', align:74, since:2021, stick:'#FF69C8', chant:9.1, barricade:55,  base:34.10 },
+    { id:'in', name:'Ivo N.',     mono:'IN', group:'NEON HALO', bias:'Minji',   align:51, since:2023, stick:'#2FE0C2', chant:7.2, barricade:90,  base:29.80 },
+    { id:'gr', name:'Gus R.',     mono:'GR', group:'NEON HALO', bias:'Taeyang', align:23, since:2025, stick:'#FFD66B', chant:3.5, barricade:210, base:26.40 }
+  ];
+
+  var fleet   = document.getElementById('fleet');
+  var empty   = document.getElementById('empty');
+  var thresh  = document.getElementById('thresh');
+  var threshV = document.getElementById('threshVal');
+  var togChant= document.getElementById('togChant');
+  var togSync = document.getElementById('togSync');
+  var countL  = document.getElementById('countLine');
+  var logEl   = document.getElementById('log');
+  var scrim   = document.getElementById('scrim');
+  var restate = document.getElementById('restate');
+  var clause  = document.getElementById('clause');
+  var ack     = document.getElementById('ack');
+  var go      = document.getElementById('go');
+  var cancel  = document.getElementById('cancel');
+  var doneEl  = document.getElementById('done');
+
+  var clock = 21 * 3600 + 4 * 60 + 11;
+  var lastFocus = null;
+  var selected = null;
+
+  function stamp(){
+    clock += 3 + Math.floor(Math.random() * 12);
+    var h = Math.floor(clock / 3600) % 24, m = Math.floor(clock / 60) % 60, s = clock % 60;
+    return [h, m, s].map(function(n){ return (n < 10 ? '0' : '') + n; }).join(':');
+  }
+
+  function note(head, detail){
+    var li = document.createElement('li');
+    var b = document.createElement('b');
+    b.textContent = stamp() + '  ' + head;
+    li.appendChild(b);
+    li.appendChild(document.createTextNode(detail));
+    logEl.insertBefore(li, logEl.firstChild);
+    while (logEl.children.length > 14) logEl.removeChild(logEl.lastChild);
+  }
+
+  function addons(){
+    return (togChant.checked ? 6 : 0) + (togSync.checked ? 3.5 : 0);
+  }
+  function fareFor(d){
+    return d.base * SURGE + addons();
+  }
+  function money(n){
+    return '$' + n.toFixed(2);
+  }
+  function alignClass(a){
+    return a >= 85 ? 'a-hi' : (a >= 60 ? 'a-mid' : 'a-lo');
+  }
+
+  function render(){
+    var min = parseInt(thresh.value, 10);
+    var shown = DRIVERS.filter(function(d){ return d.align >= min; });
+
+    fleet.innerHTML = '';
+    shown.forEach(function(d){
+      var li = document.createElement('li');
+      li.className = 'slab driver';
+
+      var tile = document.createElement('div');
+      tile.className = 'mono-tile';
+      tile.style.setProperty('--stick', d.stick);
+      tile.style.background = d.stick;
+      tile.textContent = d.mono;
+
+      var mid = document.createElement('div');
+      var nm = document.createElement('p');
+      nm.className = 'd-name';
+      nm.textContent = d.name;
+      var meta = document.createElement('p');
+      meta.className = 'd-meta';
+      meta.innerHTML =
+        '<span class="sw"><span class="dot"></span>' + d.group + ' / ' + d.bias + '</span>' +
+        '<span>since ' + d.since + '</span>' +
+        '<span>fanchant ' + d.chant.toFixed(1) + ' / 10</span>' +
+        '<span>' + d.barricade + ' m from barricade</span>';
+      meta.querySelector('.dot').style.setProperty('--stick', d.stick);
+      mid.appendChild(nm); mid.appendChild(meta);
+
+      var right = document.createElement('div');
+      right.className = 'd-right';
+      var al = document.createElement('div');
+      al.className = 'align ' + alignClass(d.align);
+      al.innerHTML = d.align + '<small>ALIGNMENT</small>';
+      var fa = document.createElement('div');
+      fa.className = 'fare';
+      fa.textContent = money(fareFor(d));
+      var btn = document.createElement('button');
+      btn.className = 'pick';
+      btn.type = 'button';
+      btn.textContent = 'Select';
+      btn.addEventListener('click', function(){ openModal(d, btn); });
+      right.appendChild(al); right.appendChild(fa); right.appendChild(btn);
+
+      li.appendChild(tile); li.appendChild(mid); li.appendChild(right);
+      fleet.appendChild(li);
+    });
+
+    empty.hidden = shown.length > 0;
+    countL.textContent = shown.length === 0
+      ? 'No drivers clear your threshold.'
+      : shown.length + ' of ' + DRIVERS.length + ' drivers clear your threshold.';
+
+    document.getElementById('surgeMult').textContent = SURGE.toFixed(1) + 'x';
+    document.getElementById('surgeFill').style.width = ((SURGE - 1) / 7 * 100).toFixed(1) + '%';
+  }
+
+  function openModal(d, trigger){
+    selected = d;
+    lastFocus = trigger;
+    restate.innerHTML =
+      '<div><span>driver</span><span>' + d.name + '</span></div>' +
+      '<div><span>alignment</span><span>' + d.align + ' / 100</span></div>' +
+      '<div><span>bias on file</span><span>' + d.group + ' / ' + d.bias + '</span></div>' +
+      '<div><span>drop-off</span><span>' + d.barricade + ' m from barricade</span></div>' +
+      '<div><span>fare at ' + SURGE.toFixed(1) + 'x</span><span>' + money(fareFor(d)) + '</span></div>';
+    clause.textContent = d.align >= 85
+      ? 'Alignment is inside the guaranteed band. The mismatch clause still applies, because it always applies.'
+      : 'Alignment is below the guaranteed band. Bias does not refund rides on the grounds of conversation that occurred during them.';
+    ack.checked = false;
+    go.disabled = true;
+    doneEl.hidden = true;
+    scrim.classList.add('open');
+    cancel.focus();
+    note('reviewed ' + d.name, 'alignment ' + d.align + ', fare ' + money(fareFor(d)) + ' at ' + SURGE.toFixed(1) + 'x');
+  }
+
+  function closeModal(){
+    scrim.classList.remove('open');
+    if (lastFocus) lastFocus.focus();
+  }
+
+  thresh.addEventListener('input', function(){
+    threshV.textContent = thresh.value;
+    render();
+  });
+  thresh.addEventListener('change', function(){
+    note('threshold set to ' + thresh.value, 'rider narrowed the visible fleet');
+  });
+
+  togChant.addEventListener('change', function(){
+    render();
+    note('fanchant cabin mode ' + (togChant.checked ? 'on' : 'off'), togChant.checked ? 'speakers will drop out on the call, scored per ride' : 'cabin stays quiet, no score recorded');
+  });
+  togSync.addEventListener('change', function(){
+    render();
+    note('cabin sync ' + (togSync.checked ? 'on' : 'off'), togSync.checked ? 'ten channels bound to the official colour' : 'lighting reverts to white, driver cannot change it back');
+  });
+
+  ack.addEventListener('change', function(){ go.disabled = !ack.checked; });
+  cancel.addEventListener('click', closeModal);
+  scrim.addEventListener('click', function(e){ if (e.target === scrim) closeModal(); });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && scrim.classList.contains('open')) closeModal();
+  });
+
+  go.addEventListener('click', function(){
+    doneEl.hidden = false;
+    doneEl.textContent = selected.name + ' dispatched. Arriving in 6 minutes. Do not discuss the alignment score with them.';
+    go.disabled = true;
+    note('dispatched ' + selected.name, 'fare locked at ' + money(fareFor(selected)) + ', clause acknowledged');
+  });
+
+  note('route opened', 'Night 2 of 3, gate C, 19,500 seats');
+  note('surge index moved to 3.8x', 'trigger: 17-second teaser, 00:00 KST');
+  render();
+})();
+</script>
+</body>
+</html>
