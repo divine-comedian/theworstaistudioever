@@ -1,0 +1,108 @@
+[2026-09-20T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-09-20T08:00:02Z] invoking claude -p
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/github/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/github/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.openclaw/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.openclaw/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.claude/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.claude/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/aurevon-status/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/aurevon-status/**) instead (Edit rules cover all file-editing tools).
+
+=== agent run summary 2026-09-20 ===
+
+ROLL
+  company : Twitch
+  subject : people who didn't marry their high school sweetheart
+  slug    : twitch-for-people-who-didn-t-marry-their-high-school-sweetheart
+  rerolls : 0 (first pair drawn from the 2026-09-20 LCG was unused)
+  subject rule: passes, "people who didn't marry their high school sweetheart" is a type of person.
+  note: slugify turns "didn't" into "didn-t", so the slug carries a stray hyphen. Correct per the
+        stated rule, just long. No action taken.
+
+CONCEPT
+  product   : Almost
+  one-liner : Live-stream the timeline you picked. Chat watches the other one.
+  anti-ai-slop invoked before all copy. No em dashes, no throat-clearing, no gift-wrap endings.
+
+DESIGN DIRECTION
+  style     : Varsity chenille and engraved brass, trophy-case dark mode
+  palette   : bg #12241C / fg #F4EFE2 / primary(brass) #B8892B / accent(felt red) #C2352C / muted #93A89A
+  fonts     : Graduate (display) + Public Sans (body)
+  archetype : live-streaming creator platform landing page, video-first hero
+  anti-sameness: checked against the last 7 (photocard slab, vitreous enamel, agricultural livery,
+        pharma leaflet, stained glass, risograph, microfilm amber). No collision on style, palette
+        or font pair. Neither Graduate nor Public Sans appears in the last 7. #12241C is the only
+        green ground in the window; the four prior dark modes were all near-black.
+  ui-ux-pro-max returned "Real-Time Monitoring / Inter / cinema-dark + play red" for the streaming
+        query. Took its structural advice (video-first hero, CTA over the player, section order)
+        and discarded its style/palette/font, which is the generic default the design rule forbids.
+
+IMAGES  (2 of 4 slots used, 2 gen-image calls, both first-attempt accepts)
+  rationale: whole budget on the two dual-timeline feeds, which are the product and the joke.
+        They do double duty as the landing hero's player card and the demo's player.
+  - timeline-a.webp  role=demo  attempts=1  640x800  32 KB
+      judge: ACCEPT. Brass lamp lands on the primary hex, room falls off into felt green,
+      expression reads unreadable rather than sad. No text, no UI, no AI-render tells.
+  - timeline-b.webp  role=demo  attempts=1  640x800  63 KB
+      judge: ACCEPT. Same man, same shirt, so the split reads as one person in two timelines.
+      Golden-hour brass and foliage green hold the palette. No text, no logos, no UI.
+  hero slot   : skipped. A chenille-and-brass trophy case wants felt and metal, not a second
+        photograph; the player card carries the imagery instead.
+  headshots   : skipped on purpose. The varsity direction turns testimonial avatars into chenille
+        monogram patches, which is more on-theme than three more portraits.
+
+BUILD
+  frontend-design invoked before both files.
+  index.html: hero with dual-timeline player card, 3 features, demo band, 3 testimonials,
+        3 pricing tiers, footer back-link. Both images wired in via relative paths.
+  demo.html : live channel page. Pin-a-feed toggle, verdict meter with working vote buttons that
+        recompute the rolling percentage, live-appending chat with composer and emote picker,
+        follow toggle, left rail with graduating-class filter. All client-side, no frameworks.
+  self-correction: first draft of the features grid carried "Feature one / two / three" eyebrows.
+        Features are not a sequence, so the numbered markers were cut before validation.
+
+GALLERY
+  site/index.html regenerated from all 101 concept.json files, newest first.
+  Header count updated to "101 startups since 2026". styles.css untouched.
+
+WARNINGS / NEAR-MISSES
+  - Graduate is a single-weight Google font. All display weight comes from size and caps, with a
+    Rockwell/Bookman/Georgia fallback stack if the font fails to load.
+  - Accent red #C2352C is under 4.5:1 on the felt ground, so it is used only for borders, fills
+    and button backgrounds, never as text on the background. Muted was lifted from #7C9083 to
+    #93A89A during palette selection to clear 4.5:1.
+  - Step 9 visual check: RAN. A cached playwright chromium was present, so both pages were shot.
+    Landing and demo both render correctly: Graduate loads, the dual-timeline split reads as one
+    person in two lives, no overlap, no off-canvas elements, no wrong aspect ratios.
+    One corrective edit of the 3 allowed: the chat composer placeholder truncated mid-word
+    ("Say something su"), shortened to "Be supportive". Re-capture skipped, since shortening a
+    placeholder string cannot overflow further than the string it replaced.
+    Revalidated after the edit.
+
+VALIDATION
+  scripts/validate-entry.sh site twitch-for-people-who-didn-t-marry-their-high-school-sweetheart
+  -> OK, exit 0.
+  state/history.json appended, 101 entries, still valid JSON.
+Validation passes after the edit. All ten steps complete.
+
+**Rolled:** Twitch for people who didn't marry their high school sweetheart (0 rerolls) → `twitch-for-people-who-didn-t-marry-their-high-school-sweetheart`
+
+**Product:** *Almost* — "Live-stream the timeline you picked. Chat watches the other one." Dual-timeline broadcast, a Verdict Meter where chat votes every ninety seconds on whether you made the right call, and forty-two subscriber emotes cropped from your senior portrait.
+
+**Design:** varsity chenille and engraved brass, trophy-case dark mode. Felt-green ground (#12241C), brass plates for anything numeric, chenille patches with hard zero-blur shadows. Graduate + Public Sans. No collision with the last 7 on style, palette, or font pair — it's the only green ground in the window, and the four prior dark modes were all near-black.
+
+I took the `ui-ux-pro-max` recommendation for structure (video-first hero, CTA over the player) but discarded its style/palette/font suggestion, which came back as "Real-Time Monitoring / Inter / cinema dark + play red" — the generic default the design rule exists to prevent.
+
+**Images:** 2 of 4 slots, both accepted first attempt. The whole budget went to the two timeline feeds, which are the product and the joke: same man, two lives, side by side. They do double duty as the landing hero's player card and the demo's player. Hero and testimonial headshots skipped deliberately — the varsity direction turns testimonial avatars into chenille monogram patches.
+
+Two things worth flagging:
+
+- `slugify` turns "didn't" into "didn-t", so the slug carries a stray hyphen. That's correct per the stated rule, just long. Left alone.
+- I wrote "Step 9 skipped" into the run log before checking, then found a cached chromium and ran it. Log corrected. The check caught one real wart (chat placeholder truncating mid-word), fixed in one edit of the three allowed, and revalidated.
+
+```
+RUN_COMPLETE: twitch-for-people-who-didn-t-marry-their-high-school-sweetheart
+```
+[2026-09-20T08:10:51Z] new entry: twitch-for-people-who-didn-t-marry-their-high-school-sweetheart
+validate-entry [twitch-for-people-who-didn-t-marry-their-high-school-sweetheart]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 101 entries (domain theworstaistudioever.com)
+[2026-09-20T08:10:51Z] committing: Twitch for people who didn't marry their high school sweetheart

@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Almost · theworstaistudioever</title>
+<meta name="description" content="Live-stream the timeline you picked. Chat watches the other one.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Almost · theworstaistudioever">
+<meta property="og:description" content="Live-stream the timeline you picked. Chat watches the other one.">
+<meta property="og:image" content="/entries/twitch-for-people-who-didn-t-marry-their-high-school-sweetheart/timeline-b.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Almost · theworstaistudioever">
+<meta name="twitter:description" content="Live-stream the timeline you picked. Chat watches the other one.">
+<meta name="theme-color" content="#12241C">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Graduate&family=Public+Sans:wght@400;500;700&display=swap');
+
+:root{
+  --bg:#12241C;
+  --fg:#F4EFE2;
+  --ink:#F4EFE2;
+  --muted:#93A89A;
+  --brass:#B8892B;
+  --brass-hi:#D6A845;
+  --brass-lo:#8A6519;
+  --brass-ink:#2A1E08;
+  --felt:#C2352C;
+  --felt-dk:#8E241D;
+  --hard:3px 3px 0 rgba(0,0,0,.32);
+  --display:'Graduate','Rockwell','Bookman Old Style',Georgia,serif;
+  --body:'Public Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+
+html{-webkit-text-size-adjust:100%}
+
+body{
+  margin:0;
+  font-family:var(--body);
+  font-size:17px;
+  line-height:1.65;
+  color:var(--fg);
+  background-color:var(--bg);
+  background-image:
+    radial-gradient(rgba(244,239,226,.035) 1px, transparent 1px),
+    radial-gradient(rgba(0,0,0,.30) 1px, transparent 1px);
+  background-size:7px 7px, 11px 11px;
+  background-position:0 0, 3px 5px;
+}
+
+img{max-width:100%;display:block}
+a{color:inherit}
+
+:focus-visible{outline:3px solid var(--fg);outline-offset:3px}
+
+.wrap{width:min(1120px,calc(100% - 44px));margin-inline:auto}
+
+section{position:relative}
+/* the case light: one warm top-down wash per major section */
+section::before{
+  content:"";
+  position:absolute;left:0;right:0;top:0;height:180px;
+  background:linear-gradient(to bottom, rgba(244,239,226,.07), rgba(244,239,226,0));
+  pointer-events:none;
+}
+
+/* ---------- brass plate ---------- */
+.plate{
+  display:inline-block;
+  font-family:var(--body);
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--brass-ink);
+  background:linear-gradient(180deg,var(--brass-hi) 0,var(--brass) 42%,var(--brass-lo) 100%);
+  border-radius:2px;
+  padding:5px 11px;
+  border-top:1px solid rgba(255,255,255,.45);
+  border-left:1px solid rgba(255,255,255,.28);
+  border-bottom:1px solid rgba(0,0,0,.45);
+  border-right:1px solid rgba(0,0,0,.35);
+  white-space:nowrap;
+}
+.plate .dot{
+  display:inline-block;width:7px;height:7px;border-radius:50%;
+  background:#7E1712;margin-right:7px;vertical-align:1px;
+  animation:beat 2.4s ease-in-out infinite;
+}
+@keyframes beat{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* ---------- chenille patch ---------- */
+.patch{
+  position:relative;
+  background:#193026;
+  border:7px solid var(--felt);
+  border-radius:3px;
+  box-shadow:inset 0 0 0 3px var(--fg), var(--hard);
+  padding:26px 24px;
+}
+.patch::after{
+  content:"";position:absolute;inset:11px;
+  border:1px dashed rgba(244,239,226,.30);
+  border-radius:2px;pointer-events:none;
+}
+.patch.brassed{border-color:var(--brass)}
+
+/* ---------- type ---------- */
+h1,h2,h3{font-family:var(--display);font-weight:400;text-transform:uppercase;margin:0}
+h1{font-size:clamp(2.5rem,6.4vw,4.6rem);line-height:.98;letter-spacing:.005em}
+h2{font-size:clamp(1.7rem,3.4vw,2.5rem);line-height:1.08}
+h3{font-size:1.16rem;line-height:1.2;letter-spacing:.01em}
+p{margin:0 0 1em}
+p:last-child{margin-bottom:0}
+
+/* ---------- buttons ---------- */
+.btn{
+  display:inline-block;
+  font-family:var(--display);
+  font-size:1rem;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  text-decoration:none;
+  padding:15px 28px;
+  border-radius:3px;
+  transition:transform .16s ease-out, box-shadow .16s ease-out, background-color .16s ease-out;
+}
+.btn-primary{
+  background:var(--felt);
+  color:var(--fg);
+  border:2px solid var(--felt-dk);
+  box-shadow:inset 0 0 0 2px rgba(244,239,226,.85), var(--hard);
+}
+.btn-ghost{
+  background:transparent;
+  color:var(--fg);
+  border:2px solid rgba(244,239,226,.55);
+  box-shadow:var(--hard);
+}
+/* felt is glued down: it shifts into its own shadow, it does not lift */
+.btn:hover{transform:translate(3px,3px);box-shadow:inset 0 0 0 2px rgba(244,239,226,.85), 0 0 0 rgba(0,0,0,0)}
+.btn-ghost:hover{box-shadow:0 0 0 rgba(0,0,0,0);background:rgba(244,239,226,.08)}
+
+/* ---------- header ---------- */
+.masthead{
+  position:relative;z-index:2;
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+  padding:22px 0 8px;
+}
+.mark{font-family:var(--display);font-size:1.5rem;text-transform:uppercase;letter-spacing:.06em;text-decoration:none}
+.mark .tail{color:var(--felt)}
+.masthead nav{display:flex;gap:22px;align-items:center;font-size:.9rem}
+.masthead nav a{text-decoration:none;color:var(--muted);border-bottom:1px solid transparent;padding-bottom:2px}
+.masthead nav a:hover{color:var(--fg);border-bottom-color:var(--felt)}
+
+/* ---------- hero ---------- */
+.hero{padding:34px 0 86px}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.hero-copy h1{margin:20px 0 22px;max-width:11ch}
+.hero-copy .lede{font-size:1.14rem;color:#DCD8CB;max-width:58ch;margin-bottom:30px}
+.hero-actions{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+
+/* ---------- player ---------- */
+.player{padding:0;background:#0C1A13;overflow:hidden}
+.player::after{inset:7px}
+.feeds{display:grid;grid-template-columns:1fr 3px 1fr}
+.feed{position:relative}
+.feed img{width:100%;aspect-ratio:4/5;object-fit:cover}
+.stitch{background:repeating-linear-gradient(to bottom,var(--fg) 0 7px,rgba(244,239,226,.25) 7px 12px)}
+.feed .tag{position:absolute;left:10px;top:10px;font-size:10px;padding:4px 8px}
+.readout{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:14px 16px 0}
+.readout .count{margin-left:auto;font-variant-numeric:tabular-nums;font-size:.86rem;color:var(--muted)}
+
+.meter{padding:12px 16px 18px}
+.meter-head{display:flex;justify-content:space-between;align-items:baseline;font-size:.8rem;color:var(--muted);margin-bottom:7px}
+.meter-head b{font-family:var(--display);font-size:1.1rem;color:var(--fg);font-weight:400;font-variant-numeric:tabular-nums}
+.bar{height:13px;background:rgba(244,239,226,.16);border:1px solid rgba(244,239,226,.4);border-radius:2px;overflow:hidden}
+.bar span{display:block;height:100%;width:71%;background:var(--felt);box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}
+
+/* ---------- generic section rhythm ---------- */
+.band{padding:78px 0}
+.band-head{max-width:60ch;margin-bottom:38px}
+.band-head h2{margin-bottom:14px}
+.band-head p{color:var(--muted)}
+
+/* ---------- features ---------- */
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.feature h3{margin-bottom:12px;color:var(--fg)}
+.feature p{font-size:.97rem;color:#D3D0C4}
+
+/* ---------- demo band ---------- */
+.demo-band{padding:70px 0}
+.demo-inner{
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:28px;
+  background:#193026;border:7px solid var(--brass);border-radius:3px;
+  box-shadow:inset 0 0 0 3px var(--fg), var(--hard);
+  padding:34px 32px;position:relative;
+}
+.demo-inner::after{content:"";position:absolute;inset:11px;border:1px dashed rgba(244,239,226,.30);border-radius:2px;pointer-events:none}
+.demo-inner h2{margin-bottom:10px}
+.demo-inner p{color:var(--muted);max-width:52ch}
+.demo-inner > div{position:relative;z-index:1}
+
+/* ---------- testimonials ---------- */
+.quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.quote blockquote{margin:0 0 20px;font-size:1.02rem;color:#E6E2D6}
+.who{display:flex;align-items:center;gap:13px}
+.monogram{
+  flex:none;width:52px;height:52px;border-radius:50%;
+  background:var(--felt);border:2px solid var(--fg);
+  box-shadow:inset 0 0 0 2px var(--felt-dk);
+  display:grid;place-items:center;
+  font-family:var(--display);font-size:.92rem;color:var(--fg);
+}
+.who .nm{font-weight:700;font-size:.92rem;line-height:1.3}
+.who .ttl{font-size:.78rem;color:var(--muted);line-height:1.35}
+
+/* ---------- pricing ---------- */
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;align-items:start}
+.tier{display:flex;flex-direction:column;height:100%}
+.tier h3{margin-bottom:6px}
+.tier .cost{font-family:var(--display);font-size:2rem;margin:10px 0 4px;font-variant-numeric:tabular-nums}
+.tier .pitch{font-size:.9rem;color:var(--muted);margin-bottom:18px}
+.tier ul{list-style:none;margin:0 0 24px;padding:0;font-size:.93rem}
+.tier li{padding:9px 0 9px 22px;position:relative;border-top:1px solid rgba(244,239,226,.14);color:#D8D4C8}
+.tier li:first-child{border-top:0}
+.tier li::before{
+  content:"";position:absolute;left:2px;top:17px;
+  width:9px;height:9px;background:var(--brass);border-radius:1px;
+}
+.tier .btn{margin-top:auto;text-align:center}
+.tier-flag{margin-bottom:14px}
+
+/* ---------- footer ---------- */
+.foot{padding:48px 0 60px;border-top:1px solid rgba(244,239,226,.16);margin-top:20px}
+.foot-in{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center}
+.back{font-size:.9rem;text-decoration:none;color:var(--muted);border-bottom:1px solid rgba(244,239,226,.3);padding-bottom:2px}
+.back:hover{color:var(--fg);border-bottom-color:var(--felt)}
+.fine{font-size:.8rem;color:var(--muted);max-width:56ch}
+
+/* ---------- responsive ---------- */
+@media (max-width:980px){
+  .hero-grid{grid-template-columns:1fr;gap:40px}
+  .hero-copy{order:2}
+  .player{order:1}
+  .features,.quotes,.tiers{grid-template-columns:1fr}
+  .hero-copy h1{max-width:none}
+}
+@media (max-width:620px){
+  body{font-size:16px}
+  .wrap{width:calc(100% - 32px)}
+  .band,.demo-band{padding:56px 0}
+  .masthead nav{display:none}
+  .btn{display:block;text-align:center}
+  .hero-actions{display:grid;grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .btn:hover{transform:none}
+}
+</style>
+</head>
+<body>
+
+<header class="wrap masthead">
+  <a class="mark" href="#top">Al<span class="tail">most</span></a>
+  <nav>
+    <a href="#how">How it works</a>
+    <a href="#viewers">Viewers</a>
+    <a href="#tiers">Subscriptions</a>
+    <a href="./demo.html">Open the demo</a>
+  </nav>
+</header>
+
+<section class="hero" id="top">
+  <div class="wrap hero-grid">
+
+    <div class="hero-copy">
+      <span class="plate"><span class="dot"></span>4,102 channels live right now</span>
+      <h1>Go live from the life you actually chose.</h1>
+      <p class="lede">Almost is a streaming platform for the 41 million adults who did not marry the person from the yearbook. Dual-timeline broadcast, live chat verdicts, and subscriber emotes cut from your senior portrait.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#tiers">Start broadcasting</a>
+        <a class="btn btn-ghost" href="./demo.html">Open the demo →</a>
+      </div>
+    </div>
+
+    <div class="patch player">
+      <div class="feeds">
+        <div class="feed">
+          <span class="plate tag">Timeline you picked</span>
+          <img src="timeline-a.webp" width="640" height="800" alt="A man in his late thirties sitting alone at a kitchen table at night under a brass lamp.">
+        </div>
+        <div class="stitch" aria-hidden="true"></div>
+        <div class="feed">
+          <span class="plate tag">Reconstructed</span>
+          <img src="timeline-b.webp" width="640" height="800" alt="The same man standing in a sunlit backyard in late afternoon, half smiling.">
+        </div>
+      </div>
+
+      <div class="readout">
+        <span class="plate">dellmarcus_44</span>
+        <span class="plate">Uptime 6:12</span>
+        <span class="count">9,847 watching</span>
+      </div>
+
+      <div class="meter">
+        <div class="meter-head">
+          <span>Chat says he made the right call</span>
+          <b>71%</b>
+        </div>
+        <div class="bar" role="img" aria-label="Verdict meter at 71 percent right call."><span></span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="band" id="how">
+  <div class="wrap">
+    <div class="band-head">
+      <h2>Two feeds. One of them happened.</h2>
+      <p>Everything below ships on every channel, at every tier, whether or not you asked for it.</p>
+    </div>
+    <div class="features">
+
+      <article class="patch feature">
+        <h3>Dual Timeline</h3>
+        <p>Your camera on the left. On the right, a continuous reconstruction of the timeline where you stayed, assembled from one yearbook page, four saved voicemails, and their sister's public Facebook. Both feeds run at 1080p. Viewers pin whichever one they prefer.</p>
+      </article>
+
+      <article class="patch feature">
+        <h3>The Verdict Meter</h3>
+        <p>Every ninety seconds, chat votes on whether you made the right call. The rolling percentage sits under your handle permanently. It does not reset between streams. It does not reset between marriages.</p>
+      </article>
+
+      <article class="patch feature">
+        <h3>Yearbook Emotes</h3>
+        <p>We crop your senior portrait into forty-two reaction emotes. Subscribers deploy them during your worst moments. Tier three unlocks the one where you are wearing the rented tux.</p>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<section class="demo-band">
+  <div class="wrap demo-inner">
+    <div>
+      <h2>Sit in on a live channel.</h2>
+      <p>Marcus is six hours into a Tuesday broadcast. Both feeds are up, chat is voting, and the meter has not moved since March.</p>
+    </div>
+    <div>
+      <a class="btn btn-primary" href="./demo.html">Open the demo →</a>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="viewers">
+  <div class="wrap">
+    <div class="band-head">
+      <h2>What the audience says.</h2>
+      <p>Collected during scheduled streams. Published with consent, which was granted quickly in all three cases.</p>
+    </div>
+    <div class="quotes">
+
+      <article class="patch quote">
+        <blockquote>"I started streaming to watch the other feed. I stayed because chat is kinder to me than my brother is."</blockquote>
+        <div class="who">
+          <span class="monogram" aria-hidden="true">MD</span>
+          <span>
+            <span class="nm">Marcus Dell</span><br>
+            <span class="ttl">Regional Sales Lead, Industrial Fasteners, Upper Midwest</span>
+          </span>
+        </div>
+      </article>
+
+      <article class="patch quote">
+        <blockquote>"The verdict meter sat at 71 percent for eight months. Last Tuesday it moved to 72. I took the day off."</blockquote>
+        <div class="who">
+          <span class="monogram" aria-hidden="true">RP</span>
+          <span>
+            <span class="nm">Renata Poole</span><br>
+            <span class="ttl">Second-Shift Supervisor, Municipal Water Treatment</span>
+          </span>
+        </div>
+      </article>
+
+      <article class="patch quote">
+        <blockquote>"My wife watches the stream. She has a subscription. She is tier two."</blockquote>
+        <div class="who">
+          <span class="monogram" aria-hidden="true">DV</span>
+          <span>
+            <span class="nm">Doug Vaneck</span><br>
+            <span class="ttl">Assistant Golf Pro, Pine Hollow, Weekdays Only</span>
+          </span>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<section class="band" id="tiers">
+  <div class="wrap">
+    <div class="band-head">
+      <h2>Support a channel.</h2>
+      <p>Subscriptions renew on the anniversary of whatever you entered at signup. That field is required.</p>
+    </div>
+    <div class="tiers">
+
+      <article class="patch tier">
+        <h3>Still Thinking About It</h3>
+        <div class="cost">$5.99/mo</div>
+        <p class="pitch">Entry tier. No commitment, which is thematically appropriate.</p>
+        <ul>
+          <li>Ad-free playback on both timelines</li>
+          <li>One yearbook emote, selected by us</li>
+          <li>Your handle listed under Considered</li>
+        </ul>
+        <a class="btn btn-ghost" href="./demo.html">Subscribe</a>
+      </article>
+
+      <article class="patch tier brassed">
+        <span class="plate tier-flag">Where most people land</span>
+        <h3>Drove Past The House</h3>
+        <div class="cost">$14.99/mo</div>
+        <p class="pitch">For the recurring viewer. Most people land here and stay.</p>
+        <ul>
+          <li>All forty-two emotes</li>
+          <li>Verdict votes weighted three times</li>
+          <li>Subscriber-only chat during anniversary streams</li>
+          <li>Monthly digest of their public posts, summarized</li>
+        </ul>
+        <a class="btn btn-primary" href="./demo.html">Subscribe</a>
+      </article>
+
+      <article class="patch tier">
+        <h3>Full Reconstruction</h3>
+        <div class="cost">$299/mo</div>
+        <p class="pitch">Enterprise-grade. Invoiced quarterly. Nine seats minimum, for some reason.</p>
+        <ul>
+          <li>Dedicated timeline engineer</li>
+          <li>Second feed rendered at 4K</li>
+          <li>One raid on their actual channel, non-transferable</li>
+          <li>Printed year-end report, mailed to your current address</li>
+        </ul>
+        <a class="btn btn-ghost" href="./demo.html">Contact sales</a>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <a class="back" href="/">← theworstaistudioever</a>
+    <p class="fine">Almost does not contact anyone on the second timeline. Reconstructions are generated from publicly available material and one thing you typed during onboarding.</p>
+  </div>
+</footer>
+
+<script>
+document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+  a.addEventListener('click', function (e) {
+    var target = document.querySelector(a.getAttribute('href'));
+    if (!target) return;
+    e.preventDefault();
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  });
+});
+</script>
+
+</body>
+</html>

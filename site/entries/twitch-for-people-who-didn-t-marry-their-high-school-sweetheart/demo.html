@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dellmarcus_44 is live · Almost</title>
+<meta name="description" content="A live Almost channel. Two timelines, one chat, and a verdict meter that has not moved since March.">
+<meta name="theme-color" content="#12241C">
+<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Graduate&family=Public+Sans:wght@400;500;700&display=swap');
+
+:root{
+  --bg:#12241C;
+  --panel:#193026;
+  --deep:#0C1A13;
+  --fg:#F4EFE2;
+  --muted:#93A89A;
+  --brass:#B8892B;
+  --brass-hi:#D6A845;
+  --brass-lo:#8A6519;
+  --brass-ink:#2A1E08;
+  --felt:#C2352C;
+  --felt-dk:#8E241D;
+  --hard:3px 3px 0 rgba(0,0,0,.32);
+  --display:'Graduate','Rockwell','Bookman Old Style',Georgia,serif;
+  --body:'Public Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+
+body{
+  margin:0;
+  font-family:var(--body);
+  font-size:15px;
+  line-height:1.55;
+  color:var(--fg);
+  background-color:var(--bg);
+  background-image:
+    radial-gradient(rgba(244,239,226,.035) 1px, transparent 1px),
+    radial-gradient(rgba(0,0,0,.30) 1px, transparent 1px);
+  background-size:7px 7px, 11px 11px;
+  background-position:0 0, 3px 5px;
+}
+
+img{max-width:100%;display:block}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--fg);outline-offset:2px}
+
+h1,h2,h3{font-family:var(--display);font-weight:400;text-transform:uppercase;margin:0}
+
+/* ---------- brass ---------- */
+.plate,.brassbtn{
+  display:inline-block;
+  font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--brass-ink);
+  background:linear-gradient(180deg,var(--brass-hi) 0,var(--brass) 42%,var(--brass-lo) 100%);
+  border-radius:2px;padding:5px 10px;
+  border-top:1px solid rgba(255,255,255,.45);
+  border-left:1px solid rgba(255,255,255,.28);
+  border-bottom:1px solid rgba(0,0,0,.45);
+  border-right:1px solid rgba(0,0,0,.35);
+  white-space:nowrap;
+}
+.brassbtn{transition:filter .15s ease-out}
+.brassbtn:hover{filter:brightness(1.1)}
+.brassbtn:active,.brassbtn[aria-pressed="true"]{
+  border-top:1px solid rgba(0,0,0,.45);
+  border-left:1px solid rgba(0,0,0,.35);
+  border-bottom:1px solid rgba(255,255,255,.45);
+  border-right:1px solid rgba(255,255,255,.28);
+  background:linear-gradient(180deg,var(--brass-lo) 0,var(--brass) 58%,var(--brass-hi) 100%);
+}
+.dot{
+  display:inline-block;width:7px;height:7px;border-radius:50%;
+  background:#7E1712;margin-right:6px;vertical-align:1px;
+  animation:beat 2.4s ease-in-out infinite;
+}
+@keyframes beat{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* ---------- panels ---------- */
+.panel{
+  background:var(--panel);
+  border:5px solid var(--felt);
+  border-radius:3px;
+  box-shadow:inset 0 0 0 2px var(--fg), var(--hard);
+  position:relative;
+}
+
+/* ---------- chrome ---------- */
+.chrome{
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  padding:12px 20px;
+  border-bottom:1px solid rgba(244,239,226,.18);
+  background:rgba(12,26,19,.75);
+}
+.back{
+  font-size:.85rem;text-decoration:none;color:var(--muted);
+  border-bottom:1px solid rgba(244,239,226,.3);padding-bottom:2px;
+}
+.back:hover{color:var(--fg);border-bottom-color:var(--felt)}
+.mark{font-family:var(--display);font-size:1.15rem;text-transform:uppercase;letter-spacing:.06em}
+.mark .tail{color:var(--felt)}
+.chrome .spacer{margin-left:auto}
+
+/* ---------- shell ---------- */
+.shell{
+  display:grid;
+  grid-template-columns:238px minmax(0,1fr) 330px;
+  gap:18px;
+  padding:18px;
+  align-items:start;
+}
+
+/* ---------- left rail ---------- */
+.rail{padding:16px 14px}
+.rail h2{font-size:.95rem;margin-bottom:12px}
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.chip{
+  background:transparent;border:1px solid rgba(244,239,226,.34);
+  border-radius:2px;padding:5px 9px;font-size:.76rem;
+  transition:background-color .15s ease-out,border-color .15s ease-out;
+}
+.chip:hover{background:rgba(244,239,226,.09)}
+.chip[aria-pressed="true"]{background:var(--felt);border-color:var(--felt-dk);font-weight:700}
+.chanlist{list-style:none;margin:0;padding:0}
+.chan{
+  display:flex;gap:10px;align-items:center;width:100%;
+  background:transparent;border:0;border-top:1px solid rgba(244,239,226,.13);
+  padding:10px 4px;text-align:left;
+  transition:background-color .15s ease-out;
+}
+.chan:hover{background:rgba(244,239,226,.07)}
+.chan[hidden]{display:none}
+.mono{
+  flex:none;width:34px;height:34px;border-radius:50%;
+  background:var(--felt);border:2px solid var(--fg);
+  box-shadow:inset 0 0 0 2px var(--felt-dk);
+  display:grid;place-items:center;font-family:var(--display);font-size:.7rem;
+}
+.chan .h{font-size:.83rem;font-weight:700;line-height:1.25}
+.chan .s{font-size:.72rem;color:var(--muted);line-height:1.3}
+.chan .v{margin-left:auto;font-size:.72rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.chan.off .mono{background:#2C4034;box-shadow:inset 0 0 0 2px #1C2B23;border-color:rgba(244,239,226,.45)}
+.chan.off .h{color:var(--muted)}
+.railnote{font-size:.72rem;color:var(--muted);margin:14px 0 0;line-height:1.45}
+
+/* ---------- stage ---------- */
+.stage{padding:0;overflow:hidden;background:var(--deep)}
+.feeds{
+  display:grid;grid-template-columns:1fr 3px 1fr;
+  transition:grid-template-columns .2s ease-out;
+}
+.feed{position:relative;overflow:hidden;min-width:0}
+.feed img{width:100%;height:430px;object-fit:cover}
+.stitch{background:repeating-linear-gradient(to bottom,var(--fg) 0 7px,rgba(244,239,226,.25) 7px 12px)}
+.feeds[data-pin="a"]{grid-template-columns:1fr 3px 0fr}
+.feeds[data-pin="b"]{grid-template-columns:0fr 3px 1fr}
+.feedbar{
+  position:absolute;left:0;right:0;bottom:0;
+  display:flex;align-items:center;gap:8px;justify-content:space-between;
+  padding:10px;background:linear-gradient(to top,rgba(4,10,7,.88),rgba(4,10,7,0));
+}
+.feed .tag{position:absolute;left:10px;top:10px}
+
+.meta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:14px 16px 0}
+.meta .who{display:flex;gap:11px;align-items:center;margin-right:6px}
+.meta h1{font-size:1.05rem}
+.meta .sub{font-size:.76rem;color:var(--muted)}
+.meta .spacer{margin-left:auto}
+.followbtn{
+  background:var(--felt);border:2px solid var(--felt-dk);border-radius:3px;
+  box-shadow:inset 0 0 0 2px rgba(244,239,226,.85);
+  font-family:var(--display);font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;
+  padding:9px 16px;transition:background-color .15s ease-out;
+}
+.followbtn[aria-pressed="true"]{background:#2C4034;border-color:#1C2B23}
+.title{padding:10px 16px 0;font-size:.92rem;color:#D8D4C8}
+
+/* ---------- verdict ---------- */
+.verdict{padding:14px 16px 18px;margin-top:12px;border-top:1px solid rgba(244,239,226,.15)}
+.vhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.vhead .q{font-size:.88rem;color:var(--muted)}
+.vhead b{font-family:var(--display);font-size:1.5rem;font-weight:400;font-variant-numeric:tabular-nums}
+.bar{height:15px;background:rgba(244,239,226,.16);border:1px solid rgba(244,239,226,.4);border-radius:2px;overflow:hidden}
+.bar span{display:block;height:100%;background:var(--felt);box-shadow:inset 0 -3px 0 rgba(0,0,0,.25);transition:width .22s ease-out}
+.votes{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+.votebtn{
+  background:transparent;border:2px solid rgba(244,239,226,.5);border-radius:3px;
+  padding:9px 16px;font-size:.84rem;font-weight:700;
+  transition:background-color .15s ease-out,border-color .15s ease-out;
+}
+.votebtn:hover{background:rgba(244,239,226,.1)}
+.votebtn.yes[aria-pressed="true"]{background:var(--felt);border-color:var(--felt-dk)}
+.votebtn.no[aria-pressed="true"]{background:#2C4034;border-color:#1C2B23}
+.vnote{font-size:.74rem;color:var(--muted);margin-left:auto}
+
+/* ---------- chat ---------- */
+.chat{display:flex;flex-direction:column;height:678px;padding:0}
+.chathead{
+  padding:11px 14px;border-bottom:1px solid rgba(244,239,226,.18);
+  display:flex;align-items:center;gap:10px;
+}
+.chathead h2{font-size:.85rem}
+.chathead .n{margin-left:auto;font-size:.74rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.log{flex:1;overflow-y:auto;padding:12px 14px;font-size:.85rem;scrollbar-width:thin}
+.msg{margin-bottom:9px;line-height:1.45;word-wrap:break-word}
+.msg .u{font-weight:700}
+.msg.mine{border-left:3px solid var(--brass);padding-left:8px;margin-left:-11px}
+.msg.sys{color:var(--muted);font-size:.78rem;font-style:italic}
+.emote{
+  display:inline-block;background:var(--felt);border:1px solid var(--fg);
+  border-radius:2px;padding:0 5px;font-size:.74rem;font-weight:700;
+  letter-spacing:.02em;margin:0 1px;
+}
+.emote.locked{background:#2C4034;border-color:rgba(244,239,226,.45);color:var(--muted)}
+.picker{display:none;flex-wrap:wrap;gap:6px;padding:10px 14px;border-top:1px solid rgba(244,239,226,.18)}
+.picker.open{display:flex}
+.picker button{background:transparent;border:0;padding:0}
+.composer{display:flex;gap:8px;padding:11px 14px;border-top:1px solid rgba(244,239,226,.18)}
+.composer input{
+  flex:1;min-width:0;font:inherit;font-size:.85rem;color:var(--fg);
+  background:var(--deep);border:1px solid rgba(244,239,226,.34);border-radius:2px;
+  padding:9px 10px;
+}
+.composer input::placeholder{color:var(--muted)}
+.composer input:focus{border-color:var(--brass);outline:none}
+.sendbtn{
+  background:var(--felt);border:2px solid var(--felt-dk);border-radius:3px;
+  box-shadow:inset 0 0 0 2px rgba(244,239,226,.85);
+  font-family:var(--display);font-size:.78rem;text-transform:uppercase;padding:8px 14px;
+}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- responsive ---------- */
+@media (max-width:1180px){
+  .shell{grid-template-columns:minmax(0,1fr) 310px}
+  .rail{display:none}
+}
+@media (max-width:860px){
+  .shell{grid-template-columns:minmax(0,1fr);padding:14px}
+  .chat{height:460px}
+  .feed img{height:300px}
+  .vnote{margin-left:0;width:100%}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="mark">Al<span class="tail">most</span></span>
+  <span class="spacer"></span>
+  <span class="plate"><span class="dot"></span>Live</span>
+  <span class="plate">Uptime 6:12</span>
+</div>
+
+<main class="shell">
+
+  <!-- left rail -->
+  <aside class="panel rail">
+    <h2>Your graduating class</h2>
+    <div class="filters" role="group" aria-label="Filter channels">
+      <button class="chip" type="button" data-filter="all" aria-pressed="true">Everyone</button>
+      <button class="chip" type="button" data-filter="2009" aria-pressed="false">Class of 09</button>
+      <button class="chip" type="button" data-filter="2004" aria-pressed="false">Class of 04</button>
+      <button class="chip" type="button" data-filter="off" aria-pressed="false">Offline</button>
+    </div>
+    <ul class="chanlist" id="chanlist"></ul>
+    <p class="railnote">Channels are matched by graduation year and county. You cannot remove someone from this list. You can only stop opening it.</p>
+  </aside>
+
+  <!-- stage -->
+  <section class="panel stage">
+    <div class="feeds" id="feeds" data-pin="none">
+      <div class="feed">
+        <span class="plate tag">Timeline you picked</span>
+        <img src="timeline-a.webp" width="640" height="800" alt="Marcus sitting alone at a kitchen table at night under a brass lamp.">
+        <div class="feedbar">
+          <span class="plate">Live camera</span>
+          <button class="brassbtn" type="button" data-pin="a" aria-pressed="false">Pin this feed</button>
+        </div>
+      </div>
+      <div class="stitch" aria-hidden="true"></div>
+      <div class="feed">
+        <span class="plate tag">Reconstructed</span>
+        <img src="timeline-b.webp" width="640" height="800" alt="Marcus standing in a sunlit backyard in late afternoon, half smiling.">
+        <div class="feedbar">
+          <span class="plate">Rendered 1080p</span>
+          <button class="brassbtn" type="button" data-pin="b" aria-pressed="false">Pin this feed</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="meta">
+      <span class="who">
+        <span class="mono" aria-hidden="true">MD</span>
+        <span>
+          <h1>dellmarcus_44</h1>
+          <span class="sub">Industrial fasteners · Class of 2009 · Verdict 71%</span>
+        </span>
+      </span>
+      <span class="spacer"></span>
+      <span class="plate" id="viewers">9,847 watching</span>
+      <button class="followbtn" type="button" id="follow" aria-pressed="false">Follow</button>
+    </div>
+
+    <p class="title">tuesday. going through the box from my mom's attic. not opening the blue one</p>
+
+    <div class="verdict">
+      <div class="vhead">
+        <span class="q">Did he make the right call?</span>
+        <b id="pct">71%</b>
+      </div>
+      <div class="bar"><span id="fill" style="width:71%"></span></div>
+      <div class="votes">
+        <button class="votebtn yes" type="button" id="voteYes" aria-pressed="false">Right call</button>
+        <button class="votebtn no" type="button" id="voteNo" aria-pressed="false">Wrong call</button>
+        <span class="vnote" id="vnote">Voting reopens every 90 seconds. 4,113 ballots this stream.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- chat -->
+  <section class="panel chat">
+    <div class="chathead">
+      <h2>Stream chat</h2>
+      <span class="n" id="chatters">2,214 chatting</span>
+    </div>
+    <div class="log" id="log" role="log" aria-live="polite" aria-label="Stream chat"></div>
+    <div class="picker" id="picker" aria-label="Yearbook emotes"></div>
+    <form class="composer" id="composer">
+      <label class="sr" for="say">Send a message</label>
+      <input id="say" type="text" autocomplete="off" placeholder="Be supportive" maxlength="140">
+      <button class="brassbtn" type="button" id="emoteBtn" aria-expanded="false">Emotes</button>
+      <button class="sendbtn" type="submit">Send</button>
+    </form>
+  </section>
+
+</main>
+
+<script>
+(function () {
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- channel rail ---------- */
+  var channels = [
+    { h: 'dellmarcus_44', s: 'Going through a box', y: '2009', v: '9.8K', live: true, m: 'MD' },
+    { h: 'poole_renata', s: 'Second shift, talking', y: '2004', v: '3.1K', live: true, m: 'RP' },
+    { h: 'vaneck_doug', s: 'Range balls, no commentary', y: '2004', v: '882', live: true, m: 'DV' },
+    { h: 'kedzie_annmarie', s: 'Reading the yearbook aloud', y: '2009', v: '2.4K', live: true, m: 'AK' },
+    { h: 'bo_hartigan', s: 'Driving somewhere specific', y: '2009', v: '641', live: true, m: 'BH' },
+    { h: 'tesskovach', s: 'Offline since March', y: '2004', v: '—', live: false, m: 'TK' },
+    { h: 'raysandoval_77', s: 'Offline since the reunion', y: '2009', v: '—', live: false, m: 'RS' }
+  ];
+
+  var list = document.getElementById('chanlist');
+  channels.forEach(function (c) {
+    var li = document.createElement('li');
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chan' + (c.live ? '' : ' off');
+    b.dataset.year = c.y;
+    b.dataset.live = c.live ? 'on' : 'off';
+    b.innerHTML =
+      '<span class="mono" aria-hidden="true">' + c.m + '</span>' +
+      '<span><span class="h">' + c.h + '</span><br><span class="s">' + c.s + '</span></span>' +
+      '<span class="v">' + c.v + '</span>';
+    li.appendChild(b);
+    list.appendChild(li);
+  });
+
+  var chips = Array.prototype.slice.call(document.querySelectorAll('.chip'));
+  chips.forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      chips.forEach(function (c) { c.setAttribute('aria-pressed', String(c === chip)); });
+      var f = chip.dataset.filter;
+      Array.prototype.forEach.call(list.querySelectorAll('.chan'), function (row) {
+        var show = f === 'all' ||
+                   (f === 'off' && row.dataset.live === 'off') ||
+                   (f === row.dataset.year && row.dataset.live === 'on');
+        row.hidden = !show;
+      });
+    });
+  });
+
+  /* ---------- pin a feed ---------- */
+  var feeds = document.getElementById('feeds');
+  Array.prototype.forEach.call(document.querySelectorAll('[data-pin]'), function (btn) {
+    if (btn === feeds) return;
+    btn.addEventListener('click', function () {
+      var want = btn.dataset.pin;
+      var next = feeds.dataset.pin === want ? 'none' : want;
+      feeds.dataset.pin = next;
+      Array.prototype.forEach.call(document.querySelectorAll('.feedbar [data-pin]'), function (b) {
+        var on = b.dataset.pin === next;
+        b.setAttribute('aria-pressed', String(on));
+        b.textContent = on ? 'Unpin' : 'Pin this feed';
+      });
+    });
+  });
+
+  /* ---------- follow ---------- */
+  var follow = document.getElementById('follow');
+  follow.addEventListener('click', function () {
+    var on = follow.getAttribute('aria-pressed') !== 'true';
+    follow.setAttribute('aria-pressed', String(on));
+    follow.textContent = on ? 'Following' : 'Follow';
+    if (on) push('sys', '', 'You followed dellmarcus_44. You will be told when he goes live, which is most days.');
+  });
+
+  /* ---------- verdict meter ---------- */
+  var pct = 71, yes = 4113, total = 5793;
+  var pctEl = document.getElementById('pct');
+  var fillEl = document.getElementById('fill');
+  var noteEl = document.getElementById('vnote');
+  var yesBtn = document.getElementById('voteYes');
+  var noBtn = document.getElementById('voteNo');
+
+  function vote(right) {
+    total += 1;
+    if (right) yes += 1;
+    pct = Math.round((yes / total) * 100);
+    pctEl.textContent = pct + '%';
+    fillEl.style.width = pct + '%';
+    yesBtn.setAttribute('aria-pressed', String(right));
+    noBtn.setAttribute('aria-pressed', String(!right));
+    noteEl.textContent = 'Ballot recorded. ' + total.toLocaleString('en-US') + ' this stream. It does not reset.';
+    push('sys', '', right ? 'You voted: right call.' : 'You voted: wrong call.');
+  }
+  yesBtn.addEventListener('click', function () { vote(true); });
+  noBtn.addEventListener('click', function () { vote(false); });
+
+  /* ---------- emotes ---------- */
+  var emotes = [
+    { code: 'almostWAVE', locked: false },
+    { code: 'blueBOX', locked: false },
+    { code: 'theLAMP', locked: false },
+    { code: 'pinLEFT', locked: false },
+    { code: 'classOf09', locked: false },
+    { code: 'sameSHIRT', locked: false },
+    { code: 'rentedTUX', locked: true },
+    { code: 'atticRUN', locked: true }
+  ];
+  var picker = document.getElementById('picker');
+  var say = document.getElementById('say');
+  emotes.forEach(function (e) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.innerHTML = '<span class="emote' + (e.locked ? ' locked' : '') + '">' + e.code + '</span>';
+    b.title = e.locked ? 'Tier three unlocks this one' : e.code;
+    b.addEventListener('click', function () {
+      if (e.locked) {
+        push('sys', '', e.code + ' is locked. Full Reconstruction unlocks it, along with the year-end report.');
+        return;
+      }
+      say.value = (say.value + ' ' + e.code).trim() + ' ';
+      say.focus();
+    });
+    picker.appendChild(b);
+  });
+
+  var emoteBtn = document.getElementById('emoteBtn');
+  emoteBtn.addEventListener('click', function () {
+    var open = picker.classList.toggle('open');
+    emoteBtn.setAttribute('aria-expanded', String(open));
+  });
+
+  /* ---------- chat ---------- */
+  var log = document.getElementById('log');
+  var codes = emotes.map(function (e) { return e.code; });
+
+  function esc(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function withEmotes(s) {
+    codes.forEach(function (c) {
+      s = s.split(c).join('<span class="emote">' + c + '</span>');
+    });
+    return s;
+  }
+  function push(kind, user, text) {
+    var d = document.createElement('p');
+    d.className = 'msg' + (kind === 'sys' ? ' sys' : '') + (kind === 'mine' ? ' mine' : '');
+    d.innerHTML = kind === 'sys'
+      ? esc(text)
+      : '<span class="u" style="color:' + colorFor(user) + '">' + esc(user) + '</span>: ' + withEmotes(esc(text));
+    log.appendChild(d);
+    while (log.children.length > 90) log.removeChild(log.firstChild);
+    log.scrollTop = log.scrollHeight;
+  }
+  var palette = ['#E0B457', '#E3766C', '#9CC4A8', '#D9C9A3', '#C98FB0', '#8FB6CE'];
+  function colorFor(u) {
+    var n = 0;
+    for (var i = 0; i < u.length; i++) n = (n * 31 + u.charCodeAt(i)) % 997;
+    return palette[n % palette.length];
+  }
+
+  var users = ['fastener_dad', 'hollowpine22', 'not_the_sister', 'quarterzip', 'lakeeffect_ken',
+               'mrs_bellamy', 'countyfair04', 'reunion_no', 'doug_again', 'annmarie_k'];
+  var lines = [
+    'pin left. pin left. pinLEFT',
+    'he has not opened the blue one in four streams',
+    'right feed is not real and you are all invested in it',
+    'theLAMP is back',
+    'sameSHIRT in both feeds again',
+    'the meter has not moved since march and honestly fair',
+    'my verdict is 71 and it will stay 71',
+    'classOf09 represent',
+    'chat be normal for one minute',
+    'he looked at the box. he looked at it.',
+    'i subscribed at tier two to say this: open it',
+    'almostWAVE',
+    'the reconstruction gave him a fence this week',
+    'my wife is in this chat. hi.',
+    'blueBOX blueBOX blueBOX',
+    'six hours in and he has said eleven words',
+    'we are all doing great and everything is fine',
+    'somebody raid doug he is alone on the range'
+  ];
+
+  [
+    ['fastener_dad', 'six hours in and he has said eleven words'],
+    ['mrs_bellamy', 'theLAMP again'],
+    ['quarterzip', 'pin left. pinLEFT'],
+    ['not_the_sister', 'i am not the sister. stop asking.'],
+    ['lakeeffect_ken', 'the meter has not moved since march and honestly fair']
+  ].forEach(function (m) { push('user', m[0], m[1]); });
+
+  var i = 0;
+  setInterval(function () {
+    push('user', users[(i * 7 + 3) % users.length], lines[i % lines.length]);
+    i += 1;
+    var n = 9847 + ((i * 13) % 180) - 90;
+    document.getElementById('viewers').textContent = n.toLocaleString('en-US') + ' watching';
+  }, reduce ? 6500 : 3200);
+
+  document.getElementById('composer').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var v = say.value.trim();
+    if (!v) return;
+    push('mine', 'you', v);
+    say.value = '';
+    picker.classList.remove('open');
+    emoteBtn.setAttribute('aria-expanded', 'false');
+  });
+})();
+</script>
+
+</body>
+</html>
