@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dander workspace · Reginald's House</title>
+<meta name="description" content="The Dander workspace for one pug's immune system. Six channels, one bot that only posts numbers, and no resolved threads.">
+<meta name="theme-color" content="#DCEBF0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#DCEBF0;--ink:#14323C;--primary:#0B6A80;--accent:#F2713F;
+    --muted:#5E8593;--muted-ink:#3F6474;--vinyl:#F4FAFC;--vinyl-deep:#0B6A80;
+    --well:#C9E0E8;--rule:#B9D3DC;
+    --display:'Bricolage Grotesque','Helvetica Neue',Helvetica,Arial,sans-serif;
+    --body:'Instrument Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --mono:'DM Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+  }
+  *,*::before,*::after{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;background-color:var(--bg);
+    background-image:
+      radial-gradient(1100px 700px at 6% -12%, rgba(255,255,255,.55), rgba(255,255,255,0) 70%),
+      radial-gradient(900px 620px at 102% 110%, rgba(255,255,255,.4), rgba(255,255,255,0) 72%);
+    background-attachment:fixed;
+    color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--primary);text-underline-offset:3px;}
+  h1,h2,h3{font-family:var(--display);letter-spacing:-.022em;margin:0;line-height:1.1;}
+  button{font:inherit;color:inherit;cursor:pointer;}
+  :focus-visible{outline:3px solid var(--primary);outline-offset:2px;}
+
+  .panel{
+    position:relative;background:var(--vinyl);border-radius:26px;
+    box-shadow:0 10px 22px rgba(20,50,60,.14),inset 2px 2px 0 rgba(255,255,255,.75),inset -3px -3px 0 rgba(11,106,128,.13);
+  }
+  .panel::before{content:"";position:absolute;inset:10px;border-radius:17px;border:2px dashed rgba(11,106,128,.3);pointer-events:none;}
+  .panel.deep{background:var(--vinyl-deep);color:#E7F4F8;box-shadow:0 12px 26px rgba(20,50,60,.22),inset 2px 2px 0 rgba(255,255,255,.2),inset -3px -3px 0 rgba(0,0,0,.16);}
+  .panel.deep::before{border-color:rgba(255,255,255,.26);}
+
+  .well{
+    display:inline-flex;align-items:center;gap:.5em;font-family:var(--mono);
+    font-size:.74rem;font-variant-numeric:tabular-nums;background:var(--well);color:var(--ink);
+    padding:.3em .74em;border-radius:999px;box-shadow:inset 2px 2px 0 rgba(11,106,128,.2);
+  }
+  .panel.deep .well{background:rgba(0,0,0,.26);color:#DCEEF3;box-shadow:inset 2px 2px 0 rgba(0,0,0,.3);}
+
+  .shell{max-width:1240px;margin-inline:auto;padding:16px 16px 24px;min-height:100%;display:flex;flex-direction:column;gap:14px;}
+
+  .chrome{display:flex;flex-wrap:wrap;align-items:center;gap:12px;justify-content:space-between;padding:4px 6px;}
+  .back{font-size:.93rem;text-decoration:none;color:var(--primary);font-weight:500;}
+  .back:hover{text-decoration:underline;}
+  .chrome .ws{display:flex;align-items:center;gap:9px;font-family:var(--display);font-weight:800;font-size:1.05rem;letter-spacing:-.03em;}
+  .chrome .ws .dot{width:13px;height:13px;border-radius:999px;background:var(--accent);box-shadow:inset 0 0 0 3px var(--bg),0 0 0 1px rgba(20,50,60,.3);}
+
+  .app{display:grid;gap:14px;grid-template-columns:1fr;flex:1;}
+  @media (min-width:840px){.app{grid-template-columns:232px 1fr;}}
+  @media (min-width:1120px){.app{grid-template-columns:232px 1fr 252px;}}
+
+  /* --- channel rail --- */
+  .rail{padding:22px 16px;}
+  .railgroup+.railgroup{margin-top:20px;}
+  .railgroup h2{font-size:.82rem;font-weight:600;font-family:var(--body);letter-spacing:0;color:var(--muted-ink);margin-bottom:9px;padding-left:8px;}
+  .rail ul{list-style:none;margin:0;padding:0;display:grid;gap:3px;}
+  .chan{
+    width:100%;display:flex;align-items:center;gap:8px;justify-content:space-between;
+    background:transparent;border:0;border-radius:999px;padding:.44em .8em;text-align:left;
+    font-size:.94rem;color:var(--ink);transition:background .15s ease-out;
+  }
+  .chan:hover{background:rgba(11,106,128,.09);}
+  .chan[aria-current="true"]{background:var(--vinyl-deep);color:#F1FAFC;box-shadow:inset 1px 1px 0 rgba(255,255,255,.18);}
+  .chan .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .chan .badge{font-family:var(--mono);font-size:.7rem;background:var(--accent);color:#2A1206;border-radius:999px;padding:0 .5em;flex:none;}
+  .chan[aria-current="true"] .badge{background:#F2713F;}
+  @media (max-width:839px){
+    .rail ul{grid-auto-flow:column;grid-auto-columns:max-content;overflow-x:auto;gap:7px;padding-bottom:4px;}
+    .railgroup h2{padding-left:0;}
+    .chan{background:var(--well);}
+  }
+
+  /* --- message column --- */
+  .stream{display:flex;flex-direction:column;min-height:520px;padding:0;}
+  .streamhead{padding:20px 24px 16px;border-bottom:2px solid var(--rule);display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;justify-content:space-between;}
+  .streamhead h1{font-size:1.5rem;}
+  .streamhead .topic{color:var(--muted-ink);font-size:.92rem;margin:6px 0 0;max-width:52ch;}
+  .search{
+    display:flex;align-items:center;gap:8px;background:var(--well);border-radius:999px;
+    padding:.34em .9em;box-shadow:inset 2px 2px 0 rgba(11,106,128,.2);
+  }
+  .search input{background:transparent;border:0;outline:0;font-family:var(--mono);font-size:.8rem;color:var(--ink);width:min(210px,52vw);}
+  .search input::placeholder{color:var(--muted-ink);opacity:.9;}
+
+  .feed{padding:16px 24px 8px;display:grid;gap:4px;align-content:start;flex:1;overflow-y:auto;min-height:0;}
+  .msg{display:grid;grid-template-columns:38px 1fr;gap:12px;padding:9px 0;border-radius:14px;}
+  .av{width:38px;height:38px;border-radius:999px;object-fit:cover;box-shadow:0 0 0 2px var(--vinyl),0 0 0 3px rgba(11,106,128,.28);}
+  .av.glyph{display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:.9rem;background:var(--well);color:var(--primary);}
+  .av.bot{background:var(--vinyl-deep);color:#EAF6F9;}
+  .mhead{display:flex;flex-wrap:wrap;align-items:baseline;gap:9px;}
+  .mhead .who{font-weight:600;font-size:.96rem;}
+  .mhead .role{color:var(--muted-ink);font-size:.78rem;}
+  .mhead time{font-family:var(--mono);font-size:.72rem;color:var(--muted-ink);}
+  .mbody{margin:3px 0 0;font-size:.98rem;max-width:64ch;}
+  .mbody.num{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:.9rem;}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px;}
+  .chip{
+    font-family:var(--mono);font-size:.72rem;background:var(--well);border:1px solid transparent;
+    border-radius:999px;padding:.2em .7em;box-shadow:inset 2px 2px 0 rgba(11,106,128,.16);
+    transition:transform .15s ease-out,border-color .15s ease-out;
+  }
+  .chip:hover{border-color:rgba(11,106,128,.45);}
+  .chip:active{transform:scale(.96);}
+  .chip.on{background:var(--accent);color:#2A1206;box-shadow:inset 2px 2px 0 rgba(120,45,15,.2);}
+  .thr{
+    margin-top:10px;display:inline-flex;align-items:center;gap:8px;background:transparent;border:0;
+    color:var(--primary);font-size:.86rem;font-weight:500;padding:0;text-decoration:underline;text-underline-offset:3px;
+  }
+  .replies{margin:11px 0 2px;padding:12px 0 2px 16px;border-left:3px solid var(--rule);display:none;gap:12px;}
+  .replies.open{display:grid;}
+  .reply{display:grid;grid-template-columns:28px 1fr;gap:10px;}
+  .reply .av{width:28px;height:28px;font-size:.76rem;}
+  .reply .mbody{font-size:.92rem;}
+  .empty{padding:26px 4px;color:var(--muted-ink);font-size:.95rem;}
+
+  .composer{padding:14px 24px 22px;border-top:2px solid var(--rule);display:flex;gap:10px;align-items:center;}
+  .composer input{
+    flex:1;background:var(--well);border:0;border-radius:999px;padding:.72em 1.1em;font:inherit;font-size:.95rem;
+    color:var(--ink);box-shadow:inset 2px 2px 0 rgba(11,106,128,.2);outline:0;
+  }
+  .composer input::placeholder{color:var(--muted-ink);}
+  .send{
+    border:1px solid rgba(20,50,60,.3);background:var(--accent);color:var(--ink);font-weight:600;
+    border-radius:999px;padding:.66em 1.3em;font-size:.95rem;
+    box-shadow:0 7px 14px rgba(20,50,60,.18),inset 2px 2px 0 rgba(255,255,255,.4),inset -2px -3px 0 rgba(120,45,15,.18);
+    transition:transform .2s ease-out,box-shadow .2s ease-out;
+  }
+  .send:active{transform:scale(.985);box-shadow:0 3px 7px rgba(20,50,60,.2),inset 2px 2px 0 rgba(255,255,255,.3);}
+
+  /* --- right rail --- */
+  .side{padding:22px 20px;display:grid;gap:22px;align-content:start;}
+  @media (max-width:1119px){.side{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));}}
+  .side h2{font-size:1.02rem;}
+  .side p{margin:8px 0 0;color:var(--muted-ink);font-size:.86rem;}
+  .meter{height:14px;border-radius:999px;background:var(--well);box-shadow:inset 2px 2px 0 rgba(11,106,128,.2);overflow:hidden;margin-top:12px;}
+  .meter span{display:block;height:100%;width:0;border-radius:999px;background:var(--accent);transition:width .5s ease-out;}
+  .bigno{font-family:var(--display);font-weight:800;font-size:2.4rem;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1;margin-top:10px;}
+  .statusrow{display:flex;align-items:center;gap:11px;margin-top:12px;}
+  .statusrow img{width:40px;height:40px;border-radius:999px;object-fit:cover;box-shadow:0 0 0 2px var(--vinyl),0 0 0 3px rgba(11,106,128,.28);}
+  .statusrow .s{font-size:.88rem;font-weight:600;}
+  .statusrow .u{font-size:.78rem;color:var(--muted-ink);font-family:var(--mono);}
+  .sidefoot{font-size:.78rem;color:var(--muted-ink);}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none !important;}}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="chrome">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <span class="ws"><span class="dot" aria-hidden="true"></span>Reginald's House</span>
+    <span class="well" id="wsmeta">members 4 · plan pro snout</span>
+  </div>
+
+  <div class="app">
+
+    <nav class="panel rail" aria-label="Channels and messages">
+      <div class="railgroup">
+        <h2>Channels</h2>
+        <ul id="chanlist"></ul>
+      </div>
+      <div class="railgroup">
+        <h2>Direct messages</h2>
+        <ul id="dmlist"></ul>
+      </div>
+    </nav>
+
+    <main class="panel stream">
+      <div class="streamhead">
+        <div>
+          <h1 id="chanName">#general</h1>
+          <p class="topic" id="chanTopic"></p>
+        </div>
+        <label class="search">
+          <span class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">Filter messages</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3F6474" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.6-3.6"></path></svg>
+          <input id="q" type="search" placeholder="filter this channel" autocomplete="off">
+        </label>
+      </div>
+
+      <div class="feed" id="feed"></div>
+
+      <form class="composer" id="composer">
+        <input id="draft" type="text" placeholder="Message this channel as Priya" autocomplete="off" aria-label="Message this channel as Priya">
+        <button class="send" type="submit">Post</button>
+      </form>
+    </main>
+
+    <aside class="panel side" aria-label="Channel status">
+      <div>
+        <h2>Flare severity</h2>
+        <div class="meter"><span id="meterFill"></span></div>
+        <p id="sevText">Scored hourly against the last fourteen days in this channel.</p>
+      </div>
+      <div>
+        <h2>Unresolved threads</h2>
+        <div class="bigno" id="unresolved">118</div>
+        <p>Across the workspace. This number has not gone down since March.</p>
+      </div>
+      <div>
+        <h2>Status</h2>
+        <div class="statusrow">
+          <img src="headshot-1.webp" width="320" height="320" alt="Reginald, a fawn pug.">
+          <span><span class="s">itchy</span><br><span class="u">set 4 may · auto</span></span>
+        </div>
+        <p class="sidefoot">Synced from the regional pollen index. Nobody in the household can clear it.</p>
+      </div>
+    </aside>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  var PEOPLE = {
+    reginald: { name: "Reginald", role: "Head of Breathing", img: "headshot-1.webp" },
+    moira:    { name: "Moira",    role: "Storage Mite Working Group", img: "headshot-2.webp" },
+    dusty:    { name: "Dusty",    role: "Grass Pollen, IC", img: "headshot-3.webp" },
+    priya:    { name: "Priya",    role: "Owner, primary account", initials: "PR" },
+    bot:      { name: "Pollen Index", role: "bot", initials: "PI", bot: true },
+    vet:      { name: "The Vet's Front Desk", role: "guest", initials: "VF" }
+  };
+
+  var CHANNELS = [
+    {
+      id: "general", name: "#general", dm: false, unread: 2, severity: 3.1,
+      topic: "Workspace-wide. Please keep individual allergens in their own channels.",
+      msgs: [
+        { by: "priya", t: "08:12", text: "Adding everyone to the new workspace. Reginald, you have an account now.",
+          chips: [["noted", 2, false]] },
+        { by: "reginald", t: "08:40", text: "I will not be using it.",
+          chips: [["concur", 3, false], ["understood", 1, false]] },
+        { by: "bot", t: "09:00", text: "tree 4.1 · grass 6.2 · mould 2.8 · household dust 7.4", num: true },
+        { by: "moira", t: "09:06", text: "Someone should probably close the March thread before the quarter ends.",
+          chips: [["agree", 4, false]],
+          thread: [
+            { by: "dusty", t: "09:14", text: "Who owns it." },
+            { by: "moira", t: "09:15", text: "Nobody owns it. That is why it is still open." },
+            { by: "priya", t: "11:02", text: "I will look at it this weekend." }
+          ] }
+      ]
+    },
+    {
+      id: "chicken", name: "#chicken-protein", dm: false, unread: 6, severity: 8.7,
+      topic: "Confirmed trigger. Escalations go straight to #vet-escalations, not here.",
+      msgs: [
+        { by: "priya", t: "18:30", text: "He got into the stock pot. Opening this as an incident.",
+          chips: [["seen", 3, false]] },
+        { by: "bot", t: "18:31", text: "severity 8.7 · onset 00:14 · duration ongoing", num: true },
+        { by: "reginald", t: "18:44", text: "It was on the floor. The floor is mine.",
+          chips: [["fair", 5, false], ["disputed", 2, false]],
+          thread: [
+            { by: "moira", t: "18:51", text: "The floor is a shared resource." },
+            { by: "reginald", t: "18:52", text: "It has never been escalated before." },
+            { by: "priya", t: "19:20", text: "It is being escalated now." }
+          ] },
+        { by: "dusty", t: "21:07", text: "This happens every autumn and the thread never closes." }
+      ]
+    },
+    {
+      id: "mites", name: "#storage-mites", dm: false, unread: 0, severity: 5.4,
+      topic: "Owned by Moira. Bag of kibble opened 11 August, still in service.",
+      msgs: [
+        { by: "moira", t: "07:02", text: "Reopening this. The bag has been open for six weeks and the clip is decorative.",
+          chips: [["noted", 1, false]] },
+        { by: "bot", t: "07:05", text: "bag age 41d · humidity 62% · risk index 5.4", num: true },
+        { by: "priya", t: "07:40", text: "I bought a new clip." },
+        { by: "moira", t: "07:41", text: "You bought a new clip in June." }
+      ]
+    },
+    {
+      id: "lawn", name: "#lawn-next-door", dm: false, unread: 1, severity: 6.9,
+      topic: "Cut Tuesdays. We have no relationship with the neighbour and no plans to build one.",
+      msgs: [
+        { by: "bot", t: "06:15", text: "mower detected · grass 6.9 · exposure window 11 min", num: true },
+        { by: "dusty", t: "06:48", text: "I went out anyway.",
+          chips: [["brave", 7, false], ["unwise", 4, false]] },
+        { by: "reginald", t: "07:30", text: "Dusty went out anyway. Logging it here so it is somewhere." }
+      ]
+    },
+    {
+      id: "car", name: "#the-car-incident", dm: false, unread: 0, severity: 2.2,
+      topic: "Archive-only. Retained because the Kennel Compliance plan will not let us delete it.",
+      msgs: [
+        { by: "priya", t: "14:11", text: "Keeping this channel for the record. Nothing new is expected here." },
+        { by: "reginald", t: "14:52", text: "Good." },
+        { by: "bot", t: "15:00", text: "last activity 189d · retention 7y · deletable no", num: true }
+      ]
+    },
+    {
+      id: "vet", name: "#vet-escalations", dm: false, unread: 3, severity: 7.5,
+      topic: "The front desk is a guest in this channel and can see everything above this line.",
+      msgs: [
+        { by: "priya", t: "09:02", text: "Sharing last month's record ahead of Thursday." },
+        { by: "vet", t: "09:48", text: "Received. We do not monitor this channel between appointments.",
+          chips: [["received", 1, false]] },
+        { by: "reginald", t: "10:15", text: "" , textOverride: "I have not spoken since the front desk joined. This message is an exception." },
+        { by: "bot", t: "12:00", text: "escalations open 3 · closed 0 · median age 71d", num: true }
+      ]
+    },
+    {
+      id: "dm-histamine", name: "Histamine Response", dm: true, unread: 9, severity: 9.2,
+      topic: "Direct message. Responds instantly and never to the question asked.",
+      msgs: [
+        { by: "priya", t: "22:40", text: "Can you hold off until morning." },
+        { by: "bot", t: "22:40", text: "response initiated · latency 0.4s · scope whole animal", num: true },
+        { by: "bot", t: "22:41", text: "response initiated · latency 0.3s · scope whole animal", num: true },
+        { by: "bot", t: "22:41", text: "response initiated · latency 0.3s · scope whole animal", num: true }
+      ]
+    },
+    {
+      id: "dm-ear", name: "Left Ear", dm: true, unread: 0, severity: 4.6,
+      topic: "Direct message. Reports independently of the rest of the animal.",
+      msgs: [
+        { by: "reginald", t: "16:20", text: "Status." },
+        { by: "bot", t: "16:20", text: "warm · pink · itch 4.6 · unchanged 12d", num: true },
+        { by: "reginald", t: "16:22", text: "Understood." }
+      ]
+    }
+  ];
+
+  var state = { active: "general", filter: "" };
+  var feed = document.getElementById("feed");
+  var chanList = document.getElementById("chanlist");
+  var dmList = document.getElementById("dmlist");
+
+  function find(id){ for (var i=0;i<CHANNELS.length;i++){ if (CHANNELS[i].id === id) return CHANNELS[i]; } return CHANNELS[0]; }
+  function esc(s){ var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+
+  function renderRail(){
+    chanList.innerHTML = "";
+    dmList.innerHTML = "";
+    CHANNELS.forEach(function(c){
+      var li = document.createElement("li");
+      var b = document.createElement("button");
+      b.className = "chan";
+      b.type = "button";
+      b.setAttribute("aria-current", c.id === state.active ? "true" : "false");
+      var label = c.dm ? c.name : c.name;
+      b.innerHTML = '<span class="nm">' + esc(label) + '</span>' +
+        (c.unread ? '<span class="badge">' + c.unread + '</span>' : '');
+      b.addEventListener("click", function(){
+        state.active = c.id;
+        c.unread = 0;
+        document.getElementById("q").value = "";
+        state.filter = "";
+        renderRail();
+        renderChannel();
+      });
+      li.appendChild(b);
+      (c.dm ? dmList : chanList).appendChild(li);
+    });
+  }
+
+  function avatar(key, small){
+    var p = PEOPLE[key];
+    if (p.img) {
+      var img = document.createElement("img");
+      img.className = "av";
+      img.width = 320;
+      img.height = 320;
+      img.src = p.img;
+      img.alt = p.name;
+      return img.outerHTML;
+    }
+    return '<span class="av glyph' + (p.bot ? " bot" : "") + '" aria-hidden="true">' + esc(p.initials) + '</span>';
+  }
+
+  function messageNode(m, ci, mi){
+    var p = PEOPLE[m.by];
+    var wrap = document.createElement("article");
+    wrap.className = "msg";
+    var body = m.textOverride || m.text;
+
+    var chips = "";
+    if (m.chips) {
+      chips = '<div class="chips">' + m.chips.map(function(c, idx){
+        return '<button type="button" class="chip' + (c[2] ? " on" : "") + '" data-c="' + ci + '" data-m="' + mi + '" data-i="' + idx + '">' +
+          esc(c[0]) + " " + c[1] + '</button>';
+      }).join("") + '</div>';
+    }
+
+    var thread = "";
+    if (m.thread) {
+      thread = '<button type="button" class="thr" data-thread="' + ci + "-" + mi + '">' +
+        m.thread.length + " replies · unresolved</button>" +
+        '<div class="replies" id="t-' + ci + "-" + mi + '">' +
+        m.thread.map(function(r){
+          var rp = PEOPLE[r.by];
+          return '<div class="reply">' + avatar(r.by, true) +
+            '<div><div class="mhead"><span class="who">' + esc(rp.name) + '</span><time>' + esc(r.t) + '</time></div>' +
+            '<p class="mbody">' + esc(r.text) + '</p></div></div>';
+        }).join("") + '</div>';
+    }
+
+    wrap.innerHTML = avatar(m.by) +
+      '<div><div class="mhead"><span class="who">' + esc(p.name) + '</span>' +
+      '<span class="role">' + esc(p.role) + '</span><time>' + esc(m.t) + '</time></div>' +
+      '<p class="mbody' + (m.num ? " num" : "") + '">' + esc(body) + '</p>' +
+      chips + thread + '</div>';
+    return wrap;
+  }
+
+  function renderChannel(){
+    var c = find(state.active);
+    var ci = CHANNELS.indexOf(c);
+    document.getElementById("chanName").textContent = c.name;
+    document.getElementById("chanTopic").textContent = c.topic;
+
+    feed.innerHTML = "";
+    var f = state.filter.trim().toLowerCase();
+    var shown = 0;
+    c.msgs.forEach(function(m, mi){
+      var hay = ((m.textOverride || m.text) + " " + PEOPLE[m.by].name).toLowerCase();
+      if (f && hay.indexOf(f) === -1) return;
+      shown++;
+      feed.appendChild(messageNode(m, ci, mi));
+    });
+    if (!shown) {
+      var e = document.createElement("p");
+      e.className = "empty";
+      e.textContent = f
+        ? 'Nothing in ' + c.name + ' matches "' + f + '". The record is long but it is not complete.'
+        : 'This channel is empty. Nothing has gone wrong here yet.';
+      feed.appendChild(e);
+    }
+
+    var fill = document.getElementById("meterFill");
+    fill.style.width = "0%";
+    window.requestAnimationFrame(function(){
+      window.requestAnimationFrame(function(){ fill.style.width = (c.severity * 10) + "%"; });
+    });
+    document.getElementById("sevText").textContent =
+      "Scored " + c.severity.toFixed(1) + " out of 10 in " + c.name + ", hourly, against the last fourteen days.";
+  }
+
+  feed.addEventListener("click", function(ev){
+    var chip = ev.target.closest(".chip");
+    if (chip) {
+      var c = CHANNELS[+chip.dataset.c], m = c.msgs[+chip.dataset.m], entry = m.chips[+chip.dataset.i];
+      entry[2] = !entry[2];
+      entry[1] += entry[2] ? 1 : -1;
+      chip.classList.toggle("on", entry[2]);
+      chip.textContent = entry[0] + " " + entry[1];
+      return;
+    }
+    var thr = ev.target.closest(".thr");
+    if (thr) {
+      var box = document.getElementById("t-" + thr.dataset.thread);
+      var open = box.classList.toggle("open");
+      thr.textContent = box.querySelectorAll(".reply").length + (open ? " replies · hide" : " replies · unresolved");
+    }
+  });
+
+  document.getElementById("q").addEventListener("input", function(ev){
+    state.filter = ev.target.value;
+    renderChannel();
+  });
+
+  document.getElementById("composer").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    var input = document.getElementById("draft");
+    var text = input.value.trim();
+    if (!text) return;
+    var c = find(state.active);
+    var now = new Date();
+    var hh = ("0" + now.getHours()).slice(-2), mm = ("0" + now.getMinutes()).slice(-2);
+    c.msgs.push({ by: "priya", t: hh + ":" + mm, text: text, chips: [["noted", 0, false]] });
+    input.value = "";
+    state.filter = "";
+    document.getElementById("q").value = "";
+    renderChannel();
+    feed.scrollTop = feed.scrollHeight;
+    var u = document.getElementById("unresolved");
+    u.textContent = (parseInt(u.textContent, 10) + 1);
+  });
+
+  renderRail();
+  renderChannel();
+})();
+</script>
+</body>
+</html>
