@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trading floor · Clutch</title>
+<meta name="description" content="The Clutch trading floor: egg-denominated spot and perpetual markets, priced per dozen, settled physically.">
+<meta name="theme-color" content="#DCD5C4">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..800,60,1&family=Karla:wght@400;500;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#DCD5C4;
+  --cell:#D2CAB7;
+  --hi:#F0EADC;
+  --lo:#A89E88;
+  --ink:#241E18;
+  --muted-ink:#57503F;
+  --indigo:#2F3E8E;
+  --verm:#C0402B;
+  --alarm-ink:#9E3220;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background-color:var(--bg);
+  background-image:
+    repeating-radial-gradient(circle at 17% 29%, rgba(168,158,136,.10) 0 1px, transparent 1px 7px),
+    repeating-radial-gradient(circle at 73% 61%, rgba(240,234,220,.10) 0 1px, transparent 1px 9px),
+    repeating-radial-gradient(circle at 41% 83%, rgba(168,158,136,.08) 0 1px, transparent 1px 11px);
+  background-attachment:fixed;
+  color:var(--ink);
+  font-family:'Karla',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{
+  font-family:'Fraunces','Bookman Old Style',Georgia,serif;
+  font-variation-settings:'SOFT' 60,'WONK' 1,'opsz' 60;
+  font-weight:700;letter-spacing:-.015em;line-height:1.1;margin:0;
+}
+.m{font-family:'Courier Prime','Courier New',Courier,monospace;font-variant-numeric:tabular-nums}
+.cell{
+  background:var(--cell);border-radius:14px;
+  box-shadow:inset 2px 2px 0 var(--hi),inset -2px -2px 0 var(--lo),0 3px 4px rgba(36,30,24,.14);
+}
+.stamp{
+  display:inline-block;position:relative;
+  font-family:'Courier Prime',monospace;font-variant-numeric:tabular-nums;
+  font-size:.66rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--indigo);border:2px solid var(--indigo);border-radius:3px;
+  padding:.28em .58em .22em;transform:rotate(-1.2deg);opacity:.84;white-space:nowrap;
+  transition:opacity 180ms ease-out;
+}
+.stamp::after{content:"";position:absolute;inset:2px;border:1px dashed rgba(47,62,142,.42);border-radius:1px;pointer-events:none}
+.stamp:hover{opacity:1}
+.stamp.alarm{color:var(--alarm-ink);border-color:var(--verm);transform:rotate(1.1deg)}
+.stamp.alarm::after{border-color:rgba(192,64,43,.42)}
+.vent-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--bg);box-shadow:inset 0 0 0 1px var(--lo);flex:0 0 auto}
+.vents{height:7px;background-image:radial-gradient(circle at 8px 3.5px, var(--bg) 0 2.4px, var(--lo) 2.4px 3.4px, transparent 3.5px);background-size:16px 7px;background-repeat:repeat-x}
+
+/* chrome */
+.chrome{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:16px clamp(14px,2.6vw,26px) 0}
+.back{font-size:.9rem;color:var(--muted-ink);text-decoration:none;border-bottom:1px solid transparent;padding-bottom:2px}
+.back:hover,.back:focus-visible{color:var(--indigo);border-bottom-color:var(--indigo)}
+.floormark{font-family:'Fraunces',Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1,'opsz' 60;font-weight:800;font-size:1.1rem;color:var(--indigo)}
+.clock{margin-left:auto;font-size:.82rem;color:var(--muted-ink);display:flex;align-items:center;gap:10px}
+
+/* layout */
+.floor{display:grid;grid-template-columns:230px minmax(0,1fr) 288px;gap:14px;padding:16px clamp(14px,2.6vw,26px) 30px;align-items:start}
+.panel{padding:16px}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.panel-head h2{font-size:1.02rem}
+.hint{font-size:.74rem;color:var(--muted-ink)}
+
+/* instruments */
+.inst{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.inst button{
+  width:100%;text-align:left;cursor:pointer;font-family:inherit;font-size:inherit;
+  background:transparent;border:0;border-radius:10px;padding:10px 11px;min-height:56px;
+  box-shadow:inset 0 0 0 1px rgba(168,158,136,.7);
+  transition:box-shadow 180ms ease-out,background 180ms ease-out;color:var(--ink);
+}
+.inst button:hover{background:rgba(240,234,220,.42)}
+.inst button[aria-pressed="true"]{background:rgba(240,234,220,.6);box-shadow:inset 0 0 0 2px var(--indigo)}
+.inst .code{font-family:'Courier Prime',monospace;font-weight:700;font-size:.92rem;letter-spacing:.04em}
+.inst .nm{display:block;font-size:.74rem;color:var(--muted-ink);margin-top:1px}
+.inst .row2{display:flex;justify-content:space-between;align-items:baseline;margin-top:6px}
+.inst .px{font-family:'Courier Prime',monospace;font-variant-numeric:tabular-nums;font-weight:700;font-size:.88rem}
+.inst .ch{font-family:'Courier Prime',monospace;font-variant-numeric:tabular-nums;font-size:.76rem}
+.up{color:var(--indigo)}
+.down{color:var(--alarm-ink)}
+
+/* ladder */
+.ladder{width:100%;border-collapse:collapse;font-family:'Courier Prime',monospace;font-variant-numeric:tabular-nums;font-size:.86rem}
+.ladder caption{text-align:left;font-family:'Karla',sans-serif;font-size:.74rem;color:var(--muted-ink);padding-bottom:8px}
+.ladder th{
+  text-align:right;font-weight:700;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted-ink);padding:0 10px 7px;border-bottom:1px solid var(--lo);
+}
+.ladder th:first-child{text-align:left}
+.ladder td{padding:0;border:0}
+.ladder tr.lvl{cursor:pointer}
+.ladder tr.lvl:hover .lc,.ladder tr.lvl:focus-within .lc{background:rgba(240,234,220,.55)}
+.lc{padding:5px 10px;position:relative;z-index:1}
+.lc.r{text-align:right}
+.depth{position:relative}
+.depth .bar{position:absolute;top:2px;bottom:2px;right:0;border-radius:3px;opacity:.28}
+.ask .bar{background:var(--verm)}
+.bid .bar{background:var(--indigo)}
+.ask .px{color:var(--alarm-ink);font-weight:700}
+.bid .px{color:var(--indigo);font-weight:700}
+.spread td{padding:9px 10px;border-top:1px solid var(--lo);border-bottom:1px solid var(--lo)}
+.spread .lbl{font-family:'Karla',sans-serif;font-size:.72rem;color:var(--muted-ink);letter-spacing:.06em}
+
+/* ticket */
+.ticket{margin-top:14px;padding:16px}
+.toggle{display:flex;gap:0;border-radius:10px;overflow:hidden;box-shadow:inset 0 0 0 2px var(--lo);margin-bottom:14px}
+.toggle button{
+  flex:1;cursor:pointer;font-family:'Karla',sans-serif;font-weight:700;font-size:.92rem;
+  background:transparent;border:0;padding:12px 8px;min-height:48px;color:var(--muted-ink);
+  transition:background 180ms ease-out,color 180ms ease-out;
+}
+.toggle button[aria-pressed="true"]{background:var(--indigo);color:#F2EFE6}
+.toggle button.leave[aria-pressed="true"]{background:var(--verm);color:#F7EFE9}
+.tkt-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-ink);font-family:'Courier Prime',monospace}
+.field input{
+  font-family:'Courier Prime',monospace;font-variant-numeric:tabular-nums;font-size:1rem;font-weight:700;
+  color:var(--ink);background:rgba(240,234,220,.55);border:0;border-radius:9px;padding:11px 12px;min-height:46px;
+  box-shadow:inset 2px 2px 0 rgba(168,158,136,.5),inset -1px -1px 0 var(--hi);width:100%;
+}
+.field input:focus-visible{outline:3px solid var(--indigo);outline-offset:2px}
+.tkt-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:14px}
+.settle{font-size:.78rem;color:var(--muted-ink);max-width:30ch}
+.settle b{font-family:'Courier Prime',monospace;color:var(--ink)}
+.place{
+  cursor:pointer;font-family:'Karla',sans-serif;font-weight:700;font-size:.95rem;
+  background:var(--indigo);color:#F2EFE6;border:0;border-radius:11px;padding:13px 22px;min-height:48px;
+  box-shadow:inset 2px 2px 0 rgba(240,234,220,.22),inset -2px -2px 0 rgba(12,18,56,.5),0 3px 4px rgba(36,30,24,.2);
+  transition:transform 180ms ease-out,box-shadow 180ms ease-out;
+}
+.place:active{transform:translateY(1px);box-shadow:inset 2px 2px 0 rgba(240,234,220,.22),inset -2px -2px 0 rgba(12,18,56,.5),0 1px 2px rgba(36,30,24,.22)}
+
+/* broodiness */
+.pen{margin-bottom:14px}
+.pen:last-of-type{margin-bottom:0}
+.pen-row{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:5px}
+.pen-name{font-size:.86rem;font-weight:700}
+.pen-val{font-family:'Courier Prime',monospace;font-variant-numeric:tabular-nums;font-size:.84rem;font-weight:700}
+.meter{height:9px;border-radius:99px;background:rgba(168,158,136,.55);box-shadow:inset 1px 1px 0 rgba(36,30,24,.12);overflow:hidden}
+.meter i{display:block;height:100%;width:0;border-radius:99px;background:var(--indigo);transition:width 620ms ease-out}
+.meter.hot i{background:var(--verm)}
+@media (prefers-reduced-motion:reduce){.meter i{transition:none}}
+.pen-note{font-size:.74rem;color:var(--muted-ink);margin-top:5px}
+
+/* log */
+.log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px;max-height:280px;overflow-y:auto}
+.log li{display:flex;gap:9px;align-items:flex-start;font-size:.81rem;line-height:1.4}
+.log time{font-family:'Courier Prime',monospace;font-variant-numeric:tabular-nums;color:var(--muted-ink);flex:0 0 auto;font-size:.78rem;padding-top:1px}
+.log .fresh{color:var(--indigo);font-weight:700}
+.log .vent-dot{margin-top:5px}
+
+@media (max-width:1080px){
+  .floor{grid-template-columns:1fr 1fr}
+  .side-right{grid-column:1 / -1}
+}
+@media (max-width:760px){
+  .floor{grid-template-columns:1fr}
+  .side-right{grid-column:auto}
+  .inst{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+}
+a:focus-visible,button:focus-visible{outline:3px solid var(--verm);outline-offset:3px;border-radius:4px}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <a class="back" href="./index.html">&larr; back to the pitch</a>
+  <span class="floormark">Clutch</span>
+  <span class="stamp">Floor open</span>
+  <span class="clock"><span class="vent-dot" aria-hidden="true"></span><span class="m" id="clock">05:41:00</span> pen time</span>
+</div>
+
+<div class="floor">
+
+  <!-- instruments -->
+  <aside class="cell panel">
+    <div class="panel-head"><h2>Instruments</h2></div>
+    <ul class="inst" id="inst"></ul>
+    <div class="vents" aria-hidden="true" style="margin:14px 0 10px"></div>
+    <p class="hint" style="margin:0">All prices per dozen. The book thins after dusk and halts entirely in November.</p>
+  </aside>
+
+  <!-- ladder + ticket -->
+  <main>
+    <section class="cell panel">
+      <div class="panel-head">
+        <h2 id="bookTitle">EGG spot</h2>
+        <span class="stamp" id="bookStamp">Last 4.18</span>
+      </div>
+      <table class="ladder">
+        <caption>Click any level to load that price into the ticket.</caption>
+        <thead>
+          <tr><th scope="col">Level</th><th scope="col">Price</th><th scope="col">Resting</th></tr>
+        </thead>
+        <tbody id="asks"></tbody>
+        <tbody id="spreadRow"></tbody>
+        <tbody id="bids"></tbody>
+      </table>
+    </section>
+
+    <section class="cell ticket">
+      <div class="panel-head">
+        <h2>Order ticket</h2>
+        <span class="hint">Pen 3 · account CLTCH-04-118</span>
+      </div>
+      <div class="toggle" role="group" aria-label="Order side">
+        <button type="button" id="sideSit" class="sit" aria-pressed="true">Sit</button>
+        <button type="button" id="sideLeave" class="leave" aria-pressed="false">Leave</button>
+      </div>
+      <div class="tkt-grid">
+        <div class="field">
+          <label for="size">Size, dozens</label>
+          <input id="size" type="number" inputmode="numeric" min="1" max="999" step="1" value="6">
+        </div>
+        <div class="field">
+          <label for="limit">Limit, per dozen</label>
+          <input id="limit" type="number" inputmode="decimal" min="0" step="0.01" value="4.18">
+        </div>
+      </div>
+      <div class="tkt-foot">
+        <p class="settle" style="margin:0">Estimated physical settlement <b id="settleDate">Tue 29 Sep</b>, assuming the custodian stands up.</p>
+        <button class="place" type="button" id="place">Place order</button>
+      </div>
+      <p class="hint" id="receipt" style="margin:12px 0 0" role="status" aria-live="polite"></p>
+    </section>
+  </main>
+
+  <!-- broodiness + log -->
+  <aside class="side-right">
+    <section class="cell panel">
+      <div class="panel-head">
+        <h2>Broodiness Index</h2>
+        <span class="stamp alarm" id="bellStamp">1 bell</span>
+      </div>
+      <div id="pens"></div>
+      <p class="pen-note" style="margin-top:12px">A member above 80 is sitting on collateral. Collateral under a sitting member cannot be called.</p>
+    </section>
+
+    <section class="cell panel" style="margin-top:14px">
+      <div class="panel-head">
+        <h2>Settlement log</h2>
+        <span class="hint">north run</span>
+      </div>
+      <ul class="log" id="log"></ul>
+    </section>
+  </aside>
+
+</div>
+
+<script>
+(function(){
+  var instruments = [
+    { code:'EGG',        name:'Grade A spot',       last:4.18,  chg: 0.06 },
+    { code:'BRWN',       name:'Brown, sized large', last:5.02,  chg:-0.11 },
+    { code:'BANTAM',     name:'Bantam, half-lot',   last:2.74,  chg: 0.19 },
+    { code:'DBLYLK-PERP',name:'Double yolk, perp',  last:11.40, chg:-0.87 }
+  ];
+
+  var pens = [
+    { name:'Pen 1, south', val:34, note:'Nobody has sat down. Ordinary morning.' },
+    { name:'Pen 3, north run', val:88, note:'Marguerite is on the collateral. Margin call suspended until she moves.' },
+    { name:'Pen 5, orchard', val:52, note:'Two members circling the box. Watch it.' },
+    { name:'Pen 7, quarantine', val:12, note:'Cleared at 04:10. No open interest.' }
+  ];
+
+  var baseLog = [
+    ['05:40','Floor opened. Three members present, one asleep.'],
+    ['05:38','Ronald crowed. Not a market event. Logged anyway.'],
+    ['05:12','Withdrawal CLTCH-8841 released. Custodian stood up voluntarily.'],
+    ['04:55','Delphine failed roost-order auth. New bird from the north run.'],
+    ['04:10','Pen 7 swept and cleared. Straw replaced.'],
+    ['23:47','Book closed at dusk. Two resting bids carried overnight.']
+  ];
+
+  var el = function(id){ return document.getElementById(id); };
+  var active = 0;
+  var side = 'sit';
+
+  function fmt(n){ return n.toFixed(2); }
+
+  function renderInstruments(){
+    var ul = el('inst');
+    ul.innerHTML = '';
+    instruments.forEach(function(it, i){
+      var li = document.createElement('li');
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-pressed', i === active ? 'true' : 'false');
+      var dir = it.chg >= 0 ? 'up' : 'down';
+      var sign = it.chg >= 0 ? '+' : '';
+      b.innerHTML =
+        '<span class="code">' + it.code + '</span>' +
+        '<span class="nm">' + it.name + '</span>' +
+        '<span class="row2"><span class="px">' + fmt(it.last) + '</span>' +
+        '<span class="ch ' + dir + '">' + sign + fmt(it.chg) + '</span></span>';
+      b.addEventListener('click', function(){ active = i; renderInstruments(); renderBook(); syncLimit(); });
+      li.appendChild(b);
+      ul.appendChild(li);
+    });
+  }
+
+  function levels(mid, i, isAsk){
+    var step = mid > 8 ? 0.05 : 0.02;
+    var price = isAsk ? mid + step * (i + 1) : mid - step * (i + 1);
+    var seed = Math.abs(Math.sin((mid * 100 + i * 17 + (isAsk ? 3 : 8))));
+    var resting = Math.round(4 + seed * 46);
+    return { price: price, resting: resting };
+  }
+
+  function renderBook(){
+    var it = instruments[active];
+    el('bookTitle').textContent = it.code + (it.code === 'DBLYLK-PERP' ? ' perpetual' : ' spot');
+    el('bookStamp').textContent = 'Last ' + fmt(it.last);
+
+    var rows = [];
+    for (var i = 4; i >= 0; i--) rows.push(levels(it.last, i, true));
+    var bidRows = [];
+    for (var j = 0; j < 5; j++) bidRows.push(levels(it.last, j, false));
+
+    var maxR = 0;
+    rows.concat(bidRows).forEach(function(r){ if (r.resting > maxR) maxR = r.resting; });
+
+    function paint(tbodyId, data, cls){
+      var tb = el(tbodyId);
+      tb.innerHTML = '';
+      data.forEach(function(r, idx){
+        var tr = document.createElement('tr');
+        tr.className = 'lvl ' + cls;
+        tr.tabIndex = 0;
+        tr.setAttribute('role','button');
+        tr.setAttribute('aria-label','Load ' + fmt(r.price) + ' per dozen into the ticket');
+        var pct = Math.round((r.resting / maxR) * 100);
+        tr.innerHTML =
+          '<td class="lc">' + (cls === 'ask' ? 'Ask ' : 'Bid ') + (cls === 'ask' ? (data.length - idx) : (idx + 1)) + '</td>' +
+          '<td class="lc r px">' + fmt(r.price) + '</td>' +
+          '<td class="lc r depth"><span class="bar" style="width:' + pct + '%"></span>' + r.resting + '</td>';
+        var load = function(){
+          el('limit').value = fmt(r.price);
+          el('receipt').textContent = 'Ticket loaded at ' + fmt(r.price) + ' per dozen.';
+        };
+        tr.addEventListener('click', load);
+        tr.addEventListener('keydown', function(e){
+          if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); load(); }
+        });
+        tb.appendChild(tr);
+      });
+    }
+
+    paint('asks', rows, 'ask');
+    paint('bids', bidRows, 'bid');
+
+    var step = it.last > 8 ? 0.05 : 0.02;
+    el('spreadRow').innerHTML =
+      '<tr class="spread"><td class="lbl">Spread</td>' +
+      '<td class="lc r m">' + fmt(step * 2) + '</td>' +
+      '<td class="lc r m">' + fmt(it.last) + '</td></tr>';
+  }
+
+  function syncLimit(){ el('limit').value = fmt(instruments[active].last); }
+
+  function renderPens(){
+    var host = el('pens');
+    host.innerHTML = '';
+    pens.forEach(function(p){
+      var d = document.createElement('div');
+      d.className = 'pen';
+      var hot = p.val >= 80;
+      d.innerHTML =
+        '<div class="pen-row"><span class="pen-name">' + p.name + '</span>' +
+        '<span class="pen-val ' + (hot ? 'down' : '') + '">' + p.val + '</span></div>' +
+        '<div class="meter' + (hot ? ' hot' : '') + '"><i data-w="' + p.val + '"></i></div>' +
+        '<p class="pen-note">' + p.note + '</p>';
+      host.appendChild(d);
+    });
+    requestAnimationFrame(function(){
+      Array.prototype.forEach.call(host.querySelectorAll('.meter i'), function(bar){
+        bar.style.width = bar.getAttribute('data-w') + '%';
+      });
+    });
+  }
+
+  function renderLog(){
+    var ul = el('log');
+    ul.innerHTML = '';
+    baseLog.forEach(function(row){ addLogRow(row[0], row[1], false); });
+  }
+
+  function addLogRow(t, text, fresh){
+    var ul = el('log');
+    var li = document.createElement('li');
+    li.innerHTML = '<span class="vent-dot" aria-hidden="true"></span><time>' + t + '</time>' +
+                   '<span class="' + (fresh ? 'fresh' : '') + '">' + text + '</span>';
+    if (fresh) ul.insertBefore(li, ul.firstChild); else ul.appendChild(li);
+  }
+
+  function setSide(next){
+    side = next;
+    el('sideSit').setAttribute('aria-pressed', next === 'sit' ? 'true' : 'false');
+    el('sideLeave').setAttribute('aria-pressed', next === 'leave' ? 'true' : 'false');
+  }
+
+  function settlementDate(){
+    var d = new Date(2026, 8, 22);
+    d.setDate(d.getDate() + 7);
+    var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return days[d.getDay()] + ' ' + d.getDate() + ' ' + months[d.getMonth()];
+  }
+
+  function place(){
+    var it = instruments[active];
+    var size = parseInt(el('size').value, 10) || 0;
+    var px = parseFloat(el('limit').value) || 0;
+    if (size < 1){
+      el('receipt').textContent = 'Size must be at least one dozen. Partial eggs are not an instrument.';
+      el('size').focus();
+      return;
+    }
+    var verb = side === 'sit' ? 'Sat on' : 'Left';
+    var total = (size * px).toFixed(2);
+    el('receipt').textContent = verb + ' ' + size + ' dozen ' + it.code + ' at ' + fmt(px) + ', notional ' + total + '. Resting until a member moves.';
+    var now = el('clock').textContent.slice(0, 5);
+    addLogRow(now, verb.toLowerCase() + ' ' + size + ' dozen ' + it.code + ' at ' + fmt(px) + '. Order resting.', true);
+  }
+
+  function tick(){
+    var base = 5 * 3600 + 41 * 60;
+    var t = base + Math.floor((Date.now() / 1000) % 3600);
+    var h = Math.floor(t / 3600) % 24, m = Math.floor((t % 3600) / 60), s = t % 60;
+    var p = function(n){ return (n < 10 ? '0' : '') + n; };
+    el('clock').textContent = p(h) + ':' + p(m) + ':' + p(s);
+  }
+
+  el('sideSit').addEventListener('click', function(){ setSide('sit'); });
+  el('sideLeave').addEventListener('click', function(){ setSide('leave'); });
+  el('place').addEventListener('click', place);
+
+  renderInstruments();
+  renderBook();
+  renderPens();
+  renderLog();
+  el('settleDate').textContent = settlementDate();
+  tick();
+  setInterval(tick, 1000);
+})();
+</script>
+</body>
+</html>

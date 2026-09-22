@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clutch · theworstaistudioever</title>
+<meta name="description" content="A spot and derivatives venue for egg-denominated instruments, settled physically, in dozens.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Clutch · theworstaistudioever">
+<meta property="og:description" content="A spot and derivatives venue for egg-denominated instruments, settled physically, in dozens.">
+<meta property="og:image" content="hero.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Clutch · theworstaistudioever">
+<meta name="twitter:description" content="A spot and derivatives venue for egg-denominated instruments, settled physically, in dozens.">
+<meta name="theme-color" content="#DCD5C4">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..800,60,1&family=Karla:wght@400;500;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#DCD5C4;
+  --cell:#D2CAB7;
+  --hi:#F0EADC;
+  --lo:#A89E88;
+  --ink:#241E18;
+  --muted:#7E7563;
+  --muted-ink:#57503F;
+  --indigo:#2F3E8E;
+  --verm:#C0402B;
+  --alarm-ink:#9E3220;
+  --measure:68ch;
+  --pad:clamp(20px,5vw,64px);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  margin:0;
+  background-color:var(--bg);
+  background-image:
+    repeating-radial-gradient(circle at 17% 29%, rgba(168,158,136,.10) 0 1px, transparent 1px 7px),
+    repeating-radial-gradient(circle at 73% 61%, rgba(240,234,220,.10) 0 1px, transparent 1px 9px),
+    repeating-radial-gradient(circle at 41% 83%, rgba(168,158,136,.08) 0 1px, transparent 1px 11px),
+    repeating-radial-gradient(circle at 89% 13%, rgba(240,234,220,.07) 0 1px, transparent 1px 13px);
+  background-attachment:fixed;
+  color:var(--ink);
+  font-family:'Karla',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  font-size:17px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{
+  font-family:'Fraunces','Bookman Old Style',Georgia,'Times New Roman',serif;
+  font-variation-settings:'SOFT' 60,'WONK' 1,'opsz' 110;
+  font-weight:700;
+  letter-spacing:-.015em;
+  line-height:1.08;
+  margin:0;
+}
+p{margin:0 0 1em}
+a{color:var(--indigo)}
+.wrap{max-width:1140px;margin:0 auto;padding:0 var(--pad)}
+
+/* ---- motif 1: the pulp cell ---- */
+.cell{
+  background:var(--cell);
+  border-radius:14px;
+  box-shadow:
+    inset 2px 2px 0 var(--hi),
+    inset -2px -2px 0 var(--lo),
+    0 3px 4px rgba(36,30,24,.14);
+}
+
+/* ---- motif 2: the grade stamp ---- */
+.stamp{
+  display:inline-block;
+  position:relative;
+  font-family:'Courier Prime','Courier New',Courier,monospace;
+  font-variant-numeric:tabular-nums;
+  font-size:.71rem;
+  font-weight:700;
+  letter-spacing:.13em;
+  text-transform:uppercase;
+  color:var(--indigo);
+  border:2px solid var(--indigo);
+  border-radius:3px;
+  padding:.3em .62em .24em;
+  transform:rotate(-1.2deg);
+  opacity:.84;
+  transition:opacity 180ms ease-out;
+  white-space:nowrap;
+}
+.stamp::after{
+  content:"";position:absolute;inset:2px;
+  border:1px dashed rgba(47,62,142,.42);border-radius:1px;pointer-events:none;
+}
+.stamp.alarm{color:var(--alarm-ink);border-color:var(--verm);transform:rotate(1.1deg)}
+.stamp.alarm::after{border-color:rgba(192,64,43,.42)}
+.cell:hover .stamp,.stamp:hover{opacity:1}
+
+/* ---- motif 4: the vent hole ---- */
+.vents{
+  height:7px;
+  background-image:radial-gradient(circle at 8px 3.5px, var(--bg) 0 2.4px, var(--lo) 2.4px 3.4px, transparent 3.5px);
+  background-size:16px 7px;
+  background-repeat:repeat-x;
+}
+.vent-dot{
+  display:inline-block;width:7px;height:7px;border-radius:50%;
+  background:var(--bg);box-shadow:inset 0 0 0 1px var(--lo);
+  vertical-align:.08em;flex:0 0 auto;
+}
+
+/* ---- top bar ---- */
+.topbar{padding:22px 0 0}
+.topbar-inner{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.wordmark{
+  font-family:'Fraunces',Georgia,serif;font-variation-settings:'SOFT' 60,'WONK' 1,'opsz' 60;
+  font-weight:800;font-size:1.42rem;letter-spacing:-.02em;color:var(--indigo);
+  text-decoration:none;
+}
+.topnav{margin-left:auto;display:flex;gap:20px;flex-wrap:wrap}
+.topnav a{
+  font-size:.92rem;color:var(--muted-ink);text-decoration:none;
+  border-bottom:1px solid transparent;padding-bottom:2px;
+}
+.topnav a:hover,.topnav a:focus-visible{color:var(--indigo);border-bottom-color:var(--indigo)}
+
+/* ---- hero ---- */
+.hero{padding:clamp(40px,7vw,78px) 0 clamp(36px,6vw,62px)}
+.hero-grid{display:grid;grid-template-columns:1.02fr .98fr;gap:clamp(26px,4vw,54px);align-items:center}
+.hero h1{font-size:clamp(2.45rem,6.1vw,4.4rem);max-width:15ch;margin:18px 0 20px}
+.hero .lede{max-width:64ch;color:var(--ink);font-size:1.06rem}
+.hero-figure{padding:12px;border-radius:18px}
+.hero-figure img{
+  display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;
+  border-radius:8px;box-shadow:inset 0 0 0 1px rgba(36,30,24,.12);
+}
+
+/* ---- buttons ---- */
+.actions{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:28px}
+.btn{
+  display:inline-block;background:var(--indigo);color:#F2EFE6;
+  font-family:'Karla',sans-serif;font-weight:700;font-size:1rem;
+  text-decoration:none;padding:14px 26px;border-radius:12px;min-height:48px;
+  box-shadow:inset 2px 2px 0 rgba(240,234,220,.22),inset -2px -2px 0 rgba(12,18,56,.5),0 3px 4px rgba(36,30,24,.2);
+  transition:transform 180ms ease-out,box-shadow 180ms ease-out;
+}
+.btn:active{
+  transform:translateY(1px);
+  box-shadow:inset 2px 2px 0 rgba(240,234,220,.22),inset -2px -2px 0 rgba(12,18,56,.5),0 1px 2px rgba(36,30,24,.22);
+}
+.btn.ghost{background:transparent;color:var(--indigo);box-shadow:inset 0 0 0 2px var(--indigo)}
+.btn.ghost:active{transform:translateY(1px);box-shadow:inset 0 0 0 2px var(--indigo)}
+.linklike{color:var(--alarm-ink);font-weight:700;text-decoration:none;border-bottom:2px solid var(--verm);padding-bottom:1px}
+
+/* ---- metadata strip ---- */
+.metastrip{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  margin-top:34px;padding-top:22px;border-top:1px solid var(--lo);
+}
+.metafield{display:flex;flex-direction:column;gap:3px}
+.metafield .k{
+  font-family:'Courier Prime',monospace;font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted-ink);
+}
+.metafield .v{
+  font-family:'Courier Prime',monospace;font-variant-numeric:tabular-nums;
+  font-size:.92rem;font-weight:700;color:var(--ink);
+}
+
+/* ---- sections ---- */
+section{padding:clamp(44px,6vw,74px) 0}
+.sec-head{max-width:30ch;margin-bottom:clamp(28px,3.6vw,44px)}
+.sec-head h2{font-size:clamp(1.8rem,3.5vw,2.6rem)}
+.sec-head p{margin-top:14px;max-width:var(--measure);color:var(--muted-ink)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(16px,2.2vw,26px)}
+.card{padding:clamp(22px,2.4vw,30px)}
+.card h3{font-size:1.28rem;margin:16px 0 10px}
+.card p{margin:0;color:var(--muted-ink);font-size:.97rem}
+
+/* ---- testimonials ---- */
+.quote{display:flex;flex-direction:column;padding:clamp(22px,2.4vw,30px)}
+.quote blockquote{
+  margin:0 0 22px;font-family:'Fraunces',Georgia,serif;
+  font-variation-settings:'SOFT' 60,'WONK' 1,'opsz' 20;
+  font-weight:400;font-size:1.1rem;line-height:1.46;
+}
+.byline{display:flex;gap:14px;align-items:center;margin-top:auto}
+.byline img{
+  width:74px;height:74px;border-radius:10px;object-fit:cover;flex:0 0 auto;
+  background:var(--bg);
+  box-shadow:inset 2px 2px 0 var(--hi),inset -2px -2px 0 var(--lo),0 2px 3px rgba(36,30,24,.16);
+  padding:3px;
+}
+.byline .who{display:block;font-weight:700;font-size:.97rem;line-height:1.3}
+.byline .role{display:block;font-size:.83rem;color:var(--muted-ink);line-height:1.35;margin-top:3px}
+
+/* ---- pricing ---- */
+.tier{display:flex;flex-direction:column;padding:clamp(22px,2.4vw,30px)}
+.tier h3{font-size:1.36rem;margin:16px 0 4px}
+.tier .tagline{color:var(--muted-ink);font-size:.93rem;margin:0 0 18px}
+.tier .price{
+  font-family:'Courier Prime',monospace;font-variant-numeric:tabular-nums;
+  font-size:1.62rem;font-weight:700;color:var(--ink);margin:0 0 18px;
+}
+.perks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:11px}
+.perks li{display:flex;gap:11px;align-items:flex-start;font-size:.95rem;line-height:1.45}
+.perks .vent-dot{margin-top:7px}
+.tier.raised{
+  background:#D8D0BB;
+  transform:translateY(-10px);
+  box-shadow:inset 2px 2px 0 var(--hi),inset -2px -2px 0 var(--lo),0 8px 10px rgba(36,30,24,.17);
+}
+@media (max-width:860px){.tier.raised{transform:none}}
+
+/* ---- closing ---- */
+.closing{margin:clamp(34px,5vw,60px) 0 0;padding:clamp(30px,4.4vw,52px);text-align:left}
+.closing h2{font-size:clamp(1.8rem,3.6vw,2.7rem);max-width:18ch}
+.closing p{margin:16px 0 0;max-width:58ch;color:var(--muted-ink)}
+
+/* ---- footer ---- */
+footer{padding:36px 0 54px}
+.foot-inner{display:flex;gap:18px;flex-wrap:wrap;align-items:baseline;justify-content:space-between}
+.foot-inner a{font-size:.9rem;color:var(--muted-ink);text-decoration:none}
+.foot-inner a:hover,.foot-inner a:focus-visible{color:var(--indigo)}
+.smallprint{font-size:.8rem;color:var(--muted-ink);max-width:62ch;line-height:1.55}
+
+/* ---- focus + motion ---- */
+a:focus-visible,.btn:focus-visible{outline:3px solid var(--verm);outline-offset:3px;border-radius:4px}
+.rise{opacity:0;transform:translateY(8px)}
+.js .rise{transition:opacity 180ms ease-out,transform 180ms ease-out}
+.rise.in{opacity:1;transform:none}
+html:not(.js) .rise{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  .rise,.rise.in{opacity:1!important;transform:none!important;transition:none!important}
+  .btn,.stamp{transition:none}
+}
+
+/* ---- gutter + rhythm reconciliation ----
+   .wrap sets the gutter, the block rules below set the rhythm; both are
+   longhand so neither shorthand cancels the other. */
+.wrap.topbar,.wrap.hero{padding-left:var(--pad);padding-right:var(--pad)}
+.wrap.topbar{padding-top:22px;padding-bottom:0}
+.wrap.hero{padding-top:clamp(40px,7vw,78px);padding-bottom:clamp(36px,6vw,62px)}
+section.wrap{padding-top:clamp(44px,6vw,74px);padding-bottom:clamp(44px,6vw,74px)}
+footer.wrap{padding-top:36px;padding-bottom:54px}
+
+/* ---- responsive ---- */
+@media (max-width:980px){.grid3{grid-template-columns:1fr 1fr}}
+@media (max-width:860px){
+  .hero-grid{grid-template-columns:1fr}
+  .hero h1{max-width:none}
+  .grid3{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="#top">Clutch</a>
+    <span class="stamp">Spot &amp; physical</span>
+    <nav class="topnav" aria-label="Sections">
+      <a href="#custody">Custody</a>
+      <a href="#members">Members</a>
+      <a href="#fees">Fees</a>
+      <a href="./demo.html">Trading floor</a>
+    </nav>
+  </div>
+</div>
+
+<main id="top">
+
+  <header class="hero wrap">
+    <div class="hero-grid">
+      <div>
+        <span class="stamp">Venue 04-118 · graded daily</span>
+        <h1>Institutional-grade custody for an asset that breaks.</h1>
+        <p class="lede">Clutch operates the only regulated venue where the underlying is laid on-site. Settlement is physical. Delivery is a bird walking somewhere. Fees are quoted in dozens and collected in dozens.</p>
+        <div class="actions">
+          <a class="btn" href="#fees">Open a nest account</a>
+          <a class="linklike" href="./demo.html">open the demo &rarr;</a>
+        </div>
+        <div class="metastrip">
+          <div class="metafield"><span class="k">Venue</span><span class="v">CLTCH-04</span></div>
+          <span class="vent-dot" aria-hidden="true"></span>
+          <div class="metafield"><span class="k">Underlying</span><span class="v">EGG, GRADE A</span></div>
+          <span class="vent-dot" aria-hidden="true"></span>
+          <div class="metafield"><span class="k">Settlement</span><span class="v">PHYSICAL</span></div>
+          <span class="vent-dot" aria-hidden="true"></span>
+          <div class="metafield"><span class="k">Lot</span><span class="v">12 UNITS</span></div>
+        </div>
+      </div>
+      <figure class="cell hero-figure" style="margin:0">
+        <img src="hero.webp" width="1600" height="900" alt="A brown hen standing in profile against a pale, matte fibrous wall.">
+      </figure>
+    </div>
+  </header>
+
+  <div class="wrap"><div class="vents" aria-hidden="true"></div></div>
+
+  <section id="custody" class="wrap">
+    <div class="sec-head">
+      <h2>Three properties we have stopped apologising for.</h2>
+      <p>Our members are birds. Every safeguard below follows from that, and each one was reviewed by counsel before it was priced.</p>
+    </div>
+    <div class="grid3">
+      <article class="cell card rise">
+        <span class="stamp">Custody</span>
+        <h3>Cold storage, in the literal sense</h3>
+        <p>Member keys are printed at four point on a paper slip and placed beneath a broody hen. Retrieval requires the hen to stand up of her own accord. Clutch does not hurry the hen. Median withdrawal time is nine days and we consider that a security property.</p>
+      </article>
+      <article class="cell card rise">
+        <span class="stamp">Consensus</span>
+        <h3>Proof of Lay</h3>
+        <p>The ledger advances only when a member lays. Average block time is twenty-six hours and falls to nothing in November. Finality is therefore seasonal, which our counsel has asked us to describe as finality anyway.</p>
+      </article>
+      <article class="cell card rise">
+        <span class="stamp">Access</span>
+        <h3>Roost-order authentication</h3>
+        <p>Every dusk the flock sorts itself onto the perch in a stable hierarchy. That sequence is your second factor. Introducing a new bird rotates the credential for the entire pen, a behaviour we have documented and priced rather than fixed.</p>
+      </article>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="vents" aria-hidden="true"></div></div>
+
+  <section id="members" class="wrap">
+    <div class="sec-head">
+      <h2>Members on the record.</h2>
+      <p>Quotations collected at the north run, transcribed by a human, approved by the pen.</p>
+    </div>
+    <div class="grid3">
+      <figure class="cell quote rise" style="margin:0">
+        <blockquote>&ldquo;I moved my entire position into the nest box in March and have not looked at it since. I am told this is the correct behaviour and that checking would be the mistake.&rdquo;</blockquote>
+        <figcaption class="byline">
+          <img src="headshot-1.webp" width="320" height="320" alt="A white leghorn hen facing the camera.">
+          <span>
+            <span class="who">Marguerite Quill</span>
+            <span class="role">Senior Layer, Pen 3, and Interim Chief Risk Officer</span>
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="cell quote rise" style="margin:0">
+        <blockquote>&ldquo;Login failed eleven evenings in a row because a new bird arrived from the north run. Support explained, patiently, that this is the feature working.&rdquo;</blockquote>
+        <figcaption class="byline">
+          <img src="headshot-2.webp" width="320" height="320" alt="A barred grey and white hen facing the camera.">
+          <span>
+            <span class="who">Delphine Barre</span>
+            <span class="role">Deputy Custodian of the Nest Box, North Run</span>
+          </span>
+        </figcaption>
+      </figure>
+      <figure class="cell quote rise" style="margin:0">
+        <blockquote>&ldquo;I do not lay. I hold no position. They issued me an observer seat, a lanyard, and a seat on the compensation committee.&rdquo;</blockquote>
+        <figcaption class="byline">
+          <img src="headshot-3.webp" width="320" height="320" alt="A black and copper rooster facing the camera.">
+          <span>
+            <span class="who">Ronald Speck</span>
+            <span class="role">Rooster, Non-Executive</span>
+          </span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="vents" aria-hidden="true"></div></div>
+
+  <section id="fees" class="wrap">
+    <div class="sec-head">
+      <h2>Fee schedule, per pen, per month.</h2>
+      <p>Billed in advance. Grit is credited, never refunded. All tiers halt in November.</p>
+    </div>
+    <div class="grid3">
+      <article class="cell tier rise">
+        <span class="stamp">Tier 1</span>
+        <h3>Pullet</h3>
+        <p class="tagline">For a member with no production history.</p>
+        <p class="price">$19 / mo</p>
+        <ul class="perks">
+          <li><span class="vent-dot" aria-hidden="true"></span><span>Spot access to EGG and BRWN</span></li>
+          <li><span class="vent-dot" aria-hidden="true"></span><span>One nest box, shared</span></li>
+          <li><span class="vent-dot" aria-hidden="true"></span><span>Withdrawals reviewed at dawn</span></li>
+          <li><span class="vent-dot" aria-hidden="true"></span><span>No margin, for everyone&rsquo;s sake</span></li>
+        </ul>
+      </article>
+      <article class="cell tier raised rise">
+        <span class="stamp alarm">Tier 2 · most pens</span>
+        <h3>Point of Lay</h3>
+        <p class="tagline">Where most members settle, and stay.</p>
+        <p class="price">$240 / mo</p>
+        <ul class="perks">
+          <li><span class="vent-dot" aria-hidden="true"></span><span>Full order book, all four instruments</span></li>
+          <li><span class="vent-dot" aria-hidden="true"></span><span>Private nest box with a numbered lid</span></li>
+          <li><span class="vent-dot" aria-hidden="true"></span><span>Broodiness Index alerts by bell</span></li>
+          <li><span class="vent-dot" aria-hidden="true"></span><span>4x leverage against future production</span></li>
+          <li><span class="vent-dot" aria-hidden="true"></span><span>Grit credited monthly</span></li>
+        </ul>
+      </article>
+      <article class="cell tier rise">
+        <span class="stamp">Tier 3</span>
+        <h3>Prime Broody</h3>
+        <p class="tagline">For pens operating above eleven birds.</p>
+        <p class="price">$4,100 / mo</p>
+        <ul class="perks">
+          <li><span class="vent-dot" aria-hidden="true"></span><span>Dedicated settlement window at 05:40</span></li>
+          <li><span class="vent-dot" aria-hidden="true"></span><span>A named human who knows your birds</span></li>
+          <li><span class="vent-dot" aria-hidden="true"></span><span>Physical delivery by van, not by walking</span></li>
+          <li><span class="vent-dot" aria-hidden="true"></span><span>Custody audited quarterly by a second hen</span></li>
+          <li><span class="vent-dot" aria-hidden="true"></span><span>Priority during the November halt</span></li>
+        </ul>
+      </article>
+    </div>
+
+    <div class="cell closing rise">
+      <span class="stamp">Floor open 05:40 to dusk</span>
+      <h2>The book is thin before first light.</h2>
+      <p>The trading floor runs on live quotes from four pens. Size is entered in dozens, the ladder fills on click, and the Broodiness Index will tell you when a member has sat down on your collateral.</p>
+      <div class="actions">
+        <a class="btn" href="./demo.html">open the demo &rarr;</a>
+        <a class="btn ghost" href="#custody">Read the custody note</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  <div class="vents" aria-hidden="true" style="margin-bottom:26px"></div>
+  <div class="foot-inner">
+    <a href="/">&larr; theworstaistudioever</a>
+    <p class="smallprint" style="margin:0">Clutch is a venue, not a farm. Positions are held by birds and birds do not read. Physical delivery is subject to weather, fox activity, and the willingness of the member to move. Past production is a poor guide to November.</p>
+  </div>
+</footer>
+
+<script>
+document.documentElement.classList.add('js');
+(function(){
+  var items = Array.prototype.slice.call(document.querySelectorAll('.rise'));
+  var reveal = function(el){ el.classList.add('in'); };
+  if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    items.forEach(reveal);
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting){ reveal(e.target); io.unobserve(e.target); }
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
+  items.forEach(function(el){ io.observe(el); });
+  setTimeout(function(){ items.forEach(reveal); }, 2200);
+})();
+</script>
+</body>
+</html>

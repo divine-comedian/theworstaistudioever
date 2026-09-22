@@ -1,0 +1,102 @@
+[2026-09-22T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-09-22T08:00:02Z] invoking claude -p
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/github/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/github/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.openclaw/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.openclaw/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.claude/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.claude/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/aurevon-status/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/aurevon-status/**) instead (Edit rules cover all file-editing tools).
+
+--- agent run summary (2026-09-22) ---
+
+ROLL
+  company : Kraken
+  subject : chickens  (animal, passes subject rule)
+  slug    : kraken-for-chickens
+  rerolls : 2 (two drawn pairs already present in state/history.json)
+  PRNG    : LCG seeded from sum(ord) of "2026-09-22" * 2654435761 mod 2^31
+
+CONCEPT
+  product   : Clutch
+  one-liner : A spot and derivatives venue for egg-denominated instruments, settled
+              physically, in dozens.
+  demo      : trading floor terminal (instrument rail, bid/ask ladder with click-to-fill,
+              SIT/LEAVE order ticket in dozens, Broodiness Index gauges, settlement log)
+  anti-ai-slop invoked before all copy in steps 2, 5 and 6.
+
+DESIGN DIRECTION (anti-sameness checked against the last 7 concept.json files:
+  2026-09-15 stained glass, 09-16 pharma leaflet, 09-17 galvanized zinc, 09-18 enamel
+  over terrazzo, 09-19 holographic slab, 09-20 chenille and brass, 09-21 welded vinyl)
+  style     : moulded egg-pulp carton with grade-stamp ink, overcast daylight mode
+  palette   : Packing Plant Pulp - primary #2F3E8E, accent #C0402B, bg #DCD5C4,
+              fg/ink #241E18, muted #7E7563
+  fonts     : Fraunces (display) / Karla (body) / Courier Prime (figures)
+  archetype : regulated exchange landing page on the trust-and-authority pattern
+  No collision on (style, palette name, fonts) with any of the last 7.
+  ui-ux-pro-max returned its default fintech recommendation (Exaggerated Minimalism,
+  gold-and-purple dark, Inter/Inter). Rejected as generic; kept only its
+  trust-and-authority landing pattern and product archetype.
+
+IMAGES (4 of 4 slots used, 4 API calls, daily cap 10 not approached)
+  rationale : hero earned a photograph because the direction is material rather than
+              typographic and the hero composition seats a 16:9 image inside a moulded
+              cell. Demo subject assets skipped: the demo is a terminal, not photo-shaped.
+              Remaining three slots went to testimonial headshots.
+  hero.webp        role hero        1600x900  attempts 1  verdict PASS
+                   (brown hen in profile, left-weighted, matte pale fibrous ground,
+                    generous right-hand space, no text artifacts)
+  headshot-1.webp  role testimonial 320x320   attempts 1  verdict PASS (white leghorn)
+  headshot-2.webp  role testimonial 320x320   attempts 1  verdict PASS (barred Plymouth Rock)
+  headshot-3.webp  role testimonial 320x320   attempts 1  verdict PASS (black-copper rooster)
+  All four judged with vision on the cropped WebP. No regenerations needed.
+  Sizes: hero 138 KB, headshots 7-13 KB. All under the 500 KB validation limit.
+
+WARNINGS / NEAR-MISSES
+  - Palette muted #7E7563 fails 4.5:1 against the pulp ground, so a darker
+    --muted-ink #57503F carries all small muted text on both pages. Same for the
+    vermilion accent: fills use #C0402B, small text uses #9E3220.
+  - Scroll-reveal on the landing page is gated on a .js class plus a 2200 ms timeout
+    fallback, so sections below the fold are never left CSS-hidden.
+  - Middle pricing tier drops its -10px raise below 860px to avoid overlap.
+
+GALLERY
+  site/index.html regenerated from scratch, 103 slides, newest first.
+  Header count updated to "103 startups - since 2026".
+
+VALIDATION
+  scripts/validate-entry.sh site kraken-for-chickens -> OK (exit 0)
+  state/history.json appended, 103 records, JSON valid.
+
+STEP 9 VISUAL CHECK (ran; playwright present)
+  captures : kraken-landing (initial), kraken-demo, kraken-landing (re-shot)
+  edits    : 2 of 3 allowed
+    1. CSS specificity collision. .hero and .topbar used the `padding` shorthand,
+       which cancelled .wrap's horizontal gutter at equal specificity, so the hero
+       and top bar sat 64px left of every other section. The same collision ran the
+       other way for `section` and `footer`, where .wrap won and zeroed their
+       vertical rhythm. Replaced with longhand rules at .wrap.hero / section.wrap
+       specificity so gutter and rhythm stop fighting.
+    2. Testimonial byline name and role were inline spans running together on one
+       line. Set both to display:block.
+  demo     : no breakage. Ladder, depth bars, order ticket, Broodiness meters and
+             settlement log all render correctly at 1440px.
+  re-validated after edits: scripts/validate-entry.sh site kraken-for-chickens -> OK
+Shipped. Kraken for chickens is live in the working tree.
+
+- **Rolled:** Kraken × chickens → `kraken-for-chickens` (2 rerolls on already-used pairs)
+- **Concept:** Clutch, a spot and derivatives venue for egg-denominated instruments. Proof of Lay consensus, keys stored under a broody hen, roost-order 2FA.
+- **Design:** moulded egg-pulp carton with grade-stamp ink, daylight only. Packing Plant Pulp palette (#2F3E8E / #C0402B / #DCD5C4), Fraunces + Karla + Courier Prime. No collision with the last 7 entries; the ui-ux-pro-max default (dark fintech, Inter/Inter, gold-and-purple) was rejected as generic and only its landing pattern kept.
+- **Images:** all 4 slots used, 4 API calls, every one passed vision judging on the first attempt. Hero hen plus three deadpan directory headshots. Demo got none because it's a terminal.
+- **Demo:** trading floor with an instrument rail, click-to-fill bid/ask ladder, a SIT/LEAVE order ticket sized in dozens, live Broodiness Index meters, and a settlement log written as a barn diary.
+- **Gallery:** regenerated, 103 slides, count updated.
+- **Visual check:** ran under cap. Found and fixed a real CSS specificity collision where `.hero`/`.topbar` shorthand padding cancelled the `.wrap` gutter while `.wrap` zeroed `section`/`footer` vertical rhythm, plus a run-on testimonial byline. Re-shot to confirm, re-validated after.
+
+Validation passed both before and after the polish edits. History appended (103 records), run summary written to `state/runs/2026-09-22.log`. No git commands run.
+
+```
+RUN_COMPLETE: kraken-for-chickens
+```
+[2026-09-22T08:10:49Z] new entry: kraken-for-chickens
+validate-entry [kraken-for-chickens]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 103 entries (domain theworstaistudioever.com)
+[2026-09-22T08:10:50Z] committing: Kraken for chickens
