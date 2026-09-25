@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Browse · theworstaistudioever</title>
+<meta name="description" content="Visual discovery for goats. Save the things you plan to eat, climb, or stand on for no reason.">
+<meta name="theme-color" content="#CFA877">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Browse · Pinterest for goats">
+<meta property="og:description" content="Visual discovery for goats. Save the things you plan to eat, climb, or stand on for no reason.">
+<meta property="og:image" content="hero.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Browse · Pinterest for goats">
+<meta name="twitter:description" content="Visual discovery for goats. Save the things you plan to eat, climb, or stand on for no reason.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Martian+Mono:wght@400;600&family=Work+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pin: #C8412D;
+    --pin-dark: #8E2B1C;
+    --alfalfa: #B5C24A;
+    --cork: #CFA877;
+    --cork-dark: #B88E5C;
+    --cork-light: #E0C396;
+    --paper: #FBF6EA;
+    --paper-2: #F3EAD2;
+    --fg: #2B2117;
+    --muted: #6E5638;
+    --ink: #1F1810;
+    --display: 'Caprasimo', 'Cooper Black', 'Bookman Old Style', Georgia, serif;
+    --body: 'Work Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --mono: 'Martian Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    color: var(--fg);
+    font: 400 17px/1.62 var(--body);
+    background-color: var(--cork);
+    background-image:
+      radial-gradient(circle at 20% 30%, var(--cork-dark) 0 1px, transparent 1.6px),
+      radial-gradient(circle at 70% 60%, var(--cork-light) 0 1.2px, transparent 1.8px),
+      radial-gradient(circle at 45% 85%, var(--cork-dark) 0 0.9px, transparent 1.5px),
+      radial-gradient(circle at 85% 15%, var(--cork-light) 0 0.8px, transparent 1.4px),
+      radial-gradient(circle at 10% 75%, rgba(110,86,56,.35) 0 1.4px, transparent 2px);
+    background-size: 11px 13px, 17px 11px, 9px 15px, 23px 19px, 31px 29px;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; border-radius: 4px; }
+  .wrap { width: min(1160px, 100% - 40px); margin: 0 auto; }
+
+  /* pinned card system */
+  .card { position: relative; filter: drop-shadow(0 6px 7px rgba(31,24,16,.22)); transform: rotate(var(--r, 0deg)); }
+  .paper { background: var(--paper); border-radius: 4px; padding: 30px 26px 26px; height: 100%; }
+  .pin {
+    position: absolute; top: -7px; left: 50%; width: 16px; height: 16px; margin-left: -8px; z-index: 2;
+    border-radius: 50%;
+    background: radial-gradient(circle at 34% 32%, #fff 0 2.5px, transparent 3px), radial-gradient(circle at 50% 50%, var(--pin) 0 60%, var(--pin-dark) 100%);
+    box-shadow: 1px 3px 2px rgba(31,24,16,.4);
+  }
+  .bite .paper {
+    -webkit-mask:
+      radial-gradient(circle 18px at calc(100% - 2px) calc(100% - 36px), #0000 96%, #000 100%),
+      radial-gradient(circle 22px at calc(100% - 14px) calc(100% - 6px), #0000 96%, #000 100%),
+      radial-gradient(circle 16px at calc(100% - 48px) calc(100% + 2px), #0000 96%, #000 100%);
+    -webkit-mask-composite: source-in;
+    mask:
+      radial-gradient(circle 18px at calc(100% - 2px) calc(100% - 36px), #0000 96%, #000 100%),
+      radial-gradient(circle 22px at calc(100% - 14px) calc(100% - 6px), #0000 96%, #000 100%),
+      radial-gradient(circle 16px at calc(100% - 48px) calc(100% + 2px), #0000 96%, #000 100%);
+    mask-composite: intersect;
+  }
+  .bite.left .paper {
+    -webkit-mask:
+      radial-gradient(circle 18px at 2px calc(100% - 36px), #0000 96%, #000 100%),
+      radial-gradient(circle 22px at 14px calc(100% - 6px), #0000 96%, #000 100%),
+      radial-gradient(circle 16px at 48px calc(100% + 2px), #0000 96%, #000 100%);
+    -webkit-mask-composite: source-in;
+    mask:
+      radial-gradient(circle 18px at 2px calc(100% - 36px), #0000 96%, #000 100%),
+      radial-gradient(circle 22px at 14px calc(100% - 6px), #0000 96%, #000 100%),
+      radial-gradient(circle 16px at 48px calc(100% + 2px), #0000 96%, #000 100%);
+    mask-composite: intersect;
+  }
+  .tape {
+    position: absolute; width: 74px; height: 22px; z-index: 2;
+    background: rgba(181,194,74,.62);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.18);
+  }
+  .num { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 13px; letter-spacing: -.01em; }
+
+  /* header */
+  .top { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; }
+  .logo { font-family: var(--display); font-size: 30px; text-decoration: none; color: var(--ink); display: inline-flex; align-items: center; gap: 10px; }
+  .logo svg { width: 30px; height: 30px; }
+  .top nav { display: flex; gap: 22px; font-weight: 500; font-size: 15px; }
+  .top nav a { text-decoration: none; padding: 10px 2px; }
+  .top nav a:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+  /* buttons */
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 26px;
+    font: 600 17px/1 var(--body); text-decoration: none; border-radius: 4px; cursor: pointer; border: 0;
+    transition: transform .2s ease-out, box-shadow .2s ease-out;
+  }
+  .btn-pin { background: var(--pin); color: #FFF8EC; box-shadow: 0 5px 0 var(--pin-dark), 0 9px 14px rgba(31,24,16,.25); }
+  .btn-pin:hover { transform: translateY(-2px); box-shadow: 0 7px 0 var(--pin-dark), 0 13px 18px rgba(31,24,16,.25); }
+  .btn-pin:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--pin-dark), 0 4px 6px rgba(31,24,16,.25); }
+  .btn-paper { background: var(--paper); color: var(--ink); box-shadow: 0 5px 12px rgba(31,24,16,.2); }
+  .btn-paper:hover { transform: translateY(-2px) rotate(-.5deg); }
+
+  /* hero */
+  .hero { display: grid; grid-template-columns: 1.02fr 1fr; gap: 56px; align-items: center; padding: 36px 0 90px; }
+  .hero-copy .strip {
+    display: inline-block; background: var(--paper-2); padding: 6px 14px 7px; font-size: 15px; font-weight: 500; color: var(--muted);
+    transform: rotate(-1.4deg); margin-bottom: 22px;
+    clip-path: polygon(0 8%, 4% 0, 12% 6%, 22% 0, 35% 5%, 48% 0, 60% 7%, 73% 1%, 86% 6%, 100% 0, 99% 92%, 90% 100%, 78% 94%, 64% 100%, 50% 95%, 36% 100%, 22% 94%, 10% 100%, 1% 95%);
+  }
+  h1, h2, h3 { font-family: var(--display); font-weight: 400; color: var(--ink); margin: 0; }
+  .hero h1 { font-size: clamp(44px, 6.4vw, 84px); line-height: .98; letter-spacing: -.01em; }
+  .hero .sub { font-size: 19px; max-width: 34em; margin: 24px 0 34px; color: var(--fg); }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+  .hero-art { position: relative; min-height: 460px; }
+  .polaroid { --r: 2.2deg; }
+  .polaroid .paper { padding: 16px 16px 20px; }
+  .polaroid img { display: block; width: 100%; height: auto; aspect-ratio: 16/9; object-fit: cover; border-radius: 2px; }
+  .polaroid .caption { display: flex; justify-content: space-between; gap: 12px; margin-top: 14px; color: var(--muted); }
+  .polaroid .tape { top: -8px; right: 28px; transform: rotate(9deg); }
+  .note { position: absolute; width: 190px; font-size: 15px; line-height: 1.45; }
+  .note .paper { padding: 22px 16px 16px; }
+  .note b { font-family: var(--display); font-weight: 400; font-size: 19px; display: block; color: var(--ink); margin-bottom: 4px; }
+  .note-a { --r: -4deg; left: -26px; bottom: -58px; }
+  .note-a .paper { background: #FFF4B8; }
+  .note-b { --r: 3deg; right: -10px; bottom: -84px; }
+  .note-b .pin { background: radial-gradient(circle at 34% 32%, #fff 0 2.5px, transparent 3px), radial-gradient(circle, #3E6FA8 0 60%, #274A74 100%); }
+
+  /* sections */
+  section { padding: 70px 0; }
+  .sec-head { max-width: 640px; margin-bottom: 44px; }
+  .sec-head h2 { font-size: clamp(34px, 4.4vw, 54px); line-height: 1.02; }
+  .sec-head p { margin: 14px 0 0; font-size: 18px; }
+
+  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 34px; align-items: start; }
+  .features .card:nth-child(1) { --r: -1.3deg; }
+  .features .card:nth-child(2) { --r: 1deg; margin-top: 30px; }
+  .features .card:nth-child(3) { --r: -.6deg; margin-top: 8px; }
+  .features h3 { font-size: 27px; line-height: 1.1; margin: 16px 0 10px; }
+  .features p { margin: 0 0 22px; }
+  .features svg { width: 44px; height: 44px; stroke: var(--pin); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+  .quotes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 34px; align-items: start; }
+  .quotes .card:nth-child(1) { --r: 1.2deg; }
+  .quotes .card:nth-child(2) { --r: -1.4deg; margin-top: 44px; }
+  .quotes .card:nth-child(3) { --r: .7deg; margin-top: 12px; }
+  .quotes blockquote { margin: 0 0 22px; font-size: 18px; line-height: 1.55; }
+  .who { display: flex; gap: 14px; align-items: center; padding-bottom: 20px; }
+  .who img, .who .init { width: 64px; height: 64px; border-radius: 3px; flex: none; object-fit: cover; }
+  .who .init { display: grid; place-items: center; background: var(--alfalfa); color: var(--ink); font-family: var(--display); font-size: 28px; }
+  .who .init.b { background: var(--cork-light); }
+  .who strong { display: block; font-family: var(--display); font-weight: 400; font-size: 21px; color: var(--ink); }
+  .who span { font-size: 14px; color: var(--muted); line-height: 1.4; display: block; }
+
+  .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 34px; align-items: start; }
+  .tiers .card:nth-child(1) { --r: -1deg; }
+  .tiers .card:nth-child(2) { --r: .8deg; }
+  .tiers .card:nth-child(3) { --r: -.4deg; }
+  .tier .paper { padding: 34px 28px 30px; }
+  .tier h3 { font-size: 30px; }
+  .tier .price { font-family: var(--mono); font-weight: 600; font-size: 30px; color: var(--ink); margin: 14px 0 4px; letter-spacing: -.03em; }
+  .tier .tl { color: var(--muted); margin: 0 0 18px; min-height: 3.2em; }
+  .tier ul { list-style: none; padding: 0; margin: 0 0 26px; }
+  .tier li { padding: 9px 0 9px 26px; border-top: 1px dashed rgba(110,86,56,.35); position: relative; }
+  .tier li::before { content: ""; position: absolute; left: 2px; top: 17px; width: 10px; height: 10px; border-radius: 50%; background: var(--pin); box-shadow: inset -2px -2px 0 var(--pin-dark); }
+  .tier.hot .paper { background: #FFF1DE; outline: 3px solid var(--pin); outline-offset: -3px; }
+  .tier .flag { position: absolute; top: -14px; right: 18px; z-index: 3; background: var(--pin); color: #FFF8EC; font-size: 13px; font-weight: 600; padding: 5px 11px; transform: rotate(4deg); border-radius: 2px; }
+  .tier .btn { width: 100%; justify-content: center; }
+
+  .demo-cta { padding: 40px 0 90px; }
+  .demo-card { --r: -.8deg; max-width: 860px; margin: 0 auto; }
+  .demo-card .paper { display: grid; grid-template-columns: 1fr auto; gap: 28px; align-items: center; padding: 44px 40px 40px; background: var(--ink); color: var(--paper); }
+  .demo-card h2 { color: var(--paper); font-size: clamp(30px, 3.6vw, 44px); line-height: 1.05; }
+  .demo-card p { margin: 10px 0 0; color: #D9CBAE; }
+  .demo-card .tape { top: -9px; left: 40px; transform: rotate(-7deg); }
+
+  footer { border-top: 2px dashed rgba(31,24,16,.25); padding: 26px 0 40px; font-size: 14px; color: var(--ink); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  footer a { font-weight: 600; }
+
+  /* the one orchestrated moment: hero cards get pinned on load */
+  .js .hero-art .card { opacity: 0; transform: translateY(-14px) rotate(calc(var(--r) + 3deg)); }
+  .js.ready .hero-art .card { opacity: 1; transform: rotate(var(--r)); transition: opacity .35s ease-out, transform .45s cubic-bezier(.2,1.4,.4,1); }
+  .js.ready .hero-art .note-a { transition-delay: .18s; }
+  .js.ready .hero-art .note-b { transition-delay: .32s; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .js .hero-art .card { opacity: 1; transform: rotate(var(--r)); transition: none !important; }
+    .btn { transition: none; }
+  }
+
+  @media (max-width: 960px) {
+    .hero { grid-template-columns: 1fr; gap: 40px; padding-bottom: 80px; }
+    .hero-art { min-height: 0; padding-bottom: 60px; }
+    .features, .quotes, .tiers { grid-template-columns: 1fr; max-width: 560px; }
+    .features .card, .quotes .card { margin-top: 0 !important; }
+    .note-a { left: -6px; bottom: 0; }
+    .note-b { right: -4px; bottom: -10px; }
+  }
+  @media (max-width: 620px) {
+    .top nav a:not(:last-child) { display: none; }
+    .note { width: 160px; font-size: 14px; }
+    .note b { font-size: 17px; }
+    .demo-card .paper { grid-template-columns: 1fr; padding: 36px 24px 30px; }
+    .polaroid .caption { flex-direction: column; gap: 2px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="#">
+      <svg viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="12" r="10" fill="#C8412D"/><circle cx="11.5" cy="8.5" r="3" fill="#fff" opacity=".85"/><path d="M15 22v7" stroke="#1F1810" stroke-width="2.4" stroke-linecap="round"/></svg>
+      Browse
+    </a>
+    <nav aria-label="Primary">
+      <a href="#features">Product</a>
+      <a href="#pricing">Pricing</a>
+      <a href="./demo.html">Open the demo</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="h1">
+      <div class="hero-copy">
+        <span class="strip">Goats were browsing before it meant websites</span>
+        <h1 id="h1">Everything you've ever wanted to eat, on one board.</h1>
+        <p class="sub">Browse is visual discovery for goats. Pin a neighbour's hydrangea, a tractor seat, the lower third of a parked sedan. We rank each one by chewability and tell you which fence it's behind.</p>
+        <div class="hero-actions">
+          <a class="btn btn-pin" href="./demo.html">Start pinning</a>
+          <a class="btn btn-paper" href="./demo.html">open the demo →</a>
+        </div>
+      </div>
+      <div class="hero-art">
+        <div class="card polaroid">
+          <span class="pin" aria-hidden="true"></span>
+          <span class="tape" aria-hidden="true"></span>
+          <div class="paper">
+            <img src="hero.webp" width="1600" height="900" alt="A brown and white goat standing on the roof of a dusty blue hatchback outside a barn.">
+            <div class="caption num"><span>142 cm off the ground</span><span>Chewability 6/10</span></div>
+          </div>
+        </div>
+        <div class="card note note-a">
+          <span class="pin" aria-hidden="true"></span>
+          <div class="paper"><b>Saved 1,204 times</b>Mostly by goats already on the car.</div>
+        </div>
+        <div class="card note note-b bite">
+          <span class="pin" aria-hidden="true"></span>
+          <div class="paper"><b>Board: Things On Cars</b>2,300 followers. One of them owns the car.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" aria-labelledby="f-h">
+      <div class="sec-head">
+        <h2 id="f-h">Built for an animal with no concept of "not yours."</h2>
+        <p>Three systems, each tested on a herd of nine in a field outside Ithaca. The field has since been reseeded.</p>
+      </div>
+      <div class="features">
+        <article class="card bite">
+          <span class="pin" aria-hidden="true"></span>
+          <div class="paper">
+            <svg viewBox="0 0 44 44" aria-hidden="true"><path d="M8 30c4-12 12-18 28-20-2 16-8 24-20 28"/><path d="M8 36 22 22"/><circle cx="31" cy="31" r="5"/><circle cx="36" cy="26" r="3"/></svg>
+            <h3>Chewability Score</h3>
+            <p>Every pin gets a score from 1 to 10 based on texture, fibre content, and how upset the owner will be. Anything above 7 is reviewed by a human. The human is usually the owner.</p>
+          </div>
+        </article>
+        <article class="card">
+          <span class="pin" aria-hidden="true"></span>
+          <div class="paper">
+            <svg viewBox="0 0 44 44" aria-hidden="true"><path d="M6 38h32"/><path d="M10 38V26h10v12"/><path d="M24 38V14h10v24"/><path d="M29 8l-3 3m3-3 3 3m-3-3v6"/></svg>
+            <h3>Elevation Boards</h3>
+            <p>Sort any board by height off the ground. The roof of a car outranks the car. A picnic table outranks the picnic. Nothing outranks the shed, because we have not found anything above the shed.</p>
+          </div>
+        </article>
+        <article class="card bite left">
+          <span class="pin" aria-hidden="true"></span>
+          <div class="paper">
+            <svg viewBox="0 0 44 44" aria-hidden="true"><path d="M6 34h32M6 22h32"/><path d="M10 16v22M18 16v22M26 16v22M34 16v22"/><path d="M8 10c6-4 12 4 18 0s8-2 10 0" stroke-dasharray="2 4"/></svg>
+            <h3>Fence-Aware Routing</h3>
+            <p>Browse knows which fence stands between you and each pin, and roughly how long it will keep standing there. Routes refresh every 40 minutes, or instantly when somebody leaves a gate open.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="t-h">
+      <div class="sec-head">
+        <h2 id="t-h">Pinned by the herd.</h2>
+        <p>Quotes collected during onboarding calls. Two of the calls were conducted over a fence.</p>
+      </div>
+      <div class="quotes">
+        <figure class="card" style="margin:0">
+          <span class="pin" aria-hidden="true"></span>
+          <div class="paper">
+            <blockquote>"I pinned the same rose bush forty-one times. Browse didn't say anything. It just moved the bush to the top of my feed."</blockquote>
+            <figcaption class="who">
+              <img src="headshot-1.webp" width="320" height="320" alt="Marigold, a brown and white goat, in a navy suit.">
+              <div><strong>Marigold</strong><span>Senior Hedge Analyst, Two Acres Behind the Methodist Church</span></div>
+            </figcaption>
+          </div>
+        </figure>
+        <figure class="card bite" style="margin:0">
+          <span class="pin" aria-hidden="true"></span>
+          <div class="paper">
+            <blockquote>"My board Things On Cars has 2,300 followers. Most are goats. One is the car's owner, who follows very closely."</blockquote>
+            <figcaption class="who">
+              <span class="init" aria-hidden="true">P</span>
+              <div><strong>Pepper</strong><span>Head of Elevation, Nubian Holdings (Dairy Division)</span></div>
+            </figcaption>
+          </div>
+        </figure>
+        <figure class="card" style="margin:0">
+          <span class="pin" aria-hidden="true"></span>
+          <div class="paper">
+            <blockquote>"We moved the whole herd onto Enterprise. The donkey stayed on the free plan. He doesn't do much."</blockquote>
+            <figcaption class="who">
+              <span class="init b" aria-hidden="true">D</span>
+              <div><strong>Doug</strong><span>Herd Operations Lead, Tuesday Farm LLC</span></div>
+            </figcaption>
+          </div>
+        </figure>
+      </div>
+    </section>
+
+    <section id="pricing" aria-labelledby="p-h">
+      <div class="sec-head">
+        <h2 id="p-h">Pricing, per goat, per month.</h2>
+        <p>Billed to whoever is holding the phone. Hay accepted in lieu of payment at a rate we set weekly.</p>
+      </div>
+      <div class="tiers">
+        <div class="card tier">
+          <span class="pin" aria-hidden="true"></span>
+          <div class="paper">
+            <h3>Kid</h3>
+            <div class="price">$0/mo</div>
+            <p class="tl">For goats under one year, and goats who claim to be.</p>
+            <ul><li>Up to 3 boards</li><li>Chewability rounded to the nearest 5</li><li>Ads for salt licks</li></ul>
+            <a class="btn btn-paper" href="./demo.html" style="background:var(--paper-2)">Start free</a>
+          </div>
+        </div>
+        <div class="card tier hot">
+          <span class="flag">Most chewed</span>
+          <span class="pin" aria-hidden="true"></span>
+          <div class="paper">
+            <h3>Nanny</h3>
+            <div class="price">$14/mo</div>
+            <p class="tl">For the household goat with a plan.</p>
+            <ul><li>Unlimited boards</li><li>Fence-Aware Routing in one pasture</li><li>Priority alerts on laundry lines</li></ul>
+            <a class="btn btn-pin" href="./demo.html">Start pinning</a>
+          </div>
+        </div>
+        <div class="card tier bite">
+          <span class="pin" aria-hidden="true"></span>
+          <div class="paper">
+            <h3>Billy Enterprise</h3>
+            <div class="price">$2,400/yr</div>
+            <p class="tl">Per herd. For operations that include a donkey.</p>
+            <ul><li>Dedicated climbing-structure advisor</li><li>99.1% SLA on gate status</li><li>One annual audit of the vegetable garden</li></ul>
+            <a class="btn btn-paper" href="./demo.html" style="background:var(--paper-2)">Talk to the herd</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo-cta" aria-labelledby="d-h">
+      <div class="card demo-card">
+        <span class="pin" aria-hidden="true"></span>
+        <span class="tape" aria-hidden="true"></span>
+        <div class="paper">
+          <div>
+            <h2 id="d-h">Marigold's feed is open.</h2>
+            <p>Filter by edible, climbable, or unguarded. Save a hydrangea. Nobody will know for about 40 minutes.</p>
+          </div>
+          <a class="btn btn-pin" href="./demo.html">open the demo →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <a href="/">← theworstaistudioever</a>
+    <span>Browse Inc. is not affiliated with any fence.</span>
+  </footer>
+</div>
+<script>
+  (function () {
+    var root = document.documentElement;
+    root.classList.add('js');
+    var go = function () { root.classList.add('ready'); };
+    requestAnimationFrame(function () { requestAnimationFrame(go); });
+    setTimeout(go, 600);
+  })();
+</script>
+</body>
+</html>

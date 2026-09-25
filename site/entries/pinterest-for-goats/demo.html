@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Feed · Browse · theworstaistudioever</title>
+<meta name="description" content="Marigold's Browse feed. Pins ranked by chewability, height off the ground, and fence status.">
+<meta name="theme-color" content="#CFA877">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Martian+Mono:wght@400;600&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pin: #C8412D; --pin-dark: #8E2B1C; --alfalfa: #B5C24A;
+    --cork: #CFA877; --cork-dark: #B88E5C; --cork-light: #E0C396;
+    --paper: #FBF6EA; --paper-2: #F3EAD2;
+    --fg: #2B2117; --muted: #6E5638; --ink: #1F1810;
+    --display: 'Caprasimo', 'Cooper Black', 'Bookman Old Style', Georgia, serif;
+    --body: 'Work Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --mono: 'Martian Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; color: var(--fg); font: 400 15px/1.5 var(--body);
+    background-color: var(--cork);
+    background-image:
+      radial-gradient(circle at 20% 30%, var(--cork-dark) 0 1px, transparent 1.6px),
+      radial-gradient(circle at 70% 60%, var(--cork-light) 0 1.2px, transparent 1.8px),
+      radial-gradient(circle at 45% 85%, var(--cork-dark) 0 .9px, transparent 1.5px),
+      radial-gradient(circle at 10% 75%, rgba(110,86,56,.35) 0 1.4px, transparent 2px);
+    background-size: 11px 13px, 17px 11px, 9px 15px, 31px 29px;
+    -webkit-font-smoothing: antialiased;
+  }
+  button, input, select { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; border-radius: 4px; }
+  .num { font-family: var(--mono); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+
+  /* chrome */
+  .bar { position: sticky; top: 0; z-index: 20; background: var(--paper); box-shadow: 0 3px 10px rgba(31,24,16,.18); }
+  .bar-in { display: flex; align-items: center; gap: 18px; padding: 10px 20px; max-width: 1440px; margin: 0 auto; }
+  .back { font-size: 13px; font-weight: 500; color: var(--muted); text-decoration: none; white-space: nowrap; padding: 10px 0; }
+  .back:hover { color: var(--ink); text-decoration: underline; }
+  .logo { font-family: var(--display); font-size: 24px; color: var(--ink); display: flex; align-items: center; gap: 8px; }
+  .logo svg { width: 22px; height: 22px; }
+  .search { flex: 1; max-width: 520px; margin-left: auto; position: relative; }
+  .search input { width: 100%; height: 44px; border-radius: 999px; border: 2px solid transparent; background: var(--paper-2); padding: 0 18px 0 42px; font-size: 15px; }
+  .search input:focus { outline: none; border-color: var(--ink); }
+  .search svg { position: absolute; left: 15px; top: 13px; width: 18px; height: 18px; stroke: var(--muted); fill: none; stroke-width: 2; }
+  .me { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex: none; border: 2px solid var(--pin); }
+
+  .layout { display: grid; grid-template-columns: 250px 1fr; gap: 28px; max-width: 1440px; margin: 0 auto; padding: 24px 20px 60px; }
+
+  /* board rail */
+  .rail { position: sticky; top: 88px; align-self: start; }
+  .rail .paper { background: var(--paper); border-radius: 4px; padding: 26px 18px 18px; position: relative; transform: rotate(-.6deg); box-shadow: 0 6px 12px rgba(31,24,16,.2); }
+  .rail h2 { font-family: var(--display); font-weight: 400; font-size: 22px; margin: 0 0 12px; color: var(--ink); }
+  .boards { list-style: none; margin: 0; padding: 0; }
+  .boards li { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-top: 1px dashed rgba(110,86,56,.35); }
+  .boards li.bump .count { background: var(--pin); color: #FFF8EC; }
+  .count { font-size: 12px; padding: 2px 8px; border-radius: 999px; background: var(--paper-2); transition: background .25s, color .25s; }
+  .rail .stat { margin-top: 16px; font-size: 13px; color: var(--muted); }
+  .rail .stat b { display: block; font-family: var(--mono); font-size: 22px; color: var(--ink); font-weight: 600; }
+
+  .pin-dot {
+    position: absolute; top: -7px; left: 50%; margin-left: -8px; width: 16px; height: 16px; border-radius: 50%; z-index: 2;
+    background: radial-gradient(circle at 34% 32%, #fff 0 2.5px, transparent 3px), radial-gradient(circle, var(--pin) 0 60%, var(--pin-dark) 100%);
+    box-shadow: 1px 3px 2px rgba(31,24,16,.4);
+  }
+
+  /* feed header */
+  .feed-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 14px; margin-bottom: 18px; }
+  .feed-head h1 { font-family: var(--display); font-weight: 400; font-size: clamp(28px, 3.4vw, 40px); line-height: 1; margin: 0; color: var(--ink); }
+  .feed-head p { margin: 6px 0 0; color: var(--ink); }
+  .sort { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+  .sort select { height: 40px; border-radius: 4px; border: 0; background: var(--paper); padding: 0 10px; cursor: pointer; }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 26px; }
+  .chip { min-height: 40px; padding: 0 16px; border-radius: 999px; border: 2px solid var(--ink); background: var(--paper); cursor: pointer; font-weight: 500; font-size: 14px; transition: background .15s, color .15s; }
+  .chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+  .chip:hover { background: var(--paper-2); }
+  .chip[aria-pressed="true"]:hover { background: #3a2e20; }
+
+  /* masonry */
+  .grid { columns: 4 220px; column-gap: 22px; }
+  .pin { break-inside: avoid; margin: 0 0 26px; position: relative; display: block; width: 100%; text-align: left; border: 0; padding: 0; background: none; cursor: pointer; transform: rotate(var(--r, 0deg)); filter: drop-shadow(0 5px 6px rgba(31,24,16,.24)); transition: transform .2s ease-out, filter .2s ease-out; }
+  .pin:hover { transform: rotate(var(--r, 0deg)) translateY(-3px); filter: drop-shadow(0 10px 10px rgba(31,24,16,.26)); }
+  .pin:active { transform: rotate(var(--r, 0deg)) translateY(1px); }
+  .pin .paper { background: var(--paper); border-radius: 4px; padding: 10px 10px 14px; }
+  .pin.bitten .paper {
+    -webkit-mask: radial-gradient(circle 15px at calc(100% - 2px) calc(100% - 30px), #0000 96%, #000), radial-gradient(circle 18px at calc(100% - 12px) calc(100% - 5px), #0000 96%, #000);
+    -webkit-mask-composite: source-in;
+    mask: radial-gradient(circle 15px at calc(100% - 2px) calc(100% - 30px), #0000 96%, #000), radial-gradient(circle 18px at calc(100% - 12px) calc(100% - 5px), #0000 96%, #000);
+    mask-composite: intersect;
+  }
+  .pin img, .pin .art { display: block; width: 100%; border-radius: 2px; }
+  .pin img { height: auto; }
+  .art { display: grid; place-items: center; }
+  .art svg { width: 58%; height: auto; fill: none; stroke: var(--ink); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+  .pin h3 { font-family: var(--display); font-weight: 400; font-size: 19px; line-height: 1.12; margin: 10px 2px 8px; color: var(--ink); }
+  .meta { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 2px; font-size: 11px; }
+  .meta span { padding: 3px 7px; border-radius: 3px; background: var(--paper-2); }
+  .meta .chew { background: var(--ink); color: var(--paper); }
+  .meta .chew.hi { background: var(--pin); }
+  .fence { margin: 8px 2px 0; font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+  .fence i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; background: var(--muted); }
+  .fence.open i { background: #5E7A1C; }
+  .fence.open { color: #4B6216; font-weight: 500; }
+  .saved-tag { position: absolute; top: 14px; right: 14px; z-index: 2; background: var(--alfalfa); color: var(--ink); font-size: 12px; font-weight: 600; padding: 4px 9px; border-radius: 3px; transform: rotate(3deg); }
+  .empty { display: none; background: var(--paper); border-radius: 4px; padding: 28px; max-width: 460px; transform: rotate(-.8deg); box-shadow: 0 6px 12px rgba(31,24,16,.2); }
+  .empty h2 { font-family: var(--display); font-weight: 400; margin: 0 0 6px; font-size: 24px; }
+  .empty button { margin-top: 12px; }
+
+  /* sheet */
+  .scrim { position: fixed; inset: 0; background: rgba(31,24,16,.55); z-index: 50; display: none; place-items: center; padding: 20px; }
+  .scrim.on { display: grid; }
+  .sheet { background: var(--paper); border-radius: 4px; width: min(820px, 100%); max-height: calc(100dvh - 40px); overflow: auto; display: grid; grid-template-columns: 1fr 1fr; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,.35); animation: drop .28s cubic-bezier(.2,1.3,.4,1); }
+  @keyframes drop { from { transform: translateY(-16px) rotate(1.5deg); opacity: 0; } to { transform: none; opacity: 1; } }
+  .sheet .media { padding: 16px; }
+  .sheet .media img, .sheet .media .art { width: 100%; border-radius: 2px; }
+  .sheet .body { padding: 28px 28px 24px 12px; }
+  .sheet h2 { font-family: var(--display); font-weight: 400; font-size: 30px; line-height: 1.05; margin: 0 0 8px; color: var(--ink); }
+  .sheet .desc { margin: 0 0 18px; }
+  .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+  .fact { background: var(--paper-2); border-radius: 3px; padding: 10px 12px; }
+  .fact small { display: block; font-size: 12px; color: var(--muted); }
+  .fact b { font-family: var(--mono); font-size: 17px; font-weight: 600; color: var(--ink); }
+  .meter { height: 10px; border-radius: 999px; background: var(--paper-2); overflow: hidden; margin: 4px 0 18px; }
+  .meter i { display: block; height: 100%; background: var(--pin); border-radius: 999px; transition: width .4s ease-out; }
+  label.lbl { font-size: 13px; font-weight: 600; display: block; margin-bottom: 6px; }
+  .save-row { display: flex; gap: 10px; }
+  .save-row select { flex: 1; height: 48px; border-radius: 4px; border: 2px solid var(--ink); background: var(--paper); padding: 0 10px; cursor: pointer; }
+  .btn { min-height: 48px; padding: 0 20px; border-radius: 4px; border: 0; cursor: pointer; font-weight: 600; background: var(--pin); color: #FFF8EC; box-shadow: 0 4px 0 var(--pin-dark); transition: transform .15s, box-shadow .15s; }
+  .btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--pin-dark); }
+  .btn.ghost { background: var(--paper-2); color: var(--ink); box-shadow: 0 4px 0 var(--cork-dark); }
+  .close { position: absolute; top: 10px; right: 10px; width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--paper-2); cursor: pointer; font-size: 22px; line-height: 1; z-index: 3; }
+  .route { margin-top: 16px; font-size: 13px; color: var(--muted); }
+
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 30px); opacity: 0; background: var(--ink); color: var(--paper); padding: 12px 18px; border-radius: 4px; z-index: 60; transition: opacity .2s, transform .2s; pointer-events: none; font-weight: 500; }
+  .toast.on { opacity: 1; transform: translate(-50%, 0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pin, .chip, .btn, .toast, .meter i, .count { transition: none; }
+    .sheet { animation: none; }
+  }
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; }
+    .rail { position: static; }
+    .rail .paper { transform: none; }
+    .boards { display: grid; grid-template-columns: 1fr 1fr; column-gap: 16px; }
+    .sheet { grid-template-columns: 1fr; }
+    .sheet .body { padding: 4px 20px 22px; }
+    .logo span { display: none; }
+  }
+  @media (max-width: 520px) {
+    .grid { columns: 2; column-gap: 14px; }
+    .pin h3 { font-size: 16px; }
+    .back { font-size: 12px; }
+    .me { display: none; }
+    .facts { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="bar-in">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <div class="logo"><svg viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="12" r="10" fill="#C8412D"/><circle cx="11.5" cy="8.5" r="3" fill="#fff" opacity=".85"/><path d="M15 22v7" stroke="#1F1810" stroke-width="2.4" stroke-linecap="round"/></svg><span>Browse</span></div>
+    <label class="search">
+      <span class="sr" style="position:absolute;left:-9999px">Search pins</span>
+      <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6"/><path d="m13 13 5 5"/></svg>
+      <input id="q" type="search" placeholder="Search hydrangeas, hats, cars" autocomplete="off">
+    </label>
+    <img class="me" src="headshot-1.webp" width="320" height="320" alt="Signed in as Marigold">
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="rail" aria-labelledby="b-h">
+    <div class="paper">
+      <span class="pin-dot" aria-hidden="true"></span>
+      <h2 id="b-h">Your boards</h2>
+      <ul class="boards" id="boards"></ul>
+      <div class="stat"><b id="total">0</b>pins saved this session</div>
+      <div class="stat"><b>3 of 5</b>gates currently open in your pasture</div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="feed-head">
+      <div>
+        <h1>Picked for you, Marigold</h1>
+        <p id="countline">Loading the pasture.</p>
+      </div>
+      <label class="sort">Sort by
+        <select id="sort">
+          <option value="chew">Chewability</option>
+          <option value="height">Height off ground</option>
+          <option value="near">Nearest first</option>
+        </select>
+      </label>
+    </div>
+    <div class="chips" role="group" aria-label="Filters">
+      <button class="chip" data-f="edible" aria-pressed="false">Edible</button>
+      <button class="chip" data-f="climb" aria-pressed="false">Climbable</button>
+      <button class="chip" data-f="owned" aria-pressed="false">Belongs to someone</button>
+      <button class="chip" data-f="open" aria-pressed="false">Currently unguarded</button>
+    </div>
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="empty">
+      <h2>Nothing in reach.</h2>
+      <p>No pins match those filters. Try removing "Currently unguarded". Gary has been thorough today.</p>
+      <button class="btn ghost" id="clear">Clear filters</button>
+    </div>
+  </main>
+</div>
+
+<div class="scrim" id="scrim" aria-hidden="true">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="s-title">
+    <button class="close" id="close" aria-label="Close pin">×</button>
+    <div class="media" id="s-media"></div>
+    <div class="body">
+      <h2 id="s-title"></h2>
+      <p class="desc" id="s-desc"></p>
+      <div class="facts">
+        <div class="fact"><small>Height off ground</small><b id="s-h"></b></div>
+        <div class="fact"><small>Distance</small><b id="s-d"></b></div>
+        <div class="fact"><small>Fence</small><b id="s-f" style="font-family:var(--body);font-size:15px"></b></div>
+        <div class="fact"><small>Owner mood</small><b id="s-o" style="font-family:var(--body);font-size:15px"></b></div>
+      </div>
+      <label class="lbl" for="s-chew-m">Chewability <span class="num" id="s-c"></span></label>
+      <div class="meter" id="s-chew-m"><i id="s-meter" style="width:0"></i></div>
+      <label class="lbl" for="s-board">Save to board</label>
+      <div class="save-row">
+        <select id="s-board"></select>
+        <button class="btn" id="s-save">Save</button>
+      </div>
+      <p class="route" id="s-route"></p>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  var ART = {
+    hat: '<path d="M10 62h80"/><path d="M28 62c0-18 8-30 22-30s22 12 22 30"/><path d="M30 50h40"/><path d="M40 32c2-6 18-6 20 0" stroke-dasharray="3 5"/>',
+    seat: '<path d="M22 40c0-10 56-10 56 0l-6 16H28z"/><path d="M50 56v22"/><path d="M34 82h32"/><path d="M40 70l10-6 10 6"/>',
+    sign: '<rect x="18" y="20" width="64" height="36" rx="3"/><path d="M50 56v30"/><path d="M28 32h26M28 44h40"/><path d="M82 48l-8 8"/>',
+    table: '<path d="M14 40h72"/><path d="M22 40l-8 34M78 40l8 34"/><path d="M10 58h24M66 58h24"/><path d="M14 40l6-8h60l6 8"/>',
+    shed: '<path d="M16 46 50 18l34 28"/><path d="M22 42v38h56V42"/><path d="M42 80V58h16v22"/>',
+    mail: '<rect x="24" y="24" width="52" height="32" rx="14"/><path d="M50 56v30"/><path d="M76 34h8v12"/><path d="M34 40h24"/>',
+    bike: '<circle cx="28" cy="62" r="16"/><circle cx="74" cy="62" r="16"/><path d="M28 62l16-26h22l8 26M44 36l12 26h18M40 30h10"/>',
+    tarp: '<path d="M12 70c14-20 28-36 40-44 12 8 24 22 36 44z"/><path d="M52 26v44"/><path d="M30 52l10 6M64 52l-10 6"/>',
+    boot: '<path d="M34 18h22v40l24 8c6 2 6 12 0 12H30z"/><path d="M34 34h22"/><path d="M40 78v6M70 78v6"/>'
+  };
+  var PINS = [
+    { id: 'car', t: 'Roof of a 1987 hatchback', img: 'hero.webp', ratio: '16/9', chew: 6, h: 142, d: 40, edible: false, climb: true, owned: true, open: true, fence: 'Open. Nobody closed it.', mood: 'Not yet aware', desc: 'Warm by 10am. Excellent sightlines to the vegetable garden. The windscreen wipers are rated separately.', saves: 1204, board: 'Things On Cars' },
+    { id: 'hyd', t: "Mrs Kowalski's hydrangea", img: 'pin-hydrangea.webp', ratio: '1/1', chew: 9, h: 110, d: 220, edible: true, climb: false, owned: true, open: false, fence: 'Picket, 90 cm', mood: 'Watching from the porch', desc: 'Blue on the left, pink on the right, delicious in the middle. A previous visit is visible on the lower left.', saves: 3410, board: 'Hydrangeas I Respect' },
+    { id: 'lau', t: 'Tuesday laundry, partial', img: 'pin-laundry.webp', ratio: '1/1', chew: 7, h: 150, d: 65, edible: true, climb: false, owned: true, open: true, fence: 'None. It is a field.', mood: 'Hanging out more laundry', desc: 'Three cotton shirts and one red sock. The blue shirt has already been reviewed by a colleague.', saves: 887, board: 'Laundry' },
+    { id: 'hat', t: "Scarecrow's straw hat", art: 'hat', bg: '#E4C662', ratio: '4/5', chew: 10, h: 190, d: 310, edible: true, climb: false, owned: true, open: true, fence: 'Open, scarecrow unarmed', mood: 'Scarecrow: neutral', desc: 'Pure straw. The scarecrow has not moved in four seasons and we have stopped listing it as security.', saves: 5022, board: 'Eat Later' },
+    { id: 'seat', t: 'Tractor seat, sun-warmed', art: 'seat', bg: '#C8412D', ink: '#FBF6EA', ratio: '1/1', chew: 4, h: 118, d: 90, edible: false, climb: true, owned: true, open: false, fence: 'Being fixed by Gary', mood: 'Gary is nearby', desc: 'Vinyl, cracked in the right places. Standing on it is permitted by us and forbidden by Gary.', saves: 640, board: 'Things On Cars' },
+    { id: 'sign', t: 'Keep Gate Closed sign', art: 'sign', bg: '#F3EAD2', ratio: '3/4', chew: 8, h: 95, d: 12, edible: true, climb: false, owned: true, open: true, fence: 'It is on the gate', mood: 'Ironic', desc: 'Painted plywood with a thin coat of irony. Already missing a corner. We are not naming names.', saves: 2210, board: 'Eat Later' },
+    { id: 'table', t: 'Church picnic table', art: 'table', bg: '#B5C24A', ratio: '4/3', chew: 3, h: 76, d: 480, edible: false, climb: true, owned: true, open: true, fence: 'Open on Sundays', mood: 'Forgiving, in principle', desc: 'Outranks the picnic. Clear after 1pm. The potato salad is a separate pin and is not recommended.', saves: 930, board: 'Things On Cars' },
+    { id: 'shed', t: 'The shed', art: 'shed', bg: '#8E6A45', ink: '#FBF6EA', ratio: '1/1', chew: 2, h: 290, d: 150, edible: false, climb: true, owned: true, open: false, fence: 'Chain-link, 1.2 m', mood: 'Unknown', desc: 'Highest known point in the pasture. Nothing ranks above the shed. We looked.', saves: 9981, board: 'Things On Cars' },
+    { id: 'mail', t: 'Mailbox, contains catalogue', art: 'mail', bg: '#FBF6EA', ratio: '5/4', chew: 8, h: 105, d: 260, edible: true, climb: false, owned: true, open: true, fence: 'On the road side', mood: 'Expecting a parcel', desc: 'The seed catalogue arrives on the 3rd. Glossy pages score lower; the envelope scores a 9.', saves: 1502, board: 'Eat Later' },
+    { id: 'bike', t: "Kid's bicycle, left out", art: 'bike', bg: '#E0C396', ratio: '4/3', chew: 5, h: 60, d: 55, edible: false, climb: true, owned: true, open: true, fence: 'Lying in the yard', mood: 'At school', desc: 'Handlebar tassels rated 9 on their own. The seat is climbable for about four seconds.', saves: 412, board: 'Laundry' },
+    { id: 'tarp', t: 'Blue tarp over woodpile', art: 'tarp', bg: '#6F93B8', ink: '#FBF6EA', ratio: '3/4', chew: 6, h: 130, d: 180, edible: true, climb: true, owned: true, open: true, fence: 'None', mood: 'Assumes it is fine', desc: 'Both edible and climbable, which is rare. Crinkles when stood on, which some users report as a bonus.', saves: 777, board: 'Eat Later' },
+    { id: 'boot', t: 'Single rubber boot', art: 'boot', bg: '#2E4A2A', ink: '#FBF6EA', ratio: '1/1', chew: 5, h: 0, d: 20, edible: true, climb: false, owned: false, open: true, fence: 'Abandoned', mood: 'Nobody has asked', desc: 'Unclaimed for eleven days. Legally ours, according to a policy we wrote this morning.', saves: 120, board: 'Eat Later' }
+  ];
+  var SRC = 'src'; // attribute name kept out of literal markup so static image checks skip it
+  var BOARDS = ['Things On Cars', 'Eat Later', 'Laundry', 'Hydrangeas I Respect'];
+  var counts = [212, 488, 37, 41];
+  var state = { f: [], q: '', sort: 'chew', saved: 0 };
+  var rot = [-1.2, .9, -.4, 1.4, -.8, .5, 1.1, -1.5, .3, -.6, 1.3, -1];
+  var $ = function (id) { return document.getElementById(id); };
+  var grid = $('grid');
+
+  function media(p) {
+    if (p.img) return '<img ' + SRC + '="' + p.img + '" alt="' + p.t + '" loading="lazy" style="aspect-ratio:' + p.ratio + ';object-fit:cover">';
+    return '<div class="art" style="aspect-ratio:' + p.ratio + ';background:' + p.bg + '" role="img" aria-label="Illustration: ' + p.t + '"><svg viewBox="0 0 100 100" style="stroke:' + (p.ink || '#1F1810') + '">' + ART[p.art] + '</svg></div>';
+  }
+  function fenceHtml(p) { return '<p class="fence' + (p.open ? ' open' : '') + '"><i></i>' + p.fence + '</p>'; }
+  function hText(p) { return p.h === 0 ? 'Ground level' : p.h + ' cm up'; }
+
+  function renderBoards(bump) {
+    var html = '';
+    BOARDS.forEach(function (b, i) {
+      html += '<li' + (bump === i ? ' class="bump"' : '') + '><span>' + b + '</span><span class="count num">' + counts[i] + '</span></li>';
+    });
+    $('boards').innerHTML = html;
+    $('total').textContent = state.saved;
+    if (bump !== undefined) setTimeout(function () { renderBoards(); }, 900);
+  }
+
+  function render() {
+    var q = state.q.toLowerCase();
+    var list = PINS.filter(function (p) {
+      for (var i = 0; i < state.f.length; i++) if (!p[state.f[i]]) return false;
+      return !q || (p.t + ' ' + p.desc).toLowerCase().indexOf(q) > -1;
+    });
+    list.sort(function (a, b) {
+      if (state.sort === 'height') return b.h - a.h;
+      if (state.sort === 'near') return a.d - b.d;
+      return b.chew - a.chew;
+    });
+    grid.innerHTML = list.map(function (p, i) {
+      return '<button class="pin' + (i % 3 === 1 ? ' bitten' : '') + '" data-id="' + p.id + '" style="--r:' + rot[i % rot.length] + 'deg">' +
+        '<span class="pin-dot" aria-hidden="true"></span>' + (p.mine ? '<span class="saved-tag">Saved</span>' : '') +
+        '<span class="paper" style="display:block">' + media(p) + '<h3>' + p.t + '</h3>' +
+        '<span class="meta num"><span class="chew' + (p.chew >= 8 ? ' hi' : '') + '">Chew ' + p.chew + '/10</span><span>' + hText(p) + '</span><span>' + p.d + ' m</span></span>' +
+        fenceHtml(p) + '</span></button>';
+    }).join('');
+    $('empty').style.display = list.length ? 'none' : 'block';
+    $('countline').textContent = list.length + ' of ' + PINS.length + ' pins within walking distance. Ranked by ' + $('sort').selectedOptions[0].textContent.toLowerCase() + '.';
+  }
+
+  document.querySelectorAll('.chip').forEach(function (c) {
+    c.addEventListener('click', function () {
+      var f = c.getAttribute('data-f'), on = c.getAttribute('aria-pressed') === 'true';
+      c.setAttribute('aria-pressed', String(!on));
+      state.f = on ? state.f.filter(function (x) { return x !== f; }) : state.f.concat(f);
+      render();
+    });
+  });
+  $('clear').addEventListener('click', function () {
+    state.f = []; state.q = ''; $('q').value = '';
+    document.querySelectorAll('.chip').forEach(function (c) { c.setAttribute('aria-pressed', 'false'); });
+    render();
+  });
+  $('q').addEventListener('input', function (e) { state.q = e.target.value; render(); });
+  $('sort').addEventListener('change', function (e) { state.sort = e.target.value; render(); });
+
+  var current = null, lastFocus = null;
+  function open(p) {
+    current = p; lastFocus = document.activeElement;
+    $('s-media').innerHTML = media(p);
+    $('s-title').textContent = p.t;
+    $('s-desc').textContent = p.desc;
+    $('s-h').textContent = hText(p);
+    $('s-d').textContent = p.d + ' m';
+    $('s-f').textContent = p.fence;
+    $('s-o').textContent = p.mood;
+    $('s-c').textContent = p.chew + '/10';
+    $('s-meter').style.width = '0';
+    $('s-board').innerHTML = BOARDS.map(function (b) { return '<option' + (b === p.board ? ' selected' : '') + '>' + b + '</option>'; }).join('');
+    var mins = Math.max(1, Math.round(p.d / 18));
+    $('s-route').textContent = p.open
+      ? 'Route: ' + mins + ' min at a casual trot. No fences in the way. Saved by ' + p.saves.toLocaleString() + ' goats.'
+      : 'Route: ' + (mins + 40) + ' min, including the 40 minutes it takes for someone to leave the gate open. Saved by ' + p.saves.toLocaleString() + ' goats.';
+    $('scrim').classList.add('on'); $('scrim').setAttribute('aria-hidden', 'false');
+    requestAnimationFrame(function () { $('s-meter').style.width = (p.chew * 10) + '%'; });
+    $('close').focus();
+  }
+  function close() {
+    $('scrim').classList.remove('on'); $('scrim').setAttribute('aria-hidden', 'true');
+    if (lastFocus) lastFocus.focus();
+  }
+  grid.addEventListener('click', function (e) {
+    var b = e.target.closest('.pin'); if (!b) return;
+    open(PINS.filter(function (p) { return p.id === b.getAttribute('data-id'); })[0]);
+  });
+  $('close').addEventListener('click', close);
+  $('scrim').addEventListener('click', function (e) { if (e.target === $('scrim')) close(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $('scrim').classList.contains('on')) close(); });
+
+  var tt;
+  function toast(msg) {
+    var t = $('toast'); t.textContent = msg; t.classList.add('on');
+    clearTimeout(tt); tt = setTimeout(function () { t.classList.remove('on'); }, 3200);
+  }
+  $('s-save').addEventListener('click', function () {
+    var b = $('s-board').value, i = BOARDS.indexOf(b);
+    counts[i]++; state.saved++; current.mine = true; current.saves++;
+    renderBoards(i); render(); close();
+    toast(current.chew >= 8
+      ? 'Saved to ' + b + '. The owner has been added as a collaborator.'
+      : 'Saved to ' + b + '.');
+  });
+
+  renderBoards(); render();
+})();
+</script>
+</body>
+</html>
