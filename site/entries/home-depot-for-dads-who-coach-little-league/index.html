@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fungo · theworstaistudioever</title>
+<meta name="description" content="A big-box supply store for volunteer coaches, where the batting order is sold by the linear foot and parent complaints go to the returns desk.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Fungo · theworstaistudioever">
+<meta property="og:description" content="A big-box supply store for volunteer coaches, where the batting order is sold by the linear foot and parent complaints go to the returns desk.">
+<meta property="og:image" content="hero.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#E2621B">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --apron: #E2621B;
+    --apron-deep: #B84A10;
+    --tag: #F5D430;
+    --concrete: #ECE8E0;
+    --concrete-2: #DFDAD0;
+    --ink: #1E1F1C;
+    --muted: #6B675F;
+    --sign: #1F3A5F;
+    --peg: #B98B5A;
+    --peg-hole: #6E4F30;
+    --paper: #FFFFFF;
+    --display: 'Archivo Black', 'Arial Black', Impact, sans-serif;
+    --body: 'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'Space Mono', ui-monospace, 'Courier New', monospace;
+    --drop: 4px 4px 0 rgba(30, 31, 28, .18);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--concrete);
+    color: var(--ink);
+    font: 400 17px/1.6 var(--body);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--sign); outline-offset: 3px; }
+  img { display: block; max-width: 100%; }
+  .wrap { width: min(1180px, 100% - 40px); margin: 0 auto; }
+
+  /* top bar */
+  .bar {
+    background: var(--ink);
+    color: var(--concrete);
+    font: 400 13px/1 var(--mono);
+  }
+  .bar .wrap { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; flex-wrap: wrap; }
+  .bar b { color: var(--tag); font-weight: 700; }
+  .nav { background: var(--paper); border-bottom: 3px solid var(--ink); }
+  .nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 14px 0; }
+  .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+  .logo-mark {
+    width: 44px; height: 44px; background: var(--apron); display: grid; place-items: center;
+    box-shadow: inset 0 0 0 3px var(--ink);
+  }
+  .logo-word { font: 400 28px/1 var(--display); letter-spacing: -.02em; }
+  .nav ul { list-style: none; display: flex; gap: 26px; margin: 0; padding: 0; font-weight: 600; font-size: 15px; }
+  .nav ul a { text-decoration: none; padding: 12px 0; }
+  .nav ul a:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 5px; }
+
+  /* buttons */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    min-height: 52px; padding: 0 26px;
+    font: 700 16px/1 var(--body); text-decoration: none; cursor: pointer;
+    border: 3px solid var(--ink); box-shadow: var(--drop);
+    transition: transform .18s ease-out, box-shadow .18s ease-out;
+  }
+  .btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 rgba(30,31,28,.18); }
+  .btn-apron { background: var(--apron); color: var(--ink); position: relative; }
+  .btn-apron::after { content: ""; position: absolute; inset: 4px; border: 1px dashed rgba(30,31,28,.55); pointer-events: none; }
+  .btn-plain { background: var(--paper); color: var(--ink); }
+  .btn:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 rgba(30,31,28,.22); }
+
+  /* pegboard */
+  .peg {
+    background-color: var(--peg);
+    background-image: radial-gradient(circle at 12px 12px, var(--peg-hole) 3px, transparent 3.6px);
+    background-size: 24px 24px;
+    border-top: 3px solid var(--ink);
+    border-bottom: 3px solid var(--ink);
+  }
+
+  /* hero */
+  .hero { padding: 56px 0 72px; }
+  .hero .wrap { display: grid; grid-template-columns: 1.05fr 1fr; gap: 40px; align-items: center; }
+  .hero-card { background: var(--concrete); border: 3px solid var(--ink); box-shadow: 8px 8px 0 rgba(30,31,28,.28); padding: 36px 36px 32px; }
+  .aisle-chip {
+    display: inline-flex; align-items: stretch; margin-bottom: 22px;
+    border: 2px solid var(--ink); font-weight: 700; font-size: 14px;
+  }
+  .aisle-chip span:first-child { background: var(--apron); padding: 6px 10px; font-family: var(--mono); }
+  .aisle-chip span:last-child { background: var(--sign); color: #fff; padding: 6px 12px; }
+  h1 {
+    font: 400 clamp(40px, 5.6vw, 72px)/.98 var(--display);
+    letter-spacing: -.025em; margin: 0 0 22px;
+  }
+  .hero-sub { font-size: 19px; max-width: 34em; margin: 0 0 28px; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 14px; }
+  .hook-card { position: relative; padding-top: 34px; }
+  .hook {
+    position: absolute; top: 0; left: 50%; width: 64px; height: 40px; transform: translateX(-50%);
+    border: 5px solid #9A9C98; border-bottom: none; border-radius: 30px 30px 0 0;
+  }
+  .hook-card figure {
+    margin: 0; background: var(--paper); border: 3px solid var(--ink); padding: 10px;
+    box-shadow: 8px 8px 0 rgba(30,31,28,.28);
+    transform-origin: 50% -30px;
+  }
+  .hook-card img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
+  .hook-card figcaption { font-size: 14px; color: var(--muted); padding: 10px 4px 2px; }
+  .js .hook-card figure { animation: sway 1.4s ease-out 1; }
+  @keyframes sway { 0% { transform: rotate(-2.5deg); } 35% { transform: rotate(1.5deg); } 70% { transform: rotate(-.6deg); } 100% { transform: rotate(0); } }
+
+  /* shelf tag */
+  .tag {
+    display: inline-block; background: var(--tag); color: var(--ink);
+    border-top: 3px solid var(--ink); padding: 8px 12px 10px; min-width: 150px;
+    font-family: var(--mono); box-shadow: var(--drop);
+  }
+  .tag .price { font: 700 30px/1 var(--mono); letter-spacing: -.02em; display: block; }
+  .tag .unit { font-size: 12px; display: block; margin-top: 4px; }
+  .tag .code {
+    height: 18px; margin-top: 8px;
+    background: repeating-linear-gradient(90deg, var(--ink) 0 2px, transparent 2px 4px, var(--ink) 4px 5px, transparent 5px 8px, var(--ink) 8px 11px, transparent 11px 12px);
+  }
+  .hero-tag { position: absolute; left: -18px; bottom: 58px; }
+
+  /* aisle signs */
+  .aisle { padding: 88px 0 24px; }
+  .sign-hang { display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 44px; }
+  .chains { display: flex; gap: 240px; margin-left: 40px; height: 34px; }
+  .chains i { width: 2px; background: repeating-linear-gradient(180deg, #8C8E8A 0 5px, transparent 5px 7px); }
+  .sign {
+    display: flex; align-items: stretch; background: var(--sign); color: #fff;
+    border: 3px solid var(--ink); box-shadow: var(--drop);
+    transform-origin: 50% -34px; transition: transform .18s ease-out;
+  }
+  .sign:hover { transform: rotate(-1deg); }
+  .sign .num { background: var(--apron); color: var(--ink); font: 400 64px/1 var(--display); padding: 12px 20px 8px; display: flex; align-items: center; }
+  .sign .name { padding: 14px 26px; display: flex; flex-direction: column; justify-content: center; }
+  .sign h2 { font: 400 clamp(26px, 3.2vw, 38px)/1.05 var(--display); margin: 0; letter-spacing: -.01em; }
+  .sign p { margin: 6px 0 0; font-size: 15px; color: #C9D4E2; }
+
+  /* features: shelf units */
+  .shelf { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 3px solid var(--ink); background: var(--paper); }
+  .bay { padding: 30px 28px 0; border-right: 3px solid var(--ink); display: flex; flex-direction: column; }
+  .bay:last-child { border-right: none; }
+  .bay-loc { font: 400 13px/1 var(--mono); color: var(--muted); margin-bottom: 18px; }
+  .bay h3 { font: 400 25px/1.1 var(--display); margin: 0 0 12px; letter-spacing: -.01em; }
+  .bay p { margin: 0 0 26px; }
+  .bay svg { width: 44px; height: 44px; margin-bottom: 18px; }
+  .bay-edge {
+    margin: auto -28px 0; border-top: 3px solid var(--ink); background: var(--tag);
+    font: 400 13px/1 var(--mono); padding: 12px 28px; display: flex; justify-content: space-between;
+  }
+
+  /* testimonials: receipts */
+  .receipts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; align-items: start; }
+  .receipt {
+    background: var(--paper); padding: 26px 24px 30px; position: relative;
+    box-shadow: var(--drop); border: 1px solid #CFC9BD;
+    font-size: 16px;
+  }
+  .receipt::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: -10px; height: 10px;
+    background: linear-gradient(135deg, var(--paper) 50%, transparent 50%) 0 0 / 14px 10px repeat-x,
+                linear-gradient(-135deg, var(--paper) 50%, transparent 50%) 0 0 / 14px 10px repeat-x;
+  }
+  .receipt-head { display: flex; gap: 16px; align-items: center; padding-bottom: 16px; border-bottom: 2px dashed var(--ink); margin-bottom: 18px; }
+  .receipt-head img { width: 72px; height: 72px; object-fit: cover; border: 2px solid var(--ink); filter: saturate(.9); }
+  .receipt-head strong { display: block; font-size: 17px; line-height: 1.2; }
+  .receipt-head span { display: block; font-size: 13px; color: var(--muted); line-height: 1.35; margin-top: 4px; }
+  .receipt blockquote { margin: 0; font-size: 17px; }
+  .receipt-foot { margin-top: 20px; padding-top: 14px; border-top: 2px dashed var(--ink); font: 400 12px/1.5 var(--mono); color: var(--muted); display: flex; justify-content: space-between; }
+
+  /* pricing wall */
+  .wall { padding: 20px 0 64px; margin-top: 44px; }
+  .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; align-items: start; padding-top: 30px; }
+  .tier { position: relative; padding-top: 30px; }
+  .tier .hook { width: 44px; height: 30px; border-width: 4px; }
+  .tier-card { background: var(--paper); border: 3px solid var(--ink); box-shadow: 8px 8px 0 rgba(30,31,28,.28); padding: 26px 24px 26px; }
+  .tier-hot .tier-card { background: var(--apron); }
+  .tier-hot .tier-card .tier-line { color: var(--ink); }
+  .tier h3 { font: 400 26px/1.1 var(--display); margin: 0 0 8px; }
+  .tier-line { color: var(--muted); font-size: 15px; margin: 0 0 20px; min-height: 4.8em; }
+  .tier .tag { margin-bottom: 22px; width: 100%; }
+  .tier ul { list-style: none; margin: 0 0 24px; padding: 0; }
+  .tier li { padding: 9px 0 9px 26px; border-top: 1px solid rgba(30,31,28,.22); position: relative; font-size: 15px; }
+  .tier li::before { content: ""; position: absolute; left: 2px; top: 16px; width: 10px; height: 10px; background: var(--ink); }
+  .tier .btn { width: 100%; }
+  .tier-hot .btn { background: var(--ink); color: var(--concrete); }
+  .stamp {
+    position: absolute; top: 44px; right: -10px; background: var(--tag); border: 2px solid var(--ink);
+    font: 700 12px/1 var(--mono); padding: 7px 9px; transform: rotate(4deg);
+  }
+
+  /* demo band */
+  .demo-band { padding: 88px 0; }
+  .demo-box {
+    display: grid; grid-template-columns: 1.3fr 1fr; gap: 0; border: 3px solid var(--ink);
+    background: var(--sign); color: #fff; box-shadow: 8px 8px 0 rgba(30,31,28,.28);
+  }
+  .demo-box > div { padding: 44px 40px; }
+  .demo-box h2 { font: 400 clamp(30px, 4vw, 46px)/1.02 var(--display); margin: 0 0 14px; letter-spacing: -.02em; }
+  .demo-box p { color: #C9D4E2; margin: 0 0 26px; max-width: 32em; }
+  .demo-cta { font-size: 19px; min-height: 60px; }
+  .demo-spec { background: var(--concrete); color: var(--ink); border-left: 3px solid var(--ink); font: 400 14px/1.4 var(--mono); }
+  .demo-spec dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 12px 18px; }
+  .demo-spec dt { color: var(--muted); }
+  .demo-spec dd { margin: 0; font-weight: 700; }
+
+  footer { border-top: 3px solid var(--ink); background: var(--paper); }
+  footer .wrap { display: flex; justify-content: space-between; gap: 20px; padding: 26px 0; flex-wrap: wrap; font-size: 14px; color: var(--muted); }
+  footer a { font-weight: 700; color: var(--ink); }
+
+  @media (max-width: 900px) {
+    .hero .wrap, .demo-box { grid-template-columns: 1fr; }
+    .shelf { grid-template-columns: 1fr; }
+    .bay { border-right: none; border-bottom: 3px solid var(--ink); }
+    .bay:last-child { border-bottom: none; }
+    .receipts, .tiers { grid-template-columns: 1fr; max-width: 520px; }
+    .demo-spec { border-left: none; border-top: 3px solid var(--ink); }
+    .nav ul { display: none; }
+    .hero-tag { left: 8px; }
+    .tier-line { min-height: 0; }
+    .chains { gap: 160px; }
+  }
+  @media (max-width: 520px) {
+    .hero-card { padding: 26px 20px; }
+    .sign .num { font-size: 44px; padding: 10px 14px 6px; }
+    .sign .name { padding: 12px 16px; }
+    .chains { gap: 110px; }
+    .demo-box > div { padding: 32px 22px; }
+    .bar .wrap span:last-child { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+<div class="bar">
+  <div class="wrap">
+    <span>Store #0412 · Open Sat 6:30am, before warmups</span>
+    <span><b>Clearance:</b> last season's lineup cards, 40% off</span>
+  </div>
+</div>
+
+<nav class="nav" aria-label="Main">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Fungo home">
+      <span class="logo-mark" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="#1E1F1C" stroke-width="3" stroke-linecap="square"><path d="M4 22 L19 7"/><circle cx="20.5" cy="5.5" r="2.5" fill="#1E1F1C" stroke="none"/></svg>
+      </span>
+      <span class="logo-word">Fungo</span>
+    </a>
+    <ul>
+      <li><a href="#departments">Departments</a></li>
+      <li><a href="#reviews">Reviews</a></li>
+      <li><a href="#pricing">Pro Desk</a></li>
+      <li><a href="./demo.html">Lineup Builder</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main id="top">
+  <section class="hero peg">
+    <div class="wrap">
+      <div class="hero-card">
+        <div class="aisle-chip"><span>14</span><span>Coaching supply</span></div>
+        <h1>Build the lineup. Pour the dugout. Be home by six.</h1>
+        <p class="hero-sub">Fungo stocks everything a volunteer coach needs for a Saturday, from pressure-treated batting orders to a returns desk that accepts parents. Aisle 14 has the clipboards. Aisle 14 has always had the clipboards.</p>
+        <div class="hero-actions">
+          <a class="btn btn-apron" href="#departments">Find it in Aisle 14</a>
+          <a class="btn btn-plain" href="./demo.html">open the demo →</a>
+        </div>
+      </div>
+      <div class="hook-card">
+        <span class="hook" aria-hidden="true"></span>
+        <figure>
+          <img src="hero.webp" width="1600" height="900" alt="A little league coach in a navy windbreaker stands alone in a warehouse store aisle, holding a clipboard to his chest.">
+          <figcaption>Pictured: Coach, head, 8U. Sold separately.</figcaption>
+        </figure>
+        <div class="tag hero-tag" aria-label="Price: $0 to start, per season">
+          <span class="price">$0.00</span>
+          <span class="unit">to start · $0.00 / dad / season</span>
+          <span class="code" aria-hidden="true"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="aisle" id="departments">
+    <div class="wrap">
+      <div class="sign-hang">
+        <div class="chains" aria-hidden="true"><i></i><i></i></div>
+        <div class="sign">
+          <span class="num">14</span>
+          <div class="name"><h2>Coaching supply</h2><p>Lineups, liability, citrus</p></div>
+        </div>
+      </div>
+
+      <div class="shelf">
+        <article class="bay">
+          <div class="bay-loc">Bay 14-A · Lumber</div>
+          <svg viewBox="0 0 44 44" fill="none" stroke="#1E1F1C" stroke-width="2.5" aria-hidden="true"><rect x="4" y="14" width="36" height="8"/><rect x="4" y="24" width="36" height="8"/><path d="M10 14v8M18 24v8M30 14v8"/></svg>
+          <h3>Lineups, cut to length</h3>
+          <p>Tell us how many kids showed up. Our in-store saw rips a batting order to size while you wait, pressure-treated against parents who have opinions about the three-hole. Offcuts go to the bench.</p>
+          <div class="bay-edge"><span>SKU 1400-221</span><span>$0.00 / ft</span></div>
+        </article>
+        <article class="bay">
+          <div class="bay-loc">Bay 14-B · Returns</div>
+          <svg viewBox="0 0 44 44" fill="none" stroke="#1E1F1C" stroke-width="2.5" aria-hidden="true"><path d="M6 18h32v20H6z"/><path d="M4 18h36M16 10h12v8H16z"/><path d="M14 28h16"/></svg>
+          <h3>The parent returns desk</h3>
+          <p>Bring your complaint to the orange counter with the original receipt. Gary will say he needs to check in the back. Gary has been checking in the back since 2019 and the complaint rate at partner fields has dropped 41 percent.</p>
+          <div class="bay-edge"><span>SKU 1400-009</span><span>No receipt, no refund</span></div>
+        </article>
+        <article class="bay">
+          <div class="bay-loc">Bay 14-C · Garden center</div>
+          <svg viewBox="0 0 44 44" fill="none" stroke="#1E1F1C" stroke-width="2.5" aria-hidden="true"><path d="M6 26a16 16 0 0 0 32 0z"/><path d="M22 26V14M22 26l-11-8M22 26l11-8"/></svg>
+          <h3>Orange slices, contractor pricing</h3>
+          <p>Halftime citrus sold by the pallet and delivered by forklift to the gate behind Field 3. Every order is pre-quartered, logged to a SKU and backed by a 90-day freshness warranty we have never had to honor.</p>
+          <div class="bay-edge"><span>SKU 1400-750</span><span>$0.31 / wedge</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="aisle" id="reviews">
+    <div class="wrap">
+      <div class="sign-hang">
+        <div class="chains" aria-hidden="true"><i></i><i></i></div>
+        <div class="sign">
+          <span class="num">22</span>
+          <div class="name"><h2>Customer reviews</h2><p>Verified purchase, verified dad</p></div>
+        </div>
+      </div>
+
+      <div class="receipts">
+        <figure class="receipt">
+          <div class="receipt-head">
+            <img src="headshot-1.webp" width="320" height="320" alt="Doug Pressler, head coach, in a navy windbreaker with a whistle.">
+            <div><strong>Doug Pressler</strong><span>Head Coach, Tri-County Hornets 8U; Regional Sales Manager, Mid-Atlantic Adhesives</span></div>
+          </div>
+          <blockquote>I used to do the lineup on the back of a gas receipt. Now it arrives on a pallet with a SKU and my wife says I talk about it too much at dinner.</blockquote>
+          <div class="receipt-foot"><span>TRANS 0412-8812</span><span>★★★★★</span></div>
+        </figure>
+        <figure class="receipt">
+          <div class="receipt-head">
+            <img src="headshot-2.webp" width="320" height="320" alt="Ray Okafor, assistant coach, in a grey quarter-zip and navy cap.">
+            <div><strong>Ray Okafor</strong><span>Assistant Coach, Lakeview Mudcats 10U; Owns Two Leaf Blowers</span></div>
+          </div>
+          <blockquote>The returns desk took a complaint about my son's playing time from my own brother-in-law. He was issued store credit. We have not discussed it since.</blockquote>
+          <div class="receipt-foot"><span>TRANS 0412-9030</span><span>★★★★★</span></div>
+        </figure>
+        <figure class="receipt">
+          <div class="receipt-head">
+            <img src="headshot-3.webp" width="320" height="320" alt="Brent Vasquez-Hollis, head coach, in an orange polo holding a clipboard.">
+            <div><strong>Brent Vasquez-Hollis</strong><span>Head Coach, Pine Hollow Pirates Coach-Pitch; Snack Bar Treasurer, Second Term</span></div>
+          </div>
+          <blockquote>Forty pounds of orange slices, quartered, at the gate at 9:15. The forklift driver wished the kids luck. It is the most supported I have felt as a man.</blockquote>
+          <div class="receipt-foot"><span>TRANS 0412-9117</span><span>★★★★☆</span></div>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="aisle" id="pricing" style="padding-bottom:0">
+    <div class="wrap">
+      <div class="sign-hang" style="margin-bottom:0">
+        <div class="chains" aria-hidden="true"><i></i><i></i></div>
+        <div class="sign">
+          <span class="num">31</span>
+          <div class="name"><h2>Pro Desk</h2><p>Membership, billed per season or per month</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="wall peg">
+      <div class="wrap">
+        <div class="tiers">
+          <article class="tier">
+            <span class="hook" aria-hidden="true"></span>
+            <div class="tier-card">
+              <h3>Weekend Project</h3>
+              <p class="tier-line">For the dad who said yes at the parents' meeting because nobody else raised a hand.</p>
+              <div class="tag"><span class="price">$0</span><span class="unit">free, like the job</span><span class="code" aria-hidden="true"></span></div>
+              <ul>
+                <li>One (1) laminated lineup card</li>
+                <li>Pencil, carpenter, flat</li>
+                <li>Access to the clipboard aisle on weekdays</li>
+              </ul>
+              <a class="btn btn-plain" href="./demo.html">Grab a cart</a>
+            </div>
+          </article>
+          <article class="tier tier-hot">
+            <span class="hook" aria-hidden="true"></span>
+            <span class="stamp">Most returned</span>
+            <div class="tier-card">
+              <h3>Pro Desk</h3>
+              <p class="tier-line">For coaches who have started calling it "the program."</p>
+              <div class="tag"><span class="price">$49/mo</span><span class="unit">$1.63 / day · $0.14 / kid / day</span><span class="code" aria-hidden="true"></span></div>
+              <ul>
+                <li>Unlimited lineup cuts</li>
+                <li>Priority lane at the parent returns desk</li>
+                <li>Rental fungo bat, 4-hour minimum</li>
+                <li>Your name embroidered on an apron</li>
+              </ul>
+              <a class="btn" href="./demo.html">Open a Pro account</a>
+            </div>
+          </article>
+          <article class="tier">
+            <span class="hook" aria-hidden="true"></span>
+            <div class="tier-card">
+              <h3>General Contractor</h3>
+              <p class="tier-line">For the dad who also runs the snack bar and has keys to the equipment shed.</p>
+              <div class="tag"><span class="price">$1,850</span><span class="unit">per season · net 30</span><span class="code" aria-hidden="true"></span></div>
+              <ul>
+                <li>Forklift orange-slice delivery</li>
+                <li>Dugout re-roof, one per season</li>
+                <li>A second adult who stands near you and nods</li>
+                <li>Net 30 terms on sunflower seeds</li>
+              </ul>
+              <a class="btn btn-plain" href="./demo.html">Request a quote</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="demo-band">
+    <div class="wrap">
+      <div class="demo-box">
+        <div>
+          <h2>Try the Lineup Builder before Saturday.</h2>
+          <p>Eleven Tri-County Hornets are on the shelf. Some are in stock. One is at grandma's. Load nine into the cart, watch the Parent Friction Estimate climb, and print the receipt.</p>
+          <a class="btn btn-apron demo-cta" href="./demo.html">open the demo →</a>
+        </div>
+        <div class="demo-spec">
+          <dl>
+            <dt>Roster</dt><dd>11 SKUs</dd>
+            <dt>Cart</dt><dd>9 slots</dd>
+            <dt>Friction</dt><dd>Live estimate</dd>
+            <dt>Returns</dt><dd>Parents, 30 days</dd>
+            <dt>Install</dt><dd>None. Walk-in.</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a href="/">← theworstaistudioever</a>
+    <span>Fungo Supply Co. is not affiliated with any league, store, or orange grove. Prices valid through the end of the regular season.</span>
+  </div>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js');
+</script>
+</body>
+</html>

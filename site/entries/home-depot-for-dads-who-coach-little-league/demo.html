@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lineup Builder · Fungo · theworstaistudioever</title>
+<meta name="description" content="The Fungo Lineup Builder. Eleven Tri-County Hornets on the shelf, nine slots in the cart, one Parent Friction Estimate.">
+<meta property="og:title" content="Lineup Builder · Fungo">
+<meta property="og:description" content="Eleven Tri-County Hornets on the shelf, nine slots in the cart, one Parent Friction Estimate.">
+<meta name="theme-color" content="#E2621B">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --apron: #E2621B;
+    --tag: #F5D430;
+    --concrete: #ECE8E0;
+    --concrete-2: #DFDAD0;
+    --ink: #1E1F1C;
+    --muted: #6B675F;
+    --sign: #1F3A5F;
+    --paper: #FFFFFF;
+    --ok: #2D6A3E;
+    --warn: #A33A12;
+    --display: 'Archivo Black', 'Arial Black', Impact, sans-serif;
+    --body: 'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'Space Mono', ui-monospace, 'Courier New', monospace;
+    --drop: 4px 4px 0 rgba(30, 31, 28, .18);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--concrete); color: var(--ink); font: 400 16px/1.5 var(--body); -webkit-font-smoothing: antialiased; min-height: 100dvh; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--sign); outline-offset: 2px; }
+
+  .chrome { background: var(--ink); color: var(--concrete); }
+  .chrome .in { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 10px 20px; font: 400 13px/1 var(--mono); flex-wrap: wrap; }
+  .chrome a { color: var(--tag); text-decoration: none; font-weight: 700; padding: 6px 0; }
+  .chrome a:hover { text-decoration: underline; }
+
+  .appbar { background: var(--paper); border-bottom: 3px solid var(--ink); }
+  .appbar .in { display: flex; align-items: center; gap: 18px; padding: 12px 20px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: 10px; font: 400 22px/1 var(--display); }
+  .brand i { width: 34px; height: 34px; background: var(--apron); box-shadow: inset 0 0 0 3px var(--ink); display: grid; place-items: center; }
+  .crumbs { font-size: 14px; color: var(--muted); }
+  .crumbs b { color: var(--ink); }
+  .store { margin-left: auto; font: 400 13px/1.3 var(--mono); text-align: right; color: var(--muted); }
+
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 24px; padding: 24px 20px 40px; max-width: 1320px; margin: 0 auto; }
+
+  .panel { background: var(--paper); border: 3px solid var(--ink); box-shadow: var(--drop); }
+  .panel-head { display: flex; align-items: stretch; border-bottom: 3px solid var(--ink); }
+  .panel-head .num { background: var(--apron); font: 400 28px/1 var(--display); padding: 12px 14px; display: flex; align-items: center; border-right: 3px solid var(--ink); }
+  .panel-head .ttl { background: var(--sign); color: #fff; flex: 1; padding: 10px 16px; display: flex; flex-direction: column; justify-content: center; }
+  .panel-head h1, .panel-head h2 { font: 400 20px/1.1 var(--display); margin: 0; }
+  .panel-head p { margin: 3px 0 0; font-size: 13px; color: #C9D4E2; }
+
+  .tools { display: flex; gap: 12px; padding: 14px 16px; border-bottom: 2px solid var(--concrete-2); flex-wrap: wrap; align-items: center; }
+  .search { flex: 1 1 220px; display: flex; align-items: center; border: 2px solid var(--ink); background: var(--concrete); }
+  .search label { padding: 0 10px; display: flex; }
+  .search input { flex: 1; border: 0; background: transparent; font: 400 15px/1 var(--body); padding: 12px 10px 12px 0; min-height: 44px; color: var(--ink); }
+  .search input:focus { outline: none; }
+  .search:focus-within { outline: 3px solid var(--sign); outline-offset: 2px; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip { border: 2px solid var(--ink); background: var(--paper); padding: 0 14px; min-height: 40px; font-weight: 600; font-size: 14px; }
+  .chip[aria-pressed="true"] { background: var(--ink); color: var(--concrete); }
+  .chip:hover:not([aria-pressed="true"]) { background: var(--concrete); }
+
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font: 700 12px/1.2 var(--mono); color: var(--muted); padding: 10px 12px; border-bottom: 2px solid var(--ink); background: var(--concrete); white-space: nowrap; }
+  td { padding: 12px; border-bottom: 1px solid var(--concrete-2); vertical-align: middle; font-size: 15px; }
+  tr.in-cart td { background: #FFF8D6; }
+  .kid { display: flex; align-items: center; gap: 12px; }
+  .jersey { width: 38px; height: 38px; flex: none; background: var(--sign); color: #fff; font: 400 16px/1 var(--display); display: grid; place-items: center; border: 2px solid var(--ink); }
+  .kid strong { display: block; line-height: 1.2; }
+  .kid small { font: 400 12px/1.3 var(--mono); color: var(--muted); }
+  .status { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .status::before { content: ""; width: 10px; height: 10px; border: 2px solid var(--ink); }
+  .status.in::before { background: var(--ok); }
+  .status.back::before { background: var(--tag); }
+  .status.special::before { background: var(--apron); }
+  .num-cell { font: 400 14px/1 var(--mono); white-space: nowrap; }
+  .bar-mini { display: inline-block; width: 60px; height: 8px; border: 1px solid var(--ink); vertical-align: middle; margin-left: 6px; background: var(--concrete); position: relative; }
+  .bar-mini span { position: absolute; inset: 0 auto 0 0; background: var(--ink); }
+  .add { min-height: 40px; padding: 0 12px; border: 2px solid var(--ink); background: var(--apron); font-weight: 700; font-size: 14px; white-space: nowrap; box-shadow: 2px 2px 0 rgba(30,31,28,.25); }
+  .add:active { transform: translate(1px,1px); box-shadow: none; }
+  .add.ghost { background: var(--paper); }
+  .add:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
+  .empty { padding: 36px 20px; text-align: center; color: var(--muted); }
+  .empty button { margin-top: 12px; }
+  .table-wrap { overflow-x: auto; }
+
+  /* cart */
+  .cart { position: sticky; top: 16px; align-self: start; }
+  .slots { list-style: none; margin: 0; padding: 8px 12px; counter-reset: slot; }
+  .slot { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px dashed var(--concrete-2); min-height: 56px; }
+  .slot:last-child { border-bottom: none; }
+  .slot-n { width: 30px; height: 30px; flex: none; font: 700 14px/1 var(--mono); display: grid; place-items: center; border: 2px solid var(--ink); background: var(--tag); }
+  .slot.open .slot-n { background: var(--paper); color: var(--muted); border-style: dashed; }
+  .slot-body { flex: 1; min-width: 0; }
+  .slot-body strong { display: block; font-size: 15px; line-height: 1.2; }
+  .slot-body small { font: 400 12px/1.3 var(--mono); color: var(--muted); }
+  .slot.open .slot-body { color: var(--muted); font-size: 14px; font-style: italic; }
+  .slot-acts { display: flex; gap: 4px; }
+  .ico { width: 34px; height: 34px; border: 2px solid var(--ink); background: var(--paper); display: grid; place-items: center; padding: 0; }
+  .ico:hover:not(:disabled) { background: var(--concrete); }
+  .ico:disabled { opacity: .3; cursor: not-allowed; }
+
+  .meter { padding: 14px 16px 16px; border-top: 3px solid var(--ink); background: var(--concrete); }
+  .meter-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .meter-top span { font-weight: 700; font-size: 14px; }
+  .meter-top output { font: 700 22px/1 var(--mono); }
+  .gauge { height: 18px; border: 2px solid var(--ink); background: var(--paper); margin: 10px 0 8px; position: relative; overflow: hidden; }
+  .gauge span { position: absolute; inset: 0 auto 0 0; width: 0; background: repeating-linear-gradient(90deg, var(--apron) 0 10px, #C9540F 10px 12px); transition: width .25s ease-out; }
+  .meter p { margin: 0; font-size: 13px; color: var(--muted); min-height: 2.6em; }
+  .checkout { padding: 0 16px 16px; background: var(--concrete); }
+  .checkout button { width: 100%; min-height: 54px; border: 3px solid var(--ink); background: var(--apron); font: 700 17px/1 var(--body); box-shadow: var(--drop); position: relative; }
+  .checkout button::after { content: ""; position: absolute; inset: 4px; border: 1px dashed rgba(30,31,28,.55); }
+  .checkout button:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 rgba(30,31,28,.18); }
+  .checkout small { display: block; text-align: center; margin-top: 8px; font: 400 12px/1.3 var(--mono); color: var(--muted); }
+
+  /* modal */
+  .scrim { position: fixed; inset: 0; background: rgba(30,31,28,.55); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 50; }
+  .scrim.open { display: flex; }
+  .receipt { background: var(--paper); width: min(400px, 100%); max-height: 90dvh; overflow: auto; padding: 26px 24px 22px; font: 400 14px/1.5 var(--mono); position: relative; box-shadow: 6px 6px 0 rgba(0,0,0,.3); }
+  .scrim.open .receipt { animation: print .3s ease-out; }
+  @keyframes print { from { transform: translateY(-24px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .receipt h2 { font: 400 26px/1 var(--display); text-align: center; margin: 0 0 4px; }
+  .receipt .c { text-align: center; color: var(--muted); font-size: 12px; margin: 0; }
+  .receipt hr { border: 0; border-top: 2px dashed var(--ink); margin: 14px 0; }
+  .receipt ol { margin: 0; padding: 0; list-style: none; }
+  .receipt li { display: flex; justify-content: space-between; gap: 12px; padding: 2px 0; }
+  .receipt .tot { display: flex; justify-content: space-between; font-weight: 700; }
+  .receipt .policy { font-size: 12px; color: var(--muted); }
+  .receipt .code { height: 40px; margin: 14px 0 6px; background: repeating-linear-gradient(90deg, var(--ink) 0 2px, transparent 2px 4px, var(--ink) 4px 5px, transparent 5px 8px, var(--ink) 8px 11px, transparent 11px 12px, var(--ink) 12px 13px, transparent 13px 16px); }
+  .receipt-acts { display: flex; gap: 10px; margin-top: 16px; }
+  .receipt-acts button { flex: 1; min-height: 46px; border: 2px solid var(--ink); background: var(--paper); font: 700 14px/1 var(--body); }
+  .receipt-acts button.primary { background: var(--apron); }
+
+  .toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%) translateY(20px); opacity: 0; background: var(--ink); color: var(--concrete); padding: 12px 18px; border-left: 8px solid var(--tag); font-size: 14px; max-width: calc(100% - 40px); transition: opacity .2s ease-out, transform .2s ease-out; pointer-events: none; z-index: 60; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 980px) {
+    .layout { grid-template-columns: 1fr; }
+    .cart { position: static; }
+    .store { display: none; }
+  }
+  @media (max-width: 640px) {
+    .hide-sm { display: none; }
+    td, th { padding: 10px 8px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="chrome">
+  <div class="in">
+    <a href="./index.html">← back to the pitch</a>
+    <span>Signed in: Coach D. Pressler · Pro Desk member</span>
+  </div>
+</div>
+
+<header class="appbar">
+  <div class="in">
+    <div class="brand"><i aria-hidden="true"><svg width="20" height="20" viewBox="0 0 26 26" fill="none" stroke="#1E1F1C" stroke-width="3.5" stroke-linecap="square"><path d="M4 22 L19 7"/><circle cx="20.5" cy="5.5" r="2.5" fill="#1E1F1C" stroke="none"/></svg></i>Fungo</div>
+    <div class="crumbs">Aisle 14 / Coaching supply / <b>Lineup Builder</b></div>
+    <div class="store">Store #0412, Field 3 pickup<br>Game: Sat 9:30am vs. Eastfield Owls</div>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="panel" aria-labelledby="shelf-title">
+    <div class="panel-head">
+      <span class="num">14</span>
+      <div class="ttl"><h1 id="shelf-title">Roster shelf: Tri-County Hornets 8U</h1><p id="shelf-count">11 units on shelf</p></div>
+    </div>
+    <div class="tools">
+      <div class="search">
+        <label for="q"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E1F1C" stroke-width="2.5" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="M15 15l6 6"/></svg><span style="position:absolute;left:-9999px">Search roster</span></label>
+        <input id="q" type="search" placeholder="Search by name, number or SKU" autocomplete="off">
+      </div>
+      <div class="chips" role="group" aria-label="Filter by aisle">
+        <button class="chip" data-aisle="all" aria-pressed="true">All</button>
+        <button class="chip" data-aisle="Infield" aria-pressed="false">Infield</button>
+        <button class="chip" data-aisle="Outfield" aria-pressed="false">Outfield</button>
+        <button class="chip" data-aisle="Bench" aria-pressed="false">Bench</button>
+        <button class="chip" data-aisle="Snack Duty" aria-pressed="false">Snack duty</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Unit</th>
+            <th scope="col">Stock</th>
+            <th scope="col" class="hide-sm">Arm rating</th>
+            <th scope="col" class="hide-sm">Attention, min</th>
+            <th scope="col" class="hide-sm">Parent load</th>
+            <th scope="col"><span style="position:absolute;left:-9999px">Action</span></th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div class="empty" id="empty" hidden>
+        No units match that search. Aisle 14 is fully stocked, so the problem is the search.<br>
+        <button class="add ghost" id="clear" type="button">Clear search and filters</button>
+      </div>
+    </div>
+  </section>
+
+  <aside class="panel cart" aria-labelledby="cart-title">
+    <div class="panel-head">
+      <span class="num">9</span>
+      <div class="ttl"><h2 id="cart-title">Batting order cart</h2><p id="cart-count">0 of 9 slots loaded</p></div>
+    </div>
+    <ol class="slots" id="slots"></ol>
+    <div class="meter">
+      <div class="meter-top"><span id="meter-label">Parent Friction Estimate</span><output id="fric" aria-labelledby="meter-label">0.0</output></div>
+      <div class="gauge" aria-hidden="true"><span id="gauge"></span></div>
+      <p id="fric-note">Cart is empty. No parent has an opinion yet. Enjoy it.</p>
+    </div>
+    <div class="checkout">
+      <button type="button" id="checkout">Check out lineup</button>
+      <small>Receipt prints at the returns desk and here</small>
+    </div>
+  </aside>
+</main>
+
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="r-title">
+  <div class="receipt" tabindex="-1" id="receipt">
+    <h2 id="r-title">FUNGO</h2>
+    <p class="c">Store #0412 · Aisle 14 · Coaching supply</p>
+    <p class="c" id="r-date"></p>
+    <hr>
+    <ol id="r-items"></ol>
+    <hr>
+    <div class="tot"><span>Units in order</span><span id="r-units"></span></div>
+    <div class="tot"><span>Parent friction</span><span id="r-fric"></span></div>
+    <div class="tot"><span>Balance due</span><span>$0.00</span></div>
+    <hr>
+    <p class="policy">Return policy: parents may return this lineup within 30 days with the original receipt and a calm voice. Complaints without a receipt are issued store credit. Gary is checking in the back.</p>
+    <div class="code" aria-hidden="true"></div>
+    <p class="c" id="r-trans"></p>
+    <div class="receipt-acts">
+      <button type="button" id="r-close">Keep editing</button>
+      <button type="button" class="primary" id="r-print">Print receipt</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  var roster = [
+    ['Mason Pressler', 7, 'Infield', 'in', 8, 11, 9, 'Parent is head coach. Friction is structural.'],
+    ['Aiden Kowalczyk', 12, 'Infield', 'in', 6, 4, 7, 'Dad records every at-bat on an iPad.'],
+    ['Lily Tran', 3, 'Infield', 'in', 9, 22, 2, ''],
+    ['Jaxon Reed', 21, 'Outfield', 'in', 5, 2, 6, 'Picks dandelions in left. Mom considers this a skill.'],
+    ['Sofia Okafor', 9, 'Infield', 'in', 7, 14, 4, ''],
+    ['Theo Brandt', 15, 'Outfield', 'back', 6, 9, 3, 'At grandma’s through Sunday.'],
+    ['Emma Vasquez-Hollis', 2, 'Outfield', 'in', 7, 17, 5, ''],
+    ['Caleb Duffy', 44, 'Bench', 'in', 3, 6, 8, 'Grandfather sits behind the backstop. Has a folding chair.'],
+    ['Noah Whitfield', 11, 'Bench', 'special', 4, 5, 5, 'At a birthday party. Bounce house confirmed.'],
+    ['Ava Lindqvist', 5, 'Outfield', 'in', 6, 12, 3, ''],
+    ['Grayson Pike', 30, 'Snack Duty', 'in', 2, 3, 6, 'Assigned to snack duty in 2025. Has not left.']
+  ].map(function (r, i) {
+    return { id: i, name: r[0], num: r[1], aisle: r[2], stock: r[3], arm: r[4], attn: r[5], load: r[6], note: r[7], sku: '1400-' + String(300 + r[1] * 7) };
+  });
+  var stockText = { in: 'In stock', back: 'Backordered', special: 'Special order' };
+  var cart = [];
+  var aisle = 'all';
+  var $ = function (id) { return document.getElementById(id); };
+  var toastTimer;
+
+  function toast(msg) {
+    var t = $('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove('show'); }, 3200);
+  }
+
+  function friction() {
+    if (!cart.length) return 0;
+    var f = 0;
+    cart.forEach(function (id, pos) { f += roster[id].load * (pos / 8) * 0.9; });
+    roster.forEach(function (k) {
+      if (k.stock === 'in' && cart.indexOf(k.id) === -1) f += k.load * 1.1;
+    });
+    return Math.min(99.9, f);
+  }
+
+  function frictionNote(f) {
+    if (!cart.length) return 'Cart is empty. No parent has an opinion yet. Enjoy it.';
+    if (f < 20) return 'Low. Expect one text message, polite, around 8pm.';
+    if (f < 40) return 'Moderate. A parent will ask to "grab you for two minutes" after the game.';
+    if (f < 60) return 'Elevated. Returns desk has been notified. Gary is stretching.';
+    return 'Severe. A group chat you are not in has been created.';
+  }
+
+  function renderRows() {
+    var q = $('q').value.trim().toLowerCase();
+    var list = roster.filter(function (k) {
+      var hay = (k.name + ' ' + k.num + ' ' + k.sku).toLowerCase();
+      return (aisle === 'all' || k.aisle === aisle) && (!q || hay.indexOf(q) !== -1);
+    });
+    var tb = $('rows');
+    tb.innerHTML = '';
+    list.forEach(function (k) {
+      var inCart = cart.indexOf(k.id) !== -1;
+      var tr = document.createElement('tr');
+      if (inCart) tr.className = 'in-cart';
+      var btn;
+      if (inCart) btn = '<button class="add ghost" data-remove="' + k.id + '">Remove</button>';
+      else if (k.stock === 'in') btn = '<button class="add" data-add="' + k.id + '"' + (cart.length >= 9 ? ' disabled' : '') + '>Add to lineup</button>';
+      else btn = '<button class="add ghost" data-notify="' + k.id + '">Notify me</button>';
+      tr.innerHTML =
+        '<td><div class="kid"><span class="jersey">' + k.num + '</span><div><strong>' + k.name + '</strong><small>SKU ' + k.sku + ' / ' + k.aisle + '</small></div></div></td>' +
+        '<td><span class="status ' + k.stock + '">' + stockText[k.stock] + '</span></td>' +
+        '<td class="num-cell hide-sm">' + k.arm + '/10<span class="bar-mini"><span style="width:' + k.arm * 10 + '%"></span></span></td>' +
+        '<td class="num-cell hide-sm">' + k.attn + '</td>' +
+        '<td class="num-cell hide-sm" title="' + (k.note || 'No notes on file') + '">' + k.load + '/10</td>' +
+        '<td>' + btn + '</td>';
+      tb.appendChild(tr);
+    });
+    $('empty').hidden = list.length > 0;
+    $('shelf-count').textContent = list.length + (list.length === 1 ? ' unit' : ' units') + ' on shelf' + (aisle !== 'all' ? ', aisle: ' + aisle : '');
+  }
+
+  function renderCart() {
+    var ol = $('slots');
+    ol.innerHTML = '';
+    for (var i = 0; i < 9; i++) {
+      var li = document.createElement('li');
+      var id = cart[i];
+      if (id === undefined) {
+        li.className = 'slot open';
+        li.innerHTML = '<span class="slot-n">' + (i + 1) + '</span><span class="slot-body">Open slot</span>';
+      } else {
+        var k = roster[id];
+        li.className = 'slot';
+        li.innerHTML = '<span class="slot-n">' + (i + 1) + '</span>' +
+          '<span class="slot-body"><strong>' + k.name + '</strong><small>#' + k.num + ' / arm ' + k.arm + ' / load ' + k.load + '</small></span>' +
+          '<span class="slot-acts">' +
+          '<button class="ico" data-up="' + i + '" aria-label="Move ' + k.name + ' up"' + (i === 0 ? ' disabled' : '') + '><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#1E1F1C" stroke-width="2.5"><path d="M2 9l5-5 5 5"/></svg></button>' +
+          '<button class="ico" data-down="' + i + '" aria-label="Move ' + k.name + ' down"' + (i === cart.length - 1 ? ' disabled' : '') + '><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#1E1F1C" stroke-width="2.5"><path d="M2 5l5 5 5-5"/></svg></button>' +
+          '<button class="ico" data-remove="' + id + '" aria-label="Remove ' + k.name + '"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#1E1F1C" stroke-width="2.5"><path d="M3 3l8 8M11 3l-8 8"/></svg></button>' +
+          '</span>';
+      }
+      ol.appendChild(li);
+    }
+    $('cart-count').textContent = cart.length + ' of 9 slots loaded';
+    var f = friction();
+    $('fric').textContent = f.toFixed(1);
+    $('gauge').style.width = f + '%';
+    $('fric-note').textContent = frictionNote(f);
+  }
+
+  function render() { renderRows(); renderCart(); }
+
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (!b) return;
+    var d = b.dataset;
+    if (d.add !== undefined) {
+      if (cart.length >= 9) { toast('Cart is full. Nine is the league maximum and also the fire code.'); return; }
+      cart.push(+d.add);
+      toast(roster[+d.add].name + ' added to slot ' + cart.length + '.');
+      if (roster[+d.add].note) setTimeout(function () { toast('Note on file: ' + roster[+d.add].note); }, 1400);
+    } else if (d.remove !== undefined) {
+      cart.splice(cart.indexOf(+d.remove), 1);
+      toast(roster[+d.remove].name + ' returned to shelf.');
+    } else if (d.up !== undefined) {
+      var i = +d.up; var t = cart[i - 1]; cart[i - 1] = cart[i]; cart[i] = t;
+    } else if (d.down !== undefined) {
+      var j = +d.down; var u = cart[j + 1]; cart[j + 1] = cart[j]; cart[j] = u;
+    } else if (d.notify !== undefined) {
+      var k = roster[+d.notify];
+      toast('We will text you when ' + k.name.split(' ')[0] + ' is back in stock. ' + k.note);
+      return;
+    } else if (d.aisle) {
+      aisle = d.aisle;
+      document.querySelectorAll('.chip').forEach(function (c) { c.setAttribute('aria-pressed', String(c === b)); });
+    } else { return; }
+    render();
+  });
+
+  $('q').addEventListener('input', renderRows);
+  $('clear').addEventListener('click', function () {
+    $('q').value = ''; aisle = 'all';
+    document.querySelectorAll('.chip').forEach(function (c) { c.setAttribute('aria-pressed', String(c.dataset.aisle === 'all')); });
+    renderRows();
+  });
+
+  var lastFocus;
+  function openReceipt() {
+    if (!cart.length) { toast('Cart is empty. Add at least one unit before checkout.'); return; }
+    var items = $('r-items');
+    items.innerHTML = '';
+    cart.forEach(function (id, i) {
+      var li = document.createElement('li');
+      li.innerHTML = '<span>' + (i + 1) + '. ' + roster[id].name.toUpperCase() + '</span><span>#' + roster[id].num + '</span>';
+      items.appendChild(li);
+    });
+    if (cart.length < 9) {
+      var w = document.createElement('li');
+      w.innerHTML = '<span>** SHORT ' + (9 - cart.length) + ' UNIT(S). UMPIRE WILL DISCUSS.</span><span></span>';
+      items.appendChild(w);
+    }
+    var now = new Date();
+    $('r-date').textContent = now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    $('r-units').textContent = cart.length + ' / 9';
+    $('r-fric').textContent = friction().toFixed(1);
+    $('r-trans').textContent = 'TRANS 0412-' + (8800 + Math.floor(Math.random() * 900));
+    lastFocus = document.activeElement;
+    $('scrim').classList.add('open');
+    $('receipt').focus();
+  }
+  function closeReceipt() { $('scrim').classList.remove('open'); if (lastFocus) lastFocus.focus(); }
+  $('checkout').addEventListener('click', openReceipt);
+  $('r-close').addEventListener('click', closeReceipt);
+  $('r-print').addEventListener('click', function () { closeReceipt(); toast('Receipt printed. A copy has been sent to the returns desk.'); });
+  $('scrim').addEventListener('click', function (e) { if (e.target === this) closeReceipt(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $('scrim').classList.contains('open')) closeReceipt(); });
+
+  // Preload a partial lineup so the screen opens mid-decision.
+  cart = [2, 4, 0, 1];
+  render();
+})();
+</script>
+</body>
+</html>
