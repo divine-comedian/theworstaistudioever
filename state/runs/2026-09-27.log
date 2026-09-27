@@ -1,0 +1,48 @@
+[2026-09-27T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-09-27T08:00:02Z] invoking claude -p
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/github/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/github/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.openclaw/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.openclaw/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.claude/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.claude/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/aurevon-status/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/aurevon-status/**) instead (Edit rules cover all file-editing tools).
+
+--- agent run summary (2026-09-27) ---
+Rolled: Tinder x former child actors -> tinder-for-former-child-actors (product: Callback)
+Rerolls: 0 (first PRNG draw was unused; seed = sum(charcodes('2026-09-27')) * 31337 mod 2^31, LCG)
+Note: subject 'former child actors' previously used with TikTok (tiktok-for-former-child-actors); pair is new.
+Design direction: casting-office headshot composite, studio-seamless daylight mode (8x10 glossies, staples, applause-sign CTA, SMPTE bar dividers)
+  Palette 'Studio Seamless': primary #1F5E63, accent #C8102E, bg #ECE9E3, fg #1C1B1F, muted #6F6A62, ink #16151A
+  Fonts: Abril Fatface (display) / Libre Franklin (body) / IBM Plex Mono (figures)
+  Anti-sameness: no match vs last 7 (Archivo Black, Caprasimo, Fraunces, Bricolage, Graduate, Syncopate, Alfa Slab; none used Studio Seamless or headshot composite)
+Images (4 generated, 4 API calls, all kept):
+  Rationale: photo-shaped demo (headshot swipe stack) -> 3 portrait cards, reused as the landing hero's fanned 8x10 composite, so no 16:9 hero; 4th = testimonial headshot (Dana Voss). Other two testimonials keep CSS initials.
+  card-1.webp  demo  attempts 1  PASS (correct subject, grey seamless, teal matches primary, no text)
+  card-2.webp  demo  attempts 1  PASS (red sweater harmonizes with accent, no text)
+  card-3.webp  demo  attempts 1  PASS (frosted tips subtle but reads; no text)
+  headshot-1.webp testimonial attempts 1 PASS (deadpan, neutral backdrop, no text)
+Warnings / near-misses:
+  - validate-entry flagged a JS string-built img src in demo.html as a missing image; fixed by building img via DOM setAttribute. Re-validated OK.
+  - Renamed parody show titles that sat too close to real shows (Full House / Gimme a Break / Teen Wolf).
+Validation: scripts/validate-entry.sh site tinder-for-former-child-actors -> OK
+Gallery: site/index.html regenerated, 106 startups.
+Visual check (step 9): 2 captures + 1 re-capture. 1 corrective edit: hero .glossy img and .quote .face lacked height:auto, so the height attribute stretched the prints past the hero. Fixed and re-validated OK. Demo rendered clean.
+RUN_COMPLETE: tinder-for-former-child-actors
+
+Today's entry is **Tinder for former child actors**. The product is called **Callback**, pitched as "Dating for people who peaked before their adult teeth came in." It validates and is recorded in `state/history.json` and today's run log.
+
+- **Roll:** the first draw was a new pair, so no rerolls. `tiktok-for-former-child-actors` already used this subject, but with a different company.
+- **Design:** styled like a casting office's headshot wall, on a light grey studio background. It uses glossy 8x10 headshot prints, staples, a red applause-sign button, and TV color bars between sections. Fonts are Abril Fatface, Libre Franklin and IBM Plex Mono. None of it matches the last 7 entries.
+- **Images:** all 4 generated images passed my check on the first try. Three headshots feed the demo's swipe stack, and the landing hero reuses them, so I skipped a separate hero image. The fourth is the headshot for the first testimonial; the other two testimonials show initials instead of photos.
+- **Demo:** a swipe stack of headshot cards with film credits, a catchphrase compatibility score and a recognition risk meter. You can filter by era, and a match opens a call sheet for the first date. Swiping works by drag, buttons or arrow keys.
+- **Gallery:** rebuilt with 106 startups.
+
+Two problems came up and are fixed:
+- The validator rejected `demo.html` because an image path built in the JS looked like a missing file. I changed it to build the images through the DOM, and validation passed after that.
+- The screenshot check showed the hero headshots stretched past the hero into the next section. One CSS fix sorted it, and a re-capture confirmed it.
+
+The Gemini image cap counter shows 4 calls used today. I didn't run any git commands. Several claude.ai connectors (Gmail, Google Calendar, Google Drive, Hivemind, n8n) need re-authorizing in the claude.ai connector settings. Today's run didn't use any of them.
+[2026-09-27T08:06:19Z] new entry: tinder-for-former-child-actors
+validate-entry [tinder-for-former-child-actors]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 106 entries (domain theworstaistudioever.com)
+[2026-09-27T08:06:20Z] committing: Tinder for former child actors

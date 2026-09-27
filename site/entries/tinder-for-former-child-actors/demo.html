@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Submissions · Callback · theworstaistudioever</title>
+<meta name="description" content="Tonight's headshot submissions on Callback, the dating service for former child actors.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=IBM+Plex+Mono:wght@400;500&family=Libre+Franklin:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1F5E63; --accent: #C8102E; --bg: #ECE9E3; --fg: #1C1B1F; --muted: #6F6A62; --ink: #16151A;
+    --paper: #FFFFFF; --edge: #D8D3C9; --cream: #FFF4D6; --line: #E4DFD5;
+    --display: 'Abril Fatface', 'Didot', 'Bodoni 72', Georgia, serif;
+    --body: 'Libre Franklin', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --mono: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 400 15px/1.5 var(--body); -webkit-font-smoothing: antialiased; min-height: 100vh; }
+  button { font: inherit; cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+  .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+  .chrome { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 24px; background: var(--paper); border-bottom: 1px solid var(--edge); }
+  .chrome a.back { color: var(--ink); text-decoration: none; font-size: 14px; font-weight: 600; }
+  .chrome a.back:hover { color: var(--accent); }
+  .chrome .brand { font-family: var(--display); font-size: 24px; color: var(--ink); }
+  .chrome .me { font-size: 13px; color: var(--muted); }
+  .bars { height: 6px; display: grid; grid-template-columns: repeat(7, 1fr); }
+  .bars i:nth-child(1) { background: #BDBDBD; } .bars i:nth-child(2) { background: #CFC56A; }
+  .bars i:nth-child(3) { background: #6FB9B7; } .bars i:nth-child(4) { background: #6FAE72; }
+  .bars i:nth-child(5) { background: #B278A8; } .bars i:nth-child(6) { background: #C06464; }
+  .bars i:nth-child(7) { background: #5D6DAE; }
+
+  .app { display: grid; grid-template-columns: 280px 1fr 300px; gap: 28px; max-width: 1280px; margin: 0 auto; padding: 28px 24px 48px; }
+  .panel { background: var(--paper); border: 1px solid var(--edge); padding: 20px; align-self: start; }
+  .panel h2 { font-family: var(--display); font-weight: 400; font-size: 24px; margin: 0 0 4px; color: var(--ink); }
+  .panel p.hint { margin: 0 0 16px; color: var(--muted); font-size: 13px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+  .chip { border: 1.5px solid var(--ink); background: transparent; color: var(--ink); padding: 8px 14px; min-height: 40px; font-weight: 600; font-size: 14px; }
+  .chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+  .toggle { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); font-size: 14px; }
+  .toggle input { width: 20px; height: 20px; accent-color: var(--primary); }
+  .stat { display: flex; justify-content: space-between; padding: 8px 0; border-top: 1px solid var(--line); font-size: 14px; }
+
+  .stage { display: flex; flex-direction: column; align-items: center; }
+  .stage-head { width: 100%; max-width: 420px; display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; }
+  .stage-head h1 { font-family: var(--display); font-weight: 400; font-size: 30px; margin: 0; color: var(--ink); }
+  .stage-head span { font-size: 13px; color: var(--muted); }
+  .stack { position: relative; width: 100%; max-width: 420px; height: 640px; }
+  .card {
+    position: absolute; inset: 0; background: var(--paper); border: 1px solid var(--edge); border-radius: 2px;
+    padding: 12px 12px 0; box-shadow: 0 16px 36px rgba(22,21,26,0.14);
+    display: flex; flex-direction: column; touch-action: none; user-select: none;
+    transition: transform 0.22s ease-out, opacity 0.22s ease-out;
+  }
+  .card:not(.top) { pointer-events: none; }
+  .card .photo { position: relative; flex: 1; min-height: 0; background: #D9D5CD; overflow: hidden; }
+  .card .photo img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+  .card .pending { position: absolute; inset: 0; display: grid; place-items: center; color: #9C968C; }
+  .card .pending small { position: absolute; bottom: 12px; left: 0; right: 0; text-align: center; font-size: 12px; color: var(--muted); }
+  .badge { position: absolute; top: 12px; left: 12px; background: var(--primary); color: var(--paper); font-size: 12px; font-weight: 600; padding: 5px 9px; }
+  .stamp { position: absolute; top: 28px; padding: 6px 14px; border: 4px solid; font-family: var(--display); font-size: 30px; opacity: 0; transform: rotate(-12deg); background: rgba(255,255,255,0.8); }
+  .stamp.yes { left: 20px; color: var(--primary); border-color: var(--primary); }
+  .stamp.no { right: 20px; color: var(--accent); border-color: var(--accent); transform: rotate(12deg); }
+  .card .info { padding: 12px 4px 14px; }
+  .card .name { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .card .name b { font-family: var(--display); font-weight: 400; font-size: 26px; color: var(--ink); line-height: 1.1; }
+  .card .name span { font-size: 13px; color: var(--muted); }
+  .credits { margin: 8px 0 10px; font-size: 13px; }
+  .credits div { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; border-top: 1px solid var(--line); }
+  .meters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 12px; color: var(--muted); }
+  .meter .track { height: 8px; background: var(--line); margin-top: 4px; }
+  .meter .fill { height: 100%; background: var(--primary); }
+  .meter.risk .fill { background: var(--accent); }
+  .meter b { color: var(--ink); font-family: var(--mono); font-weight: 500; }
+
+  .controls { display: flex; gap: 14px; margin-top: 22px; flex-wrap: wrap; justify-content: center; }
+  .ctl { min-height: 52px; padding: 0 22px; font-weight: 700; border: 2px solid var(--ink); background: var(--paper); color: var(--ink); }
+  .ctl:hover { background: var(--ink); color: var(--paper); }
+  .ctl.like { background: var(--accent); border-color: #8E0B21; color: var(--cream); position: relative; }
+  .ctl.like::before { content: ""; position: absolute; inset: 4px; border: 1.5px solid var(--cream); opacity: 0.8; pointer-events: none; }
+  .ctl.like:hover { background: #A30D26; }
+  .ctl.super { border-color: var(--primary); color: var(--primary); }
+  .ctl.super:hover { background: var(--primary); color: var(--paper); }
+  .keys { margin-top: 12px; font-size: 12px; color: var(--muted); }
+
+  .empty { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; border: 2px dashed var(--edge); padding: 32px; }
+  .empty.show { display: flex; }
+  .empty b { font-family: var(--display); font-weight: 400; font-size: 28px; color: var(--ink); margin-bottom: 8px; }
+
+  .cb-list { list-style: none; padding: 0; margin: 0; }
+  .cb-list li { display: flex; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); }
+  .cb-list .thumb { width: 44px; height: 55px; background: #D9D5CD; flex: none; overflow: hidden; border: 3px solid var(--paper); outline: 1px solid var(--edge); }
+  .cb-list .thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .cb-list b { display: block; font-family: var(--display); font-weight: 400; font-size: 17px; color: var(--ink); }
+  .cb-list span { font-size: 12px; color: var(--muted); }
+  .cb-empty { color: var(--muted); font-size: 13px; padding: 10px 0; border-top: 1px solid var(--line); }
+
+  .modal { position: fixed; inset: 0; background: rgba(22,21,26,0.55); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 50; }
+  .modal.open { display: flex; }
+  .sheet { background: var(--paper); max-width: 460px; width: 100%; padding: 30px 28px 24px; position: relative; box-shadow: 0 30px 60px rgba(0,0,0,0.3); }
+  .sheet .staple { position: absolute; width: 22px; height: 6px; background: #B9BCC0; border-bottom: 1px solid #7D8186; top: 12px; left: 18px; transform: rotate(-8deg); }
+  .sheet h2 { font-family: var(--display); font-weight: 400; font-size: 34px; line-height: 1; margin: 6px 0 8px; color: var(--accent); }
+  .sheet p { margin: 0 0 16px; color: var(--muted); }
+  .callsheet { border: 2px solid var(--ink); margin-bottom: 18px; }
+  .callsheet div { display: grid; grid-template-columns: 120px 1fr; border-top: 1px solid var(--ink); font-size: 14px; }
+  .callsheet div:first-child { border-top: 0; }
+  .callsheet dt, .callsheet dd { margin: 0; padding: 8px 10px; }
+  .callsheet dt { background: var(--bg); font-weight: 600; border-right: 1px solid var(--ink); }
+  .sheet .row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--paper); padding: 12px 18px; font-size: 14px; opacity: 0; transition: opacity 0.2s, transform 0.2s; pointer-events: none; z-index: 60; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (prefers-reduced-motion: reduce) { .card, .toast { transition: none; } }
+  @media (max-width: 1080px) {
+    .app { grid-template-columns: 1fr; max-width: 520px; }
+    .filters { order: 2; } .stage { order: 1; } .callbacks { order: 3; }
+  }
+  @media (max-width: 480px) {
+    .stack { height: 560px; }
+    .chrome .me { display: none; }
+    .ctl { padding: 0 14px; }
+  }
+</style>
+</head>
+<body>
+<header class="chrome">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="brand">Callback</span>
+  <span class="me">Signed in as <b>Kelli M.</b> · Recurring plan</span>
+</header>
+<div class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+<div class="app">
+  <aside class="panel filters" aria-label="Filters">
+    <h2>Casting notes</h2>
+    <p class="hint">Filter tonight's submissions. Phyllis has pre-screened all of them and liked none.</p>
+    <div class="chips" role="group" aria-label="Era">
+      <button class="chip" data-era="all" aria-pressed="true">All eras</button>
+      <button class="chip" data-era="80s" aria-pressed="false">80s</button>
+      <button class="chip" data-era="90s" aria-pressed="false">90s</button>
+      <button class="chip" data-era="00s" aria-pressed="false">00s</button>
+    </div>
+    <label class="toggle">Residuals still arriving <input type="checkbox" id="resid"></label>
+    <label class="toggle">Hide anyone who played my sibling <input type="checkbox" id="sib" checked></label>
+    <label class="toggle">Recognition shield on <input type="checkbox" id="shield" checked></label>
+    <div style="margin-top:14px">
+      <div class="stat"><span>Submissions tonight</span><span class="num" id="s-total">0</span></div>
+      <div class="stat"><span>Passed</span><span class="num" id="s-pass">0</span></div>
+      <div class="stat"><span>Callbacks</span><span class="num" id="s-cb">0</span></div>
+    </div>
+  </aside>
+
+  <main class="stage">
+    <div class="stage-head"><h1>Submissions</h1><span id="left">0 in the stack</span></div>
+    <div class="stack" id="stack">
+      <div class="empty" id="empty"><b>That's a wrap.</b><span>No more submissions match these notes. Loosen a filter or come back after the 11 p.m. reruns.</span><button class="ctl" id="reset" style="margin-top:18px">Reload the stack</button></div>
+    </div>
+    <div class="controls">
+      <button class="ctl" id="pass">Pass</button>
+      <button class="ctl super" id="super">Have my people call yours</button>
+      <button class="ctl like" id="like">Callback</button>
+    </div>
+    <p class="keys">Drag the card, or use ← to pass and → to call back.</p>
+  </main>
+
+  <aside class="panel callbacks" aria-label="Today's callbacks">
+    <h2>Today's callbacks</h2>
+    <p class="hint">People you called back. Mutual ones get a call sheet.</p>
+    <ul class="cb-list" id="cbs"></ul>
+    <div class="cb-empty" id="cb-empty">No callbacks yet. The stack is to your left.</div>
+  </aside>
+</div>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="m-title">
+  <div class="sheet">
+    <span class="staple"></span>
+    <h2 id="m-title">You got the callback.</h2>
+    <p id="m-sub">They called you back too. Your first date has been scheduled.</p>
+    <dl class="callsheet">
+      <div><dt>Scene</dt><dd id="m-scene">First date, int. restaurant</dd></div>
+      <div><dt>Location</dt><dd id="m-loc">Blind spot</dd></div>
+      <div><dt>Call time</dt><dd class="num" id="m-time">7:40 PM</dd></div>
+      <div><dt>Wardrobe</dt><dd id="m-ward">Own clothes</dd></div>
+      <div><dt>Notes</dt><dd id="m-notes">Do not say the line.</dd></div>
+    </dl>
+    <div class="row">
+      <button class="ctl like" id="m-ok">Confirm call time</button>
+      <button class="ctl" id="m-close">Keep swiping</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  var PEOPLE = [
+    { id: 1, name: "Kelli Marone", age: 38, era: "90s", img: "card-1.webp", resid: true, sib: false, cc: 8, risk: 7, mutual: true,
+      credits: [["Step Up, Stepdad", "1989–93"], ["Juice box, national spot", "1990"], ["Very Special Episode (bike helmet)", "1992"]], badge: "Still receiving residuals" },
+    { id: 2, name: "Todd Brannigan", age: 42, era: "90s", img: "card-2.webp", resid: false, sib: true, cc: 6, risk: 4, mutual: true,
+      credits: [["Upstairs Neighbors", "1994–96"], ["Kid who falls off dock, TV movie", "1995"], ["Cereal box, back panel", "1997"]], badge: "Played your sibling once" },
+    { id: 3, name: "Jace Okafor-Reed", age: 35, era: "00s", img: "card-3.webp", resid: true, sib: false, cc: 3, risk: 9, mutual: false,
+      credits: [["Skate Dads: The Series", "2003–05"], ["Summer Camp Showdown 2 (direct to DVD)", "2006"], ["Frosted-tips commercial, regional", "2004"]], badge: "Still receiving residuals" },
+    { id: 4, name: "Brenda Ostrowski", age: 47, era: "80s", img: null, resid: true, sib: false, cc: 9, risk: 5, mutual: true,
+      credits: [["Mall Pals", "1985–88"], ["Doll that talks, voice only", "1986"], ["Anti-drug PSA, girl on swing", "1987"]], badge: "Still receiving residuals" },
+    { id: 5, name: "Devin Castellano", age: 44, era: "80s", img: null, resid: false, sib: false, cc: 5, risk: 2, mutual: false,
+      credits: [["Grandpa's In Charge Now", "1987–89"], ["Kid in the back of the van", "1988"], ["Holiday special, uncredited", "1989"]], badge: null },
+    { id: 6, name: "Tiffani Rhee", age: 33, era: "00s", img: null, resid: false, sib: false, cc: 7, risk: 6, mutual: true,
+      credits: [["Homeroom Heroes", "2002–04"], ["Pop tart, laughing", "2003"], ["Guest spot, cop show corpse", "2008"]], badge: null }
+  ];
+  var VENUES = ["a vegan bistro staffed entirely by people born after 2003", "a climbing gym on a Tuesday morning", "a ramen counter with no televisions and one working light", "a pottery class for Gen Z beginners", "a board game cafe where the median customer is 21"];
+  var WARD = ["Own clothes. No turtlenecks from your era.", "Business casual. Avoid overalls with one strap down.", "Anything without your character's name on it.", "Neutral tones. Sunglasses permitted indoors."];
+
+  var state = { era: "all", resid: false, sib: true, deck: [], passed: 0, cbs: [] };
+  var stack = document.getElementById("stack");
+  var empty = document.getElementById("empty");
+  var $ = function (id) { return document.getElementById(id); };
+
+  var silhouette = '<svg width="120" height="150" viewBox="0 0 120 150" aria-hidden="true"><circle cx="60" cy="52" r="30" fill="currentColor" opacity=".45"/><path d="M10 150c4-38 26-56 50-56s46 18 50 56z" fill="currentColor" opacity=".45"/></svg>';
+
+  function imgTag(file, alt) {
+    var im = document.createElement("img");
+    im.setAttribute("src", file); im.alt = alt; im.width = 640; im.height = 800;
+    return im.outerHTML;
+  }
+
+  function build() {
+    Array.prototype.slice.call(stack.querySelectorAll(".card")).forEach(function (c) { c.remove(); });
+    var shielded = $("shield").checked;
+    state.deck = PEOPLE.filter(function (p) {
+      if (state.era !== "all" && p.era !== state.era) return false;
+      if (state.resid && !p.resid) return false;
+      if (state.sib && p.sib) return false;
+      if (state.cbs.some(function (c) { return c.id === p.id; })) return false;
+      return true;
+    });
+    state.deck.slice().reverse().forEach(function (p, i, arr) {
+      var depth = arr.length - 1 - i;
+      var el = document.createElement("article");
+      el.className = "card";
+      el.setAttribute("aria-label", p.name + ", " + p.age);
+      el.dataset.id = p.id;
+      var photo = p.img
+        ? imgTag(p.img, "Headshot of " + p.name)
+        :'<div class="pending">' + silhouette + '<small>Headshot at the lab. Phyllis says it is "fine."</small></div>';
+      var credits = p.credits.map(function (c) { return '<div><span>' + c[0] + '</span><span class="num">' + c[1] + '</span></div>'; }).join("");
+      var riskShown = shielded ? Math.max(1, p.risk - 3) : p.risk;
+      el.innerHTML =
+        '<div class="photo">' + photo +
+          (p.badge ? '<span class="badge">' + p.badge + '</span>' : '') +
+          '<span class="stamp yes">CALLBACK</span><span class="stamp no">PASS</span>' +
+        '</div>' +
+        '<div class="info">' +
+          '<div class="name"><b>' + p.name + '</b><span><span class="num">' + p.age + '</span> · last aired <span class="num">' + p.credits[0][1].slice(-2) + '</span></span></div>' +
+          '<div class="credits">' + credits + '</div>' +
+          '<div class="meters">' +
+            '<div class="meter">Catchphrase compatibility <b>' + p.cc + '/10</b><div class="track"><div class="fill" style="width:' + p.cc * 10 + '%"></div></div></div>' +
+            '<div class="meter risk">Recognition risk <b>' + riskShown + '/10</b><div class="track"><div class="fill" style="width:' + riskShown * 10 + '%"></div></div></div>' +
+          '</div>' +
+        '</div>';
+      el.style.transform = "translateY(" + Math.min(depth, 2) * 10 + "px) scale(" + (1 - Math.min(depth, 2) * 0.03) + ")";
+      el.style.zIndex = String(10 - depth);
+      if (depth > 2) el.style.opacity = "0";
+      stack.appendChild(el);
+    });
+    refresh();
+  }
+
+  function topCard() { var cards = stack.querySelectorAll(".card"); return cards.length ? cards[cards.length - 1] : null; }
+
+  function refresh() {
+    var cards = stack.querySelectorAll(".card");
+    Array.prototype.forEach.call(cards, function (c, i) {
+      var depth = cards.length - 1 - i;
+      c.classList.toggle("top", depth === 0);
+      c.style.transform = "translateY(" + Math.min(depth, 2) * 10 + "px) scale(" + (1 - Math.min(depth, 2) * 0.03) + ")";
+      c.style.opacity = depth > 2 ? "0" : "1";
+    });
+    empty.classList.toggle("show", cards.length === 0);
+    $("left").textContent = cards.length + " in the stack";
+    $("s-total").textContent = PEOPLE.length;
+    $("s-pass").textContent = state.passed;
+    $("s-cb").textContent = state.cbs.length;
+    var t = topCard(); if (t) bindDrag(t);
+  }
+
+  function decide(kind) {
+    var el = topCard(); if (!el) return;
+    var p = PEOPLE.filter(function (x) { return x.id === Number(el.dataset.id); })[0];
+    var dir = kind === "pass" ? -1 : 1;
+    el.style.transform = "translateX(" + dir * 140 + "%) rotate(" + dir * 18 + "deg)";
+    el.style.opacity = "0";
+    setTimeout(function () {
+      el.remove();
+      if (kind === "pass") { state.passed++; toast("Passed on " + p.name + ". They have been told it was a scheduling thing."); }
+      else {
+        state.cbs.unshift({ id: p.id, name: p.name, img: p.img, super: kind === "super", mutual: p.mutual });
+        renderCbs();
+        if (p.mutual || kind === "super") openModal(p, kind === "super");
+        else toast("Callback sent to " + p.name + ". Their agent is reviewing it.");
+      }
+      refresh();
+    }, 230);
+  }
+
+  function renderCbs() {
+    var ul = $("cbs"); ul.innerHTML = "";
+    $("cb-empty").style.display = state.cbs.length ? "none" : "block";
+    state.cbs.forEach(function (c) {
+      var li = document.createElement("li");
+      li.innerHTML = '<div class="thumb">' + (c.img ? imgTag(c.img, "") : '') + '</div>' +
+        '<div><b>' + c.name + '</b><span>' + (c.super ? "Your people are calling their people" : c.mutual ? "Mutual. Call sheet issued." : "Waiting on their agent") + '</span></div>';
+      ul.appendChild(li);
+    });
+  }
+
+  var lastFocus = null;
+  function openModal(p, isSuper) {
+    lastFocus = document.activeElement;
+    $("m-sub").textContent = isSuper
+      ? "Your people reached " + p.name + "'s people. Everyone agreed on a date before either of you was asked."
+      : p.name + " called you back too. The first date is on the schedule.";
+    $("m-scene").textContent = "First date with " + p.name.split(" ")[0] + ", int. somewhere quiet";
+    $("m-loc").textContent = VENUES[p.id % VENUES.length];
+    $("m-time").textContent = (6 + (p.id % 3)) + ":" + (p.id % 2 ? "40" : "15") + " PM";
+    $("m-ward").textContent = WARD[p.id % WARD.length];
+    $("m-notes").textContent = p.cc >= 7 ? "You both have lines. Neither of you will say them." : "Only one of you has a line. Do not ask which.";
+    $("modal").classList.add("open");
+    $("m-ok").focus();
+  }
+  function closeModal(msg) {
+    $("modal").classList.remove("open");
+    if (msg) toast(msg);
+    if (lastFocus) lastFocus.focus();
+  }
+  $("m-ok").addEventListener("click", function () { closeModal("Call time confirmed. Phyllis has been notified and disapproves."); });
+  $("m-close").addEventListener("click", function () { closeModal(); });
+  $("modal").addEventListener("click", function (e) { if (e.target === $("modal")) closeModal(); });
+
+  var tt;
+  function toast(msg) { var t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(tt); tt = setTimeout(function () { t.classList.remove("show"); }, 3200); }
+
+  function bindDrag(el) {
+    if (el.dataset.bound) return; el.dataset.bound = "1";
+    var sx = 0, dx = 0, dragging = false;
+    el.addEventListener("pointerdown", function (e) { dragging = true; sx = e.clientX; dx = 0; el.setPointerCapture(e.pointerId); el.style.transition = "none"; });
+    el.addEventListener("pointermove", function (e) {
+      if (!dragging) return; dx = e.clientX - sx;
+      el.style.transform = "translateX(" + dx + "px) rotate(" + dx / 18 + "deg)";
+      el.querySelector(".stamp.yes").style.opacity = Math.max(0, Math.min(1, dx / 100));
+      el.querySelector(".stamp.no").style.opacity = Math.max(0, Math.min(1, -dx / 100));
+    });
+    function end() {
+      if (!dragging) return; dragging = false; el.style.transition = "";
+      if (dx > 110) decide("like"); else if (dx < -110) decide("pass");
+      else { el.style.transform = ""; el.querySelector(".stamp.yes").style.opacity = 0; el.querySelector(".stamp.no").style.opacity = 0; }
+    }
+    el.addEventListener("pointerup", end); el.addEventListener("pointercancel", end);
+  }
+
+  $("pass").addEventListener("click", function () { decide("pass"); });
+  $("like").addEventListener("click", function () { decide("like"); });
+  $("super").addEventListener("click", function () { decide("super"); });
+  $("reset").addEventListener("click", function () { state.cbs = []; state.passed = 0; renderCbs(); build(); });
+  document.addEventListener("keydown", function (e) {
+    if ($("modal").classList.contains("open")) { if (e.key === "Escape") closeModal(); return; }
+    if (e.target.tagName === "INPUT") return;
+    if (e.key === "ArrowLeft") decide("pass");
+    if (e.key === "ArrowRight") decide("like");
+  });
+  Array.prototype.forEach.call(document.querySelectorAll(".chip"), function (b) {
+    b.addEventListener("click", function () {
+      state.era = b.dataset.era;
+      Array.prototype.forEach.call(document.querySelectorAll(".chip"), function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      build();
+    });
+  });
+  $("resid").addEventListener("change", function (e) { state.resid = e.target.checked; build(); });
+  $("sib").addEventListener("change", function (e) { state.sib = e.target.checked; build(); });
+  $("shield").addEventListener("change", function () { build(); toast($("shield").checked ? "Recognition shield on. Risk scores adjusted for venues without cable." : "Recognition shield off. Good luck at the airport."); });
+
+  renderCbs();
+  build();
+})();
+</script>
+</body>
+</html>
