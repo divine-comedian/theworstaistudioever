@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tuppence · theworstaistudioever</title>
+<meta name="description" content="Send $1.50 and four paragraphs to anyone who will accept it.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Tuppence · theworstaistudioever">
+<meta property="og:description" content="Send $1.50 and four paragraphs to anyone who will accept it.">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#EAEFF5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Inter+Tight:wght@600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #2B2BE0;
+    --accent: #FFE14D;
+    --bg: #EAEFF5;
+    --fg: #1B1D24;
+    --muted: #555B68;
+    --ink: #000000;
+    --paper: #FFFFFF;
+    --display: 'Inter Tight', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --body: 'Atkinson Hyperlegible', -apple-system, BlinkMacSystemFont, 'Segoe UI', Verdana, sans-serif;
+    --mono: 'Atkinson Hyperlegible Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+    --rule: 3px solid var(--ink);
+  }
+  html { font-size: 100%; transition: font-size 200ms ease-out; }
+  html[data-size="1"] { font-size: 118%; }
+  html[data-size="2"] { font-size: 138%; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--body);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--primary); text-underline-offset: 0.18em; text-decoration-thickness: 2px; }
+  :focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+  .wrap { max-width: 78rem; margin: 0 auto; padding: 0 clamp(1.25rem, 4vw, 3rem); }
+  .skip { position: absolute; left: -999px; }
+  .skip:focus { left: 1rem; top: 1rem; background: var(--paper); padding: 0.5rem 1rem; z-index: 10; }
+
+  /* nav */
+  .nav { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.25rem 0; border-bottom: var(--rule); flex-wrap: wrap; }
+  .wordmark { font-family: var(--display); font-weight: 800; font-size: 1.6rem; letter-spacing: -0.04em; color: var(--ink); text-decoration: none; }
+  .wordmark span { color: var(--primary); }
+  .nav-right { display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; }
+  .sizer { display: flex; align-items: center; gap: 0.5rem; }
+  .sizer-label { font-size: 0.9rem; color: var(--muted); }
+  .sizer-group { display: inline-flex; border: 2px solid var(--ink); border-radius: 999px; overflow: hidden; background: var(--paper); }
+  .sizer button {
+    font-family: var(--display); font-weight: 800; border: 0; background: transparent; color: var(--ink);
+    min-width: 2.9rem; min-height: 2.75rem; padding: 0 0.7rem; cursor: pointer; line-height: 1;
+  }
+  .sizer button + button { border-left: 2px solid var(--ink); }
+  .sizer button[data-s="0"] { font-size: 0.95rem; }
+  .sizer button[data-s="1"] { font-size: 1.15rem; }
+  .sizer button[data-s="2"] { font-size: 1.4rem; }
+  .sizer button[aria-pressed="true"] { background: var(--ink); color: var(--accent); }
+  .nav-demo { font-weight: 700; }
+
+  /* buttons */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; min-height: 3.4rem; padding: 0 1.8rem;
+    border-radius: 999px; font-family: var(--display); font-weight: 800; font-size: 1.15rem; letter-spacing: -0.01em;
+    text-decoration: none; border: 3px solid var(--ink); cursor: pointer; transition: transform 120ms ease-out, box-shadow 120ms ease-out;
+  }
+  .btn-primary { background: var(--primary); color: var(--paper); box-shadow: 4px 4px 0 var(--ink); }
+  .btn-primary:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--ink); }
+  .btn-primary:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink); }
+  .btn-plain { background: var(--paper); color: var(--ink); }
+
+  /* marker swipe */
+  .mark { position: relative; white-space: nowrap; z-index: 0; }
+  .mark::before {
+    content: ""; position: absolute; left: -0.08em; right: -0.08em; top: 0.52em; bottom: 0.02em;
+    background: var(--accent); z-index: -1; transform-origin: left center; transform: skewX(-6deg);
+  }
+  .hero .mark::before { animation: swipe 520ms 250ms ease-out both; }
+  @keyframes swipe { from { transform: skewX(-6deg) scaleX(0); } to { transform: skewX(-6deg) scaleX(1); } }
+
+  /* hero */
+  .hero { display: grid; grid-template-columns: 1fr; gap: 3rem; padding: clamp(3rem, 8vw, 6.5rem) 0 clamp(3rem, 7vw, 5.5rem); border-bottom: var(--rule); }
+  .hero h1 {
+    font-family: var(--display); font-weight: 800; color: var(--ink);
+    font-size: clamp(3.1rem, 8.6vw, 8.4rem); line-height: 0.92; letter-spacing: -0.045em; margin: 0 0 2rem; max-width: 11ch;
+  }
+  .hero-sub { font-size: 1.35rem; line-height: 1.5; max-width: 34ch; margin: 0 0 2.25rem; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 1rem 1.75rem; align-items: center; }
+  .hero-actions a.text { font-weight: 700; font-size: 1.1rem; }
+
+  .receipt {
+    align-self: end; background: var(--paper); border: var(--rule); padding: 1.75rem 1.75rem 1.5rem; max-width: 26rem;
+  }
+  .receipt-top { display: flex; align-items: center; gap: 0.9rem; margin-bottom: 1.25rem; }
+  .receipt-top img { width: 3.25rem; height: 3.25rem; border-radius: 50%; border: 2px solid var(--ink); object-fit: cover; }
+  .receipt-who { line-height: 1.3; }
+  .receipt-who b { display: block; color: var(--ink); }
+  .receipt-who small { color: var(--muted); font-size: 0.9rem; }
+  .receipt-amt { font-family: var(--display); font-weight: 800; font-size: 4.2rem; line-height: 1; letter-spacing: -0.04em; color: var(--ink); margin: 0 0 1rem; }
+  .receipt-memo { margin: 0 0 1rem; font-size: 1.05rem; }
+  .receipt-more { color: var(--muted); font-style: italic; }
+  .receipt-foot { display: flex; justify-content: space-between; gap: 1rem; border-top: 2px solid var(--ink); padding-top: 0.8rem; font-family: var(--mono); font-size: 0.9rem; color: var(--muted); }
+
+  @media (min-width: 960px) {
+    .hero { grid-template-columns: 1.55fr 1fr; align-items: end; }
+  }
+
+  /* sections */
+  section.block { padding: clamp(3rem, 7vw, 5.5rem) 0; border-bottom: var(--rule); }
+  .block h2 {
+    font-family: var(--display); font-weight: 800; color: var(--ink);
+    font-size: clamp(2.2rem, 5vw, 4rem); line-height: 1; letter-spacing: -0.04em; margin: 0 0 2.5rem; max-width: 18ch;
+  }
+
+  /* features */
+  .feature { display: grid; grid-template-columns: 1fr; gap: 1rem 3rem; padding: 2rem 0; border-top: 2px solid var(--ink); }
+  .feature:last-child { border-bottom: 2px solid var(--ink); }
+  .feature h3 { font-family: var(--display); font-weight: 800; font-size: clamp(1.6rem, 3vw, 2.3rem); line-height: 1.05; letter-spacing: -0.03em; margin: 0; color: var(--ink); }
+  .feature p { margin: 0; max-width: 58ch; font-size: 1.15rem; }
+  .feature .fig { font-family: var(--display); font-weight: 800; font-size: 2.6rem; letter-spacing: -0.04em; color: var(--ink); line-height: 1; }
+  .feature .fig small { display: block; font-family: var(--body); font-weight: 400; font-size: 0.95rem; letter-spacing: 0; color: var(--muted); margin-top: 0.4rem; }
+  @media (min-width: 820px) {
+    .feature { grid-template-columns: 1fr 1.6fr 0.8fr; align-items: start; }
+  }
+
+  /* testimonials */
+  .quotes { display: grid; grid-template-columns: 1fr; gap: 2.5rem; }
+  @media (min-width: 900px) { .quotes { grid-template-columns: repeat(3, 1fr); gap: 2rem; } }
+  .quote { margin: 0; display: flex; flex-direction: column; gap: 1.25rem; }
+  .quote blockquote { margin: 0; font-size: 1.3rem; line-height: 1.45; color: var(--ink); }
+  .quote figcaption { display: flex; gap: 1rem; align-items: center; margin-top: auto; }
+  .quote img { width: 5.5rem; height: 5.5rem; border-radius: 50%; border: 3px solid var(--ink); object-fit: cover; flex: none; background: var(--paper); }
+  .quote b { display: block; color: var(--ink); font-size: 1.05rem; }
+  .quote span { color: var(--muted); font-size: 0.95rem; line-height: 1.35; display: block; }
+
+  /* pricing */
+  .tiers { display: grid; grid-template-columns: 1fr; border: var(--rule); background: var(--paper); }
+  @media (min-width: 900px) { .tiers { grid-template-columns: repeat(3, 1fr); } }
+  .tier { padding: 2rem 1.75rem 2.25rem; display: flex; flex-direction: column; gap: 1rem; }
+  .tier + .tier { border-top: var(--rule); }
+  @media (min-width: 900px) { .tier + .tier { border-top: 0; border-left: var(--rule); } }
+  .tier h3 { font-family: var(--display); font-weight: 800; font-size: 1.6rem; letter-spacing: -0.03em; margin: 0; }
+  .tier .price { font-family: var(--display); font-weight: 800; font-size: 3.4rem; line-height: 1; letter-spacing: -0.04em; margin: 0; }
+  .tier .price small { font-size: 1.1rem; letter-spacing: 0; font-weight: 600; }
+  .tier .tl { margin: 0; color: var(--muted); font-size: 1.05rem; }
+  .tier ul { list-style: none; padding: 0; margin: 0.5rem 0 1.5rem; display: grid; gap: 0.7rem; }
+  .tier li { padding-left: 1.4rem; position: relative; }
+  .tier li::before { content: ""; position: absolute; left: 0; top: 0.55em; width: 0.6rem; height: 0.6rem; background: var(--ink); border-radius: 50%; }
+  .tier .btn { margin-top: auto; align-self: flex-start; }
+  .tier.featured { background: var(--primary); color: var(--paper); }
+  .tier.featured .tl { color: #D6D8FF; }
+  .tier.featured li::before { background: var(--accent); }
+  .tier.featured .btn { background: var(--accent); color: var(--ink); box-shadow: 4px 4px 0 var(--ink); }
+  .tier.featured .pick { align-self: flex-start; background: var(--accent); color: var(--ink); font-weight: 700; font-size: 0.9rem; padding: 0.2rem 0.75rem; border-radius: 999px; }
+
+  /* demo band */
+  .band { padding: clamp(3rem, 7vw, 5rem) 0; border-bottom: var(--rule); display: grid; gap: 1.5rem; }
+  .band p { font-family: var(--display); font-weight: 800; font-size: clamp(2rem, 5vw, 3.8rem); line-height: 1; letter-spacing: -0.04em; margin: 0; color: var(--ink); max-width: 20ch; }
+  .band .btn { justify-self: start; font-size: 1.3rem; min-height: 4rem; padding: 0 2.2rem; }
+
+  footer { padding: 2rem 0 3rem; display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; color: var(--muted); font-size: 0.95rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { transition: none; }
+    .hero .mark::before { animation: none; }
+    .btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="wrap">
+  <header class="nav">
+    <a class="wordmark" href="./">Tuppence<span>.</span></a>
+    <div class="nav-right">
+      <div class="sizer" role="group" aria-label="Text size">
+        <span class="sizer-label" id="sizer-label">Text size</span>
+        <div class="sizer-group">
+          <button type="button" data-s="0" aria-pressed="true" aria-label="Regular text">A</button>
+          <button type="button" data-s="1" aria-pressed="false" aria-label="Large text">A+</button>
+          <button type="button" data-s="2" aria-pressed="false" aria-label="Largest text">A++</button>
+        </div>
+      </div>
+      <a class="nav-demo" href="./demo.html">open the demo →</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div>
+        <h1>Pay someone <span class="mark">$2.</span> Tell them about your hip.</h1>
+        <p class="hero-sub">Tuppence is peer-to-peer payments where the payment is small and the memo field holds 4,000 characters. Every transaction posts to a public feed your grandchildren are enrolled in by default.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="./demo.html">Send my first $1.50</a>
+          <a class="text" href="./demo.html">open the demo →</a>
+        </div>
+      </div>
+      <aside class="receipt" aria-label="Example payment">
+        <div class="receipt-top">
+          <img src="headshot-1.webp" alt="Dolores Finch" width="52" height="52">
+          <div class="receipt-who"><b>Dolores Finch paid Travis Finch</b><small>Public · seen by 3</small></div>
+        </div>
+        <p class="receipt-amt">$1.50</p>
+        <p class="receipt-memo">For the stamps. Also I wanted to tell you that the podiatrist on Elm has retired and the new one does not take my insurance, which I found out after sitting for forty minutes next to a man who</p>
+        <p class="receipt-more">(1,140 more characters)</p>
+        <div class="receipt-foot"><span>Tue 6:02 AM</span><span>Callback due in 41h</span></div>
+      </aside>
+    </section>
+
+    <section class="block" aria-labelledby="f-h">
+      <h2 id="f-h">The payment is the stamp. The memo is the letter.</h2>
+      <div class="feature">
+        <h3>The Memo Minimum</h3>
+        <p>Payments under $5 require a memo of at least 280 characters. We tested lower. People sent the money and left. Our median memo is 1,140 characters and usually mentions a casserole.</p>
+        <div class="fig"><span class="mark">1,140</span><small>median memo, characters</small></div>
+      </div>
+      <div class="feature">
+        <h3>Split a Lunch You Ate Alone</h3>
+        <p>Photograph a receipt for one. Tuppence finds another member within nine miles and sends them a request for half. Most of them pay. Some of them call to ask about the soup, which is also allowed.</p>
+        <div class="fig"><span class="mark">9 mi</span><small>maximum split radius</small></div>
+      </div>
+      <div class="feature">
+        <h3>Callback Escrow</h3>
+        <p>Attach $3 to any payment and the recipient must phone you within 48 hours to release it. Unclaimed callbacks return to you with a notice that reads "He was probably busy." Grandchildren are enrolled automatically.</p>
+        <div class="fig"><span class="mark">48 h</span><small>to call, or the $3 comes home</small></div>
+      </div>
+    </section>
+
+    <section class="block" aria-labelledby="t-h">
+      <h2 id="t-h">Members, in their own words, of which there are many.</h2>
+      <div class="quotes">
+        <figure class="quote">
+          <blockquote>"I sent my nephew $3 for his birthday with 900 words about the Carter administration. The app says he saw it. I have a screenshot of the little eye."</blockquote>
+          <figcaption><img src="headshot-1.webp" alt="Dolores Finch" width="88" height="88" loading="lazy"><div><b>Dolores Finch</b><span>Retired Court Stenographer, 212 consecutive days posting</span></div></figcaption>
+        </figure>
+        <figure class="quote">
+          <blockquote>"Somebody named Kyle requested $14 for 'pizza.' I have never met Kyle. We talk every Sunday now and he still has not explained the pizza."</blockquote>
+          <figcaption><img src="headshot-2.webp" alt="Harold Voss" width="88" height="88" loading="lazy"><div><b>Harold Voss</b><span>Former Regional Manager, Tri-County Sprinkler Supply</span></div></figcaption>
+        </figure>
+        <figure class="quote">
+          <blockquote>"I charge my neighbor 25 cents per hello. He pays every time. Last month he said hello eleven times on purpose."</blockquote>
+          <figcaption><img src="headshot-3.webp" alt="Bernadette Kowalczyk" width="88" height="88" loading="lazy"><div><b>Bernadette Kowalczyk</b><span>HOA Treasurer Emerita, Cedar Hollow Phase II</span></div></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="block" aria-labelledby="p-h">
+      <h2 id="p-h">Plans, priced per month, billed to whoever is nearest.</h2>
+      <div class="tiers">
+        <div class="tier">
+          <h3>Pocket Change</h3>
+          <p class="price">$0</p>
+          <p class="tl">For members who mostly receive.</p>
+          <ul>
+            <li>Unlimited incoming requests from strangers</li>
+            <li>Memo field capped at 1,000 characters</li>
+            <li>Feed visible to immediate family only, who have muted it</li>
+          </ul>
+          <a class="btn btn-plain" href="./demo.html">Start receiving</a>
+        </div>
+        <div class="tier featured">
+          <span class="pick">Renews every Wednesday</span>
+          <h3>Standing Wednesday</h3>
+          <p class="price">$6.40<small>/mo</small></p>
+          <p class="tl">Our most-chosen plan among widowers.</p>
+          <ul>
+            <li>4,000-character memos</li>
+            <li>Callback Escrow on every payment</li>
+            <li>A recurring $1 request from the same person every Wednesday at 11:30</li>
+          </ul>
+          <a class="btn" href="./demo.html">Book my Wednesday</a>
+        </div>
+        <div class="tier">
+          <h3>Estate Plan</h3>
+          <p class="price">$84<small>/mo</small></p>
+          <p class="tl">The feed continues after you.</p>
+          <ul>
+            <li>Pre-written memos auto-post for 20 years</li>
+            <li>Your grandson receives $0.25 every Sunday with a paragraph about his posture</li>
+            <li>Named Tuppence liaison who says your name correctly</li>
+          </ul>
+          <a class="btn btn-plain" href="./demo.html">Plan my feed</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="band">
+      <p>Somebody within nine miles is waiting to owe you $6.</p>
+      <a class="btn btn-primary" href="./demo.html">open the demo →</a>
+    </section>
+  </main>
+
+  <footer>
+    <a href="/">← theworstaistudioever</a>
+    <span>Tuppence Payments LLC. Not a bank. Not a pen pal service. Legally unclear.</span>
+  </footer>
+</div>
+<script>
+  (function () {
+    var root = document.documentElement;
+    var buttons = document.querySelectorAll('.sizer button');
+    function apply(s) {
+      root.setAttribute('data-size', s);
+      buttons.forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-s') === s ? 'true' : 'false'); });
+      try { localStorage.setItem('tuppence-size', s); } catch (e) {}
+    }
+    var saved = null;
+    try { saved = localStorage.getItem('tuppence-size'); } catch (e) {}
+    if (saved === '0' || saved === '1' || saved === '2') apply(saved);
+    buttons.forEach(function (b) { b.addEventListener('click', function () { apply(b.getAttribute('data-s')); }); });
+  })();
+</script>
+</body>
+</html>

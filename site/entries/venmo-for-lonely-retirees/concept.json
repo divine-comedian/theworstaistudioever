@@ -1,0 +1,95 @@
+{
+  "date": "2026-09-28",
+  "company": "Venmo",
+  "subject": "lonely retirees",
+  "tagline": "Venmo for lonely retirees",
+  "slug": "venmo-for-lonely-retirees",
+  "product_name": "Tuppence",
+  "one_liner": "Send $1.50 and four paragraphs to anyone who will accept it.",
+  "brand_voice_notes": "Tuppence is a payments company that has noticed, and chosen not to mention, that nobody on the platform needs the money. Copy is written like a fintech compliance team discovered a retirement community and decided the memo field is the product. Amounts stay tiny and exact. Memos stay long. Nobody says the word lonely. The app says 'engagement' and means it literally.",
+  "hero": {
+    "h1": "Pay someone $2. Tell them about your hip.",
+    "sub": "Tuppence is peer-to-peer payments where the payment is small and the memo field holds 4,000 characters. Every transaction posts to a public feed your grandchildren are enrolled in by default.",
+    "primary_cta": "Send my first $1.50"
+  },
+  "features": [
+    {
+      "title": "The Memo Minimum",
+      "blurb": "Payments under $5 require a memo of at least 280 characters. We tested lower. People sent the money and left. Our median memo is 1,140 characters and usually mentions a casserole."
+    },
+    {
+      "title": "Split a Lunch You Ate Alone",
+      "blurb": "Photograph a receipt for one. Tuppence finds another member within nine miles and sends them a request for half. Most of them pay. Some of them call to ask about the soup, which is also allowed."
+    },
+    {
+      "title": "Callback Escrow",
+      "blurb": "Attach $3 to any payment and the recipient must phone you within 48 hours to release it. Unclaimed callbacks return to you with a notice that reads 'He was probably busy.' Grandchildren are enrolled automatically."
+    }
+  ],
+  "pricing_tiers": [
+    {
+      "name": "Pocket Change",
+      "price": "$0",
+      "tagline": "For members who mostly receive.",
+      "perks": ["Unlimited incoming requests from strangers", "Memo field capped at 1,000 characters", "Feed visible to immediate family only, who have muted it"]
+    },
+    {
+      "name": "Standing Wednesday",
+      "price": "$6.40/mo",
+      "tagline": "Our most-chosen plan among widowers.",
+      "perks": ["4,000-character memos", "Callback Escrow on every payment", "A recurring $1 request from the same person every Wednesday at 11:30"]
+    },
+    {
+      "name": "Estate Plan",
+      "price": "$84/mo",
+      "tagline": "The feed continues after you.",
+      "perks": ["Pre-written memos auto-post for 20 years", "Your grandson receives $0.25 every Sunday with a paragraph about his posture", "Named Tuppence liaison who says your name correctly"]
+    }
+  ],
+  "testimonials": [
+    {
+      "quote": "I sent my nephew $3 for his birthday with 900 words about the Carter administration. The app says he saw it. I have a screenshot of the little eye.",
+      "name": "Dolores Finch",
+      "title": "Retired Court Stenographer, 212 consecutive days posting"
+    },
+    {
+      "quote": "Somebody named Kyle requested $14 for 'pizza.' I have never met Kyle. We talk every Sunday now and he still has not explained the pizza.",
+      "name": "Harold Voss",
+      "title": "Former Regional Manager, Tri-County Sprinkler Supply"
+    },
+    {
+      "quote": "I charge my neighbor 25 cents per hello. He pays every time. Last month he said hello eleven times on purpose.",
+      "name": "Bernadette Kowalczyk",
+      "title": "HOA Treasurer Emerita, Cedar Hollow Phase II"
+    }
+  ],
+  "demo_screen_concept": "A Tuppence home feed on a single phone-width column at maximum text size: a public stream of tiny payments ($0.25 to $3.00) each with an avatar, sender and recipient, an amount chip, and a very long memo collapsed to three lines with a 'read the whole thing' toggle. Tabs filter Everyone / Friends / Me / Owes You a Call. Each item has a heart counter and a 'seen by' eye count. A compose sheet opens from a big Pay or Request button with recipient picker ('People nearby who might pick up'), amount keypad chips, a memo box with a live 'needs 180 more characters' counter that blocks sending under the minimum, and a Callback Escrow toggle. Sending posts the new item to the top of the feed. A pending-callback strip at the top shows escrow countdowns.",
+  "images": {
+    "rationale": "Hero skipped because the large-print direction is purely typographic and a photo would compete with the 9rem headline. Demo is a payment feed whose avatars are small circles, so it reuses the three testimonial headshots instead of spending budget on new demo assets. Budget: 3 testimonial headshots, 4th slot left unused.",
+    "items": [
+      { "role": "testimonial", "file": "headshot-1.webp", "prompt": "Editorial corporate headshot photograph of a woman in her mid seventies, retired court stenographer, short silver hair set in rollers that morning, pearl clip earrings, cream cardigan, ultramarine #2B2BE0 blouse, bank-ID seriousness, flat warm paper backdrop #F4F0E6, soft daylight. No text, no letters, no numbers, no logos, no watermarks, no rendered UI screens.", "attempts": 1 },
+      { "role": "testimonial", "file": "headshot-2.webp", "prompt": "Editorial corporate headshot photograph of a man around seventy-eight, former sprinkler supply regional manager, comb-over, tinted bifocals, plaid short-sleeve shirt and ultramarine tie, holding a flip phone to his chest, deadpan hopeful, flat warm paper backdrop #F4F0E6. No text, no letters, no numbers, no logos, no watermarks, no rendered UI screens.", "attempts": 1 },
+      { "role": "testimonial", "file": "headshot-3.webp", "prompt": "Editorial corporate headshot photograph of a woman around seventy, retired HOA treasurer, auburn bob, reading glasses on a beaded chain, highlighter yellow #FFE14D windbreaker, arms crossed, calm accounting expression, flat warm paper backdrop #F4F0E6. No text, no letters, no numbers, no logos, no watermarks, no rendered UI screens.", "attempts": 1 }
+    ]
+  },
+  "design_direction": {
+    "style": "Exaggerated minimalism, large-print edition. The whole brand is set as though the accessibility slider was pushed all the way right and the design team kept it. Oversized headings at clamp(3.2rem, 9vw, 9rem) in weight 800 with -0.045em tracking, huge negative space, a single-column reading rail, and a working text-size control (A, A+, A++) in the nav that rescales the entire page. No material staging, no textures, no pins, plates, stamps, seams or physical objects: flat checkbook-blue paper, true black type, one ultramarine, one highlighter. Figures sit inside highlighter-yellow marker swipes, the way someone marks the important number on a bank statement. Rules are 3px solid ink. Radius is 999px on buttons and chips only, 0 elsewhere. No shadows except a single 4px ink offset on the primary CTA.",
+    "palette": {
+      "name": "Large Print Statement",
+      "primary": "#2B2BE0",
+      "accent": "#FFE14D",
+      "bg": "#EAEFF5",
+      "fg": "#1B1D24",
+      "muted": "#555B68",
+      "ink": "#000000"
+    },
+    "fonts": {
+      "display": "'Inter Tight', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+      "body": "'Atkinson Hyperlegible', -apple-system, BlinkMacSystemFont, 'Segoe UI', Verdana, sans-serif",
+      "mono": "'Atkinson Hyperlegible Mono', 'SFMono-Regular', Menlo, Consolas, monospace"
+    },
+    "archetype": "Centered type hero into a bordered ledger grid: giant typographic hero, 3-up bordered feature rows, testimonial rail with headshots, 3-column pricing table with one tier inverted to ultramarine.",
+    "motion_vocab": "Almost none, on purpose. Text-size changes animate font-size over 200ms. The hero's yellow marker swipe draws left to right once on load (scaleX from 0, 500ms ease-out). Buttons press 2px down into their offset shadow. All gated behind prefers-reduced-motion.",
+    "hero_composition_notes": "Left-aligned, not centered, on pale checkbook-safety-paper blue rather than cream. No eyebrow label. The h1 across three lines at maximum size with '$2' sitting inside a highlighter swipe, then the sub at 1.35rem on a 34ch measure, then one ultramarine pill CTA with a hard ink offset and a secondary text link to the demo. To the right on wide screens, a single oversized transaction receipt rendered in HTML: amount, sender, a memo cut off mid-sentence with '... (1,140 more characters)'."
+  }
+}

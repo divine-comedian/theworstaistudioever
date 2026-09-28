@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en" data-size="1">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tuppence · Feed · theworstaistudioever</title>
+<meta name="description" content="The Tuppence feed. Small payments, long memos, and callbacks held in escrow.">
+<meta name="theme-color" content="#EAEFF5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Inter+Tight:wght@600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #2B2BE0;
+    --accent: #FFE14D;
+    --bg: #EAEFF5;
+    --fg: #1B1D24;
+    --muted: #555B68;
+    --ink: #000000;
+    --paper: #FFFFFF;
+    --line: #C9D1DD;
+    --display: 'Inter Tight', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --body: 'Atkinson Hyperlegible', -apple-system, BlinkMacSystemFont, 'Segoe UI', Verdana, sans-serif;
+    --mono: 'Atkinson Hyperlegible Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+  }
+  html { font-size: 100%; transition: font-size 200ms ease-out; }
+  html[data-size="1"] { font-size: 112%; }
+  html[data-size="2"] { font-size: 130%; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 1rem; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+  a { color: var(--primary); text-underline-offset: 0.18em; }
+
+  .chrome { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.9rem clamp(1rem, 3vw, 2rem); border-bottom: 3px solid var(--ink); background: var(--bg); position: sticky; top: 0; z-index: 5; flex-wrap: wrap; }
+  .back { font-weight: 700; font-size: 0.95rem; }
+  .brand { font-family: var(--display); font-weight: 800; font-size: 1.35rem; letter-spacing: -0.04em; color: var(--ink); }
+  .brand span { color: var(--primary); }
+  .sizer { display: inline-flex; border: 2px solid var(--ink); border-radius: 999px; overflow: hidden; background: var(--paper); }
+  .sizer button { border: 0; background: transparent; font-family: var(--display); font-weight: 800; min-width: 2.75rem; min-height: 2.75rem; padding: 0 0.6rem; line-height: 1; }
+  .sizer button + button { border-left: 2px solid var(--ink); }
+  .sizer button[aria-pressed="true"] { background: var(--ink); color: var(--accent); }
+
+  .app { max-width: 70rem; margin: 0 auto; padding: 1.5rem clamp(1rem, 3vw, 2rem) 7rem; display: grid; gap: 1.5rem; grid-template-columns: 1fr; }
+  @media (min-width: 960px) { .app { grid-template-columns: 19rem 1fr; align-items: start; } .rail { position: sticky; top: 5.5rem; } }
+
+  /* rail */
+  .panel { background: var(--paper); border: 3px solid var(--ink); padding: 1.25rem; }
+  .panel + .panel { margin-top: 1rem; }
+  .panel h2 { font-family: var(--display); font-weight: 800; font-size: 1.15rem; letter-spacing: -0.02em; margin: 0 0 0.75rem; color: var(--ink); }
+  .bal { font-family: var(--display); font-weight: 800; font-size: 2.8rem; line-height: 1; letter-spacing: -0.04em; color: var(--ink); margin: 0 0 0.35rem; }
+  .bal-note { color: var(--muted); font-size: 0.92rem; margin: 0; }
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 1rem; border-top: 2px solid var(--ink); padding-top: 0.9rem; }
+  .stats b { display: block; font-family: var(--display); font-weight: 800; font-size: 1.5rem; color: var(--ink); letter-spacing: -0.03em; }
+  .stats span { font-size: 0.85rem; color: var(--muted); }
+  .escrow { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.75rem; }
+  .escrow li { display: grid; grid-template-columns: 2.5rem 1fr; gap: 0.25rem 0.75rem; align-items: center; }
+  .escrow img, .av { width: 2.5rem; height: 2.5rem; border-radius: 50%; border: 2px solid var(--ink); object-fit: cover; }
+  .escrow .who { font-weight: 700; color: var(--ink); line-height: 1.25; }
+  .escrow .clock { grid-column: 2; font-family: var(--mono); font-size: 0.88rem; color: var(--muted); }
+  .escrow .clock.late { color: #B3261E; font-weight: 600; }
+  .ring { grid-column: 2; justify-self: start; border: 2px solid var(--ink); background: var(--accent); border-radius: 999px; padding: 0.2rem 0.8rem; font-weight: 700; font-size: 0.85rem; min-height: 2.25rem; }
+
+  /* feed */
+  .feed-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+  .feed-head h1 { font-family: var(--display); font-weight: 800; font-size: clamp(2rem, 4.5vw, 3rem); line-height: 1; letter-spacing: -0.045em; margin: 0; color: var(--ink); }
+  .search { flex: 1 1 14rem; max-width: 22rem; }
+  .search label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 0.2rem; }
+  .search input { width: 100%; min-height: 2.9rem; border: 2px solid var(--ink); border-radius: 999px; padding: 0 1rem; font: inherit; background: var(--paper); }
+  .tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+  .tabs button { border: 2px solid var(--ink); background: var(--paper); border-radius: 999px; padding: 0 1.1rem; min-height: 2.75rem; font-weight: 700; }
+  .tabs button[aria-selected="true"] { background: var(--ink); color: var(--paper); }
+  .tabs .count { font-family: var(--mono); font-weight: 400; margin-left: 0.35rem; opacity: 0.75; }
+
+  .feed { list-style: none; padding: 0; margin: 0; border-top: 3px solid var(--ink); }
+  .item { background: var(--paper); border: 3px solid var(--ink); border-top: 0; padding: 1.1rem 1.25rem 1rem; display: grid; grid-template-columns: 2.75rem 1fr auto; gap: 0.2rem 0.9rem; }
+  .item.new { animation: arrive 360ms ease-out; }
+  @keyframes arrive { from { background: var(--accent); } to { background: var(--paper); } }
+  .item .av { width: 2.75rem; height: 2.75rem; grid-row: span 2; }
+  .av.init { display: grid; place-items: center; background: var(--bg); font-family: var(--display); font-weight: 800; color: var(--ink); font-size: 0.95rem; }
+  .line1 { font-weight: 700; color: var(--ink); line-height: 1.3; }
+  .line1 .verb { font-weight: 400; color: var(--muted); }
+  .meta { font-size: 0.85rem; color: var(--muted); }
+  .amt { grid-row: span 2; align-self: start; font-family: var(--display); font-weight: 800; font-size: 1.35rem; letter-spacing: -0.03em; color: var(--ink); background: var(--accent); padding: 0 0.45rem; border-radius: 3px; white-space: nowrap; }
+  .amt.req { background: transparent; border: 2px dashed var(--ink); }
+  .memo { grid-column: 2 / 4; margin: 0.6rem 0 0; font-size: 1.05rem; max-width: 60ch; }
+  .memo.clamp { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .actions { grid-column: 2 / 4; display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: center; margin-top: 0.6rem; }
+  .actions button { border: 0; background: transparent; padding: 0.35rem 0; min-height: 2.75rem; font-weight: 700; color: var(--primary); text-decoration: underline; text-underline-offset: 0.2em; }
+  .actions .like { color: var(--ink); text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; }
+  .actions .like svg { width: 1.2rem; height: 1.2rem; }
+  .actions .like[aria-pressed="true"] svg path { fill: var(--primary); stroke: var(--primary); }
+  .actions .seen { font-size: 0.88rem; color: var(--muted); display: inline-flex; gap: 0.35rem; align-items: center; }
+  .actions .seen svg { width: 1.1rem; height: 1.1rem; }
+  .tag { display: inline-block; font-size: 0.78rem; font-weight: 700; border: 2px solid var(--ink); border-radius: 999px; padding: 0 0.5rem; margin-left: 0.35rem; vertical-align: 1px; }
+  .empty { background: var(--paper); border: 3px solid var(--ink); border-top: 0; padding: 2rem 1.25rem; }
+  .empty b { display: block; font-family: var(--display); font-size: 1.3rem; color: var(--ink); }
+
+  /* fab */
+  .fab { position: fixed; right: clamp(1rem, 4vw, 2.5rem); bottom: clamp(1rem, 4vw, 2rem); z-index: 6; display: flex; gap: 0.6rem; }
+  .fab button { min-height: 3.6rem; padding: 0 1.6rem; border-radius: 999px; border: 3px solid var(--ink); font-family: var(--display); font-weight: 800; font-size: 1.15rem; box-shadow: 4px 4px 0 var(--ink); transition: transform 120ms, box-shadow 120ms; }
+  .fab button:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink); }
+  .fab .pay { background: var(--primary); color: var(--paper); }
+  .fab .req { background: var(--paper); color: var(--ink); }
+
+  /* sheet */
+  .scrim { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 20; display: none; align-items: end; justify-content: center; padding: 0; }
+  .scrim.open { display: flex; }
+  @media (min-width: 720px) { .scrim { align-items: center; padding: 1.5rem; } }
+  .sheet { background: var(--paper); border: 3px solid var(--ink); width: 100%; max-width: 38rem; max-height: 92vh; overflow: auto; padding: 1.5rem; animation: rise 220ms ease-out; }
+  @keyframes rise { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .sheet-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1.25rem; }
+  .sheet h2 { font-family: var(--display); font-weight: 800; font-size: 1.8rem; letter-spacing: -0.04em; margin: 0; color: var(--ink); }
+  .close { border: 2px solid var(--ink); background: var(--paper); border-radius: 999px; min-width: 2.75rem; min-height: 2.75rem; font-weight: 700; }
+  .field { margin-bottom: 1.25rem; border: 0; padding: 0; }
+  .field > label, .field legend { display: block; font-weight: 700; color: var(--ink); margin-bottom: 0.45rem; padding: 0; }
+  .field .help { font-size: 0.88rem; color: var(--muted); margin: 0.35rem 0 0; }
+  .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .chip { display: inline-flex; align-items: center; gap: 0.5rem; border: 2px solid var(--ink); background: var(--paper); border-radius: 999px; padding: 0.2rem 0.9rem 0.2rem 0.25rem; min-height: 2.75rem; font-weight: 700; }
+  .chip.noav { padding-left: 0.9rem; }
+  .chip .av { width: 2rem; height: 2rem; border-width: 1.5px; font-size: 0.75rem; }
+  .chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+  .chip small { font-weight: 400; opacity: 0.8; }
+  textarea { width: 100%; min-height: 9rem; border: 2px solid var(--ink); padding: 0.75rem; font: inherit; line-height: 1.5; resize: vertical; }
+  .counter { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.9rem; margin-top: 0.35rem; }
+  .counter .need { font-weight: 700; color: #B3261E; }
+  .counter .ok { font-weight: 700; color: #1D6B3A; }
+  .counter .n { font-family: var(--mono); color: var(--muted); }
+  .toggle { display: flex; gap: 0.9rem; align-items: flex-start; }
+  .switch { flex: none; width: 3.4rem; height: 2rem; border-radius: 999px; border: 2px solid var(--ink); background: var(--bg); position: relative; padding: 0; margin-top: 0.1rem; }
+  .switch::after { content: ""; position: absolute; top: 0.2rem; left: 0.2rem; width: 1.3rem; height: 1.3rem; border-radius: 50%; background: var(--ink); transition: transform 160ms ease-out; }
+  .switch[aria-checked="true"] { background: var(--accent); }
+  .switch[aria-checked="true"]::after { transform: translateX(1.4rem); }
+  .toggle b { display: block; color: var(--ink); }
+  .toggle span { font-size: 0.9rem; color: var(--muted); }
+  .send { width: 100%; min-height: 3.6rem; border-radius: 999px; border: 3px solid var(--ink); background: var(--primary); color: var(--paper); font-family: var(--display); font-weight: 800; font-size: 1.2rem; box-shadow: 4px 4px 0 var(--ink); }
+  .send:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
+
+  .toast { position: fixed; left: 50%; bottom: 6rem; transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--paper); padding: 0.85rem 1.25rem; border-radius: 999px; font-weight: 700; opacity: 0; pointer-events: none; transition: opacity 200ms, transform 200ms; z-index: 30; max-width: calc(100% - 2rem); text-align: center; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    html, .switch::after, .toast, .fab button { transition: none; }
+    .item.new, .sheet { animation: none; }
+  }
+</style>
+</head>
+<body>
+<header class="chrome">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="brand">Tuppence<span>.</span></span>
+  <div class="sizer" role="group" aria-label="Text size">
+    <button type="button" data-s="0" aria-pressed="false" aria-label="Regular text">A</button>
+    <button type="button" data-s="1" aria-pressed="true" aria-label="Large text">A+</button>
+    <button type="button" data-s="2" aria-pressed="false" aria-label="Largest text">A++</button>
+  </div>
+</header>
+
+<div class="app">
+  <aside class="rail" aria-label="Your account">
+    <section class="panel">
+      <h2>Your Tuppence balance</h2>
+      <p class="bal" id="bal">$41.75</p>
+      <p class="bal-note">Unchanged in 6 weeks. Everyone sends it back.</p>
+      <div class="stats">
+        <div><b id="stat-memo">3,812</b><span>characters sent this week</span></div>
+        <div><b id="stat-seen">17</b><span>people saw them</span></div>
+      </div>
+    </section>
+    <section class="panel">
+      <h2>Callbacks in escrow</h2>
+      <ul class="escrow" id="escrow"></ul>
+    </section>
+  </aside>
+
+  <main>
+    <div class="feed-head">
+      <h1>The feed</h1>
+      <div class="search">
+        <label for="q">Search memos</label>
+        <input id="q" type="search" placeholder="casserole, podiatrist, Kyle" autocomplete="off">
+      </div>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Feed filter">
+      <button role="tab" data-tab="all" aria-selected="true">Everyone<span class="count" data-c="all"></span></button>
+      <button role="tab" data-tab="friends" aria-selected="false">Friends<span class="count" data-c="friends"></span></button>
+      <button role="tab" data-tab="me" aria-selected="false">Me<span class="count" data-c="me"></span></button>
+      <button role="tab" data-tab="call" aria-selected="false">Owes you a call<span class="count" data-c="call"></span></button>
+    </div>
+    <ul class="feed" id="feed" aria-live="polite"></ul>
+  </main>
+</div>
+
+<div class="fab">
+  <button type="button" class="req" data-open="request">Request</button>
+  <button type="button" class="pay" data-open="pay">Pay</button>
+</div>
+
+<div class="scrim" id="scrim">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+    <div class="sheet-head">
+      <h2 id="sheet-title">Pay someone</h2>
+      <button type="button" class="close" id="close" aria-label="Close">✕</button>
+    </div>
+    <fieldset class="field">
+      <legend>To</legend>
+      <div class="chips" id="people"></div>
+      <p class="help">People nearby who might pick up, sorted by how recently they picked up.</p>
+    </fieldset>
+    <fieldset class="field">
+      <legend>Amount</legend>
+      <div class="chips" id="amounts"></div>
+    </fieldset>
+    <div class="field">
+      <label for="memo">Memo</label>
+      <textarea id="memo" placeholder="Start with the weather. Everyone does."></textarea>
+      <div class="counter"><span id="need"></span><span class="n" id="n">0 / 4,000</span></div>
+    </div>
+    <div class="field toggle" id="escrow-row">
+      <button type="button" class="switch" id="escrow-toggle" role="switch" aria-checked="true" aria-labelledby="escrow-lbl"></button>
+      <div><b id="escrow-lbl">Callback Escrow, $3</b><span>They get the $3 when they phone you. If they don't within 48 hours, it comes back with a note.</span></div>
+    </div>
+    <button type="button" class="send" id="send" disabled>Pay $1.50</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function () {
+  var AV = {
+    dolores: '<img class="av" src="headshot-1.webp" alt="" width="44" height="44">',
+    harold: '<img class="av" src="headshot-2.webp" alt="" width="44" height="44">',
+    bernadette: '<img class="av" src="headshot-3.webp" alt="" width="44" height="44">'
+  };
+  var ME = 'Harold Voss';
+  var items = [
+    { from: 'Dolores Finch', fa: 'dolores', to: 'Travis Finch', amt: 1.5, kind: 'pay', time: '6:02 AM', scope: 'friends', likes: 1, seen: 3, call: false,
+      memo: 'For the stamps. Also I wanted to tell you that the podiatrist on Elm has retired and the new one does not take my insurance, which I found out after sitting for forty minutes next to a man who described his entire gallbladder to me, start to finish, including the part where they let him keep it. He keeps it in the garage. I told him I would pass that along to you because you like science. Your mother says you are busy with the new job, which is fine, I am only saying the stamps were forty cents more than last year and I did not want you to be out anything. Call when you can. The number is the same. It has been the same since 1974.' },
+    { from: 'Kyle Brandt', fa: '', to: ME, amt: 14, kind: 'request', time: '5:48 AM', scope: 'me', likes: 0, seen: 1, call: false,
+      memo: 'pizza' },
+    { from: ME, fa: 'harold', to: 'Kyle Brandt', amt: 14, kind: 'pay', time: 'Sun 4:10 PM', scope: 'me', likes: 2, seen: 2, call: true,
+      memo: 'Kyle, here is the fourteen dollars for the pizza. I would still like to know which pizza, and whether I was supposed to be there, because if I was then I am sorry I missed it, and if I was not then I think you may have the wrong Harold, which is fine too. There are a lot of us. I looked it up. There are 112 Harold Vosses in the United States and I am the one in Tri-County. Anyway I am attaching the three dollars again. Sunday is good. Sunday at 4 is best because Wheel is on at 7.' },
+    { from: 'Bernadette Kowalczyk', fa: 'bernadette', to: 'Gerald Pruitt', amt: 0.25, kind: 'request', time: 'Yesterday', scope: 'all', likes: 6, seen: 11, call: false,
+      memo: 'Hello, invoice number 312. You said hello at the mailbox at 9:14 and again at 9:15 after you forgot your key, which I am counting as two because you made eye contact both times. I have waived the fee for the wave from the car, as that is covered under the neighbor courtesy clause, section four, which I have laminated and put in your screen door.' },
+    { from: 'Gerald Pruitt', fa: '', to: 'Bernadette Kowalczyk', amt: 2.75, kind: 'pay', time: 'Yesterday', scope: 'all', likes: 9, seen: 14, call: true,
+      memo: 'Paying invoices 301 through 311 in full. Hello. Hello again. That is two more, bill me. I have been thinking about what you said about the hedges and you are right that they are over the line by four inches but I would point out that the line was drawn in 1988 by a man who was, and I say this with respect, not using a tape measure. Also hello.' },
+    { from: 'Dolores Finch', fa: 'dolores', to: 'Harold Voss', amt: 3, kind: 'pay', time: 'Thu', scope: 'friends', likes: 4, seen: 5, call: true,
+      memo: 'Harold, we met at the Tuppence Split Lunch on Tuesday. You had the soup. I had the soup also but you did not see me because I was at the other end of the counter and you split with a woman named Pat. I am attaching the three dollars so that you will call and I can tell you that Pat is my cousin and she is a liar about her age.' },
+    { from: 'Lorraine Oduya', fa: '', to: 'Wendell Oduya', amt: 1, kind: 'pay', time: 'Wed', scope: 'all', likes: 3, seen: 8, call: false,
+      memo: 'Wendell, it is your mother. You are in the other room. I can hear the television. I am paying you one dollar to come out and look at what the cat has done, and I would like to point out that I did not have to use the app to tell you this but the app is how you seem to prefer to hear from me, since you liked my memo about the gutters inside of four minutes and have not answered the door since Easter.' }
+  ];
+  var people = [
+    { name: 'Kyle Brandt', note: 'picked up Sunday', a: '' },
+    { name: 'Dolores Finch', note: '0.4 mi', a: 'dolores' },
+    { name: 'Bernadette Kowalczyk', note: 'invoices you', a: 'bernadette' },
+    { name: 'Travis Finch', note: 'seen, not replied', a: '' },
+    { name: 'Pat (cousin)', note: 'age unverified', a: '' }
+  ];
+  var amounts = [0.25, 1, 1.5, 3, 14];
+  var escrow = [
+    { name: 'Kyle Brandt', a: '', secs: 41 * 3600 + 12 * 60 },
+    { name: 'Travis Finch', a: '', secs: 3 * 3600 + 5 * 60 + 40 },
+    { name: 'Wendell Oduya', a: '', secs: 0 }
+  ];
+
+  var state = { tab: 'all', q: '', open: {}, liked: {}, mode: 'pay', to: 'Kyle Brandt', amt: 1.5, escrow: true };
+  var feedEl = document.getElementById('feed');
+  var HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-9.2-8.6C1.2 8.2 3.2 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4.7-1.2 2.2-2.4 4.3-2.4 3.5 0 5.5 3.7 3.9 6.9C19 15.6 12 20 12 20z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>';
+  var EYE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>';
+
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function money(n) { return '$' + n.toFixed(2); }
+  function initials(n) { return n.split(' ').map(function (p) { return p.charAt(0); }).join('').slice(0, 2).toUpperCase(); }
+  function avatar(name, key) {
+    if (key && AV[key]) return AV[key];
+    return '<span class="av init" aria-hidden="true">' + initials(name) + '</span>';
+  }
+  function matches(it, tab) {
+    if (tab === 'friends') return it.scope === 'friends';
+    if (tab === 'me') return it.from === ME || it.to === ME;
+    if (tab === 'call') return it.call && it.from === ME;
+    return true;
+  }
+
+  function render() {
+    var q = state.q.toLowerCase();
+    var list = items.filter(function (it) {
+      return matches(it, state.tab) && (!q || (it.memo + ' ' + it.from + ' ' + it.to).toLowerCase().indexOf(q) !== -1);
+    });
+    ['all', 'friends', 'me', 'call'].forEach(function (t) {
+      document.querySelector('[data-c="' + t + '"]').textContent = items.filter(function (it) { return matches(it, t); }).length;
+    });
+    if (!list.length) {
+      feedEl.innerHTML = '<li class="empty"><b>Nothing matches "' + esc(state.q) + '".</b>Try a broader word. "Soup" returns results for most members.</li>';
+      return;
+    }
+    feedEl.innerHTML = list.map(function (it) {
+      var idx = items.indexOf(it);
+      var isOpen = !!state.open[idx];
+      var liked = !!state.liked[idx];
+      var verb = it.kind === 'request' ? ' requested from ' : ' paid ';
+      var long = it.memo.length > 180;
+      return '<li class="item' + (it.fresh ? ' new' : '') + '">' +
+        avatar(it.from, it.fa) +
+        '<div class="line1">' + esc(it.from) + '<span class="verb">' + verb + '</span>' + esc(it.to) +
+          (it.call ? '<span class="tag">+ $3 callback</span>' : '') + '</div>' +
+        '<span class="amt' + (it.kind === 'request' ? ' req' : '') + '">' + (it.kind === 'request' ? 'asks ' : '') + money(it.amt) + '</span>' +
+        '<div class="meta">' + esc(it.time) + ' · ' + (it.scope === 'all' ? 'Public' : it.scope === 'friends' ? 'Friends' : 'Private') + ' · ' + it.memo.length.toLocaleString() + ' characters</div>' +
+        '<p class="memo' + (long && !isOpen ? ' clamp' : '') + '">' + esc(it.memo) + '</p>' +
+        '<div class="actions">' +
+          '<button type="button" class="like" data-like="' + idx + '" aria-pressed="' + liked + '" aria-label="Heart, ' + (it.likes + (liked ? 1 : 0)) + '">' + HEART + (it.likes + (liked ? 1 : 0)) + '</button>' +
+          '<span class="seen">' + EYE + 'Seen by ' + it.seen + '</span>' +
+          (long ? '<button type="button" data-open-memo="' + idx + '" aria-expanded="' + isOpen + '">' + (isOpen ? 'Fold it back up' : 'Read the whole thing') + '</button>' : '') +
+        '</div></li>';
+    }).join('');
+    items.forEach(function (it) { it.fresh = false; });
+  }
+
+  feedEl.addEventListener('click', function (e) {
+    var l = e.target.closest('[data-like]');
+    if (l) { var i = l.getAttribute('data-like'); state.liked[i] = !state.liked[i]; render(); return; }
+    var m = e.target.closest('[data-open-memo]');
+    if (m) { var j = m.getAttribute('data-open-memo'); state.open[j] = !state.open[j]; render(); }
+  });
+  document.querySelectorAll('[role="tab"]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      state.tab = b.getAttribute('data-tab');
+      document.querySelectorAll('[role="tab"]').forEach(function (x) { x.setAttribute('aria-selected', x === b ? 'true' : 'false'); });
+      render();
+    });
+  });
+  document.getElementById('q').addEventListener('input', function (e) { state.q = e.target.value.trim(); render(); });
+
+  /* escrow countdowns */
+  var escEl = document.getElementById('escrow');
+  function fmt(s) {
+    if (s <= 0) return 'Expired. $3 returned with a note.';
+    var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60;
+    return h + 'h ' + String(m).padStart(2, '0') + 'm ' + String(x).padStart(2, '0') + 's left to call';
+  }
+  function renderEscrow() {
+    escEl.innerHTML = escrow.map(function (e, i) {
+      return '<li>' + avatar(e.name, e.a) + '<span class="who">' + esc(e.name) + '</span>' +
+        '<span class="clock' + (e.secs <= 0 ? ' late' : '') + '" data-clock="' + i + '">' + fmt(e.secs) + '</span>' +
+        (e.secs <= 0 ? '<button type="button" class="ring" data-nudge="' + i + '">Send another $3</button>' : '') + '</li>';
+    }).join('');
+  }
+  escEl.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-nudge]');
+    if (!b) return;
+    escrow[+b.getAttribute('data-nudge')].secs = 48 * 3600;
+    renderEscrow();
+    toast('Another $3 in escrow. He was probably busy the first time.');
+  });
+  setInterval(function () {
+    escrow.forEach(function (e, i) {
+      if (e.secs > 0) {
+        e.secs--;
+        var c = escEl.querySelector('[data-clock="' + i + '"]');
+        if (c) c.textContent = fmt(e.secs);
+        if (e.secs === 0) renderEscrow();
+      }
+    });
+  }, 1000);
+
+  /* compose sheet */
+  var scrim = document.getElementById('scrim');
+  var memo = document.getElementById('memo');
+  var sendBtn = document.getElementById('send');
+  var lastFocus = null;
+  function renderChips() {
+    document.getElementById('people').innerHTML = people.map(function (p) {
+      return '<button type="button" class="chip' + '" data-person="' + esc(p.name) + '" aria-pressed="' + (state.to === p.name) + '">' +
+        avatar(p.name, p.a) + esc(p.name) + ' <small>' + esc(p.note) + '</small></button>';
+    }).join('');
+    document.getElementById('amounts').innerHTML = amounts.map(function (a) {
+      return '<button type="button" class="chip noav" data-amt="' + a + '" aria-pressed="' + (state.amt === a) + '">' + money(a) + '</button>';
+    }).join('');
+  }
+  function minFor() { return state.amt < 5 ? 280 : 0; }
+  function check() {
+    var len = memo.value.trim().length, min = minFor();
+    var need = document.getElementById('need');
+    document.getElementById('n').textContent = len.toLocaleString() + ' / 4,000';
+    if (len < min) { need.className = 'need'; need.textContent = 'Needs ' + (min - len) + ' more characters. Payments under $5 require a proper memo.'; }
+    else if (len === 0) { need.className = 'need'; need.textContent = 'Add a memo. Even one word. Kyle managed one.'; }
+    else { need.className = 'ok'; need.textContent = 'Long enough. Keep going if you like.'; }
+    var verb = state.mode === 'pay' ? 'Pay ' : 'Request ';
+    sendBtn.textContent = verb + money(state.amt) + (state.mode === 'pay' && state.escrow ? ' + $3 callback' : '');
+    sendBtn.disabled = len < Math.max(min, 1);
+  }
+  function openSheet(mode) {
+    lastFocus = document.activeElement;
+    state.mode = mode;
+    document.getElementById('sheet-title').textContent = mode === 'pay' ? 'Pay someone' : 'Request from someone';
+    document.getElementById('escrow-row').style.display = mode === 'pay' ? '' : 'none';
+    renderChips(); check();
+    scrim.classList.add('open');
+    memo.focus();
+  }
+  function closeSheet() { scrim.classList.remove('open'); if (lastFocus) lastFocus.focus(); }
+  document.querySelectorAll('[data-open]').forEach(function (b) { b.addEventListener('click', function () { openSheet(b.getAttribute('data-open')); }); });
+  document.getElementById('close').addEventListener('click', closeSheet);
+  scrim.addEventListener('click', function (e) { if (e.target === scrim) closeSheet(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && scrim.classList.contains('open')) closeSheet(); });
+  document.getElementById('people').addEventListener('click', function (e) {
+    var c = e.target.closest('[data-person]'); if (!c) return; state.to = c.getAttribute('data-person'); renderChips(); check();
+  });
+  document.getElementById('amounts').addEventListener('click', function (e) {
+    var c = e.target.closest('[data-amt]'); if (!c) return; state.amt = parseFloat(c.getAttribute('data-amt')); renderChips(); check();
+  });
+  var sw = document.getElementById('escrow-toggle');
+  sw.addEventListener('click', function () { state.escrow = !state.escrow; sw.setAttribute('aria-checked', state.escrow); check(); });
+  memo.addEventListener('input', check);
+
+  var bal = 41.75, chars = 3812;
+  sendBtn.addEventListener('click', function () {
+    var text = memo.value.trim();
+    var pay = state.mode === 'pay';
+    items.unshift({ from: ME, fa: 'harold', to: state.to, amt: state.amt, kind: pay ? 'pay' : 'request', time: 'Just now', scope: 'all', likes: 0, seen: 0, call: pay && state.escrow, memo: text, fresh: true });
+    if (pay) {
+      bal -= state.amt + (state.escrow ? 3 : 0);
+      document.getElementById('bal').textContent = money(bal);
+      if (state.escrow) { escrow.unshift({ name: state.to, a: (people.filter(function (p) { return p.name === state.to; })[0] || {}).a || '', secs: 48 * 3600 }); renderEscrow(); }
+    }
+    chars += text.length;
+    document.getElementById('stat-memo').textContent = chars.toLocaleString();
+    memo.value = '';
+    closeSheet();
+    state.tab = 'all';
+    document.querySelectorAll('[role="tab"]').forEach(function (x) { x.setAttribute('aria-selected', x.getAttribute('data-tab') === 'all' ? 'true' : 'false'); });
+    render();
+    toast(pay ? 'Paid ' + money(state.amt) + ' to ' + state.to + '. Seen by 0 so far.' : 'Requested ' + money(state.amt) + ' from ' + state.to + '. They have been notified twice.');
+  });
+
+  var tEl = document.getElementById('toast'), tTimer;
+  function toast(msg) { tEl.textContent = msg; tEl.classList.add('show'); clearTimeout(tTimer); tTimer = setTimeout(function () { tEl.classList.remove('show'); }, 3800); }
+
+  /* text size */
+  var root = document.documentElement, sz = document.querySelectorAll('.sizer button');
+  function size(s) {
+    root.setAttribute('data-size', s);
+    sz.forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-s') === s ? 'true' : 'false'); });
+  }
+  sz.forEach(function (b) { b.addEventListener('click', function () { size(b.getAttribute('data-s')); }); });
+
+  render(); renderEscrow();
+})();
+</script>
+</body>
+</html>
