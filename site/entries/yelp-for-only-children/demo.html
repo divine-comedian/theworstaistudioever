@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Search results · Party of One · theworstaistudioever</title>
+<meta name="description" content="Party of One demo: local places reviewed by only children, sorted by how much attention the reviewer received.">
+<meta name="theme-color" content="#FBF8F0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:ital,wght@0,400;0,500;0,700;1,400&family=Red+Hat+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#D2342B; --gold:#F2B01E; --paper:#FBF8F0; --fg:#1E2A4A; --muted:#5E6687; --ink:#141B33;
+  --rule:#C3CFEA; --mid:#EBB3AD; --edge:#D9D2C0; --card:#FFFFFF; --soft:#F3EFE4;
+  --display:'Young Serif','Bookman Old Style',Georgia,serif;
+  --body:'Figtree',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'Red Hat Mono','SFMono-Regular',Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--fg);font:400 16px/1.55 var(--body);-webkit-font-smoothing:antialiased;
+  background-image:linear-gradient(to bottom, transparent 31px, #DCE3F2 31px, #DCE3F2 32px);background-size:100% 32px}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:3px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500}
+
+/* chrome */
+.bar{background:var(--card);border-bottom:2px solid var(--ink);position:sticky;top:0;z-index:30}
+.bar-in{max-width:1240px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.back{font-size:14px;font-weight:500;text-decoration:none;color:var(--muted);white-space:nowrap}
+.back:hover{color:var(--red)}
+.mark{display:flex;align-items:center;gap:8px;font:400 20px/1 var(--display);color:var(--ink);white-space:nowrap}
+.mark svg{width:28px;height:28px}
+.sbox{flex:1;display:flex;min-width:280px;border:2px solid var(--ink);border-radius:3px;overflow:hidden}
+.sbox label{display:flex;align-items:center;gap:6px;padding:0 12px;flex:1;min-width:0}
+.sbox label+label{border-left:1px solid var(--edge);flex:.6}
+.sbox span{font-size:13px;font-weight:700;color:var(--muted)}
+.sbox input{border:0;background:transparent;font:500 15px var(--body);color:var(--ink);padding:10px 0;width:100%;min-width:0}
+.sbox input:focus{outline:none}
+.sbox label:focus-within{background:#FFF8E4}
+.sbox .go{border:0;background:var(--red);color:#fff;padding:0 16px;cursor:pointer;display:grid;place-items:center}
+.sbox .go svg{width:18px;height:18px}
+.me{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);white-space:nowrap}
+.me b{color:var(--ink)}
+.me .av{width:32px;height:32px;border-radius:50%;background:var(--gold);color:var(--ink);display:grid;place-items:center;font-weight:700;border:2px solid var(--ink)}
+
+.tabs{max-width:1240px;margin:0 auto;padding:0 20px;display:flex;gap:4px;overflow-x:auto}
+.tab{border:0;background:none;padding:12px 14px 10px;font-weight:500;font-size:15px;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;color:var(--muted)}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--red);font-weight:700}
+
+/* layout */
+.page{max-width:1240px;margin:0 auto;padding:24px 20px 60px;display:grid;grid-template-columns:250px 1fr;gap:32px}
+aside h2{font:400 18px/1.2 var(--display);margin:0 0 10px;color:var(--ink)}
+.fgroup{background:var(--card);border:1px solid var(--edge);border-radius:3px;padding:16px;margin-bottom:18px;box-shadow:3px 3px 0 rgba(30,42,74,.1)}
+.chk{display:flex;align-items:flex-start;gap:10px;padding:7px 0;cursor:pointer;font-size:15px;line-height:1.35}
+.chk input{appearance:none;width:20px;height:20px;border:2px solid var(--fg);border-radius:3px;flex:none;margin:0;cursor:pointer;background:#fff;display:grid;place-items:center}
+.chk input:checked{background:var(--red);border-color:var(--red)}
+.chk input:checked::after{content:"";width:9px;height:5px;border:solid #fff;border-width:0 0 2.5px 2.5px;transform:rotate(-45deg) translate(1px,-1px)}
+.chk small{display:block;color:var(--muted);font-size:13px}
+.range{width:100%;accent-color:var(--red)}
+.rangeval{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+.note{font-size:13px;color:var(--muted);margin:0}
+
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.head h1{font:400 clamp(26px,3vw,34px)/1.15 var(--display);margin:0;color:var(--ink)}
+.head p{margin:4px 0 0;color:var(--muted);font-size:15px}
+.sort{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:500}
+.sort select{font:500 15px var(--body);padding:8px 10px;border:2px solid var(--ink);border-radius:3px;background:#fff;color:var(--ink);cursor:pointer}
+
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px;min-height:0}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--ink);color:var(--paper);border:0;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:500;cursor:pointer}
+.chip:hover{background:var(--red)}
+
+/* stickers */
+.stk{width:20px;height:20px;flex:none}
+.stk .s{fill:var(--gold)} .stk .r{fill:none;stroke:#fff;stroke-width:1.6} .stk .x{fill:#fff}
+.stk.off .s{fill:#E4DFD2}
+.stk.half .s{fill:url(#half)}
+.stk.red .s{fill:var(--red)}
+.stars{display:inline-flex;gap:1px;align-items:center}
+.stars .stk:nth-child(odd){transform:rotate(-4deg)} .stars .stk:nth-child(even){transform:rotate(3deg)}
+
+/* results */
+.list{display:grid;gap:16px}
+.res{display:grid;grid-template-columns:132px 1fr;gap:18px;background:var(--card);border:1px solid var(--edge);border-top:4px solid #8FA3D6;border-radius:3px;padding:16px;box-shadow:3px 3px 0 rgba(30,42,74,.12);cursor:pointer;text-align:left;width:100%;transition:transform .15s ease-out, box-shadow .15s ease-out}
+.res:hover{transform:translateY(-2px);box-shadow:3px 5px 0 rgba(30,42,74,.18)}
+.res.feat{grid-template-columns:minmax(0,1.05fr) 1fr;border:2px solid var(--ink);border-top:6px solid var(--red);box-shadow:5px 5px 0 var(--ink);position:relative}
+.thumb{aspect-ratio:1;border-radius:3px;background:var(--soft);display:grid;place-items:center;overflow:hidden;position:relative}
+.thumb svg{width:56%;height:56%}
+.thumb .lbl{position:absolute;bottom:6px;left:6px;right:6px;font-size:11px;color:var(--muted);text-align:center;line-height:1.2}
+.res.feat .thumb{aspect-ratio:4/3}
+.res.feat .thumb img{width:100%;height:100%;object-fit:cover}
+.tag{display:inline-block;font-size:13px;font-weight:700;color:var(--red);margin-bottom:4px}
+.res h3{font:400 21px/1.2 var(--display);margin:0 0 4px;color:var(--ink)}
+.res.feat h3{font-size:27px}
+.meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:14px;color:var(--muted);margin-bottom:8px}
+.meta .num{color:var(--ink)}
+.cat{font-size:14px;color:var(--muted);margin:0 0 10px}
+.gauges{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;margin:0 0 10px;max-width:460px}
+.g{font-size:13px;color:var(--muted)}
+.g .top{display:flex;justify-content:space-between}
+.g .top .num{color:var(--ink);font-weight:700}
+.meter{height:8px;background:var(--soft);border-radius:999px;overflow:hidden;margin-top:3px;border:1px solid var(--edge)}
+.meter i{display:block;height:100%;background:var(--gold);border-radius:999px}
+.meter.low i{background:var(--red)}
+.snip{margin:0;font-size:15px;line-height:1.5}
+.snip q{font-style:italic}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.b{font-size:12px;font-weight:500;padding:3px 8px;border-radius:3px;background:#EEF1F9;color:var(--fg);border:1px solid #D5DCEE}
+.empty{background:var(--card);border:2px dashed var(--edge);border-radius:3px;padding:36px;text-align:center}
+.empty h3{font:400 22px var(--display);margin:0 0 6px;color:var(--ink)}
+.empty button{margin-top:10px}
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(20,27,51,.5);z-index:40;opacity:0;pointer-events:none;transition:opacity .2s ease-out}
+.scrim.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--paper);z-index:50;transform:translateX(100%);transition:transform .25s ease-out;display:flex;flex-direction:column;border-left:2px solid var(--ink)}
+.drawer.open{transform:none}
+.dhead{padding:18px 22px 16px;border-bottom:2px solid var(--ink);background:var(--card);display:flex;gap:14px;align-items:flex-start}
+.dhead h2{font:400 26px/1.15 var(--display);margin:0 0 4px;color:var(--ink)}
+.x{margin-left:auto;border:2px solid var(--ink);background:#fff;border-radius:3px;width:40px;height:40px;cursor:pointer;display:grid;place-items:center;flex:none}
+.x:hover{background:var(--soft)}
+.dbody{overflow-y:auto;padding:20px 22px 40px;flex:1}
+.dbody h3{font:400 19px var(--display);margin:22px 0 10px;color:var(--ink)}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.fact{background:var(--card);border:1px solid var(--edge);border-radius:3px;padding:10px 12px}
+.fact .num{display:block;font-size:22px;font-weight:700;color:var(--ink)}
+.fact span{font-size:12px;color:var(--muted)}
+.review{background:var(--card);border:1px solid var(--edge);border-radius:3px;padding:14px 16px;margin-bottom:10px}
+.review.mine{border:2px solid var(--red);box-shadow:3px 3px 0 var(--red)}
+.review .who{display:flex;justify-content:space-between;gap:10px;font-size:14px;margin-bottom:6px;flex-wrap:wrap}
+.review .who b{color:var(--ink)}
+.review .who small{color:var(--muted)}
+.review p{margin:6px 0 0;font-size:15px}
+.pin{font-size:12px;font-weight:700;color:var(--red)}
+form.write{background:var(--card);border:2px solid var(--ink);border-radius:3px;padding:16px;box-shadow:4px 4px 0 var(--ink)}
+.picker{display:flex;gap:4px;margin:4px 0 4px}
+.picker button{border:0;background:none;padding:2px;cursor:pointer;border-radius:50%;width:44px;height:44px;display:grid;place-items:center}
+.picker .stk{width:36px;height:36px;transition:transform .2s ease-out}
+.picker button:hover .stk{transform:rotate(-8deg) scale(1.08)}
+.pickl{font-size:14px;color:var(--muted);min-height:22px;margin:0 0 10px}
+form.write label{display:block;font-size:14px;font-weight:700;margin-bottom:4px}
+form.write textarea{width:100%;min-height:96px;border:2px solid var(--edge);border-radius:3px;padding:10px;font:400 15px/1.5 var(--body);color:var(--ink);resize:vertical;background:#fff}
+form.write textarea:focus{outline:none;border-color:var(--fg)}
+.err{color:var(--red);font-size:14px;margin:6px 0 0;min-height:20px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 18px;border-radius:3px;border:2px solid var(--ink);background:var(--red);color:#fff;font:700 15px var(--body);cursor:pointer;box-shadow:3px 3px 0 var(--ink)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.btn.ghost{background:#fff;color:var(--ink)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,120px);background:var(--ink);color:var(--paper);padding:12px 18px;border-radius:3px;z-index:60;font-size:15px;transition:transform .25s ease-out;box-shadow:4px 4px 0 var(--gold);max-width:calc(100% - 32px)}
+.toast.on{transform:translate(-50%,0)}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media (max-width:900px){
+  .page{grid-template-columns:1fr}
+  aside{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  aside .fgroup{margin:0}
+  .res.feat{grid-template-columns:1fr}
+}
+@media (max-width:600px){
+  aside{grid-template-columns:1fr}
+  .res{grid-template-columns:84px 1fr;gap:12px}
+  .gauges{grid-template-columns:1fr}
+  .me{display:none}
+  .sbox label+label{display:none}
+  .facts{grid-template-columns:1fr 1fr 1fr}
+}
+.stk.off{--sf:#E4DFD2}.stk.red{--sf:#D2342B}.stk.half{--sf:url(#half)}.card:nth-child(2) .badge{--sf:#D2342B}
+.toast{visibility:hidden;transition:transform .25s ease-out,visibility .25s}.toast.on{visibility:visible}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs><linearGradient id="half"><stop offset="50%" stop-color="#F2B01E"/><stop offset="50%" stop-color="#E4DFD2"/></linearGradient></defs>
+  <symbol id="stk" viewBox="-2 -2 44 44">
+    <path class="s" style="fill:var(--sf,#F2B01E)" d="M23.2 2.1 Q27.4 -0.3 29.1 4.2 Q33.9 3.5 33.9 8.3 Q38.7 9.2 37.1 13.8 Q41.3 16.2 38.2 20.0 Q41.3 23.8 37.1 26.2 Q38.7 30.8 33.9 31.7 Q33.9 36.5 29.1 35.8 Q27.4 40.3 23.2 37.9 Q20.0 41.6 16.8 37.9 Q12.6 40.3 10.9 35.8 Q6.1 36.5 6.1 31.7 Q1.3 30.8 2.9 26.2 Q-1.3 23.8 1.8 20.0 Q-1.3 16.2 2.9 13.8 Q1.3 9.2 6.1 8.3 Q6.1 3.5 10.9 4.2 Q12.6 -0.3 16.8 2.1 Q20.0 -1.6 23.2 2.1Z"/>
+    <circle class="r" cx="20" cy="20" r="14.5" fill="none" stroke="#fff" stroke-width="1.6"/>
+    <path class="x" fill="#fff" d="M20.0 11.6 L22.3 17.4 L28.6 17.8 L23.7 21.8 L25.3 27.9 L20.0 24.5 L14.7 27.9 L16.3 21.8 L11.4 17.8 L17.7 17.4Z"/>
+  </symbol>
+  <symbol id="i-rest" viewBox="0 0 48 48"><g fill="none" stroke="#5E6687" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="26" r="11"/><path d="M8 12v10M5 12v6a3 3 0 0 0 6 0v-6M8 22v16M40 12c-3 2-4 6-4 10h4v16"/></g></symbol>
+  <symbol id="i-fam" viewBox="0 0 48 48"><g fill="none" stroke="#5E6687" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22 24 9l16 13M12 19v19h24V19"/><path d="M21 38v-9h6v9"/></g></symbol>
+  <symbol id="i-road" viewBox="0 0 48 48"><g fill="none" stroke="#5E6687" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 30l3-9a4 4 0 0 1 4-3h16a4 4 0 0 1 4 3l3 9v6H9z"/><circle cx="15" cy="36" r="3"/><circle cx="33" cy="36" r="3"/><path d="M9 30h30"/></g></symbol>
+  <symbol id="i-bday" viewBox="0 0 48 48"><g fill="none" stroke="#5E6687" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 38V24h28v14M8 38h32M10 30c4 3 8-3 14 0s10-3 14 0M24 24v-6"/><path d="M24 11c2 2 2 4 0 5-2-1-2-3 0-5z"/></g></symbol>
+</svg>
+
+<header class="bar">
+  <div class="bar-in">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <span class="mark"><svg class="stk red" aria-hidden="true"><use href="#stk"/></svg>Party of One</span>
+    <form class="sbox" id="sform" role="search">
+      <label><span>Find</span><input id="q" value="" placeholder="places that won't make me share" aria-label="Find"></label>
+      <label><span>Near</span><input value="Me, specifically" aria-label="Near"></label>
+      <button class="go" type="submit" aria-label="Search"><svg viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="6"/><path d="M13 13l5 5"/></svg></button>
+    </form>
+    <span class="me"><span class="av" aria-hidden="true">M</span><span>Signed in as <b>Morgan</b><br><span class="num">0</span> siblings, verified</span></span>
+  </div>
+  <div class="tabs" role="tablist" aria-label="Categories">
+    <button class="tab" role="tab" data-cat="all" aria-selected="true">Everything</button>
+    <button class="tab" role="tab" data-cat="restaurants" aria-selected="false">Restaurants</button>
+    <button class="tab" role="tab" data-cat="gatherings" aria-selected="false">Family gatherings</button>
+    <button class="tab" role="tab" data-cat="roadtrips" aria-selected="false">Road trips</button>
+    <button class="tab" role="tab" data-cat="birthdays" aria-selected="false">Birthday parties</button>
+  </div>
+</header>
+
+<div class="page">
+  <aside aria-label="Filters">
+    <div class="fgroup">
+      <h2>Filters</h2>
+      <label class="chk"><input type="checkbox" data-f="sibfree"><span>Sibling-free<small>No other children observed</small></span></label>
+      <label class="chk"><input type="checkbox" data-f="adult"><span>Adult table<small>Seated with grown-ups on arrival</small></span></label>
+      <label class="chk"><input type="checkbox" data-f="single"><span>Single portions<small>Nothing arrives "for the table"</small></span></label>
+      <label class="chk"><input type="checkbox" data-f="parents"><span>Parents reachable<small>Within one wave</small></span></label>
+    </div>
+    <div class="fgroup">
+      <h2>Minimum attention</h2>
+      <input class="range" type="range" id="att" min="0" max="100" step="5" value="0" aria-describedby="attv">
+      <div class="rangeval"><span>Ignored</span><span id="attv" class="num">0%</span><span>Adored</span></div>
+    </div>
+    <div class="fgroup">
+      <p class="note">Ratings measure how much attention the reviewer personally received. Food quality is recorded where the reviewer was asked about it.</p>
+    </div>
+  </aside>
+
+  <main>
+    <div class="head">
+      <div>
+        <h1 id="title">Places that won't make you share</h1>
+        <p id="count" aria-live="polite"></p>
+      </div>
+      <label class="sort">Sort by
+        <select id="sort">
+          <option value="attention">Attention received</option>
+          <option value="rating">Sticker rating</option>
+          <option value="adult">Adult Table Index</option>
+          <option value="kids">Fewest other children</option>
+        </select>
+      </label>
+    </div>
+    <div class="chips" id="chips"></div>
+    <div class="list" id="list"></div>
+  </main>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dname" aria-hidden="true">
+  <div class="dhead">
+    <div>
+      <h2 id="dname"></h2>
+      <div class="meta" id="dmeta"></div>
+    </div>
+    <button class="x" id="close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" stroke="#141B33" stroke-width="2.4" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg></button>
+  </div>
+  <div class="dbody">
+    <div class="facts" id="dfacts"></div>
+    <h3>Write a review</h3>
+    <form class="write" id="wform" novalidate>
+      <label id="pl">Your sticker rating</label>
+      <div class="picker" id="picker" role="radiogroup" aria-labelledby="pl"></div>
+      <p class="pickl" id="pickl">Pick a sticker count.</p>
+      <label for="wtext">What happened to you here</label>
+      <textarea id="wtext" placeholder="Describe the attention you received. Be fair. Be final."></textarea>
+      <p class="err" id="werr" role="alert"></p>
+      <button class="btn" type="submit">Post review</button>
+    </form>
+    <h3 id="rh">Reviews</h3>
+    <div id="dreviews"></div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+var CATS={restaurants:'Restaurants',gatherings:'Family gatherings',roadtrips:'Road trips',birthdays:'Birthday parties'};
+var ICON={restaurants:'i-rest',gatherings:'i-fam',roadtrips:'i-road',birthdays:'i-bday'};
+var FL={sibfree:'Sibling-free',adult:'Adult table',single:'Single portions',parents:'Parents reachable'};
+var DATA=[
+ {id:'booth',name:'The Quiet Booth',cat:'restaurants',sub:'Dumplings, tables for one',price:'$$',rating:4.9,count:2311,att:97,adult:9.4,kids:0,tags:['sibfree','single','adult'],feat:true,img:'featured.webp',
+  snip:'Two dumplings, both mine. The server remembered my name and my position on cilantro.',
+  reviews:[['Hollis K.',5,'One chair per table. The host walked me to it like it was a coronation, which it was.'],['Sunita P.',5,'Two dumplings arrived. I waited for someone to ask for one. Nobody did. Nobody was there.'],['Grant W.',4,'Excellent, but the couple by the window were being attentive to each other.']]},
+ {id:'lantern',name:'Golden Lantern Dim Sum',cat:'restaurants',sub:'Dim sum, carts',price:'$$',rating:5.0,count:1184,att:94,adult:8.8,kids:1,tags:['sibfree','single'],
+  snip:'Every basket came in threes and all three were mine.',
+  reviews:[['Marguerite L.',5,'The waiter asked what I thought of the pork bun. I told him. He wrote it down.'],['Theo A.',5,'A cart lady called me "the boss." Accurate.']]},
+ {id:'benihana',name:'Benihana, Mall Level 2',cat:'restaurants',sub:'Teppanyaki, shared grill',price:'$$$',rating:3.5,count:876,att:71,adult:5.2,kids:6,tags:['adult','parents'],
+  snip:'The chef flipped a shrimp at me specifically. Then at a stranger. Mixed.',
+  reviews:[['Priya V.',3,'You sit at a communal grill with other families. I was sold a show, not a table.'],['Leon B.',4,'The onion volcano erupted in my direction. I choose to believe that was deliberate.']]},
+ {id:'olive',name:'Olive Garden, Route 9',cat:'restaurants',sub:'Italian-adjacent, breadsticks',price:'$$',rating:1.2,count:4410,att:18,adult:3.1,kids:14,tags:['parents'],
+  snip:'The server addressed the whole table. I was the table.',
+  reviews:[['Priya V.',1,'Breadsticks placed in the middle, equidistant from everyone. An insult in geometry.'],['Dev M.',2,'Unlimited is a lie if you are expected to offer.']]},
+ {id:'chuck',name:'Chuck E. Cheese, Westfield',cat:'birthdays',sub:'Pizza, animatronics, other children',price:'$',rating:1.0,count:3021,att:4,adult:0.2,kids:400,tags:[],
+  snip:'Four hundred other children. I counted, and then I left.',
+  reviews:[['Owen T.',1,'The mouse sang happy birthday to a boy named Kayden. I had not been told there would be a Kayden.'],['Ruth H.',1,'Tickets are shared currency. Everything here is shared. Avoid.']]},
+ {id:'laser',name:'My 9th Birthday, Laser Quest',cat:'birthdays',sub:'Private party, one guest of honor',price:'$$$',rating:5.0,count:1,att:100,adult:7.0,kids:11,tags:['parents'],
+  snip:'Flawless. Eleven people were invited to watch me play laser tag.',
+  reviews:[['Morgan (you)',5,'Top score, as scheduled. Cake had my name on it and nobody else\'s.']]},
+ {id:'tyler',name:'Tyler\'s 9th Birthday',cat:'birthdays',sub:'Backyard, bouncy castle',price:'Free',rating:1.5,count:3,att:9,adult:1.5,kids:22,tags:['parents'],
+  snip:'Tyler opened presents for an hour. Nobody asked what I would have gotten.',
+  reviews:[['Morgan (you)',1,'The whole event was about Tyler. This was, admittedly, on the invitation.'],['Bea F.',2,'Goodie bag was generic. It did not reference me.']]},
+ {id:'ruth',name:'Grandma Ruth\'s House',cat:'gatherings',sub:'Sunday lunch, plastic on the couch',price:'Free',rating:5.0,count:212,att:99,adult:9.9,kids:0,tags:['sibfree','adult','single','parents'],
+  snip:'Asked about school for forty minutes and took notes.',
+  reviews:[['Colin A.',5,'Grandma has one grandchild and she knows it. So do I. Very efficient household.'],['Hana S.',5,'Leftovers packed, labeled, addressed to me only.']]},
+ {id:'carol',name:'Thanksgiving at Aunt Carol\'s',cat:'gatherings',sub:'Holiday, kids\' table in use',price:'Free',rating:2.5,count:58,att:41,adult:2.0,kids:7,tags:['parents'],
+  snip:'Seated at the kids\' table. I am 34.',
+  reviews:[['Dana W.',2,'The folding table wobbled and so did my sense of self.'],['Nate G.',3,'Pie was good. Was asked to share it with a cousin named Paisley.']]},
+ {id:'brent',name:'Cousin Brent\'s Graduation Party',cat:'gatherings',sub:'Backyard, speeches',price:'Free',rating:2.0,count:14,att:22,adult:6.1,kids:3,tags:['adult','parents'],
+  snip:'The party was about Brent. I accept this. I do not endorse it.',
+  reviews:[['Owen T.',2,'Four speeches about Brent. None of them mentioned me, which felt like an oversight.']]},
+ {id:'i95',name:'I-95 Southbound, Back Seat',cat:'roadtrips',sub:'Road trip, 9 hours',price:'Gas',rating:4.0,count:402,att:82,adult:7.4,kids:0,tags:['sibfree','parents','single'],
+  snip:'Both windows. Both cupholders. Dad asked for my read on the route and did not take it.',
+  reviews:[['Ines R.',4,'Minus one sticker for the route decision. It was the wrong exit and I said so.'],['Paulo C.',5,'Nobody touched my side because every side was my side.']]},
+ {id:'canyon',name:'Grand Canyon, South Rim',cat:'roadtrips',sub:'Natural wonder',price:'$$',rating:3.0,count:9120,att:12,adult:4.0,kids:58,tags:['parents'],
+  snip:'Very large. Did not seem to be about me.',
+  reviews:[['Greta O.',3,'Two billion years in the making and no acknowledgment of my arrival.'],['Sam Y.',3,'Everyone was looking at it instead of at me. Structural issue.']]}
+];
+var state={cat:'all',f:{},minAtt:0,sort:'attention',q:''};
+var list=document.getElementById('list'),countEl=document.getElementById('count'),chips=document.getElementById('chips');
+function stars(r,cls){var h='<span class="stars" aria-label="'+r+' out of 5 stickers">';for(var i=1;i<=5;i++){var c=r>=i?'':(r>=i-0.5?' half':' off');h+='<svg class="stk'+c+(cls||'')+'" aria-hidden="true"><use href="#stk"/></svg>'}return h+'</span>'}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]})}
+function fmt(n){return n.toLocaleString('en-US')}
+function meter(label,val,max,unit){var p=Math.round(val/max*100);return '<div class="g"><div class="top"><span>'+label+'</span><span class="num">'+val+unit+'</span></div><div class="meter'+(p<35?' low':'')+'"><i style="width:'+p+'%"></i></div></div>'}
+function visible(){
+  var q=state.q.toLowerCase();
+  return DATA.filter(function(d){
+    if(state.cat!=='all'&&d.cat!==state.cat)return false;
+    for(var k in state.f){if(state.f[k]&&d.tags.indexOf(k)<0)return false}
+    if(d.att<state.minAtt)return false;
+    if(q&&(d.name+' '+d.sub+' '+d.snip).toLowerCase().indexOf(q)<0)return false;
+    return true;
+  }).sort(function(a,b){
+    if(a.feat&&state.sort==='attention')return -1; if(b.feat&&state.sort==='attention')return 1;
+    if(state.sort==='rating')return b.rating-a.rating||b.count-a.count;
+    if(state.sort==='adult')return b.adult-a.adult;
+    if(state.sort==='kids')return a.kids-b.kids;
+    return b.att-a.att;
+  });
+}
+function card(d){
+  var th=d.img?'<div class="thumb"><img src="featured.webp" alt="A restaurant table set for exactly one diner" width="960" height="720"></div>'
+    :'<div class="thumb"><svg aria-hidden="true"><use href="#'+ICON[d.cat]+'"/></svg><span class="lbl">No photo. Reviewer was in all of them.</span></div>';
+  var b=d.tags.map(function(t){return '<span class="b">'+FL[t]+'</span>'}).join('');
+  return '<article class="res'+(d.feat?' feat':'')+'" data-id="'+d.id+'" tabindex="0" role="button" aria-label="Open '+esc(d.name)+'">'+th+'<div>'+
+    (d.feat?'<span class="tag">Reviewer\'s Choice</span>':'')+
+    '<h3>'+esc(d.name)+'</h3>'+
+    '<div class="meta">'+stars(d.rating)+'<span class="num">'+d.rating.toFixed(1)+'</span><span>(<span class="num">'+fmt(d.count)+'</span> reviews)</span><span>'+esc(d.price)+'</span></div>'+
+    '<p class="cat">'+CATS[d.cat]+', '+esc(d.sub)+'</p>'+
+    '<div class="gauges">'+meter('Attention received',d.att,100,'%')+meter('Adult Table Index',d.adult,10,'')+'</div>'+
+    '<p class="snip"><q>'+esc(d.snip)+'</q></p>'+(b?'<div class="badges">'+b+'</div>':'')+'</div></article>';
+}
+function render(){
+  var v=visible();
+  list.innerHTML=v.length?v.map(card).join(''):'<div class="empty"><h3>Nowhere meets your standards</h3><p>That is consistent with our data. Loosen a filter to see places that fall short.</p><button class="btn ghost" id="reset">Clear filters</button></div>';
+  countEl.textContent=v.length+(v.length===1?' place':' places')+' near you, specifically. Sorted by '+document.getElementById('sort').selectedOptions[0].text.toLowerCase()+'.';
+  var c='';for(var k in state.f){if(state.f[k])c+='<button class="chip" data-k="'+k+'">'+FL[k]+' <span aria-hidden="true">×</span><span class="vh" style="position:absolute;left:-9999px">remove</span></button>'}
+  if(state.q)c+='<button class="chip" data-k="__q">"'+esc(state.q)+'" <span aria-hidden="true">×</span></button>';
+  chips.innerHTML=c;
+  var r=document.getElementById('reset');if(r)r.onclick=reset;
+}
+function reset(){state.f={};state.minAtt=0;state.q='';document.getElementById('q').value='';document.getElementById('att').value=0;document.getElementById('attv').textContent='0%';
+  document.querySelectorAll('.chk input').forEach(function(i){i.checked=false});render()}
+function setCat(c){state.cat=CATS[c]?c:'all';document.querySelectorAll('.tab').forEach(function(t){t.setAttribute('aria-selected',t.dataset.cat===state.cat?'true':'false')});
+  document.getElementById('title').textContent=state.cat==='all'?'Places that won\'t make you share':CATS[state.cat]+' that won\'t make you share';render()}
+document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){setCat(t.dataset.cat);history.replaceState(null,'','#'+t.dataset.cat)})});
+document.querySelectorAll('.chk input').forEach(function(i){i.addEventListener('change',function(){state.f[i.dataset.f]=i.checked;render()})});
+document.getElementById('att').addEventListener('input',function(e){state.minAtt=+e.target.value;document.getElementById('attv').textContent=e.target.value+'%';render()});
+document.getElementById('sort').addEventListener('change',function(e){state.sort=e.target.value;render()});
+document.getElementById('sform').addEventListener('submit',function(e){e.preventDefault();state.q=document.getElementById('q').value.trim();render()});
+document.getElementById('q').addEventListener('input',function(e){state.q=e.target.value.trim();render()});
+chips.addEventListener('click',function(e){var b=e.target.closest('.chip');if(!b)return;var k=b.dataset.k;
+  if(k==='__q'){state.q='';document.getElementById('q').value=''}else{state.f[k]=false;document.querySelector('.chk input[data-f="'+k+'"]').checked=false}render()});
+
+/* drawer */
+var drawer=document.getElementById('drawer'),scrim=document.getElementById('scrim'),cur=null,pick=0,lastFocus=null;
+var PICKL=['Pick a sticker count.','One sticker. Nobody asked how I was.','Two stickers. I was acknowledged, briefly.','Three stickers. Adequate. Someone else was also there.','Four stickers. Nearly about me.','Five stickers. It was about me.'];
+var picker=document.getElementById('picker');
+for(var i=1;i<=5;i++){picker.insertAdjacentHTML('beforeend','<button type="button" role="radio" aria-checked="false" aria-label="'+i+' sticker'+(i>1?'s':'')+'" data-v="'+i+'"><svg class="stk off" aria-hidden="true"><use href="#stk"/></svg></button>')}
+function setPick(v){pick=v;picker.querySelectorAll('button').forEach(function(b){var n=+b.dataset.v;b.setAttribute('aria-checked',n===v?'true':'false');b.querySelector('.stk').setAttribute('class','stk'+(n<=v?'':' off'))});document.getElementById('pickl').textContent=PICKL[v]}
+picker.addEventListener('click',function(e){var b=e.target.closest('button');if(b)setPick(+b.dataset.v)});
+function renderReviews(d){document.getElementById('rh').textContent='Reviews ('+fmt(d.count)+')';
+  document.getElementById('dreviews').innerHTML=d.reviews.map(function(r,ix){return '<div class="review'+(r[3]?' mine':'')+'"><div class="who"><span><b>'+esc(r[0])+'</b> <small>'+(r[3]?'just now':'0 siblings, verified')+'</small></span>'+stars(r[1])+'</div>'+(r[3]?'<span class="pin">Pinned to the top. As is your right.</span>':'')+'<p>'+esc(r[2])+'</p></div>'}).join('')}
+function open(id){cur=DATA.filter(function(d){return d.id===id})[0];if(!cur)return;lastFocus=document.activeElement;
+  document.getElementById('dname').textContent=cur.name;
+  document.getElementById('dmeta').innerHTML=stars(cur.rating)+'<span class="num">'+cur.rating.toFixed(1)+'</span><span>'+CATS[cur.cat]+'</span><span>'+esc(cur.price)+'</span>';
+  document.getElementById('dfacts').innerHTML='<div class="fact"><span class="num">'+cur.att+'%</span><span>Attention received</span></div><div class="fact"><span class="num">'+cur.adult+'</span><span>Adult Table Index</span></div><div class="fact"><span class="num">'+fmt(cur.kids)+'</span><span>Other children observed</span></div>';
+  renderReviews(cur);setPick(0);document.getElementById('wtext').value='';document.getElementById('werr').textContent='';
+  drawer.classList.add('open');scrim.classList.add('open');drawer.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';
+  setTimeout(function(){document.getElementById('close').focus()},50)}
+function close(){drawer.classList.remove('open');scrim.classList.remove('open');drawer.setAttribute('aria-hidden','true');document.body.style.overflow='';if(lastFocus)lastFocus.focus()}
+list.addEventListener('click',function(e){var c=e.target.closest('.res');if(c)open(c.dataset.id)});
+list.addEventListener('keydown',function(e){var c=e.target.closest('.res');if(c&&(e.key==='Enter'||e.key===' ')){e.preventDefault();open(c.dataset.id)}});
+document.getElementById('close').addEventListener('click',close);scrim.addEventListener('click',close);
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&drawer.classList.contains('open'))close()});
+document.getElementById('wform').addEventListener('submit',function(e){e.preventDefault();
+  var t=document.getElementById('wtext').value.trim(),err=document.getElementById('werr');
+  if(!pick){err.textContent='Choose a sticker count. Your opinion needs a number on it.';picker.querySelector('button').focus();return}
+  if(t.length<8){err.textContent='Add at least a sentence about what happened to you here.';document.getElementById('wtext').focus();return}
+  err.textContent='';
+  cur.reviews.unshift(['Morgan (you)',pick,t,true]);cur.count+=1;
+  cur.rating=Math.round(((cur.rating*(cur.count-1))+pick)/cur.count*10)/10;
+  renderReviews(cur);setPick(0);document.getElementById('wtext').value='';render();
+  toast('Review posted. Pinned above the other '+fmt(cur.count-1)+', as requested.')});
+var tt;function toast(m){var el=document.getElementById('toast');el.textContent=m;el.classList.add('on');clearTimeout(tt);tt=setTimeout(function(){el.classList.remove('on')},3800)}
+
+var h=location.hash.replace('#','');setCat(CATS[h]?h:'all');
+})();
+</script>
+</body>
+</html>

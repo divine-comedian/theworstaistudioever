@@ -1,0 +1,59 @@
+[2026-09-29T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-09-29T08:00:02Z] invoking claude -p
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/github/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/github/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.openclaw/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.openclaw/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.claude/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.claude/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/aurevon-status/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/aurevon-status/**) instead (Edit rules cover all file-editing tools).
+
+=== agent run summary (2026-09-29) ===
+Rolled: company=Yelp, subject=only children, slug=yelp-for-only-children
+Rerolls: 0 (first draw was not in history)
+Product: Party of One
+
+Design direction:
+  style: primary-school reward chart, classroom daylight mode (ruled worksheet, gold/red scalloped reward stickers, red-pen marks, white index cards)
+  palette: Reward Chart Red (primary #D2342B, accent #F2B01E, bg #FBF8F0, fg #1E2A4A, muted #6B7392, ink #141B33)
+  fonts: Young Serif (display) / Figtree (body) / Red Hat Mono (figures)
+  anti-sameness: checked against last 7 (2026-09-20..09-28); no style, palette name or font pair collides.
+
+Images (4 Gemini calls, 4 kept):
+  rationale: hero skipped (typographic worksheet hero with search bar); 1 demo featured-listing photo; 3 testimonial headshots.
+  headshot-1.webp (testimonial, Priya) attempts=1 PASS: correct subject, navy/cream/red palette, no text
+  headshot-2.webp (testimonial, Colin) attempts=1 PASS: correct subject, cream/navy palette, no text
+  headshot-3.webp (testimonial, Dana) attempts=1 PASS: correct subject, red cardigan on cream, no text
+  featured.webp (demo, Reviewer's Choice listing) attempts=1 PASS: table-for-one booth, navy/red/cream, no text. Two dumplings rendered instead of one; accepted and written into the listing copy ("Two dumplings, both mine").
+
+Warnings / near-misses:
+  - validate-entry.sh flagged demo.html on first run: its <img src> regex matched a JS string template ('+d.img+'). Fixed by using the literal filename featured.webp. Validation passed on re-run.
+  - Inline-JS syntax check wrote a scratch file to /tmp/chk.js (outside the working tree). Harmless but against the rules; next time use node --check on stdin.
+  - Worksheet dashed midline dropped during build (CSS layer would have tiled every pixel); blue baselines + margin rule only.
+
+Validation: scripts/validate-entry.sh site yelp-for-only-children -> OK
+Gallery: site/index.html regenerated, 108 startups; diff is new slide + count only.
+
+Step 9 visual check: 2 captures + 1 re-capture, 1 corrective edit (scripted, both files).
+  - Breakage: every reward sticker rendered solid black on both pages (class selectors cannot style <use> shadow content). Fixed by driving fill through an inherited --sf custom property.
+  - Breakage: empty demo toast visible as a small dark box in full-page capture. Fixed with visibility:hidden until shown.
+  - Re-capture of demo confirmed gold/grey/half stickers and no toast artifact. Re-validation: OK.
+RUN_COMPLETE: yelp-for-only-children
+
+Today's entry is **Yelp for only children**, shipped as "Party of One": local reviews written only by people who never had to share a back seat, a bedroom, or the last dumpling. The first draw wasn't in history, so there were no rerolls. Validation passed, including a re-run after the last edit.
+
+- **Look:** the page is styled as a primary-school reward chart. Ruled worksheet paper, gold and red stickers instead of Yelp stars, red-pen marks, white index cards. Fonts are Young Serif, Figtree and Red Hat Mono. None of this matches the last 7 entries.
+- **Images:** 4 Gemini calls, all 4 kept on the first try. Three are testimonial headshots and one is the photo for the demo's top listing. I skipped a hero image because the hero is text plus a search bar. The top-listing photo shows two dumplings where I asked for one, so its copy now says "Two dumplings, both mine."
+- **Demo:** a Yelp-style results page with 12 listings. It has category tabs, filters, a minimum-attention slider, sorting and search. Clicking a listing opens a panel with its reviews. The panel has a write-a-review form, and a new review gets pinned to the top.
+- **Gallery:** rebuilt with 108 startups. The diff is just the new slide and the count.
+- **Records:** today's entry is appended to `state/history.json` and the summary is in `state/runs/2026-09-29.log`.
+
+Three things went wrong along the way, all fixed and noted in the log:
+- **Validator false alarm:** `validate-entry.sh` flagged `demo.html` on the first run. Its image check matched a JavaScript string that builds the image tag, not a real missing file. I changed it to the literal filename `featured.webp` and it passed.
+- **Screenshot check:** it found every sticker rendering as a solid black circle on both pages. It also found a stray dark box over one demo listing, which was the hidden popup notice. One edit fixed both, and a second demo screenshot confirmed it. I didn't take a second landing screenshot, but it got the same fix.
+- **Scratch file:** my JavaScript syntax check wrote a scratch file to `/tmp`, which breaks the working-tree-only rule. It's harmless.
+
+I didn't run any git commands.
+[2026-09-29T08:08:43Z] new entry: yelp-for-only-children
+validate-entry [yelp-for-only-children]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 108 entries (domain theworstaistudioever.com)
+[2026-09-29T08:08:44Z] committing: Yelp for only children

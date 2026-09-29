@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Party of One · theworstaistudioever</title>
+<meta name="description" content="Local reviews written exclusively by people who have never had to share a back seat, a bedroom, or the last dumpling.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Party of One · theworstaistudioever">
+<meta property="og:description" content="Local reviews written exclusively by people who have never had to share a back seat, a bedroom, or the last dumpling.">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#FBF8F0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:ital,wght@0,400;0,500;0,700;1,400&family=Red+Hat+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#D2342B; --gold:#F2B01E; --paper:#FBF8F0; --fg:#1E2A4A; --muted:#5E6687; --ink:#141B33;
+  --rule:#C3CFEA; --mid:#EBB3AD; --edge:#D9D2C0; --card:#FFFFFF;
+  --display:'Young Serif','Bookman Old Style',Georgia,serif;
+  --body:'Figtree',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'Red Hat Mono','SFMono-Regular',Menlo,Consolas,monospace;
+  --line:32px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--fg);font:400 17px/1.62 var(--body);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+img{display:block;max-width:100%}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px;border-radius:3px}
+.skip{position:absolute;left:-999px;top:8px;background:var(--ink);color:#fff;padding:8px 12px;z-index:50}
+.skip:focus{left:8px}
+
+/* worksheet: blue baselines, red margin rule */
+.sheet{
+  background-image:
+    linear-gradient(to right, transparent 55px, var(--mid) 55px, var(--mid) 57px, transparent 57px),
+    linear-gradient(to bottom, transparent calc(var(--line) - 1px), var(--rule) calc(var(--line) - 1px), var(--rule) var(--line));
+  background-size:100% 100%, 100% var(--line);
+  background-repeat:no-repeat, repeat;
+}
+.wrap{max-width:1160px;margin:0 auto;padding:0 24px 0 88px}
+
+/* header */
+.top{border-bottom:2px solid var(--fg);background:var(--paper);position:sticky;top:0;z-index:20}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:68px}
+.mark{display:flex;align-items:center;gap:10px;text-decoration:none;font:400 24px/1 var(--display);color:var(--ink)}
+.mark svg{width:34px;height:34px}
+.top nav{display:flex;gap:26px;align-items:center;font-weight:500;font-size:15px}
+.top nav a{text-decoration:none}
+.top nav a:hover{text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:5px;text-decoration-thickness:2px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 20px;border-radius:3px;border:2px solid var(--ink);
+  background:var(--red);color:#fff;font:700 16px/1 var(--body);text-decoration:none;cursor:pointer;box-shadow:3px 3px 0 var(--ink);transition:transform .15s ease-out, box-shadow .15s ease-out}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.btn.ghost{background:var(--card);color:var(--ink)}
+@media (max-width:760px){.top nav a:not(.btn){display:none}}
+
+/* stickers */
+.stk{width:22px;height:22px;flex:none}
+.stk .s{fill:var(--gold)} .stk .r{fill:none;stroke:#fff;stroke-width:1.6} .stk .x{fill:#fff}
+.stk.off .s{fill:#E4DFD2} .stk.off .x{fill:#fff}
+.stk.red .s{fill:var(--red)}
+.stars{display:inline-flex;gap:2px;align-items:center}
+.stars .stk:nth-child(odd){transform:rotate(-4deg)} .stars .stk:nth-child(even){transform:rotate(3deg)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500}
+
+/* hero */
+.hero{padding:calc(var(--line)*2) 0 calc(var(--line)*3)}
+.hero .wrap{display:grid;grid-template-columns:1.25fr .9fr;gap:56px;align-items:start}
+h1{font:400 clamp(44px,6.4vw,84px)/1.02 var(--display);letter-spacing:-.015em;color:var(--ink);margin:0 0 var(--line);max-width:13ch}
+.lede{font-size:19px;max-width:54ch;margin:0 0 var(--line);background:var(--paper);padding:2px 0}
+.search{display:flex;background:var(--card);border:2px solid var(--ink);border-radius:3px;box-shadow:4px 4px 0 var(--ink);max-width:640px}
+.search label{flex:1;display:flex;flex-direction:column;padding:8px 14px;min-width:0}
+.search label+label{border-left:1px solid var(--edge)}
+.search span{font-size:13px;font-weight:700;color:var(--muted)}
+.search input{border:0;font:500 17px/1.4 var(--body);color:var(--ink);background:transparent;padding:2px 0;min-width:0}
+.search input:focus{outline:none}
+.search label:focus-within{background:#FFF8E4}
+.search button{border:0;border-left:2px solid var(--ink);background:var(--red);color:#fff;font:700 16px var(--body);padding:0 22px;cursor:pointer}
+.search button:hover{background:#B82A22}
+.hint{margin:14px 0 0;font-size:14px;color:var(--muted)}
+.hint button{background:none;border:0;padding:0 2px;font:inherit;color:var(--fg);text-decoration:underline;text-decoration-color:var(--rule);text-underline-offset:3px;cursor:pointer}
+.hint button:hover{text-decoration-color:var(--red)}
+.searched{margin-top:12px;font-size:15px;min-height:24px;color:var(--ink)}
+
+.stack{position:relative;min-height:420px;margin-top:8px}
+.rev{position:absolute;width:min(330px,100%);background:var(--card);border:1px solid var(--edge);border-top:4px solid #8FA3D6;border-radius:3px;padding:16px 18px 18px;box-shadow:3px 3px 0 rgba(30,42,74,.12)}
+.rev:nth-child(1){top:0;left:6%;transform:rotate(-2.5deg)}
+.rev:nth-child(2){top:132px;left:22%;transform:rotate(1.8deg)}
+.rev:nth-child(3){top:268px;left:2%;transform:rotate(-1deg)}
+.rev h3{font:400 19px/1.25 var(--display);margin:0 0 6px;color:var(--ink)}
+.rev p{margin:8px 0 0;font-size:15px;line-height:1.5}
+.rev .by{display:block;margin-top:8px;font-size:13px;color:var(--muted)}
+.rev .row{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+
+/* sections */
+section{padding:calc(var(--line)*3) 0}
+h2{font:400 clamp(32px,4vw,48px)/1.1 var(--display);margin:0 0 calc(var(--line)*1.5);color:var(--ink);max-width:22ch}
+.intro{max-width:58ch;margin:-24px 0 calc(var(--line)*1.5);color:var(--fg)}
+.cats{display:flex;flex-wrap:wrap;gap:12px;padding:0;margin:0;list-style:none}
+.cats a{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--edge);border-radius:3px;padding:10px 16px;text-decoration:none;font-weight:500;box-shadow:3px 3px 0 rgba(30,42,74,.12);transition:transform .15s ease-out, box-shadow .15s ease-out}
+.cats a:hover{transform:translateY(-2px);box-shadow:3px 5px 0 rgba(30,42,74,.18)}
+.cats .num{font-size:13px;color:var(--muted)}
+
+.feats{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.card{background:var(--card);border:1px solid var(--edge);border-top:4px solid #8FA3D6;border-radius:3px;padding:22px 24px 26px;box-shadow:3px 3px 0 rgba(30,42,74,.12);position:relative}
+.card h3{font:400 23px/1.2 var(--display);margin:0 0 10px;color:var(--ink);padding-right:52px}
+.card p{margin:0}
+.card .badge{position:absolute;top:-16px;right:18px;width:52px;height:52px;transform:rotate(8deg)}
+.card .badge .s{fill:var(--gold)}
+.card:nth-child(2) .badge .s{fill:var(--red)}
+
+.quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.q{background:var(--card);border:1px solid var(--edge);border-radius:3px;padding:24px;box-shadow:3px 3px 0 rgba(30,42,74,.12);display:flex;flex-direction:column}
+.q blockquote{margin:0 0 20px;font:400 21px/1.4 var(--display);color:var(--ink);flex:1}
+.q figcaption{display:flex;gap:14px;align-items:center;border-top:1px dashed var(--edge);padding-top:16px}
+.q img{width:64px;height:64px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px var(--edge);object-fit:cover}
+.q b{display:block;font-weight:700}
+.q small{display:block;font-size:14px;color:var(--muted);line-height:1.4}
+.q .stars{margin-bottom:14px}
+
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;align-items:start}
+.tier{background:var(--card);border:1px solid var(--edge);border-radius:3px;padding:28px 26px;box-shadow:3px 3px 0 rgba(30,42,74,.12);position:relative}
+.tier h3{font:400 26px/1.1 var(--display);margin:0 0 4px;color:var(--ink)}
+.tier .price{font:700 34px/1.2 var(--mono);color:var(--ink);margin:14px 0 2px;font-variant-numeric:tabular-nums}
+.tier .tl{margin:0 0 18px;color:var(--muted)}
+.tier ul{list-style:none;padding:0;margin:0 0 24px}
+.tier li{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid #EFEAE0;font-size:16px}
+.tier li svg{flex:none;width:18px;height:18px;margin-top:4px}
+.tier .btn{width:100%}
+.tier.pick{border:2px solid var(--ink);box-shadow:5px 5px 0 var(--ink);transform:translateY(-10px)}
+.pen{position:absolute;pointer-events:none;overflow:visible}
+.pen path{fill:none;stroke:var(--red);stroke-width:2.5;stroke-linecap:round}
+.tier.pick .pen{left:-14px;top:14px;width:calc(100% + 28px);height:70px}
+.see{position:absolute;top:-18px;left:20px;font:italic 500 15px var(--body);color:var(--red);background:var(--paper);padding:0 8px;transform:rotate(-3deg)}
+
+.close{text-align:left}
+.close .panel{background:var(--ink);color:var(--paper);border-radius:3px;padding:48px 48px 52px;display:grid;grid-template-columns:1fr auto;gap:32px;align-items:center}
+.close h2{color:var(--paper);margin:0 0 10px}
+.close p{margin:0;max-width:52ch;color:#D7DCEB}
+.close .btn{background:var(--gold);color:var(--ink);border-color:var(--paper);box-shadow:4px 4px 0 var(--red);font-size:18px;min-height:56px;padding:0 28px}
+
+footer{border-top:2px solid var(--fg);padding:28px 0 40px;font-size:14px;color:var(--muted);background:var(--paper)}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer a{text-decoration:none}
+footer a:hover{color:var(--red)}
+
+/* one orchestrated moment: stickers press on, the pen circle draws */
+@media (prefers-reduced-motion:no-preference){
+  .js .rev .stars .stk{animation:press .32s ease-out both}
+  .js .rev:nth-child(1) .stk{animation-delay:.25s}
+  .js .rev:nth-child(2) .stk{animation-delay:.45s}
+  .js .rev:nth-child(3) .stk{animation-delay:.65s}
+  .js .pen path{stroke-dasharray:640;stroke-dashoffset:640;transition:stroke-dashoffset .9s ease-out}
+  .js .pen.on path,.nojs .pen path{stroke-dashoffset:0}
+}
+@keyframes press{from{transform:scale(1.35) rotate(-12deg);opacity:0}to{opacity:1}}
+
+@media (max-width:980px){
+  .hero .wrap{grid-template-columns:1fr}
+  .stack{min-height:0;display:grid;gap:18px}
+  .rev{position:static;width:100%;transform:none!important}
+  .feats,.quotes,.tiers{grid-template-columns:1fr}
+  .tier.pick{transform:none}
+  .close .panel{grid-template-columns:1fr;padding:36px 28px}
+}
+@media (max-width:640px){
+  .wrap{padding:0 18px 0 44px}
+  .sheet{background-image:
+    linear-gradient(to right, transparent 27px, var(--mid) 27px, var(--mid) 29px, transparent 29px),
+    linear-gradient(to bottom, transparent calc(var(--line) - 1px), var(--rule) calc(var(--line) - 1px), var(--rule) var(--line))}
+  .search{flex-direction:column}
+  .search label+label{border-left:0;border-top:1px solid var(--edge)}
+  .search button{border-left:0;border-top:2px solid var(--ink);min-height:48px}
+}
+.stk.off{--sf:#E4DFD2}.stk.red{--sf:#D2342B}.stk.half{--sf:url(#half)}.card:nth-child(2) .badge{--sf:#D2342B}
+</style>
+</head>
+<body class="sheet">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="stk" viewBox="-2 -2 44 44">
+    <path class="s" style="fill:var(--sf,#F2B01E)" d="M23.2 2.1 Q27.4 -0.3 29.1 4.2 Q33.9 3.5 33.9 8.3 Q38.7 9.2 37.1 13.8 Q41.3 16.2 38.2 20.0 Q41.3 23.8 37.1 26.2 Q38.7 30.8 33.9 31.7 Q33.9 36.5 29.1 35.8 Q27.4 40.3 23.2 37.9 Q20.0 41.6 16.8 37.9 Q12.6 40.3 10.9 35.8 Q6.1 36.5 6.1 31.7 Q1.3 30.8 2.9 26.2 Q-1.3 23.8 1.8 20.0 Q-1.3 16.2 2.9 13.8 Q1.3 9.2 6.1 8.3 Q6.1 3.5 10.9 4.2 Q12.6 -0.3 16.8 2.1 Q20.0 -1.6 23.2 2.1Z"/>
+    <circle class="r" cx="20" cy="20" r="14.5" fill="none" stroke="#fff" stroke-width="1.6"/>
+    <path class="x" fill="#fff" d="M20.0 11.6 L22.3 17.4 L28.6 17.8 L23.7 21.8 L25.3 27.9 L20.0 24.5 L14.7 27.9 L16.3 21.8 L11.4 17.8 L17.7 17.4Z"/>
+  </symbol>
+  <symbol id="tick" viewBox="0 0 18 18"><path d="M2 10 L7 15 L16 3" fill="none" stroke="#D2342B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="#top" aria-label="Party of One home"><svg class="stk red" aria-hidden="true"><use href="#stk"/></svg>Party of One</a>
+    <nav aria-label="Primary">
+      <a href="#verified">How we verify</a>
+      <a href="#reviews">Reviews</a>
+      <a href="#pricing">Pricing</a>
+      <a class="btn" href="./demo.html">Open the demo →</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero" id="top">
+  <div class="wrap">
+    <div>
+      <h1>Every place in town, rated by the only person who mattered.</h1>
+      <p class="lede">Party of One is a review platform written exclusively by only children. 41,200 verified reviewers, zero siblings, and every star reflects how much attention the reviewer personally received.</p>
+      <form class="search" id="search" role="search">
+        <label><span>Find</span><input id="q" name="q" placeholder="dim sum, Thanksgiving, road trips" autocomplete="off"></label>
+        <label><span>Near</span><input id="near" name="near" value="Me, specifically" autocomplete="off"></label>
+        <button type="submit">Find a table for one</button>
+      </form>
+      <p class="hint">Popular right now:
+        <button type="button" data-q="Restaurants with single portions">single portions</button>,
+        <button type="button" data-q="Grandparents who ask follow-up questions">attentive grandparents</button>,
+        <button type="button" data-q="Road trips with no one else in the back">empty back seats</button>
+      </p>
+      <p class="searched" id="searched" aria-live="polite"></p>
+    </div>
+
+    <div class="stack" aria-label="Recent reviews">
+      <article class="rev">
+        <div class="row"><span class="stars" aria-label="5 out of 5"><svg class="stk"><use href="#stk"/></svg><svg class="stk"><use href="#stk"/></svg><svg class="stk"><use href="#stk"/></svg><svg class="stk"><use href="#stk"/></svg><svg class="stk"><use href="#stk"/></svg></span><span class="num">5.0</span></div>
+        <h3>Golden Lantern Dim Sum</h3>
+        <p>Every basket came in threes and all three were mine. The waiter asked what I thought of the pork bun. I told him.</p>
+        <span class="by">Marguerite L., reviewer since age 6</span>
+      </article>
+      <article class="rev">
+        <div class="row"><span class="stars" aria-label="2 out of 5"><svg class="stk"><use href="#stk"/></svg><svg class="stk"><use href="#stk"/></svg><svg class="stk off"><use href="#stk"/></svg><svg class="stk off"><use href="#stk"/></svg><svg class="stk off"><use href="#stk"/></svg></span><span class="num">2.0</span></div>
+        <h3>Cousin Brent's Graduation Party</h3>
+        <p>The party was about Brent. This was disclosed on the invitation, which I accept, but I do not endorse.</p>
+        <span class="by">Owen T., 14 reviews, 0 siblings</span>
+      </article>
+      <article class="rev">
+        <div class="row"><span class="stars" aria-label="4 out of 5"><svg class="stk"><use href="#stk"/></svg><svg class="stk"><use href="#stk"/></svg><svg class="stk"><use href="#stk"/></svg><svg class="stk"><use href="#stk"/></svg><svg class="stk off"><use href="#stk"/></svg></span><span class="num">4.0</span></div>
+        <h3>I-95 Southbound, Back Seat</h3>
+        <p>Both windows. Both cupholders. Dad asked for my read on the route and did not take it. Minus one sticker.</p>
+        <span class="by">Ines R., Elite Reviewer '25</span>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="browse-h">
+  <div class="wrap">
+    <h2 id="browse-h">Browse by the places you were taken</h2>
+    <ul class="cats">
+      <li><a href="./demo.html#restaurants">Restaurants <span class="num">12,480</span></a></li>
+      <li><a href="./demo.html#gatherings">Family gatherings <span class="num">3,102</span></a></li>
+      <li><a href="./demo.html#roadtrips">Road trips <span class="num">1,877</span></a></li>
+      <li><a href="./demo.html#birthdays">Birthday parties (yours) <span class="num">9,340</span></a></li>
+      <li><a href="./demo.html#birthdays">Birthday parties (other people's) <span class="num">41</span></a></li>
+      <li><a href="./demo.html#restaurants">Quiet libraries <span class="num">6,215</span></a></li>
+    </ul>
+  </div>
+</section>
+
+<section id="verified" aria-labelledby="verify-h">
+  <div class="wrap">
+    <h2 id="verify-h">Reviews you can trust, because nobody else was there</h2>
+    <p class="intro">Other review sites let anyone post. We ask for paperwork.</p>
+    <div class="feats">
+      <article class="card">
+        <svg class="badge" aria-hidden="true"><use href="#stk"/></svg>
+        <h3>Sibling-Free Verified</h3>
+        <p>Every reviewer uploads a notarized family tree before posting. Half-siblings trigger a manual audit. Cousins are permitted but disclosed at the bottom of the review in smaller type.</p>
+      </article>
+      <article class="card">
+        <svg class="badge" aria-hidden="true"><use href="#stk"/></svg>
+        <h3>The Adult Table Index</h3>
+        <p>Venues are scored on how quickly a nine-year-old gets seated with the grown-ups and asked for their opinion on the regional housing market. The current city leader is a tapas bar that closed in March.</p>
+      </article>
+      <article class="card">
+        <svg class="badge" aria-hidden="true"><use href="#stk"/></svg>
+        <h3>Last Dumpling Guarantee</h3>
+        <p>We only list restaurants where shared plates arrive in quantities divisible by one. Family-style dining has been delisted pending an appeal we do not intend to hear.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="reviews" aria-labelledby="rev-h">
+  <div class="wrap">
+    <h2 id="rev-h">What our reviewers say about us, which they were asked to do</h2>
+    <div class="quotes">
+      <figure class="q">
+        <span class="stars" aria-label="1 out of 5"><svg class="stk"><use href="#stk"/></svg><svg class="stk off"><use href="#stk"/></svg><svg class="stk off"><use href="#stk"/></svg><svg class="stk off"><use href="#stk"/></svg><svg class="stk off"><use href="#stk"/></svg></span>
+        <blockquote>I gave Olive Garden one star because the server addressed the whole table. I was the table.</blockquote>
+        <figcaption><img src="headshot-1.webp" alt="Priya Venkataraman" width="64" height="64" loading="lazy"><span><b>Priya Venkataraman</b><small>Senior Director of Being Consulted, Hartford</small></span></figcaption>
+      </figure>
+      <figure class="q">
+        <span class="stars" aria-label="5 out of 5"><svg class="stk"><use href="#stk"/></svg><svg class="stk"><use href="#stk"/></svg><svg class="stk"><use href="#stk"/></svg><svg class="stk"><use href="#stk"/></svg><svg class="stk"><use href="#stk"/></svg></span>
+        <blockquote>Nobody on here replies "what about your brother." I don't have a brother. That is the entire value proposition.</blockquote>
+        <figcaption><img src="headshot-2.webp" alt="Colin Aldersey" width="64" height="64" loading="lazy"><span><b>Colin Aldersey</b><small>Sole Beneficiary, Aldersey Family Trust (Revocable)</small></span></figcaption>
+      </figure>
+      <figure class="q">
+        <span class="stars" aria-label="4 out of 5"><svg class="stk"><use href="#stk"/></svg><svg class="stk"><use href="#stk"/></svg><svg class="stk"><use href="#stk"/></svg><svg class="stk"><use href="#stk"/></svg><svg class="stk off"><use href="#stk"/></svg></span>
+        <blockquote>My mother read my review of her Thanksgiving and called it fair. It was four stars. The ham is gone now.</blockquote>
+        <figcaption><img src="headshot-3.webp" alt="Dana Whitfield" width="64" height="64" loading="lazy"><span><b>Dana Whitfield</b><small>Head of Holiday Seating, Elite Reviewer '24</small></span></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="pricing" aria-labelledby="price-h">
+  <div class="wrap">
+    <h2 id="price-h">Pricing, per person, and there is only one person</h2>
+    <div class="tiers">
+      <article class="tier">
+        <h3>Only</h3>
+        <p class="price">$0</p>
+        <p class="tl">For the reviewer who already has everything.</p>
+        <ul>
+          <li><svg aria-hidden="true"><use href="#tick"/></svg>Unlimited five-star reviews of your own opinions</li>
+          <li><svg aria-hidden="true"><use href="#tick"/></svg>Private reviews of your parents</li>
+          <li><svg aria-hidden="true"><use href="#tick"/></svg>One (1) sticker per review</li>
+        </ul>
+        <a class="btn ghost" href="./demo.html">Start reviewing</a>
+      </article>
+      <article class="tier pick">
+        <span class="see">see me</span>
+        <svg class="pen" viewBox="0 0 300 70" preserveAspectRatio="none" aria-hidden="true"><path d="M40 40 C 20 8, 190 -4, 262 20 C 300 34, 250 64, 150 62 C 70 60, 14 50, 30 28 C 40 16, 80 10, 120 8"/></svg>
+        <h3>Center of Attention</h3>
+        <p class="price">$19<span style="font-size:18px">/mo</span></p>
+        <p class="tl">Most chosen. Obviously.</p>
+        <ul>
+          <li><svg aria-hidden="true"><use href="#tick"/></svg>Your review pinned above everyone else's</li>
+          <li><svg aria-hidden="true"><use href="#tick"/></svg>Hosts alerted when you arrive</li>
+          <li><svg aria-hidden="true"><use href="#tick"/></svg>Your birthday recognized as a fiscal week</li>
+          <li><svg aria-hidden="true"><use href="#tick"/></svg>Gold sticker upgrade</li>
+        </ul>
+        <a class="btn" href="./demo.html">Be the center</a>
+      </article>
+      <article class="tier">
+        <h3>Sole Heir</h3>
+        <p class="price">$4,000<span style="font-size:18px">/yr</span></p>
+        <p class="tl">Billed to your parents. They already agreed.</p>
+        <ul>
+          <li><svg aria-hidden="true"><use href="#tick"/></svg>Estate-planning concierge</li>
+          <li><svg aria-hidden="true"><use href="#tick"/></svg>Any review that disagrees with yours is quietly removed</li>
+          <li><svg aria-hidden="true"><use href="#tick"/></svg>A small, loyal dog</li>
+        </ul>
+        <a class="btn ghost" href="./demo.html">Send the invoice home</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="close">
+  <div class="wrap">
+    <div class="panel">
+      <div>
+        <h2>There is a table waiting. It seats one.</h2>
+        <p>Browse 41,200 verified reviews of restaurants, road trips and holidays, each written by someone who was the only one there.</p>
+      </div>
+      <a class="btn" href="./demo.html">Open the demo →</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a href="/">← theworstaistudioever</a>
+    <span>Party of One, Inc. Reviews reflect the opinion of the reviewer, which is final.</span>
+  </div>
+</footer>
+
+<script>
+document.documentElement.classList.add('js');
+document.body.classList.add('js');
+(function(){
+  var form=document.getElementById('search'), q=document.getElementById('q'), out=document.getElementById('searched');
+  function run(){
+    var term=q.value.trim()||'anything';
+    var n=(term.length*137)%400+12;
+    out.textContent=n+' places for "'+term+'" near you, specifically. Opening results for one.';
+    setTimeout(function(){location.href='./demo.html'},1100);
+  }
+  form.addEventListener('submit',function(e){e.preventDefault();run()});
+  document.querySelectorAll('.hint button').forEach(function(b){
+    b.addEventListener('click',function(){q.value=b.getAttribute('data-q');q.focus()});
+  });
+  var pens=document.querySelectorAll('.pen');
+  function on(){pens.forEach(function(p){p.classList.add('on')})}
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}})},{threshold:.4});
+    pens.forEach(function(p){io.observe(p)});
+    setTimeout(on,4000);
+  } else on();
+})();
+</script>
+</body>
+</html>
