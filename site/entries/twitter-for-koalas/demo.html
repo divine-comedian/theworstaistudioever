@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home timeline · Bellow · theworstaistudioever</title>
+<meta name="description" content="The Bellow timeline at the moment of the Dusk Drop.">
+<meta name="theme-color" content="#E9EDE7">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=JetBrains+Mono:wght@400;600&family=Public+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#2F5D50; --orange:#E0643A; --bg:#E9EDE7; --fg:#1D2421; --muted:#5E6A64; --ink:#111613;
+  --line:rgba(17,22,19,.14); --paper:#F4F6F2;
+  --display:'Bricolage Grotesque','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --body:'Public Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'JetBrains Mono','SFMono-Regular',Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font:400 15px/1.5 var(--body);-webkit-font-smoothing:antialiased;min-height:100vh}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* chrome */
+.bar{display:flex;align-items:center;gap:20px;padding:10px 20px;border-bottom:2px solid var(--ink);background:var(--paper);position:sticky;top:0;z-index:20}
+.back{font-size:14px;text-decoration:none;color:var(--muted);white-space:nowrap}
+.back:hover{color:var(--ink);text-decoration:underline}
+.logo{font:800 22px/1 var(--display);letter-spacing:-.04em}
+.clock{margin-left:auto;display:flex;align-items:center;gap:14px;min-width:0;flex:0 1 520px}
+.clock label{font-size:13px;color:var(--muted);white-space:nowrap}
+.sched{position:relative;flex:1;min-width:140px}
+.cells{display:grid;grid-template-columns:repeat(24,1fr);gap:2px;height:22px}
+.cells i{background:var(--green)}
+.cells i.a{background:var(--paper);box-shadow:inset 0 0 0 1.5px var(--orange)}
+.sched input{position:absolute;inset:-6px 0;width:100%;opacity:0;cursor:ew-resize}
+.needle{position:absolute;top:-5px;bottom:-5px;width:3px;background:var(--ink);pointer-events:none;transform:translateX(-50%)}
+.sched input:focus-visible + .needle{outline:3px solid var(--orange);outline-offset:2px}
+.time{font:600 15px/1 var(--mono);min-width:5ch}
+.state{font:600 12px/1 var(--mono);padding:6px 8px;border:1.5px solid currentColor;white-space:nowrap}
+.state.awake{color:#A23F1B}
+.state.asleep{color:var(--green)}
+
+/* layout */
+.app{display:grid;grid-template-columns:220px minmax(0,640px) 300px;justify-content:center;gap:0;min-height:calc(100vh - 52px)}
+.rail{padding:20px 16px;border-right:1px solid var(--line);position:sticky;top:52px;align-self:start;height:calc(100vh - 52px)}
+.rail button{display:flex;align-items:center;gap:12px;width:100%;padding:12px 12px;font:500 18px/1 var(--display);letter-spacing:-.01em;text-align:left;min-height:46px}
+.rail button:hover{background:rgba(47,93,80,.08)}
+.rail button[aria-current="page"]{font-weight:800;box-shadow:inset 4px 0 0 var(--orange)}
+.rail svg{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.rail .me{margin-top:24px;padding:14px 12px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+.feedcol{border-right:1px solid var(--line);min-width:0}
+.side{padding:20px}
+
+/* compose */
+.compose{padding:18px 20px;border-bottom:2px solid var(--ink);background:var(--paper)}
+.compose .row{display:flex;gap:14px}
+.compose textarea{flex:1;border:0;background:transparent;resize:none;font:500 20px/1.35 var(--display);min-height:56px;letter-spacing:-.01em}
+.compose textarea::placeholder{color:#7E8A84}
+.compose textarea:focus{outline:none}
+.compose .foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px;padding-left:58px}
+.count{font:400 13px/1 var(--mono);color:var(--muted)}
+.count.hot{color:#A23F1B;font-weight:600}
+.send{background:var(--orange);color:var(--ink);font-weight:600;padding:11px 20px;border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);transition:transform .15s,box-shadow .15s}
+.send:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.send:disabled{background:transparent;color:var(--muted);border-color:var(--muted);box-shadow:none;cursor:not-allowed}
+.lock{display:none;margin-top:12px;padding:10px 12px;border-left:4px solid var(--green);background:rgba(47,93,80,.08);font-size:14px}
+.compose.locked .lock{display:block}
+.compose.locked textarea{color:var(--muted)}
+
+/* tabs + toggles */
+.tools{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding:0 12px 0 0;flex-wrap:wrap}
+.tabs{display:flex}
+.tabs button{padding:14px 16px;font-weight:600;color:var(--muted);border-bottom:3px solid transparent;min-height:48px}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+.switch{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);cursor:pointer;padding:8px 4px}
+.switch input{appearance:none;width:34px;height:18px;border:1.5px solid var(--ink);position:relative;cursor:pointer;background:var(--paper)}
+.switch input::after{content:"";position:absolute;top:2px;left:2px;width:11px;height:11px;background:var(--ink);transition:transform .15s}
+.switch input:checked{background:var(--orange)}
+.switch input:checked::after{transform:translateX(16px)}
+
+/* bellows */
+.drop{padding:10px 20px;font:400 12px/1.4 var(--mono);color:var(--muted);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px}
+.post{display:grid;grid-template-columns:44px 1fr;gap:14px;padding:18px 20px;border-bottom:1px solid var(--line)}
+.post.new{animation:slot .35s ease-out}
+@keyframes slot{from{background:rgba(224,100,58,.18)}to{background:transparent}}
+.av{width:44px;height:44px;border-radius:50%;object-fit:cover;border:1.5px solid var(--ink);display:grid;place-items:center;font:800 15px/1 var(--display);background:var(--green);color:var(--paper)}
+.av.alt{background:var(--paper);color:var(--ink)}
+.meta{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;font-size:14px}
+.meta b{font-weight:600}
+.meta .h,.meta .t{color:var(--muted)}
+.check{display:inline-block;width:15px;height:15px;vertical-align:-2px}
+.slept{display:inline-block;font:600 11px/1 var(--mono);color:var(--green);border:1px solid var(--green);padding:3px 5px;margin-left:4px}
+.body{font-size:16px;margin:4px 0 10px;overflow-wrap:anywhere}
+.body.snore{font-family:var(--mono);font-size:15px;color:var(--green)}
+.media{border:1.5px solid var(--ink);margin:4px 0 12px}
+.media img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover}
+.acts{display:flex;gap:4px;margin-left:-10px}
+.acts button{display:flex;align-items:center;gap:6px;padding:8px 10px;font:400 13px/1 var(--mono);color:var(--muted);min-height:36px}
+.acts button:hover{color:var(--ink);background:rgba(47,93,80,.08)}
+.acts button[aria-pressed="true"]{color:#A23F1B;font-weight:600}
+.acts svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.acts button[aria-pressed="true"] svg{fill:rgba(224,100,58,.25)}
+.empty{padding:48px 20px;text-align:center;color:var(--muted)}
+
+/* side */
+.box{border:2px solid var(--ink);background:var(--paper);margin-bottom:20px}
+.box h2{font:800 20px/1.1 var(--display);letter-spacing:-.02em;padding:14px 16px;border-bottom:2px solid var(--ink)}
+.trend{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:12px 16px;border-bottom:1px solid var(--line);width:100%;text-align:left}
+.trend:last-child{border-bottom:0}
+.trend:hover{background:rgba(47,93,80,.06)}
+.trend .n{font-weight:600}
+.trend .k{font:400 13px/1.4 var(--mono)}
+.trend .s{grid-column:1/-1;font-size:12px;color:var(--muted)}
+.trend .bar2{grid-column:1/-1;height:4px;background:var(--line);margin-top:6px}
+.trend .bar2 i{display:block;height:100%;background:var(--green)}
+.trend.on .bar2 i{background:var(--orange)}
+.fine{font-size:12px;color:var(--muted);padding:0 4px}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;background:var(--ink);color:var(--paper);padding:12px 18px;font-size:14px;transition:opacity .2s,transform .2s;pointer-events:none;max-width:90vw;z-index:50}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:1180px){.app{grid-template-columns:200px minmax(0,1fr)}.side{display:none}}
+@media (max-width:760px){
+  .app{grid-template-columns:1fr}
+  .rail{position:static;height:auto;display:flex;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);padding:6px 8px}
+  .rail button{width:auto;font-size:15px;white-space:nowrap}
+  .rail .me{display:none}
+  .bar{flex-wrap:wrap;gap:10px 16px}
+  .clock{flex-basis:100%;margin-left:0}
+  .feedcol{border-right:0}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="logo">Bellow</span>
+  <div class="clock">
+    <label for="clock">Tree time</label>
+    <div class="sched">
+      <div class="cells" id="cells" aria-hidden="true"></div>
+      <input type="range" id="clock" min="0" max="1439" step="5" value="1120" aria-describedby="clockState">
+      <span class="needle" id="needle"></span>
+    </div>
+    <span class="time" id="timeOut">18:40</span>
+    <span class="state awake" id="clockState">Awake</span>
+  </div>
+</header>
+
+<div class="app">
+  <nav class="rail" aria-label="Bellow">
+    <button aria-current="page" data-nav="Home"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home</button>
+    <button data-nav="My Tree"><svg viewBox="0 0 24 24"><path d="M12 21V9M12 13l-5-4M12 11l5-4M7 9a3 3 0 1 1 0-.1M17 7a3 3 0 1 1 0-.1"/></svg>My Tree</button>
+    <button data-nav="Snores"><svg viewBox="0 0 24 24"><path d="M4 7h6l-6 7h6M14 4h6l-6 7h6"/></svg>Snores</button>
+    <button data-nav="Leaf Check"><svg viewBox="0 0 24 24"><path d="M5 19c0-8 6-14 14-14 0 8-6 14-14 14zM5 19l7-7"/></svg>Leaf Check</button>
+    <button data-nav="Profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>Profile</button>
+    <div class="me">Signed in as <b>@you</b><br>Fork plan, renews at dusk</div>
+  </nav>
+
+  <main class="feedcol">
+    <div class="compose" id="compose">
+      <div class="row">
+        <span class="av alt" aria-hidden="true">Y</span>
+        <label for="draft" class="sr" style="position:absolute;left:-9999px">Write a bellow</label>
+        <textarea id="draft" maxlength="40" rows="2" placeholder="What is the leaf situation?"></textarea>
+      </div>
+      <div class="foot">
+        <span class="count" id="count">40 left</span>
+        <button class="send" id="send" disabled>Bellow</button>
+      </div>
+      <p class="lock" id="lock">You are asleep. Bellow will hold this draft and post it at 18:00, or transcribe whatever you snore in the meantime.</p>
+    </div>
+
+    <div class="tools">
+      <div class="tabs" role="tablist" aria-label="Filter timeline">
+        <button role="tab" aria-selected="true" data-f="all">Everyone</button>
+        <button role="tab" aria-selected="false" data-f="awake">Awake now</button>
+        <button role="tab" aria-selected="false" data-f="asleep">Asleep</button>
+        <button role="tab" aria-selected="false" data-f="tree">My tree</button>
+      </div>
+      <label class="switch"><input type="checkbox" id="raw"> Show raw snore</label>
+    </div>
+
+    <div class="drop"><span>Dusk Drop delivered 18:40. 9 bellows, all of today.</span><span id="shown">9 shown</span></div>
+    <div id="feed" role="feed" aria-busy="false"></div>
+  </main>
+
+  <aside class="side">
+    <section class="box">
+      <h2>Trending leaves</h2>
+      <div id="trends"></div>
+    </section>
+    <p class="fine">Figures are tonnes eaten by Bellow users since 00:00. Most were eaten by people who will not remember doing it.</p>
+  </aside>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  var CHECK='<svg class="check" viewBox="0 0 16 16" aria-label="Leaf verified"><path d="M8 1c4 0 7 3 7 7s-3 7-7 7-7-3-7-7 3-7 7-7z" fill="#2F5D50"/><path d="M5 8.3l2 2 4-4.3" stroke="#F4F6F2" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>';
+  var ICON_G='<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>';
+  var ICON_R='<svg viewBox="0 0 24 24"><path d="M4 9h13l-3-3M20 15H7l3 3"/></svg>';
+  var ICON_C='<svg viewBox="0 0 24 24"><path d="M12 3v18M12 8c-3-3-6-2-7 0M12 8c3-3 6-2 7 0M12 14c-3-3-6-2-7 0M12 14c3-3 6-2 7 0"/></svg>';
+
+  var posts=[
+    {who:'Gwen Tallowwood',h:'gwen.tallowwood',av:'headshot-1.webp',v:1,t:'03:12',st:'asleep',tree:1,
+      text:'Branch update. Still here.',snore:'hhhnnnk. hhhnnnk. mrrp.',img:'post-1.webp',g:3,r:88,c:412},
+    {who:'Doug Ironbark',h:'d.ironbark',av:'headshot-2.webp',v:1,t:'18:22',st:'awake',tree:0,
+      text:'Ate the leaf on the left. Will report on the leaf on the right tomorrow.',g:0,r:12,c:57},
+    {who:'Bev Manna',h:'bevmanna',av:'headshot-3.webp',v:1,t:'18:05',st:'awake',tree:1,
+      text:'Day 412 of the same leaf. Brand consistency is a choice.',g:1,r:203,c:960},
+    {who:'Kevin Bluegum',h:'kev.bluegum',ini:'KB',v:0,t:'11:47',st:'asleep',tree:0,
+      text:'Moving to a new tree. Same as the old tree. Slightly higher.',snore:'grrrrnnnhh. hk. grrrnh.',g:0,r:4,c:31},
+    {who:'Sharon Redgum',h:'sharonrg',ini:'SR',v:1,t:'18:31',st:'awake',tree:1,
+      text:'Whoever is on the branch above me, please stop shifting.',g:6,r:2,c:19},
+    {who:'Possum Brand Partners',h:'possum.bp',ini:'PB',alt:1,v:0,t:'Sponsored',st:'awake',tree:0,
+      text:'Your engagement is down 0 percent this quarter. We can fix that. Book a brand audit.',g:0,r:0,c:1},
+    {who:'Trevor Coolibah',h:'trev.coolibah',ini:'TC',v:0,t:'07:58',st:'asleep',tree:0,
+      text:'Thinking about joining LinkedIn but I would have to be conscious.',snore:'nnnnhhh. mmrk. nnnnhhh.',g:2,r:61,c:240},
+    {who:'Margaret Swamp-Mahogany',h:'marg.sm',ini:'MS',v:1,t:'18:39',st:'awake',tree:1,
+      text:'Fell asleep mid-bellow again. Posting what I have: leaf',g:0,r:9,c:77},
+    {who:'Clive Snappy-Gum',h:'clive.sg',ini:'CS',v:0,t:'14:03',st:'asleep',tree:0,
+      text:'Strong opinion on eucalyptus. Will elaborate at 18:00.',snore:'hrrrnk.',g:0,r:1,c:8}
+  ];
+  var trends=[
+    {n:'Manna gum',k:12.4,s:'Bev Manna is responsible for most of it'},
+    {n:'Tallowwood',k:9.8,s:'Up since the Dusk Drop'},
+    {n:'Grey gum',k:7.1,s:'Steady, like the users'},
+    {n:'Swamp mahogany',k:2.3,s:'One user, mid-bellow'},
+    {n:'River red gum',k:0.4,s:'Down 3 percent. Nobody has noticed'}
+  ];
+
+  var feed=document.getElementById('feed'), filter='all', raw=false, trendFilter=null;
+  var toastEl=document.getElementById('toast'), toastT;
+  function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},3200)}
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return '&'+({'&':'amp','<':'lt','>':'gt','"':'quot'})[c]+';'})}
+
+  function avatar(p){
+    if(p.av) return '<img class="av" src'+'="'+p.av+'" width="44" height="44" alt="">';
+    return '<span class="av'+(p.alt?' alt':'')+'" aria-hidden="true">'+p.ini+'</span>';
+  }
+  function render(){
+    var list=posts.filter(function(p){
+      if(filter==='awake'&&p.st!=='awake') return false;
+      if(filter==='asleep'&&p.st!=='asleep') return false;
+      if(filter==='tree'&&!p.tree) return false;
+      if(trendFilter&&p.text.toLowerCase().indexOf('leaf')<0) return false;
+      return true;
+    });
+    document.getElementById('shown').textContent=list.length+' shown';
+    if(!list.length){feed.innerHTML='<p class="empty">Nobody in this filter is awake enough to have posted. Try Everyone.</p>';return}
+    feed.innerHTML=list.map(function(p){
+      var i=posts.indexOf(p);
+      var useSnore=raw&&p.snore;
+      return '<article class="post'+(p.fresh?' new':'')+'" aria-label="Bellow by '+esc(p.who)+'">'+avatar(p)+
+        '<div><div class="meta"><b>'+esc(p.who)+'</b>'+(p.v?CHECK:'')+'<span class="h">@'+esc(p.h)+'</span><span class="t mono">'+esc(p.t)+'</span>'+
+        (p.snore?'<span class="slept">sleep-posted</span>':'')+'</div>'+
+        '<p class="body'+(useSnore?' snore':'')+'">'+esc(useSnore?p.snore:p.text)+'</p>'+
+        (p.img?'<div class="media"><img src'+'="'+p.img+'" width="1200" height="900" alt="A koala asleep in the fork of a eucalyptus tree" loading="lazy"></div>':'')+
+        '<div class="acts">'+
+          btn(i,'g','Grunt',ICON_G,p.g,p.gx)+btn(i,'r','Re-bellow',ICON_R,p.r,p.rx)+btn(i,'c','Cling',ICON_C,p.c,p.cx)+
+        '</div></div></article>';
+    }).join('');
+    posts.forEach(function(p){p.fresh=false});
+  }
+  function btn(i,k,label,icon,n,on){
+    return '<button data-i="'+i+'" data-k="'+k+'" aria-pressed="'+(on?'true':'false')+'" aria-label="'+label+', '+n+'">'+icon+'<span>'+n.toLocaleString()+'</span></button>';
+  }
+  feed.addEventListener('click',function(e){
+    var b=e.target.closest('button[data-k]'); if(!b) return;
+    var p=posts[+b.dataset.i], k=b.dataset.k, on=p[k+'x'];
+    p[k+'x']=!on; p[k]+=on?-1:1;
+    if(!on&&k==='g') toast('Grunt queued. '+p.who.split(' ')[0]+' will see it at the next Dusk Drop.');
+    if(!on&&k==='c') toast('Clinging to '+p.who.split(' ')[0]+'. They have not been told.');
+    if(!on&&k==='r') toast('Re-bellowed to 0 followers who are currently awake.');
+    render();
+  });
+
+  document.querySelectorAll('.tabs button').forEach(function(t){
+    t.addEventListener('click',function(){
+      document.querySelectorAll('.tabs button').forEach(function(x){x.setAttribute('aria-selected','false')});
+      t.setAttribute('aria-selected','true'); filter=t.dataset.f; render();
+    });
+  });
+  document.getElementById('raw').addEventListener('change',function(e){raw=e.target.checked;render()});
+
+  /* trends */
+  var tr=document.getElementById('trends'), max=trends[0].k;
+  tr.innerHTML=trends.map(function(t,i){
+    return '<button class="trend" data-t="'+i+'"><span class="n">'+t.n+'</span><span class="k">'+t.k.toFixed(1)+' t</span><span class="s">'+t.s+'</span><span class="bar2"><i style="width:'+(t.k/max*100)+'%"></i></span></button>';
+  }).join('');
+  tr.addEventListener('click',function(e){
+    var b=e.target.closest('.trend'); if(!b) return;
+    var was=b.classList.contains('on');
+    tr.querySelectorAll('.trend').forEach(function(x){x.classList.remove('on')});
+    trendFilter=was?null:b.dataset.t;
+    if(!was){b.classList.add('on');toast('Showing bellows that mention a leaf. That is most of them.')}
+    render();
+  });
+
+  /* rail */
+  document.querySelectorAll('.rail button').forEach(function(b){
+    b.addEventListener('click',function(){
+      if(b.dataset.nav==='Home') return;
+      toast(b.dataset.nav+' opens at the next Dusk Drop. You may be asleep by then.');
+    });
+  });
+
+  /* clock + compose */
+  var cells=document.getElementById('cells');
+  for(var h=0;h<24;h++){var c=document.createElement('i');if(h>=18&&h<22)c.className='a';cells.appendChild(c)}
+  var clock=document.getElementById('clock'), needle=document.getElementById('needle'), timeOut=document.getElementById('timeOut'),
+      stateEl=document.getElementById('clockState'), compose=document.getElementById('compose'),
+      draft=document.getElementById('draft'), send=document.getElementById('send'), count=document.getElementById('count');
+  function awakeAt(m){return m>=1080&&m<1320}
+  function pad(n){return (n<10?'0':'')+n}
+  function syncClock(){
+    var m=+clock.value, label=pad(Math.floor(m/60))+':'+pad(m%60), awake=awakeAt(m);
+    needle.style.left=(m/1440*100)+'%';
+    timeOut.textContent=label;
+    clock.setAttribute('aria-valuetext',label+', '+(awake?'awake':'asleep'));
+    stateEl.textContent=awake?'Awake':'Asleep';
+    stateEl.className='state '+(awake?'awake':'asleep');
+    compose.classList.toggle('locked',!awake);
+    syncSend();
+  }
+  function syncSend(){
+    var left=40-draft.value.length;
+    count.textContent=left+' left';
+    count.classList.toggle('hot',left<=5);
+    send.disabled=!draft.value.trim()||!awakeAt(+clock.value);
+  }
+  clock.addEventListener('input',syncClock);
+  draft.addEventListener('input',syncSend);
+  send.addEventListener('click',function(){
+    var m=+clock.value;
+    posts.unshift({who:'You',h:'you',ini:'Y',alt:1,v:0,t:pad(Math.floor(m/60))+':'+pad(m%60),st:'awake',tree:1,text:draft.value.trim(),g:0,r:0,c:0,fresh:true});
+    draft.value=''; syncSend();
+    if(filter==='asleep'){document.querySelector('.tabs button[data-f="all"]').click()}else{render()}
+    toast('Bellowed. Your followers will see it at 18:40 tomorrow.');
+  });
+  syncClock(); render();
+})();
+</script>
+</body>
+</html>
