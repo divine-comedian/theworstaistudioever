@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Library · Natter · theworstaistudioever</title>
+<meta name="description" content="The Natter Library: every video message you've sent, who watched it and for how long.">
+<meta property="og:title" content="Natter Library">
+<meta property="og:description" content="The Natter Library: every video message you've sent, who watched it and for how long.">
+<meta name="theme-color" content="#EFE6D4">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Karla:ital,wght@0,400;0,600;0,700;1,400&family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #2340C8;
+    --rec: #D7372A;
+    --bg: #EFE6D4;
+    --fg: #1D1B26;
+    --muted: #6F6656;
+    --ink: #14121B;
+    --label: #FFFDF6;
+    --bezel: #D9CCB1;
+    --display: 'Bowlby One', 'Arial Black', Impact, sans-serif;
+    --body: 'Karla', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --osd: 'VT323', 'SFMono-Regular', Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 var(--body); -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+  img { display: block; max-width: 100%; }
+
+  .chrome { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 22px; border-bottom: 2px solid var(--ink); background: var(--label); flex-wrap: wrap; }
+  .back { font-weight: 600; font-size: .95rem; text-decoration: none; }
+  .back:hover { text-decoration: underline; }
+  .logo { display: flex; align-items: center; gap: 9px; font-family: var(--display); font-size: 1.3rem; color: var(--ink); }
+  .logo-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--rec); box-shadow: 0 0 0 3px var(--label), 0 0 0 5px var(--ink); }
+  .acct { font-size: .92rem; color: var(--muted); }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+    font-weight: 700; font-size: .98rem; line-height: 1;
+    padding: 12px 16px; border: 2px solid var(--ink); border-radius: 3px;
+    background: var(--label); color: var(--ink); box-shadow: 3px 3px 0 var(--ink);
+    cursor: pointer; transition: transform .1s ease-out, box-shadow .1s ease-out; min-height: 44px;
+  }
+  .btn:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--ink); }
+  .btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+  .btn-rec { background: var(--rec); color: #fff; }
+  .btn-rec .dot { width: 11px; height: 11px; border-radius: 50%; background: #fff; }
+  .btn-blue { background: var(--blue); color: #fff; }
+  .btn-sm { padding: 8px 11px; font-size: .88rem; min-height: 36px; box-shadow: 2px 2px 0 var(--ink); }
+
+  .app { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 66px); }
+  aside { border-right: 2px solid var(--ink); padding: 22px 16px; background: var(--bezel); }
+  aside h2 { font-family: var(--osd); font-weight: 400; font-size: 1.35rem; line-height: 1; margin: 18px 8px 8px; color: var(--ink); }
+  aside h2:first-child { margin-top: 0; }
+  .filter { display: flex; justify-content: space-between; align-items: center; width: 100%; text-align: left; background: none; border: 2px solid transparent; padding: 9px 10px; border-radius: 3px; cursor: pointer; font-weight: 600; min-height: 42px; }
+  .filter:hover { background: rgba(255,253,246,.55); }
+  .filter[aria-pressed="true"] { background: var(--label); border-color: var(--ink); box-shadow: 2px 2px 0 var(--ink); }
+  .filter .n { font-family: var(--osd); font-size: 1.3rem; line-height: 1; }
+  .craig-card { margin-top: 24px; background: var(--blue); color: #fff; border: 2px solid var(--ink); padding: 14px; box-shadow: 3px 3px 0 var(--ink); font-size: .9rem; }
+  .craig-card b { font-family: var(--osd); font-weight: 400; font-size: 1.5rem; line-height: 1; display: block; text-shadow: 2px 2px 0 var(--ink); }
+
+  main { padding: 26px 28px 60px; min-width: 0; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between; margin-bottom: 22px; }
+  .toolbar h1 { font-family: var(--display); font-weight: 400; font-size: clamp(1.7rem, 3vw, 2.4rem); line-height: 1; margin: 0; color: var(--ink); }
+  .tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .search { display: flex; align-items: center; gap: 8px; background: var(--label); border: 2px solid var(--ink); border-radius: 3px; padding: 0 12px; min-height: 44px; }
+  .search input { border: 0; background: transparent; font: inherit; width: 200px; outline: none; }
+  .search label { font-family: var(--osd); font-size: 1.2rem; color: var(--muted); }
+  select { font: inherit; font-weight: 600; background: var(--label); border: 2px solid var(--ink); border-radius: 3px; padding: 0 10px; min-height: 44px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 24px; }
+  .tape { background: var(--label); border: 2px solid var(--ink); border-radius: 3px; box-shadow: 4px 4px 0 var(--ink); display: flex; flex-direction: column; }
+  .thumb { position: relative; aspect-ratio: 16 / 9; border-bottom: 2px solid var(--ink); overflow: hidden; background: var(--blue); cursor: pointer; padding: 0; border-left: 0; border-right: 0; border-top: 0; width: 100%; display: block; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .thumb::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(0,0,0,.12) 0 1px, transparent 1px 3px); pointer-events: none; }
+  .thumb .blank { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--osd); color: #fff; font-size: 1.9rem; text-shadow: 2px 2px 0 var(--ink); }
+  .thumb .rt { position: absolute; right: 8px; bottom: 8px; z-index: 1; font-family: var(--osd); font-size: 1.3rem; line-height: 1; color: #fff; background: rgba(20,18,27,.72); padding: 3px 6px 2px; }
+  .thumb .tag { position: absolute; left: 8px; top: 8px; z-index: 1; font-family: var(--osd); font-size: 1.15rem; line-height: 1; color: #fff; background: var(--blue); padding: 3px 6px 2px; border: 1px solid var(--ink); }
+  .thumb:hover .play { opacity: 1; }
+  .play { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; transition: opacity .12s; z-index: 1; }
+  .play i { width: 0; height: 0; border-left: 30px solid #fff; border-top: 18px solid transparent; border-bottom: 18px solid transparent; filter: drop-shadow(3px 3px 0 var(--ink)); }
+  .tape-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .tape-title { font-weight: 700; font-size: 1.08rem; color: var(--ink); line-height: 1.25; border-bottom: 1px solid rgba(35,64,200,.45); padding-bottom: 6px; }
+  .meta { font-size: .9rem; color: var(--muted); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { font-size: .82rem; font-weight: 700; padding: 3px 8px; border: 1.5px solid var(--ink); border-radius: 999px; background: var(--label); }
+  .chip.craig { background: var(--blue); color: #fff; }
+  .chip.bad { background: var(--rec); color: #fff; }
+  .chip.ok { background: #C9DCC0; }
+  .tape-actions { display: flex; gap: 8px; margin-top: auto; padding-top: 4px; flex-wrap: wrap; }
+  .nudge-log { font-size: .85rem; font-style: italic; color: var(--rec); min-height: 0; }
+  .empty { grid-column: 1 / -1; background: var(--label); border: 2px dashed var(--ink); padding: 40px; text-align: center; }
+
+  /* modals */
+  .scrim { position: fixed; inset: 0; background: rgba(20,18,27,.55); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 50; }
+  .scrim.open { display: flex; }
+  .modal { background: var(--label); border: 2px solid var(--ink); border-radius: 4px; box-shadow: 8px 8px 0 var(--ink); width: min(920px, 100%); max-height: calc(100vh - 40px); overflow: auto; animation: pop .16s ease-out; }
+  @keyframes pop { from { transform: scale(.97); opacity: 0; } to { transform: none; opacity: 1; } }
+  .modal-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; background: var(--blue); color: #fff; border-bottom: 2px solid var(--ink); }
+  .modal-head h2 { margin: 0; font-family: var(--osd); font-weight: 400; font-size: 1.7rem; line-height: 1; text-shadow: 2px 2px 0 var(--ink); }
+  .x { background: var(--label); color: var(--ink); border: 2px solid var(--ink); width: 40px; height: 40px; border-radius: 3px; cursor: pointer; font-weight: 700; font-size: 1.1rem; }
+  .player { display: grid; grid-template-columns: 1.5fr 1fr; }
+  .screen { position: relative; aspect-ratio: 16 / 9; background: var(--blue); border-bottom: 2px solid var(--ink); overflow: hidden; }
+  .screen img { width: 100%; height: 100%; object-fit: cover; }
+  .screen::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(0,0,0,.14) 0 1px, transparent 1px 3px); pointer-events: none; }
+  .screen .osd-l, .screen .osd-r { position: absolute; z-index: 1; font-family: var(--osd); color: #fff; font-size: 1.6rem; line-height: 1; text-shadow: 2px 2px 0 var(--ink); }
+  .screen .osd-l { left: 14px; top: 12px; }
+  .screen .osd-r { right: 14px; bottom: 12px; }
+  .screen .blank { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--osd); color: #fff; font-size: 2.4rem; text-shadow: 2px 2px 0 var(--ink); }
+  .controls { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 2px solid var(--ink); }
+  .bar { flex: 1; height: 14px; border: 2px solid var(--ink); background: var(--bg); position: relative; cursor: pointer; }
+  .bar span { position: absolute; left: 0; top: 0; bottom: 0; background: var(--rec); width: 0; }
+  .tc { font-family: var(--osd); font-size: 1.35rem; line-height: 1; white-space: nowrap; }
+  .panel { padding: 16px; border-left: 2px solid var(--ink); }
+  .panel h3 { font-family: var(--osd); font-weight: 400; font-size: 1.35rem; line-height: 1; margin: 0 0 10px; color: var(--ink); }
+  .chapters { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 4px; }
+  .chapters button { display: flex; justify-content: space-between; gap: 10px; width: 100%; text-align: left; background: none; border: 1.5px solid transparent; padding: 6px 8px; cursor: pointer; border-radius: 3px; }
+  .chapters button:hover { border-color: var(--ink); }
+  .chapters button.on { background: var(--blue); color: #fff; border-color: var(--ink); }
+  .chapters .t { font-family: var(--osd); font-size: 1.2rem; line-height: 1.2; }
+  .retention { padding: 14px 16px 18px; }
+  .retention p { margin: 8px 0 0; font-size: .9rem; color: var(--muted); }
+  .legend { display: flex; gap: 16px; font-size: .85rem; margin-top: 6px; flex-wrap: wrap; }
+  .legend i { display: inline-block; width: 12px; height: 12px; border: 1.5px solid var(--ink); margin-right: 6px; vertical-align: -1px; }
+
+  .rec-wrap { padding: 18px; display: grid; gap: 16px; }
+  .rec-screen { position: relative; aspect-ratio: 16 / 9; border: 2px solid var(--ink); overflow: hidden; background: #3a3530; }
+  .rec-screen .face-blob { position: absolute; left: 50%; top: 58%; width: 30%; aspect-ratio: 3 / 4; border-radius: 50% 50% 46% 46%; background: #D6B39A; border: 2px solid var(--ink); transform: translate(-50%, -50%) scale(1); transition: transform .15s ease-out; }
+  .rec-screen .face-blob::before { content: ""; position: absolute; left: 22%; right: 22%; top: 48%; height: 7%; background: radial-gradient(circle at 15% 50%, var(--ink) 0 35%, transparent 37%), radial-gradient(circle at 85% 50%, var(--ink) 0 35%, transparent 37%); }
+  .rec-screen .osd-l, .rec-screen .osd-r, .rec-screen .osd-m { position: absolute; z-index: 2; font-family: var(--osd); color: #fff; font-size: 1.7rem; line-height: 1; text-shadow: 2px 2px 0 var(--ink); display: flex; gap: 8px; align-items: center; }
+  .rec-screen .osd-l { left: 14px; top: 12px; }
+  .rec-screen .osd-r { right: 14px; top: 12px; }
+  .rec-screen .osd-m { left: 14px; bottom: 12px; background: var(--blue); padding: 3px 8px 2px; border: 1px solid var(--ink); }
+  .rec-screen .osd-l b { width: 14px; height: 14px; border-radius: 50%; background: var(--rec); animation: blink 1s steps(1) infinite; }
+  .rec-screen::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 1px, transparent 1px 3px); pointer-events: none; z-index: 1; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .field { display: grid; gap: 6px; }
+  .field label { font-weight: 700; }
+  .field small { color: var(--muted); }
+  .field input[type="text"], .field select { font: inherit; border: 2px solid var(--ink); border-radius: 3px; padding: 8px 10px; background: #fff; min-height: 44px; }
+  input[type="range"] { accent-color: var(--blue); width: 100%; }
+  .meter { height: 16px; border: 2px solid var(--ink); background: var(--bg); position: relative; }
+  .meter span { position: absolute; left: 0; top: 0; bottom: 0; background: var(--blue); }
+  .meter span.hot { background: var(--rec); }
+  .rec-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+
+  .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(120px); background: var(--ink); color: #fff; padding: 12px 18px; border-radius: 3px; font-weight: 600; transition: transform .2s ease-out, visibility .2s; z-index: 60; max-width: calc(100% - 40px); visibility: hidden; }
+  .toast.show { transform: translateX(-50%) translateY(0); visibility: visible; }
+
+  @media (max-width: 860px) {
+    .app { grid-template-columns: 1fr; }
+    aside { border-right: 0; border-bottom: 2px solid var(--ink); display: flex; gap: 6px; overflow-x: auto; padding: 12px; }
+    aside h2, .craig-card { display: none; }
+    .filter { width: auto; white-space: nowrap; gap: 10px; }
+    .player { grid-template-columns: 1fr; }
+    .panel { border-left: 0; border-top: 2px solid var(--ink); }
+    main { padding: 20px 16px 50px; }
+    .search input { width: 140px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="chrome">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="logo"><span class="logo-dot" aria-hidden="true"></span>Natter</span>
+  <span class="acct">Walt &amp; June Pruitt · Long Distance plan</span>
+</div>
+
+<div class="app">
+  <aside aria-label="Filters">
+    <h2>LIBRARY</h2>
+    <button class="filter" data-f="all" aria-pressed="true">All tapes <span class="n" data-count="all"></span></button>
+    <button class="filter" data-f="unwatched" aria-pressed="false">Unwatched by family <span class="n" data-count="unwatched"></span></button>
+    <button class="filter" data-f="craig" aria-pressed="false">Only Craig watched <span class="n" data-count="craig"></span></button>
+    <h2>RECIPIENTS</h2>
+    <button class="filter" data-f="Kyle" aria-pressed="false">Kyle (son) <span class="n" data-count="Kyle"></span></button>
+    <button class="filter" data-f="Brianna" aria-pressed="false">Brianna (granddaughter) <span class="n" data-count="Brianna"></span></button>
+    <button class="filter" data-f="Pastor Hull" aria-pressed="false">Pastor Hull <span class="n" data-count="Pastor Hull"></span></button>
+    <div class="craig-card">
+      <b>CRAIG: ONLINE</b>
+      Your staff viewer is watching "Happy birthday Brianna". He is 41 minutes in and has not looked away.
+    </div>
+  </aside>
+
+  <main>
+    <div class="toolbar">
+      <h1 id="view-title">All tapes</h1>
+      <div class="tools">
+        <div class="search">
+          <label for="q">FIND</label>
+          <input id="q" type="search" placeholder="Gutters, fence, Dale…" autocomplete="off">
+        </div>
+        <select id="sort" aria-label="Sort tapes">
+          <option value="new">Newest first</option>
+          <option value="long">Longest first</option>
+          <option value="ignored">Most ignored first</option>
+        </select>
+        <button class="btn btn-rec" id="open-rec"><span class="dot" aria-hidden="true"></span>Record</button>
+      </div>
+    </div>
+    <div class="grid" id="grid" aria-live="polite"></div>
+  </main>
+</div>
+
+<div class="scrim" id="player-scrim" role="dialog" aria-modal="true" aria-labelledby="p-title">
+  <div class="modal">
+    <div class="modal-head"><h2 id="p-title">PLAY</h2><button class="x" data-close aria-label="Close player">✕</button></div>
+    <div class="player">
+      <div>
+        <div class="screen" id="p-screen"></div>
+        <div class="controls">
+          <button class="btn btn-sm btn-blue" id="p-toggle">Play</button>
+          <div class="bar" id="p-bar" role="slider" aria-label="Playback position" tabindex="0" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="p-fill"></span></div>
+          <span class="tc" id="p-tc">0:00 / 0:00</span>
+        </div>
+        <div class="retention">
+          <h3 style="font-family:var(--osd);font-weight:400;font-size:1.35rem;margin:0 0 8px;">WHO WATCHED, AND UNTIL WHEN</h3>
+          <svg id="p-chart" viewBox="0 0 400 90" width="100%" height="90" role="img" aria-label="Viewer retention chart"></svg>
+          <div class="legend"><span><i style="background:var(--rec)"></i>Family</span><span><i style="background:var(--blue)"></i>Craig (Staff)</span></div>
+          <p id="p-note"></p>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>CHAPTERS (AUTO)</h3>
+        <ul class="chapters" id="p-chapters"></ul>
+        <h3>DETAILS</h3>
+        <div class="meta" id="p-meta"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="scrim" id="rec-scrim" role="dialog" aria-modal="true" aria-labelledby="r-title">
+  <div class="modal" style="width:min(640px,100%)">
+    <div class="modal-head"><h2 id="r-title">NEW TAPE</h2><button class="x" data-close aria-label="Close recorder">✕</button></div>
+    <div class="rec-wrap">
+      <div class="rec-screen">
+        <div class="face-blob" id="r-face"></div>
+        <span class="osd-l"><b aria-hidden="true"></b><span id="r-state">STBY</span></span>
+        <span class="osd-r" id="r-tc">0:00:00</span>
+        <span class="osd-m" id="r-mode">STANDARD FRAMING</span>
+      </div>
+      <div class="field">
+        <label for="r-lean">How far are you leaning in?</label>
+        <input id="r-lean" type="range" min="0" max="100" value="35">
+        <div class="meter" aria-hidden="true"><span id="r-meter"></span></div>
+        <small id="r-cov">Forehead coverage: 22%</small>
+      </div>
+      <div class="field">
+        <label for="r-title-in">Tape label</label>
+        <input id="r-title-in" type="text" value="Gutters, part 4">
+      </div>
+      <div class="field">
+        <label for="r-to">Send to</label>
+        <select id="r-to"><option>Kyle</option><option>Brianna</option><option>Pastor Hull</option></select>
+      </div>
+      <div class="rec-row">
+        <button class="btn btn-rec" id="r-go"><span class="dot" aria-hidden="true"></span>Start recording</button>
+        <span class="meta" id="r-hint">Craig is standing by.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  var NUDGES = [
+    'Did you get my video?',
+    'Just checking you got my video.',
+    'It\'s the one about the gutters.',
+    'Natter says you haven\'t opened it.',
+    'I can see you haven\'t opened it, KYLE.'
+  ];
+  var CH = {
+    gutters3: [['Hello', 0], ['Is this on', 42], ['The gutters', 160], ['Your cousin Dale', 1310], ['The gutters (cont.)', 1900], ['Weather', 2700], ['Is this on', 3100]],
+    gutters2: [['Hello', 0], ['The ladder', 300], ['Why I did not use the ladder', 900], ['The gutters', 1500], ['Anyway', 2600]],
+    thanks: [['Hello sweetheart', 0], ['Thanksgiving: who is bringing what', 120], ['Your uncle and the yams', 900], ['Anyway', 1800], ['Love you, call me', 2240]],
+    fan: [['Is this on', 0], ['Ceiling fan', 9], ['Is this on', 51]],
+    fence: [['Hello Pastor', 0], ['The Hendersons\' fence', 80], ['Property lines, a history', 600], ['Prayer request (fence)', 1100]],
+    bday: [['Happy birthday', 0], ['The day you were born', 40], ['The weather that day', 900], ['Gutters, briefly', 2100], ['Happy birthday (again)', 3600]]
+  };
+  var tapes = [
+    { id: 't1', title: 'Gutters, part 3', from: 'Walt', to: 'Kyle', len: 3134, days: 2, img: 'hero.webp', tag: 'PORTRAIT MODE', ch: 'gutters3', fam: 4, famName: 'Kyle', craig: true, nudges: 0 },
+    { id: 't2', title: 'Re: Thanksgiving (long)', from: 'June', to: 'Brianna', len: 2320, days: 5, img: 'tape-1.webp', tag: '', ch: 'thanks', fam: 11, famName: 'Brianna (2x speed)', craig: true, nudges: 0 },
+    { id: 't3', title: 'Is this on', from: 'Walt', to: 'Kyle', len: 58, days: 9, img: '', blank: 'CEILING FAN', tag: 'AMBIENT', ch: 'fan', fam: 0, famName: '', craig: true, nudges: 0 },
+    { id: 't4', title: 'Fence update for the bulletin', from: 'June', to: 'Pastor Hull', len: 1276, days: 12, img: '', blank: 'NO SIGNAL', tag: '', ch: 'fence', fam: 1276, famName: 'Pastor Hull', craig: false, nudges: 0 },
+    { id: 't5', title: 'Gutters, part 2', from: 'Walt', to: 'Kyle', len: 2823, days: 19, img: 'tape-2.webp', tag: '', ch: 'gutters2', fam: 0, famName: '', craig: true, nudges: 0 },
+    { id: 't6', title: 'Happy birthday Brianna', from: 'Walt', to: 'Brianna', len: 3870, days: 23, img: '', blank: 'ARTISTIC (UPSIDE DOWN)', tag: 'ARTISTIC', ch: 'bday', fam: 0, famName: '', craig: true, nudges: 0 }
+  ];
+  var state = { f: 'all', q: '', sort: 'new' };
+  var grid = document.getElementById('grid');
+
+  function fmt(s) {
+    s = Math.max(0, Math.round(s));
+    var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60;
+    var mm = h ? String(m).padStart(2, '0') : String(m);
+    return (h ? h + ':' : '') + mm + ':' + String(x).padStart(2, '0');
+  }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return '&#' + c.charCodeAt(0) + ';'; }); }
+  function familyWatched(t) { return t.fam > 0; }
+  function match(t) {
+    if (state.f === 'unwatched' && familyWatched(t)) return false;
+    if (state.f === 'craig' && !(t.craig && t.fam === 0)) return false;
+    if (['all', 'unwatched', 'craig'].indexOf(state.f) < 0 && t.to !== state.f) return false;
+    if (state.q) {
+      var hay = (t.title + ' ' + t.to + ' ' + t.from + ' ' + CH[t.ch].map(function (c) { return c[0]; }).join(' ')).toLowerCase();
+      if (hay.indexOf(state.q) < 0) return false;
+    }
+    return true;
+  }
+  function counts() {
+    var keys = ['all', 'unwatched', 'craig', 'Kyle', 'Brianna', 'Pastor Hull'];
+    keys.forEach(function (k) {
+      var saved = state.f; state.f = k; var q = state.q; state.q = '';
+      var n = tapes.filter(match).length;
+      state.f = saved; state.q = q;
+      var el = document.querySelector('[data-count="' + k + '"]');
+      if (el) el.textContent = n;
+    });
+  }
+  function chipsFor(t) {
+    var out = [];
+    if (t.fam > 0) {
+      var pct = Math.round(t.fam / t.len * 100);
+      out.push('<span class="chip ' + (pct > 50 ? 'ok' : 'bad') + '">' + esc(t.famName) + ' watched ' + (pct > 50 ? pct + '%' : fmt(t.fam)) + '</span>');
+    } else {
+      out.push('<span class="chip bad">Unopened, ' + (t.days === 0 ? 'just now' : t.days + ' days') + '</span>');
+    }
+    if (t.craig) out.push('<span class="chip craig">' + (t.queued ? 'Craig: queued' : 'Craig (Staff) 100%') + '</span>');
+    return out.join('');
+  }
+  function render() {
+    var list = tapes.filter(match).slice();
+    if (state.sort === 'new') list.sort(function (a, b) { return a.days - b.days; });
+    if (state.sort === 'long') list.sort(function (a, b) { return b.len - a.len; });
+    if (state.sort === 'ignored') list.sort(function (a, b) { return (a.fam / a.len) - (b.fam / b.len) || b.days - a.days; });
+    if (!list.length) {
+      grid.innerHTML = '<div class="empty"><strong>No tapes match.</strong><br>Clear the search or record one. Craig is free.</div>';
+      counts();
+      return;
+    }
+    grid.innerHTML = list.map(function (t) {
+      var pic = t.img
+        ? '<img data-img="' + t.img + '" alt="" width="800" height="450" loading="lazy">'
+        : '<span class="blank">' + esc(t.blank || 'NO SIGNAL') + '</span>';
+      var nudgeable = t.fam / t.len < 0.5;
+      return '<article class="tape">' +
+        '<button class="thumb" data-open="' + t.id + '" aria-label="Play ' + esc(t.title) + '">' + pic +
+          (t.tag ? '<span class="tag">' + esc(t.tag) + '</span>' : '') +
+          '<span class="rt">' + fmt(t.len) + '</span><span class="play" aria-hidden="true"><i></i></span></button>' +
+        '<div class="tape-body">' +
+          '<div class="tape-title">' + esc(t.title) + '</div>' +
+          '<div class="meta">' + esc(t.from) + ' to ' + esc(t.to) + ', ' + (t.days === 0 ? 'today' : t.days + ' days ago') + '</div>' +
+          '<div class="chips">' + chipsFor(t) + '</div>' +
+          '<div class="nudge-log" id="log-' + t.id + '">' + (t.lastNudge ? 'Sent: "' + esc(t.lastNudge) + '"' : '') + '</div>' +
+          '<div class="tape-actions">' +
+            '<button class="btn btn-sm" data-open="' + t.id + '">Play</button>' +
+            (nudgeable ? '<button class="btn btn-sm btn-blue" data-nudge="' + t.id + '">Nudge ' + esc(t.to.split(' ')[0]) + (t.nudges ? ' (' + t.nudges + ')' : '') + '</button>' : '') +
+          '</div>' +
+        '</div></article>';
+    }).join('');
+    counts();
+  }
+
+  function hydrate(root) {
+    root.querySelectorAll('img[data-img]').forEach(function (im) { im.setAttribute('src', im.getAttribute('data-img')); });
+  }
+  new MutationObserver(function () { hydrate(document.body); }).observe(document.body, { childList: true, subtree: true });
+
+  function toast(msg) {
+    var el = document.getElementById('toast');
+    el.textContent = msg; el.classList.add('show');
+    clearTimeout(toast.t); toast.t = setTimeout(function () { el.classList.remove('show'); }, 3200);
+  }
+
+  document.querySelectorAll('.filter').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.filter').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+      b.setAttribute('aria-pressed', 'true');
+      state.f = b.getAttribute('data-f');
+      document.getElementById('view-title').textContent = b.childNodes[0].textContent.trim();
+      render();
+    });
+  });
+  document.getElementById('q').addEventListener('input', function (e) { state.q = e.target.value.trim().toLowerCase(); render(); });
+  document.getElementById('sort').addEventListener('change', function (e) { state.sort = e.target.value; render(); });
+
+  grid.addEventListener('click', function (e) {
+    var o = e.target.closest('[data-open]');
+    if (o) { openPlayer(o.getAttribute('data-open')); return; }
+    var n = e.target.closest('[data-nudge]');
+    if (n) {
+      var t = tapes.filter(function (x) { return x.id === n.getAttribute('data-nudge'); })[0];
+      var msg = NUDGES[Math.min(t.nudges, NUDGES.length - 1)].replace('KYLE', t.to.split(' ')[0]);
+      t.nudges += 1; t.lastNudge = msg;
+      render();
+      toast(t.nudges >= NUDGES.length ? 'Nudge sent. This is as firm as Natter gets.' : 'Nudge sent to ' + t.to + '.');
+    }
+  });
+
+  /* player */
+  var P = { t: null, pos: 0, timer: null, lastFocus: null };
+  function openModal(id) {
+    P.lastFocus = document.activeElement;
+    var s = document.getElementById(id); s.classList.add('open');
+    var c = s.querySelector('[data-close]'); if (c) c.focus();
+  }
+  function closeModal(s) {
+    s.classList.remove('open');
+    stopPlay(); stopRec();
+    if (P.lastFocus) P.lastFocus.focus();
+  }
+  document.querySelectorAll('.scrim').forEach(function (s) {
+    s.addEventListener('click', function (e) { if (e.target === s || e.target.closest('[data-close]')) closeModal(s); });
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') document.querySelectorAll('.scrim.open').forEach(closeModal);
+  });
+
+  function openPlayer(id) {
+    var t = tapes.filter(function (x) { return x.id === id; })[0];
+    P.t = t; P.pos = 0;
+    document.getElementById('p-title').textContent = 'PLAY  ' + t.title.toUpperCase();
+    document.getElementById('p-screen').innerHTML = (t.img ? '<img data-img="' + t.img + '" alt="" width="800" height="450">' : '<span class="blank">' + esc(t.blank || 'NO SIGNAL') + '</span>') +
+      '<span class="osd-l">PLAY SP</span><span class="osd-r" id="p-osd">0:00:00</span>';
+    document.getElementById('p-chapters').innerHTML = CH[t.ch].map(function (c, i) {
+      return '<li><button data-seek="' + c[1] + '" data-i="' + i + '"><span>' + esc(c[0]) + '</span><span class="t">' + fmt(c[1]) + '</span></button></li>';
+    }).join('');
+    document.getElementById('p-meta').innerHTML =
+      'From ' + esc(t.from) + ' to ' + esc(t.to) + '<br>' +
+      'Runtime ' + fmt(t.len) + '<br>' +
+      'Times you said "anyway": ' + Math.round(t.len / 11) + '<br>' +
+      (t.craig ? 'Craig\'s note: "Good energy. Ladder seems fine."' : 'Craig\'s note: none, the Pastor got there first.');
+    drawChart(t);
+    var note = t.fam === 0 ? 'Family viewers: none yet. Craig carried this one alone.'
+      : (t.fam < t.len / 2 ? t.famName + ' left at ' + fmt(t.fam) + '. Craig stayed for the rest.' : t.famName + ' watched ' + Math.round(t.fam / t.len * 100) + '%.');
+    document.getElementById('p-note').textContent = note;
+    document.getElementById('p-toggle').textContent = 'Play';
+    update();
+    openModal('player-scrim');
+  }
+  function drawChart(t) {
+    var W = 400, H = 90, svg = document.getElementById('p-chart');
+    var famW = Math.max(t.fam > 0 ? 3 : 0, t.fam / t.len * W);
+    var parts = [];
+    parts.push('<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="#EFE6D4" stroke="#14121B" stroke-width="2"/>');
+    if (t.craig) parts.push('<rect x="1" y="' + (H / 2) + '" width="' + (W - 2) + '" height="' + (H / 2 - 1) + '" fill="#2340C8"/>');
+    if (famW) parts.push('<rect x="1" y="' + (t.craig ? 8 : H / 2) + '" width="' + famW + '" height="' + (t.craig ? H / 2 - 8 : H / 2 - 1) + '" fill="#D7372A"/>');
+    parts.push('<line id="p-head" x1="0" x2="0" y1="0" y2="' + H + '" stroke="#14121B" stroke-width="2"/>');
+    svg.innerHTML = parts.join('');
+  }
+  function update() {
+    var t = P.t; if (!t) return;
+    var pct = P.pos / t.len * 100;
+    document.getElementById('p-fill').style.width = pct + '%';
+    document.getElementById('p-bar').setAttribute('aria-valuenow', Math.round(pct));
+    document.getElementById('p-tc').textContent = fmt(P.pos) + ' / ' + fmt(t.len);
+    var osd = document.getElementById('p-osd'); if (osd) osd.textContent = fmt(P.pos);
+    var head = document.getElementById('p-head'); if (head) { head.setAttribute('x1', pct * 4); head.setAttribute('x2', pct * 4); }
+    var on = 0; CH[t.ch].forEach(function (c, i) { if (P.pos >= c[1]) on = i; });
+    document.querySelectorAll('#p-chapters button').forEach(function (b) { b.classList.toggle('on', +b.getAttribute('data-i') === on); });
+  }
+  function stopPlay() { clearInterval(P.timer); P.timer = null; var b = document.getElementById('p-toggle'); if (b) b.textContent = 'Play'; }
+  document.getElementById('p-toggle').addEventListener('click', function () {
+    if (P.timer) { stopPlay(); return; }
+    this.textContent = 'Pause';
+    P.timer = setInterval(function () {
+      P.pos += Math.max(1, P.t.len / 240);
+      if (P.pos >= P.t.len) { P.pos = P.t.len; stopPlay(); toast('End of tape. Craig has been notified that you finished it.'); }
+      update();
+    }, 100);
+  });
+  function seekFromEvent(e) {
+    var r = e.currentTarget.getBoundingClientRect();
+    P.pos = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)) * P.t.len; update();
+  }
+  document.getElementById('p-bar').addEventListener('click', seekFromEvent);
+  document.getElementById('p-bar').addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight') { P.pos = Math.min(P.t.len, P.pos + P.t.len / 20); update(); e.preventDefault(); }
+    if (e.key === 'ArrowLeft') { P.pos = Math.max(0, P.pos - P.t.len / 20); update(); e.preventDefault(); }
+  });
+  document.getElementById('p-chapters').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-seek]'); if (!b) return;
+    P.pos = +b.getAttribute('data-seek'); update();
+  });
+
+  /* recorder */
+  var R = { timer: null, s: 0 };
+  var lean = document.getElementById('r-lean');
+  function cov() {
+    var v = +lean.value;
+    var c = Math.round(Math.min(100, Math.pow(v / 100, 1.6) * 100));
+    document.getElementById('r-face').style.transform = 'translate(-50%, -50%) scale(' + (0.8 + v / 100 * 3.2) + ')';
+    var m = document.getElementById('r-meter'); m.style.width = c + '%'; m.classList.toggle('hot', c >= 70);
+    document.getElementById('r-cov').textContent = 'Forehead coverage: ' + c + '%' + (c >= 70 ? '. Portrait Mode engaged.' : '');
+    document.getElementById('r-mode').textContent = c >= 95 ? 'NOSTRIL CAM' : (c >= 70 ? 'PORTRAIT MODE' : 'STANDARD FRAMING');
+  }
+  lean.addEventListener('input', cov); cov();
+  function stopRec() { clearInterval(R.timer); R.timer = null; }
+  document.getElementById('open-rec').addEventListener('click', function () {
+    R.s = 0; document.getElementById('r-tc').textContent = '0:00:00';
+    document.getElementById('r-state').textContent = 'STBY';
+    document.getElementById('r-go').innerHTML = '<span class="dot" aria-hidden="true"></span>Start recording';
+    document.getElementById('r-hint').textContent = 'Craig is standing by.';
+    openModal('rec-scrim');
+  });
+  document.getElementById('r-go').addEventListener('click', function () {
+    var btn = this;
+    if (!R.timer) {
+      document.getElementById('r-state').textContent = 'REC';
+      btn.innerHTML = '<span class="dot" aria-hidden="true"></span>Stop and send';
+      document.getElementById('r-hint').textContent = 'Recording. Take your time. Everyone else does.';
+      R.timer = setInterval(function () {
+        R.s += 37;
+        var h = Math.floor(R.s / 3600), m = Math.floor((R.s % 3600) / 60), x = R.s % 60;
+        document.getElementById('r-tc').textContent = h + ':' + String(m).padStart(2, '0') + ':' + String(x).padStart(2, '0');
+      }, 200);
+      return;
+    }
+    stopRec();
+    var c = +document.getElementById('r-meter').style.width.replace('%', '');
+    var title = document.getElementById('r-title-in').value.trim() || 'Untitled (probably gutters)';
+    tapes.unshift({
+      id: 'n' + Date.now(), title: title, from: 'Walt', to: document.getElementById('r-to').value,
+      len: Math.max(R.s, 60), days: 0, img: '', blank: c >= 70 ? 'PORTRAIT MODE' : 'STANDARD FRAMING', tag: c >= 70 ? 'PORTRAIT MODE' : '',
+      ch: 'gutters3', fam: 0, famName: '', craig: true, queued: true, nudges: 0
+    });
+    closeModal(document.getElementById('rec-scrim'));
+    render();
+    toast('Sent. Uploading overnight. Craig has it in his queue.');
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
