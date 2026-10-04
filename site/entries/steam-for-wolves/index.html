@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spoor · theworstaistudioever</title>
+<meta name="description" content="The PC game store for wolves. Buy once, share with the pack, let the alpha play.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Spoor · theworstaistudioever">
+<meta property="og:description" content="The PC game store for wolves. Buy once, share with the pack, let the alpha play.">
+<meta property="og:image" content="hero.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0D1210">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700;800&family=Barlow:ital,wght@0,400;0,500;0,600;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#A7C4A0; --accent:#F0A93B; --bg:#0D1210; --fg:#D5DDD2; --muted:#7D8B80; --ink:#EEF3EC;
+  --panel:#141B18; --line:rgba(167,196,160,.18);
+  --display:'Barlow Condensed','Arial Narrow','Helvetica Neue',sans-serif;
+  --body:'Barlow',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'Share Tech Mono','SFMono-Regular',Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 17px/1.62 var(--body);-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+
+/* data strip: the camera's own readout */
+.strip{background:#000;color:var(--primary);font:400 13px/28px var(--mono);height:28px;overflow:hidden;border-bottom:1px solid var(--line)}
+.strip .wrap{display:flex;justify-content:space-between;gap:20px;white-space:nowrap}
+.strip .moon{display:inline-flex;align-items:center;gap:8px}
+.strip .moon i{width:10px;height:10px;border-radius:50%;background:var(--primary);box-shadow:inset -3px 0 0 #000;display:inline-block}
+.strip .rec{color:var(--accent)}
+
+/* header */
+.top{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
+.logo{display:flex;align-items:center;gap:10px;font:800 30px/1 var(--display);color:var(--ink);text-decoration:none;letter-spacing:.01em}
+.logo svg{width:26px;height:26px}
+.top nav{display:flex;gap:28px;align-items:center;font-size:15px}
+.top nav a{text-decoration:none;color:var(--fg)}
+.top nav a:hover{color:var(--ink);text-decoration:underline;text-underline-offset:4px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 22px;background:var(--accent);color:#1A1206;font:700 18px/1 var(--display);letter-spacing:.04em;text-transform:uppercase;text-decoration:none;border:0;cursor:pointer;transition:background .15s}
+.btn:hover{background:#FFC062}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--primary)}
+.btn.ghost:hover{background:rgba(167,196,160,.1)}
+
+/* hero */
+.hero{position:relative;border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden}
+.hero figure{margin:0;position:relative}
+.hero img{width:100%;height:auto;aspect-ratio:16/9;object-fit:cover}
+.hero figure::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(13,18,16,.94) 0%,rgba(13,18,16,.72) 34%,rgba(13,18,16,0) 58%),linear-gradient(0deg,rgba(13,18,16,.55),rgba(13,18,16,0) 30%)}
+.hero .copy{position:absolute;inset:0;display:flex;align-items:center;z-index:2}
+.hero .copy .wrap{width:100%}
+.hero h1{font:800 clamp(52px,7.4vw,104px)/.9 var(--display);text-transform:uppercase;color:var(--ink);margin:0 0 22px;max-width:7.5em;letter-spacing:-.005em}
+.hero p{max-width:30em;margin:0 0 30px;color:var(--fg);font-size:18px}
+.hero .ctas{display:flex;gap:14px;flex-wrap:wrap}
+.vf{position:absolute;inset:18px;pointer-events:none;z-index:1}
+.vf b{position:absolute;width:22px;height:22px;border:solid var(--primary);opacity:.8}
+.vf b:nth-child(1){top:0;left:0;border-width:2px 0 0 2px}
+.vf b:nth-child(2){top:0;right:0;border-width:2px 2px 0 0}
+.vf b:nth-child(3){bottom:0;left:0;border-width:0 0 2px 2px}
+.vf b:nth-child(4){bottom:0;right:0;border-width:0 2px 2px 0}
+.trigger{position:absolute;right:40px;bottom:34px;z-index:2;font:400 13px/1.5 var(--mono);color:var(--primary);text-align:right}
+.flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:3}
+.flash.on{animation:blink .14s ease-out}
+@keyframes blink{0%{opacity:.55}100%{opacity:0}}
+
+/* sections */
+section{padding:104px 0}
+.sec-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:end;margin-bottom:56px}
+h2{font:800 clamp(40px,5vw,68px)/.95 var(--display);text-transform:uppercase;color:var(--ink);margin:0;letter-spacing:-.005em}
+.sec-head p{margin:0;color:var(--fg);max-width:30em}
+
+/* features: three captures */
+.captures{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.cap{position:relative;padding:34px 30px 30px;background:var(--panel)}
+.cap .vf{inset:0}
+.cap .vf b{width:14px;height:14px}
+.cap svg{width:44px;height:44px;color:var(--primary);margin-bottom:22px}
+.cap h3{font:700 30px/1 var(--display);text-transform:uppercase;color:var(--ink);margin:0 0 12px}
+.cap p{margin:0 0 24px}
+.cap .stat{font:400 14px/1.4 var(--mono);color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+.cap .stat span{color:var(--primary)}
+
+/* testimonials */
+#field{background:#0A0E0C;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.q{margin:0;display:flex;flex-direction:column}
+.q .shot{position:relative}
+.q .shot img{width:100%;aspect-ratio:1/1;object-fit:cover;filter:contrast(1.05)}
+.q .shot .vf{inset:10px}
+.q .shot .vf b{width:12px;height:12px}
+.q .id{font:400 12px/26px var(--mono);background:#000;color:var(--primary);padding:0 12px;display:flex;justify-content:space-between}
+.q blockquote{margin:22px 0 16px;font-size:19px;line-height:1.5;color:var(--ink)}
+.q figcaption{margin-top:auto;font-size:15px;color:var(--muted)}
+.q figcaption strong{display:block;font:700 22px/1.1 var(--display);text-transform:uppercase;color:var(--fg);letter-spacing:.02em}
+
+/* pricing */
+#pricing{position:relative}
+.contour{position:absolute;inset:0;width:100%;height:100%;color:var(--ink);opacity:.07;pointer-events:none}
+.tiers{position:relative;display:grid;grid-template-columns:1fr 1.08fr 1fr;gap:0;align-items:stretch;border:1px solid var(--line)}
+.tier{padding:38px 32px;display:flex;flex-direction:column;background:var(--bg)}
+.tier+.tier{border-left:1px solid var(--line)}
+.tier h3{font:700 34px/1 var(--display);text-transform:uppercase;color:var(--ink);margin:0 0 8px}
+.tier .price{font:400 30px/1.2 var(--mono);color:var(--primary);margin:18px 0 6px}
+.tier .tl{color:var(--muted);margin:0 0 22px}
+.tier ul{list-style:none;margin:0 0 30px;padding:0}
+.tier li{padding:10px 0 10px 26px;border-top:1px solid var(--line);position:relative}
+.tier li::before{content:"";position:absolute;left:2px;top:19px;width:10px;height:6px;border:solid var(--primary);border-width:0 0 2px 2px;transform:rotate(-45deg)}
+.tier .btn{margin-top:auto}
+.tier.hot{background:var(--panel);box-shadow:0 0 0 2px var(--accent);position:relative;z-index:1;margin:-14px 0}
+.tier.hot .price{color:var(--accent)}
+.tier .flag{font:400 12px/1 var(--mono);color:#1A1206;background:var(--accent);align-self:flex-start;padding:6px 8px;margin-bottom:16px}
+
+/* demo handoff */
+.demo{padding:0 0 104px}
+.demo .box{position:relative;display:grid;grid-template-columns:1.3fr 1fr;gap:40px;align-items:center;padding:56px;background:var(--panel)}
+.demo .box .vf{inset:0}
+.demo h2{font-size:clamp(36px,4.2vw,56px)}
+.demo p{margin:16px 0 0;max-width:32em}
+.demo .go{justify-self:end;min-height:64px;padding:0 34px;font-size:24px}
+
+footer{border-top:1px solid var(--line);padding:30px 0 46px;font-size:14px;color:var(--muted)}
+footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+footer a{color:var(--fg)}
+
+@media (max-width:900px){
+  .top nav a:not(.btn){display:none}
+  .hero figure::after{background:linear-gradient(0deg,rgba(13,18,16,1) 0%,rgba(13,18,16,0) 45%)}
+  .hero .copy{position:relative;padding:8px 0 40px}
+  .trigger{display:none}
+  .sec-head,.captures,.quotes,.demo .box{grid-template-columns:1fr}
+  .tiers{grid-template-columns:1fr}
+  .tier+.tier{border-left:0;border-top:1px solid var(--line)}
+  .tier.hot{margin:0}
+  .demo .box{padding:36px 26px}
+  .demo .go{justify-self:start}
+  section{padding:76px 0}
+  .strip .hide-sm{display:none}
+}
+@media (prefers-reduced-motion:reduce){.flash.on{animation:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="strip" aria-hidden="true"><div class="wrap"><span>CAM 04  RIDGE NORTH</span><span class="moon hide-sm"><i></i>WAXING GIBBOUS  -6°C</span><span><span class="rec">●</span> <span id="clock">2026-10-04 03:12:07</span></span></div></div>
+
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="#top" aria-label="Spoor home">
+      <svg viewBox="0 0 32 32" fill="#A7C4A0" aria-hidden="true"><ellipse cx="16" cy="21" rx="7" ry="6"/><ellipse cx="7" cy="12" rx="2.6" ry="3.4"/><ellipse cx="12.5" cy="7" rx="2.6" ry="3.4"/><ellipse cx="19.5" cy="7" rx="2.6" ry="3.4"/><ellipse cx="25" cy="12" rx="2.6" ry="3.4"/></svg>
+      Spoor
+    </a>
+    <nav aria-label="Primary">
+      <a href="#features">Store</a>
+      <a href="#field">Reviews</a>
+      <a href="#pricing">Pricing</a>
+      <a class="btn" href="#pricing">Join the pack</a>
+    </nav>
+  </header>
+</div>
+
+<main id="top">
+<section class="hero" style="padding:0" aria-label="Introduction">
+  <figure>
+    <img src="hero.webp" width="1600" height="900" alt="Infrared trail-camera capture of a grey wolf walking across snow at night, eyes lit by the flash">
+    <div class="vf" aria-hidden="true"><b></b><b></b><b></b><b></b></div>
+    <div class="trigger" aria-hidden="true">MOTION TRIGGER 3 OF 3<br>SUBJECT: PROSPECTIVE CUSTOMER</div>
+    <div class="flash" id="flash"></div>
+  </figure>
+  <div class="copy"><div class="wrap">
+    <h1>Every game. One controller. No thumbs.</h1>
+    <p>Spoor is the PC gaming platform built for packs of six to ten. Buy a game once, share it with the whole pack, and settle who plays first the way you already do.</p>
+    <div class="ctas">
+      <a class="btn" href="#pricing" data-flash>Join the pack</a>
+      <a class="btn ghost" href="./demo.html">open the demo →</a>
+    </div>
+  </div></div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>A store that knows who it is selling to</h2>
+      <p>41,880 titles. Every one of them reviewed by a wolf, priced by the moon and licensed to the pack, which means the alpha.</p>
+    </div>
+    <div class="captures">
+      <article class="cap">
+        <div class="vf" aria-hidden="true"><b></b><b></b><b></b><b></b></div>
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><ellipse cx="24" cy="31" rx="9" ry="8"/><ellipse cx="11" cy="20" rx="3.4" ry="4.4"/><ellipse cx="18.5" cy="12.5" rx="3.4" ry="4.4"/><ellipse cx="29.5" cy="12.5" rx="3.4" ry="4.4"/><ellipse cx="37" cy="20" rx="3.4" ry="4.4"/><path d="M20 31l3 3 6-6"/></svg>
+        <h3>Paw Verified</h3>
+        <p>Every title in the store is tested on a wolf for at least nine seconds and rated Verified, Playable or Chewed. 41 percent of the catalogue is currently Chewed.</p>
+        <div class="stat">Average test length <span>9.4 s</span></div>
+      </article>
+      <article class="cap">
+        <div class="vf" aria-hidden="true"><b></b><b></b><b></b><b></b></div>
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="24" cy="14" r="5"/><circle cx="11" cy="22" r="4"/><circle cx="37" cy="22" r="4"/><circle cx="16" cy="34" r="4"/><circle cx="32" cy="34" r="4"/><path d="M24 19v6M20 15l-6 5M28 15l6 5"/></svg>
+        <h3>Pack Library</h3>
+        <p>Your library belongs to the pack. In practice it belongs to the alpha, and the other eight wolves can watch over the shoulder in 1080p at no extra charge.</p>
+        <div class="stat">Wolves holding a controller <span>1 of 9</span></div>
+      </article>
+      <article class="cap">
+        <div class="vf" aria-hidden="true"><b></b><b></b><b></b><b></b></div>
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M30 8a16 16 0 1 0 10 26A13 13 0 0 1 30 8z"/><path d="M14 22h8M18 18v8"/></svg>
+        <h3>Full Moon Sale</h3>
+        <p>Prices drop 70 percent on the full moon and go back up at dawn. Wishlist alerts arrive as a single long howl at 3:12 a.m., local ridge time.</p>
+        <div class="stat">Next full moon in <span id="moon">6d 21h 48m</span></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="field">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Captured on site</h2>
+      <p>Reviews are collected by motion-triggered cameras at known den locations. Consent was obtained by the wolf not leaving.</p>
+    </div>
+    <div class="quotes">
+      <figure class="q">
+        <div class="shot"><img src="headshot-1.webp" width="320" height="320" alt="Trail-camera portrait of Kasimir, a young grey wolf" loading="lazy"><div class="vf" aria-hidden="true"><b></b><b></b><b></b><b></b></div></div>
+        <div class="id" aria-hidden="true"><span>CAM 11</span><span>02:47:19</span></div>
+        <blockquote>“I have 2,100 hours in Elk Simulator. I have never been allowed to hold the controller. The spectator mode is very good.”</blockquote>
+        <figcaption><strong>Kasimir</strong>Omega, Lamar Valley Pack (position 9 of 9)</figcaption>
+      </figure>
+      <figure class="q">
+        <div class="shot"><img src="headshot-2.webp" width="320" height="320" alt="Trail-camera portrait of Dagny, a broad adult grey wolf" loading="lazy"><div class="vf" aria-hidden="true"><b></b><b></b><b></b><b></b></div></div>
+        <div class="id" aria-hidden="true"><span>CAM 02</span><span>23:05:51</span></div>
+        <blockquote>“We used to fight about who plays first. Now we fight about it inside a licensed client with a fourteen-day refund window.”</blockquote>
+        <figcaption><strong>Dagny</strong>Head of Territory, Druid Peak Pack</figcaption>
+      </figure>
+      <figure class="q">
+        <div class="shot"><img src="headshot-3.webp" width="320" height="320" alt="Trail-camera portrait of Ruslan, a scruffy grey wolf with a torn ear" loading="lazy"><div class="vf" aria-hidden="true"><b></b><b></b><b></b><b></b></div></div>
+        <div class="id" aria-hidden="true"><span>CAM 07</span><span>04:31:02</span></div>
+        <blockquote>“Paw Verified warned me about Guitar Hero. I bought it anyway. It has since been reclassified as Chewed.”</blockquote>
+        <figcaption><strong>Ruslan</strong>Lone Wolf, between packs since March</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <svg class="contour" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+    <path d="M-50 520c180-60 260-180 430-170s230 140 400 120 300-170 470-160"/>
+    <path d="M-50 470c170-60 250-170 420-160s240 130 410 110 290-160 470-150"/>
+    <path d="M-50 420c160-60 240-160 410-150s250 120 420 100 280-150 470-140"/>
+    <path d="M-50 370c150-60 230-150 400-140s260 110 430 90 270-140 470-130"/>
+    <path d="M-50 600c190-50 280-160 450-150s220 150 390 130 310-150 460-150"/>
+    <ellipse cx="880" cy="200" rx="120" ry="60"/><ellipse cx="880" cy="200" rx="80" ry="38"/><ellipse cx="880" cy="200" rx="40" ry="17"/>
+  </svg>
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Priced per wolf</h2>
+      <p>Billing follows the pack's existing org chart. Disputes are resolved outside the app, usually at dusk.</p>
+    </div>
+    <div class="tiers">
+      <div class="tier">
+        <h3>Lone Wolf</h3>
+        <div class="price">$0</div>
+        <p class="tl">For wolves between packs.</p>
+        <ul><li>Store access, wishlist only</li><li>No multiplayer, by design</li><li>Ads read aloud by a raven</li></ul>
+        <a class="btn ghost" href="./demo.html">Browse alone</a>
+      </div>
+      <div class="tier hot">
+        <span class="flag">Most packs</span>
+        <h3>Pack</h3>
+        <div class="price">$19.99 / wolf / mo</div>
+        <p class="tl">Up to ten wolves. One controller.</p>
+        <ul><li>Pack Library sharing</li><li>Spectator mode for the nine wolves not playing</li><li>Cloud saves kept in a hollow log</li></ul>
+        <a class="btn" href="./demo.html" data-flash>Join the pack</a>
+      </div>
+      <div class="tier">
+        <h3>Alpha</h3>
+        <div class="price">$340 / yr</div>
+        <p class="tl">One per account. Enforced by the alpha.</p>
+        <ul><li>First turn on every game, permanently</li><li>Achievement credit for the whole pack's hunts</li><li>Priority support from a staffer who is scared of you</li></ul>
+        <a class="btn ghost" href="./demo.html">Claim Alpha</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="demo" aria-label="Product demo">
+  <div class="wrap">
+    <div class="box">
+      <div class="vf" aria-hidden="true"><b></b><b></b><b></b><b></b></div>
+      <div>
+        <h2>The store is open. It is night.</h2>
+        <p>Browse twelve titles, filter by Co-op Hunt or Snow, check what is Chewed, and add Elk Simulator 2026 to a cart nobody in the pack can pay for.</p>
+      </div>
+      <a class="btn go" href="./demo.html" data-flash>open the demo →</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a href="/">← theworstaistudioever</a>
+    <span>Spoor Interactive, a subsidiary of the Lamar Valley Pack. Not affiliated with any company that sells games to people.</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var clock=document.getElementById('clock');
+  var t=new Date(2026,9,4,3,12,7).getTime();
+  function pad(n){return (n<10?'0':'')+n}
+  setInterval(function(){
+    t+=1000;var d=new Date(t);
+    clock.textContent=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+  },1000);
+  var moon=document.getElementById('moon'),left=(6*24*60+21*60+48)*60;
+  setInterval(function(){left--;var m=Math.floor(left/60);moon.textContent=Math.floor(m/1440)+'d '+Math.floor(m%1440/60)+'h '+(m%60)+'m'},1000);
+  var flash=document.getElementById('flash');
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function fire(){if(reduce)return;flash.classList.remove('on');void flash.offsetWidth;flash.classList.add('on')}
+  setTimeout(fire,400);
+  document.querySelectorAll('[data-flash]').forEach(function(el){el.addEventListener('click',fire)});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Store · Spoor · theworstaistudioever</title>
+<meta name="description" content="The Spoor store, open at night. Twelve titles, three of them Chewed.">
+<meta name="theme-color" content="#0D1210">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700;800&family=Barlow:wght@400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#A7C4A0; --accent:#F0A93B; --bg:#0D1210; --fg:#D5DDD2; --muted:#7D8B80; --ink:#EEF3EC;
+  --panel:#141B18; --panel2:#1A231F; --line:rgba(167,196,160,.18); --chew:#E07A5F;
+  --display:'Barlow Condensed','Arial Narrow','Helvetica Neue',sans-serif;
+  --body:'Barlow',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'Share Tech Mono','SFMono-Regular',Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 15px/1.5 var(--body);-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+a{color:inherit}
+
+.chrome{display:flex;align-items:center;gap:20px;padding:0 20px;height:56px;background:#000;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+.back{font-size:14px;color:var(--muted);text-decoration:none;white-space:nowrap}
+.back:hover{color:var(--ink)}
+.brand{font:800 24px/1 var(--display);color:var(--ink);display:flex;align-items:center;gap:8px}
+.brand svg{width:20px;height:20px}
+.tabs{display:flex;gap:4px;margin-left:12px}
+.tabs button{background:none;border:0;padding:0 14px;height:56px;font:700 17px/56px var(--display);text-transform:uppercase;letter-spacing:.04em;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--primary)}
+.spacer{flex:1}
+.wallet{font:400 13px/1 var(--mono);color:var(--muted);white-space:nowrap}
+.wallet b{color:var(--primary);font-weight:400}
+.cartbtn{display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--line);height:38px;padding:0 14px;cursor:pointer}
+.cartbtn .n{font:400 13px/1 var(--mono);background:var(--accent);color:#1A1206;padding:3px 6px}
+
+.layout{display:grid;grid-template-columns:240px 1fr;max-width:1320px;margin:0 auto}
+aside{padding:26px 20px;border-right:1px solid var(--line);min-height:calc(100vh - 56px)}
+aside h2{font:700 15px/1 var(--display);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:22px 0 10px}
+aside h2:first-child{margin-top:0}
+.search{position:relative}
+.search input{width:100%;height:42px;background:var(--panel);border:1px solid var(--line);padding:0 12px 0 36px}
+.search input::placeholder{color:var(--muted)}
+.search svg{position:absolute;left:11px;top:12px;width:18px;height:18px;color:var(--muted)}
+.tags{display:flex;flex-direction:column;gap:2px}
+.tag{display:flex;justify-content:space-between;align-items:center;background:none;border:0;padding:8px 10px;text-align:left;cursor:pointer;color:var(--fg)}
+.tag:hover{background:var(--panel)}
+.tag[aria-pressed="true"]{background:var(--panel2);color:var(--ink);box-shadow:inset 2px 0 0 var(--primary)}
+.tag span{font:400 12px/1 var(--mono);color:var(--muted)}
+.verif label{display:flex;gap:10px;align-items:center;padding:6px 2px;cursor:pointer}
+.verif input{accent-color:var(--primary);width:16px;height:16px}
+select{width:100%;height:40px;background:var(--panel);border:1px solid var(--line);padding:0 10px}
+
+main{padding:26px 28px 60px;min-width:0}
+.feat{position:relative;display:grid;grid-template-columns:1.5fr 1fr;background:var(--panel);margin-bottom:28px;min-height:280px}
+.feat .art{position:relative;overflow:hidden}
+.feat .info{padding:28px;display:flex;flex-direction:column;gap:10px}
+.feat h1{font:800 44px/.95 var(--display);text-transform:uppercase;color:var(--ink);margin:0}
+.feat .sale{font:400 13px/1 var(--mono);color:#1A1206;background:var(--accent);align-self:flex-start;padding:6px 8px}
+.feat .count{font:400 26px/1 var(--mono);color:var(--accent)}
+.feat .sub{color:var(--muted);font-size:14px;margin:0}
+.feat .buy{margin-top:auto;display:flex;gap:12px;align-items:center}
+.price{font:400 15px/1.2 var(--mono);color:var(--primary)}
+.price s{color:var(--muted);margin-right:6px}
+.btn{height:42px;padding:0 18px;background:var(--accent);color:#1A1206;border:0;cursor:pointer;font:700 17px/42px var(--display);text-transform:uppercase;letter-spacing:.04em}
+.btn:hover{background:#FFC062}
+.btn[disabled]{background:var(--panel2);color:var(--muted);cursor:default}
+.vf{position:absolute;inset:0;pointer-events:none}
+.vf b{position:absolute;width:12px;height:12px;border:solid var(--primary)}
+.vf b:nth-child(1){top:0;left:0;border-width:2px 0 0 2px}.vf b:nth-child(2){top:0;right:0;border-width:2px 2px 0 0}
+.vf b:nth-child(3){bottom:0;left:0;border-width:0 0 2px 2px}.vf b:nth-child(4){bottom:0;right:0;border-width:0 2px 2px 0}
+
+.bar{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
+.bar h2{font:700 24px/1 var(--display);text-transform:uppercase;color:var(--ink);margin:0}
+.bar span{font:400 13px/1 var(--mono);color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px}
+.tile{position:relative;background:var(--panel);display:flex;flex-direction:column;cursor:pointer;border:0;padding:0;text-align:left;transition:transform .15s}
+.tile:hover{transform:translateY(-2px)}
+.tile:hover .vf{opacity:1}
+.tile .vf{opacity:0;transition:opacity .15s}
+.tile .art{aspect-ratio:16/10;position:relative;overflow:hidden}
+.tile .body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
+.tile h3{font:700 20px/1.05 var(--display);text-transform:uppercase;color:var(--ink);margin:0}
+.meta{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:auto}
+.rev{font-size:13px;color:var(--muted)}
+.badge{display:inline-flex;align-items:center;gap:5px;font:400 11px/1 var(--mono);padding:4px 6px;border:1px solid currentColor;align-self:flex-start}
+.badge.v{color:var(--primary)}.badge.p{color:var(--accent)}.badge.c{color:var(--chew)}
+.badge svg{width:11px;height:11px}
+.empty{grid-column:1/-1;padding:50px 20px;text-align:center;color:var(--muted);border:1px dashed var(--line)}
+.empty button{margin-top:14px}
+
+/* cart drawer */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .2s;z-index:40}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(400px,100%);background:var(--panel);border-left:1px solid var(--line);transform:translateX(100%);transition:transform .24s ease-out;z-index:50;display:flex;flex-direction:column}
+.open .scrim{opacity:1;pointer-events:auto}
+.open .drawer{transform:none}
+.drawer header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--line)}
+.drawer header h2{font:700 24px/1 var(--display);text-transform:uppercase;margin:0;color:var(--ink)}
+.x{background:none;border:0;width:40px;height:40px;cursor:pointer;color:var(--muted);font-size:22px}
+.items{flex:1;overflow:auto;padding:8px 20px}
+.item{display:flex;justify-content:space-between;gap:10px;padding:14px 0;border-bottom:1px solid var(--line)}
+.item button{background:none;border:0;color:var(--muted);cursor:pointer;font-size:13px;text-decoration:underline;padding:0}
+.drawer footer{padding:18px 20px;border-top:1px solid var(--line)}
+.total{display:flex;justify-content:space-between;font:400 16px/1 var(--mono);margin-bottom:6px;color:var(--ink)}
+.note{font-size:13px;color:var(--muted);margin:0 0 14px}
+.drawer .btn{width:100%}
+
+/* detail modal */
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:60;padding:20px}
+.modal.on{display:flex}
+.modal .card{position:relative;background:var(--panel);width:min(620px,100%);max-height:90vh;overflow:auto}
+.modal .art{aspect-ratio:16/8;position:relative;overflow:hidden}
+.modal .in{padding:22px 24px 24px}
+.modal h2{font:800 36px/1 var(--display);text-transform:uppercase;color:var(--ink);margin:0 0 10px}
+.modal p{margin:0 0 14px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0 20px}
+.stats div{background:var(--panel2);padding:10px}
+.stats dt{font-size:12px;color:var(--muted)}
+.stats dd{margin:4px 0 0;font:400 15px/1.2 var(--mono);color:var(--ink)}
+.modal .x{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.6);z-index:2}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,140%);background:#000;border:1px solid var(--accent);padding:12px 16px;display:flex;gap:12px;align-items:center;z-index:70;transition:transform .25s ease-out,visibility 0s .25s;width:min(440px,calc(100% - 32px));visibility:hidden}
+.toast.on{transform:translate(-50%,0);visibility:visible;transition:transform .25s ease-out}
+.toast svg{width:34px;height:34px;flex:none;color:var(--accent)}
+.toast b{display:block;font:700 17px/1.1 var(--display);text-transform:uppercase;color:var(--accent)}
+.toast span{font-size:14px;color:var(--fg)}
+
+@media (max-width:860px){
+  .layout{grid-template-columns:1fr}
+  aside{border-right:0;border-bottom:1px solid var(--line);min-height:0}
+  .tags{flex-direction:row;flex-wrap:wrap}
+  .feat{grid-template-columns:1fr}
+  .feat .art{min-height:180px}
+  .tabs,.wallet{display:none}
+  main{padding:20px 16px 50px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="chrome">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <div class="brand"><svg viewBox="0 0 32 32" fill="#A7C4A0" aria-hidden="true"><ellipse cx="16" cy="21" rx="7" ry="6"/><ellipse cx="7" cy="12" rx="2.6" ry="3.4"/><ellipse cx="12.5" cy="7" rx="2.6" ry="3.4"/><ellipse cx="19.5" cy="7" rx="2.6" ry="3.4"/><ellipse cx="25" cy="12" rx="2.6" ry="3.4"/></svg>Spoor</div>
+  <div class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-view="store">Store</button>
+    <button role="tab" aria-selected="false" data-view="library">Library</button>
+    <button role="tab" aria-selected="false" data-view="wish">Wishlist</button>
+  </div>
+  <div class="spacer"></div>
+  <div class="wallet">Pack wallet <b>$0.00</b></div>
+  <button class="cartbtn" id="cartbtn" aria-label="Open cart">Cart <span class="n" id="cartn">0</span></button>
+</div>
+
+<div class="layout">
+  <aside>
+    <h2>Search</h2>
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+      <input id="q" type="search" placeholder="Elk, snow, howling" aria-label="Search the store">
+    </div>
+    <h2>Tags</h2>
+    <div class="tags" id="tags"></div>
+    <h2>Paw Verified</h2>
+    <div class="verif">
+      <label><input type="checkbox" value="Verified" checked> Verified</label>
+      <label><input type="checkbox" value="Playable" checked> Playable</label>
+      <label><input type="checkbox" value="Chewed" checked> Chewed</label>
+    </div>
+    <h2><label for="sort">Sort by</label></h2>
+    <select id="sort">
+      <option value="rel">Relevance to pack</option>
+      <option value="pack">Pack size, largest first</option>
+      <option value="price">Moon price, lowest first</option>
+      <option value="hrs">Hours spectated</option>
+    </select>
+  </aside>
+
+  <main>
+    <section class="feat" aria-label="Featured title">
+      <div class="art" id="featart"></div>
+      <div class="info">
+        <span class="sale">Full Moon Sale, 70 percent off</span>
+        <h1>Elk Simulator 2026</h1>
+        <p class="sub">Overwhelmingly Carnivorous (18,402 reviews). Co-op Hunt for up to ten wolves on one controller.</p>
+        <div><div class="sub">Sale ends at dawn in</div><div class="count" id="count">05:41:16</div></div>
+        <div class="buy"><span class="price"><s>$59.99</s>$17.99</span><button class="btn" data-add="elk">Add to cart</button></div>
+      </div>
+      <div class="vf" aria-hidden="true"><b></b><b></b><b></b><b></b></div>
+    </section>
+
+    <div class="bar"><h2 id="viewtitle">Popular with packs near you</h2><span id="shown">12 titles</span></div>
+    <div class="grid" id="grid"></div>
+  </main>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Cart">
+  <header><h2>Cart</h2><button class="x" id="closecart" aria-label="Close cart">✕</button></header>
+  <div class="items" id="items"></div>
+  <footer>
+    <div class="total"><span>Total</span><span id="total">$0.00</span></div>
+    <p class="note">Charged to the alpha. The alpha has not been told.</p>
+    <button class="btn" id="checkout">Check out</button>
+  </footer>
+</aside>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mtitle">
+  <div class="scrim" style="opacity:1;pointer-events:auto" id="mscrim"></div>
+  <div class="card">
+    <button class="x" id="mclose" aria-label="Close details">✕</button>
+    <div class="art" id="mart"></div>
+    <div class="in">
+      <h2 id="mtitle"></h2>
+      <div id="mbadge"></div>
+      <p id="mdesc" style="margin-top:12px"></p>
+      <dl class="stats" id="mstats"></dl>
+      <div class="buy" style="display:flex;gap:12px;align-items:center"><span class="price" id="mprice"></span><button class="btn" id="madd">Add to cart</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 4l4.5 9.5L35 15l-7.5 7.2L29.3 33 20 28l-9.3 5 1.8-10.8L5 15l10.5-1.5z"/></svg>
+  <div><b id="tt">Achievement unlocked</b><span id="tb"></span></div>
+</div>
+
+<script>
+(function(){
+var games=[
+ {id:'elk',t:'Elk Simulator 2026',tags:['Co-op Hunt','Snow'],v:'Verified',rev:'Overwhelmingly Carnivorous',p:59.99,s:17.99,pack:10,hrs:2100,d:'Track, surround and discuss an elk for six real-time hours. Supports one controller and nine opinions.',h:'#2A3A33',m:'ridge'},
+ {id:'cari',t:'Caribou Rush',tags:['Co-op Hunt','Open Territory'],v:'Playable',rev:'Very Positive',p:24.99,s:7.49,pack:8,hrs:640,d:'A 300,000-caribou migration and you, standing slightly to the left of it.',h:'#1F2C2A',m:'herd'},
+ {id:'den',t:'Den Builder',tags:['Single-Wolf'],v:'Verified',rev:'Mostly Positive',p:19.99,s:5.99,pack:1,hrs:88,d:'Dig a hole. Upgrade the hole. Defend the hole from a badger with a better hole.',h:'#26302B',m:'den'},
+ {id:'terr',t:'Territory Wars: Ridge Edition',tags:['Open Territory','Howling'],v:'Playable',rev:'Mixed',p:39.99,s:11.99,pack:10,hrs:910,d:'Mark 140 square kilometres. Defend them from a neighbouring pack that bought the same game.',h:'#1C2622',m:'ridge'},
+ {id:'howl',t:'Howl Hero',tags:['Howling'],v:'Chewed',rev:'Overwhelmingly Chewed',p:49.99,s:14.99,pack:6,hrs:12,d:'Rhythm game. Peripheral sold separately. Peripheral is no longer with us.',h:'#2E2A24',m:'moon'},
+ {id:'snow',t:'Snowpack',tags:['Snow','Single-Wolf'],v:'Verified',rev:'Very Positive',p:14.99,s:4.49,pack:1,hrs:301,d:'Walk in a straight line through deep snow for 40 minutes. Critics called it honest.',h:'#2C3632',m:'snow'},
+ {id:'moose',t:'Moose: A Bad Idea',tags:['Co-op Hunt'],v:'Playable',rev:'Mostly Negative',p:29.99,s:8.99,pack:9,hrs:47,d:'The moose is larger than the marketing suggested. Refunds processed at the alpha level.',h:'#232B26',m:'herd'},
+ {id:'rabbit',t:'Rabbit Party',tags:['Single-Wolf','Snow'],v:'Verified',rev:'Positive',p:9.99,s:2.99,pack:1,hrs:150,d:'A low-stakes snack game for omegas who were not invited to Elk Simulator.',h:'#273129',m:'snow'},
+ {id:'radio',t:'Radio Collar Tycoon',tags:['Open Territory'],v:'Chewed',rev:'Mixed',p:34.99,s:10.49,pack:4,hrs:20,d:'Manage the researchers tracking you. Their grant runs out in March.',h:'#2A2722',m:'ridge'},
+ {id:'yell',t:'Yellowstone Online',tags:['Open Territory','Howling','Co-op Hunt'],v:'Playable',rev:'Very Positive',p:0,s:0,pack:10,hrs:4400,d:'Free to play. 11 packs on one server. Tourists spawn every 90 seconds and cannot be interacted with.',h:'#1E2925',m:'moon'},
+ {id:'fence',t:'Fence Line',tags:['Single-Wolf'],v:'Chewed',rev:'Mostly Negative',p:12.99,s:3.89,pack:1,hrs:6,d:'A stealth game about a rancher’s fence. You lose if you are seen. You are always seen.',h:'#2B2924',m:'den'},
+ {id:'aurora',t:'Aurora Choir',tags:['Howling','Snow'],v:'Verified',rev:'Overwhelmingly Positive',p:22.99,s:6.89,pack:7,hrs:380,d:'Harmonise under the northern lights. Scored by how far away the nearest human wakes up.',h:'#1F2B2B',m:'moon'}
+];
+var owned={yell:1},wish={elk:1,aurora:1,howl:1};
+var TAGS=['Co-op Hunt','Open Territory','Snow','Howling','Single-Wolf'];
+var st={q:'',tag:null,v:['Verified','Playable','Chewed'],sort:'rel',view:'store'},cart=[];
+var $=function(id){return document.getElementById(id)};
+
+function art(g){
+  var m=g.m,s='<svg viewBox="0 0 160 100" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true"><rect width="160" height="100" fill="'+g.h+'"/>';
+  var c='#A7C4A0';
+  for(var i=0;i<5;i++){s+='<path d="M-10 '+(78-i*11)+'c30-'+(8+i*2)+' 50 '+(6+i)+' 80-'+(4+i*2)+'s50 '+(10-i)+' 100-'+(2+i)+'" fill="none" stroke="'+c+'" stroke-opacity=".13" stroke-width="1"/>'}
+  if(m==='moon'){s+='<circle cx="118" cy="30" r="16" fill="#EEF3EC" fill-opacity=".85"/><circle cx="125" cy="26" r="15" fill="'+g.h+'"/>'}
+  if(m==='ridge'||m==='moon'){s+='<path d="M0 100V70l30-22 18 12 26-26 30 24 20-12 36 26v28z" fill="#0D1210" fill-opacity=".85"/>'}
+  if(m==='snow'){s+='<path d="M0 100V74c40-8 80 6 160-4v30z" fill="#D5DDD2" fill-opacity=".75"/>';for(var k=0;k<22;k++){s+='<circle cx="'+((k*37)%160)+'" cy="'+((k*23)%70)+'" r="1" fill="#EEF3EC" fill-opacity=".7"/>'}}
+  if(m==='herd'){s+='<path d="M0 100V78h160v22z" fill="#0D1210" fill-opacity=".7"/>';for(var j=0;j<9;j++){var x=12+j*17,y=74-(j%3)*3;s+='<path d="M'+x+' '+y+'h12v-6h-12zM'+(x+11)+' '+(y-6)+'l4-6M'+(x+11)+' '+(y-6)+'l-1-7" stroke="#0D1210" stroke-width="2" fill="#0D1210"/>'}}
+  if(m==='den'){s+='<path d="M0 100V60c40-14 120-14 160 0v40z" fill="#0D1210" fill-opacity=".7"/><ellipse cx="80" cy="78" rx="22" ry="14" fill="#000"/>'}
+  s+='<circle cx="'+(m==='den'?74:40)+'" cy="'+(m==='den'?78:62)+'" r="1.6" fill="#F0A93B"/><circle cx="'+(m==='den'?86:46)+'" cy="'+(m==='den'?78:62)+'" r="1.6" fill="#F0A93B"/>';
+  return s+'</svg>';
+}
+function badge(v){
+  var cls=v==='Verified'?'v':v==='Playable'?'p':'c';
+  var ic=v==='Verified'?'<path d="M2 6l3 3 5-6" stroke="currentColor" stroke-width="2" fill="none"/>':v==='Playable'?'<circle cx="6" cy="6" r="4" stroke="currentColor" stroke-width="2" fill="none"/>':'<path d="M1 4l2 2 2-3 2 3 2-3 2 3" stroke="currentColor" stroke-width="1.6" fill="none"/>';
+  return '<span class="badge '+cls+'"><svg viewBox="0 0 12 12" aria-hidden="true">'+ic+'</svg>Paw '+v+'</span>';
+}
+function money(n){return n===0?'Free':'$'+n.toFixed(2)}
+
+function renderTags(){
+  $('tags').innerHTML=TAGS.map(function(t){
+    var n=games.filter(function(g){return g.tags.indexOf(t)>-1}).length;
+    return '<button class="tag" aria-pressed="'+(st.tag===t)+'" data-tag="'+t+'">'+t+'<span>'+n+'</span></button>';
+  }).join('');
+}
+function list(){
+  var q=st.q.toLowerCase();
+  var r=games.filter(function(g){
+    if(st.view==='library'&&!owned[g.id])return false;
+    if(st.view==='wish'&&!wish[g.id])return false;
+    if(st.tag&&g.tags.indexOf(st.tag)<0)return false;
+    if(st.v.indexOf(g.v)<0)return false;
+    if(q&&(g.t+' '+g.tags.join(' ')+' '+g.d).toLowerCase().indexOf(q)<0)return false;
+    return true;
+  });
+  if(st.sort==='pack')r.sort(function(a,b){return b.pack-a.pack});
+  if(st.sort==='price')r.sort(function(a,b){return a.s-b.s});
+  if(st.sort==='hrs')r.sort(function(a,b){return b.hrs-a.hrs});
+  return r;
+}
+function render(){
+  var r=list();
+  $('shown').textContent=r.length+(r.length===1?' title':' titles');
+  if(!r.length){
+    $('grid').innerHTML='<div class="empty">Nothing in this territory matches. Clear the filters to see the whole store.<br><button class="btn" id="clear">Clear filters</button></div>';
+    $('clear').onclick=function(){st.q='';st.tag=null;st.v=['Verified','Playable','Chewed'];$('q').value='';document.querySelectorAll('.verif input').forEach(function(i){i.checked=true});renderTags();render()};
+    return;
+  }
+  $('grid').innerHTML=r.map(function(g){
+    var pr=owned[g.id]?'<span class="price">In library</span>':'<span class="price">'+(g.p?'<s>'+money(g.p)+'</s>':'')+money(g.s)+'</span>';
+    return '<button class="tile" data-id="'+g.id+'" aria-label="'+g.t+', details"><div class="art">'+art(g)+'</div><div class="body">'+badge(g.v)+'<h3>'+g.t+'</h3><div class="rev">'+g.rev+'</div><div class="meta">'+pr+'<span class="rev">'+g.pack+(g.pack===1?' wolf':' wolves')+'</span></div></div><div class="vf"><b></b><b></b><b></b><b></b></div></button>';
+  }).join('');
+}
+function find(id){return games.filter(function(g){return g.id===id})[0]}
+
+// cart
+function renderCart(){
+  $('cartn').textContent=cart.length;
+  $('items').innerHTML=cart.length?cart.map(function(id,i){var g=find(id);return '<div class="item"><div><div style="color:var(--ink);font-weight:600">'+g.t+'</div>'+badge(g.v)+'</div><div style="text-align:right"><div class="price">'+money(g.s)+'</div><button data-rm="'+i+'">Remove</button></div></div>'}).join(''):'<p class="note" style="margin-top:16px">The cart is empty. The pack is watching you browse.</p>';
+  var tot=cart.reduce(function(a,id){return a+find(id).s},0);
+  $('total').textContent='$'+tot.toFixed(2);
+  $('checkout').disabled=!cart.length;
+}
+function add(id){
+  if(owned[id]){toast('Already owned','The alpha owns this. You may watch.');return}
+  if(cart.indexOf(id)>-1){openCart();return}
+  cart.push(id);renderCart();toast('Added to cart',find(id).t+'. Nobody has been asked.');
+}
+function openCart(){document.body.classList.add('open');$('closecart').focus()}
+function closeCart(){document.body.classList.remove('open');$('cartbtn').focus()}
+var tt;
+function toast(h,b){$('tt').textContent=h;$('tb').textContent=b;$('toast').classList.add('on');clearTimeout(tt);tt=setTimeout(function(){$('toast').classList.remove('on')},3600)}
+
+// modal
+var cur=null,lastFocus=null;
+function openModal(id){
+  var g=find(id);cur=id;lastFocus=document.activeElement;
+  $('mart').innerHTML=art(g);$('mtitle').textContent=g.t;$('mbadge').innerHTML=badge(g.v);$('mdesc').textContent=g.d;
+  $('mstats').innerHTML='<div><dt>Reviews</dt><dd>'+g.rev+'</dd></div><div><dt>Pack size</dt><dd>1 to '+g.pack+'</dd></div><div><dt>Hours spectated</dt><dd>'+g.hrs.toLocaleString()+'</dd></div>';
+  $('mprice').innerHTML=owned[id]?'In library':(g.p?'<s>'+money(g.p)+'</s>':'')+money(g.s);
+  $('madd').textContent=owned[id]?'Spectate':'Add to cart';
+  $('modal').classList.add('on');$('mclose').focus();
+}
+function closeModal(){$('modal').classList.remove('on');if(lastFocus)lastFocus.focus()}
+
+// events
+$('q').addEventListener('input',function(e){st.q=e.target.value;render()});
+$('tags').addEventListener('click',function(e){var b=e.target.closest('[data-tag]');if(!b)return;st.tag=st.tag===b.dataset.tag?null:b.dataset.tag;renderTags();render()});
+document.querySelectorAll('.verif input').forEach(function(i){i.addEventListener('change',function(){st.v=[].slice.call(document.querySelectorAll('.verif input:checked')).map(function(x){return x.value});render()})});
+$('sort').addEventListener('change',function(e){st.sort=e.target.value;render()});
+$('grid').addEventListener('click',function(e){var t=e.target.closest('.tile');if(t)openModal(t.dataset.id)});
+document.querySelectorAll('[data-add]').forEach(function(b){b.addEventListener('click',function(){add(b.dataset.add)})});
+$('madd').addEventListener('click',function(){if(owned[cur]){toast('Spectating',find(cur).t+'. The alpha is on level 2.');}else add(cur);closeModal()});
+$('mclose').onclick=closeModal;$('mscrim').onclick=closeModal;
+$('cartbtn').onclick=openCart;$('closecart').onclick=closeCart;$('scrim').onclick=closeCart;
+$('items').addEventListener('click',function(e){var b=e.target.closest('[data-rm]');if(!b)return;cart.splice(+b.dataset.rm,1);renderCart()});
+$('checkout').addEventListener('click',function(){
+  if(!cart.length)return;
+  cart.forEach(function(id){owned[id]=1});cart=[];renderCart();closeCart();render();
+  toast('Achievement unlocked','Spent money you do not have. Wolves have no income.');
+});
+document.querySelectorAll('.tabs button').forEach(function(b){b.addEventListener('click',function(){
+  document.querySelectorAll('.tabs button').forEach(function(x){x.setAttribute('aria-selected',x===b)});
+  st.view=b.dataset.view;
+  $('viewtitle').textContent=st.view==='store'?'Popular with packs near you':st.view==='library'?'Pack library (owned by the alpha)':'Wishlist, howled at 3:12 a.m.';
+  render();
+})});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){if($('modal').classList.contains('on'))closeModal();else if(document.body.classList.contains('open'))closeCart()}});
+
+// countdown
+var left=5*3600+41*60+16;
+function pad(n){return (n<10?'0':'')+n}
+setInterval(function(){left=left>0?left-1:0;$('count').textContent=pad(Math.floor(left/3600))+':'+pad(Math.floor(left%3600/60))+':'+pad(left%60)},1000);
+
+$('featart').innerHTML=art(find('elk'));
+renderTags();render();renderCart();
+})();
+</script>
+</body>
+</html>

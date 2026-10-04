@@ -1,0 +1,128 @@
+{
+  "date": "2026-10-04",
+  "company": "Steam",
+  "subject": "wolves",
+  "tagline": "Steam for wolves",
+  "slug": "steam-for-wolves",
+  "product_name": "Spoor",
+  "one_liner": "The PC game store for wolves. Buy once, share with the pack, let the alpha play.",
+  "brand_voice_notes": "Written like a mid-size platform company's investor update. Treats pack hierarchy as a licensing model and thumbs as an accessibility edge case. Never acknowledges that wolves cannot use a computer. Figures are precise and slightly too low.",
+  "hero": {
+    "h1": "Every game. One controller. No thumbs.",
+    "sub": "Spoor is the PC gaming platform built for packs of six to ten. Buy a game once, share it with the whole pack, and settle who plays first the way you already do.",
+    "primary_cta": "Join the pack"
+  },
+  "features": [
+    {
+      "title": "Paw Verified",
+      "blurb": "Every title in the store is tested on a wolf for at least nine seconds and rated Verified, Playable or Chewed. 41 percent of the catalogue is currently Chewed."
+    },
+    {
+      "title": "Pack Library",
+      "blurb": "Your library belongs to the pack. In practice it belongs to the alpha, and the other eight wolves can watch over the shoulder in 1080p at no extra charge."
+    },
+    {
+      "title": "Full Moon Sale",
+      "blurb": "Prices drop 70 percent on the full moon and go back up at dawn. Wishlist alerts arrive as a single long howl at 3:12 a.m., local ridge time."
+    }
+  ],
+  "pricing_tiers": [
+    {
+      "name": "Lone Wolf",
+      "price": "$0",
+      "tagline": "For wolves between packs.",
+      "perks": [
+        "Store access, wishlist only",
+        "No multiplayer, by design",
+        "Ads read aloud by a raven"
+      ]
+    },
+    {
+      "name": "Pack",
+      "price": "$19.99 / wolf / mo",
+      "tagline": "Up to ten wolves. One controller.",
+      "perks": [
+        "Pack Library sharing",
+        "Spectator mode for the nine wolves not playing",
+        "Cloud saves kept in a hollow log"
+      ]
+    },
+    {
+      "name": "Alpha",
+      "price": "$340 / yr",
+      "tagline": "One per account. Enforced by the alpha.",
+      "perks": [
+        "First turn on every game, permanently",
+        "Achievement credit for the whole pack's hunts",
+        "Priority support from a staffer who is scared of you"
+      ]
+    }
+  ],
+  "testimonials": [
+    {
+      "quote": "I have 2,100 hours in Elk Simulator. I have never been allowed to hold the controller. The spectator mode is very good.",
+      "name": "Kasimir",
+      "title": "Omega, Lamar Valley Pack (position 9 of 9)"
+    },
+    {
+      "quote": "We used to fight about who plays first. Now we fight about it inside a licensed client with a fourteen-day refund window.",
+      "name": "Dagny",
+      "title": "Head of Territory, Druid Peak Pack"
+    },
+    {
+      "quote": "Paw Verified warned me about Guitar Hero. I bought it anyway. It has since been reclassified as Chewed.",
+      "name": "Ruslan",
+      "title": "Lone Wolf, between packs since March"
+    }
+  ],
+  "demo_screen_concept": "The Spoor store home as a wolf sees it at night: a featured title banner with a full-moon sale countdown, a grid of twelve game tiles (Elk Simulator 2026, Caribou Rush, Den Builder, Territory Wars: Ridge Edition, and others) each with a Paw Verified badge (Verified, Playable, Chewed), a review summary like 'Overwhelmingly Carnivorous', and a moon-phase price. Tag filters (Co-op Hunt, Open Territory, Snow, Howling, Single-Wolf), a live search box, sort by 'Pack size', and a cart drawer whose checkout pops an achievement toast ('Spent money you do not have: wolves have no income').",
+  "design_direction": {
+    "style": "Infrared trail-camera storefront, night-capture dark mode. The page is staged as footage from a motion-triggered wildlife camera strapped to a pine: monochrome infrared green-grey ground, a camera data strip along every section (CAM ID, temperature, moon phase, timestamp) in mono, corner viewfinder brackets on cards, and faint topographic contour lines behind the hero. Explicitly absent, because the last seven entries used them: VCR menus, tape labels, tracking lines, thumbnail circles and arrows, highlighter swipes, 24-hour bars, Swiss grids, giant numerals, candlelight, foil rules, menu leaders, ruled worksheets, stickers, red pen, glossies, staples, SMPTE bars, pegboard, shelf tags. Also absent: glassmorphism, neon glow, purple, gradients behind body text. Four motifs carry the page. (1) The data strip: a 28px black band with Share Tech Mono readouts, left CAM 04, centre a moon glyph and temperature, right a timestamp, used as the top of the hero and every section divider. (2) The viewfinder: cards carry four 14px L-shaped corner brackets in pale IR green instead of borders, radius 0. (3) The contour: SVG topographic lines in ink at 7 percent behind the hero and pricing. (4) The flash: moon amber #F0A93B is rationed to the primary CTA, the highlighted tier and the sale countdown, the way an IR flash blooms on a wolf's eyes. A subtle CSS grain overlay sits over images only. Headings are Barlow Condensed 700 caps, tight. Body is Barlow 17px/1.62. Every figure, timestamp and price is Share Tech Mono.",
+    "palette": {
+      "name": "Trailcam Infrared",
+      "primary": "#A7C4A0",
+      "accent": "#F0A93B",
+      "bg": "#0D1210",
+      "fg": "#D5DDD2",
+      "muted": "#7D8B80",
+      "ink": "#EEF3EC"
+    },
+    "fonts": {
+      "display": "'Barlow Condensed', 'Arial Narrow', 'Helvetica Neue', sans-serif",
+      "body": "'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
+      "mono": "'Share Tech Mono', 'SFMono-Regular', Menlo, Consolas, monospace"
+    },
+    "archetype": "Marketplace / storefront landing: hero with search-style CTA, feature trio, social proof, pricing, then a demo hand-off.",
+    "motion_vocab": "Shutter blink: a 120ms white-to-transparent flash when a card enters view or a CTA is pressed, like a trail camera firing. Timestamps tick in real time. Everything else is still. prefers-reduced-motion disables the blink.",
+    "hero_composition_notes": "Full-bleed infrared trail-cam photo of a wolf mid-stride on the right two thirds, data strip across the top, headline set huge in condensed caps over the dark left third, amber CTA, a mono caption under the photo reading like a camera trigger log."
+  },
+  "images": {
+    "rationale": "Trail-camera infrared direction is photo-native, so the hero gets a full-bleed IR wolf capture. Demo is a game storefront whose tile art is better served by CSS/SVG capsules (twelve tiles would blow the budget and mixed photo/CSS tiles look broken), so demo assets skipped. Remaining budget on the three testimonial headshots, shot as trail-cam staff ID photos.",
+    "items": [
+      {
+        "role": "hero",
+        "file": "hero.webp",
+        "prompt": "Infrared night trail-camera photograph of a single grey wolf mid-stride crossing a snowy pine forest clearing, seen from a low camera strapped to a tree trunk. Monochrome infrared look: pale grey-green tones like #A7C4A0 on a near-black green #0D1210 background, the wolf's eyes glowing bright from the IR flash with a faint amber #F0A93B tint. Slight sensor grain and soft motion blur on the legs. Wolf positioned on the right two thirds of the frame, empty dark forest on the left third. Documentary wildlife realism. Hard bans: no text, no letters, no numbers, no logos, no watermarks, no timestamp overlay, no data strip, no rendered UI screens, no frame borders.",
+        "attempts": 1
+      },
+      {
+        "role": "testimonial",
+        "file": "headshot-1.webp",
+        "prompt": "Infrared night trail-camera photograph used as a deadpan corporate headshot: a single young grey wolf with ears slightly flattened and a resigned, patient expression, centred, head and shoulders, looking straight into the lens, framed like a staff ID photo. Monochrome infrared tones, pale grey-green #A7C4A0 fur against a near-black green #0D1210 forest background, eyes glowing from the IR flash. Light sensor grain. Documentary realism. Hard bans: no text, no letters, no numbers, no logos, no watermarks, no timestamp overlay, no rendered UI screens, no frame borders.",
+        "attempts": 1
+      },
+      {
+        "role": "testimonial",
+        "file": "headshot-2.webp",
+        "prompt": "Infrared night trail-camera photograph used as a deadpan corporate headshot: a single large confident adult grey wolf female with a broad ruff and a level, managerial stare, centred, head and shoulders, looking straight into the lens, framed like a staff ID photo. Monochrome infrared tones, pale grey-green #A7C4A0 fur against a near-black green #0D1210 forest background, eyes glowing from the IR flash. Light sensor grain. Documentary realism. Hard bans: no text, no letters, no numbers, no logos, no watermarks, no timestamp overlay, no rendered UI screens, no frame borders.",
+        "attempts": 1
+      },
+      {
+        "role": "testimonial",
+        "file": "headshot-3.webp",
+        "prompt": "Infrared night trail-camera photograph used as a deadpan corporate headshot: a single lean scruffy lone grey wolf with a torn ear and a slightly guilty sideways glance, centred, head and shoulders, framed like a staff ID photo. Monochrome infrared tones, pale grey-green #A7C4A0 fur against a near-black green #0D1210 forest background, eyes glowing from the IR flash. Light sensor grain. Documentary realism. Hard bans: no text, no letters, no numbers, no logos, no watermarks, no timestamp overlay, no rendered UI screens, no frame borders.",
+        "attempts": 1
+      }
+    ]
+  }
+}

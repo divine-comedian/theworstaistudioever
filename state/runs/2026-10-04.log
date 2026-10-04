@@ -1,0 +1,56 @@
+[2026-10-04T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-10-04T08:00:02Z] invoking claude -p
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/github/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/github/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.openclaw/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.openclaw/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.claude/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.claude/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/aurevon-status/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/aurevon-status/**) instead (Edit rules cover all file-editing tools).
+RUN 2026-10-04
+Rolled: Steam x wolves -> steam-for-wolves (product: Spoor)
+Rerolls: 0 (first draw unused; PRNG = LCG seeded from sum(charcodes('2026-10-04'))*7919 mod 2^31)
+
+Design direction
+- Style: infrared trail-camera storefront, night-capture dark mode (data strip readouts, viewfinder corner brackets, topo contours, amber IR-flash accent)
+- Palette: Trailcam Infrared  primary #A7C4A0  accent #F0A93B  bg #0D1210  fg #D5DDD2  muted #7D8B80  ink #EEF3EC
+- Fonts: Barlow Condensed (display) / Barlow (body) / Share Tech Mono (figures), from the ui-ux-pro-max Sports pairing
+- Archetype: marketplace/storefront landing
+- Anti-sameness: no style/palette/font overlap with the last 7 (stripe-yt, loom-retirees, twitter-koalas, canva-sommeliers, yelp-only-children, venmo-retirees, tinder-child-actors). Only one other dark entry in the window (09-30, oxblood/gold).
+
+Images (4 generated, 4 kept, 4 API calls)
+- Rationale: trail-cam direction is photo-native, so hero gets a full-bleed IR wolf capture. Demo storefront tiles use CSS/SVG capsule art (12 tiles exceed budget; mixed photo/CSS tiles would look broken), so demo assets skipped. Remaining budget on 3 testimonial headshots as trail-cam staff ID photos.
+- hero.webp (16:9, 1600x900): attempt 1, PASS. Correct subject, IR palette matches, no text artifacts. Snow bottom-left is bright, handled with a left/bottom scrim.
+- headshot-1.webp: attempt 1, PASS (eyes render reddish from the flash, reads as IR glow, kept).
+- headshot-2.webp: attempt 1, PASS.
+- headshot-3.webp: attempt 1, PASS (torn ear not visible; sideways glance present).
+
+Build
+- index.html: hero over photo, 3 features, 3 testimonials with headshots, 3 pricing tiers, demo hand-off, footer back link.
+- demo.html: storefront with search, tag filters, Paw Verified checkboxes, sort, Store/Library/Wishlist tabs, detail modal, cart drawer, checkout achievement toast, live sale countdown.
+- Gallery: site/index.html regenerated, 113 slides, count updated.
+
+Warnings / near-misses
+- Bash sandbox rejected several commands containing shell variables; rewritten with literal paths. No effect on output.
+
+Validation: scripts/validate-entry.sh site steam-for-wolves -> OK
+
+Step 9 visual check: 2 captures. Landing clean. Demo: inactive achievement toast rendered as an empty bar in full-page capture; fixed with visibility:hidden when inactive (1 corrective edit). Re-validated: OK
+Today's entry is built and passes validation, both on the first run and again after the one fix in Step 9.
+
+**Steam for wolves → `steam-for-wolves`** (product name "Spoor")
+- **Roll:** the first draw wasn't in history yet, so no rerolls.
+- **Design:** dark mode styled like an infrared trail camera. Colours are a pale green (#A7C4A0) on a near-black green (#0D1210), with amber (#F0A93B) used only for the main buttons and the highlighted price tier. Fonts are Barlow Condensed, Barlow and Share Tech Mono. None of this repeats the last 7 entries.
+- **Images:** 4 generated, all accepted on the first try: an infrared hero shot of a wolf and three wolf headshots for the testimonials. The demo's 12 game tiles use drawn CSS/SVG art instead, since 12 photos would go well past the 4-image limit.
+- **Landing page:** hero over the photo, 3 features, 3 testimonials with headshots, 3 pricing tiers (Lone Wolf / Pack / Alpha), and a link to the demo.
+- **Demo:** a working store page. It has search, tag filters, "Paw Verified" filter checkboxes, sorting, Store/Library/Wishlist tabs, a game detail popup, a cart, and an "achievement unlocked" message at checkout.
+- **Gallery:** `site/index.html` regenerated with 113 slides. The only change is the new slide and the updated count.
+- **Recorded:** one entry appended to `state/history.json`; the run summary is in `state/runs/2026-10-04.log`.
+- **Visual check:** I took two screenshots. The landing page had no problems. On the demo, the hidden achievement message showed as an empty bar in the middle of the page in the full-page screenshot, so I made it fully invisible until it's triggered. I didn't take a second demo screenshot to confirm the fix.
+
+Several MCP connectors (Gmail, Google Calendar, Google Drive, Hivemind, n8n, Supabase) need to be authorised in your claude.ai connector settings or through `/mcp`. Today's run didn't use any of them.
+
+RUN_COMPLETE: steam-for-wolves
+[2026-10-04T08:07:20Z] new entry: steam-for-wolves
+validate-entry [steam-for-wolves]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 113 entries (domain theworstaistudioever.com)
+[2026-10-04T08:07:20Z] committing: Steam for wolves
