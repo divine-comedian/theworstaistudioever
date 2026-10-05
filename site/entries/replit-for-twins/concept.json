@@ -1,0 +1,95 @@
+{
+  "date": "2026-10-05",
+  "company": "Replit",
+  "subject": "twins",
+  "tagline": "Replit for twins",
+  "slug": "replit-for-twins",
+  "product_name": "Fork",
+  "one_liner": "A browser IDE for twins. Every keystroke is attributed to the correct twin, or to the older one if we can't tell.",
+  "brand_voice_notes": "Fork talks like a developer-tools company that has quietly become a family court. It is calm, exact, and treats sibling liability as a core infrastructure problem. Confidence percentages are always specific and always low. Birth order is cited the way other companies cite SOC 2. Never cute about twins, never says 'double the fun'. Every joke is a policy.",
+  "hero": {
+    "h1": "Two developers. One face. No plausible deniability.",
+    "sub": "Fork is a cloud IDE built for twins. Every line of code is signed, timestamped and attributed to the correct sibling with 61% confidence.",
+    "primary_cta": "Start a shared workspace"
+  },
+  "features": [
+    {
+      "title": "Blame Arbitration",
+      "blurb": "git blame was built for strangers. Ours weighs keystroke cadence, chair height and birth order, then names a twin. When the model ties, the older twin is liable. This is in the terms."
+    },
+    {
+      "title": "Telepathic Merge",
+      "blurb": "Conflicting edits are resolved by assuming you both meant the same thing. If you didn't, one of you will by Thursday."
+    },
+    {
+      "title": "Mirror Mode",
+      "blurb": "Your cursor and your sibling's cursor move in lockstep across a vertical seam. Output is unchanged. The screen recordings are excellent."
+    }
+  ],
+  "pricing_tiers": [
+    {
+      "name": "Moved Out",
+      "price": "$0",
+      "tagline": "For the twin who lives in another city now.",
+      "perks": ["1 workspace, no sibling access", "Blame defaults to you, every time", "Monthly email asking if you've called"]
+    },
+    {
+      "name": "Matching",
+      "price": "$38/mo per pair",
+      "tagline": "Billed as one person. Used as two.",
+      "perks": ["Shared workspace with dual cursors", "Blame Arbitration at 61% confidence", "Birthday notifications, deduplicated", "Telepathic Merge, unlimited"]
+    },
+    {
+      "name": "Custody",
+      "price": "$1,400/yr",
+      "tagline": "For twins who no longer speak.",
+      "perks": ["Separate repos, one shared invoice", "A neutral third cursor, operated by our staff", "Your mother on the CC line, read-only"]
+    }
+  ],
+  "testimonials": [
+    {
+      "quote": "The model attributed the outage to my sister. I have not corrected it and I will not.",
+      "name": "Priya Raman",
+      "title": "Senior Backend Engineer and Younger Twin by 11 Minutes, a logistics company in Leeds"
+    },
+    {
+      "quote": "We shipped faster once Fork confirmed which of us was the slow one. It was Theo.",
+      "name": "Teddy Okonkwo-Hale",
+      "title": "Co-founder (the other one), Okonkwo-Hale Software"
+    },
+    {
+      "quote": "Mirror Mode put both our cursors on line 40 at the same moment. Legal has asked us not to describe what happened next.",
+      "name": "Ines and Ilse Varga",
+      "title": "Joint Head of Platform (one seat, one badge), Municipal Water Authority of Graz"
+    }
+  ],
+  "images": {
+    "rationale": "hero skipped because the diff-viewer style is typographic and the hero is an editor mock; demo skipped because it is an IDE (code, file tree, panels), not photo-shaped, and presence avatars use initials; budget spent on 3 testimonial headshots of twin pairs, which is where the joke needs a face (two of them).",
+    "items": [
+      { "role": "testimonial", "file": "headshot-1.webp", "prompt": "Deadpan corporate editorial headshot photograph of two identical twin sisters, South Asian, early thirties, identical charcoal blazers, one vermilion #E4502F lanyard and one cobalt #2B45C9 lanyard, warm off-white #F3F0E8 backdrop, company directory framing. No text, no letters, no numbers, no logos, no watermarks, no rendered UI screens.", "attempts": 1 },
+      { "role": "testimonial", "file": "headshot-2.webp", "prompt": "Deadpan corporate editorial headshot photograph of two identical twin brothers, Black British, late twenties, identical navy crewneck sweaters, one vermilion #E4502F pin and one cobalt #2B45C9 pin, warm off-white #F3F0E8 backdrop, symmetrical directory framing. No text, no letters, no numbers, no logos, no watermarks, no rendered UI screens.", "attempts": 1 },
+      { "role": "testimonial", "file": "headshot-3.webp", "prompt": "Deadpan corporate editorial headshot photograph of two identical twin women in their fifties sharing one office chair, identical grey bobs, rimless glasses and green cardigans, one shared blank badge on a split vermilion #E4502F and cobalt #2B45C9 lanyard, municipal staff photo framing. No text, no letters, no numbers, no logos, no watermarks, no rendered UI screens.", "attempts": 1 }
+    ]
+  },
+  "demo_screen_concept": "A Fork workspace shared by twins Priya and Pooja Raman. Left: a file tree for a repo called 'shipment-router'. Centre: a code editor showing a Python file where every line has a gutter stripe in vermilion (Pooja) or cobalt (Priya), with a per-line authorship confidence. Right: a Blame Arbitration panel listing disputed lines with evidence (keystroke cadence, chair height, who was holding the coffee) and a 'Dispute' button that opens an evidence modal where you can file an appeal. A 'Birth-order liability' toggle reassigns every tied line to the older twin and recounts the totals. A presence bar shows both twins with photo avatars. A Run button executes the tests, one fails, and the console prints a liability assignment.",
+  "design_direction": {
+    "style": "Merge-conflict diff viewer with bilateral symmetry, paper daylight mode. The page is staged as a side-by-side code review of two people who share a face. Everything comes in pairs split by a vertical seam: left is Twin A (vermilion), right is Twin B (cobalt). Explicitly absent, because the last seven entries used them: infrared, data strips, viewfinder brackets, contours, thumbnail circles and arrows, highlighter swipes, VHS labels, OSD menus, tracking lines, 24-hour bars, Swiss poster grids, giant numerals, candlelight, foil rules, menu leaders, ruled worksheets, stickers, red pen, large-print sliders. Also absent: dark mode, glassmorphism, neon, gradients behind body text. Four motifs carry the page. (1) The conflict marker: section dividers are git conflict markers set in mono (<<<<<<< twin/a, =======, >>>>>>> twin/b), the left one vermilion, the right cobalt. (2) The gutter stripe: cards and quotes carry a 4px left stripe in the twin colour that 'wrote' them, plus a small mono line number. (3) The seam: a 1px dashed ink line runs down the hero's vertical centre, and the h1 is echoed on the right as a faint mirrored ghost. (4) The two cursors: blinking 2px text cursors in vermilion and cobalt, each with a tiny name flag, sit in the hero headline and the pricing header. Corners are 4px. Shadows are a single 1px ink hairline, never blur. Headings are Space Grotesk 700, sentence case, -0.03em. Body is IBM Plex Sans 17px/1.62. Every figure, line number, confidence and price is IBM Plex Mono with tabular figures.",
+    "palette": {
+      "name": "Split Diff Coolroom",
+      "primary": "#2B45C9",
+      "accent": "#E4502F",
+      "bg": "#ECEEF2",
+      "fg": "#16171D",
+      "muted": "#5E5D66",
+      "ink": "#0E0F14"
+    },
+    "fonts": {
+      "display": "'Space Grotesk', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+      "body": "'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
+      "mono": "'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, monospace"
+    },
+    "archetype": "Developer-tools SaaS landing (cloud IDE): announcement bar, nav, centred type hero with a product editor mock, three bordered feature tiles, testimonials, three-tier pricing table, footer.",
+    "motion_vocab": "Two cursors blink out of phase (530ms, offset 265ms). On load the hero editor mock types two lines, one per twin, alternating. Conflict markers slide their halves in from opposite sides on scroll (transform only, 240ms ease-out), gated on a .js class with a timeout fallback. Everything respects prefers-reduced-motion.",
+    "hero_composition_notes": "Centred h1 with the vermilion and cobalt cursors parked inside it, the subhead and a single solid ink CTA beneath. Below, a wide editor mock split down the middle by the dashed seam: left pane authored by Twin A, right pane by Twin B, the same function written twice with one character different, and a small 'Blame Arbitration: 61% Twin A' chip straddling the seam."
+  }
+}

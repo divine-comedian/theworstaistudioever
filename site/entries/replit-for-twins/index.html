@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fork · theworstaistudioever</title>
+<meta name="description" content="A browser IDE for twins. Every keystroke is attributed to the correct twin, or to the older one if we can't tell.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Fork · theworstaistudioever">
+<meta property="og:description" content="A browser IDE for twins. Every keystroke is attributed to the correct twin, or to the older one if we can't tell.">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#ECEEF2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --a:#E4502F;          /* twin A, vermilion */
+  --a-wash:#FBE4DD;
+  --b:#2B45C9;          /* twin B, cobalt */
+  --b-wash:#DFE4FA;
+  --bg:#ECEEF2;
+  --paper:#F8F9FB;
+  --fg:#16171D;
+  --muted:#5E5D66;
+  --ink:#0E0F14;
+  --line:#C9CCD4;
+  --display:'Space Grotesk','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --body:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 17px/1.62 var(--body);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--b);outline-offset:3px}
+.wrap{max-width:1140px;margin:0 auto;padding:0 24px}
+h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:-0.03em;line-height:1.05;margin:0}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* announcement */
+.notice{background:var(--ink);color:#E9EAEE;font:500 13.5px/1.4 var(--mono);text-align:center;padding:9px 16px}
+.notice a{color:#fff;text-underline-offset:3px}
+
+/* nav */
+.nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 0}
+.logo{display:flex;align-items:center;gap:10px;font:700 24px/1 var(--display);letter-spacing:-0.04em;text-decoration:none}
+.logo svg{display:block}
+.nav-links{display:flex;gap:28px;font-size:15px}
+.nav-links a{text-decoration:none;color:var(--muted)}
+.nav-links a:hover{color:var(--fg)}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 22px;border-radius:4px;font:600 15px/1 var(--body);text-decoration:none;border:1px solid var(--ink);cursor:pointer;transition:background .18s ease,color .18s ease}
+.btn-solid{background:var(--ink);color:#fff}
+.btn-solid:hover{background:var(--b);border-color:var(--b)}
+.btn-ghost{background:transparent;color:var(--ink)}
+.btn-ghost:hover{background:var(--paper)}
+.nav .btn{min-height:40px;padding:0 16px;font-size:14px}
+
+/* hero */
+.hero{text-align:center;padding:72px 0 0}
+.hero h1{font-size:clamp(2.6rem,6.4vw,5.4rem);max-width:15ch;margin:0 auto}
+.cur{display:inline-block;position:relative;width:3px;height:.86em;vertical-align:-0.08em;margin:0 .06em;animation:blink 1.06s steps(1) infinite}
+.cur.a{background:var(--a)}
+.cur.b{background:var(--b);animation-delay:.53s}
+.cur i{position:absolute;bottom:100%;left:0;font:500 11px/1 var(--mono);font-style:normal;color:#fff;padding:4px 6px;border-radius:3px 3px 3px 0;white-space:nowrap;letter-spacing:0}
+.cur.a i{background:var(--a)}
+.cur.b i{background:var(--b)}
+@keyframes blink{50%{opacity:0}}
+.hero .sub{max-width:56ch;margin:26px auto 0;font-size:19px;color:var(--muted)}
+.hero .ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:32px}
+
+/* split editor */
+.editor{margin:64px auto 0;max-width:1000px;background:var(--paper);border:1px solid var(--ink);border-radius:6px;overflow:hidden;text-align:left;position:relative}
+.ed-bar{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);font:500 13px/1 var(--mono);color:var(--muted)}
+.ed-bar .who{display:flex;gap:14px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:0}
+.panes{display:grid;grid-template-columns:1fr 1fr;position:relative;padding-bottom:44px}
+.panes::after{content:"";position:absolute;top:0;bottom:0;left:50%;border-left:1px dashed var(--ink)}
+.pane{font:400 14px/1.75 var(--mono);padding:14px 0 18px;overflow-x:auto}
+.pane .h{font:500 12px/1 var(--mono);color:var(--muted);padding:0 16px 10px}
+.ln{display:flex;white-space:pre;padding-right:16px}
+.ln b{flex:none;width:42px;text-align:right;padding-right:14px;color:#9A9CA6;font-weight:400}
+.pane.a .ln{border-left:4px solid var(--a)}
+.pane.b .ln{border-left:4px solid var(--b)}
+.ln.diff.a-d{background:var(--a-wash)}
+.ln.diff.b-d{background:var(--b-wash)}
+.kw{color:var(--b)}
+.pane.a .kw{color:#B23A1E}
+.str{color:#3E6B33}
+.cm{color:#8A8C96}
+.verdict{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);background:var(--ink);color:#fff;font:500 12.5px/1 var(--mono);padding:9px 12px;border-radius:4px;white-space:nowrap;z-index:1}
+.verdict span{color:#FF9C84}
+
+/* conflict marker divider */
+.conflict{font:500 14px/1.7 var(--mono);margin:110px 0 44px;overflow:hidden}
+.conflict div{white-space:nowrap}
+.conflict .m-a{color:var(--a)}
+.conflict .m-eq{color:var(--muted)}
+.conflict .m-b{color:var(--b);text-align:right}
+.section-head{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end;margin-bottom:40px}
+.section-head h2{font-size:clamp(2rem,4vw,3.1rem)}
+.section-head p{margin:0;color:var(--muted);max-width:46ch}
+
+/* features */
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.tile{background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--a);border-radius:4px;padding:26px 26px 30px}
+.tile.b{border-left-color:var(--b)}
+.tile.ab{border-left:0;position:relative;padding-left:30px}
+.tile.ab::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:4px 0 0 4px;background:linear-gradient(var(--a) 50%,var(--b) 50%)}
+.tile .attr{font:500 12.5px/1 var(--mono);color:var(--muted);margin-bottom:22px}
+.tile h3{font-size:25px;margin-bottom:12px}
+.tile p{margin:0;color:#33343C}
+
+/* testimonials */
+.quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.quote{background:var(--paper);border:1px solid var(--line);border-radius:4px;overflow:hidden;display:flex;flex-direction:column}
+.quote img{display:block;width:100%;height:auto;aspect-ratio:1/1;object-fit:cover;border-bottom:1px solid var(--line)}
+.quote .body{padding:22px 24px 26px;display:flex;flex-direction:column;flex:1}
+.quote blockquote{margin:0 0 22px;font:500 20px/1.38 var(--display);letter-spacing:-0.01em;flex:1}
+.quote .name{font-weight:600}
+.quote .title{color:var(--muted);font-size:14.5px;line-height:1.5}
+.quote .conf{font:500 12.5px/1 var(--mono);margin-top:16px;padding-top:14px;border-top:1px dashed var(--line);color:var(--muted)}
+
+/* pricing */
+.pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch}
+.tier{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:28px;display:flex;flex-direction:column}
+.tier.hot{background:var(--ink);color:#F1F2F5;border-color:var(--ink);position:relative}
+.tier .flag{position:absolute;top:-12px;left:28px;font:500 12px/1 var(--mono);background:var(--a);color:#fff;padding:6px 8px;border-radius:3px}
+.tier h3{font-size:24px}
+.tier .price{font:600 32px/1.1 var(--mono);margin:18px 0 6px;letter-spacing:-0.02em}
+.tier .tl{color:var(--muted);margin:0 0 20px;font-size:15.5px}
+.tier.hot .tl{color:#B7B9C3}
+.tier ul{list-style:none;margin:0 0 28px;padding:0;flex:1}
+.tier li{padding:9px 0 9px 22px;border-top:1px solid var(--line);position:relative;font-size:15.5px}
+.tier.hot li{border-color:#2C2E37}
+.tier li::before{content:"+";position:absolute;left:0;font-family:var(--mono);color:var(--b)}
+.tier.hot li::before{color:#FF9C84}
+.tier.hot .btn{background:#fff;color:var(--ink);border-color:#fff}
+.tier.hot .btn:hover{background:var(--a);color:#fff;border-color:var(--a)}
+
+/* demo band */
+.demo-band{margin:120px 0 0;background:var(--ink);color:#F1F2F5}
+.demo-band .wrap{display:grid;grid-template-columns:1.2fr 1fr;gap:40px;align-items:center;padding-top:72px;padding-bottom:72px}
+.demo-band h2{font-size:clamp(2rem,4.4vw,3.4rem)}
+.demo-band p{color:#B7B9C3;margin:16px 0 0;max-width:44ch}
+.demo-band .btn{background:#fff;color:var(--ink);border-color:#fff;min-height:58px;font-size:17px;padding:0 30px;justify-self:start}
+.demo-band .btn:hover{background:var(--a);border-color:var(--a);color:#fff}
+
+footer{padding:36px 0 48px;font-size:14px;color:var(--muted)}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer a{text-decoration:none}
+footer a:hover{color:var(--fg)}
+
+@media (max-width:900px){
+  .nav-links{display:none}
+  .features,.quotes,.pricing{grid-template-columns:1fr}
+  .section-head,.demo-band .wrap{grid-template-columns:1fr;gap:16px}
+  .tier.hot{margin-top:8px}
+}
+@media (max-width:640px){
+  .panes{grid-template-columns:1fr}
+  .panes::after{display:none}
+  .pane.b{border-top:1px dashed var(--ink)}
+  .verdict{position:static;transform:none;margin:0 14px 14px;display:inline-block;white-space:normal}
+  .hero{padding-top:56px}
+  .conflict{font-size:12px}
+}
+@media (prefers-reduced-motion:reduce){
+  .cur{animation:none}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<div class="notice">Fork now resolves tied authorship by birth order in 14 jurisdictions. <a href="#pricing">Read the policy</a></div>
+
+<div class="wrap">
+  <nav class="nav" aria-label="Main">
+    <a class="logo" href="#top" aria-label="Fork home">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><path d="M13 24V13" stroke="#0E0F14" stroke-width="2.4" fill="none"/><path d="M13 13L5 4" stroke="#E4502F" stroke-width="2.4" fill="none"/><path d="M13 13l8-9" stroke="#2B45C9" stroke-width="2.4" fill="none"/><circle cx="13" cy="24" r="1.6" fill="#0E0F14"/></svg>
+      Fork
+    </a>
+    <div class="nav-links">
+      <a href="#features">Product</a>
+      <a href="#customers">Customers</a>
+      <a href="#pricing">Pricing</a>
+    </div>
+    <a class="btn btn-solid" href="./demo.html">Open the demo</a>
+  </nav>
+</div>
+
+<main id="top">
+  <section class="hero wrap">
+    <h1>Two developers.<span class="cur a" aria-hidden="true"><i>Pooja</i></span> One face. No plausible deniability.<span class="cur b" aria-hidden="true"><i>Priya</i></span></h1>
+    <p class="sub">Fork is a cloud IDE built for twins. Every line of code is signed, timestamped and attributed to the correct sibling with 61% confidence.</p>
+    <div class="ctas">
+      <a class="btn btn-solid" href="./demo.html">Start a shared workspace</a>
+      <a class="btn btn-ghost" href="#features">See how blame works</a>
+    </div>
+
+    <div class="editor" role="img" aria-label="Fork editor showing the same function written by two twins, differing by one character, with an arbitration verdict of 61 percent Pooja.">
+      <div class="ed-bar">
+        <span>shipment-router / eta.py</span>
+        <span class="who"><span><span class="dot" style="background:var(--a)"></span>Pooja, 11 min older</span><span><span class="dot" style="background:var(--b)"></span>Priya</span></span>
+      </div>
+      <div class="panes">
+        <div class="pane a" aria-hidden="true">
+          <div class="h">twin/a</div>
+          <div class="ln"><b>38</b><span class="kw">def</span> eta(route, delay):</div>
+          <div class="ln"><b>39</b>    <span class="cm"># i wrote this</span></div>
+          <div class="ln"><b>40</b>    base = route.hours * <span class="str">1.08</span></div>
+          <div class="ln diff a-d"><b>41</b>    <span class="kw">return</span> base + delay</div>
+          <div class="ln"><b>42</b></div>
+        </div>
+        <div class="pane b" aria-hidden="true">
+          <div class="h">twin/b</div>
+          <div class="ln"><b>38</b><span class="kw">def</span> eta(route, delay):</div>
+          <div class="ln"><b>39</b>    <span class="cm"># no, i wrote this</span></div>
+          <div class="ln"><b>40</b>    base = route.hours * <span class="str">1.08</span></div>
+          <div class="ln diff b-d"><b>41</b>    <span class="kw">return</span> base - delay</div>
+          <div class="ln"><b>42</b></div>
+        </div>
+      </div>
+      <div class="verdict">Blame Arbitration: line 41 <span>61% Pooja</span>, tie-break pending</div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="conflict" aria-hidden="true">
+      <div class="m-a">&lt;&lt;&lt;&lt;&lt;&lt;&lt; twin/a</div>
+      <div class="m-eq">=======</div>
+      <div class="m-b">&gt;&gt;&gt;&gt;&gt;&gt;&gt; twin/b</div>
+    </div>
+
+    <section id="features">
+      <div class="section-head">
+        <h2>An IDE that assumes one of you is lying.</h2>
+        <p>Everything Replit does, plus three systems for establishing who did it. Your code runs in the browser. Your alibi runs on our servers.</p>
+      </div>
+      <div class="features">
+        <article class="tile a">
+          <div class="attr">authored by twin/a, 74% confidence</div>
+          <h3>Blame Arbitration</h3>
+          <p>git blame was built for strangers. Ours weighs keystroke cadence, chair height and birth order, then names a twin. When the model ties, the older twin is liable. This is in the terms.</p>
+        </article>
+        <article class="tile ab">
+          <div class="attr">authored by both, allegedly</div>
+          <h3>Telepathic Merge</h3>
+          <p>Conflicting edits are resolved by assuming you both meant the same thing. If you didn't, one of you will by Thursday.</p>
+        </article>
+        <article class="tile b">
+          <div class="attr">authored by twin/b, 52% confidence</div>
+          <h3>Mirror Mode</h3>
+          <p>Your cursor and your sibling's cursor move in lockstep across a vertical seam. Output is unchanged. The screen recordings are excellent.</p>
+        </article>
+      </div>
+    </section>
+
+    <div class="conflict" aria-hidden="true">
+      <div class="m-a">&lt;&lt;&lt;&lt;&lt;&lt;&lt; twin/a</div>
+      <div class="m-eq">=======</div>
+      <div class="m-b">&gt;&gt;&gt;&gt;&gt;&gt;&gt; twin/b</div>
+    </div>
+
+    <section id="customers">
+      <div class="section-head">
+        <h2>Trusted by 2,412 pairs and one set of triplets we are not discussing.</h2>
+        <p>Each testimonial below was submitted by one twin and countersigned by the other. Countersignatures were not verified.</p>
+      </div>
+      <div class="quotes">
+        <figure class="quote" style="margin:0">
+          <img src="headshot-1.webp" alt="Priya Raman and her twin sister in matching charcoal blazers, one wearing a vermilion lanyard and one a blue lanyard." width="320" height="320" loading="lazy">
+          <div class="body">
+            <blockquote>“The model attributed the outage to my sister. I have not corrected it and I will not.”</blockquote>
+            <figcaption>
+              <div class="name">Priya Raman</div>
+              <div class="title">Senior Backend Engineer and Younger Twin by 11 Minutes, a logistics company in Leeds</div>
+              <div class="conf">submitted by twin/b, 88% confidence</div>
+            </figcaption>
+          </div>
+        </figure>
+        <figure class="quote" style="margin:0">
+          <img src="headshot-2.webp" alt="Teddy Okonkwo-Hale and his twin brother in matching navy sweaters, one with arms crossed." width="320" height="320" loading="lazy">
+          <div class="body">
+            <blockquote>“We shipped faster once Fork confirmed which of us was the slow one. It was Theo.”</blockquote>
+            <figcaption>
+              <div class="name">Teddy Okonkwo-Hale</div>
+              <div class="title">Co-founder (the other one), Okonkwo-Hale Software</div>
+              <div class="conf">disputed by Theo, appeal 0042 open</div>
+            </figcaption>
+          </div>
+        </figure>
+        <figure class="quote" style="margin:0">
+          <img src="headshot-3.webp" alt="Ines and Ilse Varga, identical twins in green cardigans, sharing one office chair and one badge." width="320" height="320" loading="lazy">
+          <div class="body">
+            <blockquote>“Mirror Mode put both our cursors on line 40 at the same moment. Legal has asked us not to describe what happened next.”</blockquote>
+            <figcaption>
+              <div class="name">Ines and Ilse Varga</div>
+              <div class="title">Joint Head of Platform (one seat, one badge), Municipal Water Authority of Graz</div>
+              <div class="conf">authored by both, 50.0% each</div>
+            </figcaption>
+          </div>
+        </figure>
+      </div>
+    </section>
+
+    <div class="conflict" aria-hidden="true">
+      <div class="m-a">&lt;&lt;&lt;&lt;&lt;&lt;&lt; twin/a</div>
+      <div class="m-eq">=======</div>
+      <div class="m-b">&gt;&gt;&gt;&gt;&gt;&gt;&gt; twin/b</div>
+    </div>
+
+    <section id="pricing">
+      <div class="section-head">
+        <h2>Priced per pair. Splitting the bill is a separate product.</h2>
+        <p>Refunds go to the older twin. Fork does not mediate what happens after that.</p>
+      </div>
+      <div class="pricing">
+        <article class="tier">
+          <h3>Moved Out</h3>
+          <div class="price">$0</div>
+          <p class="tl">For the twin who lives in another city now.</p>
+          <ul>
+            <li>1 workspace, no sibling access</li>
+            <li>Blame defaults to you, every time</li>
+            <li>Monthly email asking if you've called</li>
+          </ul>
+          <a class="btn btn-ghost" href="./demo.html">Go solo</a>
+        </article>
+        <article class="tier hot">
+          <span class="flag">picked by 9 in 10 pairs</span>
+          <h3>Matching</h3>
+          <div class="price">$38<span style="font-size:16px;font-weight:500">/mo per pair</span></div>
+          <p class="tl">Billed as one person. Used as two.</p>
+          <ul>
+            <li>Shared workspace with dual cursors</li>
+            <li>Blame Arbitration at 61% confidence</li>
+            <li>Birthday notifications, deduplicated</li>
+            <li>Telepathic Merge, unlimited</li>
+          </ul>
+          <a class="btn" href="./demo.html">Start a shared workspace</a>
+        </article>
+        <article class="tier">
+          <h3>Custody</h3>
+          <div class="price">$1,400<span style="font-size:16px;font-weight:500">/yr</span></div>
+          <p class="tl">For twins who no longer speak.</p>
+          <ul>
+            <li>Separate repos, one shared invoice</li>
+            <li>A neutral third cursor, operated by our staff</li>
+            <li>Your mother on the CC line, read-only</li>
+          </ul>
+          <a class="btn btn-ghost" href="./demo.html">Request a mediator</a>
+        </article>
+      </div>
+    </section>
+  </div>
+
+  <section class="demo-band">
+    <div class="wrap">
+      <div>
+        <h2>Watch a real dispute get resolved.</h2>
+        <p>The demo is a live workspace shared by Pooja and Priya Raman. One test is failing. Somebody is about to be named.</p>
+      </div>
+      <a class="btn" href="./demo.html">open the demo →</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a href="/">← theworstaistudioever</a>
+    <span>Fork Inc. Incorporated twice, in error.</span>
+  </div>
+</footer>
+
+<script>
+document.querySelectorAll('a[href^="#"]').forEach(function(a){
+  a.addEventListener('click',function(e){
+    var id=a.getAttribute('href');
+    if(id.length<2)return;
+    var t=document.querySelector(id);
+    if(t){e.preventDefault();t.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});}
+  });
+});
+</script>
+</body>
+</html>
