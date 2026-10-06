@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hotbar · theworstaistudioever</title>
+<meta name="description" content="A card reader that clips to your monitor, so the people in your house finally pay for what they use.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Hotbar · theworstaistudioever">
+<meta property="og:description" content="A card reader that clips to your monitor, so the people in your house finally pay for what they use.">
+<meta property="og:image" content="hero.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0E0F12">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Russo+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #B8F03C;
+    --accent: #FF7A1A;
+    --bg: #0E0F12;
+    --panel: #16181D;
+    --line: #2A2D34;
+    --fg: #E4E6EA;
+    --muted: #80858F;
+    --ink: #F5F6F8;
+    --display: 'Russo One', 'Arial Black', Impact, sans-serif;
+    --body: 'Chakra Petch', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  img { display: block; max-width: 100%; }
+  :focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
+  .wrap { width: min(1180px, 100% - 48px); margin: 0 auto; }
+
+  /* header */
+  .top {
+    position: absolute; inset: 0 0 auto 0; z-index: 5;
+    padding: 22px 0;
+  }
+  .top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+  .mark { font-family: var(--display); font-size: 24px; color: var(--ink); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+  .mark i { width: 10px; height: 10px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 12px var(--primary); }
+  .top nav { display: flex; gap: 28px; align-items: center; font-weight: 500; font-size: 15px; }
+  .top nav a { text-decoration: none; color: var(--fg); opacity: .8; }
+  .top nav a:hover { opacity: 1; }
+  .top nav .buy { opacity: 1; border: 1px solid var(--line); padding: 8px 16px; border-radius: 6px; background: rgba(14,15,18,.6); }
+
+  /* hero */
+  .hero {
+    position: relative;
+    min-height: min(92vh, 860px);
+    display: flex; align-items: flex-end;
+    overflow: hidden;
+    background: var(--bg);
+  }
+  .hero img {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; object-position: 70% 60%;
+  }
+  .hero::after {
+    content: ""; position: absolute; inset: 0;
+    background:
+      linear-gradient(90deg, rgba(14,15,18,.96) 0%, rgba(14,15,18,.78) 38%, rgba(14,15,18,0) 68%),
+      linear-gradient(0deg, rgba(14,15,18,1) 0%, rgba(14,15,18,0) 30%);
+  }
+  .hero .wrap { position: relative; z-index: 2; padding: 160px 0 72px; }
+  .hero h1 {
+    font-family: var(--display); font-weight: 400;
+    color: var(--ink);
+    font-size: clamp(40px, 6.4vw, 84px);
+    line-height: 1.02; letter-spacing: -0.01em;
+    max-width: 11.5em; margin: 0 0 24px;
+  }
+  .hero p { max-width: 34em; margin: 0 0 36px; font-size: 19px; color: #C9CCD2; }
+  .actions { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--body); font-weight: 700; font-size: 17px;
+    padding: 15px 26px; border-radius: 8px; text-decoration: none;
+    position: relative; cursor: pointer;
+  }
+  .btn-live { background: var(--primary); color: #0E0F12; }
+  .btn-live::before {
+    content: ""; position: absolute; inset: -1px; border-radius: 9px;
+    border: 2px solid var(--primary); opacity: 0;
+    animation: tap 2.8s ease-out infinite;
+  }
+  @keyframes tap {
+    0% { transform: scale(1); opacity: .7; }
+    60%, 100% { transform: scale(1.18, 1.5); opacity: 0; }
+  }
+  .btn-ghost { border: 1px solid var(--line); color: var(--ink); background: rgba(22,24,29,.7); }
+  .btn-ghost:hover { border-color: var(--muted); }
+
+  /* spec strip */
+  .specs { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .specs .wrap { display: grid; grid-template-columns: repeat(4, 1fr); }
+  .spec { padding: 28px 24px 26px 0; border-right: 1px solid var(--line); }
+  .spec + .spec { padding-left: 24px; }
+  .spec:last-child { border-right: 0; }
+  .spec b { display: block; font-family: var(--display); font-weight: 400; font-size: 30px; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .spec span { color: var(--muted); font-size: 15px; }
+
+  /* corridor */
+  .section-head { max-width: 40em; margin-bottom: 56px; }
+  .section-head h2 {
+    font-family: var(--display); font-weight: 400; color: var(--ink);
+    font-size: clamp(30px, 3.8vw, 48px); line-height: 1.08; margin: 0 0 14px;
+  }
+  .section-head p { margin: 0; color: var(--muted); }
+  .corridor { padding: 120px 0 100px; }
+  .spine { position: relative; padding-left: 56px; }
+  .spine::before {
+    content: ""; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px;
+    background: linear-gradient(var(--primary), var(--line) 85%);
+    transform-origin: top; transform: scaleY(var(--draw, 1));
+    transition: transform 1.4s cubic-bezier(.2,.7,.2,1);
+  }
+  .js .spine { --draw: 0; }
+  .js .spine.on { --draw: 1; }
+  .feature {
+    position: relative;
+    display: grid; grid-template-columns: 1.15fr 1fr; gap: 48px; align-items: start;
+    padding: 8px 0 72px;
+  }
+  .feature:last-child { padding-bottom: 0; }
+  .feature::before {
+    content: ""; position: absolute; left: -56px; top: 12px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--bg); border: 2px solid var(--primary);
+    box-shadow: 0 0 0 4px var(--bg), 0 0 14px rgba(184,240,60,.45);
+  }
+  .feature h3 { font-family: var(--display); font-weight: 400; color: var(--ink); font-size: 26px; line-height: 1.15; margin: 0 0 12px; }
+  .feature p { margin: 0; max-width: 32em; }
+  .lineitem {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 18px 20px; font-size: 15px;
+  }
+  .lineitem .row { display: flex; justify-content: space-between; gap: 16px; padding: 6px 0; font-variant-numeric: tabular-nums; }
+  .lineitem .row + .row { border-top: 1px dashed var(--line); }
+  .lineitem .who { color: var(--muted); font-size: 14px; padding-bottom: 8px; }
+  .lineitem .sur { color: var(--accent); }
+  .lineitem .total { color: var(--ink); font-weight: 700; }
+
+  /* demo band */
+  .band { background: var(--panel); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .band .wrap { display: flex; justify-content: space-between; align-items: center; gap: 32px; padding: 64px 0; flex-wrap: wrap; }
+  .band h2 { font-family: var(--display); font-weight: 400; color: var(--ink); font-size: clamp(26px, 3vw, 38px); margin: 0 0 8px; line-height: 1.1; }
+  .band p { margin: 0; color: var(--muted); max-width: 34em; }
+
+  /* testimonials */
+  .reviews { padding: 110px 0; }
+  .quotes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+  .quote { margin: 0; display: flex; flex-direction: column; }
+  .quote blockquote { margin: 0 0 28px; font-size: 20px; line-height: 1.45; color: var(--ink); flex: 1; }
+  .quote figcaption { display: flex; gap: 14px; align-items: center; border-top: 1px solid var(--line); padding-top: 18px; }
+  .quote img { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; flex: none; }
+  .quote strong { display: block; color: var(--ink); font-weight: 600; }
+  .quote span { color: var(--muted); font-size: 14px; line-height: 1.4; display: block; }
+
+  /* pricing */
+  .pricing { padding: 20px 0 120px; }
+  .skus { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; align-items: stretch; }
+  .sku {
+    border: 1px solid var(--line); border-radius: 12px; padding: 30px 28px;
+    display: flex; flex-direction: column; background: var(--bg);
+  }
+  .sku.pick { border-color: var(--primary); background: linear-gradient(180deg, rgba(184,240,60,.06), rgba(184,240,60,0) 50%); }
+  .sku .flag { align-self: flex-start; font-size: 13px; font-weight: 600; color: #0E0F12; background: var(--primary); padding: 3px 10px; border-radius: 99px; margin-bottom: 18px; }
+  .sku h3 { font-family: var(--display); font-weight: 400; color: var(--ink); font-size: 24px; margin: 0 0 4px; }
+  .sku .price { font-family: var(--display); font-size: 44px; color: var(--ink); margin: 10px 0 6px; font-variant-numeric: tabular-nums; }
+  .sku .price small { font-family: var(--body); font-size: 16px; color: var(--muted); }
+  .sku .tag { color: var(--muted); margin: 0 0 22px; min-height: 3.2em; }
+  .sku ul { list-style: none; padding: 0; margin: 0 0 28px; flex: 1; }
+  .sku li { padding: 10px 0 10px 26px; border-top: 1px solid var(--line); position: relative; }
+  .sku li::before { content: ""; position: absolute; left: 2px; top: 19px; width: 8px; height: 8px; border-radius: 50%; background: var(--primary); }
+  .sku .btn { justify-content: center; }
+
+  footer { border-top: 1px solid var(--line); padding: 36px 0 48px; color: var(--muted); font-size: 14px; }
+  footer .wrap { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+  footer a { text-decoration: none; color: var(--fg); }
+  footer a:hover { color: var(--primary); }
+
+  @media (max-width: 900px) {
+    .top nav a:not(.buy) { display: none; }
+    .specs .wrap { grid-template-columns: repeat(2, 1fr); }
+    .spec { padding: 22px 16px 20px 0; }
+    .spec + .spec { padding-left: 0; }
+    .spec:nth-child(2n) { border-right: 0; padding-left: 16px; }
+    .spec:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+    .spec:nth-child(4) { padding-left: 16px; }
+    .feature { grid-template-columns: 1fr; gap: 22px; }
+    .quotes, .skus { grid-template-columns: 1fr; }
+    .hero::after { background: linear-gradient(0deg, rgba(14,15,18,1) 10%, rgba(14,15,18,.75) 55%, rgba(14,15,18,.35) 100%); }
+    .hero img { object-position: 62% 50%; }
+  }
+  @media (max-width: 520px) {
+    .wrap { width: calc(100% - 32px); }
+    .spine { padding-left: 36px; }
+    .feature::before { left: -36px; }
+    .hero p { font-size: 17px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .btn-live::before { animation: none; }
+    .js .spine { --draw: 1; }
+    .spine::before { transition: none; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="#top"><i aria-hidden="true"></i>Hotbar</a>
+    <nav aria-label="Primary">
+      <a href="#reader">The reader</a>
+      <a href="#reviews">Customers</a>
+      <a href="#pricing">Pricing</a>
+      <a class="buy" href="./demo.html">Open the demo</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <img src="hero.webp" alt="A matte black Hotbar card reader glowing lime green on a dark gaming desk" width="1600" height="900">
+    <div class="wrap">
+      <h1>Your setup is a small business. Start invoicing like one.</h1>
+      <p>Hotbar mounts to your monitor bezel and charges siblings, roommates, and partners for every controller, couch seat, and carry they consume. Funds settle in 2 business days or one ranked match, whichever ends first.</p>
+      <div class="actions">
+        <a class="btn btn-live" href="#pricing">Order the reader</a>
+        <a class="btn btn-ghost" href="./demo.html">Open the demo</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="specs" aria-label="Reader specifications">
+    <div class="wrap">
+      <div class="spec"><b>38 g</b><span>Lighter than the guilt</span></div>
+      <div class="spec"><b>11 ms</b><span>Tap-to-charge latency</span></div>
+      <div class="spec"><b>2.9% + 30¢</b><span>Per tap, before tip</span></div>
+      <div class="spec"><b>0</b><span>Free controller sessions</span></div>
+    </div>
+  </section>
+
+  <section class="corridor" id="reader">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Everything in your room has a price. Now it has a reader.</h2>
+        <p>Three billing modes ship on every unit. They run in the background while you play and post to the household ledger at the end of each match.</p>
+      </div>
+      <div class="spine" id="spine">
+        <article class="feature">
+          <div>
+            <h3>Controller rental, metered by the minute</h3>
+            <p>Player 2 is billed from the moment the light turns blue. A drift surcharge applies automatically if they flick the stick near the vents.</p>
+          </div>
+          <div class="lineitem" aria-label="Sample charge">
+            <div class="who">Jayden, younger brother</div>
+            <div class="row"><span>Controller rental, 47 min</span><span>$3.92</span></div>
+            <div class="row sur"><span>Drift surcharge</span><span>$1.50</span></div>
+            <div class="row total"><span>Charged to his birthday money</span><span>$5.42</span></div>
+          </div>
+        </article>
+        <article class="feature">
+          <div>
+            <h3>Tap to spectate</h3>
+            <p>Anyone who stands behind your chair for more than 40 seconds is presented with the reader. Commentary is billed separately at the advice rate.</p>
+          </div>
+          <div class="lineitem" aria-label="Sample charge">
+            <div class="who">Theo, roommate</div>
+            <div class="row"><span>Spectating, 6 min</span><span>$0.60</span></div>
+            <div class="row sur"><span>"You should have gone left"</span><span>$2.00</span></div>
+            <div class="row total"><span>Total</span><span>$2.60</span></div>
+          </div>
+        </article>
+        <article class="feature">
+          <div>
+            <h3>Carry invoicing</h3>
+            <p>Getting your cousin through a raid used to be a favor. Hotbar itemizes every revive, every boss pull, every "just stand there," and emails a PDF to his mom.</p>
+          </div>
+          <div class="lineitem" aria-label="Sample charge">
+            <div class="who">Invoice #0418, cc: Aunt Denise</div>
+            <div class="row"><span>Revives (×14)</span><span>$7.00</span></div>
+            <div class="row"><span>Boss pulls (×3)</span><span>$9.00</span></div>
+            <div class="row total"><span>Net 30</span><span>$16.00</span></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap">
+      <div>
+        <h2>Ring up your little brother.</h2>
+        <p>The Hotbar Register is live in the demo. Add a couch seat, pick a customer, and watch the tip screen ask Mom for 20%.</p>
+      </div>
+      <a class="btn btn-live" href="./demo.html">Open the demo</a>
+    </div>
+  </section>
+
+  <section class="reviews" id="reviews">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Merchants who stopped playing for free.</h2>
+      </div>
+      <div class="quotes">
+        <figure class="quote">
+          <blockquote>"My brother owed me $412 in controller time. I didn't know that until Hotbar told me. Now he knows too."</blockquote>
+          <figcaption><img src="headshot-1.webp" alt="Priya Venkataraman" width="56" height="56" loading="lazy"><div><strong>Priya Venkataraman</strong><span>Diamond II Support Main, Head of Household Receivables</span></div></figcaption>
+        </figure>
+        <figure class="quote">
+          <blockquote>"I put the second reader on the mini fridge. Energy drink theft is down 80 percent. My roommate moved out, which is also down."</blockquote>
+          <figcaption><img src="headshot-2.webp" alt="Colt Brannigan" width="56" height="56" loading="lazy"><div><strong>Colt Brannigan</strong><span>Apartment 4C Operations Lead, Part-Time Sniper</span></div></figcaption>
+        </figure>
+        <figure class="quote">
+          <blockquote>"The tip screen asked my dad for 20% after he brought me a sandwich. He tipped. We have not discussed it."</blockquote>
+          <figcaption><img src="headshot-3.webp" alt="Mara Okonkwo-Beale" width="56" height="56" loading="lazy"><div><strong>Mara Okonkwo-Beale</strong><span>Speedrunner (Any%, Unverified), Age 16</span></div></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="pricing" id="pricing">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Pick a plan. Your siblings will pay for it.</h2>
+        <p>Every plan includes the reader, a USB-C cable, and a sticker that says "Card only" for your door.</p>
+      </div>
+      <div class="skus">
+        <div class="sku">
+          <h3>Solo Queue</h3>
+          <div class="price">$0<small>/mo</small></div>
+          <p class="tag">2.9% + 30¢ per tap. Same as everyone else.</p>
+          <ul>
+            <li>One reader, matte black</li>
+            <li>Tip screen with 18%, 20%, and GG presets</li>
+            <li>Receipts printed in a font that looks expensive</li>
+          </ul>
+          <a class="btn btn-ghost" href="./demo.html">Start free</a>
+        </div>
+        <div class="sku pick">
+          <span class="flag">Most households</span>
+          <h3>Duo</h3>
+          <div class="price">$14.99<small>/mo</small></div>
+          <p class="tag">For households with exactly one other person who keeps asking.</p>
+          <ul>
+            <li>Two readers, one for the couch arm</li>
+            <li>Snack-run surcharge on any order placed mid-match</li>
+            <li>Chargebacks settled by best-of-three</li>
+          </ul>
+          <a class="btn btn-live" href="./demo.html">Order Duo</a>
+        </div>
+        <div class="sku">
+          <h3>Clan</h3>
+          <div class="price">$249<small>/mo</small></div>
+          <p class="tag">For LAN parties, dorm floors, and one man named Derek with nine monitors.</p>
+          <ul>
+            <li>Unlimited readers</li>
+            <li>Seat pricing by distance from the TV</li>
+            <li>Year-end 1099s for everyone you carried</li>
+          </ul>
+          <a class="btn btn-ghost" href="./demo.html">Talk to sales</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a href="/">← theworstaistudioever</a>
+    <span>Hotbar is a registered money services business in no states. Tips are not shared with the household.</span>
+    <a href="./demo.html">Open the demo →</a>
+  </div>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js');
+  (function () {
+    var spine = document.getElementById('spine');
+    var done = function () { spine.classList.add('on'); };
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) { done(); io.disconnect(); } });
+      }, { threshold: 0.15 });
+      io.observe(spine);
+    }
+    setTimeout(done, 2500);
+  })();
+</script>
+</body>
+</html>

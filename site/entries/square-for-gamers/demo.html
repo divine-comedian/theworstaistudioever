@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hotbar Register · theworstaistudioever</title>
+<meta name="description" content="Ring up a controller rental, pick a family member, and charge them. A demo of the Hotbar Register.">
+<meta name="theme-color" content="#0E0F12">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Russo+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #B8F03C;
+    --accent: #FF7A1A;
+    --bg: #0E0F12;
+    --panel: #16181D;
+    --raise: #1D2027;
+    --line: #2A2D34;
+    --fg: #E4E6EA;
+    --muted: #80858F;
+    --ink: #F5F6F8;
+    --display: 'Russo One', 'Arial Black', Impact, sans-serif;
+    --body: 'Chakra Petch', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font-family: var(--body); font-size: 15px; line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  .app { display: grid; grid-template-rows: auto 1fr; min-height: 100vh; }
+  .bar {
+    display: flex; align-items: center; gap: 20px; padding: 12px 20px;
+    border-bottom: 1px solid var(--line); background: var(--panel);
+  }
+  .back { color: var(--muted); text-decoration: none; font-size: 14px; }
+  .back:hover { color: var(--ink); }
+  .bar .title { font-family: var(--display); color: var(--ink); font-size: 18px; }
+  .bar .station { color: var(--muted); font-size: 14px; }
+  .status { margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--fg); }
+  .led { width: 9px; height: 9px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 10px var(--primary); animation: led 2.4s ease-in-out infinite; }
+  @keyframes led { 50% { opacity: .45; } }
+
+  .main { display: grid; grid-template-columns: 1fr 400px; min-height: 0; }
+
+  /* catalog */
+  .catalog { padding: 20px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .tools { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .tabs { display: flex; gap: 4px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 4px; flex-wrap: wrap; }
+  .tab { background: none; border: 0; padding: 8px 14px; border-radius: 7px; color: var(--muted); font-weight: 600; }
+  .tab[aria-selected="true"] { background: var(--raise); color: var(--ink); }
+  .search { flex: 1; min-width: 200px; position: relative; }
+  .search label { position: absolute; left: -9999px; }
+  .search input {
+    width: 100%; background: var(--panel); border: 1px solid var(--line); color: var(--ink);
+    border-radius: 10px; padding: 11px 14px; font: inherit;
+  }
+  .search input::placeholder { color: var(--muted); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; align-content: start; }
+  .tile {
+    text-align: left; background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px; min-height: 118px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px;
+    transition: transform .12s ease, border-color .15s ease;
+  }
+  .tile:hover { border-color: var(--muted); }
+  .tile:active { transform: scale(.97); }
+  .tile.bump { border-color: var(--primary); }
+  .tile .name { color: var(--ink); font-weight: 600; font-size: 16px; line-height: 1.25; }
+  .tile .meta { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .tile .price { font-family: var(--display); color: var(--ink); font-size: 18px; }
+  .tile .unit { color: var(--muted); font-size: 13px; }
+  .empty { color: var(--muted); padding: 40px 0; grid-column: 1 / -1; }
+
+  /* ticket */
+  .ticket { border-left: 1px solid var(--line); background: var(--panel); display: flex; flex-direction: column; min-height: 0; }
+  .sect { padding: 16px 20px; border-bottom: 1px solid var(--line); }
+  .sect h2 { font-size: 14px; color: var(--muted); font-weight: 500; margin: 0 0 10px; }
+  .customers { display: grid; gap: 6px; }
+  .cust {
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    background: var(--bg); border: 1px solid var(--line); border-radius: 9px; padding: 9px 12px; text-align: left;
+  }
+  .cust[aria-checked="true"] { border-color: var(--primary); }
+  .cust .who b { color: var(--ink); font-weight: 600; display: block; }
+  .cust .who span { color: var(--muted); font-size: 13px; }
+  .cust .owed { font-size: 14px; color: var(--accent); white-space: nowrap; }
+  .cust .owed.zero { color: var(--muted); }
+
+  .lines { flex: 1; overflow: auto; padding: 8px 20px; min-height: 140px; }
+  .line { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px dashed var(--line); }
+  .line .n { color: var(--ink); }
+  .line .n small { display: block; color: var(--muted); font-size: 12.5px; }
+  .step { display: flex; align-items: center; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .step button { background: var(--bg); border: 0; width: 32px; height: 32px; font-size: 18px; line-height: 1; }
+  .step button:hover { background: var(--raise); }
+  .step span { min-width: 28px; text-align: center; }
+  .line .amt { min-width: 64px; text-align: right; color: var(--ink); }
+  .noitems { color: var(--muted); padding: 24px 0; }
+
+  .tips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .tip { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 9px 4px; font-weight: 600; }
+  .tip[aria-checked="true"] { background: var(--primary); color: #0E0F12; border-color: var(--primary); }
+  .tip:disabled { opacity: .4; cursor: not-allowed; text-decoration: line-through; }
+  .tipnote { color: var(--muted); font-size: 12.5px; margin-top: 8px; }
+
+  .totals { padding: 14px 20px 6px; }
+  .totals .row { display: flex; justify-content: space-between; padding: 3px 0; color: var(--muted); }
+  .totals .row.grand { color: var(--ink); font-size: 20px; font-family: var(--display); padding-top: 10px; }
+  .charge {
+    margin: 12px 20px 20px; padding: 16px; border: 0; border-radius: 10px;
+    background: var(--primary); color: #0E0F12; font-weight: 700; font-size: 18px;
+  }
+  .charge:disabled { background: var(--raise); color: var(--muted); cursor: not-allowed; }
+
+  /* modal */
+  .scrim { position: fixed; inset: 0; background: rgba(5,6,8,.72); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 20; }
+  .scrim.open { display: flex; }
+  .tapper { text-align: center; color: var(--ink); }
+  .pad {
+    width: 150px; height: 150px; margin: 0 auto 22px; border-radius: 26px; background: #1B1D22;
+    border: 1px solid var(--line); position: relative; box-shadow: 0 6px 0 var(--primary), 0 10px 40px rgba(184,240,60,.25);
+  }
+  .pad::after {
+    content: ""; position: absolute; inset: 30px; border-radius: 50%; border: 2px solid var(--primary);
+    animation: ripple 1.1s ease-out infinite;
+  }
+  @keyframes ripple { from { transform: scale(.3); opacity: 1; } to { transform: scale(1.3); opacity: 0; } }
+  .tapper p { margin: 0; font-size: 18px; }
+  .tapper small { color: var(--muted); }
+  .receipt {
+    background: #F1F0EA; color: #1A1A1A; width: min(340px, 100%); padding: 26px 24px 30px;
+    font-family: 'Courier New', Courier, monospace; font-size: 14px; line-height: 1.5;
+    -webkit-mask: radial-gradient(circle 6px at 50% 100%, transparent 98%, #000) 0 0 / 14px 100%;
+            mask: radial-gradient(circle 6px at 50% 100%, transparent 98%, #000) 0 0 / 14px 100%;
+    max-height: calc(100vh - 40px); overflow: auto;
+    animation: print .35s ease-out;
+  }
+  @keyframes print { from { transform: translateY(-16px); opacity: 0; } }
+  .receipt h2 { font-family: var(--display); font-weight: 400; font-size: 22px; text-align: center; margin: 0 0 2px; }
+  .receipt .c { text-align: center; }
+  .receipt hr { border: 0; border-top: 1px dashed #777; margin: 12px 0; }
+  .receipt .r { display: flex; justify-content: space-between; gap: 12px; }
+  .receipt .big { font-weight: 700; font-size: 16px; }
+  .receipt .ok { text-align: center; font-weight: 700; margin-top: 10px; }
+  .receipt button { margin-top: 18px; width: 100%; padding: 11px; background: #1A1A1A; color: #F1F0EA; border: 0; border-radius: 6px; font-family: var(--body); font-weight: 700; }
+  .tapper, .receipt { display: none; }
+  .scrim.tapping .tapper, .scrim.printed .receipt { display: block; }
+
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); opacity: 0; background: var(--raise); border: 1px solid var(--line); color: var(--ink); padding: 10px 16px; border-radius: 8px; transition: .2s ease; pointer-events: none; z-index: 30; }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  @media (max-width: 880px) {
+    .main { grid-template-columns: 1fr; }
+    .ticket { border-left: 0; border-top: 1px solid var(--line); }
+    .lines { overflow: visible; }
+    .bar .station { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .led, .pad::after, .receipt { animation: none; }
+    .tile, .toast { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="bar">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <span class="title">Hotbar Register</span>
+    <span class="station">Station: Desk 1 (Kevin's room)</span>
+    <span class="status"><span class="led" aria-hidden="true"></span>Reader connected</span>
+  </header>
+
+  <div class="main">
+    <section class="catalog" aria-label="Items">
+      <div class="tools">
+        <div class="tabs" role="tablist" aria-label="Category" id="tabs"></div>
+        <div class="search">
+          <label for="q">Search items</label>
+          <input id="q" type="search" placeholder="Search items, e.g. couch" autocomplete="off">
+        </div>
+      </div>
+      <div class="grid" id="grid"></div>
+    </section>
+
+    <aside class="ticket" aria-label="Current sale">
+      <div class="sect">
+        <h2 id="custlabel">Customer</h2>
+        <div class="customers" role="radiogroup" aria-labelledby="custlabel" id="customers"></div>
+      </div>
+      <div class="lines" id="lines" aria-live="polite"></div>
+      <div class="sect">
+        <h2 id="tiplabel">Tip</h2>
+        <div class="tips" role="radiogroup" aria-labelledby="tiplabel" id="tips"></div>
+        <div class="tipnote">"No tip" is unavailable in your household.</div>
+      </div>
+      <div class="totals">
+        <div class="row"><span>Subtotal</span><span class="num" id="sub">$0.00</span></div>
+        <div class="row"><span>Processing (2.9% + 30¢)</span><span class="num" id="fee">$0.00</span></div>
+        <div class="row"><span>Tip</span><span class="num" id="tipamt">$0.00</span></div>
+        <div class="row grand"><span>Total</span><span class="num" id="total">$0.00</span></div>
+      </div>
+      <button class="charge" id="charge" disabled>Charge</button>
+    </aside>
+  </div>
+</div>
+
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-label="Payment">
+  <div class="tapper">
+    <div class="pad" aria-hidden="true"></div>
+    <p id="tapmsg">Waiting for Jayden to tap</p>
+    <small>He is pretending not to hear you.</small>
+  </div>
+  <div class="receipt" id="receipt"></div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function () {
+  var items = [
+    ['h1', 'Hardware', 'Controller rental, 1 hr', 5.00, 'per hour'],
+    ['h2', 'Hardware', 'Headset loan, mic muted', 3.00, 'per session'],
+    ['h3', 'Hardware', 'The good controller', 9.00, 'surge'],
+    ['h4', 'Hardware', 'Charging cable, returned', 1.50, 'deposit'],
+    ['s1', 'Seating', 'Couch seat, left (the good one)', 4.00, 'per match'],
+    ['s2', 'Seating', 'Couch seat, right', 2.00, 'per match'],
+    ['s3', 'Seating', 'Beanbag, partially deflated', 0.75, 'per match'],
+    ['s4', 'Seating', 'Standing behind my chair', 0.10, 'per minute'],
+    ['v1', 'Services', 'Carried through raid', 12.00, 'flat'],
+    ['v2', 'Services', 'Revive', 0.50, 'each'],
+    ['v3', 'Services', 'Silence during ranked', 6.00, 'per match'],
+    ['v4', 'Services', 'Explaining the lore', 8.00, 'per 10 min'],
+    ['p1', 'Pantry', 'Energy drink, from my fridge', 3.50, 'each'],
+    ['p2', 'Pantry', 'Last slice of pizza', 4.25, 'contested'],
+    ['p3', 'Pantry', 'Snack run, mid-match', 7.00, 'surcharge'],
+    ['p4', 'Pantry', 'Asking what I want for dinner', 1.00, 'interruption']
+  ].map(function (a) { return { id: a[0], cat: a[1], name: a[2], price: a[3], unit: a[4] }; });
+
+  var customers = [
+    { id: 'j', name: 'Jayden', rel: 'Younger brother', owed: 41.20 },
+    { id: 'm', name: 'Mom', rel: 'Landlord, technically', owed: 0 },
+    { id: 't', name: 'Theo', rel: 'Roommate, on notice', owed: 18.75 }
+  ];
+  var tips = [['18', 18], ['20', 20], ['GG', 25], ['None', 0]];
+  var cats = ['All', 'Hardware', 'Seating', 'Services', 'Pantry'];
+
+  var state = { cat: 'All', q: '', cart: [], cust: 'j', tip: 20, receiptNo: 1042 };
+  var $ = function (id) { return document.getElementById(id); };
+  var money = function (n) { return '$' + n.toFixed(2); };
+  var esc = function (s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); };
+
+  function renderTabs() {
+    $('tabs').innerHTML = cats.map(function (c) {
+      return '<button class="tab" role="tab" aria-selected="' + (c === state.cat) + '" data-cat="' + c + '">' + c + '</button>';
+    }).join('');
+  }
+  function renderGrid() {
+    var q = state.q.toLowerCase();
+    var list = items.filter(function (it) {
+      return (state.cat === 'All' || it.cat === state.cat) && (!q || it.name.toLowerCase().indexOf(q) > -1);
+    });
+    $('grid').innerHTML = list.length ? list.map(function (it) {
+      return '<button class="tile" data-id="' + it.id + '"><span class="name">' + esc(it.name) + '</span>' +
+        '<span class="meta"><span class="price num">' + money(it.price) + '</span><span class="unit">' + it.unit + '</span></span></button>';
+    }).join('') : '<p class="empty">Nothing in the catalog matches "' + esc(state.q) + '". Everything is billable, though. Try a shorter search.</p>';
+  }
+  function renderCustomers() {
+    $('customers').innerHTML = customers.map(function (c) {
+      return '<button class="cust" role="radio" aria-checked="' + (c.id === state.cust) + '" data-cust="' + c.id + '">' +
+        '<span class="who"><b>' + c.name + '</b><span>' + c.rel + '</span></span>' +
+        '<span class="owed num' + (c.owed ? '' : ' zero') + '">' + (c.owed ? money(c.owed) + ' owed' : 'Paid up') + '</span></button>';
+    }).join('');
+  }
+  function renderTips() {
+    $('tips').innerHTML = tips.map(function (t) {
+      var label = t[0] === 'None' ? 'No tip' : (t[0] === 'GG' ? 'GG' : t[0] + '%');
+      var dis = t[0] === 'None' ? ' disabled' : '';
+      return '<button class="tip" role="radio" aria-checked="' + (t[1] === state.tip && !dis) + '" data-tip="' + t[1] + '"' + dis + '>' + label + '</button>';
+    }).join('');
+  }
+  function calc() {
+    var sub = state.cart.reduce(function (s, l) { return s + l.item.price * l.qty; }, 0);
+    var fee = sub ? sub * 0.029 + 0.30 : 0;
+    var tip = sub * state.tip / 100;
+    return { sub: sub, fee: fee, tip: tip, total: sub + fee + tip };
+  }
+  function renderTicket() {
+    var lines = $('lines');
+    if (!state.cart.length) {
+      lines.innerHTML = '<p class="noitems">No items yet. Tap something from the catalog. Everything here belongs to you.</p>';
+    } else {
+      lines.innerHTML = state.cart.map(function (l, i) {
+        return '<div class="line"><span class="n">' + esc(l.item.name) + '<small>' + money(l.item.price) + ' ' + l.item.unit + '</small></span>' +
+          '<span class="step"><button data-dec="' + i + '" aria-label="Remove one ' + esc(l.item.name) + '">−</button><span class="num">' + l.qty + '</span>' +
+          '<button data-inc="' + i + '" aria-label="Add one ' + esc(l.item.name) + '">+</button></span>' +
+          '<span class="amt num">' + money(l.item.price * l.qty) + '</span></div>';
+      }).join('');
+    }
+    var t = calc();
+    $('sub').textContent = money(t.sub);
+    $('fee').textContent = money(t.fee);
+    $('tipamt').textContent = money(t.tip);
+    $('total').textContent = money(t.total);
+    var c = customers.filter(function (x) { return x.id === state.cust; })[0];
+    $('charge').disabled = !state.cart.length;
+    $('charge').textContent = state.cart.length ? 'Charge ' + c.name + ' ' + money(t.total) : 'Charge';
+  }
+  function toast(msg) {
+    var el = $('toast'); el.textContent = msg; el.classList.add('show');
+    clearTimeout(toast.t); toast.t = setTimeout(function () { el.classList.remove('show'); }, 2600);
+  }
+
+  $('tabs').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-cat]'); if (!b) return;
+    state.cat = b.getAttribute('data-cat'); renderTabs(); renderGrid();
+  });
+  $('q').addEventListener('input', function (e) { state.q = e.target.value.trim(); renderGrid(); });
+  $('grid').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-id]'); if (!b) return;
+    var it = items.filter(function (x) { return x.id === b.getAttribute('data-id'); })[0];
+    var line = state.cart.filter(function (l) { return l.item === it; })[0];
+    if (line) line.qty++; else state.cart.push({ item: it, qty: 1 });
+    b.classList.add('bump'); setTimeout(function () { b.classList.remove('bump'); }, 250);
+    renderTicket();
+  });
+  $('lines').addEventListener('click', function (e) {
+    var inc = e.target.closest('[data-inc]'), dec = e.target.closest('[data-dec]');
+    if (inc) state.cart[+inc.getAttribute('data-inc')].qty++;
+    if (dec) {
+      var i = +dec.getAttribute('data-dec');
+      if (--state.cart[i].qty === 0) state.cart.splice(i, 1);
+    }
+    renderTicket();
+  });
+  $('customers').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-cust]'); if (!b) return;
+    state.cust = b.getAttribute('data-cust'); renderCustomers(); renderTicket();
+    if (state.cust === 'm') toast('Mom has been added to the sale. Tip presets are unchanged.');
+  });
+  $('tips').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-tip]'); if (!b || b.disabled) return;
+    state.tip = +b.getAttribute('data-tip'); renderTips(); renderTicket();
+    if (state.tip === 25) toast('GG is 25%. Good game.');
+  });
+
+  var scrim = $('scrim');
+  $('charge').addEventListener('click', function () {
+    var c = customers.filter(function (x) { return x.id === state.cust; })[0];
+    var t = calc();
+    var lines = state.cart.slice();
+    $('tapmsg').textContent = 'Waiting for ' + c.name + ' to tap';
+    scrim.className = 'scrim open tapping';
+    setTimeout(function () {
+      c.owed = Math.max(0, c.owed - t.total);
+      var now = new Date();
+      var r = '<h2>Hotbar</h2><div class="c">Desk 1, Kevin’s room<br>' + now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + '<br>Receipt #' + (state.receiptNo++) + '</div><hr>';
+      r += lines.map(function (l) { return '<div class="r"><span>' + l.qty + ' × ' + esc(l.item.name) + '</span><span>' + money(l.item.price * l.qty) + '</span></div>'; }).join('');
+      r += '<hr><div class="r"><span>Subtotal</span><span>' + money(t.sub) + '</span></div>';
+      r += '<div class="r"><span>Processing</span><span>' + money(t.fee) + '</span></div>';
+      r += '<div class="r"><span>Tip (' + (state.tip === 25 ? 'GG' : state.tip + '%') + ')</span><span>' + money(t.tip) + '</span></div>';
+      r += '<div class="r big"><span>TOTAL</span><span>' + money(t.total) + '</span></div><hr>';
+      r += '<div class="c">Customer: ' + c.name + '<br>Card: contactless, borrowed</div>';
+      r += '<div class="ok">APPROVED</div><div class="c">No refunds after respawn.</div>';
+      r += '<button id="newsale">New sale</button>';
+      $('receipt').innerHTML = r;
+      scrim.className = 'scrim open printed';
+      $('newsale').focus();
+    }, 1600);
+  });
+  function closeModal() {
+    if (!scrim.classList.contains('printed')) return;
+    scrim.className = 'scrim';
+    state.cart = []; renderCustomers(); renderTicket();
+    toast('Charged. Funds settle after the next ranked match.');
+    $('charge').focus();
+  }
+  scrim.addEventListener('click', function (e) { if (e.target.id === 'newsale' || e.target === scrim) closeModal(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeModal(); });
+
+  state.cart.push({ item: items[0], qty: 1 }, { item: items[4], qty: 2 });
+  renderTabs(); renderGrid(); renderCustomers(); renderTips(); renderTicket();
+})();
+</script>
+</body>
+</html>
