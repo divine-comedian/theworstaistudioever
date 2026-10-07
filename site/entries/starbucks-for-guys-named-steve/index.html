@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stevedore Coffee Co. · theworstaistudioever</title>
+<meta name="description" content="The coffee chain where the barista gets your name right on the first try. It's Steve. We checked at the door.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Stevedore Coffee Co. · theworstaistudioever">
+<meta property="og:description" content="The coffee chain where the barista gets your name right on the first try. It's Steve. We checked at the door.">
+<meta property="og:image" content="hero.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#F5EEE3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Permanent+Marker&family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red:#C8322B; --red-deep:#A3241F; --kraft:#B8875A; --kraft-lt:#E3CFB4;
+    --bg:#F5EEE3; --paper:#FFFDF8; --fg:#2A211B; --muted:#6E5E50; --ink:#1E1712;
+    --display:'Archivo Black','Arial Black',Impact,sans-serif;
+    --body:'Work Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --mono:'Space Mono','SFMono-Regular',Menlo,Consolas,monospace;
+    --scrawl:'Permanent Marker','Comic Sans MS',cursive;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--fg);font:400 17px/1.62 var(--body);-webkit-font-smoothing:antialiased}
+  img{display:block;max-width:100%}
+  a{color:inherit}
+  :focus-visible{outline:3px solid var(--red);outline-offset:3px}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+  /* top bar */
+  .bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 0}
+  .mark{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--display);font-size:21px;letter-spacing:-.01em;color:var(--ink)}
+  .mark svg{flex:none}
+  .bar nav{display:flex;gap:26px;font-weight:500;font-size:15px}
+  .bar nav a{text-decoration:none;color:var(--muted)}
+  .bar nav a:hover{color:var(--ink)}
+  .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 22px;border-radius:999px;font:600 16px/1 var(--body);text-decoration:none;cursor:pointer;border:2px solid var(--ink);transition:transform .18s ease-out,background .18s ease-out}
+  .btn-red{background:var(--red);border-color:var(--red);color:#fff}
+  .btn-red:hover{background:var(--red-deep);border-color:var(--red-deep)}
+  .btn-line{background:transparent;color:var(--ink)}
+  .btn-line:hover{background:var(--ink);color:var(--bg)}
+  .btn:active{transform:scale(.97)}
+  .bar .btn{min-height:44px;font-size:15px}
+
+  /* hero */
+  .hero{display:grid;grid-template-columns:1.02fr 1fr;gap:56px;align-items:center;padding:40px 0 88px}
+  .badge{position:relative;display:inline-block;width:min(360px,100%);background:var(--paper);border-radius:14px;overflow:hidden;box-shadow:0 2px 0 var(--kraft),0 0 0 1px rgba(30,23,18,.08);transform:rotate(-2.5deg)}
+  .badge-top{background:var(--red);color:#fff;text-align:center;padding:10px 12px 8px}
+  .badge-top b{display:block;font-family:var(--display);font-size:30px;line-height:1;letter-spacing:.02em}
+  .badge-top span{font-weight:600;font-size:14px}
+  .badge-body{height:116px;display:flex;align-items:center;justify-content:center;border-bottom:16px solid var(--red)}
+  .scrawl{font-family:var(--scrawl);color:var(--ink);font-size:68px;line-height:1;transform:rotate(-4deg);display:inline-block}
+  .badge .scrawl{clip-path:inset(0 100% 0 0);animation:write .9s .35s cubic-bezier(.3,.7,.3,1) forwards}
+  @keyframes write{to{clip-path:inset(0 0 0 0)}}
+  h1{font-family:var(--display);font-weight:400;font-size:clamp(40px,5.4vw,68px);line-height:1.02;letter-spacing:-.025em;color:var(--ink);margin:34px 0 18px;max-width:12ch}
+  .hero p.sub{font-size:19px;max-width:34em;margin:0 0 30px;color:var(--fg)}
+  .ctas{display:flex;flex-wrap:wrap;gap:12px}
+  .photo{position:relative}
+  .photo img{width:100%;aspect-ratio:4/5;object-fit:cover;object-position:52% 50%;border-radius:6px;border:10px solid var(--kraft-lt)}
+  .ticket{position:absolute;left:-34px;bottom:34px;width:220px;background:#fff;color:var(--ink);font:400 13px/1.55 var(--mono);padding:14px 16px 22px;transform:rotate(3deg);box-shadow:0 6px 18px rgba(30,23,18,.14);
+    -webkit-mask:linear-gradient(#000 0 0) top/100% calc(100% - 8px) no-repeat,conic-gradient(from 135deg at 50% 0,#000 90deg,#0000 0) bottom/12px 8px repeat-x;
+            mask:linear-gradient(#000 0 0) top/100% calc(100% - 8px) no-repeat,conic-gradient(from 135deg at 50% 0,#000 90deg,#0000 0) bottom/12px 8px repeat-x}
+  .ticket .row{display:flex;justify-content:space-between;gap:10px}
+  .ticket hr{border:0;border-top:1px dashed #9b8c7e;margin:8px 0}
+  .ticket .name{font-family:var(--scrawl);font-size:24px;line-height:1.1}
+
+  /* features */
+  section{padding:88px 0}
+  .head{display:flex;align-items:end;justify-content:space-between;gap:24px;margin-bottom:44px;flex-wrap:wrap}
+  h2{font-family:var(--display);font-weight:400;font-size:clamp(30px,3.6vw,46px);line-height:1.05;letter-spacing:-.02em;color:var(--ink);margin:0;max-width:18ch}
+  .head p{max-width:30em;margin:0;color:var(--muted)}
+  .features{background:var(--paper);border-top:1px solid var(--kraft-lt);border-bottom:1px solid var(--kraft-lt)}
+  .feat-list{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:2px solid var(--ink)}
+  .feat{padding:30px 28px 8px 0}
+  .feat + .feat{padding-left:28px;border-left:1px solid var(--kraft-lt)}
+  .feat figure{margin:0 0 22px;height:120px;display:flex;align-items:center}
+  .feat h3{font:600 22px/1.25 var(--body);color:var(--ink);margin:0 0 10px}
+  .feat p{margin:0;color:var(--fg)}
+  .chips{display:flex;flex-direction:column;gap:8px}
+  .chip{align-self:flex-start;background:var(--bg);border:1.5px solid var(--ink);border-radius:999px;padding:4px 14px;font-size:14px;font-weight:500;white-space:nowrap}
+  .chip b{font-family:var(--scrawl);font-weight:400;font-size:17px;margin-right:4px}
+  .chip:nth-child(2){margin-left:22px;background:var(--red);border-color:var(--red);color:#fff}
+  .chip:nth-child(3){margin-left:8px}
+
+  /* testimonials as name tags */
+  .tags{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;align-items:start}
+  .tag{background:var(--paper);border-radius:12px;overflow:hidden;box-shadow:0 2px 0 var(--kraft),0 0 0 1px rgba(30,23,18,.07);transition:transform .22s ease-out}
+  .tag:nth-child(1){transform:rotate(-1.2deg)}
+  .tag:nth-child(2){transform:rotate(.8deg);margin-top:26px}
+  .tag:nth-child(3){transform:rotate(-.4deg);margin-top:8px}
+  .tag:hover{transform:rotate(0)}
+  .tag-top{background:var(--red);color:#fff;display:flex;align-items:center;gap:14px;padding:14px 18px}
+  .tag-top img{width:64px;height:64px;border-radius:50%;object-fit:cover;border:3px solid #fff;flex:none}
+  .tag-top .who{font-family:var(--scrawl);font-size:25px;line-height:1.05}
+  .tag blockquote{margin:0;padding:20px 20px 10px;font-size:17px}
+  .tag .title{padding:0 20px 20px;font-size:14px;color:var(--muted);font-weight:500}
+  .tag.pending .tag-top{background:var(--kraft)}
+
+  /* pricing as punch cards */
+  .pricing{background:var(--ink);color:var(--bg)}
+  .pricing h2{color:var(--bg)}
+  .pricing .head p{color:var(--kraft-lt)}
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .card{background:var(--kraft-lt);color:var(--ink);border-radius:16px;padding:26px 24px 24px;display:flex;flex-direction:column;position:relative}
+  .card.hot{background:var(--paper);outline:4px solid var(--red);outline-offset:-4px}
+  .card .tier{font-family:var(--display);font-size:26px;line-height:1.1;margin:0}
+  .card .price{font:700 34px/1 var(--mono);margin:16px 0 6px;letter-spacing:-.02em}
+  .card .tl{color:var(--muted);margin:0 0 18px;min-height:3.2em}
+  .punch{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;margin:0 0 18px}
+  .punch i{aspect-ratio:1;border-radius:50%;border:1.5px dashed rgba(30,23,18,.45)}
+  .punch i.on{background:var(--ink);border:1.5px solid var(--ink)}
+  .card.hot .punch i.on{background:var(--red);border-color:var(--red)}
+  .card ul{list-style:none;margin:0 0 24px;padding:0;flex:1}
+  .card li{padding:9px 0;border-top:1px solid rgba(30,23,18,.14);font-size:16px}
+  .card .btn{width:100%}
+  .card .flag{position:absolute;top:-14px;right:20px;background:var(--red);color:#fff;font-family:var(--scrawl);font-size:17px;padding:3px 12px;border-radius:6px;transform:rotate(3deg)}
+  .fine{margin-top:26px;font-size:14px;color:var(--kraft-lt)}
+
+  /* demo band */
+  .demo{text-align:center;padding:100px 0}
+  .demo .scrawl{font-size:clamp(70px,12vw,150px);color:var(--red)}
+  .demo h2{margin:18px auto 14px;max-width:20ch}
+  .demo p{max-width:34em;margin:0 auto 30px;color:var(--muted)}
+  .demo .btn{min-height:56px;padding:0 32px;font-size:18px}
+
+  footer{border-top:1px solid var(--kraft-lt);padding:28px 0 40px;font-size:14px;color:var(--muted)}
+  footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  footer a{color:var(--ink)}
+
+  @media (max-width:900px){
+    .bar nav{display:none}
+    .hero{grid-template-columns:1fr;gap:48px;padding-bottom:64px}
+    .photo{margin:0 0 0 20px}
+    .ticket{left:-20px;bottom:20px;width:200px}
+    .feat-list,.tags,.cards{grid-template-columns:1fr}
+    .feat,.feat + .feat{padding:28px 0;border-left:0;border-bottom:1px solid var(--kraft-lt)}
+    .tag:nth-child(n){margin-top:0}
+    .tags{gap:26px}
+    section{padding:64px 0}
+  }
+  @media (max-width:420px){
+    .scrawl{font-size:56px}
+    .bar .btn{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .badge .scrawl{animation:none;clip-path:none}
+    .tag,.btn{transition:none}
+  }
+</style>
+</head>
+<body>
+<header class="wrap bar">
+  <a class="mark" href="#top" aria-label="Stevedore Coffee Co. home">
+    <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><path d="M8 9h18l-2.4 20a2 2 0 0 1-2 1.8h-9.2a2 2 0 0 1-2-1.8z" fill="#B8875A"/><rect x="6" y="5" width="22" height="5" rx="2" fill="#1E1712"/><rect x="9.6" y="15" width="14.8" height="7" fill="#C8322B"/></svg>
+    Stevedore
+  </a>
+  <nav aria-label="Primary"><a href="#how">How it works</a><a href="#steves">Steves</a><a href="#pricing">Membership</a><a href="demo.html">Barista console</a></nav>
+  <a class="btn btn-red" href="#pricing">Verify your Steve</a>
+</header>
+
+<main id="top">
+  <div class="wrap hero">
+    <div>
+      <div class="badge" role="img" aria-label="Name badge reading Hello, my name is Steve">
+        <div class="badge-top"><b>HELLO</b><span>my name is</span></div>
+        <div class="badge-body"><span class="scrawl">Steve</span></div>
+      </div>
+      <h1>We already wrote your name on the cup.</h1>
+      <p class="sub">Stevedore is a coffee chain for one customer segment: guys named Steve. Every cup ships pre-printed. Every order is called once. Seven Steves answer, and we have a process for that.</p>
+      <div class="ctas">
+        <a class="btn btn-red" href="#pricing">Verify your Steve</a>
+        <a class="btn btn-line" href="demo.html">Open the demo →</a>
+      </div>
+    </div>
+    <div class="photo">
+      <img src="hero.webp" width="1600" height="900" alt="A man in a navy fleece vest smiling at a kraft paper coffee cup at a cafe counter">
+      <div class="ticket" aria-hidden="true">
+        <div class="row"><span>ORDER 4112</span><span>08:41</span></div>
+        <hr>
+        <div class="name">Steve</div>
+        <div>(Navy Fleece Vest)</div>
+        <hr>
+        <div class="row"><span>Flat white, 12oz</span><span>$4.10</span></div>
+        <div class="row"><span>Name asked</span><span>0 times</span></div>
+      </div>
+    </div>
+  </div>
+
+  <section class="features" id="how">
+    <div class="wrap">
+      <div class="head">
+        <h2>Three operational fixes for one first name.</h2>
+        <p>Every other coffee chain treats the name as a variable. We hard-coded it and spent the savings on process.</p>
+      </div>
+      <div class="feat-list">
+        <article class="feat">
+          <figure aria-hidden="true">
+            <svg width="190" height="110" viewBox="0 0 190 110"><g fill="#B8875A"><path d="M8 18h40l-5 84H13z"/><path d="M72 18h40l-5 84H77z"/><path d="M136 18h40l-5 84h-30z"/></g><g fill="#1E1712"><rect x="5" y="10" width="46" height="9" rx="3"/><rect x="69" y="10" width="46" height="9" rx="3"/><rect x="133" y="10" width="46" height="9" rx="3"/></g><g font-family="Permanent Marker, cursive" font-size="13" fill="#1E1712"><text x="12" y="62" transform="rotate(-6 28 58)">STEVE</text><text x="76" y="62" transform="rotate(-6 92 58)">STEVE</text><text x="140" y="62" transform="rotate(-6 156 58)">STEVE</text></g></svg>
+          </figure>
+          <h3>Pre-printed cups</h3>
+          <p>Every cup leaves the factory reading STEVE in our house marker hand. Baristas no longer ask, spell, or guess. Bar throughput is up 41% since we removed the question.</p>
+        </article>
+        <article class="feat">
+          <figure aria-hidden="true">
+            <svg width="200" height="110" viewBox="0 0 200 110"><rect x="4" y="12" width="150" height="90" rx="8" fill="#FFFDF8" stroke="#1E1712" stroke-width="2"/><rect x="4" y="12" width="150" height="20" rx="8" fill="#C8322B"/><rect x="4" y="24" width="150" height="8" fill="#C8322B"/><circle cx="38" cy="66" r="18" fill="#E3CFB4"/><circle cx="38" cy="60" r="7" fill="#B8875A"/><path d="M24 80a14 12 0 0 1 28 0z" fill="#B8875A"/><text x="66" y="62" font-family="Permanent Marker, cursive" font-size="20" fill="#1E1712">Steve</text><rect x="66" y="72" width="70" height="4" rx="2" fill="#E3CFB4"/><rect x="66" y="82" width="48" height="4" rx="2" fill="#E3CFB4"/><circle cx="168" cy="72" r="24" fill="#1E1712"/><path d="M157 72l8 8 14-16" stroke="#F5EEE3" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </figure>
+          <h3>Door-side Steve verification</h3>
+          <p>Two forms of Steve ID at the threshold: a driver's licence and a coworker who can confirm it. Stephens are admitted under review. Stevens with an n are processed in the order received.</p>
+        </article>
+        <article class="feat">
+          <figure aria-hidden="true">
+            <div class="chips">
+              <span class="chip"><b>Steve</b> (Blue Fleece)</span>
+              <span class="chip"><b>Steve</b> (Has Kayak On Car)</span>
+              <span class="chip"><b>Steve</b> (Second From Accounts)</span>
+            </div>
+          </figure>
+          <h3>The Descriptor Engine</h3>
+          <p>When we call Steve and nine men stand up, the Descriptor Engine gives each order a visible attribute at the till. Collisions are resolved in under four seconds, or eleven if two of them are wearing the same fleece.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="steves">
+    <div class="wrap">
+      <div class="head">
+        <h2>Verified Steves, on the record.</h2>
+        <p>Quotes collected at the condiment bar. One applicant is included for balance and has been told he is included for balance.</p>
+      </div>
+      <div class="tags">
+        <figure class="tag">
+          <div class="tag-top"><img src="headshot-1.webp" width="320" height="320" alt="Steve Okafor" loading="lazy"><span class="who">Steve Okafor</span></div>
+          <blockquote>"For eleven years I was Stove, Steph and once Sieve. Here they called me Steve before I opened my mouth. I sat in the car for a minute afterwards."</blockquote>
+          <figcaption class="title">Regional Logistics Lead, Second Steve In His Office</figcaption>
+        </figure>
+        <figure class="tag">
+          <div class="tag-top"><img src="headshot-2.webp" width="320" height="320" alt="Steve Lindqvist" loading="lazy"><span class="who">Steve Lindqvist</span></div>
+          <blockquote>"The Descriptor Engine assigned me Steve (Clearly Retired). It was right. I have upgraded to Prime so I can change it to Steve (Consultant)."</blockquote>
+          <figcaption class="title">Former Orthodontist, Goes By Steve, Has Always Gone By Steve</figcaption>
+        </figure>
+        <figure class="tag pending">
+          <div class="tag-top"><img src="headshot-3.webp" width="320" height="320" alt="Steven Marsh" loading="lazy"><span class="who">Steven Marsh</span></div>
+          <blockquote>"My application has been under review since March. The coffee in the waiting area is very good. I am told the Council meets in November."</blockquote>
+          <figcaption class="title">Applicant, Spelled With A V, Status Pending</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="pricing" id="pricing">
+    <div class="wrap">
+      <div class="head">
+        <h2>Membership, punched in advance.</h2>
+        <p>All tiers include coffee at normal prices. You are paying for the name to be handled correctly, which is the expensive part.</p>
+      </div>
+      <div class="cards">
+        <article class="card">
+          <h3 class="tier">Steve</h3>
+          <div class="price">$0/mo</div>
+          <p class="tl">You pay for coffee like a normal person.</p>
+          <div class="punch" aria-label="3 of 10 punched"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <ul><li>Standard pre-printed cup</li><li>One descriptor, assigned by staff</li><li>Called in the general Steve pool</li></ul>
+          <a class="btn btn-line" href="demo.html">Join the pool</a>
+        </article>
+        <article class="card hot">
+          <span class="flag">most Steves</span>
+          <h3 class="tier">Steve Prime</h3>
+          <div class="price">$14/mo</div>
+          <p class="tl">For the Steve who is tired of being Steve (Grey Fleece).</p>
+          <div class="punch" aria-label="7 of 10 punched"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
+          <ul><li>Choose your own descriptor, subject to approval</li><li>Priority call, said slightly louder</li><li>Cup spelled Stephen on request, at your own risk</li></ul>
+          <a class="btn btn-red" href="demo.html">Go Prime</a>
+        </article>
+        <article class="card">
+          <h3 class="tier">Steve Council</h3>
+          <div class="price">$2,400/yr</div>
+          <p class="tl">A vote on who else gets to be Steve.</p>
+          <div class="punch" aria-label="10 of 10 punched"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+          <ul><li>Seat at the quarterly Steve AGM</li><li>Binding vote on the Stephen admissions backlog</li><li>Your descriptor retired when you leave, like a jersey</li></ul>
+          <a class="btn btn-line" href="demo.html">Apply for a seat</a>
+        </article>
+      </div>
+      <p class="fine">Membership requires the legal first name Steve, Steven or Stephen. Stevie is assessed case by case. Esteban has written to us twice and we respect that.</p>
+    </div>
+  </section>
+
+  <section class="demo">
+    <div class="wrap">
+      <span class="scrawl" aria-hidden="true">Steve?</span>
+      <h2>Watch nine men stand up at once.</h2>
+      <p>The barista console runs the 8:40am rush: nine orders, one name, and the Descriptor Engine keeping them apart.</p>
+      <a class="btn btn-red" href="demo.html">Open the demo →</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Stevedore Coffee Co. 214 locations. 1 name.</span>
+    <a href="/">← theworstaistudioever</a>
+  </div>
+</footer>
+</body>
+</html>

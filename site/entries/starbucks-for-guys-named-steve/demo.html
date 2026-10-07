@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Barista console · Stevedore Coffee Co. · theworstaistudioever</title>
+<meta name="description" content="The Stevedore barista console: nine orders, one name, and a Descriptor Engine keeping them apart.">
+<meta name="theme-color" content="#F5EEE3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Permanent+Marker&family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red:#C8322B; --red-deep:#A3241F; --kraft:#B8875A; --kraft-lt:#E3CFB4;
+    --bg:#F5EEE3; --paper:#FFFDF8; --fg:#2A211B; --muted:#6E5E50; --ink:#1E1712; --ok:#2F6B45;
+    --display:'Archivo Black','Arial Black',Impact,sans-serif;
+    --body:'Work Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --mono:'Space Mono','SFMono-Regular',Menlo,Consolas,monospace;
+    --scrawl:'Permanent Marker','Comic Sans MS',cursive;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:400 15px/1.5 var(--body);-webkit-font-smoothing:antialiased;min-height:100dvh}
+  button{font:inherit;color:inherit;cursor:pointer}
+  :focus-visible{outline:3px solid var(--red);outline-offset:2px}
+  .app{display:grid;grid-template-columns:232px 1fr;min-height:100dvh}
+
+  /* sidebar */
+  aside{background:var(--ink);color:var(--bg);padding:18px 16px;display:flex;flex-direction:column;gap:22px}
+  .back{color:var(--kraft-lt);font-size:13px;text-decoration:none}
+  .back:hover{color:#fff}
+  .store{font-family:var(--display);font-size:19px;line-height:1.15}
+  .store small{display:block;font:400 13px/1.4 var(--body);color:var(--kraft-lt);margin-top:4px}
+  .tabs{display:flex;flex-direction:column;gap:4px}
+  .tab{display:flex;justify-content:space-between;align-items:center;min-height:44px;padding:0 12px;border:0;border-radius:8px;background:transparent;text-align:left;font-weight:500;color:var(--kraft-lt)}
+  .tab:hover{background:rgba(255,255,255,.06)}
+  .tab[aria-selected="true"]{background:var(--red);color:#fff}
+  .tab .n{font:700 12px/1 var(--mono);background:rgba(0,0,0,.25);padding:4px 7px;border-radius:99px}
+  .shift{margin-top:auto;font:400 12px/1.6 var(--mono);color:var(--kraft-lt);border-top:1px solid rgba(255,255,255,.12);padding-top:14px}
+  .shift b{color:#fff;font-weight:700}
+
+  /* main */
+  main{padding:20px 28px 40px;min-width:0}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+  h1{font-family:var(--display);font-weight:400;font-size:28px;line-height:1.1;margin:0;color:var(--ink)}
+  h1 small{display:block;font:400 14px/1.4 var(--body);color:var(--muted);margin-top:4px}
+  .stats{display:flex;gap:10px;flex-wrap:wrap}
+  .stat{background:var(--paper);border:1px solid var(--kraft-lt);border-radius:10px;padding:8px 14px;min-width:116px}
+  .stat span{display:block;font-size:12px;color:var(--muted)}
+  .stat b{font:700 20px/1.2 var(--mono);color:var(--ink)}
+  .stat.warn b{color:var(--red)}
+
+  .tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+  .filters{display:flex;gap:6px;flex-wrap:wrap}
+  .f{min-height:40px;padding:0 14px;border-radius:999px;border:1.5px solid var(--ink);background:transparent;font-weight:500;font-size:14px}
+  .f[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+  .search{flex:1;min-width:180px;display:flex;align-items:center;gap:8px;background:var(--paper);border:1.5px solid var(--kraft-lt);border-radius:999px;padding:0 14px;min-height:40px}
+  .search input{border:0;background:transparent;font:inherit;flex:1;min-width:0;outline:none}
+  .search:focus-within{border-color:var(--ink)}
+  .callall{min-height:44px;padding:0 20px;border-radius:999px;border:0;background:var(--red);color:#fff;font-weight:600}
+  .callall:hover{background:var(--red-deep)}
+
+  /* rail */
+  .rail{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:16px}
+  .tk{background:#fff;padding:14px 14px 22px;position:relative;box-shadow:0 2px 0 var(--kraft-lt),0 0 0 1px rgba(30,23,18,.06);transition:transform .2s ease-out,opacity .2s ease-out;
+    -webkit-mask:linear-gradient(#000 0 0) top/100% calc(100% - 8px) no-repeat,conic-gradient(from 135deg at 50% 0,#000 90deg,#0000 0) bottom/12px 8px repeat-x;
+            mask:linear-gradient(#000 0 0) top/100% calc(100% - 8px) no-repeat,conic-gradient(from 135deg at 50% 0,#000 90deg,#0000 0) bottom/12px 8px repeat-x}
+  .tk.flinch{animation:flinch .45s ease-out}
+  @keyframes flinch{30%{transform:translateY(-6px)}60%{transform:translateY(1px)}}
+  .tk.called{box-shadow:0 2px 0 var(--kraft-lt),0 0 0 3px var(--red)}
+  .tk .meta{display:flex;justify-content:space-between;font:400 12px/1.4 var(--mono);color:var(--muted);border-bottom:1px dashed #b8a998;padding-bottom:8px;margin-bottom:10px}
+  .tk .meta .late{color:var(--red);font-weight:700}
+  .who{display:flex;gap:12px;align-items:center}
+  .av{width:48px;height:48px;border-radius:50%;flex:none;object-fit:cover;background:var(--kraft-lt);display:grid;place-items:center;font:700 15px/1 var(--mono);color:var(--ink)}
+  .nm{font-family:var(--scrawl);font-size:26px;line-height:1;color:var(--ink)}
+  .desc{display:inline-block;margin-top:4px;font-size:13px;font-weight:500;background:var(--bg);border:1px solid var(--ink);border-radius:999px;padding:1px 10px}
+  .drink{font:400 13px/1.55 var(--mono);margin:12px 0 12px}
+  .acts{display:flex;gap:6px}
+  .acts button{flex:1;min-height:38px;border-radius:8px;border:1.5px solid var(--ink);background:transparent;font-size:13px;font-weight:600}
+  .acts .call{background:var(--ink);color:var(--bg)}
+  .acts .call:hover{background:var(--red);border-color:var(--red)}
+  .acts .done:hover{background:var(--ok);border-color:var(--ok);color:#fff}
+  .empty{grid-column:1/-1;background:var(--paper);border:1.5px dashed var(--kraft);border-radius:12px;padding:36px;text-align:center;color:var(--muted)}
+
+  /* collision meter */
+  .collide{display:none;align-items:center;gap:16px;background:var(--ink);color:var(--bg);border-radius:12px;padding:12px 16px;margin-bottom:16px}
+  .collide.on{display:flex}
+  .collide .heads{display:flex;gap:3px;flex-wrap:wrap}
+  .collide .heads i{width:14px;height:22px;border-radius:7px 7px 3px 3px;background:var(--kraft)}
+  .collide .heads i.up{background:var(--red)}
+  .collide p{margin:0;flex:1}
+  .collide b{font-family:var(--mono)}
+  .collide button{min-height:38px;padding:0 14px;border-radius:999px;border:1.5px solid var(--bg);background:transparent;color:var(--bg);font-weight:600;font-size:13px}
+  .collide button:hover{background:var(--bg);color:var(--ink)}
+
+  /* verification table */
+  .panel[hidden]{display:none}
+  table{width:100%;border-collapse:collapse;background:var(--paper);border-radius:12px;overflow:hidden;box-shadow:0 0 0 1px var(--kraft-lt)}
+  th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--kraft-lt);vertical-align:middle}
+  th{font-size:12px;font-weight:600;color:var(--muted);background:var(--bg)}
+  td .sp{font-family:var(--scrawl);font-size:20px;color:var(--ink)}
+  .st{font:700 12px/1 var(--mono);padding:5px 9px;border-radius:99px;background:var(--kraft-lt);white-space:nowrap}
+  .st.ok{background:var(--ok);color:#fff}
+  .st.council{background:var(--ink);color:var(--bg)}
+  .st.defer{background:var(--bg);border:1px solid var(--kraft)}
+  .vb{display:flex;gap:6px;flex-wrap:wrap}
+  .vb button{min-height:36px;padding:0 12px;border-radius:8px;border:1.5px solid var(--ink);background:transparent;font-size:13px;font-weight:600}
+  .vb button:hover{background:var(--ink);color:var(--bg)}
+  .note{color:var(--muted);font-size:14px;margin:0 0 14px;max-width:62ch}
+
+  /* modal */
+  .scrim{position:fixed;inset:0;background:rgba(30,23,18,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:40}
+  .scrim.on{display:flex}
+  .modal{background:var(--paper);border-radius:16px;width:min(460px,100%);overflow:hidden;animation:pop .22s ease-out}
+  @keyframes pop{from{transform:scale(.96);opacity:0}}
+  .modal header{background:var(--red);color:#fff;padding:14px 20px}
+  .modal header b{font-family:var(--display);font-size:20px;font-weight:400}
+  .modal header p{margin:2px 0 0;font-size:14px}
+  .modal .body{padding:18px 20px}
+  .opts{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+  .opt{min-height:40px;padding:0 14px;border-radius:999px;border:1.5px solid var(--ink);background:transparent;font-size:14px}
+  .opt[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+  label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+  .modal input{width:100%;min-height:44px;border:1.5px solid var(--kraft);border-radius:10px;padding:0 12px;font:inherit;background:#fff}
+  .help{font-size:12px;color:var(--muted);margin-top:6px}
+  .modal footer{display:flex;justify-content:flex-end;gap:8px;padding:0 20px 18px}
+  .modal footer button{min-height:44px;padding:0 18px;border-radius:999px;border:1.5px solid var(--ink);background:transparent;font-weight:600}
+  .modal footer .save{background:var(--red);border-color:var(--red);color:#fff}
+
+  .toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);opacity:0;background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:999px;font-size:14px;transition:.22s ease-out;z-index:50;pointer-events:none;max-width:calc(100% - 32px)}
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+
+  @media (max-width:860px){
+    .app{grid-template-columns:1fr}
+    aside{flex-direction:row;flex-wrap:wrap;align-items:center;gap:12px;padding:12px 16px}
+    .back{order:-1;width:100%}
+    .store{font-size:16px}
+    .store small{display:none}
+    .tabs{flex-direction:row;margin-left:auto}
+    .shift{display:none}
+    main{padding:18px 16px 40px}
+    table thead{display:none}
+    table,tbody,tr,td{display:block;width:100%}
+    tr{border-bottom:2px solid var(--kraft-lt);padding:6px 0}
+    td{border:0;padding:6px 14px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .tk,.tk.flinch,.modal,.toast{animation:none;transition:none}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <div class="store">Store 031, Harbour St<small>Stevedore Coffee Co. barista console</small></div>
+    <div class="tabs" role="tablist" aria-label="Console views">
+      <button class="tab" role="tab" aria-selected="true" aria-controls="p-rail" id="t-rail">Order rail <span class="n" id="n-rail">9</span></button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="p-door" id="t-door">Door verification <span class="n" id="n-door">6</span></button>
+    </div>
+    <div class="shift">Shift lead: <b>Steve (Apron)</b><br>Steves served today: <b id="served">4,111</b><br>Names asked today: <b>0</b></div>
+  </aside>
+
+  <main>
+    <section class="panel" id="p-rail" role="tabpanel" aria-labelledby="t-rail">
+      <div class="top">
+        <h1>8:40am rush<small>Every order below is for Steve. That is the problem we are solving.</small></h1>
+        <div class="stats">
+          <div class="stat"><span>Open orders</span><b id="s-open">9</b></div>
+          <div class="stat warn"><span>Last collision</span><b id="s-coll">none</b></div>
+          <div class="stat"><span>Avg. stand-ups per call</span><b id="s-avg">0.0</b></div>
+        </div>
+      </div>
+
+      <div class="collide" id="collide" role="status" aria-live="polite">
+        <div class="heads" id="heads" aria-hidden="true"></div>
+        <p id="collide-msg"></p>
+        <button type="button" id="collide-fix">Reassign descriptor</button>
+      </div>
+
+      <div class="tools">
+        <div class="filters" role="group" aria-label="Filter by descriptor family">
+          <button class="f" aria-pressed="true" data-f="all">All Steves</button>
+          <button class="f" aria-pressed="false" data-f="outerwear">Outerwear</button>
+          <button class="f" aria-pressed="false" data-f="vehicle">Vehicle</button>
+          <button class="f" aria-pressed="false" data-f="work">Workplace</button>
+          <button class="f" aria-pressed="false" data-f="other">Other</button>
+        </div>
+        <label class="search" aria-label="Search descriptors or drinks">
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="#6E5E50" stroke-width="2"/><path d="M11 11l4 4" stroke="#6E5E50" stroke-width="2" stroke-linecap="round"/></svg>
+          <input id="q" type="search" placeholder="Search descriptor or drink">
+        </label>
+        <button class="callall" type="button" id="callall">Call "Steve"</button>
+      </div>
+
+      <div class="rail" id="rail"></div>
+    </section>
+
+    <section class="panel" id="p-door" role="tabpanel" aria-labelledby="t-door" hidden>
+      <div class="top">
+        <h1>Door verification<small>Applicants whose name is near Steve but not on it.</small></h1>
+      </div>
+      <p class="note">Approve admits the applicant to the general Steve pool. Defer puts them back in the waiting area, which has seating and the good beans. Refer to Council adds them to the November agenda.</p>
+      <table>
+        <thead><tr><th>Applicant</th><th>Variance</th><th>Waiting since</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="door"></tbody>
+      </table>
+    </section>
+  </main>
+</div>
+
+<div class="scrim" id="scrim">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-title">
+    <header><b id="m-title">Disambiguate this Steve</b><p id="m-sub"></p></header>
+    <div class="body">
+      <div class="opts" id="opts" role="group" aria-label="Suggested descriptors"></div>
+      <label for="custom">Or write one</label>
+      <input id="custom" type="text" maxlength="28" placeholder="e.g. Holding Bike Helmet">
+      <div class="help">Descriptors must be visible from the bar. Feelings are not visible from the bar.</div>
+    </div>
+    <footer><button type="button" id="m-cancel">Cancel</button><button type="button" class="save" id="m-save">Assign descriptor</button></footer>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  var orders = [
+    {id:4112, desc:'Blue Fleece', fam:'outerwear', drink:'Flat white, 12oz', mods:'oat, extra hot', wait:62, img:'headshot-1.webp', ini:'SO'},
+    {id:4113, desc:'Grey Fleece', fam:'outerwear', drink:'Americano, 16oz', mods:'room for milk', wait:118, img:'', ini:'SG'},
+    {id:4114, desc:'Has Kayak On Car', fam:'vehicle', drink:'Drip, 20oz', mods:'black', wait:41, img:'', ini:'SK'},
+    {id:4115, desc:'Clearly Retired', fam:'other', drink:'Cortado', mods:'no notes', wait:205, img:'headshot-2.webp', ini:'SL'},
+    {id:4116, desc:'Second From Accounts', fam:'work', drink:'Oat latte, 12oz', mods:'half sweet', wait:33, img:'', ini:'SA'},
+    {id:4117, desc:'Navy Fleece Vest', fam:'outerwear', drink:'Flat white, 12oz', mods:'whole milk', wait:9, img:'', ini:'SN'},
+    {id:4118, desc:'Bike Helmet Still On', fam:'vehicle', drink:'Cold brew, 16oz', mods:'splash of cream', wait:77, img:'', ini:'SB'},
+    {id:4119, desc:'From Accounts', fam:'work', drink:'Chai, 16oz', mods:'oat', wait:150, img:'', ini:'SF'},
+    {id:4120, desc:'Lanyard', fam:'work', drink:'Mocha, 12oz', mods:'no whip', wait:24, img:'headshot-3.webp', ini:'SM'}
+  ];
+  var applicants = [
+    {name:'Stephen Achebe', v:'ph instead of v', since:'Jun 2', st:'review'},
+    {name:'Steven Marsh', v:'v, then an n', since:'Mar 14', st:'review'},
+    {name:'Stefan Novak', v:'f, no second e', since:'Aug 30', st:'review'},
+    {name:'Esteban Ruiz', v:'leading E, letter #3 on file', since:'Jan 9', st:'review'},
+    {name:'Stevie Park', v:'diminutive, self-reported', since:'Sep 21', st:'review'},
+    {name:'Dave', v:'says everyone calls him Steve', since:'Oct 7', st:'review'}
+  ];
+  var suggestions = ['Holding Umbrella','Reading Glasses On Head','Brought Own Cup','On A Call','Tall One','Shorts In October','Has Dog Outside','Golf Polo'];
+  var filter = 'all', query = '', calls = 0, ups = 0, served = 4111, lastCalled = null, editing = null;
+  var $ = function(id){ return document.getElementById(id); };
+
+  function fmt(s){ var m = Math.floor(s/60), r = s%60; return m + ':' + (r<10?'0':'') + r; }
+  function esc(s){ var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+  function visible(){
+    return orders.filter(function(o){
+      if(filter !== 'all' && o.fam !== filter) return false;
+      if(!query) return true;
+      return (o.desc + ' ' + o.drink + ' ' + o.mods).toLowerCase().indexOf(query) > -1;
+    });
+  }
+
+  function render(){
+    var list = visible(), rail = $('rail');
+    if(!orders.length){
+      rail.innerHTML = '<div class="empty">Rail clear. No Steves waiting. Statistically this will last about forty seconds.</div>';
+    } else if(!list.length){
+      rail.innerHTML = '<div class="empty">No Steve matches that. Clear the search or pick another descriptor family.</div>';
+    } else {
+      rail.innerHTML = list.map(function(o){
+        var av = '<span class="av" aria-hidden="true" data-photo="' + o.img + '">' + o.ini + '</span>';
+        return '<article class="tk' + (lastCalled === o.id ? ' called' : '') + '" data-id="' + o.id + '">' +
+          '<div class="meta"><span>#' + o.id + '</span><span class="' + (o.wait > 180 ? 'late' : '') + '" data-t="' + o.id + '">' + fmt(o.wait) + '</span></div>' +
+          '<div class="who">' + av + '<div><div class="nm">Steve</div><span class="desc">' + esc(o.desc) + '</span></div></div>' +
+          '<div class="drink">' + esc(o.drink) + '<br>' + esc(o.mods) + '</div>' +
+          '<div class="acts"><button type="button" class="call" data-a="call">Call</button><button type="button" data-a="edit">Reassign</button><button type="button" class="done" data-a="done">Done</button></div>' +
+          '</article>';
+      }).join('');
+      rail.querySelectorAll('[data-photo]').forEach(function(el){
+        if(!el.dataset.photo) return;
+        var im = new Image(48, 48);
+        im.className = 'av'; im.alt = ''; im.src = el.dataset.photo;
+        el.replaceWith(im);
+      });
+    }
+    $('s-open').textContent = orders.length;
+    $('n-rail').textContent = orders.length;
+    $('served').textContent = served.toLocaleString('en-US');
+    $('s-avg').textContent = calls ? (ups/calls).toFixed(1) : '0.0';
+  }
+
+  function words(s){ return s.toLowerCase().split(/\s+/).filter(function(w){ return w.length > 3 && ['still','from','second','clearly'].indexOf(w) < 0; }); }
+
+  function showCollision(n, label, id){
+    var heads = '';
+    for(var i=0;i<orders.length;i++) heads += '<i class="' + (i < n ? 'up' : '') + '"></i>';
+    $('heads').innerHTML = heads;
+    $('collide-msg').innerHTML = 'Called <b>' + esc(label) + '</b>. <b>' + n + '</b> of ' + orders.length + ' Steves stood up.' + (n > 1 ? ' Descriptor not specific enough.' : ' Clean call.');
+    $('collide-fix').style.display = (n > 1 && id) ? '' : 'none';
+    $('collide-fix').dataset.id = id || '';
+    $('collide').classList.add('on');
+    $('s-coll').textContent = n > 1 ? n + ' Steves' : 'none';
+    calls++; ups += n;
+  }
+
+  function callOne(id){
+    var o = orders.find(function(x){ return x.id === id; });
+    var w = words(o.desc);
+    var hits = orders.filter(function(x){
+      if(x.id === id) return true;
+      return words(x.desc).some(function(k){ return w.indexOf(k) > -1; });
+    });
+    lastCalled = id;
+    render();
+    hits.forEach(function(h){
+      var el = document.querySelector('.tk[data-id="' + h.id + '"]');
+      if(el){ el.classList.remove('flinch'); void el.offsetWidth; el.classList.add('flinch'); }
+    });
+    showCollision(hits.length, 'Steve (' + o.desc + ')', id);
+  }
+
+  $('callall').addEventListener('click', function(){
+    lastCalled = null; render();
+    document.querySelectorAll('.tk').forEach(function(el){ el.classList.remove('flinch'); void el.offsetWidth; el.classList.add('flinch'); });
+    showCollision(orders.length, 'Steve', null);
+    $('collide-msg').innerHTML += ' This is why we have descriptors.';
+  });
+
+  $('rail').addEventListener('click', function(e){
+    var b = e.target.closest('button'); if(!b) return;
+    var id = +b.closest('.tk').dataset.id;
+    if(b.dataset.a === 'call') callOne(id);
+    if(b.dataset.a === 'edit') openModal(id);
+    if(b.dataset.a === 'done'){
+      var o = orders.find(function(x){ return x.id === id; });
+      orders = orders.filter(function(x){ return x.id !== id; });
+      served++; if(lastCalled === id) lastCalled = null;
+      render(); toast('Handed off to Steve (' + o.desc + '). Name asked: 0 times.');
+    }
+  });
+  $('collide-fix').addEventListener('click', function(){ var id = +this.dataset.id; if(id) openModal(id); });
+
+  document.querySelectorAll('.f').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('.f').forEach(function(x){ x.setAttribute('aria-pressed','false'); });
+      b.setAttribute('aria-pressed','true'); filter = b.dataset.f; render();
+    });
+  });
+  $('q').addEventListener('input', function(){ query = this.value.trim().toLowerCase(); render(); });
+
+  /* modal */
+  var picked = null, opener = null;
+  function openModal(id){
+    editing = orders.find(function(x){ return x.id === id; }); if(!editing) return;
+    opener = document.activeElement; picked = null;
+    $('m-sub').textContent = 'Order #' + editing.id + ', currently Steve (' + editing.desc + ')';
+    var taken = orders.map(function(o){ return o.desc; });
+    $('opts').innerHTML = suggestions.filter(function(s){ return taken.indexOf(s) < 0; }).slice(0,6).map(function(s){
+      return '<button type="button" class="opt" aria-pressed="false">' + s + '</button>';
+    }).join('');
+    $('custom').value = '';
+    $('scrim').classList.add('on');
+    var first = $('opts').querySelector('button'); if(first) first.focus();
+  }
+  function closeModal(){ $('scrim').classList.remove('on'); editing = null; if(opener) opener.focus(); }
+  $('opts').addEventListener('click', function(e){
+    var b = e.target.closest('.opt'); if(!b) return;
+    this.querySelectorAll('.opt').forEach(function(x){ x.setAttribute('aria-pressed','false'); });
+    b.setAttribute('aria-pressed','true'); picked = b.textContent; $('custom').value = '';
+  });
+  $('custom').addEventListener('input', function(){
+    picked = null; $('opts').querySelectorAll('.opt').forEach(function(x){ x.setAttribute('aria-pressed','false'); });
+  });
+  $('m-cancel').addEventListener('click', closeModal);
+  $('scrim').addEventListener('click', function(e){ if(e.target === this) closeModal(); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && $('scrim').classList.contains('on')) closeModal(); });
+  $('m-save').addEventListener('click', function(){
+    var v = (picked || $('custom').value).trim();
+    if(!v){ toast('Pick a descriptor or write one. Steve on its own is how we got here.'); return; }
+    if(/sad|tired|happy|lonely|nice|good/i.test(v)){ toast('Descriptors must be visible from the bar. Try something he is wearing or holding.'); return; }
+    var id = editing.id, old = editing.desc;
+    editing.desc = v.replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+    editing.fam = 'other';
+    closeModal(); render();
+    toast('Reassigned. Steve (' + old + ') is now Steve (' + editing.desc + ').');
+    $('collide').classList.remove('on');
+  });
+
+  /* door verification */
+  var labels = {review:'Under review', ok:'Admitted', defer:'Deferred', council:'Council, Nov'};
+  function renderDoor(){
+    $('door').innerHTML = applicants.map(function(a, i){
+      return '<tr><td><span class="sp">' + a.name + '</span></td><td>' + a.v + '</td><td>' + a.since + '</td>' +
+        '<td><span class="st ' + a.st + '">' + labels[a.st] + '</span></td>' +
+        '<td><div class="vb">' + (a.st === 'ok' ? '<span class="help">In the pool</span>' :
+          '<button type="button" data-i="' + i + '" data-v="ok">Approve</button><button type="button" data-i="' + i + '" data-v="defer">Defer</button><button type="button" data-i="' + i + '" data-v="council">Refer to Council</button>') +
+        '</div></td></tr>';
+    }).join('');
+    $('n-door').textContent = applicants.filter(function(a){ return a.st !== 'ok'; }).length;
+  }
+  $('door').addEventListener('click', function(e){
+    var b = e.target.closest('button'); if(!b) return;
+    var a = applicants[+b.dataset.i], v = b.dataset.v;
+    if(v === 'ok' && a.name === 'Dave'){ toast('Dave cannot be approved. Dave has been offered a seat in the waiting area.'); a.st = 'defer'; renderDoor(); return; }
+    a.st = v; renderDoor();
+    toast(v === 'ok' ? a.name + ' admitted. Cup will read STEVE regardless.' : v === 'defer' ? a.name + ' deferred. Complimentary drip issued.' : a.name + ' added to the November Council agenda, item 41.');
+  });
+
+  /* tabs */
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.addEventListener('click', function(){
+      document.querySelectorAll('.tab').forEach(function(x){ x.setAttribute('aria-selected','false'); $(x.getAttribute('aria-controls')).hidden = true; });
+      t.setAttribute('aria-selected','true'); $(t.getAttribute('aria-controls')).hidden = false;
+    });
+  });
+
+  var tt;
+  function toast(m){ var el = $('toast'); el.textContent = m; el.classList.add('on'); clearTimeout(tt); tt = setTimeout(function(){ el.classList.remove('on'); }, 3600); }
+
+  setInterval(function(){
+    orders.forEach(function(o){
+      o.wait++;
+      var el = document.querySelector('[data-t="' + o.id + '"]');
+      if(el){ el.textContent = fmt(o.wait); el.classList.toggle('late', o.wait > 180); }
+    });
+  }, 1000);
+
+  render(); renderDoor();
+})();
+</script>
+</body>
+</html>
