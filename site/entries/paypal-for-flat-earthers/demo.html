@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Edgewise dashboard · theworstaistudioever</title>
+<meta name="description" content="The Edgewise send-money dashboard. Every transfer drawn on the disc, checked for line of sight, and kept clear of the ice wall.">
+<meta name="theme-color" content="#F2E8D2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Libre+Franklin:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1E3A66;
+    --navy-soft: rgba(30, 58, 102, .1);
+    --seal: #9E2B1F;
+    --seal-dark: #7E2016;
+    --amber: #8A5A12;
+    --green: #2F5E3A;
+    --paper: #F2E8D2;
+    --paper-dark: #E4D6B8;
+    --paper-light: #F8F1E1;
+    --fg: #2B2219;
+    --muted: #6B5B43;
+    --ink: #1A140E;
+    --rule: rgba(30, 58, 102, .28);
+    --display: 'IM Fell English', 'Iowan Old Style', Georgia, serif;
+    --body: 'Libre Franklin', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  button, input, select { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--navy); outline-offset: 2px; }
+
+  .chrome { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 24px; border-bottom: 1px solid var(--ink); background: var(--paper-light); flex-wrap: wrap; }
+  .back { color: var(--navy); font-size: 14px; font-weight: 500; text-underline-offset: 3px; }
+  .brand { display: flex; align-items: center; gap: 8px; font-family: var(--display); font-size: 23px; color: var(--ink); }
+  .brand svg { width: 24px; height: 24px; }
+  .balance { text-align: right; font-size: 13px; color: var(--muted); line-height: 1.2; }
+  .balance strong { display: block; font-family: var(--display); font-weight: 400; font-size: 24px; color: var(--ink); font-variant-numeric: lining-nums tabular-nums; }
+  .left-chrome { display: flex; align-items: center; gap: 22px; }
+
+  .tabs { display: flex; gap: 4px; padding: 0 24px; border-bottom: 1px solid var(--rule); background: var(--paper); overflow-x: auto; }
+  .tab { background: none; border: 0; border-bottom: 3px solid transparent; padding: 13px 16px 11px; font-weight: 600; color: var(--muted); white-space: nowrap; min-height: 44px; }
+  .tab[aria-selected="true"] { color: var(--navy); border-bottom-color: var(--navy); }
+  .tab:hover { color: var(--ink); }
+
+  .app { display: grid; grid-template-columns: minmax(340px, 440px) 1fr; min-height: calc(100vh - 118px); }
+  .panel { border-right: 1px solid var(--rule); padding: 22px 24px 32px; background: var(--paper); overflow: auto; }
+  .panel h2 { font-family: var(--display); font-weight: 400; font-size: 27px; margin: 0 0 4px; color: var(--ink); }
+  .panel .hint { color: var(--muted); margin: 0 0 18px; font-size: 14px; }
+  [hidden] { display: none !important; }
+
+  .search { width: 100%; padding: 10px 12px; border: 1px solid var(--ink); background: var(--paper-light); border-radius: 2px; margin-bottom: 10px; min-height: 44px; }
+  .contacts { list-style: none; margin: 0 0 18px; padding: 0; border-top: 1px solid var(--rule); }
+  .contacts li button { width: 100%; display: grid; grid-template-columns: 36px 1fr auto; gap: 12px; align-items: center; text-align: left; padding: 10px 6px; background: none; border: 0; border-bottom: 1px solid var(--rule); min-height: 52px; }
+  .contacts li button:hover { background: var(--navy-soft); }
+  .contacts li button[aria-pressed="true"] { background: var(--paper-light); box-shadow: inset 3px 0 0 var(--navy); }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--ink); display: grid; place-items: center; font-family: var(--display); font-size: 16px; background: var(--paper-light); color: var(--navy); }
+  .cname { font-weight: 600; display: block; line-height: 1.25; }
+  .cplace { font-size: 13px; color: var(--muted); }
+  .cdist { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .empty { padding: 16px 6px; color: var(--muted); font-size: 14px; }
+
+  .amount-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end; }
+  label.f { display: block; font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+  .amount { width: 100%; padding: 8px 12px; border: 1px solid var(--ink); border-radius: 2px; background: var(--paper-light); font-family: var(--display); font-size: 30px; font-variant-numeric: lining-nums tabular-nums; min-height: 52px; }
+  .fee { font-size: 13px; color: var(--muted); margin: 8px 0 16px; font-variant-numeric: tabular-nums; }
+  .send { width: 100%; min-height: 50px; border: 0; border-radius: 999px; background: var(--seal); color: var(--paper-light); font-weight: 600; font-size: 16px; box-shadow: inset 0 0 0 3px rgba(0,0,0,.14), 0 2px 0 var(--seal-dark); transition: background .15s ease, transform .15s ease; }
+  .send:hover:not(:disabled) { background: var(--seal-dark); }
+  .send:active:not(:disabled) { transform: scale(.98); }
+  .send:disabled { opacity: .45; cursor: not-allowed; }
+
+  .check { margin-top: 18px; border: 1px solid var(--ink); background: var(--paper-light); padding: 14px 16px; border-radius: 2px; position: relative; }
+  .check h3 { margin: 0 0 8px; font-family: var(--display); font-weight: 400; font-size: 19px; }
+  .steps { list-style: none; margin: 0; padding: 0; font-size: 14px; }
+  .steps li { display: flex; justify-content: space-between; gap: 12px; padding: 5px 0; border-bottom: 1px dotted var(--rule); color: var(--muted); font-variant-numeric: tabular-nums; }
+  .steps li.done { color: var(--fg); }
+  .steps li.done b { color: var(--navy); }
+  .verdict { margin-top: 12px; display: flex; align-items: center; gap: 14px; }
+  .seal { flex: none; width: 66px; height: 66px; border-radius: 50%; display: grid; place-items: center; text-align: center; font-family: var(--display); font-style: italic; font-size: 13px; line-height: 1.05; color: var(--paper-light); transform: rotate(-8deg) scale(.6); opacity: 0; transition: transform .28s cubic-bezier(.3,1.5,.6,1), opacity .2s ease; box-shadow: inset 0 0 0 4px rgba(0,0,0,.16); }
+  .seal.on { transform: rotate(-8deg) scale(1); opacity: 1; }
+  .seal.settled { background: var(--seal); }
+  .seal.held { background: var(--amber); }
+  .seal.claim { background: var(--navy); }
+  .verdict p { margin: 0; font-size: 14px; }
+
+  .toggle { display: flex; align-items: center; gap: 10px; margin-top: 18px; font-size: 14px; cursor: pointer; min-height: 44px; }
+  .toggle input { width: 18px; height: 18px; accent-color: var(--navy); }
+
+  /* ledger */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .chip { border: 1px solid var(--ink); background: var(--paper-light); border-radius: 999px; padding: 6px 14px; font-size: 13px; font-weight: 600; min-height: 36px; }
+  .chip[aria-pressed="true"] { background: var(--navy); color: var(--paper-light); border-color: var(--navy); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font-weight: 600; font-size: 12px; color: var(--muted); padding: 6px 4px; border-bottom: 1px solid var(--ink); }
+  td { padding: 10px 4px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  td.amt { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  th.amt { text-align: right; }
+  .when { display: block; font-size: 12px; color: var(--muted); }
+  .status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+  .status.settled { color: var(--seal); }
+  .status.held { color: var(--amber); }
+  .status.claim { color: var(--navy); }
+  tr.new td { animation: inked 1.2s ease-out; }
+  @keyframes inked { from { background: rgba(158, 43, 31, .14); } to { background: transparent; } }
+
+  /* wall */
+  .sectors { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+  .sectors button { width: 100%; display: grid; grid-template-columns: 1fr 120px 48px; gap: 12px; align-items: center; padding: 10px 12px; text-align: left; border: 1px solid var(--rule); background: var(--paper-light); border-radius: 2px; min-height: 48px; }
+  .sectors button[aria-pressed="true"] { border-color: var(--navy); box-shadow: inset 3px 0 0 var(--navy); }
+  .sectors .sn { font-weight: 600; display: block; }
+  .sectors .sp { font-size: 12px; color: var(--muted); }
+  .meter { height: 8px; border: 1px solid var(--ink); background: var(--paper); position: relative; }
+  .meter i { position: absolute; inset: 0 auto 0 0; background: var(--navy); }
+  .meter.low i { background: var(--amber); }
+  .pct { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .wall-note { margin-top: 16px; font-size: 13px; color: var(--muted); }
+
+  /* map */
+  .mapwrap { position: relative; display: flex; align-items: center; justify-content: center; padding: 20px; background:
+      radial-gradient(circle at 50% 50%, rgba(255,250,236,.6), transparent 70%); }
+  #map { width: 100%; max-width: 720px; height: auto; }
+  .legend { position: absolute; left: 20px; bottom: 18px; background: var(--paper-light); border: 1px solid var(--ink); padding: 10px 12px; font-size: 12px; line-height: 1.7; }
+  .legend span { display: flex; align-items: center; gap: 8px; }
+  .legend i { display: inline-block; width: 20px; height: 0; border-top: 2px solid var(--seal); }
+  .legend i.dash { border-top: 2px dashed var(--muted); }
+  .legend i.wall { border-top: 6px dotted var(--navy); }
+  .readout { position: absolute; right: 20px; top: 18px; background: var(--paper-light); border: 1px solid var(--ink); padding: 10px 14px; font-size: 13px; max-width: 260px; }
+  .readout b { font-family: var(--display); font-weight: 400; font-size: 18px; display: block; color: var(--ink); }
+  .route { stroke: var(--seal); stroke-width: 2.4; fill: none; stroke-linecap: round; }
+  .route.draw { stroke-dasharray: 900; stroke-dashoffset: 900; animation: drawr .7s ease-out forwards; }
+  @keyframes drawr { to { stroke-dashoffset: 0; } }
+  .conv { stroke: var(--muted); stroke-width: 1.6; stroke-dasharray: 5 5; fill: none; }
+  .pin { cursor: pointer; }
+  .pin circle.dot { fill: var(--paper-light); stroke: var(--navy); stroke-width: 1.6; transition: r .15s ease; }
+  .pin.sel circle.dot { fill: var(--seal); stroke: var(--ink); }
+  .pin text { font-family: var(--body); font-size: 11px; fill: var(--ink); paint-order: stroke; stroke: var(--paper-light); stroke-width: 3px; }
+  .pin:focus-visible { outline: none; }
+  .pin:focus-visible circle.dot { stroke: var(--seal); stroke-width: 3; }
+  .sector-hl { fill: none; stroke: var(--seal); stroke-width: 10; opacity: .7; }
+
+  .toast { position: fixed; left: 50%; bottom: 22px; transform: translate(-50%, 20px); opacity: 0; background: var(--ink); color: var(--paper-light); padding: 12px 18px; border-radius: 2px; font-size: 14px; transition: transform .2s ease, opacity .2s ease; pointer-events: none; max-width: calc(100vw - 32px); }
+  .toast.on { transform: translate(-50%, 0); opacity: 1; }
+
+  @media (max-width: 900px) {
+    .app { grid-template-columns: 1fr; }
+    .mapwrap { order: -1; border-bottom: 1px solid var(--rule); padding: 12px 12px 90px; }
+    .panel { border-right: 0; }
+    .readout { position: static; margin-top: 10px; max-width: none; }
+    .mapwrap { flex-direction: column; }
+    .legend { left: 12px; bottom: 12px; }
+    .balance { text-align: left; }
+  }
+  @media (max-width: 520px) {
+    .chrome, .tabs, .panel { padding-left: 16px; padding-right: 16px; }
+    .brand { font-size: 20px; }
+    .sectors button { grid-template-columns: 1fr 70px 44px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .route.draw { stroke-dashoffset: 0; }
+  }
+</style>
+</head>
+<body>
+
+<header class="chrome">
+  <div class="left-chrome">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <span class="brand"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" fill="none" stroke="#1E3A66" stroke-width="1.6"/><path d="M16 4 L18.4 16 L16 28 L13.6 16 Z" fill="#1E3A66"/><circle cx="16" cy="16" r="2.2" fill="#9E2B1F"/></svg>Edgewise</span>
+  </div>
+  <div class="balance">Available balance<strong id="bal">$2,418.60</strong></div>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Dashboard sections">
+  <button class="tab" role="tab" id="t-send" aria-controls="p-send" aria-selected="true">Send</button>
+  <button class="tab" role="tab" id="t-act" aria-controls="p-act" aria-selected="false" tabindex="-1">Activity</button>
+  <button class="tab" role="tab" id="t-wall" aria-controls="p-wall" aria-selected="false" tabindex="-1">Wall status</button>
+</nav>
+
+<div class="app">
+  <aside class="panel">
+    <section id="p-send" role="tabpanel" aria-labelledby="t-send">
+      <h2>Send money</h2>
+      <p class="hint">Pick someone. We draw the line from Dayton, Ohio and check that you could, in principle, see them.</p>
+      <label class="f" for="q">Search contacts</label>
+      <input class="search" id="q" type="search" placeholder="Name or town" autocomplete="off">
+      <ul class="contacts" id="contacts"></ul>
+      <div class="amount-row">
+        <div>
+          <label class="f" for="amt">Amount (USD)</label>
+          <input class="amount" id="amt" type="number" min="1" step="0.01" value="40.00" inputmode="decimal">
+        </div>
+      </div>
+      <p class="fee" id="fee">Flat fee 1.9%: $0.76. No hemisphere conversion.</p>
+      <button class="send" id="send" disabled>Choose a recipient</button>
+
+      <div class="check" id="check" hidden aria-live="polite">
+        <h3>Line-of-sight check</h3>
+        <ol class="steps" id="steps"></ol>
+        <div class="verdict" id="verdict" hidden>
+          <div class="seal" id="seal"></div>
+          <p id="vtext"></p>
+        </div>
+      </div>
+
+      <label class="toggle"><input type="checkbox" id="conv"> Show conventional routing (for comparison only)</label>
+    </section>
+
+    <section id="p-act" role="tabpanel" aria-labelledby="t-act" hidden>
+      <h2>Activity</h2>
+      <p class="hint">Every transfer, with the line it took.</p>
+      <div class="chips" id="chips">
+        <button class="chip" data-f="all" aria-pressed="true">All</button>
+        <button class="chip" data-f="settled" aria-pressed="false">Settled</button>
+        <button class="chip" data-f="held" aria-pressed="false">Held at ice wall</button>
+        <button class="chip" data-f="claim" aria-pressed="false">Curvature claim</button>
+      </div>
+      <table>
+        <thead><tr><th scope="col">Recipient</th><th scope="col">Status</th><th scope="col" class="amt">Amount</th></tr></thead>
+        <tbody id="ledger"></tbody>
+      </table>
+      <p class="empty" id="ledger-empty" hidden>Nothing with that status. Send something near the rim and check back.</p>
+    </section>
+
+    <section id="p-wall" role="tabpanel" aria-labelledby="t-wall" hidden>
+      <h2>Wall status</h2>
+      <p class="hint">Perimeter integrity by sector, as reported by patrol. Select a sector to find it on the disc.</p>
+      <ul class="sectors" id="sectors"></ul>
+      <p class="wall-note">Readings below 80% trigger a 3-day hold on transfers routed within 200 miles of that sector. Sector 7 has been "being looked at" since March.</p>
+    </section>
+  </aside>
+
+  <main class="mapwrap">
+    <svg id="map" viewBox="0 0 600 600" role="img" aria-label="Flat-disc map of the world centered on the North Pole, ringed by the ice wall, with your contacts pinned.">
+      <defs>
+        <clipPath id="disc"><circle cx="300" cy="300" r="272"/></clipPath>
+      </defs>
+      <circle cx="300" cy="300" r="290" fill="#F8F1E1" stroke="#1A140E" stroke-width="1.2"/>
+      <g id="grid" fill="none" stroke="#1E3A66" stroke-width=".55" opacity=".35"></g>
+      <g id="land" clip-path="url(#disc)"></g>
+      <circle cx="300" cy="300" r="279" fill="none" stroke="#1E3A66" stroke-width="16" stroke-dasharray="2 4" opacity=".55"/>
+      <circle cx="300" cy="300" r="290" fill="none" stroke="#1A140E" stroke-width="1.2"/>
+      <path id="wallSector" class="sector-hl" d="" />
+      <path id="convPath" class="conv" d="" hidden />
+      <path id="routePath" class="route" d="" />
+      <g id="pins"></g>
+    </svg>
+    <div class="legend" aria-hidden="true">
+      <span><i></i>Edgewise route</span>
+      <span><i class="dash"></i>Conventional route</span>
+      <span><i class="wall"></i>Ice wall</span>
+    </div>
+    <div class="readout" id="readout"><b>No recipient selected</b>Pick a contact to draw the line.</div>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function () {
+  var NS = 'http://www.w3.org/2000/svg';
+  var CX = 300, CY = 300, R = 272;
+  var MI_PER_UNIT = 12430 / R;
+
+  function proj(lat, lon) {
+    var r = (90 - lat) / 168 * R;
+    var a = lon * Math.PI / 180;
+    return [CX + r * Math.sin(a), CY + r * Math.cos(a)];
+  }
+  function el(name, attrs) {
+    var n = document.createElementNS(NS, name);
+    Object.keys(attrs).forEach(function (k) { n.setAttribute(k, attrs[k]); });
+    return n;
+  }
+  function money(n) { return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function fmt(n) { return Math.round(n).toLocaleString('en-US'); }
+
+  /* grid */
+  var grid = document.getElementById('grid');
+  [60, 30, 0, -30, -60].forEach(function (lat) {
+    grid.appendChild(el('circle', { cx: CX, cy: CY, r: (90 - lat) / 168 * R }));
+  });
+  for (var lon = 0; lon < 360; lon += 30) {
+    var p = proj(-78, lon);
+    grid.appendChild(el('line', { x1: CX, y1: CY, x2: p[0], y2: p[1] }));
+  }
+
+  /* land, drawn honestly and approximately */
+  var LAND = [
+    [[70,-160],[71,-125],[69,-100],[73,-80],[62,-65],[47,-60],[42,-70],[35,-76],[30,-81],[25,-80],[29,-90],[22,-97],[18,-95],[21,-87],[15,-88],[9,-79],[16,-95],[23,-106],[32,-117],[40,-124],[48,-125],[58,-137],[60,-147],[57,-158]],
+    [[60,-45],[70,-22],[78,-20],[82,-40],[78,-70],[70,-55]],
+    [[11,-72],[10,-62],[5,-52],[-1,-48],[-5,-35],[-13,-38],[-23,-42],[-34,-53],[-40,-62],[-52,-68],[-54,-70],[-46,-75],[-30,-71],[-18,-70],[-6,-81],[2,-79]],
+    [[36,-9],[43,-9],[48,-4],[51,2],[54,8],[57,8],[62,5],[70,20],[69,40],[70,60],[73,80],[76,105],[72,130],[70,160],[66,180],[60,163],[52,157],[46,142],[40,141],[35,129],[31,121],[22,113],[18,106],[10,106],[1,104],[8,98],[16,97],[22,90],[15,80],[8,77],[20,72],[25,62],[24,57],[17,54],[13,45],[28,34],[31,32],[36,36],[37,27],[40,26],[38,22],[40,19],[45,13],[38,15],[44,9],[41,3],[37,-2]],
+    [[35,-6],[37,10],[33,11],[31,20],[31,32],[22,37],[12,43],[11,51],[2,46],[-5,39],[-15,40],[-25,35],[-34,26],[-34,18],[-28,15],[-17,12],[-12,14],[-5,12],[4,9],[5,-2],[4,-8],[8,-13],[15,-17],[21,-17],[28,-13]],
+    [[-11,132],[-12,137],[-17,141],[-11,142],[-19,147],[-25,153],[-33,152],[-38,147],[-38,140],[-35,137],[-32,132],[-34,123],[-34,116],[-31,115],[-22,114],[-17,122],[-14,127]],
+    [[-35,173],[-41,175],[-46,170],[-44,168],[-39,174]],
+    [[50,-5],[55,-6],[58,-4],[57,-2],[53,0],[51,1]],
+    [[31,131],[35,135],[38,141],[41,141],[36,140],[34,133]]
+  ];
+  var land = document.getElementById('land');
+  LAND.forEach(function (poly) {
+    var d = poly.map(function (pt, i) { var q = proj(pt[0], pt[1]); return (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1); }).join(' ') + ' Z';
+    land.appendChild(el('path', { d: d, fill: '#E4D6B8', stroke: '#1A140E', 'stroke-width': '.9', 'stroke-linejoin': 'round' }));
+  });
+
+  /* people */
+  var HOME = { name: 'You', place: 'Dayton, OH', lat: 39.8, lon: -84.2 };
+  var CONTACTS = [
+    { id: 'wv', name: 'Wendell Vosk', place: 'Perth, AU', lat: -31.9, lon: 115.9 },
+    { id: 'ka', name: 'Kurt Albrecht', place: 'Duluth, MN', lat: 46.8, lon: -92.1 },
+    { id: 'mf', name: 'Monique Ferrell', place: 'Albuquerque, NM', lat: 35.1, lon: -106.6 },
+    { id: 'pw', name: 'Pieter de Wit', place: 'Rotterdam, NL', lat: 51.9, lon: 4.5 },
+    { id: 'ar', name: 'Aunt Rosalind', place: 'Honolulu, HI', lat: 21.3, lon: -157.8, curve: true },
+    { id: 'hp', name: 'Hemi Parata', place: 'Auckland, NZ', lat: -36.8, lon: 174.7, curve: true },
+    { id: 'tr', name: 'Tomasz Rek', place: 'Ushuaia, AR', lat: -54.8, lon: -68.3 },
+    { id: 'gl', name: 'Gary (rim liaison)', place: 'Ross Ice Shelf approach', lat: -76.5, lon: 168 }
+  ];
+  var HOME_P = proj(HOME.lat, HOME.lon);
+  CONTACTS.forEach(function (c) {
+    c.p = proj(c.lat, c.lon);
+    c.miles = Math.hypot(c.p[0] - HOME_P[0], c.p[1] - HOME_P[1]) * MI_PER_UNIT;
+    c.rim = (R - Math.hypot(c.p[0] - CX, c.p[1] - CY)) * MI_PER_UNIT;
+    c.scope = c.miles * 0.9;
+  });
+  function verdictFor(c) {
+    if (c.rim < 2000) return 'held';
+    if (c.curve) return 'claim';
+    return 'settled';
+  }
+  var LABEL = { settled: 'Settled', held: 'Held at ice wall', claim: 'Curvature claim' };
+  var SEALTXT = { settled: 'settled', held: 'held at<br>the wall', claim: 'curvature<br>claim' };
+  var EXPLAIN = {
+    settled: function (c) { return 'Settled. ' + c.name.split(' ')[0] + ' was visible at ' + fmt(c.scope) + 'x on a clear day. The money went straight across.'; },
+    held: function (c) { return 'Held. The recipient is ' + fmt(c.rim) + ' miles from the rim, inside the review buffer. A patrol officer will look at it within 3 business days.'; },
+    claim: function (c) { return 'Curvature claim. Pilots have described this route as "over the curve." Refund issued. We are checking with the pilots.'; }
+  };
+
+  /* pins */
+  var pins = document.getElementById('pins');
+  function addPin(c, home) {
+    var g = el('g', { class: 'pin', tabindex: home ? -1 : 0, role: home ? 'presentation' : 'button', 'aria-label': home ? '' : 'Send to ' + c.name + ', ' + c.place });
+    var dot = el('circle', { class: 'dot', cx: c.p[0], cy: c.p[1], r: home ? 6 : 5 });
+    if (home) { dot.setAttribute('style', 'fill:#1E3A66;stroke:#1A140E'); }
+    var right = c.p[0] < 470;
+    var t = el('text', { x: c.p[0] + (right ? 9 : -9), y: c.p[1] + 4, 'text-anchor': right ? 'start' : 'end' });
+    t.textContent = home ? 'You, Dayton' : c.name.split(' ')[0];
+    g.appendChild(dot); g.appendChild(t);
+    if (!home) {
+      g.addEventListener('click', function () { select(c.id); });
+      g.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(c.id); } });
+      c.pin = g;
+    }
+    pins.appendChild(g);
+  }
+  CONTACTS.forEach(function (c) { addPin(c, false); });
+  addPin({ p: HOME_P }, true);
+
+  /* contacts list */
+  var list = document.getElementById('contacts');
+  var q = document.getElementById('q');
+  function renderContacts() {
+    var term = q.value.trim().toLowerCase();
+    list.innerHTML = '';
+    var shown = CONTACTS.filter(function (c) { return !term || (c.name + ' ' + c.place).toLowerCase().indexOf(term) > -1; });
+    shown.forEach(function (c) {
+      var li = document.createElement('li');
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-pressed', String(state.sel === c.id));
+      b.innerHTML = '<span class="avatar" aria-hidden="true">' + c.name.charAt(0) + '</span><span><span class="cname">' + c.name + '</span><span class="cplace">' + c.place + '</span></span><span class="cdist">' + fmt(c.miles) + ' mi</span>';
+      b.addEventListener('click', function () { select(c.id); });
+      li.appendChild(b); list.appendChild(li);
+    });
+    if (!shown.length) {
+      var li2 = document.createElement('li'); li2.className = 'empty';
+      li2.textContent = 'Nobody by that name on the disc. Check the spelling, or invite them to look at the horizon.';
+      list.appendChild(li2);
+    }
+  }
+  q.addEventListener('input', renderContacts);
+
+  var state = { sel: null, busy: false, filter: 'all' };
+  var route = document.getElementById('routePath');
+  var conv = document.getElementById('convPath');
+  var convToggle = document.getElementById('conv');
+  var readout = document.getElementById('readout');
+  var sendBtn = document.getElementById('send');
+  var amt = document.getElementById('amt');
+
+  function byId(id) { return CONTACTS.filter(function (c) { return c.id === id; })[0]; }
+  function drawRoute(c) {
+    route.classList.remove('draw'); void route.getBBox();
+    route.setAttribute('d', 'M' + HOME_P[0] + ' ' + HOME_P[1] + ' L' + c.p[0] + ' ' + c.p[1]);
+    route.classList.add('draw');
+    var mx = (HOME_P[0] + c.p[0]) / 2, my = (HOME_P[1] + c.p[1]) / 2;
+    var dx = mx - CX, dy = my - CY, dl = Math.hypot(dx, dy) || 1;
+    var bend = 60 + c.miles / 90;
+    var kx = mx + dx / dl * bend, ky = my + dy / dl * bend;
+    conv.setAttribute('d', 'M' + HOME_P[0] + ' ' + HOME_P[1] + ' Q' + kx.toFixed(1) + ' ' + ky.toFixed(1) + ' ' + c.p[0] + ' ' + c.p[1]);
+  }
+  function select(id) {
+    if (state.busy) return;
+    state.sel = id;
+    var c = byId(id);
+    CONTACTS.forEach(function (x) { x.pin.classList.toggle('sel', x.id === id); });
+    drawRoute(c);
+    readout.innerHTML = '<b>' + c.name + '</b>' + c.place + '<br>' + fmt(c.miles) + ' mi in a straight line<br>' + fmt(c.rim) + ' mi from the ice wall';
+    document.getElementById('check').hidden = true;
+    updateSend();
+    renderContacts();
+  }
+  function updateSend() {
+    var v = parseFloat(amt.value);
+    var ok = v > 0;
+    var fee = ok ? v * 0.019 : 0;
+    document.getElementById('fee').textContent = ok ? 'Flat fee 1.9%: ' + money(fee) + '. No hemisphere conversion.' : 'Enter an amount above $0. The disc does not do negative money.';
+    if (!state.sel) { sendBtn.disabled = true; sendBtn.textContent = 'Choose a recipient'; return; }
+    sendBtn.disabled = !ok || state.busy;
+    sendBtn.textContent = ok ? 'Send ' + money(v) + ' to ' + byId(state.sel).name.split(' ')[0] : 'Enter an amount';
+  }
+  amt.addEventListener('input', updateSend);
+  convToggle.addEventListener('change', function () { conv.hidden = !convToggle.checked; });
+
+  /* send flow */
+  var balance = 2418.60;
+  sendBtn.addEventListener('click', function () {
+    var c = byId(state.sel), v = parseFloat(amt.value);
+    if (!c || !(v > 0)) return;
+    if (v * 1.019 > balance) { toast('Not enough balance. Lower the amount or wait for payday.'); return; }
+    state.busy = true; updateSend();
+    var check = document.getElementById('check'), steps = document.getElementById('steps');
+    var verdict = document.getElementById('verdict'), seal = document.getElementById('seal');
+    check.hidden = false; verdict.hidden = true; seal.className = 'seal';
+    var rows = [
+      ['Measuring straight line', fmt(c.miles) + ' mi'],
+      ['Telescope required', fmt(c.scope) + 'x'],
+      ['Haze correction', (2 + c.miles % 7).toFixed(1) + '%'],
+      ['Distance from ice wall', fmt(c.rim) + ' mi']
+    ];
+    steps.innerHTML = rows.map(function (r) { return '<li><span>' + r[0] + '</span><b>...</b></li>'; }).join('');
+    var lis = steps.querySelectorAll('li');
+    rows.forEach(function (r, i) {
+      setTimeout(function () { lis[i].classList.add('done'); lis[i].querySelector('b').textContent = r[1]; }, 380 * (i + 1));
+    });
+    setTimeout(function () {
+      var vd = verdictFor(c);
+      verdict.hidden = false;
+      seal.innerHTML = SEALTXT[vd];
+      seal.classList.add(vd);
+      requestAnimationFrame(function () { seal.classList.add('on'); });
+      document.getElementById('vtext').textContent = EXPLAIN[vd](c);
+      if (vd !== 'claim') { balance -= v * 1.019; document.getElementById('bal').textContent = money(balance); }
+      LEDGER.unshift({ name: c.name, place: c.place, amt: v, st: vd, when: 'Just now', fresh: true });
+      renderLedger();
+      toast(vd === 'settled' ? 'Sent ' + money(v) + ' to ' + c.name + '.' : vd === 'held' ? 'Sent to review. Funds held 40 ft from the wall.' : 'Curvature claim filed. ' + money(v) + ' refunded.');
+      state.busy = false; updateSend();
+    }, 380 * 5 + 120);
+  });
+
+  /* ledger */
+  var LEDGER = [
+    { name: 'Wendell Vosk', place: 'Perth, AU', amt: 40, st: 'settled', when: 'Oct 7, 4:12 pm' },
+    { name: 'Gary (rim liaison)', place: 'Ross Ice Shelf approach', amt: 299, st: 'held', when: 'Oct 6, 9:00 am' },
+    { name: 'Aunt Rosalind', place: 'Honolulu, HI', amt: 125, st: 'claim', when: 'Oct 4, 11:47 am' },
+    { name: 'Kurt Albrecht', place: 'Duluth, MN', amt: 18.5, st: 'settled', when: 'Oct 2, 2:30 pm' },
+    { name: 'Spirit Level Supply Co.', place: 'Toledo, OH', amt: 64.99, st: 'settled', when: 'Sep 30, 10:05 am' },
+    { name: 'Tomasz Rek', place: 'Ushuaia, AR', amt: 210, st: 'held', when: 'Sep 28, 6:18 pm' }
+  ];
+  var ledger = document.getElementById('ledger');
+  function renderLedger() {
+    var rows = LEDGER.filter(function (r) { return state.filter === 'all' || r.st === state.filter; });
+    ledger.innerHTML = rows.map(function (r) {
+      return '<tr' + (r.fresh ? ' class="new"' : '') + '><td><strong>' + r.name + '</strong><span class="when">' + r.place + ' · ' + r.when + '</span></td><td><span class="status ' + r.st + '">' + LABEL[r.st] + '</span></td><td class="amt">' + money(r.amt) + '</td></tr>';
+    }).join('');
+    LEDGER.forEach(function (r) { r.fresh = false; });
+    document.getElementById('ledger-empty').hidden = rows.length > 0;
+  }
+  document.getElementById('chips').addEventListener('click', function (e) {
+    var b = e.target.closest('.chip'); if (!b) return;
+    state.filter = b.getAttribute('data-f');
+    this.querySelectorAll('.chip').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+    renderLedger();
+  });
+
+  /* wall sectors */
+  var SECTORS = [
+    ['Sector 1', 'Below South Africa', 97, 'patrolled Tuesday'],
+    ['Sector 2', 'Indian Ocean rim', 94, 'patrolled Monday'],
+    ['Sector 3', 'Below Western Australia', 91, 'patrolled last week'],
+    ['Sector 4', 'Below New Zealand', 88, 'patrolled last week'],
+    ['Sector 5', 'Pacific rim, west', 83, 'patrolled in September'],
+    ['Sector 6', 'Pacific rim, central', 81, 'patrol boat in for repairs'],
+    ['Sector 7', 'Pacific rim, east', 62, 'being looked at'],
+    ['Sector 8', 'Below Cape Horn', 79, 'Tomasz says it is fine'],
+    ['Sector 9', 'South Atlantic rim', 95, 'patrolled Wednesday'],
+    ['Sector 10', 'Below West Africa', 99, 'repainted in August']
+  ];
+  var sectorsEl = document.getElementById('sectors');
+  var hl = document.getElementById('wallSector');
+  SECTORS.forEach(function (s, i) {
+    var li = document.createElement('li');
+    var b = document.createElement('button');
+    b.type = 'button'; b.setAttribute('aria-pressed', 'false');
+    b.innerHTML = '<span><span class="sn">' + s[0] + ', ' + s[1] + '</span><span class="sp">Last check: ' + s[3] + '</span></span><span class="meter' + (s[2] < 80 ? ' low' : '') + '" aria-hidden="true"><i style="width:' + s[2] + '%"></i></span><span class="pct">' + s[2] + '%</span>';
+    b.addEventListener('click', function () {
+      sectorsEl.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      var a0 = (i * 36) * Math.PI / 180, a1 = ((i + 1) * 36) * Math.PI / 180, rr = 279;
+      var x0 = CX + rr * Math.sin(a0), y0 = CY + rr * Math.cos(a0), x1 = CX + rr * Math.sin(a1), y1 = CY + rr * Math.cos(a1);
+      hl.setAttribute('d', 'M' + x0.toFixed(1) + ' ' + y0.toFixed(1) + ' A' + rr + ' ' + rr + ' 0 0 0 ' + x1.toFixed(1) + ' ' + y1.toFixed(1));
+      readout.innerHTML = '<b>' + s[0] + '</b>' + s[1] + '<br>Integrity ' + s[2] + '%<br>Last check: ' + s[3];
+    });
+    li.appendChild(b); sectorsEl.appendChild(li);
+  });
+
+  /* tabs */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+  function activate(t) {
+    tabs.forEach(function (x) {
+      var on = x === t;
+      x.setAttribute('aria-selected', String(on));
+      x.tabIndex = on ? 0 : -1;
+      document.getElementById(x.getAttribute('aria-controls')).hidden = !on;
+    });
+    if (t.id !== 't-wall') hl.setAttribute('d', '');
+  }
+  tabs.forEach(function (t, i) {
+    t.addEventListener('click', function () { activate(t); });
+    t.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        var n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+        n.focus(); activate(n);
+      }
+    });
+  });
+
+  var toastEl = document.getElementById('toast'), toastT;
+  function toast(msg) {
+    toastEl.textContent = msg; toastEl.classList.add('on');
+    clearTimeout(toastT); toastT = setTimeout(function () { toastEl.classList.remove('on'); }, 3600);
+  }
+
+  renderContacts();
+  renderLedger();
+  select('wv');
+})();
+</script>
+</body>
+</html>

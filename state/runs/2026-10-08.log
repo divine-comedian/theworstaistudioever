@@ -1,0 +1,54 @@
+[2026-10-08T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-10-08T08:00:02Z] invoking claude -p
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/github/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/github/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.openclaw/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.openclaw/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.claude/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.claude/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/aurevon-status/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/aurevon-status/**) instead (Edit rules cover all file-editing tools).
+Run 2026-10-08
+Rolled: company=Vercel, subject=squirrels, slug=vercel-for-squirrels (product: Cache)
+Rerolls: 0 (first draw not in history)
+
+Design direction: developer-platform minimalism gone feral, autumn daylight mode
+  Palette "Oak Paper Terracotta": primary #9A3412, accent #047857, bg #FBF6EC, fg/ink #1C1712, muted #776858
+  Fonts: Geist (display + body), Geist Mono
+  Anti-sameness: checked last 7 concept.json (kraft cafe / matte peripheral dark / diff viewer / IR trailcam / thumbnail-shock / VHS / swiss grid). No style, palette or font match.
+
+Images (GEMINI_API_KEY present, cap not reached), 4 of 4 used:
+  hero.webp (16:9 -> 1600x900): grey squirrel on fence post with acorn. Attempt 1, PASS (subject correct, cream/rust palette matches, no text artifacts).
+  headshot-1.webp (320x320): grey squirrel, frontal. Attempt 1, PASS.
+  headshot-2.webp (320x320): red squirrel, three-quarter. Attempt 1, PASS.
+  headshot-3.webp (320x320): fox squirrel. Attempt 1, PASS.
+  Rationale: hero photo carries the founder-portrait joke next to a terminal; demo (deployments table + dot map) is not photo-shaped, skipped; remaining 3 on testimonials.
+
+Warnings / near-misses:
+  - Bash sandbox rejected shell variables in gen-image commands; reran with literal paths.
+  - Demo initially indexed rows by array position; fixed to id lookup before validation.
+  - Gallery regen first pass HTML-escaped apostrophes in older blurbs; normalized so the diff only adds the new slide and count (117).
+
+Validation: scripts/validate-entry.sh site vercel-for-squirrels -> OK
+The visual check found nothing broken. Neither file was edited after validation.
+
+Today's entry is **Vercel for squirrels**, published as **Cache**, a hosting platform for burying acorns.
+
+- **Roll:** Vercel × squirrels on the first draw, no rerolls. Slug is `vercel-for-squirrels`.
+- **Design:** a developer-platform look on cream paper with one terracotta accent ("Oak Paper Terracotta": #9A3412 / #047857 / #FBF6EC), set in Geist and Geist Mono. It doesn't match the style, palette or fonts of any of the last 7 entries.
+- **Images:** 4 of 4 generated, and each passed the vision check on the first attempt. One is the hero photo, a squirrel on a fence post holding an acorn. The other three are deadpan headshots for the testimonials (grey, red and fox squirrels). The demo got no images because it's a table and a map.
+- **Landing page:** a hero with a typing deploy log beside the photo, a dot-map of the backyard "edge network", 3 features, 3 testimonials, 3 pricing tiers, and a link to the demo.
+- **Demo:** Pip's deployments dashboard. It has a live backyard map, status filters, search, a "Deploy nut" drawer that streams a build log (a jay rollback happens about half the time), and a Retrieve button that works 31% of the time.
+- **Gallery:** rebuilt with 117 startups. The diff only adds the new slide and changes the count.
+- **Validation and records:** `validate-entry.sh` passed. The new entry was appended to `state/history.json` (6 added lines, nothing earlier changed). The run summary is in `state/runs/2026-10-08.log`.
+
+Two problems were fixed during the run:
+- The Bash sandbox rejected shell variables in the image commands, so I reran them with literal paths.
+- A row-lookup bug in the demo was fixed before validation.
+
+The two screenshots are in `docs/design-catalogue/`, which is gitignored.
+
+The session also reported that some connectors need authorization: Supabase, Gmail, Google Calendar, Google Drive, Hivemind and n8n. You can authorize them in your claude.ai connector settings, or for Supabase with `/mcp` in an interactive session. Today's run didn't use any of them.
+
+RUN_COMPLETE: vercel-for-squirrels
+[2026-10-08T08:06:30Z] new entry: vercel-for-squirrels
+validate-entry [vercel-for-squirrels]: OK
+[2026-10-08T08:06:30Z] RUN FAILED: build-seo rejected the site

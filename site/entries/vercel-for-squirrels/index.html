@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cache · theworstaistudioever</title>
+<meta name="description" content="Deploy your acorns to 412 edge locations, most of them in the Hendersons' yard. Retrieval is on the roadmap.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Cache · theworstaistudioever">
+<meta property="og:description" content="Deploy your acorns to 412 edge locations, most of them in the Hendersons' yard. Retrieval is on the roadmap.">
+<meta property="og:image" content="hero.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#FBF6EC">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#9A3412; --accent:#047857; --bg:#FBF6EC; --fg:#1C1712; --muted:#776858; --ink:#1C1712;
+  --paper:#FFFDF8; --line:#E6DCCB; --line-2:#D6C8B2; --amber:#B45309; --grey:#8A7F72; --red:#B91C1C;
+  --term:#1A1612;
+  --display:'Geist','Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'Geist Mono','SFMono-Regular',Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 17px/1.6 var(--display);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+img{display:block;max-width:100%}
+:focus-visible{outline:2px solid var(--primary);outline-offset:3px;border-radius:4px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+.mono{font-family:var(--mono)}
+
+/* nav */
+.top{position:sticky;top:0;z-index:20;background:rgba(251,246,236,.92);backdrop-filter:saturate(1.2);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:28px;height:64px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:600;font-size:18px;letter-spacing:-.02em}
+.logo svg{width:22px;height:24px}
+.top nav{display:flex;gap:22px;font-size:14px;color:var(--muted)}
+.top nav a{text-decoration:none}
+.top nav a:hover{color:var(--fg)}
+.top .right{margin-left:auto;display:flex;gap:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:6px;font:500 15px/1 var(--display);text-decoration:none;border:1px solid var(--ink);cursor:pointer;transition:transform .12s ease, background .15s ease}
+.btn:active{transform:scale(.98)}
+.btn-dark{background:var(--ink);color:var(--paper)}
+.btn-dark:hover{background:#3a2f26}
+.btn-line{background:transparent;color:var(--ink);border-color:var(--line-2)}
+.btn-line:hover{border-color:var(--ink)}
+.top .btn{min-height:36px;font-size:14px;padding:0 14px}
+
+/* hero */
+.hero{padding:84px 0 72px}
+.hero .wrap{display:grid;grid-template-columns:1fr 1.05fr;gap:56px;align-items:center}
+.release{display:inline-flex;align-items:center;gap:10px;font:500 13px/1 var(--mono);color:var(--muted);border:1px solid var(--line-2);border-radius:999px;padding:7px 12px 7px 8px;background:var(--paper);text-decoration:none}
+.release b{font-weight:500;background:var(--primary);color:var(--paper);border-radius:999px;padding:3px 8px}
+h1{font-size:clamp(48px,7vw,84px);line-height:.98;letter-spacing:-.055em;font-weight:700;margin:26px 0 22px}
+.hero p.sub{font-size:19px;line-height:1.55;color:#4A3F35;max-width:31em;margin:0 0 32px}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px}
+.install{margin-top:28px;font:400 14px/1 var(--mono);color:var(--muted)}
+.install code{color:var(--fg);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:6px 10px;margin-left:6px}
+
+.shot{position:relative}
+.shot .photo{border-radius:10px;overflow:hidden;border:1px solid var(--line-2);aspect-ratio:4/3.3;background:#EADFCB}
+.shot .photo img{width:100%;height:100%;object-fit:cover;object-position:66% 50%}
+.term{position:absolute;left:-36px;bottom:-34px;width:min(360px,82%);background:var(--term);color:#E9E0D2;border-radius:8px;box-shadow:0 8px 24px rgba(28,23,18,.22);font:400 12.5px/1.75 var(--mono);overflow:hidden}
+.term .bar{display:flex;gap:6px;padding:10px 12px;border-bottom:1px solid #2E2720}
+.term .bar i{width:9px;height:9px;border-radius:50%;background:#3B332B}
+.term pre{margin:0;padding:12px 16px 16px;min-height:178px;white-space:pre-wrap}
+.term .p{color:#C9A27A}
+.term .ok{color:#6EC5A0}
+.term .dim{color:#8B7F70}
+
+/* trusted */
+.trusted{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:22px 0}
+.trusted .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:14px 40px;font:500 14px/1 var(--mono);color:var(--grey)}
+.trusted span:first-child{color:var(--muted);font-family:var(--display);font-weight:400}
+
+/* sections */
+section.block{padding:104px 0}
+.h2{font-size:clamp(32px,4vw,46px);line-height:1.06;letter-spacing:-.04em;font-weight:650;margin:0 0 16px;max-width:16em}
+.lede{color:#4A3F35;max-width:36em;margin:0}
+
+/* features */
+.features{display:grid;grid-template-columns:repeat(3,1fr);margin-top:56px;border:1px solid var(--line-2);border-radius:10px;background:var(--paper);overflow:hidden}
+.feature{padding:32px 30px 34px;border-left:1px solid var(--line)}
+.feature:first-child{border-left:0}
+.feature .glyph{width:40px;height:40px;border:1px solid var(--line-2);border-radius:8px;display:grid;place-items:center;margin-bottom:22px;color:var(--primary)}
+.feature h3{font-size:20px;letter-spacing:-.02em;margin:0 0 10px;font-weight:600}
+.feature p{margin:0;color:#4A3F35;font-size:16px}
+.feature .meta{margin-top:20px;font:400 13px/1.4 var(--mono);color:var(--muted)}
+
+/* map - the one bold moment */
+.network{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.network .wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:56px;align-items:center}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:36px;border-top:1px solid var(--line)}
+.stat{padding:18px 0;border-bottom:1px solid var(--line)}
+.stat:nth-child(odd){padding-right:16px;border-right:1px solid var(--line)}
+.stat:nth-child(even){padding-left:20px}
+.stat strong{display:block;font-size:30px;letter-spacing:-.04em;font-weight:600;font-variant-numeric:tabular-nums}
+.stat span{font-size:14px;color:var(--muted)}
+.yard{position:relative;border:1px solid var(--line-2);border-radius:10px;background:var(--bg);overflow:hidden;aspect-ratio:16/11}
+.yard svg{width:100%;height:100%;display:block}
+.pin{fill:var(--primary)}
+.halo{fill:var(--primary);opacity:.22;transform-box:fill-box;transform-origin:center;animation:pulse 2.4s ease-out infinite}
+@keyframes pulse{0%{transform:scale(.6);opacity:.35}100%{transform:scale(2.4);opacity:0}}
+.yard .legend{position:absolute;left:14px;bottom:12px;display:flex;flex-wrap:wrap;gap:6px 16px;font:400 12px/1 var(--mono);color:var(--muted);background:rgba(251,246,236,.9);padding:8px 10px;border-radius:6px;border:1px solid var(--line)}
+.legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:0}
+
+/* testimonials */
+.quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:56px}
+.quote{margin:0;padding:28px;border:1px solid var(--line-2);border-radius:10px;background:var(--paper);display:flex;flex-direction:column}
+.quote blockquote{margin:0 0 28px;font-size:18px;line-height:1.5;letter-spacing:-.01em}
+.quote figcaption{margin-top:auto;display:flex;gap:14px;align-items:center}
+.quote img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:1px solid var(--line-2)}
+.quote b{display:block;font-weight:600;font-size:15px}
+.quote small{display:block;color:var(--muted);font-size:13.5px;line-height:1.35}
+
+/* pricing */
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:56px;align-items:stretch}
+.tier{border:1px solid var(--line-2);border-radius:10px;padding:30px;background:var(--paper);display:flex;flex-direction:column}
+.tier.featured{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.tier .name{display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:18px}
+.tier .flag{font:500 12px/1 var(--mono);color:var(--paper);background:var(--primary);border-radius:999px;padding:5px 9px}
+.tier .price{font-size:34px;letter-spacing:-.04em;font-weight:650;margin:18px 0 4px;font-variant-numeric:tabular-nums}
+.tier .tl{color:var(--muted);margin:0 0 22px;font-size:15px}
+.tier ul{list-style:none;margin:0 0 28px;padding:20px 0 0;border-top:1px solid var(--line);font-size:15px}
+.tier li{display:flex;gap:10px;padding:5px 0}
+.tier li svg{flex:none;margin-top:5px;color:var(--primary)}
+.tier .btn{margin-top:auto}
+
+/* closing */
+.closing{padding:96px 0 104px;text-align:left}
+.closing .box{border:1px solid var(--ink);border-radius:12px;padding:56px;display:flex;flex-wrap:wrap;gap:28px;align-items:center;justify-content:space-between;background:var(--paper)}
+.closing h2{margin:0;font-size:clamp(28px,3.4vw,40px);letter-spacing:-.04em;line-height:1.08;font-weight:650;max-width:18em}
+.demo-cta{font-size:17px;min-height:52px;padding:0 24px;background:var(--primary);border-color:var(--primary);color:var(--paper)}
+.demo-cta:hover{background:#7C2A0F}
+
+footer{border-top:1px solid var(--line);padding:30px 0 48px;font-size:14px;color:var(--muted)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:16px 32px;justify-content:space-between}
+footer a{text-decoration:none}
+footer a:hover{color:var(--fg)}
+
+@media (max-width:960px){
+  .hero .wrap,.network .wrap{grid-template-columns:1fr}
+  .shot{margin:0 0 40px 24px}
+  .features,.quotes,.tiers{grid-template-columns:1fr}
+  .feature{border-left:0;border-top:1px solid var(--line)}
+  .feature:first-child{border-top:0}
+  .top nav{display:none}
+}
+@media (max-width:560px){
+  .wrap{padding:0 20px}
+  .hero{padding:56px 0 48px}
+  .term{left:-20px;width:92%}
+  .closing .box{padding:32px 24px}
+  .top .btn-line{display:none}
+  section.block{padding:76px 0}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .halo{animation:none;opacity:.2}
+  .btn{transition:none}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Cache home">
+      <svg viewBox="0 0 22 24" aria-hidden="true"><path d="M11 1 L21 9 H1 Z" fill="#1C1712"/><path d="M3 10 H19 V14 A8 8 0 0 1 3 14 Z" fill="#9A3412"/></svg>
+      Cache
+    </a>
+    <nav aria-label="Primary">
+      <a href="#features">Product</a>
+      <a href="#network">Edge network</a>
+      <a href="#customers">Customers</a>
+      <a href="#pricing">Pricing</a>
+    </nav>
+    <div class="right">
+      <a class="btn btn-line" href="./demo.html">Log in</a>
+      <a class="btn btn-dark" href="#pricing">Start burying</a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <a class="release" href="#network"><b>v4.12</b> Nine new gutters in us-backyard-2</a>
+        <h1>Bury it at the edge.</h1>
+        <p class="sub">Cache gives every squirrel a global network of 412 holes. Zero-config burying, a preview deployment for every nut, and automatic rollback when a blue jay is watching. Finding things again ships in Q3.</p>
+        <div class="cta-row">
+          <a class="btn btn-dark" href="#pricing">Start burying</a>
+          <a class="btn btn-line" href="./demo.html">Open the dashboard</a>
+        </div>
+        <p class="install">Install<code>npx cache bury ./acorn</code></p>
+      </div>
+      <div class="shot">
+        <div class="photo"><img src="hero.webp" alt="A grey squirrel on a fence post holding an acorn, looking at the camera" width="1600" height="900"></div>
+        <div class="term" aria-label="Example deploy log">
+          <div class="bar"><i></i><i></i><i></i></div>
+          <pre id="term"></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="trusted">
+    <div class="wrap">
+      <span>Burying for teams at</span>
+      <span>Eastside Park</span><span>Oak Hill Cemetery</span><span>The Hendersons (unaware)</span><span>Lot 14 Parking Structure</span><span>Riverside Elementary</span>
+    </div>
+  </div>
+
+  <section class="block" id="features">
+    <div class="wrap">
+      <h2 class="h2">The storage layer for things you will never see again.</h2>
+      <p class="lede">Cache handles the digging, the placement and the patting-down. Remembering where is your responsibility, per section 9 of the terms.</p>
+      <div class="features">
+        <article class="feature">
+          <div class="glyph" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="4" width="7" height="12" rx="1.5"/><rect x="11" y="4" width="7" height="12" rx="1.5" stroke-dasharray="2 2"/></svg></div>
+          <h3>Preview deployments</h3>
+          <p>Every acorn gets a temporary hole before it gets its permanent hole. Inspect the preview, approve it, and promote to production. Two holes per nut. Twice as much to forget.</p>
+          <p class="meta">Avg. previews per acorn: 2.0</p>
+        </article>
+        <article class="feature">
+          <div class="glyph" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="7.5"/><path d="M2.5 10h15M10 2.5c2.5 2.4 2.5 12.6 0 15M10 2.5c-2.5 2.4-2.5 12.6 0 15"/></svg></div>
+          <h3>412 edge regions</h3>
+          <p>Flower beds, gutters, a Honda Civic wheel well and one potted fern on a third-floor balcony. Median time to first acorn: 40 seconds of digging in the wrong place.</p>
+          <p class="meta">p99 retrieval: did not complete</p>
+        </article>
+        <article class="feature">
+          <div class="glyph" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h9a4 4 0 0 1 0 8H8"/><path d="M7 4 4 7l3 3"/></svg></div>
+          <h3>Instant rollback</h3>
+          <p>When a jay watches you bury, Cache digs the nut back up and redeploys it six feet left. Most customers roll back four or five times per acorn. We count each one as a deploy.</p>
+          <p class="meta">Rollback time: 0.8s, then panic</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block network" id="network">
+    <div class="wrap">
+      <div>
+        <h2 class="h2">412 regions. All of them within one fence.</h2>
+        <p class="lede">Our edge network spans the entire perimeter of a single suburban backyard and two neighboring properties. We are in talks with the park.</p>
+        <div class="stats">
+          <div class="stat"><strong>412</strong><span>Active holes</span></div>
+          <div class="stat"><strong>99.99%</strong><span>Burial success</span></div>
+          <div class="stat"><strong>31%</strong><span>Retrieval rate</span></div>
+          <div class="stat"><strong>0</strong><span>Squirrels who have read the docs</span></div>
+        </div>
+      </div>
+      <div class="yard" role="img" aria-label="Top-down dot map of a backyard with cache locations marked as pulsing pins">
+        <svg viewBox="0 0 640 440" id="yard"></svg>
+        <div class="legend"><span><i style="background:#9A3412"></i>Acorn deployed</span><span><i style="background:#D6C8B2"></i>Lawn</span><span><i style="background:#8A7F72"></i>Hendersons' deck</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="customers">
+    <div class="wrap">
+      <h2 class="h2">Teams that have stopped asking where anything is.</h2>
+      <div class="quotes">
+        <figure class="quote">
+          <blockquote>We moved the whole stash off a single oak in March. I can't find any of it, but the dashboard says it's all there, and honestly that's the part I was paying for.</blockquote>
+          <figcaption><img src="headshot-1.webp" alt="Portrait of Pip Halloran, a grey squirrel" width="52" height="52" loading="lazy"><div><b>Pip Halloran</b><small>Head of Hoarding, Eastside Park, North Quadrant</small></div></figcaption>
+        </figure>
+        <figure class="quote">
+          <blockquote>I used to bury things and forget them. Now I bury things, get a Slack notification, and forget them.</blockquote>
+          <figcaption><img src="headshot-2.webp" alt="Portrait of Nutmeg Okafor, a red squirrel" width="52" height="52" loading="lazy"><div><b>Nutmeg Okafor</b><small>Staff Burial Engineer, Third Oak From the Bench</small></div></figcaption>
+        </figure>
+        <figure class="quote">
+          <blockquote>A jay saw me deploy and I rolled back in under a second. Then I rolled back the rollback. The acorn is somewhere in Ohio now.</blockquote>
+          <figcaption><img src="headshot-3.webp" alt="Portrait of Gerald Thistlewood, a fox squirrel" width="52" height="52" loading="lazy"><div><b>Gerald Thistlewood</b><small>VP of Acorns, Oak Hill Cemetery Grounds Division</small></div></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="pricing" style="padding-top:0">
+    <div class="wrap">
+      <h2 class="h2">Pricing that scales with your tail.</h2>
+      <p class="lede">Billed per tail, per month. Fluffier tails are not charged extra, despite internal pressure.</p>
+      <div class="tiers">
+        <div class="tier">
+          <div class="name">Hobby</div>
+          <div class="price">$0</div>
+          <p class="tl">One tree. No ambitions.</p>
+          <ul>
+            <li><svg width="12" height="13" viewBox="0 0 22 24" aria-hidden="true"><path d="M11 1 L21 9 H1 Z" fill="currentColor"/><path d="M3 10 H19 V14 A8 8 0 0 1 3 14 Z" fill="currentColor" opacity=".55"/></svg>12 holes</li>
+            <li><svg width="12" height="13" viewBox="0 0 22 24" aria-hidden="true"><path d="M11 1 L21 9 H1 Z" fill="currentColor"/><path d="M3 10 H19 V14 A8 8 0 0 1 3 14 Z" fill="currentColor" opacity=".55"/></svg>Community support from a crow</li>
+            <li><svg width="12" height="13" viewBox="0 0 22 24" aria-hidden="true"><path d="M11 1 L21 9 H1 Z" fill="currentColor"/><path d="M3 10 H19 V14 A8 8 0 0 1 3 14 Z" fill="currentColor" opacity=".55"/></svg>Shared lawn</li>
+          </ul>
+          <a class="btn btn-line" href="./demo.html">Start for free</a>
+        </div>
+        <div class="tier featured">
+          <div class="name">Pro <span class="flag">Most buried</span></div>
+          <div class="price">$20<span style="font-size:16px;letter-spacing:0;font-weight:400;color:var(--muted)"> / tail / mo</span></div>
+          <p class="tl">For the serious hoarder.</p>
+          <ul>
+            <li><svg width="12" height="13" viewBox="0 0 22 24" aria-hidden="true"><path d="M11 1 L21 9 H1 Z" fill="currentColor"/><path d="M3 10 H19 V14 A8 8 0 0 1 3 14 Z" fill="currentColor" opacity=".55"/></svg>Unlimited holes</li>
+            <li><svg width="12" height="13" viewBox="0 0 22 24" aria-hidden="true"><path d="M11 1 L21 9 H1 Z" fill="currentColor"/><path d="M3 10 H19 V14 A8 8 0 0 1 3 14 Z" fill="currentColor" opacity=".55"/></svg>Forgetting analytics</li>
+            <li><svg width="12" height="13" viewBox="0 0 22 24" aria-hidden="true"><path d="M11 1 L21 9 H1 Z" fill="currentColor"/><path d="M3 10 H19 V14 A8 8 0 0 1 3 14 Z" fill="currentColor" opacity=".55"/></svg>Priority digging in frozen soil</li>
+            <li><svg width="12" height="13" viewBox="0 0 22 24" aria-hidden="true"><path d="M11 1 L21 9 H1 Z" fill="currentColor"/><path d="M3 10 H19 V14 A8 8 0 0 1 3 14 Z" fill="currentColor" opacity=".55"/></svg>Jay detection, beta</li>
+          </ul>
+          <a class="btn btn-dark" href="./demo.html">Start burying</a>
+        </div>
+        <div class="tier">
+          <div class="name">Enterprise</div>
+          <div class="price">$48,000<span style="font-size:16px;letter-spacing:0;font-weight:400;color:var(--muted)"> / winter</span></div>
+          <p class="tl">For park squirrels with a board seat.</p>
+          <ul>
+            <li><svg width="12" height="13" viewBox="0 0 22 24" aria-hidden="true"><path d="M11 1 L21 9 H1 Z" fill="currentColor"/><path d="M3 10 H19 V14 A8 8 0 0 1 3 14 Z" fill="currentColor" opacity=".55"/></svg>A dedicated oak</li>
+            <li><svg width="12" height="13" viewBox="0 0 22 24" aria-hidden="true"><path d="M11 1 L21 9 H1 Z" fill="currentColor"/><path d="M3 10 H19 V14 A8 8 0 0 1 3 14 Z" fill="currentColor" opacity=".55"/></svg>SLA: 99.99% burial, 31% retrieval</li>
+            <li><svg width="12" height="13" viewBox="0 0 22 24" aria-hidden="true"><path d="M11 1 L21 9 H1 Z" fill="currentColor"/><path d="M3 10 H19 V14 A8 8 0 0 1 3 14 Z" fill="currentColor" opacity=".55"/></svg>SOC 2 Type Nut</li>
+            <li><svg width="12" height="13" viewBox="0 0 22 24" aria-hidden="true"><path d="M11 1 L21 9 H1 Z" fill="currentColor"/><path d="M3 10 H19 V14 A8 8 0 0 1 3 14 Z" fill="currentColor" opacity=".55"/></svg>Account manager (also a squirrel)</li>
+          </ul>
+          <a class="btn btn-line" href="./demo.html">Talk to sales</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="closing">
+    <div class="wrap">
+      <div class="box">
+        <h2>Pip has 14 acorns deployed right now. Go see how many Pip can find.</h2>
+        <a class="btn demo-cta" href="./demo.html">open the demo →</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a href="/">← theworstaistudioever</a>
+    <span>Cache, Inc. Registered in the hollow of a sycamore. Status: all holes operational.</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var lines = [
+    ['p','$ cache deploy ./acorn-0412'],
+    ['dim','  Digging hole in us-backyard-2...'],
+    ['dim','  Placing acorn (1 of 1)'],
+    ['dim','  Patting soil. Looking around.'],
+    ['dim','  Jay detected. Rolling back.'],
+    ['dim','  Redeploying 6ft left...'],
+    ['ok','  Ready. hendersons-deck-1'],
+    ['dim','  Location discarded from memory.']
+  ];
+  var el = document.getElementById('term');
+  function render(n){
+    el.innerHTML = lines.slice(0,n).map(function(l){return '<span class="'+l[0]+'">'+l[1]+'</span>';}).join('\n');
+  }
+  if (reduce) { render(lines.length); }
+  else {
+    var i = 0;
+    (function tick(){ i++; render(i); if (i < lines.length) setTimeout(tick, i===4 ? 700 : 380); })();
+  }
+
+  // dot-map backyard
+  var svg = document.getElementById('yard'), NS = 'http://www.w3.org/2000/svg', out = '';
+  function inDeck(x,y){ return x>420 && x<600 && y>40 && y<170; }
+  function inShed(x,y){ return x>40 && x<130 && y>300 && y<400; }
+  for (var y = 14; y < 440; y += 14) {
+    for (var x = 14; x < 640; x += 14) {
+      var c = inDeck(x,y) ? '#8A7F72' : (inShed(x,y) ? '#B5A892' : '#D6C8B2');
+      var r = inDeck(x,y) ? 2 : 1.4;
+      out += '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+c+'"/>';
+    }
+  }
+  // fence line and oak
+  out += '<rect x="6" y="6" width="628" height="428" fill="none" stroke="#1C1712" stroke-width="1" stroke-dasharray="3 5" rx="6"/>';
+  out += '<circle cx="250" cy="200" r="54" fill="none" stroke="#776858" stroke-width="1"/><circle cx="250" cy="200" r="5" fill="#1C1712"/>';
+  out += '<text x="250" y="276" text-anchor="middle" font-family="Geist Mono, monospace" font-size="11" fill="#776858">origin oak</text>';
+  out += '<text x="510" y="190" text-anchor="middle" font-family="Geist Mono, monospace" font-size="11" fill="#1C1712">hendersons-deck-1</text>';
+  var pins = [[310,120],[190,300],[470,90],[560,140],[380,330],[90,90],[520,370],[140,220],[420,240],[300,400],[600,260],[220,60],[70,350],[350,190]];
+  var path = 'M250 200';
+  pins.forEach(function(p,i){
+    out += '<circle class="halo" cx="'+p[0]+'" cy="'+p[1]+'" r="8" style="animation-delay:'+(i*0.17).toFixed(2)+'s"/>';
+    out += '<circle class="pin" cx="'+p[0]+'" cy="'+p[1]+'" r="4.5"/>';
+  });
+  pins.slice(0,5).forEach(function(p){ path += ' L'+p[0]+' '+p[1]; });
+  out = '<path d="'+path+'" fill="none" stroke="#9A3412" stroke-width="1" stroke-dasharray="4 4" opacity=".55"/>' + out;
+  svg.innerHTML = out;
+})();
+</script>
+</body>
+</html>

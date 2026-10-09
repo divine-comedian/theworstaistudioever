@@ -1,0 +1,96 @@
+{
+  "date": "2026-10-08",
+  "company": "Vercel",
+  "subject": "squirrels",
+  "tagline": "Vercel for squirrels",
+  "slug": "vercel-for-squirrels",
+  "product_name": "Cache",
+  "one_liner": "Deploy your acorns to 412 edge locations, most of them in the Hendersons' yard. Retrieval is on the roadmap.",
+  "brand_voice_notes": "Developer-platform confidence applied to burying nuts. Every sentence sounds like a changelog or a keynote. The product works perfectly at storage and has never once worked at retrieval, and nobody at Cache treats that as a problem. Numbers are precise and bleak (31% retrieval, 40-second latency). No winking, no puns in the headings, no exclamation marks.",
+  "hero": {
+    "h1": "Bury it at the edge.",
+    "sub": "Cache gives every squirrel a global network of 412 holes. Zero-config burying, a preview deployment for every nut, and automatic rollback when a blue jay is watching. Finding things again ships in Q3.",
+    "primary_cta": "Start burying"
+  },
+  "features": [
+    {
+      "title": "Preview deployments",
+      "blurb": "Every acorn gets a temporary hole before it gets its permanent hole. Inspect the preview, approve it, and promote to production. Two holes per nut. Twice as much to forget."
+    },
+    {
+      "title": "412 edge regions",
+      "blurb": "Flower beds, gutters, a Honda Civic wheel well and one potted fern on a third-floor balcony. Median time to first acorn: 40 seconds of digging in the wrong place."
+    },
+    {
+      "title": "Instant rollback",
+      "blurb": "When a jay watches you bury, Cache digs the nut back up and redeploys it six feet left. Most customers roll back four or five times per acorn. We count each one as a deploy."
+    }
+  ],
+  "pricing_tiers": [
+    {
+      "name": "Hobby",
+      "price": "$0",
+      "tagline": "One tree. No ambitions.",
+      "perks": ["12 holes", "Community support from a crow", "Shared lawn"]
+    },
+    {
+      "name": "Pro",
+      "price": "$20 / tail / mo",
+      "tagline": "For the serious hoarder.",
+      "perks": ["Unlimited holes", "Forgetting analytics", "Priority digging in frozen soil", "Jay detection, beta"]
+    },
+    {
+      "name": "Enterprise",
+      "price": "$48,000 / winter",
+      "tagline": "For park squirrels with a board seat.",
+      "perks": ["A dedicated oak", "SLA: 99.99% burial, 31% retrieval", "SOC 2 Type Nut", "Account manager (also a squirrel)"]
+    }
+  ],
+  "testimonials": [
+    {
+      "quote": "We moved the whole stash off a single oak in March. I can't find any of it, but the dashboard says it's all there, and honestly that's the part I was paying for.",
+      "name": "Pip Halloran",
+      "title": "Head of Hoarding, Eastside Park, North Quadrant"
+    },
+    {
+      "quote": "I used to bury things and forget them. Now I bury things, get a Slack notification, and forget them.",
+      "name": "Nutmeg Okafor",
+      "title": "Staff Burial Engineer, Third Oak From the Bench"
+    },
+    {
+      "quote": "A jay saw me deploy and I rolled back in under a second. Then I rolled back the rollback. The acorn is somewhere in Ohio now.",
+      "name": "Gerald Thistlewood",
+      "title": "VP of Acorns, Oak Hill Cemetery Grounds Division"
+    }
+  ],
+  "demo_screen_concept": "The Cache project dashboard for a squirrel named Pip. A deployments table of 14 buried nuts with commit-style messages ('bury acorn near birdbath', 'hotfix: rebury, jay saw'), a status pill (Ready, Building, Forgotten, Stolen), the edge region ('hendersons-deck-1', 'gutter-west-2') and an age. Above it, a dotted top-down backyard map with pulsing pins for every cache and a stats row: holes, retrieval rate 31%, cold-start forecast. Filter chips by status, a fake search box, a 'Deploy nut' button that opens a drawer streaming a build log line by line (digging, placing acorn, patting soil, looking around, deployed, location discarded), and a per-row 'Retrieve' action that succeeds 31% of the time and otherwise marks the row Forgotten.",
+  "design_direction": {
+    "style": "Developer-platform minimalism gone feral, autumn daylight mode. Vercel-grade restraint (hairline borders, mono labels, black primary buttons, status dots, terminal panels) printed on oak-leaf paper with a single terracotta acorn accent. Explicitly absent, because the last seven entries used them: name tags, punch cards, thermal tickets, matte dark mode, lime LEDs, conflict markers, gutter stripes, data strips, viewfinder brackets, contours, thumbnail circles and arrows, highlighter, VHS labels, OSD menus, tracking lines, 24-hour bars, Swiss poster grids, giant numerals. Also absent: dark page backgrounds, glassmorphism, neon, gradients behind text. Four motifs carry the page. (1) The acorn mark: a geometric acorn (triangle cap over a rounded body) replaces Vercel's triangle in the logo and as bullet glyphs. (2) The dot map: a top-down backyard drawn as a field of 1px dots, with pulsing terracotta pins for caches and dashed paths between them. (3) The status dot: every list item carries a small filled circle with a text label: green Ready, amber Building, grey Forgotten, red Stolen. (4) The terminal: deploy logs in a near-black panel with Geist Mono, used once in the hero and once in the demo drawer. Corners 8px on cards, 6px on buttons. Shadows are a 1px border only, plus one soft 0 8px 24px lift on the hero terminal.",
+    "palette": {
+      "name": "Oak Paper Terracotta",
+      "primary": "#9A3412",
+      "accent": "#047857",
+      "bg": "#FBF6EC",
+      "fg": "#1C1712",
+      "muted": "#776858",
+      "ink": "#1C1712"
+    },
+    "fonts": {
+      "display": "'Geist', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
+      "body": "'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
+      "mono": "'Geist Mono', 'SFMono-Regular', Menlo, Consolas, monospace"
+    },
+    "archetype": "Developer platform / hosting SaaS landing (hero with terminal, logo strip, feature grid, testimonials, pricing) plus a project dashboard demo",
+    "motion_vocab": "Pins pulse on a 2.4s loop. Terminal lines type in at 60ms per line. Buttons press with a 0.98 scale. Status dots on Building rows breathe. All motion disabled under prefers-reduced-motion.",
+    "hero_composition_notes": "Two columns on desktop. Left: mono eyebrow 'cache.dev / v4.12 now with 9 new gutters', h1 at 72px Geist 700 with -0.045em tracking, sub, black primary button plus outlined secondary 'open the demo'. Right: the hero photograph of a squirrel in a 16:9 frame with a terminal panel overlapping its lower-left corner, streaming 'cache deploy ./acorn'. Below the fold a strip of 'trusted by' park names in mono grey."
+  },
+  "images": {
+    "rationale": "Hero used: the dev-platform style is restrained but the founder-portrait-of-a-squirrel photo is the joke the hero rests on, framed beside a terminal. Demo skipped: a deployments table and dot map are not photo-shaped. Remaining 3 slots on testimonial headshots, one per named customer, different species for variety.",
+    "items": [
+      { "role": "hero", "file": "hero.webp", "prompt": "Editorial photograph of a single eastern grey squirrel sitting upright on a weathered wooden fence post, holding an acorn in its front paws, looking calmly toward the camera like a founder in a product launch photo. Soft overcast autumn daylight, warm oak-paper cream background #FBF6EC softly out of focus, terracotta rust #9A3412 fallen leaves in the blurred foreground, shallow depth of field, 85mm lens, crisp fur detail, restrained minimal composition with negative space on the left. No text, no letters, no numbers, no logos, no watermarks, no rendered UI screens.", "attempts": 1 },
+      { "role": "testimonial", "file": "headshot-1.webp", "prompt": "Deadpan corporate LinkedIn-style headshot of a single eastern grey squirrel facing the camera with a serious, composed expression. Plain seamless warm cream studio backdrop #F3EADB, soft even corporate headshot lighting, head-and-shoulders crop, centered, sharp focus on the eyes, editorial photograph, 85mm. No text, no letters, no numbers, no logos, no watermarks, no rendered UI screens, no clothing, no props.", "attempts": 1 },
+      { "role": "testimonial", "file": "headshot-2.webp", "prompt": "Deadpan corporate LinkedIn-style headshot of a single red squirrel with tufted ears, three-quarter view, looking slightly off camera with quiet confidence. Plain seamless warm cream studio backdrop #F3EADB, soft even corporate headshot lighting, head-and-shoulders crop, centered, sharp focus on the eyes, editorial photograph, 85mm. No text, no letters, no numbers, no logos, no watermarks, no rendered UI screens, no clothing, no props.", "attempts": 1 },
+      { "role": "testimonial", "file": "headshot-3.webp", "prompt": "Deadpan corporate LinkedIn-style headshot of a single older fox squirrel with rust-orange fur and a slightly grizzled face, facing the camera with a tired executive stare. Plain seamless warm cream studio backdrop #F3EADB, soft even corporate headshot lighting, head-and-shoulders crop, centered, sharp focus on the eyes, editorial photograph, 85mm. No text, no letters, no numbers, no logos, no watermarks, no rendered UI screens, no clothing, no props.", "attempts": 1 }
+    ]
+  }
+}
