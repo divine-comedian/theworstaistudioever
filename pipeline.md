@@ -137,7 +137,7 @@ Generate up to **4 AI images** for the entry via `scripts/gen-image.sh`, but onl
 
 1. **Invoke the `frontend-design` skill.** This is required — it's the guardrail against generic AI output. Note that its "critique your work with screenshots" advice is deferred to Step 9, under a hard cap — do not render or screenshot anything here.
 2. Write a single self-contained HTML file to `site/entries/<slug>/index.html` with:
-   - `<head>`: title (`product_name · theworstaistudioever`), meta description (the one-liner), Open Graph tags, the chosen Google Fonts import (if any) inline.
+   - `<head>`: title (`product_name — tagline`), the chosen Google Fonts import (if any) inline. Sharing metadata is finalized in Step 8 by `scripts/build-entry-metadata.py`; keep `concept.json`'s `hero.h1` and `hero.sub` in sync with the hero copy shown on this page.
    - `<style>` block: inline CSS implementing the chosen style + palette + fonts. No external CSS frameworks. No Tailwind CDN. No Bootstrap.
    - `<body>`: hero, features (3), testimonials (3), pricing (3), footer with small "← theworstaistudioever" link to `/`, and a prominent "open the demo →" CTA linking to `./demo.html`.
    - Any JS needed (smooth scroll, etc.) inline in a `<script>` tag.
@@ -197,7 +197,12 @@ Generate up to **4 AI images** for the entry via `scripts/gen-image.sh`, but onl
 
 **This is a checkpoint. Finish all three items below before you do anything optional.** The run has a hard 80-turn cap; work done before this point survives a turn blowout, work done after it does not. On 2026-08-28 the run built a complete, valid entry and then spent its last 35 turns on unrequested polish, hit the cap, and lost the whole day because this step never ran.
 
-1. Run `scripts/validate-entry.sh site <slug>` via the Bash tool. If it exits non-zero, abort the run — print the error, do not proceed.
+1. Run `python3 scripts/build-entry-metadata.py site <slug>`, then `scripts/validate-entry.sh site <slug>` via the Bash tool. If either exits non-zero, abort the run — print the error, do not proceed. The metadata generator updates both landing and demo `<head>` tags deterministically:
+   - Title: `product_name — tagline` (demo adds ` — Demo`), reused for the document, Open Graph, and Twitter titles.
+   - Description: `hero.h1` followed by `hero.sub`, with markup removed and whitespace collapsed; fall back to `one_liner` only when hero text is absent. Cap at **300 characters including the trailing ellipsis**, truncate at a word boundary when possible, and reuse for standard, Open Graph, and Twitter descriptions.
+   - Absolute HTTPS canonical and `og:url` for each page, resolved from `site/CNAME`.
+   - A local `social-preview.jpg` (**1200×630, ≤500 KB**) derived from the hero image, or the studio `/logo.png` on the entry's background color when there is no hero. Absolute image URL, dimensions, JPEG MIME type, and alt text for Open Graph and Twitter, with a large-image card. This derivative does not consume an AI image slot.
+   - These tags must be present in the static HTML so sharing crawlers can read them without JavaScript. The wrapper regenerates them again before validation and publishing.
 2. Append `{date, company, subject, slug}` to `state/history.json`. Read the existing array, append, write back. Maintain JSON validity.
 3. Write a run summary to `state/runs/<today>.log`. Include:
    - What was rolled (company, subject, slug).
@@ -227,7 +232,7 @@ Everything that matters is already recorded, so this step is pure upside and is 
 
 That is a ceiling of roughly 8 tool calls. If you are past it, stop and go to Step 10 — a shipped entry with a minor layout wart beats a run that dies at the cap.
 
-**If you edit anything here, re-run `scripts/validate-entry.sh site <slug>` before Step 10.** The wrapper validates again after you exit, and a polish edit that breaks validation fails the run.
+**If you edit anything here, re-run `python3 scripts/build-entry-metadata.py site <slug>` and `scripts/validate-entry.sh site <slug>` before Step 10.** Keep hero changes in sync with `concept.json`. The wrapper validates again after you exit, and a polish edit that breaks validation fails the run.
 
 ---
 

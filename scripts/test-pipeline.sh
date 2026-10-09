@@ -48,6 +48,11 @@ if [[ -z "$NEW_SLUG" ]]; then
   exit 1
 fi
 
+if ! python3 scripts/build-entry-metadata.py "$SANDBOX/site" "$NEW_SLUG"; then
+  echo "DRY RUN FAILED — sharing metadata generation rejected $NEW_SLUG"
+  exit 1
+fi
+
 if ! ./scripts/validate-entry.sh "$SANDBOX/site" "$NEW_SLUG"; then
   echo "DRY RUN FAILED — validation rejected $NEW_SLUG"
   exit 1

@@ -156,6 +156,13 @@ fi
 
 log "new entry: $NEW_SLUG"
 
+# Finalize static sharing tags even if the agent skipped the metadata checkpoint.
+if ! python3 scripts/build-entry-metadata.py site "$NEW_SLUG" >> "$LOG" 2>&1; then
+  log "RUN FAILED: entry metadata generation rejected $NEW_SLUG"
+  notify_fail "sharing metadata generation failed for $NEW_SLUG"
+  exit 1
+fi
+
 # Validate the new entry
 if ! ./scripts/validate-entry.sh site "$NEW_SLUG" >> "$LOG" 2>&1; then
   log "RUN FAILED: validate-entry rejected $NEW_SLUG"

@@ -73,4 +73,9 @@ for img in "$DIR"/*.png "$DIR"/*.jpg "$DIR"/*.jpeg "$DIR"/*.webp "$DIR"/*.gif; d
 done
 shopt -u nullglob
 
+# 8. Sharing metadata matches the concept on both static pages, with no duplicates.
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+python3 "$SCRIPT_DIR/build-entry-metadata.py" "$SITE_ROOT" "$SLUG" --check \
+  || fail "sharing metadata validation failed"
+
 echo "validate-entry [$SLUG]: OK"

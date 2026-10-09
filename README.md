@@ -7,8 +7,22 @@ An applied AI studio shipping venture-grade products for underserved, over-instr
 1. `cron` fires `scripts/run-daily.sh` once a day.
 2. The wrapper invokes `claude -p < pipeline.md`.
 3. The agent rolls a non-repeat pair from `seeds/`, generates a concept, builds a landing page + interactive demo screen, regenerates the gallery, and exits.
-4. The wrapper validates output, commits, and pushes.
+4. The wrapper generates sharing metadata, validates output, commits, and pushes.
 5. GitHub Pages publishes.
+
+Each new entry's landing page and demo include static Open Graph and Twitter
+metadata. Preview titles use `product_name — tagline`; descriptions combine the
+hero heading and paragraph, capped at 300 characters with an ellipsis. Hero
+images use absolute URLs to a 1200×630 JPEG derived from the hero, with the studio
+logo as the fallback on image-less entries. The generator reads the domain from
+`site/CNAME`.
+
+To refresh an existing entry after changing its concept or hero copy:
+
+```bash
+python3 scripts/build-entry-metadata.py site paypal-for-flat-earthers
+./scripts/validate-entry.sh site paypal-for-flat-earthers
+```
 
 ## Daily run — manual
 

@@ -6,6 +6,11 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 VALIDATE="$SCRIPT_DIR/validate-entry.sh"
 TMP="$(mktemp -d)"
 trap "rm -rf $TMP" EXIT
+python3 - "$TMP/logo.png" <<'PY'
+import sys
+from PIL import Image
+Image.new('RGB', (320, 320), (120, 80, 200)).save(sys.argv[1])
+PY
 
 PASS=0
 FAIL=0
@@ -49,6 +54,7 @@ make_valid_entry() {
   "design_direction": {"style":"brutalist","palette":{},"fonts":{},"archetype":"saas-landing"}
 }
 JSON
+  python3 "$SCRIPT_DIR/build-entry-metadata.py" "$TMP" "$slug" >/dev/null
 }
 
 # Test 1: valid entry passes
@@ -104,6 +110,7 @@ make_image "$TMP/entries/with-image/hero.webp" 64
 printf '<!doctype html><html><head><title>t</title></head><body><img src="hero.webp" alt="">%s</body></html>' \
   "$(head -c 3000 < /dev/urandom | base64 | tr -d '\n' | head -c 3000)" \
   > "$TMP/entries/with-image/index.html"
+python3 "$SCRIPT_DIR/build-entry-metadata.py" "$TMP" "with-image" >/dev/null
 assert_pass "entry with valid local image" "with-image"
 
 # Test 8: <img src> pointing at a missing file fails
@@ -140,7 +147,29 @@ make_valid_entry "data-uri-img"
 printf '<!doctype html><html><head><title>t</title></head><body><img src="data:image/svg+xml,%%3Csvg/%%3E" alt="">%s</body></html>' \
   "$(head -c 3000 < /dev/urandom | base64 | tr -d '\n' | head -c 3000)" \
   > "$TMP/entries/data-uri-img/index.html"
+python3 "$SCRIPT_DIR/build-entry-metadata.py" "$TMP" "data-uri-img" >/dev/null
 assert_pass "data: uri img src allowed" "data-uri-img"
+
+# Sharing tags must survive on both pages and stay in sync with the concept.
+make_valid_entry "missing-metadata"
+python3 - "$TMP/entries/missing-metadata/demo.html" <<'PY'
+from pathlib import Path
+import sys
+p = Path(sys.argv[1])
+p.write_text(p.read_text().replace('name="twitter:card"', 'name="removed:card"'))
+PY
+assert_fail "demo missing sharing metadata" "missing-metadata"
+
+make_valid_entry "stale-metadata"
+python3 - "$TMP/entries/stale-metadata/concept.json" <<'PY'
+from pathlib import Path
+import json, sys
+p = Path(sys.argv[1])
+c = json.loads(p.read_text())
+c['one_liner'] = 'The hero copy changed.'
+p.write_text(json.dumps(c))
+PY
+assert_fail "stale metadata after copy change" "stale-metadata"
 
 echo ""
 echo "Results: $PASS passed, $FAIL failed"
