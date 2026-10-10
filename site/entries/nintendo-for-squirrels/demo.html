@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#E4E1D8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --putty: #E4E1D8;
+    --shell: #CFCBC0;
+    --shell-dark: #A9A497;
+    --fg: #2A2824;
+    --ink: #1E1C19;
+    --muted: #5F5B52;
+    --plum: #8E2A5B;
+    --plum-dark: #641B3F;
+    --lcd-0: #0F380F;
+    --lcd-1: #306230;
+    --lcd-2: #8BAC0F;
+    --lcd-3: #9BBC0F;
+    --pixel: 'Press Start 2P', 'Courier New', monospace;
+    --body: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --readout: 'VT323', 'SFMono-Regular', Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--putty); color: var(--fg); font-family: var(--body); font-size: 16px; line-height: 1.55; min-height: 100vh; }
+  :focus-visible { outline: 3px solid var(--plum); outline-offset: 3px; }
+  .chrome { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; border-bottom: 2px solid var(--ink); gap: 16px; }
+  .chrome a { color: var(--ink); font-weight: 700; text-decoration: none; padding: 8px 0; }
+  .chrome a:hover { text-decoration: underline; }
+  .chrome .unit { font-family: var(--readout); font-size: 19px; color: var(--muted); }
+
+  .stage { max-width: 1100px; margin: 0 auto; padding: 36px 24px 64px; display: grid; grid-template-columns: 420px 1fr; gap: 48px; align-items: start; }
+
+  /* the device */
+  .device {
+    background: var(--shell); border: 3px solid var(--ink);
+    border-radius: 10px 10px 80px 10px; padding: 26px 26px 40px;
+    box-shadow: 0 6px 0 var(--shell-dark); user-select: none;
+  }
+  .bezel { background: #55534c; border-radius: 8px 8px 28px 8px; padding: 18px 22px 14px; }
+  .bezel .battery { display: flex; align-items: center; gap: 8px; font-family: var(--readout); font-size: 15px; color: #b9b6ac; margin-bottom: 8px; }
+  .bezel .battery i { width: 8px; height: 8px; border-radius: 50%; background: #c63b7c; box-shadow: 0 0 6px #c63b7c; }
+  .lcd {
+    background: var(--lcd-3); color: var(--lcd-0); height: 330px; position: relative; overflow: hidden;
+    font-family: var(--readout); font-size: 19px; line-height: 1.15; padding: 10px 10px 8px;
+  }
+  .lcd::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background-image: linear-gradient(rgba(15,56,15,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(15,56,15,.08) 1px, transparent 1px);
+    background-size: 3px 3px;
+  }
+  .lcd-head { display: flex; justify-content: space-between; font-family: var(--pixel); font-size: 9px; line-height: 1.6; border-bottom: 2px solid var(--lcd-0); padding-bottom: 6px; margin-bottom: 6px; }
+  .rows { list-style: none; margin: 0; padding: 0; }
+  .rows li { padding: 3px 6px; display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; }
+  .rows li.sel { background: var(--lcd-0); color: var(--lcd-3); }
+  .rows .meta { font-size: 16px; color: var(--lcd-1); }
+  .rows li.sel .meta { color: var(--lcd-2); }
+  .bar8 { letter-spacing: 1px; font-size: 16px; }
+  .empty { padding: 30px 8px; text-align: center; }
+  .lcd-foot { position: absolute; left: 10px; right: 10px; bottom: 6px; font-size: 15px; color: var(--lcd-1); display: flex; justify-content: space-between; }
+
+  .grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 3px; margin: 6px 0 8px; }
+  .cell { aspect-ratio: 1; background: var(--lcd-2); position: relative; }
+  .cell.dug { background: var(--lcd-1); }
+  .cell.x::before, .cell.x::after { content: ""; position: absolute; left: 20%; right: 20%; top: 46%; height: 3px; background: var(--lcd-0); transform: rotate(45deg); }
+  .cell.x::after { transform: rotate(-45deg); }
+  .cell.tree { background: var(--lcd-0); }
+  .cell.cur { outline: 3px solid var(--lcd-0); outline-offset: -3px; animation: blink 0.8s steps(2) infinite; }
+  @keyframes blink { 50% { outline-color: transparent; } }
+  .msg { min-height: 40px; font-size: 18px; }
+
+  /* controls */
+  .controls { display: flex; justify-content: space-between; align-items: center; margin-top: 34px; padding: 0 6px; }
+  .dpad { position: relative; width: 132px; height: 132px; }
+  .dpad button { position: absolute; width: 44px; height: 44px; background: var(--ink); border: 0; cursor: pointer; color: #77746b; font-size: 14px; }
+  .dpad button:active { background: #000; transform: scale(.94); }
+  .dpad .u { left: 44px; top: 0; border-radius: 6px 6px 0 0; }
+  .dpad .d { left: 44px; bottom: 0; border-radius: 0 0 6px 6px; }
+  .dpad .l { left: 0; top: 44px; border-radius: 6px 0 0 6px; }
+  .dpad .r { right: 0; top: 44px; border-radius: 0 6px 6px 0; }
+  .dpad .c { position: absolute; left: 44px; top: 44px; width: 44px; height: 44px; background: var(--ink); }
+  .ab { display: flex; gap: 18px; transform: rotate(-24deg); }
+  .ab div { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .ab button {
+    width: 58px; height: 58px; border-radius: 50%; border: 3px solid var(--plum-dark);
+    background: var(--plum); color: #fff; font-family: var(--pixel); font-size: 13px; cursor: pointer;
+    box-shadow: 0 4px 0 var(--plum-dark); transition: transform 120ms ease-out, box-shadow 120ms ease-out;
+  }
+  .ab button:active { transform: translateY(4px); box-shadow: none; }
+  .ab span { font-family: var(--readout); font-size: 16px; color: var(--muted); }
+  .ab div:first-child { margin-top: 34px; }
+  .pills { display: flex; justify-content: center; gap: 22px; margin-top: 28px; }
+  .pills button { background: none; border: 0; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: var(--readout); font-size: 16px; color: var(--muted); padding: 4px; }
+  .pills button i { width: 50px; height: 14px; border-radius: 8px; background: #7d7a70; transform: rotate(-24deg); display: block; }
+
+  /* side panel */
+  .panel h1 { font-family: var(--pixel); font-weight: 400; font-size: 20px; line-height: 1.6; color: var(--ink); margin: 0 0 8px; }
+  .panel .lede { color: var(--muted); margin: 0 0 24px; max-width: 34em; }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 26px; }
+  .filters button {
+    min-height: 44px; padding: 0 16px; border-radius: 22px; border: 2px solid var(--ink); background: #EDEBE4;
+    font-family: var(--body); font-weight: 700; font-size: 15px; color: var(--ink); cursor: pointer;
+  }
+  .filters button[aria-pressed="true"] { background: var(--ink); color: var(--putty); }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
+  .stat { border: 2px solid var(--ink); border-radius: 6px; padding: 12px 14px; background: #EDEBE4; }
+  .stat b { display: block; font-family: var(--readout); font-size: 38px; line-height: 1; color: var(--ink); font-weight: 400; }
+  .stat span { font-size: 14px; color: var(--muted); }
+  .log h2 { font-size: 16px; font-weight: 800; color: var(--ink); margin: 0 0 10px; }
+  .log ol { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); }
+  .log li { padding: 9px 0; border-bottom: 1px solid var(--shell-dark); font-size: 15px; display: grid; grid-template-columns: 70px 1fr; gap: 12px; }
+  .log time { font-family: var(--readout); font-size: 17px; color: var(--muted); }
+  .keys { margin-top: 24px; font-size: 14px; color: var(--muted); }
+  kbd { font-family: var(--readout); font-size: 16px; border: 1px solid var(--muted); border-radius: 4px; padding: 0 6px; background: #EDEBE4; }
+
+  @media (max-width: 900px) {
+    .stage { grid-template-columns: 1fr; }
+    .device { max-width: 420px; margin: 0 auto; width: 100%; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 400px) {
+    .device { padding: 18px 16px 32px; }
+    .bezel { padding: 14px 12px 10px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cell.cur { animation: none; }
+    .ab button { transition: none; }
+  }
+</style>
+<title>Scurry — Nintendo for squirrels — Demo</title>
+<meta name="description" content="Play it. Bury it. Forget where. Scurry is a handheld console built around the 11-minute attention span of the eastern grey squirrel. Every cartridge is shaped to be cached in topsoil, and 74% are never found again, which our board has approved as a reforestation program.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/nintendo-for-squirrels/demo.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Scurry — Nintendo for squirrels — Demo">
+<meta property="og:description" content="Play it. Bury it. Forget where. Scurry is a handheld console built around the 11-minute attention span of the eastern grey squirrel. Every cartridge is shaped to be cached in topsoil, and 74% are never found again, which our board has approved as a reforestation program.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/nintendo-for-squirrels/demo.html">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/nintendo-for-squirrels/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Scurry hero illustration">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Scurry — Nintendo for squirrels — Demo">
+<meta name="twitter:description" content="Play it. Bury it. Forget where. Scurry is a handheld console built around the 11-minute attention span of the eastern grey squirrel. Every cartridge is shaped to be cached in topsoil, and 74% are never found again, which our board has approved as a reforestation program.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/nintendo-for-squirrels/social-preview.jpg">
+<meta name="twitter:image:alt" content="Scurry hero illustration">
+</head>
+<body>
+<header class="chrome">
+  <a href="./index.html">← back to the pitch</a>
+  <span class="unit">SQ-01, firmware 0.9 (autumn)</span>
+</header>
+
+<main class="stage">
+  <div class="device" aria-label="Scurry handheld">
+    <div class="bezel">
+      <div class="battery"><i aria-hidden="true"></i>battery</div>
+      <div class="lcd" id="lcd" aria-live="polite"></div>
+    </div>
+    <div class="controls">
+      <div class="dpad" aria-label="Directional pad">
+        <button class="u" data-k="up" aria-label="Up">▲</button>
+        <button class="l" data-k="left" aria-label="Left">◀</button>
+        <span class="c" aria-hidden="true"></span>
+        <button class="r" data-k="right" aria-label="Right">▶</button>
+        <button class="d" data-k="down" aria-label="Down">▼</button>
+      </div>
+      <div class="ab">
+        <div><button data-k="b" aria-label="B, back">B</button><span>back</span></div>
+        <div><button data-k="a" aria-label="A, select or dig">A</button><span>dig</span></div>
+      </div>
+    </div>
+    <div class="pills">
+      <button data-k="left" aria-label="Select, previous filter"><i aria-hidden="true"></i>select</button>
+      <button data-k="right" aria-label="Start, next filter"><i aria-hidden="true"></i>start</button>
+    </div>
+  </div>
+
+  <section class="panel">
+    <h1>Cartridge library</h1>
+    <p class="lede">Every cartridge you have ever owned, with where you probably put it. Open one to visit its dig site. Daylight is limited to 5 digs per site.</p>
+    <div class="filters" id="filters" role="group" aria-label="Filter by status"></div>
+    <div class="stats" id="stats"></div>
+    <div class="log">
+      <h2>Field log</h2>
+      <ol id="log"></ol>
+    </div>
+    <p class="keys">Keyboard: <kbd>↑</kbd> <kbd>↓</kbd> to browse, <kbd>←</kbd> <kbd>→</kbd> to change filter or move the shovel, <kbd>Enter</kbd> for A, <kbd>Backspace</kbd> for B.</p>
+  </section>
+</main>
+
+<script>
+(function () {
+  var STATUSES = ['All', 'In Paw', 'Buried', 'Presumed Lost', 'Now a Tree'];
+  var carts = [
+    { t: 'Super Scurry Bros.', s: 'In Paw', depth: 0, days: 0, conf: 100 },
+    { t: 'Branch Kart 8', s: 'Buried', depth: 4, days: 12, conf: 61 },
+    { t: 'The Legend of Zelnut', s: 'Buried', depth: 7, days: 33, conf: 22 },
+    { t: 'Road Crossing: New Leaves', s: 'Presumed Lost', depth: 3, days: 58, conf: 4 },
+    { t: 'Metro Park Prime', s: 'Now a Tree', depth: 5, days: 410, conf: 0 },
+    { t: 'Feeder Raid Deluxe', s: 'In Paw', depth: 0, days: 0, conf: 100 },
+    { t: 'Pokenut Yellow', s: 'Buried', depth: 6, days: 9, conf: 74 },
+    { t: 'Stackorn', s: 'Presumed Lost', depth: 8, days: 71, conf: 9 },
+    { t: 'Bird Feeder Kong', s: 'Buried', depth: 2, days: 2, conf: 88 },
+    { t: 'Splattrunk', s: 'In Paw', depth: 0, days: 0, conf: 100 }
+  ];
+  carts.forEach(function (c, i) {
+    c.x = (i * 5 + 3) % 8; c.y = (i * 3 + 1) % 6; c.digs = 0; c.dug = [];
+  });
+
+  var state = { screen: 'list', filter: 0, sel: 0, cart: null, cx: 0, cy: 0, msg: '' };
+  var lcd = document.getElementById('lcd');
+  var filtersEl = document.getElementById('filters');
+  var statsEl = document.getElementById('stats');
+  var logEl = document.getElementById('log');
+
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+  function visible() {
+    var f = STATUSES[state.filter];
+    return carts.filter(function (c) { return f === 'All' || c.s === f; });
+  }
+  function bar(n) {
+    var full = Math.round(n / 12.5), out = '';
+    for (var i = 0; i < 8; i++) out += i < full ? '■' : '□';
+    return out;
+  }
+  function meta(c) {
+    if (c.s === 'In Paw') return 'in paw / ready to play';
+    if (c.s === 'Now a Tree') return 'germinated ' + c.days + 'd ago';
+    return c.depth + 'cm / ' + c.days + 'd ago';
+  }
+  function now() {
+    var d = new Date();
+    return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+  }
+  function log(text) {
+    var li = document.createElement('li');
+    li.innerHTML = '<time>' + now() + '</time><span>' + esc(text) + '</span>';
+    logEl.insertBefore(li, logEl.firstChild);
+    while (logEl.children.length > 6) logEl.removeChild(logEl.lastChild);
+  }
+
+  function renderList() {
+    var list = visible();
+    if (state.sel >= list.length) state.sel = Math.max(0, list.length - 1);
+    var h = '<div class="lcd-head"><span>LIBRARY</span><span>' + esc(STATUSES[state.filter].toUpperCase()) + '</span></div>';
+    if (!list.length) {
+      h += '<div class="empty">Nothing here.<br>Press start to try another pile.</div>';
+    } else {
+      var start = Math.max(0, Math.min(state.sel - 2, list.length - 5));
+      h += '<ul class="rows">';
+      list.slice(start, start + 5).forEach(function (c, i) {
+        var idx = start + i;
+        h += '<li class="' + (idx === state.sel ? 'sel' : '') + '"><span>' + esc(c.t) + '</span><span class="bar8" aria-label="memory ' + c.conf + ' percent">' + bar(c.conf) + '</span>' +
+          '<span class="meta">' + meta(c) + '</span><span class="meta">' + c.conf + '%</span></li>';
+      });
+      h += '</ul>';
+    }
+    h += '<div class="lcd-foot"><span>' + (list.length ? (state.sel + 1) + '/' + list.length : '0/0') + '</span><span>A open  B nothing</span></div>';
+    lcd.innerHTML = h;
+  }
+
+  function renderDig() {
+    var c = state.cart;
+    var h = '<div class="lcd-head"><span>DIG SITE</span><span>' + (5 - c.digs) + ' LEFT</span></div>';
+    h += '<div>' + esc(c.t) + '</div><div class="grid">';
+    for (var y = 0; y < 6; y++) for (var x = 0; x < 8; x++) {
+      var cls = 'cell';
+      if (c.s === 'Now a Tree' && x === c.x && y === c.y) cls += ' tree';
+      else if (x === c.x && y === c.y && c.s !== 'In Paw') cls += ' x';
+      if (c.dug.indexOf(x + ',' + y) > -1) cls += ' dug';
+      if (x === state.cx && y === state.cy) cls += ' cur';
+      h += '<span class="' + cls + '"></span>';
+    }
+    h += '</div><div class="msg">' + esc(state.msg) + '</div>';
+    lcd.innerHTML = h;
+  }
+
+  function renderPanel() {
+    filtersEl.innerHTML = STATUSES.map(function (s, i) {
+      return '<button type="button" data-f="' + i + '" aria-pressed="' + (i === state.filter) + '">' + s + '</button>';
+    }).join('');
+    var counts = { 'In Paw': 0, 'Buried': 0, 'Presumed Lost': 0, 'Now a Tree': 0 };
+    carts.forEach(function (c) { counts[c.s]++; });
+    statsEl.innerHTML = ['In Paw', 'Buried', 'Presumed Lost', 'Now a Tree'].map(function (s) {
+      return '<div class="stat"><b>' + counts[s] + '</b><span>' + s.toLowerCase() + '</span></div>';
+    }).join('');
+  }
+
+  function render() {
+    if (state.screen === 'list') renderList(); else renderDig();
+    renderPanel();
+  }
+
+  function openCart() {
+    var c = visible()[state.sel];
+    if (!c) return;
+    state.cart = c; state.screen = 'dig'; state.cx = 0; state.cy = 0;
+    if (c.s === 'In Paw') state.msg = 'Already in paw. Bury it first, like a professional.';
+    else if (c.s === 'Now a Tree') state.msg = 'This cartridge is an oak now. It is not coming back.';
+    else if (c.digs >= 5) state.msg = 'Out of daylight at this site. Try tomorrow, or never.';
+    else state.msg = 'X marks where you think it is. Move the shovel, press A.';
+  }
+
+  function dig() {
+    var c = state.cart;
+    if (c.s === 'In Paw' || c.s === 'Now a Tree') return;
+    if (c.digs >= 5) { state.msg = 'Out of daylight at this site.'; return; }
+    var key = state.cx + ',' + state.cy;
+    if (c.dug.indexOf(key) > -1) { state.msg = 'You already dug here. It is still a hole.'; return; }
+    c.dug.push(key); c.digs++;
+    var onX = state.cx === c.x && state.cy === c.y;
+    var r = Math.random();
+    if (onX && r < 0.26) {
+      c.s = 'In Paw'; c.conf = 100; c.depth = 0; c.days = 0;
+      state.msg = 'Found it. Save file intact. You will bury it again by Thursday.';
+      log('Recovered ' + c.t + ' on dig ' + c.digs + '.');
+    } else if (onX) {
+      state.msg = 'Right spot, wrong cartridge depth. Found: one bottle cap.';
+      log('Dug at the X for ' + c.t + '. Found a bottle cap.');
+    } else if (r < 0.12) {
+      state.msg = 'Found a cartridge, but it belongs to a squirrel named Gerald.';
+      log('Recovered a cartridge registered to Gerald. Returned it, reluctantly.');
+    } else {
+      state.msg = 'Dirt. Premium dirt, but dirt.';
+    }
+    if (c.s === 'Buried' && c.digs >= 5) {
+      c.s = 'Presumed Lost'; c.conf = Math.max(1, Math.round(c.conf / 3));
+      state.msg = 'Daylight gone. ' + c.t + ' is now presumed lost.';
+      log(c.t + ' moved to Presumed Lost after 5 digs.');
+    }
+  }
+
+  function press(k) {
+    if (state.screen === 'list') {
+      var n = visible().length;
+      if (k === 'up' && state.sel > 0) state.sel--;
+      else if (k === 'down' && state.sel < n - 1) state.sel++;
+      else if (k === 'left') { state.filter = (state.filter + STATUSES.length - 1) % STATUSES.length; state.sel = 0; }
+      else if (k === 'right') { state.filter = (state.filter + 1) % STATUSES.length; state.sel = 0; }
+      else if (k === 'a') openCart();
+    } else {
+      if (k === 'up' && state.cy > 0) state.cy--;
+      else if (k === 'down' && state.cy < 5) state.cy++;
+      else if (k === 'left' && state.cx > 0) state.cx--;
+      else if (k === 'right' && state.cx < 7) state.cx++;
+      else if (k === 'a') dig();
+      else if (k === 'b') { state.screen = 'list'; state.cart = null; }
+    }
+    render();
+  }
+
+  document.querySelectorAll('[data-k]').forEach(function (b) {
+    b.addEventListener('click', function () { press(b.getAttribute('data-k')); });
+  });
+  filtersEl.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-f]');
+    if (!b) return;
+    state.filter = +b.getAttribute('data-f'); state.sel = 0; state.screen = 'list'; state.cart = null;
+    render();
+  });
+  var map = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right', Enter: 'a', Backspace: 'b', Escape: 'b' };
+  document.addEventListener('keydown', function (e) {
+    var k = map[e.key];
+    if (!k) return;
+    var tag = e.target.tagName;
+    if (k === 'a' && tag === 'BUTTON') return;
+    if (tag === 'A' && k === 'a') return;
+    e.preventDefault();
+    press(k);
+  });
+
+  log('Unit powered on. 3 of 10 cartridges in paw.');
+  render();
+})();
+</script>
+</body>
+</html>
