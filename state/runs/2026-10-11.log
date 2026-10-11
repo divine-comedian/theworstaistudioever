@@ -1,0 +1,45 @@
+[2026-10-11T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-10-11T08:00:02Z] invoking claude -p
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/github/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/github/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.openclaw/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.openclaw/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/.claude/projects/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/.claude/projects/**) instead (Edit rules cover all file-editing tools).
+Permission allow rule (../../.claude/settings.json): Write(/home/chaperzcommand/aurevon-status/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(/home/chaperzcommand/aurevon-status/**) instead (Edit rules cover all file-editing tools).
+
+--- agent run summary (2026-10-11) ---
+Rolled: Robinhood x pet tarantulas -> robinhood-for-pet-tarantulas
+Rerolls: 1 (first draw "Home Depot for dads who coach little league" already in history)
+Product: Molt
+Design direction: Claymorphic neo-brokerage, terrarium daylight mode
+  Palette "Substrate and Red Knee": primary #2E7D4F, accent #E0601C, bg #F1E9DC, fg #2B241D, muted #8A7C6B, ink #1D1813
+  Fonts: Calistoga (display) / Inter (body). Archetype: App Store style landing.
+  Anti-sameness: style, palette and font pair do not match any of the last 7 entries (2026-10-04..10-10).
+Images: 3 generated, 3 kept
+  hero: skipped (CSS clay phone mockup carries the hero)
+  demo: skipped (brokerage UI is not photo-shaped); headshot-1 reused as the account avatar
+  headshot-1.webp (Chilean rose hair) attempts=1 PASS
+  headshot-2.webp (Brazilian black) attempts=1 PASS (threat-pose legs, anatomically plausible)
+  headshot-3.webp (Mexican red-knee) attempts=1 PASS
+Warnings: gallery regen un-escapes apostrophes in two older taglines (&#x27; -> '), harmless inside double-quoted attributes.
+Validation: build-entry-metadata OK, validate-entry OK.
+Visual check: 2 captures + 1 re-capture. Edits: landing band h2 font fallback fixed; demo toast and closed order sheet hidden via visibility. Re-validated OK.
+Today's entry is **Robinhood for pet tarantulas**. It took one reroll because the first draw was already in history. The product is called **Molt**: a commission-free brokerage where orders only execute when the spider moves, which it rarely does.
+
+- **Landing page:** a soft clay look on a beige "substrate" background, with Calistoga and Inter fonts and red-knee orange used only on the main buttons and the top price tier. The hero is a phone mockup hanging from a silk thread. Each feature card shows an eight-leg meter.
+- **Demo:** Gertrude's trading screen. You can switch chart ranges, open an order sheet by tapping a holding, and place an order that waits until all eight legs have moved. "Nudge enclosure" moves a few legs at random. There's also a Burrow mode toggle that blurs the balances, and a molt calendar tab.
+- **Images:** three tarantula headshots for the testimonials (rose hair, Brazilian black, red-knee). All three passed on the first try. I skipped a hero image and demo images on purpose.
+- **Gallery:** rebuilt with the new entry first, and the count now reads 120. The rebuild also changed an escaped apostrophe to a plain one in two older taglines; the pages display the same.
+- **History and log:** today's entry is added to `state/history.json` and the run summary is appended to `state/runs/2026-10-11.log`. I appended rather than overwrote because the wrapper was already writing to that log.
+- **Validation:** the metadata build and `validate-entry.sh` both passed, and passed again after the visual-check edits.
+- **Visual check:** I took two screenshots and one re-shot, and made two fixes. The bottom headline on the landing page was showing in the wrong font. On the demo, a thin strip of the empty pop-up message showed at the top of the screen; I hid it, along with the closed order sheet. Side effect: the order sheet now disappears instantly when closed instead of sliding down.
+
+I ran no git commands.
+
+RUN_COMPLETE: robinhood-for-pet-tarantulas
+[2026-10-11T08:06:52Z] new entry: robinhood-for-pet-tarantulas
+entry-metadata [robinhood-for-pet-tarantulas]: wrote landing + demo metadata
+entry-metadata [robinhood-for-pet-tarantulas]: OK
+validate-entry [robinhood-for-pet-tarantulas]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 120 entries (domain theworstaistudioever.com)
+[2026-10-11T08:06:53Z] committing: Robinhood for pet tarantulas
