@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cobalt: #2456D6; --cobalt-lip: #1A3FA3; --cobalt-soft: #E3EBFF;
+    --orange: #FF7A2F; --orange-lip: #C9561A; --orange-soft: #FFE9DC;
+    --green: #2E9E4F; --green-lip: #1F7538; --green-soft: #DDF5E3;
+    --red: #D93B3B; --red-lip: #A82525; --red-soft: #FDE3E3;
+    --bg: #F5F8FF; --card: #FFFFFF; --line: #D9E1F4; --line-lip: #BCC8E6;
+    --fg: #1B2235; --muted: #5D6680; --ink: #121829;
+    --display: 'Fredoka', 'Trebuchet MS', -apple-system, BlinkMacSystemFont, sans-serif;
+    --body: 'Rubik', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; min-height: 100dvh; }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; border-radius: 10px; }
+  .chrome { position: fixed; top: 14px; left: 16px; z-index: 30; }
+  .chrome a { font-size: 14px; font-weight: 500; color: var(--muted); text-decoration: none; background: var(--card); border: 2px solid var(--line); border-radius: 999px; padding: 6px 14px; display: inline-block; }
+  .chrome a:hover { color: var(--cobalt); }
+
+  .stage { display: flex; justify-content: center; align-items: flex-start; gap: 28px; padding: 64px 16px 40px; }
+  .app { width: 100%; max-width: 480px; background: var(--card); border: 2px solid var(--line); border-bottom-width: 8px; border-radius: 28px; overflow: hidden; display: flex; flex-direction: column; min-height: 720px; position: relative; }
+
+  /* top bar */
+  .top { display: flex; align-items: center; gap: 14px; padding: 18px 20px 12px; }
+  .streak { display: flex; align-items: center; gap: 4px; font-family: var(--display); font-weight: 600; font-size: 20px; color: var(--orange-lip); }
+  .streak svg { width: 26px; height: 26px; }
+  .bones { display: flex; gap: 3px; margin-left: auto; }
+  .bones svg { width: 26px; height: 14px; transition: transform 200ms ease-out, opacity 200ms; }
+  .bones svg.lost { opacity: 0.25; transform: scale(0.8) rotate(-12deg); }
+  .xp { padding: 0 20px 6px; }
+  .xpbar { height: 16px; background: var(--cobalt-soft); border-radius: 999px; overflow: hidden; }
+  .xpfill { height: 100%; width: 0; background: var(--cobalt); border-radius: 999px; transition: width 400ms ease-out; position: relative; }
+  .xpfill::after { content: ""; position: absolute; left: 8px; right: 8px; top: 4px; height: 3px; border-radius: 3px; background: rgba(255,255,255,0.35); }
+  .xplabel { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  /* tabs panels */
+  .panel { flex: 1; padding: 14px 20px 20px; display: none; flex-direction: column; }
+  .panel.on { display: flex; }
+
+  /* lesson */
+  .kind { font-family: var(--display); font-weight: 600; font-size: 22px; color: var(--ink); margin: 6px 0 14px; }
+  .prompt { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 22px; }
+  .prompt svg { width: 58px; height: 58px; flex: none; }
+  .speech { border: 2px solid var(--line); border-radius: 16px; padding: 12px 16px; font-size: 19px; font-weight: 500; position: relative; }
+  .speech button { border: 0; background: var(--cobalt-soft); color: var(--cobalt); border-radius: 10px; width: 36px; height: 36px; display: inline-grid; place-items: center; cursor: pointer; vertical-align: middle; margin-right: 8px; }
+  .speech button svg { width: 20px; height: 20px; }
+  .lang { display: block; font-size: 13px; color: var(--muted); font-weight: 400; margin-top: 2px; }
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .tile {
+    background: var(--card); border: 2px solid var(--line); border-bottom-width: 6px; border-radius: 16px;
+    padding: 16px 10px 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px;
+    font-family: var(--display); font-weight: 600; font-size: 18px; color: var(--ink);
+    transition: transform 80ms ease-out; touch-action: manipulation; min-height: 120px;
+  }
+  .tile svg { width: 52px; height: 52px; }
+  .tile:active { transform: translateY(4px); border-bottom-width: 2px; }
+  .tile[aria-pressed="true"] { border-color: var(--cobalt); border-bottom-color: var(--cobalt-lip); background: var(--cobalt-soft); color: var(--cobalt); }
+  .tile:disabled { cursor: default; }
+  .spacer { flex: 1; min-height: 20px; }
+
+  .btn { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 54px; border-radius: 14px; border: 2px solid transparent; border-bottom-width: 6px; font-family: var(--display); font-weight: 600; font-size: 19px; cursor: pointer; transition: transform 80ms ease-out; touch-action: manipulation; }
+  .btn:active:not(:disabled) { transform: translateY(4px); border-bottom-width: 2px; }
+  .btn-primary { background: var(--cobalt); color: #fff; border-color: var(--cobalt-lip); }
+  .btn:disabled { background: var(--line); border-color: var(--line-lip); color: #8A93AB; cursor: not-allowed; }
+  .btn-green { background: var(--green); color: #fff; border-color: var(--green-lip); }
+  .btn-red { background: var(--red); color: #fff; border-color: var(--red-lip); }
+  .skip { background: none; border: 0; color: var(--muted); font-weight: 500; margin-top: 10px; cursor: pointer; padding: 8px; }
+
+  .sheet { position: absolute; left: 0; right: 0; bottom: 64px; padding: 18px 20px 20px; transform: translateY(110%); transition: transform 220ms ease-out; z-index: 5; }
+  .sheet.show { transform: translateY(0); }
+  .sheet.ok { background: var(--green-soft); color: var(--green-lip); }
+  .sheet.no { background: var(--red-soft); color: var(--red-lip); }
+  .sheet h3 { margin: 0 0 4px; font-family: var(--display); font-size: 24px; }
+  .sheet p { margin: 0 0 14px; }
+
+  .done { text-align: center; padding-top: 30px; }
+  .done svg { width: 110px; height: 110px; }
+  .done h2 { font-family: var(--display); font-size: 30px; margin: 12px 0 6px; color: var(--ink); }
+  .done p { color: var(--muted); margin: 0 0 18px; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 18px 0 24px; }
+  .stat { border: 2px solid var(--line); border-radius: 14px; padding: 10px 6px; }
+  .stat b { display: block; font-family: var(--display); font-size: 24px; color: var(--cobalt); }
+  .stat span { font-size: 13px; color: var(--muted); }
+
+  /* leaderboard */
+  .ph { font-family: var(--display); font-weight: 600; font-size: 24px; color: var(--ink); margin: 4px 0 2px; }
+  .psub { color: var(--muted); font-size: 14px; margin: 0 0 14px; }
+  .seg { display: flex; background: var(--bg); border: 2px solid var(--line); border-radius: 14px; padding: 4px; margin-bottom: 14px; }
+  .seg button { flex: 1; border: 0; background: none; padding: 8px; border-radius: 10px; cursor: pointer; font-weight: 500; color: var(--muted); }
+  .seg button[aria-pressed="true"] { background: var(--card); color: var(--cobalt); box-shadow: 0 2px 0 var(--line-lip); }
+  .board { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .row { display: grid; grid-template-columns: 30px 40px 1fr auto; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 14px; }
+  .row .rk { font-family: var(--display); font-weight: 600; color: var(--muted); text-align: center; }
+  .row .av { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-family: var(--display); font-weight: 600; color: #fff; }
+  .row .nm { font-weight: 500; line-height: 1.2; }
+  .row .nm small { display: block; color: var(--muted); font-weight: 400; font-size: 13px; }
+  .row .pts { font-family: var(--display); font-weight: 600; color: var(--ink); }
+  .row.me { background: var(--cobalt-soft); border: 2px solid var(--cobalt); }
+  .row.first .rk { color: var(--orange-lip); }
+
+  /* words */
+  .words { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .word { border: 2px solid var(--line); border-bottom-width: 5px; border-radius: 16px; padding: 12px 14px; }
+  .word-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .word b { font-family: var(--display); font-weight: 600; font-size: 20px; color: var(--ink); }
+  .word .tr { color: var(--cobalt); font-weight: 500; }
+  .word .note { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .langs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .langs button { border: 2px solid var(--line); background: var(--card); border-radius: 999px; padding: 3px 10px; font-size: 13px; cursor: pointer; color: var(--muted); }
+  .langs button[aria-pressed="true"] { border-color: var(--cobalt); color: var(--cobalt); background: var(--cobalt-soft); }
+  .word.locked { opacity: 0.55; }
+
+  /* tab bar */
+  .tabbar { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 2px solid var(--line); background: var(--card); height: 64px; position: relative; z-index: 6; }
+  .tabbar button { border: 0; background: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 12px; font-weight: 500; color: var(--muted); }
+  .tabbar svg { width: 24px; height: 24px; }
+  .tabbar button[aria-selected="true"] { color: var(--cobalt); }
+
+  /* gerald */
+  .gerald { width: 260px; position: sticky; top: 64px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+  .gerald .bubble { background: var(--orange); color: #fff; border-bottom: 5px solid var(--orange-lip); border-radius: 18px 18px 18px 4px; padding: 14px 16px; font-weight: 500; line-height: 1.4; transition: transform 160ms ease-out; }
+  .gerald .bubble.pop { transform: scale(1.04); }
+  .gerald svg { width: 96px; height: 96px; }
+  .gerald small { color: var(--muted); font-size: 13px; }
+
+  .pop-anim { animation: pop 220ms ease-out; }
+  @keyframes pop { 50% { transform: scale(1.08); } }
+  .shake { animation: shake 260ms ease-out; }
+  @keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+
+  @media (max-width: 860px) {
+    .stage { flex-direction: column; align-items: center; padding-top: 60px; }
+    .gerald { position: static; width: 100%; max-width: 480px; flex-direction: row; align-items: center; order: -1; }
+    .gerald svg { width: 56px; height: 56px; flex: none; }
+    .gerald small { display: none; }
+  }
+  @media (max-width: 380px) { .tile { min-height: 104px; font-size: 16px; } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+<title>Stay — Duolingo for dogs — Demo</title>
+<meta name="description" content="Your dog knows four words. We can get that to six. Stay is the language app for dogs. Five-minute lessons, a daily streak your dog will not remember, and Gerald, a squirrel who sends a reminder every nine seconds.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/duolingo-for-dogs/demo.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Stay — Duolingo for dogs — Demo">
+<meta property="og:description" content="Your dog knows four words. We can get that to six. Stay is the language app for dogs. Five-minute lessons, a daily streak your dog will not remember, and Gerald, a squirrel who sends a reminder every nine seconds.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/duolingo-for-dogs/demo.html">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/duolingo-for-dogs/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Stay hero illustration">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Stay — Duolingo for dogs — Demo">
+<meta name="twitter:description" content="Your dog knows four words. We can get that to six. Stay is the language app for dogs. Five-minute lessons, a daily streak your dog will not remember, and Gerald, a squirrel who sends a reminder every nine seconds.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/duolingo-for-dogs/social-preview.jpg">
+<meta name="twitter:image:alt" content="Stay hero illustration">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="bone" viewBox="0 0 60 32"><path d="M10 4a7 7 0 0 1 7 6h26a7 7 0 1 1 7 6 7 7 0 1 1-7 6H17a7 7 0 1 1-7-6 7 7 0 0 1 0-12z"/></symbol>
+    <symbol id="flame" viewBox="0 0 40 40"><path d="M20 3c2 7 11 11 11 21a11 11 0 0 1-22 0c0-5 3-8 5-10 0 4 2 6 4 6-1-6 0-12 2-17z" fill="#FF7A2F"/><path d="M20 20c1 3 5 5 5 9a5 5 0 0 1-10 0c0-3 3-5 5-9z" fill="#FFD23F"/></symbol>
+    <symbol id="squirrel" viewBox="0 0 64 64">
+      <path d="M44 58c12-4 18-16 14-28-3-9-12-12-17-8 6 1 9 7 7 13-2 7-7 10-7 10z" fill="#C9561A"/>
+      <ellipse cx="30" cy="44" rx="14" ry="13" fill="#FF7A2F"/>
+      <circle cx="26" cy="24" r="11" fill="#FF7A2F"/>
+      <path d="M18 16l-2-9 7 6zM30 14l3-8 2 9z" fill="#FF7A2F"/>
+      <ellipse cx="30" cy="47" rx="7" ry="8" fill="#FFE9DC"/>
+      <circle cx="22" cy="23" r="2.4" fill="#121829"/>
+      <circle cx="16" cy="28" r="1.8" fill="#121829"/>
+      <path d="M21 31c2 1 4 1 6 0" stroke="#121829" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="dog" viewBox="0 0 64 64">
+      <path d="M14 14c-6 2-8 14-4 20l8-4z" fill="#1A3FA3"/><path d="M50 14c6 2 8 14 4 20l-8-4z" fill="#1A3FA3"/>
+      <ellipse cx="32" cy="34" rx="18" ry="19" fill="#2456D6"/>
+      <ellipse cx="32" cy="44" rx="9" ry="7" fill="#E3EBFF"/>
+      <circle cx="25" cy="31" r="2.6" fill="#fff"/><circle cx="39" cy="31" r="2.6" fill="#fff"/>
+      <ellipse cx="32" cy="40" rx="3.4" ry="2.4" fill="#121829"/>
+    </symbol>
+    <symbol id="i-sit" viewBox="0 0 52 52"><circle cx="26" cy="26" r="26" fill="#E3EBFF"/><path d="M18 40V27a8 8 0 0 1 16 0v13z" fill="#2456D6"/><circle cx="26" cy="16" r="7" fill="#2456D6"/><path d="M14 40h24" stroke="#1A3FA3" stroke-width="3" stroke-linecap="round"/></symbol>
+    <symbol id="i-tilt" viewBox="0 0 52 52"><circle cx="26" cy="26" r="26" fill="#FFE9DC"/><g transform="rotate(-22 26 26)"><ellipse cx="26" cy="28" rx="12" ry="13" fill="#FF7A2F"/><path d="M15 18l-4 12 6-2zM37 18l4 12-6-2z" fill="#C9561A"/><circle cx="22" cy="26" r="1.8" fill="#121829"/><circle cx="30" cy="26" r="1.8" fill="#121829"/><ellipse cx="26" cy="33" rx="2.4" ry="1.7" fill="#121829"/></g></symbol>
+    <symbol id="i-bark" viewBox="0 0 52 52"><circle cx="26" cy="26" r="26" fill="#DDF5E3"/><path d="M12 22h10l8-8v24l-8-8H12z" fill="#2E9E4F"/><path d="M35 19c3 4 3 10 0 14M39 15c5 6 5 16 0 22" stroke="#2E9E4F" stroke-width="3" fill="none" stroke-linecap="round"/></symbol>
+    <symbol id="i-roll" viewBox="0 0 52 52"><circle cx="26" cy="26" r="26" fill="#FDE3E3"/><path d="M15 30a11 11 0 1 1 22 0" stroke="#D93B3B" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M33 26l4 5 4-6" stroke="#D93B3B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-speaker" viewBox="0 0 20 20"><path d="M3 7h4l5-4v14l-5-4H3z" fill="currentColor"/><path d="M14.5 6.5c1.5 2 1.5 5 0 7" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></symbol>
+  </defs>
+</svg>
+
+<div class="chrome"><a href="./index.html">← back to the pitch</a></div>
+
+<div class="stage">
+  <main class="app" aria-label="Stay app">
+    <div class="top">
+      <div class="streak" title="Streak"><svg aria-hidden="true"><use href="#flame"/></svg><span id="streakN">41</span></div>
+      <div class="bones" id="bones" aria-label="5 bones of health left"></div>
+    </div>
+    <div class="xp">
+      <div class="xpbar" role="progressbar" aria-label="Lesson progress" aria-valuemin="0" aria-valuemax="100" id="xpbar"><div class="xpfill" id="xpfill"></div></div>
+      <div class="xplabel" id="xplabel">Unit 2 · Lesson 3 of 5 · Biscuit's account</div>
+    </div>
+
+    <section class="panel on" id="p-lesson" role="tabpanel" aria-labelledby="t-lesson">
+      <div id="qwrap">
+        <div class="kind" id="kind">Translate this, using your body</div>
+        <div class="prompt">
+          <svg aria-hidden="true"><use href="#dog"/></svg>
+          <div class="speech"><button type="button" id="say" aria-label="Play audio"><svg><use href="#i-speaker"/></svg></button><span id="phrase">¿Quién es un buen chico?</span><span class="lang" id="plang">Spanish</span></div>
+        </div>
+        <div class="tiles" id="tiles"></div>
+      </div>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" id="check" disabled>Check</button>
+      <button class="skip" id="skip" type="button">I was distracted by a leaf</button>
+    </section>
+
+    <section class="panel" id="p-board" role="tabpanel" aria-labelledby="t-board">
+      <div class="ph">Hydrant League</div>
+      <p class="psub">Corner of Elm and 4th. Rankings refresh on contact.</p>
+      <div class="seg" role="group" aria-label="Time range">
+        <button type="button" data-range="week" aria-pressed="true">This week</button>
+        <button type="button" data-range="all" aria-pressed="false">All time</button>
+      </div>
+      <ol class="board" id="board"></ol>
+    </section>
+
+    <section class="panel" id="p-words" role="tabpanel" aria-labelledby="t-words">
+      <div class="ph">Words learned: 6</div>
+      <p class="psub">Tap a language to see how the household has been hiding it.</p>
+      <ul class="words" id="words"></ul>
+    </section>
+
+    <div class="sheet" id="sheet" role="status" aria-live="polite">
+      <h3 id="sheetH">Correct!</h3>
+      <p id="sheetP"></p>
+      <button class="btn" id="cont">Continue</button>
+    </div>
+
+    <nav class="tabbar" role="tablist" aria-label="Sections">
+      <button role="tab" id="t-lesson" aria-selected="true" aria-controls="p-lesson" data-tab="lesson"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z" fill="currentColor"/></svg>Lesson</button>
+      <button role="tab" id="t-board" aria-selected="false" aria-controls="p-board" data-tab="board"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="5" width="6" height="15" rx="1.5" fill="currentColor"/><rect x="2" y="10" width="6" height="10" rx="1.5" fill="currentColor"/><rect x="16" y="13" width="6" height="7" rx="1.5" fill="currentColor"/></svg>Hydrant</button>
+      <button role="tab" id="t-words" aria-selected="false" aria-controls="p-words" data-tab="words"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="3" fill="currentColor"/><path d="M8 8h8M8 12h8M8 16h5" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>Words</button>
+    </nav>
+  </main>
+
+  <aside class="gerald" aria-live="polite">
+    <div class="bubble" id="gerald">Hi. It's Gerald. You have a lesson. You had one nine seconds ago too.</div>
+    <svg role="img" aria-label="Gerald the squirrel"><use href="#squirrel"/></svg>
+    <small>Gerald posts a new reminder every 9 seconds. This cannot be turned off.</small>
+  </aside>
+</div>
+
+<script>
+(function () {
+  var TILES = {
+    sit: ['Sit', 'i-sit'], tilt: ['Tilt head', 'i-tilt'], bark: ['Bark once', 'i-bark'], roll: ['Roll over', 'i-roll']
+  };
+  var QUESTIONS = [
+    { kind: 'Translate this, using your body', phrase: '¿Quién es un buen chico?', lang: 'Spanish', answer: 'tilt',
+      ok: 'You are the good boy. Head tilt is the accepted answer in 41 countries.', no: 'The correct response was a head tilt. Nobody wants you to roll over for a compliment.' },
+    { kind: 'What does this mean?', phrase: 'Assis.', lang: 'French', answer: 'sit',
+      ok: 'Assis means sit. Your owner has never once said it in French. Good to have.', no: 'Assis means sit. It sounds like a sneeze. That part is not your fault.' },
+    { kind: 'Respond appropriately', phrase: 'Alkway?', lang: 'Pig Latin', answer: 'bark',
+      ok: 'That was "walk". One bark is the industry-standard acceptance.', no: 'That was "walk" in Pig Latin. The household thought you would not crack it.' },
+    { kind: 'Translate this, using your body', phrase: '산책 갈까?', lang: 'Korean', answer: 'bark',
+      ok: 'It means "shall we go for a walk?" Nobody in your home speaks Korean. You are ready anyway.', no: 'It means "shall we go for a walk?" The answer to that is always yes, out loud.' },
+    { kind: 'What does this mean?', phrase: 'Rola!', lang: 'Portuguese', answer: 'roll',
+      ok: 'Roll over. Clean form. The carpet thanks you.', no: 'Rola means roll over. Sitting was a confident guess and we respect it.' }
+  ];
+  var GERALD = [
+    "Hi. It's Gerald. You have a lesson. You had one nine seconds ago too.",
+    'Your streak is looking a little nervous. So am I. I am a squirrel.',
+    'Doug the beagle already did three lessons today. Just saying what I saw.',
+    "I'm on the window ledge. Look at the window. Do the lesson.",
+    "These reminders don't send themselves. They do, actually. I send them.",
+    'Lesson time. Also lesson time. It is lesson time.',
+    'A streak of 41 days. You will forget this. I will not.',
+    'I buried a nut in your yard. You will find it after the lesson.'
+  ];
+  var BOARD = {
+    week: [['Doug', 'Beagle', 2140, '#C9561A'], ['Pepper', 'Border Collie', 1980, '#121829'], ['Mochi', 'Shiba Inu', 1712, '#FF7A2F'], ['Sir Reginald', 'Basset Hound', 1205, '#5D6680'],
+      ['Lola', 'Dachshund', 990, '#A82525'], ['Admiral Snuffles', 'Pug', 640, '#1F7538'], ['Biscuit', 'Golden Retriever (you)', 312, '#2456D6', true], ['Kevin', 'Unknown, very large', 18, '#93A1C2']],
+    all: [['Doug', 'Beagle', 98212, '#C9561A'], ['Pepper', 'Border Collie', 61004, '#121829'], ['Biscuit', 'Golden Retriever (you)', 14010, '#2456D6', true], ['Mochi', 'Shiba Inu', 11920, '#FF7A2F'],
+      ['Sir Reginald', 'Basset Hound', 7340, '#5D6680'], ['Lola', 'Dachshund', 5200, '#A82525'], ['Admiral Snuffles', 'Pug', 3311, '#1F7538'], ['Kevin', 'Unknown, very large', 18, '#93A1C2']]
+  };
+  var WORDS = [
+    { w: 'walk', note: 'Previously spelled out by the household to avoid detection.', t: { Spanish: 'paseo', French: 'promenade', Portuguese: 'passeio', Korean: '산책', 'Pig Latin': 'alkway' } },
+    { w: 'sit', note: 'Mastered 2021. Applied selectively.', t: { Spanish: 'siéntate', French: 'assis', Portuguese: 'senta', Korean: '앉아', 'Pig Latin': 'itsay' } },
+    { w: 'treat', note: 'Recognized at 40 metres, through a closed door.', t: { Spanish: 'premio', French: 'friandise', Portuguese: 'petisco', Korean: '간식', 'Pig Latin': 'eattray' } },
+    { w: 'good boy', note: 'Correct answer: head tilt.', t: { Spanish: 'buen chico', French: 'bon chien', Portuguese: 'bom menino', Korean: '착하지', 'Pig Latin': 'oodgay oybay' } },
+    { w: 'no', note: 'Comprehension confirmed. Compliance under review.', t: { Spanish: 'no', French: 'non', Portuguese: 'não', Korean: '안 돼', 'Pig Latin': 'onay' } },
+    { w: 'vet', note: 'Learned last week. Return requested. Request denied.', t: { Spanish: 'veterinario', French: 'véto', Portuguese: 'veterinário', Korean: '동물병원', 'Pig Latin': 'etvay' } },
+    { w: 'squirrel', note: 'Locked. Gerald has asked that this word not be taught.', locked: true, t: {} }
+  ];
+
+  var $ = function (id) { return document.getElementById(id); };
+  var qi = 0, picked = null, bones = 5, xp = 0, correct = 0, answered = false;
+
+  function drawBones() {
+    var html = '';
+    for (var i = 0; i < 5; i++) html += '<svg class="' + (i < bones ? '' : 'lost') + '"><use href="#bone" fill="' + (i < bones ? '#FF7A2F' : '#BCC8E6') + '"/></svg>';
+    $('bones').innerHTML = html;
+    $('bones').setAttribute('aria-label', bones + ' bones of health left');
+  }
+  function setXP() {
+    var pct = Math.round(qi / QUESTIONS.length * 100);
+    $('xpfill').style.width = pct + '%';
+    $('xpbar').setAttribute('aria-valuenow', pct);
+  }
+  function renderQ() {
+    var q = QUESTIONS[qi];
+    picked = null; answered = false;
+    $('kind').textContent = q.kind;
+    $('phrase').textContent = q.phrase;
+    $('plang').textContent = q.lang;
+    $('check').disabled = true;
+    $('check').textContent = 'Check';
+    var html = '';
+    ['sit', 'tilt', 'bark', 'roll'].forEach(function (k) {
+      html += '<button type="button" class="tile" data-k="' + k + '" aria-pressed="false"><svg aria-hidden="true"><use href="#' + TILES[k][1] + '"/></svg>' + TILES[k][0] + '</button>';
+    });
+    $('tiles').innerHTML = html;
+    setXP();
+  }
+  $('tiles').addEventListener('click', function (e) {
+    var t = e.target.closest('.tile');
+    if (!t || answered) return;
+    Array.prototype.forEach.call(this.children, function (c) { c.setAttribute('aria-pressed', 'false'); });
+    t.setAttribute('aria-pressed', 'true');
+    picked = t.getAttribute('data-k');
+    $('check').disabled = false;
+  });
+  function showSheet(ok, text) {
+    var s = $('sheet');
+    s.className = 'sheet show ' + (ok ? 'ok' : 'no');
+    $('sheetH').textContent = ok ? 'Correct!' : 'Not quite';
+    $('sheetP').textContent = text;
+    $('cont').className = 'btn ' + (ok ? 'btn-green' : 'btn-red');
+    $('cont').focus();
+  }
+  $('check').addEventListener('click', function () {
+    if (!picked || answered) return;
+    answered = true;
+    var q = QUESTIONS[qi];
+    var ok = picked === q.answer;
+    var tile = $('tiles').querySelector('[data-k="' + picked + '"]');
+    Array.prototype.forEach.call($('tiles').children, function (c) { c.disabled = true; });
+    if (ok) { correct++; xp += 10; tile.classList.add('pop-anim'); }
+    else { bones = Math.max(0, bones - 1); drawBones(); tile.classList.add('shake'); }
+    showSheet(ok, ok ? q.ok : q.no + (bones === 0 ? ' You are out of bones. Gerald has been informed.' : ''));
+  });
+  $('skip').addEventListener('click', function () {
+    if (answered) return;
+    answered = true;
+    Array.prototype.forEach.call($('tiles').children, function (c) { c.disabled = true; });
+    showSheet(false, 'Leaf logged as a distraction. This one is free. The next leaf will cost a bone.');
+  });
+  $('cont').addEventListener('click', function () {
+    $('sheet').className = 'sheet';
+    qi++;
+    if (qi >= QUESTIONS.length) return finish();
+    renderQ();
+  });
+  function finish() {
+    setXP();
+    $('streakN').textContent = '42';
+    $('xplabel').textContent = 'Unit 2 · Lesson 3 complete';
+    $('check').style.display = 'none';
+    $('skip').style.display = 'none';
+    $('qwrap').innerHTML = '<div class="done"><svg aria-hidden="true"><use href="#flame"/></svg><h2>42-day streak</h2><p>Biscuit will not remember this. We will remind him every nine seconds.</p>' +
+      '<div class="stats"><div class="stat"><b>' + xp + '</b><span>XP earned</span></div><div class="stat"><b>' + correct + '/5</b><span>Correct</span></div><div class="stat"><b>' + bones + '</b><span>Bones left</span></div></div>' +
+      '<button class="btn btn-primary" id="again">Start the lesson again</button></div>';
+    $('again').addEventListener('click', function () {
+      location.reload();
+    });
+    gerald('Streak extended. I will now celebrate by reminding you about tomorrow.');
+  }
+  $('say').addEventListener('click', function () {
+    var q = QUESTIONS[qi];
+    if (window.speechSynthesis && q) {
+      var u = new SpeechSynthesisUtterance(q.phrase);
+      var codes = { Spanish: 'es-ES', French: 'fr-FR', Portuguese: 'pt-BR', Korean: 'ko-KR', 'Pig Latin': 'en-US' };
+      u.lang = codes[q.lang] || 'en-US';
+      u.rate = 0.8;
+      speechSynthesis.cancel(); speechSynthesis.speak(u);
+    }
+  });
+
+  function renderBoard(range) {
+    var html = '';
+    BOARD[range].forEach(function (r, i) {
+      html += '<li class="row' + (r[4] ? ' me' : '') + (i === 0 ? ' first' : '') + '"><span class="rk">' + (i + 1) + '</span>' +
+        '<span class="av" style="background:' + r[3] + '" aria-hidden="true">' + r[0].charAt(0) + '</span>' +
+        '<span class="nm">' + r[0] + '<small>' + r[1] + '</small></span><span class="pts">' + r[2].toLocaleString('en-US') + ' XP</span></li>';
+    });
+    $('board').innerHTML = html;
+  }
+  document.querySelector('.seg').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    Array.prototype.forEach.call(this.children, function (c) { c.setAttribute('aria-pressed', c === b ? 'true' : 'false'); });
+    renderBoard(b.getAttribute('data-range'));
+  });
+
+  function renderWords() {
+    var langs = ['Spanish', 'French', 'Portuguese', 'Korean', 'Pig Latin'];
+    var html = '';
+    WORDS.forEach(function (w, i) {
+      html += '<li class="word' + (w.locked ? ' locked' : '') + '"><div class="word-top"><b>' + w.w + '</b><span class="tr" id="tr' + i + '">' + (w.locked ? 'Locked' : '') + '</span></div><div class="note">' + w.note + '</div>';
+      if (!w.locked) {
+        html += '<div class="langs">';
+        langs.forEach(function (l) { html += '<button type="button" data-i="' + i + '" data-l="' + l + '" aria-pressed="false">' + l + '</button>'; });
+        html += '</div>';
+      }
+      html += '</li>';
+    });
+    $('words').innerHTML = html;
+  }
+  $('words').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    var i = +b.getAttribute('data-i'), l = b.getAttribute('data-l');
+    var on = b.getAttribute('aria-pressed') !== 'true';
+    Array.prototype.forEach.call(b.parentNode.children, function (c) { c.setAttribute('aria-pressed', 'false'); });
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    $('tr' + i).textContent = on ? WORDS[i].t[l] : '';
+  });
+
+  var tabs = document.querySelectorAll('[role="tab"]');
+  Array.prototype.forEach.call(tabs, function (t) {
+    t.addEventListener('click', function () {
+      Array.prototype.forEach.call(tabs, function (x) {
+        var on = x === t;
+        x.setAttribute('aria-selected', on ? 'true' : 'false');
+        $(x.getAttribute('aria-controls')).classList.toggle('on', on);
+      });
+      $('sheet').classList.remove('show');
+      if (t.getAttribute('data-tab') === 'lesson' && answered && qi < QUESTIONS.length) $('sheet').classList.add('show');
+    });
+  });
+
+  var gi = 0;
+  function gerald(msg) {
+    var b = $('gerald');
+    b.textContent = msg;
+    b.classList.add('pop'); setTimeout(function () { b.classList.remove('pop'); }, 160);
+  }
+  setInterval(function () { gi = (gi + 1) % GERALD.length; gerald(GERALD[gi]); }, 9000);
+
+  drawBones(); renderQ(); renderBoard('week'); renderWords();
+})();
+</script>
+</body>
+</html>

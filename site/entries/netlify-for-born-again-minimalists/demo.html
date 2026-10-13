@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=Noto+Sans+JP:wght@300;400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --washi: #F4F1EA;
+    --paper: #FAF8F3;
+    --plinth: #ECE8DE;
+    --celadon: #3E7C74;
+    --celadon-dk: #2F625B;
+    --celadon-lt: #E3ECE8;
+    --persimmon: #B5482F;
+    --fg: #2B2A27;
+    --muted: #6E6A61;
+    --ink: #1C1B19;
+    --rule: #D9D4C8;
+    --serif: 'Noto Serif JP', 'Iowan Old Style', Georgia, serif;
+    --sans: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --mono: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--washi); color: var(--fg); font-family: var(--sans); font-weight: 300; font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--celadon); outline-offset: 2px; }
+
+  .chrome { display: flex; align-items: center; gap: 20px; padding: 14px clamp(16px, 3vw, 32px); border-bottom: 1px solid var(--rule); background: var(--paper); flex-wrap: wrap; }
+  .back { font-size: 13px; color: var(--muted); text-decoration: none; }
+  .back:hover { color: var(--ink); }
+  .crumbs { font-size: 14px; color: var(--muted); }
+  .crumbs b { font-family: var(--serif); font-weight: 400; color: var(--ink); font-size: 18px; margin-right: 10px; }
+  .env { margin-left: auto; font-family: var(--mono); font-size: 12px; color: var(--celadon); border: 1px solid var(--celadon); padding: 2px 8px; }
+
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 400px; min-height: calc(100vh - 58px); }
+  main { padding: 32px clamp(16px, 3vw, 40px) 64px; }
+  aside { border-left: 1px solid var(--rule); background: var(--paper); padding: 32px 28px; display: flex; flex-direction: column; gap: 20px; position: sticky; top: 0; align-self: start; max-height: 100vh; overflow: auto; }
+
+  .meter { display: flex; align-items: flex-end; gap: 32px; flex-wrap: wrap; margin-bottom: 28px; }
+  .big { font-family: var(--serif); font-weight: 300; font-size: clamp(88px, 11vw, 148px); line-height: 0.85; color: var(--ink); font-variant-numeric: tabular-nums; letter-spacing: -0.03em; }
+  .meter-text { padding-bottom: 8px; }
+  .meter-text p { margin: 0; color: var(--muted); }
+  .meter-text strong { color: var(--ink); font-weight: 400; }
+  .bar { width: 260px; max-width: 100%; height: 3px; background: var(--rule); margin-top: 12px; position: relative; }
+  .bar i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--celadon); transition: width 300ms ease-out; }
+  .bar .target { position: absolute; top: -5px; width: 1px; height: 13px; background: var(--ink); }
+
+  .tools { display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; border-bottom: 1px solid var(--rule); margin-bottom: 4px; }
+  .tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+  .tabs button { background: none; border: 0; padding: 10px 12px 12px; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; min-height: 44px; }
+  .tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--ink); }
+  .tabs .n { font-family: var(--mono); font-size: 11px; margin-left: 4px; }
+  .search { position: relative; margin-bottom: 8px; }
+  .search input { font: inherit; font-size: 14px; background: var(--paper); border: 1px solid var(--rule); padding: 8px 12px; width: 220px; min-height: 40px; color: var(--ink); }
+  .search input:focus { outline: none; border-color: var(--celadon); }
+
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font-weight: 400; font-size: 12px; color: var(--muted); padding: 12px 8px; border-bottom: 1px solid var(--rule); }
+  td { padding: 0 8px; border-bottom: 1px solid var(--rule); height: 48px; }
+  tr.row { cursor: pointer; }
+  tr.row:hover td { background: var(--paper); }
+  tr.row.staged td { background: var(--celadon-lt); }
+  td.cb { width: 36px; }
+  td.cb input { width: 18px; height: 18px; accent-color: var(--celadon); cursor: pointer; }
+  .name { color: var(--ink); position: relative; display: inline-block; }
+  .room { color: var(--muted); font-size: 13px; }
+  .num { font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; }
+  .joy-low { color: var(--persimmon); }
+  tr.gone .name { color: #A39E92; }
+  tr.gone .name::after { content: ''; position: absolute; left: 0; right: 0; top: 54%; height: 1px; background: var(--celadon); animation: strike 300ms ease-out both; }
+  tr.gone { cursor: default; }
+  tr.gone td.cb input { visibility: hidden; }
+  tr.prot .num.last { color: var(--celadon); }
+  @keyframes strike { from { transform: scaleX(0); transform-origin: left; } to { transform: scaleX(1); transform-origin: left; } }
+  .empty { padding: 40px 8px; color: var(--muted); }
+
+  aside h2 { font-family: var(--serif); font-weight: 400; font-size: 20px; margin: 0; color: var(--ink); }
+  .staged-list { font-size: 14px; margin: 0; padding: 0; list-style: none; max-height: 140px; overflow: auto; }
+  .staged-list li { padding: 4px 0; border-bottom: 1px dashed var(--rule); display: flex; justify-content: space-between; }
+  .staged-list .none { color: var(--muted); border: 0; }
+  label.lbl { font-size: 13px; color: var(--muted); display: block; margin-bottom: 6px; }
+  textarea { width: 100%; font: inherit; font-family: var(--mono); font-size: 13px; min-height: 72px; padding: 10px; border: 1px solid var(--rule); background: #fff; color: var(--ink); resize: vertical; }
+  textarea:focus { outline: none; border-color: var(--celadon); }
+  .actions { display: flex; gap: 12px; }
+  .btn { min-height: 46px; padding: 0 22px; border: 0; background: var(--celadon); color: #fff; font-size: 15px; font-weight: 400; transition: background 200ms ease-out; }
+  .btn:hover { background: var(--celadon-dk); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn.quiet { background: transparent; color: var(--muted); border: 1px solid var(--rule); }
+  .btn.quiet:hover { color: var(--ink); border-color: var(--ink); background: transparent; }
+  .log { font-family: var(--mono); font-size: 12px; line-height: 1.75; background: #fff; border: 1px solid var(--rule); padding: 14px; min-height: 200px; max-height: 320px; overflow: auto; color: var(--fg); white-space: pre-wrap; }
+  .log .ok { color: var(--celadon); }
+  .log .warn { color: var(--persimmon); }
+  .log .dim { color: #9C978B; }
+  .history { font-size: 13px; margin: 0; padding: 0; list-style: none; }
+  .history li { padding: 8px 0; border-top: 1px solid var(--rule); display: flex; gap: 10px; }
+  .history .sha { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+  .toast { position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 20px); opacity: 0; background: var(--ink); color: var(--washi); padding: 14px 20px; max-width: min(520px, calc(100vw - 32px)); font-size: 14px; transition: opacity 200ms ease-out, transform 200ms ease-out; pointer-events: none; z-index: 10; }
+  .toast.on { opacity: 1; transform: translate(-50%, 0); }
+
+  @media (max-width: 960px) {
+    .layout { grid-template-columns: 1fr; }
+    aside { border-left: 0; border-top: 1px solid var(--rule); position: static; max-height: none; }
+    .room-col, .touch-col { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    tr.gone .name::after { animation: none; }
+    .toast, .bar i { transition: none; }
+  }
+</style>
+<title>Shed — Netlify for born-again minimalists — Demo</title>
+<meta name="description" content="Every merge removes one possession. Shed connects your Git repository to your apartment. Approve a pull request and a courier arrives within the hour to take something away. Rollbacks are not supported, by design and on principle.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/netlify-for-born-again-minimalists/demo.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Shed — Netlify for born-again minimalists — Demo">
+<meta property="og:description" content="Every merge removes one possession. Shed connects your Git repository to your apartment. Approve a pull request and a courier arrives within the hour to take something away. Rollbacks are not supported, by design and on principle.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/netlify-for-born-again-minimalists/demo.html">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/netlify-for-born-again-minimalists/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Shed hero illustration">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Shed — Netlify for born-again minimalists — Demo">
+<meta name="twitter:description" content="Every merge removes one possession. Shed connects your Git repository to your apartment. Approve a pull request and a courier arrives within the hour to take something away. Rollbacks are not supported, by design and on principle.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/netlify-for-born-again-minimalists/social-preview.jpg">
+<meta name="twitter:image:alt" content="Shed hero illustration">
+</head>
+<body>
+<div class="chrome">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="crumbs"><b>Shed</b>dana-okafor / apartment-4b</span>
+  <span class="env">production</span>
+</div>
+
+<div class="layout">
+  <main>
+    <div class="meter">
+      <div class="big" id="remaining">47</div>
+      <div class="meter-text">
+        <p><strong>possessions remaining</strong> in production</p>
+        <p>Target: 33 by the end of the quarter. <span id="togo">14 to go.</span></p>
+        <div class="bar" aria-hidden="true"><i id="fill"></i><span class="target" id="tick"></span></div>
+      </div>
+    </div>
+
+    <div class="tools">
+      <div class="tabs" role="tablist" id="tabs"></div>
+      <div class="search">
+        <label for="q" class="lbl" style="position:absolute;left:-9999px">Search possessions</label>
+        <input id="q" type="search" placeholder="Search possessions" autocomplete="off">
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr><th></th><th>Object</th><th class="room-col">Room</th><th>Joy score</th><th class="touch-col">Last touched</th></tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </main>
+
+  <aside>
+    <div>
+      <h2>Staged for removal</h2>
+      <ul class="staged-list" id="staged"></ul>
+    </div>
+    <div>
+      <label class="lbl" for="msg">Commit message</label>
+      <textarea id="msg">chore: remove things I was keeping for a version of me that does not exist</textarea>
+    </div>
+    <div class="actions">
+      <button class="btn" id="deploy" disabled>Deploy</button>
+      <button class="btn quiet" id="rollback" aria-describedby="rb-note">Rollback</button>
+    </div>
+    <div>
+      <label class="lbl">Build log</label>
+      <div class="log" id="log" aria-live="polite"><span class="dim">Waiting for a pull request. Select objects on the left to stage them.</span></div>
+    </div>
+    <div>
+      <h2 style="font-size:16px;margin-bottom:6px">Recent deploys</h2>
+      <ul class="history" id="history">
+        <li><span class="sha">a41f0c2</span><span>remove: the couch</span></li>
+        <li><span class="sha">9be71d0</span><span>remove: 64 commemorative spoons</span></li>
+        <li><span class="sha">3c02aa9</span><span>remove: book about minimalism</span></li>
+      </ul>
+    </div>
+    <p id="rb-note" style="position:absolute;left:-9999px">Rollback is not supported.</p>
+  </aside>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function () {
+  var START = 47, TARGET = 33;
+  var items = [
+    ['Kitchen', 'Bread knife', 0.71, '2 days ago'],
+    ['Kitchen', 'Second bread knife', 0.04, '2024'],
+    ['Kitchen', 'One bowl', 1.00, 'this morning', true],
+    ['Kitchen', 'Spiralizer', 0.02, 'March 2023'],
+    ['Kitchen', 'Chopsticks, mismatched', 0.33, 'last week'],
+    ['Kitchen', 'Cast iron pan', 0.88, 'yesterday'],
+    ['Kitchen', 'Mug that says Boss', 0.09, 'never, by choice'],
+    ['Kitchen', 'Kettle', 0.92, 'this morning'],
+    ['Kitchen', 'Drawer of rubber bands', 0.01, 'unknown'],
+    ['Kitchen', 'Tea tin, empty', 0.18, 'April'],
+    ['Kitchen', 'Wooden spoon', 0.64, '3 days ago'],
+    ['Kitchen', 'Fondue set (sealed)', 0.00, 'the day it arrived'],
+    ['Bedroom', 'Floor', 0.81, 'nightly', true],
+    ['Bedroom', 'Blanket', 0.95, 'nightly'],
+    ['Bedroom', 'Pillow', 0.77, 'nightly'],
+    ['Bedroom', 'Alarm clock', 0.12, 'replaced by phone'],
+    ['Bedroom', 'Bedside lamp', 0.41, 'last night'],
+    ['Bedroom', 'Journal about owning less', 0.27, 'February'],
+    ['Bedroom', 'Charger, unknown device', 0.03, 'unknown'],
+    ['Bedroom', 'Yoga mat', 0.22, 'an intention'],
+    ['Bedroom', 'Photo of the couch', 0.58, 'often'],
+    ['Living', 'Laptop running Shed', 1.00, 'now', true],
+    ['Living', 'Wooden stool', 0.49, 'an hour ago'],
+    ['Living', 'Floor cushion', 0.66, 'yesterday'],
+    ['Living', 'Plant, alive', 0.84, 'watered Tuesday'],
+    ['Living', 'Plant, plastic', 0.06, 'dusted 2025'],
+    ['Living', 'Framed screenshot of Shed dashboard', 0.97, 'every time I walk past'],
+    ['Living', 'Speaker', 0.52, 'Sunday'],
+    ['Living', 'Board game, 3 pieces missing', 0.08, 'Christmas'],
+    ['Living', 'Candle from aunt (pre-edge function)', 0.05, 'never'],
+    ['Living', 'Throw blanket', 0.31, 'October'],
+    ['Living', 'Remote for a TV I no longer own', 0.00, 'the TV deploy'],
+    ['Closet', 'Black t-shirt (1 of 5)', 0.90, 'today'],
+    ['Closet', 'Black t-shirt (2 of 5)', 0.90, 'yesterday'],
+    ['Closet', 'Black t-shirt (3 of 5)', 0.89, 'Saturday'],
+    ['Closet', 'Black t-shirt (4 of 5)', 0.89, 'Friday'],
+    ['Closet', 'Black t-shirt (5 of 5)', 0.88, 'Thursday'],
+    ['Closet', 'Wedding suit', 0.14, 'a wedding'],
+    ['Closet', 'Running shoes', 0.47, 'September'],
+    ['Closet', 'Other running shoes', 0.11, 'the race'],
+    ['Closet', 'Linen shirt', 0.86, 'today'],
+    ['Closet', 'Coat', 0.79, 'cold days'],
+    ['Closet', 'Conference lanyard', 0.02, '2019'],
+    ['Closet', 'Umbrella', 0.55, 'rain'],
+    ['Closet', 'Suitcase', 0.38, 'the move'],
+    ['Closet', 'Box labeled MISC', 0.00, 'sealed'],
+    ['Closet', 'Hanger, empty', 0.16, 'constantly']
+  ].map(function (r, i) {
+    return { id: i, room: r[0], name: r[1], joy: r[2], last: r[3], protect: !!r[4], gone: false, staged: false };
+  });
+
+  var room = 'All', query = '', deploying = false, prNum = 382;
+  var $ = function (id) { return document.getElementById(id); };
+  var rowsEl = $('rows'), tabsEl = $('tabs'), stagedEl = $('staged'), logEl = $('log');
+
+  function remaining() { return items.filter(function (x) { return !x.gone; }).length; }
+
+  function renderTabs() {
+    var rooms = ['All', 'Kitchen', 'Bedroom', 'Living', 'Closet'];
+    tabsEl.innerHTML = '';
+    rooms.forEach(function (r) {
+      var n = items.filter(function (x) { return !x.gone && (r === 'All' || x.room === r); }).length;
+      var b = document.createElement('button');
+      b.setAttribute('role', 'tab');
+      b.setAttribute('aria-selected', r === room ? 'true' : 'false');
+      b.innerHTML = r + '<span class="n">' + n + '</span>';
+      b.addEventListener('click', function () { room = r; render(); });
+      tabsEl.appendChild(b);
+    });
+  }
+
+  function renderRows() {
+    var list = items.filter(function (x) {
+      return (room === 'All' || x.room === room) && x.name.toLowerCase().indexOf(query) !== -1;
+    });
+    rowsEl.innerHTML = '';
+    if (!list.length) {
+      rowsEl.innerHTML = '<tr><td colspan="5" class="empty">Nothing matches. Clear the search to see what you still own.</td></tr>';
+      return;
+    }
+    list.forEach(function (x) {
+      var tr = document.createElement('tr');
+      tr.className = 'row' + (x.staged ? ' staged' : '') + (x.gone ? ' gone' : '') + (x.protect ? ' prot' : '');
+      var joyCls = x.joy < 0.1 ? 'num joy-low' : 'num';
+      tr.innerHTML =
+        '<td class="cb"><input type="checkbox" aria-label="Stage ' + x.name + '"' + (x.staged ? ' checked' : '') + (x.gone ? ' disabled' : '') + '></td>' +
+        '<td><span class="name">' + x.name + '</span></td>' +
+        '<td class="room room-col">' + x.room + '</td>' +
+        '<td class="' + joyCls + '">' + x.joy.toFixed(2) + '</td>' +
+        '<td class="num last touch-col">' + (x.gone ? 'removed' : x.protect ? 'protected' : x.last) + '</td>';
+      tr.addEventListener('click', function () { toggle(x); });
+      rowsEl.appendChild(tr);
+    });
+  }
+
+  function renderSide() {
+    var st = items.filter(function (x) { return x.staged; });
+    stagedEl.innerHTML = st.length ? '' : '<li class="none">Nothing staged. That is fine. Nothing is also an option.</li>';
+    st.forEach(function (x) {
+      var li = document.createElement('li');
+      li.innerHTML = '<span>' + x.name + '</span><span class="num">' + x.joy.toFixed(2) + '</span>';
+      stagedEl.appendChild(li);
+    });
+    $('deploy').disabled = deploying || !st.length;
+    $('deploy').textContent = st.length ? 'Deploy ' + st.length + (st.length === 1 ? ' removal' : ' removals') : 'Deploy';
+    var r = remaining();
+    $('remaining').textContent = r;
+    var left = r - TARGET;
+    $('togo').textContent = left > 0 ? left + ' to go.' : left === 0 ? 'Target met. Consider a lower target.' : Math.abs(left) + ' under target. Your account manager is impressed and slightly worried.';
+    $('fill').style.width = Math.min(100, ((START - r) / (START - TARGET)) * 100) + '%';
+  }
+
+  function render() { renderTabs(); renderRows(); renderSide(); }
+
+  function toggle(x) {
+    if (x.gone || deploying) return;
+    if (x.protect) {
+      toast(x.name + ' is on a protected branch. Removing it requires two approvals and a long walk.');
+      return;
+    }
+    x.staged = !x.staged;
+    render();
+  }
+
+  var toastT;
+  function toast(msg) {
+    var t = $('toast');
+    t.textContent = msg;
+    t.classList.add('on');
+    clearTimeout(toastT);
+    toastT = setTimeout(function () { t.classList.remove('on'); }, 4000);
+  }
+
+  function line(html) { logEl.innerHTML += html + '\n'; logEl.scrollTop = logEl.scrollHeight; }
+  function sha() { return Math.random().toString(16).slice(2, 9); }
+
+  $('deploy').addEventListener('click', function () {
+    var st = items.filter(function (x) { return x.staged; });
+    if (!st.length) return;
+    deploying = true;
+    renderSide();
+    var msg = $('msg').value.trim() || 'remove: some things';
+    var id = sha();
+    logEl.innerHTML = '';
+    var steps = [
+      '<span class="dim">' + new Date().toLocaleTimeString() + '</span>  PR #' + prNum + ' merged to main',
+      'Building preview of absence... <span class="ok">done</span> (0.4 s)',
+      'Running edge function at front door... <span class="ok">no incoming gifts</span>'
+    ];
+    st.forEach(function (x) {
+      steps.push('Dispatching courier for <b>' + x.name + '</b>');
+      if (x.joy > 0.6) steps.push('  <span class="warn">warn</span> joy score ' + x.joy.toFixed(2) + ' exceeds 0.60. Proceeding anyway, as requested.');
+      steps.push('  wrapping object... clearing doorway... <span class="ok">gone</span>');
+    });
+    steps.push('Invalidating cache (memories)... <span class="dim">partial</span>');
+    steps.push('<span class="ok">Deploy ' + id + ' is live.</span> ' + st.length + ' fewer things in production.');
+    var i = 0, removed = 0;
+    (function next() {
+      if (i >= steps.length) {
+        $('history').insertAdjacentHTML('afterbegin', '<li><span class="sha">' + id + '</span><span>' + msg.replace(/</g, '&lt;') + '</span></li>');
+        prNum++;
+        deploying = false;
+        render();
+        return;
+      }
+      var s = steps[i++];
+      line(s);
+      if (s.indexOf('<span class="ok">gone</span>') !== -1) {
+        st[removed].gone = true; st[removed].staged = false; removed++;
+        render();
+        deploying = true; renderSide();
+      }
+      setTimeout(next, 420);
+    })();
+  });
+
+  $('rollback').addEventListener('click', function () {
+    toast('Rollback is not supported. The object is with a courier named Marcus, and Marcus has moved on.');
+  });
+
+  $('q').addEventListener('input', function (e) { query = e.target.value.toLowerCase().trim(); renderRows(); });
+
+  var tick = $('tick');
+  tick.style.left = '100%';
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --washi: #F4F1EA;
+    --paper: #FAF8F3;
+    --plinth: #ECE8DE;
+    --celadon: #3E7C74;
+    --celadon-dk: #2F625B;
+    --persimmon: #B5482F;
+    --fg: #2B2A27;
+    --muted: #6E6A61;
+    --ink: #1C1B19;
+    --rule: #D9D4C8;
+    --serif: 'Noto Serif JP', 'Iowan Old Style', Georgia, serif;
+    --sans: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --mono: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+    --gutter: clamp(20px, 5vw, 72px);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--washi);
+    color: var(--fg);
+    font-family: var(--sans);
+    font-weight: 300;
+    font-size: 17px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--celadon); outline-offset: 3px; }
+  img { display: block; max-width: 100%; height: auto; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 0 var(--gutter); }
+
+  /* header */
+  .top { display: flex; align-items: center; justify-content: space-between; padding: 28px 0; }
+  .wordmark { font-family: var(--serif); font-weight: 400; font-size: 26px; letter-spacing: 0.02em; text-decoration: none; color: var(--ink); }
+  .top nav { display: flex; gap: 32px; align-items: center; font-size: 15px; }
+  .top nav a { text-decoration: none; color: var(--muted); }
+  .top nav a:hover { color: var(--ink); }
+  .top nav .gone { text-decoration: line-through; text-decoration-color: var(--celadon); color: #A8A397; }
+  .btn {
+    display: inline-flex; align-items: center; min-height: 48px; padding: 0 26px;
+    background: var(--celadon); color: #fff; text-decoration: none; font-size: 15px; font-weight: 400;
+    letter-spacing: 0.01em; border: 0; transition: background 200ms ease-out;
+  }
+  .btn:hover { background: var(--celadon-dk); }
+  .btn.small { min-height: 40px; padding: 0 18px; font-size: 14px; color: #fff; }
+  .link { font-size: 15px; color: var(--ink); text-underline-offset: 5px; text-decoration-thickness: 1px; }
+
+  /* hero */
+  .hero { padding: clamp(56px, 10vw, 140px) 0 64px; display: grid; grid-template-columns: 2fr 1fr; gap: 48px; align-items: end; }
+  h1 {
+    font-family: var(--serif); font-weight: 300; color: var(--ink);
+    font-size: clamp(40px, 6vw, 84px); line-height: 1.08; letter-spacing: -0.015em; margin: 0; max-width: 13ch;
+  }
+  .hero-side p { margin: 0 0 28px; color: var(--fg); max-width: 34ch; }
+  .hero-side .actions { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
+
+  /* framed print */
+  .print { margin: 0 0 clamp(96px, 14vw, 180px); }
+  .print-frame { background: var(--paper); padding: clamp(14px, 2.4vw, 32px); border: 1px solid var(--rule); }
+  .print-frame img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+  .wall-label { margin-top: 22px; max-width: 340px; margin-left: auto; font-size: 13px; line-height: 1.6; color: var(--muted); }
+  .wall-label b { display: block; font-family: var(--serif); font-weight: 400; font-size: 15px; color: var(--ink); }
+  .cat { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+  /* counter */
+  .count { display: grid; grid-template-columns: auto 1fr; gap: clamp(32px, 7vw, 120px); align-items: center; padding-bottom: clamp(96px, 14vw, 180px); }
+  .count-num { font-family: var(--serif); font-weight: 300; font-size: clamp(140px, 24vw, 340px); line-height: 0.85; color: var(--ink); font-variant-numeric: tabular-nums; letter-spacing: -0.04em; }
+  .count-cap { font-size: 15px; color: var(--muted); margin: 18px 0 0; }
+  .inventory { list-style: none; margin: 0; padding: 0; columns: 2; column-gap: 40px; font-size: 15px; }
+  .inventory li { padding: 7px 0; border-bottom: 1px solid var(--rule); break-inside: avoid; display: flex; justify-content: space-between; gap: 12px; }
+  .inventory li span:first-child { position: relative; }
+  .inventory li.out span:first-child { color: #9C978B; }
+  .inventory li.out span:first-child::after {
+    content: ''; position: absolute; left: 0; right: 0; top: 52%; height: 1px; background: var(--celadon);
+    transform-origin: left; transform: scaleX(1);
+  }
+  .js .inventory li.out span:first-child::after { transform: scaleX(0); transition: transform 300ms ease-out; }
+  .js .inventory.drawn li.out span:first-child::after { transform: scaleX(1); }
+  .inventory .when { font-family: var(--mono); font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .inventory li.keep .when { color: var(--celadon); }
+
+  /* section heads */
+  .sect-head { display: grid; grid-template-columns: 1fr 2fr; gap: 48px; margin-bottom: 64px; align-items: baseline; }
+  h2 { font-family: var(--serif); font-weight: 300; font-size: clamp(30px, 3.6vw, 46px); line-height: 1.15; margin: 0; color: var(--ink); }
+  .sect-head p { margin: 0; max-width: 52ch; color: var(--muted); }
+
+  /* plinths */
+  .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(28px, 4vw, 64px); padding-bottom: clamp(96px, 14vw, 180px); }
+  .plinth { height: 220px; background: var(--plinth); position: relative; margin-bottom: 28px; }
+  .plinth::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: #BDB7A9; }
+  .plinth .seal {
+    position: absolute; top: 18px; right: 18px; width: 54px; height: 54px; border-radius: 50%;
+    border: 1px solid var(--persimmon); color: var(--persimmon); display: grid; place-items: center;
+    font-size: 11px; letter-spacing: 0.02em; transform: rotate(-8deg);
+  }
+  .plinth .ghost { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); border: 1px dashed #B9B3A5; border-bottom: 0; }
+  .g1 { width: 46%; height: 62%; }
+  .g2 { width: 24%; height: 78%; border-radius: 40% 40% 0 0; }
+  .g3 { width: 64%; height: 34%; }
+  .placard h3 { font-family: var(--serif); font-weight: 400; font-size: 21px; line-height: 1.3; margin: 6px 0 10px; color: var(--ink); }
+  .placard p { margin: 0; font-size: 15.5px; max-width: 38ch; }
+
+  /* demo band */
+  .demo-band { border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding: clamp(56px, 8vw, 96px) 0; margin-bottom: clamp(96px, 14vw, 180px); display: flex; justify-content: space-between; align-items: center; gap: 32px; flex-wrap: wrap; }
+  .demo-band p { font-family: var(--serif); font-weight: 300; font-size: clamp(24px, 2.8vw, 34px); line-height: 1.3; margin: 0; max-width: 26ch; color: var(--ink); }
+  .demo-band .btn { min-height: 56px; padding: 0 32px; font-size: 16px; }
+
+  /* testimonials */
+  .quotes { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(28px, 4vw, 64px); padding-bottom: clamp(96px, 14vw, 180px); }
+  .quotes figure { margin: 0; }
+  .quotes img { width: 112px; height: 112px; object-fit: cover; margin-bottom: 28px; filter: grayscale(0.25); }
+  .quotes blockquote { margin: 0 0 22px; font-family: var(--serif); font-weight: 300; font-size: 19px; line-height: 1.65; color: var(--ink); }
+  .quotes figcaption { font-size: 14px; color: var(--muted); line-height: 1.5; }
+  .quotes figcaption b { display: block; color: var(--ink); font-weight: 400; }
+
+  /* pricing */
+  .tiers { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--rule); padding-bottom: 48px; }
+  .tier { padding: 40px clamp(20px, 3vw, 40px) 0 0; position: relative; }
+  .tier + .tier { padding-left: clamp(20px, 3vw, 40px); border-left: 1px solid var(--rule); }
+  .tier.pick::before { content: ''; position: absolute; top: -1px; left: 0; right: 0; height: 3px; background: var(--celadon); }
+  .tier h3 { font-family: var(--serif); font-weight: 400; font-size: 24px; margin: 0 0 4px; color: var(--ink); }
+  .tier .price { font-family: var(--serif); font-weight: 300; font-size: 52px; line-height: 1.1; margin: 18px 0 6px; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .tier .price small { font-size: 16px; color: var(--muted); font-family: var(--sans); }
+  .tier .tl { color: var(--muted); font-size: 15px; margin: 0 0 24px; min-height: 3.4em; }
+  .tier ul { list-style: none; padding: 0; margin: 0 0 32px; font-size: 15px; }
+  .tier li { padding: 8px 0; border-bottom: 1px solid var(--rule); }
+  .tier .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--ink); }
+  .tier .btn.ghost:hover { background: var(--ink); color: var(--washi); }
+  .fine { font-size: 13px; color: var(--muted); margin: 0; padding-bottom: clamp(96px, 14vw, 180px); max-width: 70ch; }
+
+  footer { border-top: 1px solid var(--rule); padding: 32px 0 48px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; font-size: 14px; color: var(--muted); }
+  footer a { color: var(--muted); text-underline-offset: 4px; }
+  footer a:hover { color: var(--ink); }
+
+  @media (max-width: 900px) {
+    .hero, .sect-head { grid-template-columns: 1fr; gap: 28px; }
+    .count { grid-template-columns: 1fr; }
+    .gallery, .quotes, .tiers { grid-template-columns: 1fr; }
+    .tier + .tier { padding-left: 0; border-left: 0; border-top: 1px solid var(--rule); margin-top: 40px; }
+    .tier { padding-right: 0; }
+    .top nav a:not(.btn) { display: none; }
+    .wall-label { margin-left: 0; }
+  }
+  @media (max-width: 560px) { .inventory { columns: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .js .inventory li.out span:first-child::after { transition: none; }
+  }
+</style>
+<title>Shed — Netlify for born-again minimalists</title>
+<meta name="description" content="Every merge removes one possession. Shed connects your Git repository to your apartment. Approve a pull request and a courier arrives within the hour to take something away. Rollbacks are not supported, by design and on principle.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/netlify-for-born-again-minimalists/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Shed — Netlify for born-again minimalists">
+<meta property="og:description" content="Every merge removes one possession. Shed connects your Git repository to your apartment. Approve a pull request and a courier arrives within the hour to take something away. Rollbacks are not supported, by design and on principle.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/netlify-for-born-again-minimalists/">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/netlify-for-born-again-minimalists/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Shed hero illustration">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Shed — Netlify for born-again minimalists">
+<meta name="twitter:description" content="Every merge removes one possession. Shed connects your Git repository to your apartment. Approve a pull request and a courier arrives within the hour to take something away. Rollbacks are not supported, by design and on principle.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/netlify-for-born-again-minimalists/social-preview.jpg">
+<meta name="twitter:image:alt" content="Shed hero illustration">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="wordmark" href="#">Shed</a>
+    <nav aria-label="Main">
+      <a href="#product">Product</a>
+      <a href="#pricing">Pricing</a>
+      <span class="gone" title="Removed in v2.1">Blog</span>
+      <a class="btn small" href="./demo.html">Connect your home</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>Every merge removes one possession.</h1>
+    <div class="hero-side">
+      <p>Shed connects your Git repository to your apartment. Approve a pull request and a courier arrives within the hour to take something away. Rollbacks are not supported, by design and on principle.</p>
+      <div class="actions">
+        <a class="btn" href="./demo.html">Connect your home</a>
+        <a class="link" href="./demo.html">open the demo →</a>
+      </div>
+    </div>
+  </section>
+
+  <figure class="print">
+    <div class="print-frame">
+      <img src="hero.webp" alt="An almost empty room with pale walls, a bare oak floor and one wooden stool in morning light" width="1600" height="900">
+    </div>
+    <figcaption class="wall-label">
+      <b>Living room, production</b>
+      <span class="cat">main@a41f0c2 · 1 object</span><br>
+      Customer apartment after 381 merged pull requests. The stool has an open PR. Its owner is reviewing it slowly.
+    </figcaption>
+  </figure>
+
+  <section class="count" aria-label="Objects remaining">
+    <div>
+      <div class="count-num" id="count">31</div>
+      <p class="count-cap">objects remaining in Dana's apartment, down from 412</p>
+    </div>
+    <ul class="inventory" id="inventory">
+      <li class="out"><span>Bread maker, used twice</span><span class="when">removed #377</span></li>
+      <li class="out"><span>Second set of towels</span><span class="when">removed #378</span></li>
+      <li class="out"><span>Commemorative spoons (64)</span><span class="when">removed #379</span></li>
+      <li class="out"><span>The couch</span><span class="when">removed #380</span></li>
+      <li class="out"><span>Book about minimalism</span><span class="when">removed #381</span></li>
+      <li class="keep"><span>One bowl</span><span class="when">protected</span></li>
+      <li class="keep"><span>Laptop running Shed</span><span class="when">protected</span></li>
+      <li><span>Wooden stool</span><span class="when">PR #382 open</span></li>
+    </ul>
+  </section>
+
+  <section id="product">
+    <div class="sect-head">
+      <h2>Three things we ship.</h2>
+      <p>Each one is displayed on an empty plinth. The objects that used to stand on them were removed during product review, which went well.</p>
+    </div>
+    <div class="gallery">
+      <article>
+        <div class="plinth" aria-hidden="true"><span class="ghost g1"></span><span class="seal">gone</span></div>
+        <div class="placard">
+          <span class="cat">feat/previews</span>
+          <h3>Deploy previews of absence</h3>
+          <p>Every pull request generates a preview URL of your living room without the item in it. Reviewers leave comments on the negative space. Median time to approval is four minutes, and nobody has ever requested changes.</p>
+        </div>
+      </article>
+      <article>
+        <div class="plinth" aria-hidden="true"><span class="ghost g2"></span><span class="seal">gone</span></div>
+        <div class="placard">
+          <span class="cat">feat/atomic</span>
+          <h3>Atomic declutters</h3>
+          <p>An object is either fully present or fully gone. There is no garage, no storage unit, no maybe box. The maybe box was a staging environment and we have shut it down.</p>
+        </div>
+      </article>
+      <article>
+        <div class="plinth" aria-hidden="true"><span class="ghost g3"></span><span class="seal">gone</span></div>
+        <div class="placard">
+          <span class="cat">feat/edge-door</span>
+          <h3>Edge functions at the front door</h3>
+          <p>A function runs at your threshold and evaluates incoming gifts in under 50 ms. Scented candles from your aunt return 403 Forbidden. She receives a short, courteous email with a link to our documentation.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <div class="demo-band">
+    <p>See the deploy console. Your possessions are already in it.</p>
+    <a class="btn" href="./demo.html">open the demo →</a>
+  </div>
+
+  <section aria-labelledby="t-h">
+    <div class="sect-head">
+      <h2 id="t-h">People who own less now.</h2>
+      <p>Customers were asked for a quote. All three asked if the quote would take up space.</p>
+    </div>
+    <div class="quotes">
+      <figure>
+        <img src="headshot-1.webp" alt="Dana Okafor" width="320" height="320" loading="lazy">
+        <blockquote>I owned 412 things in March. I own 31 now, and one of them is a framed screenshot of my Shed dashboard.</blockquote>
+        <figcaption><b>Dana Okafor</b>Former Collector of Commemorative Spoons, Portland</figcaption>
+      </figure>
+      <figure>
+        <img src="headshot-2.webp" alt="Pieter Vandermolen" width="320" height="320" loading="lazy">
+        <blockquote>The bot opened a pull request to remove my mattress. I approved it at 2 a.m. I sleep on the floor now and I mention this at every party.</blockquote>
+        <figcaption><b>Pieter Vandermolen</b>Senior Floor Sleeper, Rotterdam</figcaption>
+      </figure>
+      <figure>
+        <img src="headshot-3.webp" alt="Gil Hartmann" width="320" height="320" loading="lazy">
+        <blockquote>My wife and I disagreed about the piano, so we turned on branch protection. The piano is gone. The branch is also gone.</blockquote>
+        <figcaption><b>Gil Hartmann</b>Staff Owner of 9 Objects, Tucson</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="pricing" aria-labelledby="p-h">
+    <div class="sect-head">
+      <h2 id="p-h">Pricing.</h2>
+      <p>Three plans. We tried two, but people kept asking what the middle one was.</p>
+    </div>
+    <div class="tiers">
+      <div class="tier">
+        <h3>One Bowl</h3>
+        <div class="price">$0<small>/mo</small></div>
+        <p class="tl">For people who own one bowl and bring it up.</p>
+        <ul>
+          <li>1 un-deploy per day</li>
+          <li>Community forum access (read-only, posting adds clutter)</li>
+          <li>Shared courier, arrives eventually</li>
+        </ul>
+        <a class="btn ghost" href="./demo.html">Start with nothing</a>
+      </div>
+      <div class="tier pick">
+        <h3>The Monk</h3>
+        <div class="price">$49<small>/mo</small></div>
+        <p class="tl">Most popular among the recently divorced.</p>
+        <ul>
+          <li>Unlimited un-deploys</li>
+          <li>Build minutes billed against remaining possessions</li>
+          <li>Priority courier with soft-soled shoes</li>
+          <li>Joy scores to two decimal places</li>
+        </ul>
+        <a class="btn" href="./demo.html">Take the vow</a>
+      </div>
+      <div class="tier">
+        <h3>Nothing</h3>
+        <div class="price">$2,400<small>/mo</small></div>
+        <p class="tl">At this tier we also remove the plan.</p>
+        <ul>
+          <li>Dedicated empty room</li>
+          <li>SSO (single spoon onboarding)</li>
+          <li>99.99% vacancy SLA</li>
+          <li>Account manager who owns less than you</li>
+        </ul>
+        <a class="btn ghost" href="./demo.html">Talk to nobody</a>
+      </div>
+    </div>
+    <p class="fine">Couriers cannot remove pets, children, load-bearing walls or your landlord. Removed objects are donated, recycled or kept by the courier, who has signed a form saying he will not. Shed does not store your possessions. That would defeat the purpose.</p>
+  </section>
+
+  <footer>
+    <a href="/">← theworstaistudioever</a>
+    <span>Shed Inc. Registered office: a mostly empty room in Oakland.</span>
+  </footer>
+</div>
+<script>
+  document.documentElement.classList.add('js');
+  (function () {
+    var list = document.getElementById('inventory');
+    var num = document.getElementById('count');
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function run() {
+      list.classList.add('drawn');
+      if (reduce) return;
+      var from = 412, to = 31, t0 = null, dur = 1400;
+      function step(t) {
+        if (!t0) t0 = t;
+        var p = Math.min(1, (t - t0) / dur);
+        var e = 1 - Math.pow(1 - p, 3);
+        num.textContent = Math.round(from - (from - to) * e);
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+    setTimeout(function () { list.classList.add('drawn'); }, 2500);
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (es) {
+        if (es[0].isIntersecting) { io.disconnect(); run(); }
+      }, { threshold: 0.4 });
+      io.observe(list);
+    } else { run(); }
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cobalt: #2456D6;
+    --cobalt-lip: #1A3FA3;
+    --cobalt-soft: #E3EBFF;
+    --orange: #FF7A2F;
+    --orange-lip: #C9561A;
+    --orange-soft: #FFE9DC;
+    --bg: #F5F8FF;
+    --card: #FFFFFF;
+    --line: #D9E1F4;
+    --fg: #1B2235;
+    --muted: #5D6680;
+    --ink: #121829;
+    --green: #2E9E4F;
+    --display: 'Fredoka', 'Trebuchet MS', -apple-system, BlinkMacSystemFont, sans-serif;
+    --body: 'Rubik', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  img { display: block; max-width: 100%; }
+  a { color: inherit; }
+  .wrap { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
+  h1, h2, h3 { font-family: var(--display); color: var(--ink); margin: 0; line-height: 1.05; }
+  h2 { font-size: clamp(34px, 4.6vw, 52px); font-weight: 700; letter-spacing: -0.01em; }
+  h3 { font-size: 24px; font-weight: 600; }
+  p { margin: 0; }
+  :focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; border-radius: 8px; }
+
+  /* lip buttons */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    font-family: var(--display); font-weight: 600; font-size: 19px;
+    min-height: 56px; padding: 0 26px;
+    border-radius: 14px; border: 2px solid transparent; border-bottom-width: 6px;
+    text-decoration: none; cursor: pointer;
+    transition: transform 80ms ease-out, border-bottom-width 80ms ease-out;
+    touch-action: manipulation;
+  }
+  .btn:active { transform: translateY(4px); border-bottom-width: 2px; }
+  .btn-primary { background: var(--cobalt); color: #fff; border-color: var(--cobalt-lip); }
+  .btn-ghost { background: var(--card); color: var(--cobalt); border-color: var(--line); border-bottom-color: #BCC8E6; }
+  .btn-orange { background: var(--orange); color: #fff; border-color: var(--orange-lip); }
+
+  /* nav */
+  .nav { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; }
+  .logo { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-weight: 700; font-size: 30px; color: var(--cobalt); text-decoration: none; }
+  .logo svg { width: 40px; height: 40px; }
+  .nav-links { display: flex; gap: 28px; align-items: center; }
+  .nav-links a { text-decoration: none; font-weight: 500; color: var(--muted); }
+  .nav-links a:hover { color: var(--cobalt); }
+  .nav-links a.btn { color: #fff; }
+  .nav .btn { min-height: 46px; font-size: 17px; padding: 0 20px; }
+
+  /* hero */
+  .hero { display: grid; grid-template-columns: 1fr 1.05fr; gap: 56px; align-items: center; padding: 40px 0 96px; }
+  .pill { display: inline-flex; align-items: center; gap: 8px; background: var(--cobalt-soft); color: var(--cobalt); font-weight: 600; font-size: 15px; padding: 7px 14px; border-radius: 999px; margin-bottom: 22px; }
+  .pill svg { width: 18px; height: 18px; }
+  .hero h1 { font-size: clamp(44px, 6vw, 72px); font-weight: 700; letter-spacing: -0.015em; }
+  .hero .sub { font-size: 20px; color: var(--muted); max-width: 32em; margin: 24px 0 34px; }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 14px; }
+  .fineprint { font-size: 14px; color: var(--muted); margin-top: 18px; }
+
+  .hero-art { position: relative; }
+  .hero-frame { border-radius: 28px; overflow: hidden; background: var(--cobalt); aspect-ratio: 4 / 3.4; border-bottom: 10px solid var(--cobalt-lip); }
+  .hero-frame img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; }
+  .streak-card {
+    position: absolute; left: -28px; bottom: 44px;
+    background: var(--card); border: 2px solid var(--line); border-bottom-width: 6px; border-radius: 18px;
+    padding: 14px 18px; display: flex; align-items: center; gap: 12px;
+  }
+  .streak-card svg { width: 40px; height: 40px; animation: flicker 1.2s steps(2) infinite; transform-origin: 50% 90%; }
+  .streak-card b { font-family: var(--display); font-size: 28px; color: var(--ink); display: block; line-height: 1; }
+  .streak-card span { font-size: 14px; color: var(--muted); }
+  @keyframes flicker { 0% { transform: scale(1); } 100% { transform: scale(1.08, 0.96); } }
+
+  .gerald { position: absolute; right: -18px; top: -26px; display: flex; align-items: flex-start; gap: 6px; max-width: 280px; }
+  .gerald .bubble {
+    background: var(--orange); color: #fff; border-radius: 18px 18px 4px 18px;
+    padding: 12px 16px; font-weight: 500; font-size: 15px; line-height: 1.35;
+    border-bottom: 5px solid var(--orange-lip);
+  }
+  .gerald svg { width: 64px; height: 64px; flex: none; margin-top: 26px; }
+
+  /* section rhythm */
+  section.block { padding: 96px 0; }
+  .block-head { max-width: 640px; margin-bottom: 56px; }
+  .block-head p { color: var(--muted); font-size: 19px; margin-top: 16px; }
+
+  /* lesson path */
+  .path { position: relative; max-width: 880px; margin: 0 auto; }
+  .path::before {
+    content: ""; position: absolute; left: 50%; top: 40px; bottom: 40px; width: 0;
+    border-left: 6px dotted #BCC8E6; transform: translateX(-3px);
+  }
+  .stop { position: relative; display: grid; grid-template-columns: 1fr 120px 1fr; align-items: center; margin-bottom: 44px; }
+  .stop:last-child { margin-bottom: 0; }
+  .node {
+    grid-column: 2; justify-self: center; position: relative; z-index: 1;
+    width: 92px; height: 92px; border-radius: 50%;
+    background: var(--cobalt); border-bottom: 8px solid var(--cobalt-lip);
+    display: grid; place-items: center;
+  }
+  .node svg { width: 44px; height: 44px; }
+  .stop:nth-child(2) .node { background: var(--orange); border-bottom-color: var(--orange-lip); }
+  .stop:nth-child(3) .node { background: #B9C4DE; border-bottom-color: #93A1C2; }
+  .stop-card {
+    background: var(--card); border: 2px solid var(--line); border-bottom-width: 6px; border-radius: 20px;
+    padding: 26px 28px;
+  }
+  .stop-card p { color: var(--muted); margin-top: 10px; }
+  .stop-card .tag { display: inline-block; font-size: 14px; font-weight: 600; color: var(--cobalt); margin-bottom: 8px; }
+  .stop.left .stop-card { grid-column: 1; grid-row: 1; }
+  .stop.right .stop-card { grid-column: 3; grid-row: 1; }
+  .stop.left .node { grid-row: 1; }
+  .stop.right .node { grid-row: 1; }
+
+  /* testimonials */
+  .reviews { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .review {
+    background: var(--card); border: 2px solid var(--line); border-bottom-width: 6px; border-radius: 20px;
+    padding: 26px; display: flex; flex-direction: column; gap: 18px;
+  }
+  .review blockquote { margin: 0; font-size: 18px; color: var(--fg); flex: 1; }
+  .who { display: flex; align-items: center; gap: 14px; }
+  .who img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 3px solid var(--cobalt-soft); }
+  .who b { font-family: var(--display); font-weight: 600; font-size: 19px; color: var(--ink); display: block; line-height: 1.2; }
+  .who span { font-size: 14px; color: var(--muted); line-height: 1.35; display: block; }
+  .stars { display: flex; gap: 3px; }
+  .stars svg { width: 20px; height: 20px; }
+  .rating-note { margin-top: 26px; color: var(--muted); font-size: 15px; }
+
+  /* pricing */
+  .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; align-items: stretch; }
+  .tier {
+    background: var(--card); border: 2px solid var(--line); border-bottom-width: 6px; border-radius: 22px;
+    padding: 30px 28px; display: flex; flex-direction: column;
+  }
+  .tier.hot { border-color: var(--orange); border-bottom-color: var(--orange-lip); position: relative; }
+  .tier.hot .flag { position: absolute; top: -16px; left: 24px; background: var(--orange); color: #fff; font-family: var(--display); font-weight: 600; font-size: 15px; padding: 4px 14px; border-radius: 999px; }
+  .tier h3 { font-size: 26px; }
+  .price { font-family: var(--display); font-weight: 700; font-size: 46px; color: var(--ink); margin: 14px 0 4px; line-height: 1; }
+  .price small { font-size: 18px; font-weight: 500; color: var(--muted); }
+  .tier .tl { color: var(--muted); min-height: 3.1em; }
+  .bones { display: flex; gap: 6px; margin: 18px 0; }
+  .bones svg { width: 30px; height: 16px; }
+  .tier ul { list-style: none; padding: 0; margin: 0 0 26px; display: grid; gap: 10px; flex: 1; }
+  .tier li { display: flex; gap: 10px; align-items: flex-start; }
+  .tier li svg { width: 20px; height: 20px; flex: none; margin-top: 3px; }
+  .tier .btn { width: 100%; }
+
+  /* demo band */
+  .band {
+    background: var(--cobalt); color: #fff; border-radius: 32px; border-bottom: 12px solid var(--cobalt-lip);
+    padding: 64px 56px; display: grid; grid-template-columns: 1.3fr 1fr; gap: 40px; align-items: center;
+  }
+  .band h2 { color: #fff; }
+  .band p { color: #D6E1FF; font-size: 19px; margin-top: 16px; max-width: 30em; }
+  .band .btn-orange { font-size: 22px; min-height: 66px; padding: 0 34px; }
+  .band-right { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+  .band-right small { color: #D6E1FF; font-size: 14px; }
+
+  footer { padding: 56px 0 40px; color: var(--muted); font-size: 14px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--cobalt); }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; gap: 40px; padding-top: 16px; }
+    .hero-art { order: -1; margin: 30px 10px 0; }
+    .streak-card { left: -8px; bottom: 20px; }
+    .gerald { right: -6px; top: -36px; max-width: 230px; }
+    .gerald svg { width: 48px; height: 48px; }
+    .nav-links a { display: none; }
+    .reviews, .tiers { grid-template-columns: 1fr; }
+    .tier.hot { margin-top: 10px; }
+    .band { grid-template-columns: 1fr; padding: 44px 28px; }
+    .path::before { left: 46px; }
+    .stop { grid-template-columns: 92px 1fr; gap: 18px; }
+    .stop.left .stop-card, .stop.right .stop-card { grid-column: 2; }
+    .stop .node { grid-column: 1; width: 80px; height: 80px; }
+  }
+  @media (max-width: 480px) {
+    .wrap { padding: 0 18px; }
+    .hero .sub { font-size: 18px; }
+    .cta-row .btn { width: 100%; }
+    .stop { grid-template-columns: 1fr; }
+    .stop .node { justify-self: start; }
+    .stop.left .node, .stop.right .node { grid-row: 1; }
+    .stop.left .stop-card, .stop.right .stop-card { grid-column: 1; grid-row: 2; }
+    .path::before { display: none; }
+    section.block { padding: 72px 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+<title>Stay — Duolingo for dogs</title>
+<meta name="description" content="Your dog knows four words. We can get that to six. Stay is the language app for dogs. Five-minute lessons, a daily streak your dog will not remember, and Gerald, a squirrel who sends a reminder every nine seconds.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/duolingo-for-dogs/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Stay — Duolingo for dogs">
+<meta property="og:description" content="Your dog knows four words. We can get that to six. Stay is the language app for dogs. Five-minute lessons, a daily streak your dog will not remember, and Gerald, a squirrel who sends a reminder every nine seconds.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/duolingo-for-dogs/">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/duolingo-for-dogs/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Stay hero illustration">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Stay — Duolingo for dogs">
+<meta name="twitter:description" content="Your dog knows four words. We can get that to six. Stay is the language app for dogs. Five-minute lessons, a daily streak your dog will not remember, and Gerald, a squirrel who sends a reminder every nine seconds.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/duolingo-for-dogs/social-preview.jpg">
+<meta name="twitter:image:alt" content="Stay hero illustration">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="bone" viewBox="0 0 60 32"><path d="M10 4a7 7 0 0 1 7 6h26a7 7 0 1 1 7 6 7 7 0 1 1-7 6H17a7 7 0 1 1-7-6 7 7 0 0 1 0-12z"/></symbol>
+    <symbol id="flame" viewBox="0 0 40 40"><path d="M20 3c2 7 11 11 11 21a11 11 0 0 1-22 0c0-5 3-8 5-10 0 4 2 6 4 6-1-6 0-12 2-17z" fill="#FF7A2F"/><path d="M20 20c1 3 5 5 5 9a5 5 0 0 1-10 0c0-3 3-5 5-9z" fill="#FFD23F"/></symbol>
+    <symbol id="star" viewBox="0 0 20 20"><path d="M10 1.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L10 14.8l-5.2 2.8 1-5.8L1.5 7.7l5.9-.8z" fill="#FF7A2F"/></symbol>
+    <symbol id="check" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10" fill="#E3EBFF"/><path d="M5.5 10.5l3 3 6-6.5" fill="none" stroke="#2456D6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="squirrel" viewBox="0 0 64 64">
+      <path d="M44 58c12-4 18-16 14-28-3-9-12-12-17-8 6 1 9 7 7 13-2 7-7 10-7 10z" fill="#C9561A"/>
+      <ellipse cx="30" cy="44" rx="14" ry="13" fill="#FF7A2F"/>
+      <circle cx="26" cy="24" r="11" fill="#FF7A2F"/>
+      <path d="M18 16l-2-9 7 6zM30 14l3-8 2 9z" fill="#FF7A2F"/>
+      <ellipse cx="30" cy="47" rx="7" ry="8" fill="#FFE9DC"/>
+      <circle cx="22" cy="23" r="2.4" fill="#121829"/>
+      <circle cx="16" cy="28" r="1.8" fill="#121829"/>
+      <path d="M21 31c2 1 4 1 6 0" stroke="#121829" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="wrap">
+  <nav class="nav" aria-label="Main">
+    <a class="logo" href="#top" id="top">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><rect x="2" y="2" width="36" height="36" rx="11" fill="#2456D6"/><path d="M9 13c0-3 4-5 6-1l3 8-5 1c-3 0-4-5-4-8zM31 13c0-3-4-5-6-1l-3 8 5 1c3 0 4-5 4-8z" fill="#fff"/><circle cx="20" cy="26" r="3" fill="#FF7A2F"/></svg>
+      Stay
+    </a>
+    <div class="nav-links">
+      <a href="#path">How it works</a>
+      <a href="#reviews">Reviews</a>
+      <a href="#pricing">Pricing</a>
+      <a class="btn btn-primary" href="./demo.html">Try a lesson</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <span class="pill"><svg aria-hidden="true"><use href="#bone" fill="#2456D6"/></svg>Now with 6 words</span>
+      <h1>Your dog knows four words. We can get that to six.</h1>
+      <p class="sub">Stay is the language app for dogs. Five-minute lessons, a daily streak your dog will not remember, and Gerald, a squirrel who sends a reminder every nine seconds.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#pricing">Start your dog's streak</a>
+        <a class="btn btn-ghost" href="./demo.html">open the demo →</a>
+      </div>
+      <p class="fineprint">Free for one word a day. Owner must hold the phone.</p>
+    </div>
+    <div class="hero-art">
+      <div class="hero-frame"><img src="hero.webp" alt="A scruffy terrier wearing earbuds, sitting attentively on a cobalt backdrop next to an orange ball" width="1600" height="900"></div>
+      <div class="streak-card" aria-label="41-day streak">
+        <svg aria-hidden="true"><use href="#flame"/></svg>
+        <div><b>41 days</b><span>Streak. Dog unaware.</span></div>
+      </div>
+      <div class="gerald">
+        <div class="bubble">Lesson time. Also lesson time. It is lesson time.</div>
+        <svg aria-label="Gerald the squirrel" role="img"><use href="#squirrel"/></svg>
+      </div>
+    </div>
+  </header>
+</div>
+
+<section class="block" id="path">
+  <div class="wrap">
+    <div class="block-head">
+      <h2>A curriculum built around the attention span you have.</h2>
+      <p>Every Stay lesson runs five minutes, or until something moves outside.</p>
+    </div>
+    <div class="path">
+      <div class="stop left">
+        <div class="stop-card">
+          <span class="tag">Unit 1: Retention</span>
+          <h3>Streaks sized for a nine-second memory</h3>
+          <p>Most apps remind you once a day. Your dog forgets the reminder before it finishes. Gerald re-sends it every nine seconds, around the clock, from the window ledge.</p>
+        </div>
+        <div class="node"><svg aria-hidden="true"><use href="#flame"/></svg></div>
+      </div>
+      <div class="stop right">
+        <div class="node"><svg viewBox="0 0 44 44" aria-hidden="true"><rect x="6" y="9" width="32" height="22" rx="7" fill="#fff"/><path d="M14 31l-3 7 9-7z" fill="#fff"/><path d="M14 20h16" stroke="#FF7A2F" stroke-width="3.5" stroke-linecap="round"/></svg></div>
+        <div class="stop-card">
+          <span class="tag">Unit 2: Vocabulary</span>
+          <h3>One word, five languages</h3>
+          <p>Your household has been spelling out W-A-L-K for years. Stay teaches “walk” in Spanish, French, Portuguese, Korean and Pig Latin, so there is nowhere left to hide.</p>
+        </div>
+      </div>
+      <div class="stop left">
+        <div class="stop-card">
+          <span class="tag">Unit 3: Competition</span>
+          <h3>Leaderboards by fire hydrant</h3>
+          <p>Your dog is ranked against every dog who has visited the same hydrant this week. Rankings refresh on contact. The top dog is a beagle called Doug and nobody knows how.</p>
+        </div>
+        <div class="node"><svg viewBox="0 0 44 44" aria-hidden="true"><rect x="13" y="12" width="18" height="26" rx="4" fill="#fff"/><rect x="10" y="20" width="24" height="5" rx="2.5" fill="#fff"/><path d="M15 12a7 7 0 0 1 14 0z" fill="#fff"/><circle cx="22" cy="6" r="2.5" fill="#fff"/></svg></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="reviews" style="padding-top:24px">
+  <div class="wrap">
+    <div class="block-head">
+      <h2>Rated 4.9 by dogs who could find the screen.</h2>
+    </div>
+    <div class="reviews">
+      <figure class="review" style="margin:0">
+        <div class="stars" aria-label="5 out of 5"><svg><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg></div>
+        <blockquote>“I can now understand ‘walk’ in Portuguese, French and Korean. Nobody in this house has ever said it in Korean. I am ready anyway.”</blockquote>
+        <figcaption class="who"><img src="headshot-1.webp" alt="Biscuit, a golden retriever in a navy tie" width="320" height="320" loading="lazy"><div><b>Biscuit</b><span>Golden Retriever, Senior Fetch Analyst, Tulsa</span></div></figcaption>
+      </figure>
+      <figure class="review" style="margin:0">
+        <div class="stars" aria-label="5 out of 5"><svg><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg></div>
+        <blockquote>“Gerald told me my streak was in danger at 3:12 a.m. I barked for forty minutes. The streak survived. The neighbours filed a report.”</blockquote>
+        <figcaption class="who"><img src="headshot-2.webp" alt="Pepper, a border collie wearing a headset microphone" width="320" height="320" loading="lazy"><div><b>Pepper</b><span>Border Collie, Head of Herding Operations (Remote)</span></div></figcaption>
+      </figure>
+      <figure class="review" style="margin:0">
+        <div class="stars" aria-label="4 out of 5"><svg><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg><svg><use href="#star"/></svg></div>
+        <blockquote>“My vocabulary went from four words to six. One of the new ones is ‘vet’. I would like to return it.”</blockquote>
+        <figcaption class="who"><img src="headshot-3.webp" alt="Admiral Snuffles, a pug in a charcoal suit" width="320" height="320" loading="lazy"><div><b>Admiral Snuffles</b><span>Pug, Board Observer, Stay Series A</span></div></figcaption>
+      </figure>
+    </div>
+    <p class="rating-note">Ratings submitted by paw. Two were submitted by nose and have been counted.</p>
+  </div>
+</section>
+
+<section class="block" id="pricing" style="padding-top:24px">
+  <div class="wrap">
+    <div class="block-head">
+      <h2>Pick a plan. Your dog will not read this part.</h2>
+      <p>Billed to the human. Cancel any time, after Gerald has a word with you.</p>
+    </div>
+    <div class="tiers">
+      <div class="tier">
+        <h3>Pup</h3>
+        <div class="price">$0</div>
+        <p class="tl">One word a day, with ads for squeaky toys.</p>
+        <div class="bones" aria-label="Strength 1 of 3"><svg><use href="#bone" fill="#2456D6"/></svg><svg><use href="#bone" fill="#D9E1F4"/></svg><svg><use href="#bone" fill="#D9E1F4"/></svg></div>
+        <ul>
+          <li><svg aria-hidden="true"><use href="#check"/></svg>1 lesson per day</li>
+          <li><svg aria-hidden="true"><use href="#check"/></svg>5 bones of health</li>
+          <li><svg aria-hidden="true"><use href="#check"/></svg>Gerald, unmuted</li>
+        </ul>
+        <a class="btn btn-ghost" href="./demo.html">Start free</a>
+      </div>
+      <div class="tier hot">
+        <span class="flag">Most chewed</span>
+        <h3>Good Boy Plus</h3>
+        <div class="price">$12.99<small>/mo</small></div>
+        <p class="tl">Unlimited bones. Offline mode for car rides.</p>
+        <div class="bones" aria-label="Strength 2 of 3"><svg><use href="#bone" fill="#FF7A2F"/></svg><svg><use href="#bone" fill="#FF7A2F"/></svg><svg><use href="#bone" fill="#D9E1F4"/></svg></div>
+        <ul>
+          <li><svg aria-hidden="true"><use href="#check"/></svg>Unlimited lessons</li>
+          <li><svg aria-hidden="true"><use href="#check"/></svg>Offline mode, window down</li>
+          <li><svg aria-hidden="true"><use href="#check"/></svg>Streak Freeze (dog will not notice)</li>
+          <li><svg aria-hidden="true"><use href="#check"/></svg>Gerald, slightly quieter</li>
+        </ul>
+        <a class="btn btn-orange" href="./demo.html">Get Good Boy Plus</a>
+      </div>
+      <div class="tier">
+        <h3>Best Boy Family</h3>
+        <div class="price">$899<small>/yr</small></div>
+        <p class="tl">Up to six dogs. One cat seat, read-only.</p>
+        <div class="bones" aria-label="Strength 3 of 3"><svg><use href="#bone" fill="#2456D6"/></svg><svg><use href="#bone" fill="#2456D6"/></svg><svg><use href="#bone" fill="#2456D6"/></svg></div>
+        <ul>
+          <li><svg aria-hidden="true"><use href="#check"/></svg>6 dog profiles</li>
+          <li><svg aria-hidden="true"><use href="#check"/></svg>1 cat seat (will not log in)</li>
+          <li><svg aria-hidden="true"><use href="#check"/></svg>Quarterly vocabulary report for the vet</li>
+          <li><svg aria-hidden="true"><use href="#check"/></svg>Gerald, on retainer</li>
+        </ul>
+        <a class="btn btn-primary" href="./demo.html">Get the family plan</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" style="padding-top:24px">
+  <div class="wrap">
+    <div class="band">
+      <div>
+        <h2>Today's lesson is “¿Quién es un buen chico?”</h2>
+        <p>The answer is your dog. Your dog will still need four attempts. Try the lesson yourself first so you can supervise.</p>
+      </div>
+      <div class="band-right">
+        <a class="btn btn-orange" href="./demo.html">open the demo →</a>
+        <small>No account needed. Gerald already has your address.</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <footer>
+    <a href="/">← theworstaistudioever</a>
+    <span>Stay Learning Inc. Not affiliated with any owl. Six words is a ceiling, not a promise.</span>
+  </footer>
+</div>
+</body>
+</html>

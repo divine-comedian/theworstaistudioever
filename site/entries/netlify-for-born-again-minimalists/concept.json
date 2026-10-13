@@ -1,0 +1,130 @@
+{
+  "date": "2026-10-12",
+  "company": "Netlify",
+  "subject": "born-again minimalists",
+  "tagline": "Netlify for born-again minimalists",
+  "slug": "netlify-for-born-again-minimalists",
+  "product_name": "Shed",
+  "one_liner": "Continuous un-deployment for people who sold the couch and have told you about it twice.",
+  "brand_voice_notes": "Shed speaks like a hosting platform that has quietly adopted a monastic vow. Infrastructure vocabulary (deploys, previews, rollbacks, edge functions, build minutes) applied without irony to the removal of household objects. Calm, a little smug, never warm. Counts everything. Never says 'declutter journey', 'intentional living' or 'spark joy' except inside a joy score with two decimal places.",
+  "hero": {
+    "h1": "Every merge removes one possession.",
+    "sub": "Shed connects your Git repository to your apartment. Approve a pull request and a courier arrives within the hour to take something away. Rollbacks are not supported, by design and on principle.",
+    "primary_cta": "Connect your home"
+  },
+  "features": [
+    {
+      "title": "Deploy previews of absence",
+      "blurb": "Every pull request generates a preview URL of your living room without the item in it. Reviewers leave comments on the negative space. Median time to approval is four minutes, and nobody has ever requested changes."
+    },
+    {
+      "title": "Atomic declutters",
+      "blurb": "An object is either fully present or fully gone. There is no garage, no storage unit, no maybe box. The maybe box was a staging environment and we have shut it down."
+    },
+    {
+      "title": "Edge functions at the front door",
+      "blurb": "A function runs at your threshold and evaluates incoming gifts in under 50 ms. Scented candles from your aunt return 403 Forbidden. She receives a short, courteous email with a link to our documentation."
+    }
+  ],
+  "pricing_tiers": [
+    {
+      "name": "One Bowl",
+      "price": "$0/mo",
+      "tagline": "For people who own one bowl and bring it up.",
+      "perks": [
+        "1 un-deploy per day",
+        "Community forum access (read-only, posting adds clutter)",
+        "Shared courier, arrives eventually"
+      ]
+    },
+    {
+      "name": "The Monk",
+      "price": "$49/mo",
+      "tagline": "Most popular among the recently divorced.",
+      "perks": [
+        "Unlimited un-deploys",
+        "Build minutes billed against remaining possessions",
+        "Priority courier with soft-soled shoes",
+        "Joy scores to two decimal places"
+      ]
+    },
+    {
+      "name": "Nothing",
+      "price": "$2,400/mo",
+      "tagline": "At this tier we also remove the plan.",
+      "perks": [
+        "Dedicated empty room",
+        "SSO (single spoon onboarding)",
+        "99.99% vacancy SLA",
+        "Account manager who owns less than you"
+      ]
+    }
+  ],
+  "testimonials": [
+    {
+      "quote": "I owned 412 things in March. I own 31 now, and one of them is a framed screenshot of my Shed dashboard.",
+      "name": "Dana Okafor",
+      "title": "Former Collector of Commemorative Spoons, Portland"
+    },
+    {
+      "quote": "The bot opened a pull request to remove my mattress. I approved it at 2 a.m. I sleep on the floor now and I mention this at every party.",
+      "name": "Pieter Vandermolen",
+      "title": "Senior Floor Sleeper, Rotterdam"
+    },
+    {
+      "quote": "My wife and I disagreed about the piano, so we turned on branch protection. The piano is gone. The branch is also gone.",
+      "name": "Gil Hartmann",
+      "title": "Staff Owner of 9 Objects, Tucson"
+    }
+  ],
+  "demo_screen_concept": "The Shed deploy console. Left: the user's remaining possessions grouped by room (Kitchen, Bedroom, Living, Closet), each row with a joy score to two decimals, a last-touched date and a checkbox. Top: a giant thin counter of possessions remaining (47) against a target of 33, plus room filter tabs and a fake search. Select items to stage them, write a commit message, press Deploy, and a build log streams each removal step (courier dispatched, object wrapped, doorway cleared, ready) while the counter ticks down and the rows strike through. A Rollback button sits permanently disabled with an explanation on click.",
+  "design_direction": {
+    "style": "Monastic gallery minimalism, washi daylight mode. The page is staged as an almost-empty museum room that sells a hosting platform: vast whitespace, a washi-paper ground, hairline rules, museum wall labels instead of cards, and one celadon accent. Explicitly absent, because the last seven entries used them: clay shadows, silk threads, leg meters, exuvia outlines, LCD greens, parts diagrams, warning boxes, plum buttons, rhumb lines, cartouches, scale bars, wax seals, acorn marks, dot maps, status dots, terminal panels in the hero, name tags, punch cards, thermal tickets, matte dark mode, lime LEDs, conflict markers, gutter stripes. Also absent: dark backgrounds, glassmorphism, neon, gradients, drop shadows of any kind, rounded cards. Four motifs carry the page. (1) The wall label: features, testimonials and pricing tiers are small museum placards (title in serif, a mono catalogue line like 'Cat. no. 03 / removed 2026', body in light sans) hung on hairline rules with huge margins. (2) The empty plinth: a pale rectangle with a thin shadow line at its base, standing in for objects that have been shipped away. (3) The strikethrough inventory: lists of possessions set in light sans with a single celadon hairline through the removed ones. (4) The counter: one enormous thin numeral showing objects remaining, used once in the hero and once in the demo. Celadon #3E7C74 is rationed to the primary CTA, the strike line and the highlighted tier. Persimmon #B5482F appears only as the small round 'removed' seal. Corners 0. No shadows except the 1px plinth base.",
+    "palette": {
+      "name": "Washi and Celadon",
+      "primary": "#3E7C74",
+      "accent": "#B5482F",
+      "bg": "#F4F1EA",
+      "fg": "#2B2A27",
+      "muted": "#7A766C",
+      "ink": "#1C1B19"
+    },
+    "fonts": {
+      "display": "'Noto Serif JP', 'Iowan Old Style', Georgia, serif",
+      "body": "'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
+      "mono": "'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, monospace"
+    },
+    "archetype": "Developer platform landing page (hero, product proof, features, social proof, pricing) composed as a sparse gallery wall",
+    "motion_vocab": "Almost none. Sections fade in by opacity only, 400ms ease-out. Strikethrough lines draw left to right in 300ms. The hero counter counts down from 412 to 31 once on load. Everything respects prefers-reduced-motion.",
+    "hero_composition_notes": "Stacked and asymmetric. Top: small mono eyebrow, the h1 in Noto Serif JP 300 weight at clamp(40px, 6vw, 84px) across the left two-thirds, the sub and one celadon CTA plus a text link to the demo on the right third, aligned to the h1 baseline. Below: the wide hero photograph of a near-empty room, hung like a framed print with a museum wall label beneath it. Then a full-width strip: the giant thin counter '31' with 'objects remaining' beside a struck-through inventory list."
+  },
+  "images": {
+    "rationale": "Gallery-minimalist direction earns one wide hero photograph of an almost-empty room. Demo is a deploy console (list plus build log), so it gets no subject assets. Remaining budget goes to 3 testimonial headshots of the minimalists.",
+    "items": [
+      {
+        "role": "hero",
+        "file": "hero.webp",
+        "prompt": "Editorial interior photograph of an almost completely empty minimalist apartment room: pale washi-paper colored walls #F4F1EA, bare light oak floor, a single low wooden stool in the center, soft diffuse morning window light from the left, long quiet shadow, faint muted celadon green #3E7C74 tint in the shadows, lots of negative space, natural film grain, medium format. No people. No text, no letters, no numbers, no logos, no watermarks, no rendered UI screens.",
+        "attempts": 1
+      },
+      {
+        "role": "testimonial",
+        "file": "headshot-1.webp",
+        "prompt": "Deadpan corporate headshot, editorial photograph, head and shoulders, centered. A woman in her late thirties with close-cropped natural hair wearing a plain undyed linen shirt, neutral serious expression. Plain washi-paper off-white backdrop #F4F1EA, soft even diffuse light, muted desaturated palette with a hint of celadon green #3E7C74, natural skin texture, medium format. No text, no letters, no numbers, no logos, no watermarks, no rendered UI screens.",
+        "attempts": 1
+      },
+      {
+        "role": "testimonial",
+        "file": "headshot-2.webp",
+        "prompt": "Deadpan corporate headshot, editorial photograph, head and shoulders, centered. A tall gaunt Dutch man in his forties with a shaved head wearing a plain grey crewneck sweater, well rested and faintly smug. Plain washi-paper off-white backdrop #F4F1EA, soft even diffuse light, muted desaturated palette with a hint of celadon green #3E7C74, natural skin texture, medium format. No text, no letters, no numbers, no logos, no watermarks, no rendered UI screens.",
+        "attempts": 1
+      },
+      {
+        "role": "testimonial",
+        "file": "headshot-3.webp",
+        "prompt": "Deadpan corporate headshot, editorial photograph, head and shoulders, centered. A sunburnt man in his fifties with a trimmed grey beard wearing a plain black t-shirt, calm and slightly defensive. Plain washi-paper off-white backdrop #F4F1EA, soft even diffuse light, muted desaturated palette with a hint of celadon green #3E7C74, natural skin texture, medium format. No text, no letters, no numbers, no logos, no watermarks, no rendered UI screens.",
+        "attempts": 1
+      }
+    ]
+  }
+}
