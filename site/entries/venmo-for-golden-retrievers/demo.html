@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend+Mega:wght@700;800&family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #E39B2D;
+    --felt: #D4F03A;
+    --cream: #FFF8EC;
+    --fg: #1B1A17;
+    --muted: #6B6257;
+    --ink: #14130F;
+    --white: #FFFFFF;
+    --line: 3px solid var(--ink);
+    --shadow: 4px 4px 0 var(--ink);
+    --display: 'Lexend Mega', 'Arial Black', -apple-system, BlinkMacSystemFont, sans-serif;
+    --body: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--cream); color: var(--fg); font-family: var(--body); font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  button, input { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  .chrome { display: flex; justify-content: space-between; align-items: center; padding: 14px 24px; border-bottom: var(--line); background: var(--white); gap: 12px; }
+  .chrome a { font-weight: 700; color: var(--ink); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; font-size: 15px; }
+  .brand { display: flex; align-items: center; gap: 8px; font-family: var(--display); font-weight: 800; letter-spacing: -0.05em; font-size: 16px; }
+  .brand svg { width: 26px; height: 26px; }
+
+  .app { display: grid; grid-template-columns: 300px minmax(0, 1fr) 280px; gap: 28px; width: min(1240px, 100% - 32px); margin: 28px auto 60px; align-items: start; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    font-weight: 800; padding: 12px 18px; border: var(--line); border-radius: 999px;
+    background: var(--gold); color: var(--ink); box-shadow: var(--shadow); cursor: pointer;
+    transition: transform 120ms ease-out, box-shadow 120ms ease-out;
+  }
+  .btn:active { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--ink); }
+  .btn.felt { background: var(--felt); }
+  .btn.plain { background: var(--white); }
+
+  .tb { display: inline-flex; align-items: center; gap: 5px; font-weight: 800; font-variant-numeric: tabular-nums; font-size: 14px; padding: 2px 10px 2px 3px; background: var(--felt); border: 2px solid var(--ink); border-radius: 999px; white-space: nowrap; }
+  .tb svg { width: 17px; height: 17px; flex: none; }
+  .tb.out { background: var(--white); }
+
+  .card { background: var(--white); border: var(--line); border-radius: 14px; box-shadow: var(--shadow); }
+
+  /* wallet */
+  .wallet { padding: 22px; position: sticky; top: 20px; }
+  .me { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; }
+  .me .av { width: 56px; height: 56px; }
+  .me b { display: block; font-size: 18px; }
+  .me span { font-size: 14px; color: var(--muted); }
+  .balance { background: var(--gold); border: var(--line); border-radius: 12px; padding: 16px; margin-bottom: 18px; position: relative; overflow: hidden; }
+  .balance::after { content: ""; position: absolute; left: -10px; right: -10px; top: 50%; border-top: 3px solid rgba(255,255,255,.6); pointer-events: none; z-index: 0; }
+  .balance small, .balance .big { position: relative; z-index: 1; }
+  .balance .big span, .balance .big { text-shadow: 0 0 0 var(--gold); }
+  .balance small { display: block; font-size: 13px; font-weight: 700; }
+  .balance .big { font-family: var(--display); font-weight: 800; letter-spacing: -0.06em; font-size: 40px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .balance .stick { position: relative; z-index: 1; display: inline-block; margin-top: 8px; font-size: 13px; font-weight: 700; background: var(--cream); border: 2px solid var(--ink); border-radius: 999px; padding: 1px 10px; }
+  .wallet .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .wallet .note { margin: 18px 0 0; font-size: 13px; color: var(--muted); }
+
+  /* feed */
+  .feed-head { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .tabs { display: flex; gap: 6px; background: var(--white); border: var(--line); border-radius: 999px; padding: 4px; }
+  .tabs button { border: 0; background: transparent; padding: 7px 16px; border-radius: 999px; font-weight: 700; cursor: pointer; }
+  .tabs button[aria-selected="true"] { background: var(--ink); color: var(--cream); }
+  .search { position: relative; flex: 1 1 200px; max-width: 280px; }
+  .search input { width: 100%; padding: 10px 14px 10px 38px; border: var(--line); border-radius: 999px; background: var(--white); }
+  .search svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); width: 17px; height: 17px; }
+
+  .feed { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+  .item { display: grid; grid-template-columns: 52px 1fr auto; gap: 14px; padding: 16px; align-items: start; }
+  .item.new { animation: drop 220ms cubic-bezier(.3,1.5,.6,1); }
+  @keyframes drop { from { transform: translateY(-14px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .av { width: 52px; height: 52px; border-radius: 50%; border: 2px solid var(--ink); object-fit: cover; display: grid; place-items: center; font-weight: 800; font-size: 18px; background: var(--gold); flex: none; }
+  .who { font-size: 15.5px; }
+  .who b { font-weight: 800; }
+  .memo { margin: 2px 0 8px; font-size: 15.5px; }
+  .meta { display: flex; gap: 16px; align-items: center; font-size: 13px; color: var(--muted); }
+  .like { display: inline-flex; align-items: center; gap: 5px; border: 0; background: none; padding: 4px 2px; cursor: pointer; font-size: 13px; color: var(--muted); min-height: 32px; }
+  .like svg { width: 18px; height: 18px; }
+  .like[aria-pressed="true"] { color: var(--ink); font-weight: 800; }
+  .like[aria-pressed="true"] path { fill: var(--gold); }
+  .pending { font-size: 12px; font-weight: 800; border: 2px dashed var(--ink); border-radius: 999px; padding: 0 8px; color: var(--ink); background: var(--cream); }
+  .empty { padding: 28px; text-align: center; }
+  .empty p { margin: 0 0 14px; }
+
+  /* side */
+  .side { display: grid; gap: 20px; position: sticky; top: 20px; }
+  .side .card { padding: 18px; }
+  .side h2 { font-size: 16px; font-weight: 800; margin: 0 0 12px; }
+  .owed { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .owed li { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 14.5px; }
+  .owed .nm { display: flex; align-items: center; gap: 10px; }
+  .owed .av { width: 34px; height: 34px; font-size: 13px; }
+  .risk { background: var(--felt); }
+  .meter { height: 14px; border: 2px solid var(--ink); border-radius: 999px; background: var(--white); overflow: hidden; margin: 8px 0 6px; }
+  .meter i { display: block; height: 100%; width: 87%; background: var(--ink); }
+  .risk p { margin: 0; font-size: 13.5px; }
+
+  /* sheet */
+  .scrim { position: fixed; inset: 0; background: rgba(20,19,15,.5); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 40; }
+  .scrim.open { display: flex; }
+  .sheet { width: min(460px, 100%); background: var(--cream); border: var(--line); border-radius: 18px; box-shadow: 6px 6px 0 var(--ink); padding: 22px; animation: pop 200ms ease-out; max-height: calc(100dvh - 32px); overflow: auto; }
+  @keyframes pop { from { transform: translateY(16px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .sheet-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .sheet-top h2 { font-family: var(--display); font-weight: 800; letter-spacing: -0.06em; font-size: 20px; margin: 0; }
+  .x { width: 40px; height: 40px; border: var(--line); border-radius: 50%; background: var(--white); cursor: pointer; font-size: 20px; line-height: 1; }
+  .mode { display: grid; grid-template-columns: 1fr 1fr; border: var(--line); border-radius: 999px; overflow: hidden; margin-bottom: 18px; }
+  .mode button { border: 0; padding: 9px; background: var(--white); font-weight: 800; cursor: pointer; }
+  .mode button[aria-pressed="true"] { background: var(--gold); }
+  .lbl { display: block; font-weight: 700; font-size: 14px; margin: 0 0 8px; }
+  .dogs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .dogs button { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px 4px 4px; border: 2px solid var(--ink); border-radius: 999px; background: var(--white); cursor: pointer; font-weight: 600; font-size: 14px; }
+  .dogs button .av { width: 28px; height: 28px; font-size: 11px; border-width: 1.5px; }
+  .dogs button[aria-pressed="true"] { background: var(--felt); font-weight: 800; }
+  .stepper { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+  .stepper button { width: 44px; height: 44px; border: var(--line); border-radius: 50%; background: var(--white); font-size: 22px; font-weight: 800; cursor: pointer; }
+  .stepper output { font-family: var(--display); font-weight: 800; font-size: 34px; letter-spacing: -0.06em; min-width: 3ch; text-align: center; font-variant-numeric: tabular-nums; }
+  .stepper span { font-size: 14px; color: var(--muted); }
+  .sheet input[type=text] { width: 100%; padding: 12px 14px; border: var(--line); border-radius: 12px; background: var(--white); margin-bottom: 6px; }
+  .hint { font-size: 13px; color: var(--muted); margin: 0 0 18px; }
+  .err { font-size: 13.5px; font-weight: 700; color: #9E2B10; margin: -6px 0 14px; min-height: 1em; }
+  .sheet .send { width: 100%; font-size: 17px; }
+
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 140%); background: var(--ink); color: var(--cream); border: var(--line); border-radius: 14px; padding: 12px 18px; font-weight: 600; box-shadow: 4px 4px 0 var(--gold); transition: transform 220ms ease-out, visibility 0s linear 220ms; z-index: 50; max-width: calc(100% - 32px); visibility: hidden; }
+  .toast.show { transform: translate(-50%, 0); visibility: visible; transition: transform 220ms ease-out; }
+
+  @media (max-width: 1080px) {
+    .app { grid-template-columns: 280px minmax(0, 1fr); }
+    .side { grid-column: 1 / -1; position: static; grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 760px) {
+    .app { grid-template-columns: 1fr; margin-top: 16px; }
+    .wallet { position: static; }
+    .side { grid-template-columns: 1fr; }
+    .item { grid-template-columns: 44px 1fr; }
+    .item .av { width: 44px; height: 44px; }
+    .item .tb { grid-column: 2; justify-self: start; }
+    .search { max-width: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .item.new, .sheet { animation: none; }
+    .btn, .toast { transition: none; }
+    .btn:active { transform: none; }
+  }
+</style>
+<title>Ballpark — Venmo for golden retrievers — Demo</title>
+<meta name="description" content="Every golden retriever owes somebody a tennis ball. Ballpark is the payments app for golden retrievers. Split a stick, settle a debt, request your ball back from Murphy. Every transaction posts to a public feed, because no golden retriever has ever wanted privacy.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/venmo-for-golden-retrievers/demo.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Ballpark — Venmo for golden retrievers — Demo">
+<meta property="og:description" content="Every golden retriever owes somebody a tennis ball. Ballpark is the payments app for golden retrievers. Split a stick, settle a debt, request your ball back from Murphy. Every transaction posts to a public feed, because no golden retriever has ever wanted privacy.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/venmo-for-golden-retrievers/demo.html">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/venmo-for-golden-retrievers/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Worst AI Studio Ever logo">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Ballpark — Venmo for golden retrievers — Demo">
+<meta name="twitter:description" content="Every golden retriever owes somebody a tennis ball. Ballpark is the payments app for golden retrievers. Split a stick, settle a debt, request your ball back from Murphy. Every transaction posts to a public feed, because no golden retriever has ever wanted privacy.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/venmo-for-golden-retrievers/social-preview.jpg">
+<meta name="twitter:image:alt" content="The Worst AI Studio Ever logo">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ball" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="10.5" fill="#D4F03A" stroke="#14130F" stroke-width="2"/>
+    <path d="M4.2 5.4c3.4 2.8 3.4 10.4 0 13.2M19.8 5.4c-3.4 2.8-3.4 10.4 0 13.2" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="heart" viewBox="0 0 24 24">
+    <path d="M12 20.5s-8-4.9-8-11A4.5 4.5 0 0 1 12 6.6 4.5 4.5 0 0 1 20 9.5c0 6.1-8 11-8 11z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+  </symbol>
+</svg>
+
+<header class="chrome">
+  <a href="./index.html">← back to the pitch</a>
+  <span class="brand"><svg aria-hidden="true"><use href="#ball"/></svg>Ballpark</span>
+</header>
+
+<main class="app">
+  <aside class="wallet card" aria-label="Your wallet">
+    <div class="me">
+      <img class="av" src="headshot-1.webp" alt="Murphy" width="56" height="56">
+      <div><b>Murphy</b><span>@murphy-linden-ave · Very Good Boy</span></div>
+    </div>
+    <div class="balance">
+      <small>Ballpark balance</small>
+      <div class="big"><span id="bal">4</span> TB</div>
+      <span class="stick">+ 1 stick (disputed)</span>
+    </div>
+    <div class="actions">
+      <button class="btn" type="button" data-open="pay">Pay</button>
+      <button class="btn felt" type="button" data-open="request">Request</button>
+    </div>
+    <p class="note">One ball is currently held in your mouth and cannot be sent until you let go of it.</p>
+  </aside>
+
+  <section aria-label="Transaction feed">
+    <div class="feed-head">
+      <div class="tabs" role="tablist" aria-label="Feed filter">
+        <button role="tab" aria-selected="true" data-tab="all">Everyone</button>
+        <button role="tab" aria-selected="false" data-tab="friends">Friends</button>
+        <button role="tab" aria-selected="false" data-tab="mine">Mine</button>
+      </div>
+      <label class="search">
+        <span class="sr">Search dogs</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="#14130F" stroke-width="2.4"/><path d="M15.5 15.5L21 21" stroke="#14130F" stroke-width="2.4" stroke-linecap="round"/></svg>
+        <input id="q" type="text" placeholder="Search dogs" autocomplete="off">
+      </label>
+    </div>
+    <ul class="feed" id="feed" aria-live="polite"></ul>
+  </section>
+
+  <aside class="side">
+    <div class="card">
+      <h2>Owed to you</h2>
+      <ul class="owed" id="owed"></ul>
+    </div>
+    <div class="card risk">
+      <h2>Squirrel exposure</h2>
+      <div class="meter" role="meter" aria-valuenow="87" aria-valuemin="0" aria-valuemax="100" aria-label="Squirrel exposure 87 percent"><i></i></div>
+      <p>87% of your outstanding requests are with dogs who are near a tree. Settlement is not expected today.</p>
+    </div>
+  </aside>
+</main>
+
+<div class="scrim" id="scrim">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+    <div class="sheet-top">
+      <h2 id="sheet-title">Pay a dog</h2>
+      <button class="x" type="button" id="close" aria-label="Close">×</button>
+    </div>
+    <div class="mode">
+      <button type="button" data-mode="pay" aria-pressed="true">Pay</button>
+      <button type="button" data-mode="request" aria-pressed="false">Request</button>
+    </div>
+    <span class="lbl" id="dog-lbl">Which dog</span>
+    <div class="dogs" id="dogs" role="group" aria-labelledby="dog-lbl"></div>
+    <span class="lbl">How many balls</span>
+    <div class="stepper">
+      <button type="button" id="minus" aria-label="One fewer ball">−</button>
+      <output id="amt" aria-live="polite">1</output>
+      <span>TB</span>
+      <button type="button" id="plus" aria-label="One more ball">+</button>
+    </div>
+    <label class="lbl" for="memo">What for</label>
+    <input type="text" id="memo" maxlength="60" placeholder="u know what for">
+    <p class="hint">Memos are public. Every dog you have sniffed will read it.</p>
+    <p class="err" id="err" role="alert"></p>
+    <button class="btn send" type="button" id="send">Pay 1 TB</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function () {
+  var AV = {
+    Murphy: 'headshot-1.webp',
+    Penny: 'headshot-2.webp',
+    Cooper: 'headshot-3.webp',
+    Biscuit: 'avatar-biscuit.webp'
+  };
+  var FRIENDS = ['Biscuit', 'Penny', 'Cooper', 'Rosie'];
+  var DOGS = ['Biscuit', 'Penny', 'Cooper', 'Rosie', 'Duke', 'Maple', 'Sunny'];
+  var feed = [
+    { from: 'Murphy', to: 'Biscuit', kind: 'paid', amt: '1', memo: 'u know what for', when: '2 sniffs ago', likes: 4 },
+    { from: 'Penny', to: 'Duke', kind: 'requested', amt: '½', memo: 'the stick. THE stick.', when: '9 min ago', likes: 11 },
+    { from: 'Cooper', to: "Cooper's owner", kind: 'paid', amt: '1', memo: 'returning ball (again)', when: '12 min ago', likes: 2 },
+    { from: 'Rosie', to: 'Duke', kind: 'paid', amt: '0', memo: 'stick (see attached stick)', when: '40 min ago', likes: 23 },
+    { from: 'Biscuit', to: 'Murphy', kind: 'paid', amt: '1', memo: 'this ball', when: '1 hr ago', likes: 1 },
+    { from: 'Maple', to: 'Sunny', kind: 'paid', amt: '3', memo: 'for being at the door when I got home', when: '2 hr ago', likes: 9 },
+    { from: 'Duke', to: 'Penny', kind: 'requested', amt: '2', memo: 'defamation', when: '3 hr ago', likes: 31 },
+    { from: 'Sunny', to: 'the mailman', kind: 'requested', amt: '40', memo: 'trespass', when: 'yesterday', likes: 0 },
+    { from: 'Murphy', to: 'Biscuit', kind: 'paid', amt: '1', memo: 'u know what for', when: 'yesterday', likes: 3 }
+  ];
+  var owed = [
+    { dog: 'Biscuit', amt: '9', note: 'probably' },
+    { dog: 'Duke', amt: '1', note: '' },
+    { dog: 'Penny', amt: '½', note: '' }
+  ];
+
+  var tab = 'all', q = '', mode = 'pay', pick = 'Biscuit', amount = 1, balance = 4;
+  var feedEl = document.getElementById('feed');
+
+  function avatar(name, cls) {
+    var el;
+    if (AV[name]) {
+      el = document.createElement('img');
+      el.src = AV[name];
+      el.alt = name;
+      el.width = 52; el.height = 52;
+      el.loading = 'lazy';
+    } else {
+      el = document.createElement('span');
+      el.textContent = name.charAt(0).toUpperCase();
+      el.setAttribute('aria-hidden', 'true');
+      var hues = ['#E39B2D', '#D4F03A', '#F2C77A', '#FFFFFF'];
+      el.style.background = hues[name.length % hues.length];
+    }
+    el.className = 'av' + (cls ? ' ' + cls : '');
+    return el;
+  }
+  function ballPill(text, out) {
+    var s = document.createElement('span');
+    s.className = 'tb' + (out ? ' out' : '');
+    s.innerHTML = '<svg aria-hidden="true"><use href="#ball"/></svg>';
+    s.appendChild(document.createTextNode(text));
+    return s;
+  }
+
+  function visible(it) {
+    if (tab === 'friends' && FRIENDS.indexOf(it.from) < 0 && FRIENDS.indexOf(it.to) < 0) return false;
+    if (tab === 'mine' && it.from !== 'Murphy' && it.to !== 'Murphy') return false;
+    if (q) {
+      var hay = (it.from + ' ' + it.to + ' ' + it.memo).toLowerCase();
+      if (hay.indexOf(q) < 0) return false;
+    }
+    return true;
+  }
+
+  function render(newest) {
+    feedEl.textContent = '';
+    var shown = feed.filter(visible);
+    if (!shown.length) {
+      var li = document.createElement('li');
+      li.className = 'card empty';
+      li.innerHTML = '<p>No dog matches that. Either nobody owes them anything or they have been off the grid since the last squirrel.</p>';
+      var b = document.createElement('button');
+      b.className = 'btn plain'; b.type = 'button'; b.textContent = 'Clear search';
+      b.addEventListener('click', function () { document.getElementById('q').value = ''; q = ''; render(); });
+      li.appendChild(b);
+      feedEl.appendChild(li);
+      return;
+    }
+    shown.forEach(function (it) {
+      var li = document.createElement('li');
+      li.className = 'card item' + (it === newest ? ' new' : '');
+      li.appendChild(avatar(it.from));
+      var body = document.createElement('div');
+      var who = document.createElement('div');
+      who.className = 'who';
+      who.innerHTML = '<b></b> ' + it.kind + (it.kind === 'requested' ? ' from ' : ' ') + '<b></b>';
+      who.children[0].textContent = it.from;
+      who.children[1].textContent = it.to;
+      var memo = document.createElement('div');
+      memo.className = 'memo';
+      memo.textContent = it.memo;
+      var meta = document.createElement('div');
+      meta.className = 'meta';
+      var t = document.createElement('span'); t.textContent = it.when;
+      meta.appendChild(t);
+      var like = document.createElement('button');
+      like.type = 'button'; like.className = 'like';
+      like.setAttribute('aria-pressed', it.liked ? 'true' : 'false');
+      like.setAttribute('aria-label', 'Like, ' + it.likes + ' likes');
+      like.innerHTML = '<svg aria-hidden="true"><use href="#heart"/></svg><span></span>';
+      like.lastChild.textContent = it.likes;
+      like.addEventListener('click', function () {
+        it.liked = !it.liked;
+        it.likes += it.liked ? 1 : -1;
+        like.setAttribute('aria-pressed', it.liked ? 'true' : 'false');
+        like.setAttribute('aria-label', 'Like, ' + it.likes + ' likes');
+        like.lastChild.textContent = it.likes;
+      });
+      meta.appendChild(like);
+      if (it.pending) {
+        var p = document.createElement('span'); p.className = 'pending'; p.textContent = 'Pending: squirrel';
+        meta.appendChild(p);
+      }
+      body.appendChild(who); body.appendChild(memo); body.appendChild(meta);
+      li.appendChild(body);
+      var sign = it.kind === 'paid' && it.from === 'Murphy' ? '−' : (it.kind === 'paid' && it.to === 'Murphy' ? '+' : '');
+      li.appendChild(ballPill(sign + it.amt, it.kind === 'requested'));
+      feedEl.appendChild(li);
+    });
+  }
+
+  function renderOwed() {
+    var ul = document.getElementById('owed');
+    ul.textContent = '';
+    owed.forEach(function (o) {
+      var li = document.createElement('li');
+      var nm = document.createElement('span'); nm.className = 'nm';
+      nm.appendChild(avatar(o.dog));
+      var tx = document.createElement('span'); tx.textContent = o.dog + (o.note ? ' (' + o.note + ')' : '');
+      nm.appendChild(tx);
+      li.appendChild(nm);
+      li.appendChild(ballPill(o.amt));
+      ul.appendChild(li);
+    });
+  }
+
+  document.querySelectorAll('[data-tab]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      tab = b.getAttribute('data-tab');
+      document.querySelectorAll('[data-tab]').forEach(function (x) { x.setAttribute('aria-selected', x === b ? 'true' : 'false'); });
+      render();
+    });
+  });
+  document.getElementById('q').addEventListener('input', function (e) { q = e.target.value.trim().toLowerCase(); render(); });
+
+  /* sheet */
+  var scrim = document.getElementById('scrim');
+  var sendBtn = document.getElementById('send');
+  var errEl = document.getElementById('err');
+  var lastFocus = null;
+
+  function syncSheet() {
+    document.getElementById('sheet-title').textContent = mode === 'pay' ? 'Pay a dog' : 'Request from a dog';
+    document.querySelectorAll('[data-mode]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-mode') === mode ? 'true' : 'false'); });
+    document.getElementById('amt').textContent = amount;
+    sendBtn.textContent = (mode === 'pay' ? 'Pay ' : 'Request ') + amount + ' TB';
+    var dogs = document.getElementById('dogs');
+    dogs.textContent = '';
+    DOGS.forEach(function (d) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-pressed', d === pick ? 'true' : 'false');
+      var a = avatar(d); a.width = 28; a.height = 28;
+      b.appendChild(a);
+      b.appendChild(document.createTextNode(d));
+      b.addEventListener('click', function () { pick = d; syncSheet(); });
+      dogs.appendChild(b);
+    });
+  }
+  function openSheet(m) {
+    mode = m; amount = 1; errEl.textContent = '';
+    document.getElementById('memo').value = '';
+    lastFocus = document.activeElement;
+    syncSheet();
+    scrim.classList.add('open');
+    document.getElementById('close').focus();
+  }
+  function closeSheet() {
+    scrim.classList.remove('open');
+    if (lastFocus) lastFocus.focus();
+  }
+  document.querySelectorAll('[data-open]').forEach(function (b) {
+    b.addEventListener('click', function () { openSheet(b.getAttribute('data-open')); });
+  });
+  document.querySelectorAll('[data-mode]').forEach(function (b) {
+    b.addEventListener('click', function () { mode = b.getAttribute('data-mode'); errEl.textContent = ''; syncSheet(); });
+  });
+  document.getElementById('close').addEventListener('click', closeSheet);
+  scrim.addEventListener('click', function (e) { if (e.target === scrim) closeSheet(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && scrim.classList.contains('open')) closeSheet(); });
+  document.getElementById('minus').addEventListener('click', function () { amount = Math.max(1, amount - 1); errEl.textContent = ''; syncSheet(); });
+  document.getElementById('plus').addEventListener('click', function () { amount = Math.min(40, amount + 1); errEl.textContent = ''; syncSheet(); });
+
+  var toastEl = document.getElementById('toast'), toastT;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastT);
+    toastT = setTimeout(function () { toastEl.classList.remove('show'); }, 3800);
+  }
+
+  sendBtn.addEventListener('click', function () {
+    if (mode === 'pay' && amount > balance) {
+      errEl.textContent = 'You have ' + balance + ' TB. Lower the amount, or request some from Biscuit, who owes you 9.';
+      return;
+    }
+    var memo = document.getElementById('memo').value.trim() || 'u know what for';
+    var item = { from: 'Murphy', to: pick, kind: mode === 'pay' ? 'paid' : 'requested', amt: String(amount), memo: memo, when: 'just now', likes: 0 };
+    if (mode === 'request' && pick === 'Biscuit') {
+      item = { from: 'Murphy', to: pick, kind: 'requested', amt: String(amount), memo: memo, when: 'just now', likes: 0, pending: true };
+      toast('Squirrel detected near Biscuit. Settlement pending.');
+    } else if (mode === 'pay') {
+      balance -= amount;
+      document.getElementById('bal').textContent = balance;
+      toast('Paid ' + pick + ' ' + amount + ' TB. The whole park has been notified.');
+    } else {
+      toast('Requested ' + amount + ' TB from ' + pick + '. ' + pick + ' wagged, which is not a yes.');
+    }
+    feed.unshift(item);
+    if (tab === 'friends' && FRIENDS.indexOf(pick) < 0) tab = 'all';
+    document.querySelectorAll('[data-tab]').forEach(function (x) { x.setAttribute('aria-selected', x.getAttribute('data-tab') === tab ? 'true' : 'false'); });
+    closeSheet();
+    render(item);
+  });
+
+  render();
+  renderOwed();
+})();
+</script>
+</body>
+</html>

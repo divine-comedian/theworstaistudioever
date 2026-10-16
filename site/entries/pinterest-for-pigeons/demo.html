@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#4B3F8F; --accent:#E2574C; --accent-deep:#C23E31; --bg:#EDEDEA; --fg:#23232A;
+  --muted:#5F5E66; --ink:#18181D; --green:#2E8B6E; --crumb:#D9B98A; --card:#FFFFFF; --line:#DCDCD7;
+  --sheen:linear-gradient(115deg,#4B3F8F 0%,#5B4FA6 30%,#2E8B6E 70%,#3FA383 100%);
+  --display:'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --body:'Work Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+:focus-visible{outline:3px solid var(--primary);outline-offset:2px;border-radius:12px}
+img{display:block;max-width:100%}
+
+.bar{position:sticky;top:0;z-index:10;background:rgba(237,237,234,.96);border-bottom:1px solid var(--line)}
+.bar-row{display:flex;align-items:center;gap:14px;padding:12px 20px}
+.back{font-size:14px;color:var(--muted);text-decoration:none;white-space:nowrap}
+.back:hover{color:var(--ink)}
+.logo{display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:800;font-size:22px;color:var(--ink)}
+.logo svg{width:30px;height:30px}
+.search{flex:1;display:flex;align-items:center;gap:10px;height:46px;padding:0 18px;border-radius:999px;background:#E1E1DC}
+.search svg{width:18px;height:18px;color:var(--muted);flex:none}
+.search input{flex:1;border:0;background:none;font:inherit;color:var(--ink);outline:none;min-width:0}
+.me{width:40px;height:40px;border-radius:50%;overflow:hidden;flex:none}
+.me img{width:100%;height:100%;object-fit:cover}
+.chips{display:flex;gap:8px;padding:2px 20px 14px;overflow-x:auto;scrollbar-width:none}
+.chip-btn{flex:none;height:40px;padding:0 18px;border-radius:999px;background:#E1E1DC;font-weight:600;font-size:15px;color:var(--ink);transition:background .15s ease}
+.chip-btn:hover{background:#D5D5CF}
+.chip-btn[aria-pressed="true"]{background:var(--sheen);color:#fff}
+
+.status{padding:18px 20px 0;font-size:14px;color:var(--muted)}
+.feed{columns:5 220px;column-gap:16px;padding:16px 20px 60px}
+.pin{break-inside:avoid;margin-bottom:22px}
+.pin-media{position:relative;border-radius:18px;overflow:hidden;background:#ddd;cursor:zoom-in}
+.pin-media img{width:100%;height:auto}
+.pin-media .art{display:grid;place-items:center}
+.pin-media .art svg{width:100%;height:100%;display:block}
+.perch{position:absolute;top:10px;right:10px;height:40px;padding:0 16px;border-radius:999px;background:var(--accent-deep);color:#fff;font-family:var(--display);font-weight:600;font-size:15px;opacity:0;transition:opacity .15s ease,transform .15s ease}
+.perch:active{transform:scale(.96)}
+.pin-media:hover .perch,.pin-media:focus-within .perch,.perch.on{opacity:1}
+.perch.on{background:var(--ink)}
+.spike{position:absolute;left:10px;top:10px;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.92);color:var(--ink)}
+.spike.high{background:var(--ink);color:#fff}
+.pin-title{margin-top:8px;padding:0 4px;font-family:var(--display);font-weight:600;font-size:16px;line-height:1.25;color:var(--ink)}
+.pin-sub{padding:2px 4px 0;font-size:13px;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.meter{display:inline-flex;gap:2px;vertical-align:middle}
+.meter i{width:5px;height:5px;border-radius:50%;background:#CFCFC9}
+.meter i.f{background:#B88A4A}
+.empty{display:none;padding:60px 20px;text-align:center;color:var(--muted)}
+.empty b{display:block;font-family:var(--display);font-size:22px;color:var(--ink)}
+
+.scrim{position:fixed;inset:0;background:rgba(24,24,29,.55);display:none;align-items:center;justify-content:center;z-index:40;padding:20px}
+.scrim.open{display:flex}
+.modal{background:var(--card);border-radius:24px;width:min(440px,100%);max-height:90vh;overflow:auto;padding:24px;animation:pop .2s ease-out}
+@keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.modal{animation:none}}
+.modal h2{font-family:var(--display);font-size:24px;font-weight:700;color:var(--ink)}
+.modal .x{float:right;width:40px;height:40px;border-radius:50%;background:var(--bg);font-size:20px;line-height:1}
+.boards{margin-top:16px;list-style:none}
+.boards button{width:100%;display:flex;align-items:center;gap:12px;padding:10px;border-radius:14px;text-align:left}
+.boards button:hover{background:var(--bg)}
+.boards .cv{width:52px;height:52px;border-radius:12px;flex:none;background-size:cover;background-position:center}
+.boards b{display:block;font-weight:600;color:var(--ink)}
+.boards span{font-size:13px;color:var(--muted)}
+.boards .saved b::after{content:"  Saved";font-weight:500;color:var(--green)}
+.newboard{margin-top:12px;display:flex;gap:8px}
+.newboard input{flex:1;height:44px;border-radius:999px;border:1px solid var(--line);padding:0 16px;font:inherit}
+.newboard button{height:44px;padding:0 18px;border-radius:999px;background:var(--ink);color:#fff;font-weight:600}
+
+.sheet{width:min(860px,100%);display:grid;grid-template-columns:1fr 1fr;gap:0;padding:0;overflow:hidden}
+.sheet .left{background:#ddd}
+.sheet .left img,.sheet .left .art{width:100%;height:100%;object-fit:cover;min-height:340px;display:grid;place-items:center}
+.sheet .right{padding:24px}
+.sheet dl{margin-top:16px;display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:15px}
+.sheet dt{color:var(--muted)}
+.sheet dd{color:var(--ink);font-weight:500}
+.sheet .note{margin-top:16px;padding:14px;border-radius:14px;background:var(--bg);font-size:14px}
+.sheet .acts{margin-top:18px;display:flex;gap:8px;flex-wrap:wrap}
+.btn{height:46px;padding:0 20px;border-radius:999px;font-family:var(--display);font-weight:600}
+.btn.coral{background:var(--accent-deep);color:#fff}
+.btn.quiet{background:var(--bg);color:var(--ink)}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:999px;font-weight:500;opacity:0;transition:opacity .2s ease,transform .2s ease;z-index:60;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%)}
+
+@media (max-width:700px){
+  .logo span{display:none}
+  .back{font-size:13px}
+  .feed{columns:2;column-gap:10px;padding:12px 10px 60px}
+  .perch{opacity:1;height:34px;padding:0 12px;font-size:13px}
+  .sheet{grid-template-columns:1fr}
+  .sheet .left img,.sheet .left .art{min-height:220px;max-height:300px}
+}
+</style>
+<title>Ledge. — Pinterest for pigeons — Demo</title>
+<meta name="description" content="Every good ledge, saved for later. Ledge. is the visual discovery board for city pigeons. Pin the windowsills, food-court floors and bronze generals worth coming back to. 41 million perches catalogued across 6 cities, most of them in Rome.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/pinterest-for-pigeons/demo.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Ledge. — Pinterest for pigeons — Demo">
+<meta property="og:description" content="Every good ledge, saved for later. Ledge. is the visual discovery board for city pigeons. Pin the windowsills, food-court floors and bronze generals worth coming back to. 41 million perches catalogued across 6 cities, most of them in Rome.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/pinterest-for-pigeons/demo.html">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/pinterest-for-pigeons/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Worst AI Studio Ever logo">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Ledge. — Pinterest for pigeons — Demo">
+<meta name="twitter:description" content="Every good ledge, saved for later. Ledge. is the visual discovery board for city pigeons. Pin the windowsills, food-court floors and bronze generals worth coming back to. 41 million perches catalogued across 6 cities, most of them in Rome.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/pinterest-for-pigeons/social-preview.jpg">
+<meta name="twitter:image:alt" content="The Worst AI Studio Ever logo">
+</head>
+<body>
+
+<header class="bar">
+  <div class="bar-row">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <div class="logo"><svg viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="17" fill="#C23E31"/><path d="M17 9v10M17 19l-6 6M17 19l6 6M17 19v7" stroke="#fff" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg><span>Ledge.</span></div>
+    <label class="search">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="M14 14l4 4" stroke-linecap="round"/></svg>
+      <input id="q" type="search" placeholder="Search perches, crumbs, generals" aria-label="Search perches">
+    </label>
+    <div class="me" title="Signed in as Gary"><img src="headshot-1.webp" alt="Your profile: Gary" width="40" height="40"></div>
+  </div>
+  <div class="chips" role="toolbar" aria-label="Filter the feed">
+    <button class="chip-btn" data-f="all" aria-pressed="true">All</button>
+    <button class="chip-btn" data-f="ledge" aria-pressed="false">Ledges</button>
+    <button class="chip-btn" data-f="statue" aria-pressed="false">Statues</button>
+    <button class="chip-btn" data-f="crumbs" aria-pressed="false">Crumbs</button>
+    <button class="chip-btn" data-f="shoulder" aria-pressed="false">Shoulders</button>
+    <button class="chip-btn" data-f="spiked" aria-pressed="false">Spiked</button>
+  </div>
+</header>
+
+<p class="status" id="status" aria-live="polite"></p>
+<main class="feed" id="feed"></main>
+<div class="empty" id="empty"><b>No perches match that.</b>Try a broader search, like "bread" or "any flat surface".</div>
+
+<div class="scrim" id="saveScrim" role="dialog" aria-modal="true" aria-labelledby="saveTitle">
+  <div class="modal">
+    <button class="x" data-close aria-label="Close">×</button>
+    <h2 id="saveTitle">Save to roost</h2>
+    <ul class="boards" id="boards"></ul>
+    <form class="newboard" id="newboard">
+      <input id="newname" placeholder="New roost board name" aria-label="New roost board name">
+      <button type="submit">Create</button>
+    </form>
+  </div>
+</div>
+
+<div class="scrim" id="pinScrim" role="dialog" aria-modal="true" aria-labelledby="pinTitle">
+  <div class="modal sheet">
+    <div class="left" id="pinArt"></div>
+    <div class="right">
+      <button class="x" data-close aria-label="Close">×</button>
+      <h2 id="pinTitle"></h2>
+      <dl id="pinFacts"></dl>
+      <p class="note" id="pinNote"></p>
+      <div class="acts">
+        <button class="btn coral" id="pinPerch">Perch</button>
+        <button class="btn quiet" id="pinLater">Sit later</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+var ART = {
+  shoulder: '<svg viewBox="0 0 160 160"><rect width="160" height="160" fill="#D7DCE8"/><path d="M20 160c4-46 36-62 60-62s56 16 60 62z" fill="#3C4A6B"/><circle cx="80" cy="64" r="26" fill="#E8C3A0"/><rect x="52" y="86" width="56" height="14" rx="6" fill="#E6B655"/><path d="M118 104c4-14 18-14 22-6l-4 4c-4-4-10-2-12 4z" fill="#7C7B86"/></svg>',
+  shelter: '<svg viewBox="0 0 160 200"><rect width="160" height="200" fill="#C9D3D6"/><rect y="120" width="160" height="80" fill="#B7BDBF"/><rect x="14" y="70" width="132" height="8" rx="2" fill="#5F6668"/><rect x="20" y="78" width="5" height="100" fill="#5F6668"/><rect x="135" y="78" width="5" height="100" fill="#5F6668"/><rect x="25" y="82" width="110" height="70" fill="#E3EAEC" opacity=".7"/><ellipse cx="60" cy="64" rx="12" ry="8" fill="#7C7B86"/><ellipse cx="96" cy="64" rx="12" ry="8" fill="#6E6D7A"/></svg>',
+  fountain: '<svg viewBox="0 0 160 140"><rect width="160" height="140" fill="#D9E6E3"/><ellipse cx="80" cy="112" rx="66" ry="16" fill="#A9B8B4"/><ellipse cx="80" cy="108" rx="56" ry="10" fill="#7FB3C2"/><rect x="72" y="50" width="16" height="58" fill="#A9B8B4"/><ellipse cx="80" cy="50" rx="30" ry="7" fill="#A9B8B4"/><path d="M80 44c-6-14 6-22 0-34" stroke="#7FB3C2" stroke-width="4" fill="none"/></svg>',
+  bin: '<svg viewBox="0 0 160 190"><rect width="160" height="190" fill="#E7E0D3"/><rect x="44" y="60" width="72" height="110" rx="6" fill="#2E5E4E"/><rect x="38" y="52" width="84" height="12" rx="4" fill="#244A3E"/><path d="M60 52c4-14 30-14 34-2" fill="#F2D27A"/><circle cx="70" cy="46" r="3" fill="#D9B98A"/><circle cx="98" cy="44" r="2" fill="#D9B98A"/></svg>',
+  floor: '<svg viewBox="0 0 160 120"><rect width="160" height="120" fill="#EFE7D8"/><g stroke="#DDD2BE" stroke-width="2"><path d="M0 40h160M0 80h160M40 0v120M80 0v120M120 0v120"/></g><circle cx="30" cy="60" r="4" fill="#C98A3E"/><circle cx="62" cy="96" r="3" fill="#D9B98A"/><ellipse cx="104" cy="52" rx="10" ry="4" fill="#E6B655"/><circle cx="132" cy="90" r="5" fill="#D9B98A"/><circle cx="90" cy="20" r="2" fill="#D9B98A"/></svg>',
+  horse: '<svg viewBox="0 0 160 200"><rect width="160" height="200" fill="#E1E4DE"/><rect x="30" y="150" width="100" height="50" fill="#B9B4A8"/><path d="M40 150l10-50c6-20 50-26 62-6l10 56h-14l-6-36h-40l-8 36z" fill="#4E6B5E"/><path d="M104 96l18-30 10 6-16 30z" fill="#4E6B5E"/><circle cx="76" cy="66" r="14" fill="#5E7D6F"/><ellipse cx="78" cy="48" rx="10" ry="7" fill="#7C7B86"/></svg>',
+  rail: '<svg viewBox="0 0 160 160"><rect width="160" height="160" fill="#DFDCEB"/><rect x="0" y="80" width="160" height="8" fill="#3C3B44"/><g fill="#3C3B44"><rect x="16" y="88" width="4" height="72"/><rect x="56" y="88" width="4" height="72"/><rect x="96" y="88" width="4" height="72"/><rect x="136" y="88" width="4" height="72"/></g><ellipse cx="44" cy="72" rx="12" ry="8" fill="#7C7B86"/><ellipse cx="70" cy="72" rx="12" ry="8" fill="#6E6D7A"/><ellipse cx="96" cy="72" rx="12" ry="8" fill="#7C7B86"/></svg>'
+};
+
+var PINS = [
+  {id:1,t:'Garibaldi, hat brim, north side',c:'statue',img:'pin-statue.webp',saves:2300000,crumb:1,spike:'low',city:'Rome',note:'Best between 6 and 9 a.m., before the tour groups and after the street sweeper.'},
+  {id:2,t:'Croissant, abandoned, table 4',c:'crumbs',img:'pin-crumbs.webp',saves:88412,crumb:9,spike:'low',city:'Paris',note:'The owner of this croissant has gone to the bathroom. Average return time is 4 minutes.'},
+  {id:3,t:'Sunny sill, 3rd floor, geraniums',c:'ledge',img:'pin-ledge.webp',saves:41203,crumb:2,spike:'high',city:'Lyon',note:'Building management has ordered spikes. Delivery expected within the reminder window.'},
+  {id:4,t:'Man eating a breakfast burrito',c:'shoulder',art:'shoulder',ratio:'1/1',saves:9020,crumb:8,spike:'low',city:'New York',note:'He has not noticed you yet. He will.'},
+  {id:5,t:'Bus shelter roof, route 38',c:'ledge',art:'shelter',ratio:'4/5',saves:12877,crumb:0,spike:'low',city:'London',note:'Warm in winter from the heater nobody inside can feel.'},
+  {id:6,t:'Trevi rim, the dry part',c:'statue',art:'fountain',ratio:'8/7',saves:610554,crumb:3,spike:'low',city:'Rome',note:'Coins are not edible. 11 of our users have confirmed this independently.'},
+  {id:7,t:'Bin lid outside the chip shop',c:'crumbs',art:'bin',ratio:'16/19',saves:233019,crumb:10,spike:'low',city:'Leeds',note:'Highest crumb density on the platform. Seagull presence: unresolved.'},
+  {id:8,t:'Food court floor, near the pretzel place',c:'crumbs',art:'floor',ratio:'4/3',saves:57110,crumb:7,spike:'low',city:'Chicago',note:'Indoor. Requires getting in through the automatic doors behind a stroller.'},
+  {id:9,t:'General on horse, horse ear',c:'statue',art:'horse',ratio:'4/5',saves:301876,crumb:0,spike:'high',city:'Madrid',note:'The general was netted in March. The horse was not, yet.'},
+  {id:10,t:'Railing outside the bakery',c:'ledge',art:'rail',ratio:'1/1',saves:19440,crumb:6,spike:'high',city:'Lisbon',note:'Pamela Rock-Dove has saved this 61 times and has never landed on it.'},
+  {id:11,t:'Tourist with a gelato, left shoulder',c:'shoulder',art:'shoulder',ratio:'1/1',saves:4471,crumb:6,spike:'low',city:'Florence',note:'Right shoulder is taken by the camera strap. Plan accordingly.'},
+  {id:12,t:'Café table, second croissant',c:'crumbs',img:'pin-crumbs.webp',saves:3011,crumb:9,spike:'low',city:'Paris',note:'Same croissant as table 4. Our deduplication team is looking into it.'}
+];
+
+var BOARDS = [
+  {n:'Ledges I Respect',k:412,cv:'pin-ledge.webp'},
+  {n:'Bread Adjacent',k:1288,cv:'pin-crumbs.webp'},
+  {n:'Generals on Horses',k:57,cv:'pin-statue.webp'},
+  {n:'Shoulders of Men Who Are Eating',k:9}
+];
+
+var state = {f:'all', q:'', saved:{}, current:null};
+var feed = document.getElementById('feed');
+
+function fmt(n){ return n >= 1000000 ? (n/1000000).toFixed(1).replace('.0','') + 'M' : n >= 1000 ? Math.round(n/1000) + 'k' : String(n); }
+function meter(v){ var s=''; for(var i=0;i<5;i++){ s += '<i class="' + (i < Math.round(v/2) ? 'f' : '') + '"></i>'; } return '<span class="meter" aria-label="Crumb density ' + v + ' of 10">' + s + '</span>'; }
+function hydrate(root){ root.querySelectorAll('img[data-pic]').forEach(function(i){ i.src = i.dataset.pic; i.removeAttribute('data-pic'); }); }
+function media(p){ return p.img ? '<img data-pic="' + p.img + '" alt="' + p.t + '" width="600" height="800" loading="lazy">' : '<div class="art" style="aspect-ratio:' + p.ratio + '" role="img" aria-label="' + p.t + '">' + ART[p.art] + '</div>'; }
+
+function render(){
+  var q = state.q.toLowerCase();
+  var list = PINS.filter(function(p){
+    var okF = state.f === 'all' || (state.f === 'spiked' ? p.spike === 'high' : p.c === state.f);
+    var okQ = !q || (p.t + ' ' + p.city + ' ' + p.c).toLowerCase().indexOf(q) > -1;
+    return okF && okQ;
+  });
+  feed.innerHTML = list.map(function(p){
+    var on = state.saved[p.id];
+    return '<article class="pin"><div class="pin-media" data-open="' + p.id + '" tabindex="0">' + media(p) +
+      '<span class="spike ' + (p.spike === 'high' ? 'high' : '') + '">Spike risk: ' + p.spike + '</span>' +
+      '<button class="perch ' + (on ? 'on' : '') + '" data-perch="' + p.id + '">' + (on ? 'Perched' : 'Perch') + '</button></div>' +
+      '<h3 class="pin-title">' + p.t + '</h3><p class="pin-sub"><span>' + p.city + ' · ' + fmt(p.saves + (on ? 1 : 0)) + ' saves</span>' + meter(p.crumb) + '</p></article>';
+  }).join('');
+  hydrate(feed);
+  document.getElementById('empty').style.display = list.length ? 'none' : 'block';
+  document.getElementById('status').textContent = list.length + ' perches near you. Sorted by how long since anyone shooed you off them.';
+}
+
+function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(function(){ t.classList.remove('show'); },3200); }
+function open(id){ document.getElementById(id).classList.add('open'); var b=document.querySelector('#' + id + ' [data-close]'); if(b) b.focus(); }
+function close(el){ el.classList.remove('open'); }
+
+function renderBoards(){
+  document.getElementById('boards').innerHTML = BOARDS.map(function(b,i){
+    return '<li><button data-board="' + i + '" class="' + (b.hit ? 'saved' : '') + '"><span class="cv" style="' + (b.cv ? 'background-image:url(' + b.cv + ')' : 'background:var(--sheen)') + '"></span><span><b>' + b.n + '</b><span>' + b.k + ' pins</span></span></button></li>';
+  }).join('');
+}
+
+function askSave(id){ state.current = id; BOARDS.forEach(function(b){ b.hit=false; }); renderBoards(); open('saveScrim'); }
+
+document.addEventListener('click', function(e){
+  var perch = e.target.closest('[data-perch]');
+  if (perch){ e.stopPropagation(); var id=+perch.dataset.perch; if (state.saved[id]){ delete state.saved[id]; render(); toast('Unperched. The ledge has been informed.'); } else { askSave(id); } return; }
+  var opener = e.target.closest('[data-open]');
+  if (opener){ showPin(+opener.dataset.open); return; }
+  var board = e.target.closest('[data-board]');
+  if (board){
+    var b = BOARDS[+board.dataset.board]; b.k++; b.hit = true; state.saved[state.current] = true;
+    renderBoards(); render(); toast('Perched to ' + b.n + '.');
+    setTimeout(function(){ close(document.getElementById('saveScrim')); }, 450); return;
+  }
+  if (e.target.matches('[data-close]') || e.target.classList.contains('scrim')){ close(e.target.closest('.scrim')); }
+});
+
+document.getElementById('newboard').addEventListener('submit', function(e){
+  e.preventDefault(); var n=document.getElementById('newname').value.trim(); if(!n) return;
+  BOARDS.unshift({n:n,k:0}); document.getElementById('newname').value=''; renderBoards();
+});
+
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape') document.querySelectorAll('.scrim.open').forEach(close);
+  if (e.key === 'Enter' && e.target.dataset && e.target.dataset.open) showPin(+e.target.dataset.open);
+});
+
+function showPin(id){
+  var p = PINS.filter(function(x){ return x.id === id; })[0]; state.current = id;
+  document.getElementById('pinArt').innerHTML = media(p);
+  hydrate(document.getElementById('pinArt'));
+  document.getElementById('pinTitle').textContent = p.t;
+  document.getElementById('pinFacts').innerHTML =
+    '<dt>City</dt><dd>' + p.city + '</dd><dt>Saves</dt><dd>' + p.saves.toLocaleString('en-US') + '</dd>' +
+    '<dt>Crumb density</dt><dd>' + p.crumb + ' / 10</dd><dt>Spike risk</dt><dd>' + (p.spike === 'high' ? 'High. Spikes ordered.' : 'Low, for now') + '</dd>';
+  document.getElementById('pinNote').textContent = p.note;
+  document.getElementById('pinPerch').textContent = state.saved[id] ? 'Perched' : 'Perch';
+  open('pinScrim');
+}
+
+document.getElementById('pinPerch').addEventListener('click', function(){
+  if (state.saved[state.current]) return; close(document.getElementById('pinScrim')); askSave(state.current);
+});
+document.getElementById('pinLater').addEventListener('click', function(){
+  var d = new Date(); d.setMonth(d.getMonth() + 9 + Math.floor(Math.random()*6));
+  toast('Reminder set for ' + d.toLocaleDateString('en-US',{month:'long',year:'numeric'}) + '. Spikes likely by then.');
+});
+
+document.querySelectorAll('.chip-btn').forEach(function(c){
+  c.addEventListener('click', function(){
+    document.querySelectorAll('.chip-btn').forEach(function(x){ x.setAttribute('aria-pressed','false'); });
+    c.setAttribute('aria-pressed','true'); state.f = c.dataset.f; render();
+  });
+});
+document.getElementById('q').addEventListener('input', function(e){ state.q = e.target.value; render(); });
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Raleway:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --mist: #EEF2EE; --mist-2: #DCE5DF; --leaf: #4E6E63; --leaf-deep: #3B574D;
+    --ink: #16211D; --fg: #1E2B27; --muted: #5E6F68; --blossom: #B4472F; --blossom-deep: #973A25;
+    --surface: #FAFCFA; --warn: #8A5A12; --warn-bg: #F6EBD6;
+    --display: 'Lora', 'Iowan Old Style', Georgia, serif;
+    --body: 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --leaf-r: 22px 5px 22px 5px;
+    --soft: 0 1px 2px rgba(22,33,29,.06), 0 12px 32px rgba(22,33,29,.08);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--mist); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  button, input { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--blossom); outline-offset: 2px; }
+  .app { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+  aside { background: var(--surface); border-right: 1px solid var(--mist-2); padding: 18px 18px 28px; display: flex; flex-direction: column; gap: 22px; }
+  .back { font-size: .85rem; color: var(--muted); text-decoration: none; }
+  .back:hover { color: var(--ink); }
+  .logo { display: flex; gap: 9px; align-items: center; font-family: var(--display); font-weight: 600; font-size: 1.2rem; color: var(--ink); }
+  .logo svg { width: 26px; height: 26px; }
+  .side-h { font-size: .8rem; font-weight: 600; color: var(--muted); margin: 0 0 8px; }
+  .forks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+  .forks button { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 8px; text-align: left; background: none; border: 0; padding: 10px 12px; border-radius: var(--leaf-r); cursor: pointer; min-height: 44px; }
+  .forks button:hover { background: var(--mist); }
+  .forks button[aria-pressed="true"] { background: var(--mist-2); font-weight: 600; color: var(--ink); }
+  .forks small { color: var(--muted); font-weight: 500; }
+  .sleep { background: var(--mist); border-radius: var(--leaf-r); padding: 18px; text-align: center; }
+  .sleep svg { width: 128px; height: 128px; display: block; margin: 0 auto 8px; }
+  .sleep circle { fill: none; stroke-width: 9; }
+  .sleep .track { stroke: var(--mist-2); }
+  .sleep .awake { stroke: var(--leaf); stroke-linecap: round; }
+  .sleep .now { stroke: var(--blossom); stroke-width: 3; }
+  .sleep strong { display: block; color: var(--ink); font-size: .95rem; }
+  .sleep span { font-size: .82rem; color: var(--muted); }
+  .quota { font-size: .82rem; color: var(--muted); }
+  .bar { height: 6px; background: var(--mist-2); border-radius: 6px; overflow: hidden; margin: 6px 0 4px; }
+  .bar i { display: block; height: 100%; background: var(--leaf); width: 0; }
+
+  main { padding: 22px 32px 48px; min-width: 0; }
+  .bar-top { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+  .bar-top h1 { font-family: var(--display); font-weight: 500; font-size: 1.8rem; margin: 0; color: var(--ink); flex: 1; }
+  .search { position: relative; }
+  .search input { width: 280px; max-width: 100%; min-height: 44px; padding: 0 14px 0 38px; border-radius: var(--leaf-r); border: 1px solid var(--mist-2); background: var(--surface); }
+  .search svg { position: absolute; left: 13px; top: 14px; width: 16px; height: 16px; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .chip { min-height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--mist-2); background: var(--surface); cursor: pointer; font-weight: 500; font-size: .88rem; }
+  .chip[aria-pressed="true"] { background: var(--leaf); border-color: var(--leaf); color: #fff; }
+  .crumbs { font-size: .88rem; color: var(--muted); margin-bottom: 12px; }
+
+  .table { background: var(--surface); border-radius: 28px 6px 28px 6px; box-shadow: var(--soft); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font-size: .8rem; font-weight: 600; color: var(--muted); padding: 14px 16px; border-bottom: 1px solid var(--mist-2); }
+  td { padding: 12px 16px; border-top: 1px solid var(--mist); vertical-align: middle; font-size: .92rem; }
+  tbody tr { cursor: pointer; transition: background .2s ease-out; }
+  tbody tr:hover, tbody tr:focus-visible { background: #F2F6F3; }
+  .group td { background: var(--mist); font-family: var(--display); font-size: .98rem; color: var(--ink); cursor: default; padding: 9px 16px; }
+  tr.group { cursor: default; }
+  .fname { display: flex; gap: 10px; align-items: center; font-weight: 600; color: var(--ink); }
+  .fname svg { flex: none; width: 22px; height: 22px; }
+  .num { font-variant-numeric: tabular-nums; }
+  .tox { display: inline-flex; gap: 3px; }
+  .tox i { width: 8px; height: 8px; border-radius: 6px 1px 6px 1px; background: var(--mist-2); }
+  .tox i.on { background: var(--leaf); }
+  .chew { font-size: .85rem; color: var(--muted); }
+  .zzz { display: inline-flex; align-items: center; gap: 7px; padding: 4px 11px 4px 10px; border-radius: 999px; background: var(--mist-2); color: var(--leaf-deep); font-size: .8rem; font-weight: 600; white-space: nowrap; }
+  .zzz.live { background: #DDEBE3; color: #255443; }
+  .zzz.ro { background: var(--warn-bg); color: var(--warn); }
+  .zzz i { font-style: normal; font-family: var(--display); display: inline-flex; gap: 1px; align-items: flex-end; height: 13px; }
+  .zzz i b { font-weight: 500; animation: drift 6s ease-in-out infinite; }
+  .zzz i b:nth-child(1) { font-size: .6rem; } .zzz i b:nth-child(2) { font-size: .7rem; animation-delay: .6s; } .zzz i b:nth-child(3) { font-size: .82rem; animation-delay: 1.2s; }
+  @keyframes drift { 0%,100% { transform: translateY(0); opacity: .55; } 50% { transform: translateY(-3px); opacity: 1; } }
+  .empty { padding: 48px 20px; text-align: center; color: var(--muted); }
+  .empty button { margin-top: 12px; }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 18px; border: 0; border-radius: var(--leaf-r); font-weight: 600; cursor: pointer; transition: background .25s ease-out; }
+  .btn-primary { background: var(--blossom); color: #fff; }
+  .btn-primary:hover { background: var(--blossom-deep); }
+  .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-quiet { background: var(--mist); color: var(--ink); }
+  .btn-quiet:hover { background: var(--mist-2); }
+
+  .scrim { position: fixed; inset: 0; background: rgba(22,33,29,.45); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 40; }
+  .scrim.open { display: flex; }
+  .modal { background: var(--surface); border-radius: 36px 8px 36px 8px; width: min(520px, 100%); padding: 28px; box-shadow: 0 30px 60px rgba(0,0,0,.2); animation: rise .3s ease-out; }
+  @keyframes rise { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
+  .modal-h { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+  .modal h2 { font-family: var(--display); font-weight: 500; font-size: 1.5rem; margin: 0 0 4px; color: var(--ink); word-break: break-word; }
+  .x { width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--mist); cursor: pointer; font-size: 1.3rem; line-height: 1; flex: none; }
+  .leafpic { height: 120px; border-radius: 22px 5px 22px 5px; background: var(--mist); display: flex; align-items: center; justify-content: center; margin: 16px 0; }
+  .leafpic svg { width: 180px; height: 90px; }
+  dl { display: grid; grid-template-columns: 130px 1fr; gap: 8px 14px; margin: 0 0 18px; font-size: .92rem; }
+  dt { color: var(--muted); } dd { margin: 0; color: var(--ink); font-weight: 500; }
+  .prog { margin: 6px 0 18px; }
+  .prog .bar { height: 8px; }
+  .prog .bar i { background: var(--blossom); transition: width .4s linear; }
+  .prog small { color: var(--muted); font-size: .82rem; }
+  .row-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .switch { display: inline-flex; gap: 10px; align-items: center; cursor: pointer; font-weight: 500; min-height: 44px; }
+  .switch input { appearance: none; width: 42px; height: 24px; border-radius: 999px; background: var(--mist-2); position: relative; cursor: pointer; transition: background .2s; margin: 0; }
+  .switch input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.2); transition: transform .2s ease-out; }
+  .switch input:checked { background: var(--leaf); }
+  .switch input:checked::after { transform: translateX(18px); }
+  .warnline { display: none; margin-top: 10px; font-size: .85rem; color: var(--warn); background: var(--warn-bg); padding: 8px 12px; border-radius: 12px 3px 12px 3px; }
+  .warnline.show { display: block; }
+
+  .toast { position: fixed; right: 24px; bottom: 24px; max-width: 340px; background: var(--ink); color: #EEF2EE; padding: 14px 18px; border-radius: 20px 5px 20px 5px; font-size: .9rem; transform: translateY(20px); opacity: 0; transition: opacity .3s ease-out, transform .3s ease-out; z-index: 60; pointer-events: none; }
+  .toast.show { opacity: 1; transform: none; }
+
+  @media (max-width: 860px) {
+    .app { grid-template-columns: 1fr; }
+    aside { border-right: 0; border-bottom: 1px solid var(--mist-2); }
+    .sleep { display: flex; gap: 16px; align-items: center; text-align: left; }
+    .sleep svg { width: 84px; height: 84px; margin: 0; }
+    main { padding: 20px 16px 40px; }
+    .hide-sm { display: none; }
+    .search input { width: 100%; }
+    .search { flex: 1 1 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .zzz i b, .modal { animation: none; }
+    .toast, tbody tr, .prog .bar i { transition: none; }
+  }
+</style>
+<title>Gumdrive — Dropbox for koalas — Demo</title>
+<meta name="description" content="Your leaves. Every tree. Eventually. Gumdrive backs up every eucalyptus leaf you own to three gum trees in three different paddocks. Sync runs while you are awake, so most uploads finish by the following season.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/dropbox-for-koalas/demo.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Gumdrive — Dropbox for koalas — Demo">
+<meta property="og:description" content="Your leaves. Every tree. Eventually. Gumdrive backs up every eucalyptus leaf you own to three gum trees in three different paddocks. Sync runs while you are awake, so most uploads finish by the following season.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/dropbox-for-koalas/demo.html">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/dropbox-for-koalas/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Gumdrive hero illustration">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Gumdrive — Dropbox for koalas — Demo">
+<meta name="twitter:description" content="Your leaves. Every tree. Eventually. Gumdrive backs up every eucalyptus leaf you own to three gum trees in three different paddocks. Sync runs while you are awake, so most uploads finish by the following season.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/dropbox-for-koalas/social-preview.jpg">
+<meta name="twitter:image:alt" content="Gumdrive hero illustration">
+</head>
+<body>
+<div class="app">
+  <aside>
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <div class="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 26C6 14 14 5 27 5c0 13-8 21-21 21z" fill="#4E6E63"/><path d="M8 24C13 18 18 13 24 8" stroke="#EEF2EE" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>Gumdrive</div>
+    <div>
+      <p class="side-h">Registered forks</p>
+      <ul class="forks" id="forks"></ul>
+    </div>
+    <div class="sleep">
+      <svg viewBox="0 0 120 120" role="img" aria-label="Sleep ring: next sync window opens in 6 hours 40 minutes">
+        <circle class="track" cx="60" cy="60" r="48"/>
+        <circle class="awake" cx="60" cy="60" r="48" transform="rotate(195 60 60)" stroke-dasharray="25.1 999"/>
+        <line class="now" x1="60" y1="8" x2="60" y2="20" transform="rotate(95 60 60)"/>
+        <text x="60" y="58" text-anchor="middle" font-family="Lora, Georgia, serif" font-size="20" fill="#16211D">6h 40m</text>
+        <text x="60" y="76" text-anchor="middle" font-family="Raleway, sans-serif" font-size="10" fill="#5E6F68">until awake</text>
+      </svg>
+      <div><strong>Next sync window 11:40 pm</strong><span>Lasts 2 hours. Usually spent eating.</span></div>
+    </div>
+    <div class="quota">
+      <div class="bar"><i id="quotaBar"></i></div>
+      <span id="quotaText"></span>
+    </div>
+  </aside>
+
+  <main>
+    <div class="bar-top">
+      <h1>My Tree</h1>
+      <label class="search"><span class="hide-sm" style="position:absolute;left:-9999px">Search leaves</span>
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="#5E6F68" stroke-width="1.6"/><path d="M11 11l3.5 3.5" stroke="#5E6F68" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <input id="q" type="search" placeholder="Search leaves" aria-label="Search leaves">
+      </label>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="Filter by species"></div>
+    <div class="crumbs" id="crumbs"></div>
+    <div class="table">
+      <table>
+        <thead><tr><th>Name</th><th class="num">Size</th><th class="hide-sm">Toxicity</th><th class="hide-sm">Chew status</th><th>Sync</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div class="empty" id="empty" hidden>No leaves match that. They may still be uploading from last winter.<br><button class="btn btn-quiet" id="clear">Clear filters</button></div>
+    </div>
+  </main>
+</div>
+
+<div class="scrim" id="scrim" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <div class="modal-h">
+      <div><h2 id="mTitle"></h2><span id="mSub" style="color:var(--muted);font-size:.9rem"></span></div>
+      <button class="x" id="close" aria-label="Close preview">×</button>
+    </div>
+    <div class="leafpic"><svg viewBox="0 0 180 90" aria-hidden="true"><path d="M14 70C40 22 104 8 168 18 136 62 72 86 14 70z" fill="#4E6E63"/><path d="M20 68C64 50 110 34 160 22" stroke="#DCE5DF" stroke-width="2" fill="none"/></svg></div>
+    <dl id="mMeta"></dl>
+    <div class="prog">
+      <div class="bar"><i id="mBar"></i></div>
+      <small id="mProg"></small>
+    </div>
+    <div class="row-actions">
+      <button class="btn btn-primary" id="wake">Wake to sync</button>
+      <label class="switch"><input type="checkbox" id="share"> Share with joey</label>
+    </div>
+    <div class="warnline" id="warn">Shared read-only. Joeys cannot read, but they can chew. Chew events will appear in your activity log.</div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  var forks = [
+    ['all', 'All forks', ''],
+    ['north', 'Manna Gum', 'north fork'],
+    ['good', 'Tallowwood', 'the good one'],
+    ['windy', 'Swamp Mahogany', 'windy']
+  ];
+  var species = ['All', 'Manna Gum', 'Tallowwood', 'Swamp Mahogany', 'River Red Gum'];
+  var leaves = [
+    ['manna-gum-0412.leaf', 'Manna Gum', 'north', 1, 2, 'Unchewed', 'paused', 0.004],
+    ['manna-gum-0413-final.leaf', 'Manna Gum', 'north', 1, 2, 'Partially chewed', 'paused', 0.0],
+    ['manna-gum-0413-final-v2.leaf', 'Manna Gum', 'north', 1, 3, 'Chewed', 'synced', 100],
+    ['tallowwood-best.leaf', 'Tallowwood', 'good', 2, 1, 'Unchewed', 'paused', 0.31],
+    ['tallowwood-backup-do-not-eat.leaf', 'Tallowwood', 'good', 1, 1, 'Partially chewed', 'paused', 0.02],
+    ['tallowwood-sunday.leaf', 'Tallowwood', 'good', 1, 2, 'Unchewed', 'syncing', 0.003],
+    ['swamp-mahogany-2.leaf', 'Swamp Mahogany', 'windy', 1, 4, 'Unchewed', 'syncing', 0.003],
+    ['swamp-mahogany-fell-off.leaf', 'Swamp Mahogany', 'windy', 1, 4, 'Lost (wind)', 'paused', 12],
+    ['red-gum-from-gerald.leaf', 'River Red Gum', 'windy', 3, 3, 'Unchewed', 'paused', 0.0],
+    ['red-gum-shared-folder-2025.leaf', 'River Red Gum', 'north', 1, 5, 'Do not open', 'paused', 0.0]
+  ].map(function (r, i) {
+    return { id: i, name: r[0], species: r[1], fork: r[2], size: r[3], tox: r[4], chew: r[5], sync: r[6], pct: r[7], shared: false };
+  });
+
+  var state = { fork: 'all', species: 'All', q: '' };
+  var $ = function (id) { return document.getElementById(id); };
+  var zzz = '<i aria-hidden="true"><b>z</b><b>z</b><b>z</b></i>';
+  var leafIcon = '<svg viewBox="0 0 22 22" aria-hidden="true"><path d="M3 18C3 10 9 4 19 3c0 9-6 15-16 15z" fill="#4E6E63"/></svg>';
+
+  function chip(l) {
+    if (l.shared) return '<span class="zzz ro">Read-only (joey)</span>';
+    if (l.sync === 'synced') return '<span class="zzz live">Synced</span>';
+    if (l.sync === 'syncing') return '<span class="zzz live">Syncing ' + l.pct.toFixed(3) + '% ' + zzz + '</span>';
+    return '<span class="zzz">Paused: owner asleep ' + zzz + '</span>';
+  }
+  function tox(n) {
+    var s = '<span class="tox" aria-label="Toxicity ' + n + ' of 5">';
+    for (var i = 1; i <= 5; i++) s += '<i class="' + (i <= n ? 'on' : '') + '"></i>';
+    return s + '</span>';
+  }
+  function visible() {
+    var q = state.q.toLowerCase();
+    return leaves.filter(function (l) {
+      return (state.fork === 'all' || l.fork === state.fork) &&
+        (state.species === 'All' || l.species === state.species) &&
+        (!q || l.name.indexOf(q) > -1 || l.species.toLowerCase().indexOf(q) > -1);
+    });
+  }
+
+  function renderForks() {
+    $('forks').innerHTML = forks.map(function (f) {
+      var count = f[0] === 'all' ? leaves.length : leaves.filter(function (l) { return l.fork === f[0]; }).length;
+      return '<li><button data-fork="' + f[0] + '" aria-pressed="' + (state.fork === f[0]) + '"><span>' + f[1] + (f[2] ? ' <small>' + f[2] + '</small>' : '') + '</span><small>' + count + '</small></button></li>';
+    }).join('');
+  }
+  function renderChips() {
+    $('chips').innerHTML = species.map(function (s) {
+      return '<button class="chip" data-sp="' + s + '" aria-pressed="' + (state.species === s) + '">' + s + '</button>';
+    }).join('');
+  }
+  function renderRows() {
+    var v = visible();
+    var html = '';
+    species.slice(1).forEach(function (sp) {
+      var group = v.filter(function (l) { return l.species === sp; });
+      if (!group.length) return;
+      html += '<tr class="group"><td colspan="5">' + sp + '</td></tr>';
+      group.forEach(function (l) {
+        html += '<tr tabindex="0" data-id="' + l.id + '"><td><span class="fname">' + leafIcon + l.name + '</span></td><td class="num">' + l.size + (l.size === 1 ? ' leaf' : ' leaves') + '</td><td class="hide-sm">' + tox(l.tox) + '</td><td class="hide-sm chew">' + l.chew + '</td><td>' + chip(l) + '</td></tr>';
+      });
+    });
+    $('rows').innerHTML = html;
+    $('empty').hidden = v.length > 0;
+    var forkName = forks.filter(function (f) { return f[0] === state.fork; })[0][1];
+    $('crumbs').textContent = forkName + ' / ' + (state.species === 'All' ? 'All species' : state.species) + ' / ' + v.length + ' of ' + leaves.length + ' leaves';
+    var used = leaves.reduce(function (a, l) { return a + l.size; }, 0);
+    $('quotaBar').style.width = (used / 40 * 100) + '%';
+    $('quotaText').textContent = used + ' of 40 leaves used on Marsupial Plus';
+  }
+  function render() { renderForks(); renderChips(); renderRows(); }
+
+  var toastT;
+  function toast(msg) {
+    var t = $('toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastT); toastT = setTimeout(function () { t.classList.remove('show'); }, 4200);
+  }
+
+  $('forks').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    state.fork = b.getAttribute('data-fork'); render();
+  });
+  $('chips').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    state.species = b.getAttribute('data-sp'); render();
+  });
+  $('q').addEventListener('input', function (e) { state.q = e.target.value; renderRows(); });
+  $('clear').addEventListener('click', function () { state = { fork: 'all', species: 'All', q: '' }; $('q').value = ''; render(); });
+
+  var current = null, timer = null, lastFocus = null;
+  function openLeaf(id) {
+    current = leaves[id]; lastFocus = document.activeElement;
+    $('mTitle').textContent = current.name;
+    $('mSub').textContent = current.species + ', ' + forks.filter(function (f) { return f[0] === current.fork; })[0][1] + ' fork';
+    $('mMeta').innerHTML = '<dt>Size</dt><dd>' + current.size + (current.size === 1 ? ' leaf' : ' leaves') + '</dd><dt>Toxicity</dt><dd>' + current.tox + ' of 5</dd><dt>Chew status</dt><dd>' + current.chew + '</dd><dt>Copies</dt><dd>3 trees, 3 paddocks</dd><dt>Last opened</dt><dd>During a nap, allegedly</dd>';
+    $('share').checked = current.shared;
+    $('warn').classList.toggle('show', current.shared);
+    updateProg();
+    $('wake').disabled = current.sync === 'synced';
+    $('wake').textContent = current.sync === 'synced' ? 'Already synced' : (timer ? 'Syncing' : 'Wake to sync');
+    $('scrim').classList.add('open'); $('scrim').setAttribute('aria-hidden', 'false');
+    $('close').focus();
+  }
+  function closeLeaf() {
+    $('scrim').classList.remove('open'); $('scrim').setAttribute('aria-hidden', 'true');
+    clearInterval(timer); timer = null;
+    if (current && current.sync === 'syncing' && current.pct < 100) current.sync = 'paused';
+    current = null; renderRows();
+    if (lastFocus) lastFocus.focus();
+  }
+  function updateProg() {
+    $('mBar').style.width = Math.min(current.pct, 100) + '%';
+    var left = current.pct >= 100 ? 'Done.' : Math.round((100 - current.pct) / 0.001 / 86400 / 7) + ' weeks remaining at current speed.';
+    $('mProg').textContent = current.pct.toFixed(3) + '% uploaded. ' + left;
+  }
+  $('rows').addEventListener('click', function (e) {
+    var tr = e.target.closest('tr[data-id]'); if (tr) openLeaf(+tr.getAttribute('data-id'));
+  });
+  $('rows').addEventListener('keydown', function (e) {
+    var tr = e.target.closest('tr[data-id]');
+    if (tr && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openLeaf(+tr.getAttribute('data-id')); }
+  });
+  $('close').addEventListener('click', closeLeaf);
+  $('scrim').addEventListener('click', function (e) { if (e.target === $('scrim')) closeLeaf(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && current) closeLeaf(); });
+
+  $('wake').addEventListener('click', function () {
+    if (!current || timer) return;
+    current.sync = 'syncing'; current.dozed = false; current.dozeAt = current.pct + 0.012;
+    $('wake').textContent = 'Syncing';
+    toast('Sorry. We woke you up for this. It will take a while, so feel free to go back to sleep.');
+    timer = setInterval(function () {
+      current.pct += 0.001; updateProg();
+      if (current.pct > current.dozeAt && !current.dozed) {
+        current.dozed = true; clearInterval(timer); timer = null; current.sync = 'paused';
+        $('wake').textContent = 'Wake to sync';
+        toast('Sync paused. You fell asleep again, which is within your plan limits.');
+      }
+    }, 1000);
+  });
+  $('share').addEventListener('change', function (e) {
+    if (!current) return;
+    current.shared = e.target.checked;
+    $('warn').classList.toggle('show', current.shared);
+    toast(current.shared ? 'Shared with Mabel. She has been told not to chew it.' : 'Unshared. Mabel has been informed and does not mind.');
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

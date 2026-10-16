@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Raleway:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --mist: #EEF2EE;
+    --mist-2: #DCE5DF;
+    --leaf: #4E6E63;
+    --leaf-deep: #3B574D;
+    --ink: #16211D;
+    --fg: #1E2B27;
+    --muted: #5E6F68;
+    --blossom: #B4472F;
+    --blossom-deep: #973A25;
+    --surface: #FAFCFA;
+    --display: 'Lora', 'Iowan Old Style', Georgia, serif;
+    --body: 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --leaf-r: 28px 6px 28px 6px;
+    --soft: 0 1px 2px rgba(22,33,29,.06), 0 12px 32px rgba(22,33,29,.08);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--mist); color: var(--fg); font-family: var(--body); font-size: 17px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  img { display: block; max-width: 100%; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--blossom); outline-offset: 3px; }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 28px; }
+
+  /* nav */
+  .top { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; }
+  .logo { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-weight: 600; font-size: 1.35rem; color: var(--ink); text-decoration: none; }
+  .logo svg { width: 30px; height: 30px; }
+  .top nav { display: flex; gap: 28px; align-items: center; font-weight: 500; font-size: .95rem; }
+  .top nav a { text-decoration: none; color: var(--muted); }
+  .top nav a:hover { color: var(--ink); }
+  .btn { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 24px; border-radius: var(--leaf-r); font-family: var(--body); font-weight: 600; font-size: 1rem; text-decoration: none; border: 0; cursor: pointer; transition: background .3s ease-out, transform .3s ease-out; }
+  .btn-primary { background: var(--blossom); color: #fff; }
+  .btn-primary:hover { background: var(--blossom-deep); }
+  .btn-quiet { background: var(--surface); color: var(--ink); box-shadow: var(--soft); }
+  .btn-quiet:hover { transform: translateY(-1px); }
+  .top .btn { min-height: 42px; padding: 0 18px; font-size: .92rem; }
+
+  /* hero */
+  .hero { display: grid; grid-template-columns: 1fr 1.15fr; gap: 56px; align-items: center; padding: 48px 0 96px; }
+  .hero h1 { font-family: var(--display); font-weight: 400; font-size: clamp(2.6rem, 5.4vw, 4.4rem); line-height: 1.04; letter-spacing: -.015em; color: var(--ink); margin: 0 0 24px; }
+  .hero p.sub { font-size: 1.15rem; color: var(--muted); max-width: 30em; margin: 0 0 34px; }
+  .hero .ctas { display: flex; flex-wrap: wrap; gap: 14px; }
+  .fine { margin-top: 18px; font-size: .88rem; color: var(--muted); }
+  .photo { position: relative; }
+  .photo img { width: 100%; height: auto; aspect-ratio: 16 / 11; object-fit: cover; object-position: 68% 50%; border-radius: 56px 10px 56px 10px; box-shadow: var(--soft); }
+  .sync-card { position: absolute; left: -40px; bottom: -44px; display: flex; gap: 18px; align-items: center; background: var(--surface); border-radius: var(--leaf-r); box-shadow: var(--soft); padding: 18px 24px 18px 18px; max-width: 330px; }
+  .sync-card strong { display: block; font-weight: 600; color: var(--ink); font-size: .98rem; }
+  .sync-card span { font-size: .86rem; color: var(--muted); }
+
+  /* sleep ring */
+  .ring { flex: none; width: 74px; height: 74px; }
+  .ring circle { fill: none; stroke-width: 7; }
+  .ring .track { stroke: var(--mist-2); }
+  .ring .awake { stroke: var(--leaf); stroke-linecap: round; stroke-dasharray: 0 999; transition: stroke-dasharray 1.6s cubic-bezier(.2,.7,.2,1); }
+  .ring.drawn .awake { stroke-dasharray: var(--len) 999; }
+  .ring text { font-family: var(--body); font-size: 15px; font-weight: 700; fill: var(--ink); }
+  .ring text.small { font-size: 8px; font-weight: 500; fill: var(--muted); }
+
+  /* zzz chip */
+  .zzz { display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px 5px 10px; border-radius: 999px; background: var(--mist-2); color: var(--leaf-deep); font-size: .82rem; font-weight: 600; }
+  .zzz i { font-style: normal; font-family: var(--display); font-size: .78rem; display: inline-flex; gap: 1px; align-items: flex-end; height: 14px; }
+  .zzz i b { font-weight: 500; animation: drift 6s ease-in-out infinite; }
+  .zzz i b:nth-child(1) { font-size: .62rem; }
+  .zzz i b:nth-child(2) { font-size: .74rem; animation-delay: .6s; }
+  .zzz i b:nth-child(3) { font-size: .88rem; animation-delay: 1.2s; }
+  @keyframes drift { 0%,100% { transform: translateY(0); opacity: .55; } 50% { transform: translateY(-3px); opacity: 1; } }
+
+  section h2 { font-family: var(--display); font-weight: 400; font-size: clamp(2rem, 3.6vw, 2.8rem); line-height: 1.12; color: var(--ink); margin: 0 0 14px; letter-spacing: -.01em; }
+  section .lede { color: var(--muted); max-width: 36em; margin: 0 0 44px; font-size: 1.08rem; }
+  .band { padding: 96px 0; }
+
+  /* features as file rows */
+  .files { background: var(--surface); border-radius: 36px 8px 36px 8px; box-shadow: var(--soft); overflow: hidden; }
+  .files-head { display: grid; grid-template-columns: 2.2fr 3fr 1.1fr; gap: 24px; padding: 16px 32px; font-size: .84rem; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--mist-2); }
+  .file { display: grid; grid-template-columns: 2.2fr 3fr 1.1fr; gap: 24px; padding: 30px 32px; align-items: start; }
+  .file + .file { border-top: 1px solid var(--mist-2); }
+  .file h3 { display: flex; gap: 14px; align-items: center; margin: 0; font-family: var(--display); font-size: 1.35rem; font-weight: 500; color: var(--ink); }
+  .file h3 svg { flex: none; width: 34px; height: 34px; }
+  .file p { margin: 0; color: var(--fg); }
+  .file .status { justify-self: start; }
+
+  /* testimonials */
+  .quotes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .quote { margin: 0; padding: 30px 28px; border-left: 2px solid var(--leaf); }
+  .quote:nth-child(2) { margin-top: 48px; }
+  .quote blockquote { margin: 0 0 24px; font-family: var(--display); font-size: 1.22rem; line-height: 1.5; color: var(--ink); }
+  .quote figcaption { display: flex; gap: 14px; align-items: center; }
+  .quote img { width: 56px; height: 56px; border-radius: 18px 4px 18px 4px; object-fit: cover; }
+  .quote figcaption strong { display: block; font-weight: 600; color: var(--ink); }
+  .quote figcaption span { font-size: .88rem; color: var(--muted); line-height: 1.4; display: block; }
+
+  /* demo teaser */
+  .teaser { display: grid; grid-template-columns: 1.3fr 1fr; gap: 48px; align-items: center; background: var(--leaf); color: #F1F5F2; border-radius: 56px 10px 56px 10px; padding: 64px; }
+  .teaser h2 { color: #fff; }
+  .teaser p { color: #D5E1DA; margin: 0 0 30px; max-width: 30em; }
+  .teaser .btn-primary { background: #fff; color: var(--ink); }
+  .teaser .btn-primary:hover { background: var(--mist); }
+  .mini { background: var(--surface); color: var(--fg); border-radius: var(--leaf-r); padding: 10px 0; box-shadow: 0 20px 40px rgba(0,0,0,.18); }
+  .mini div { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 20px; font-size: .92rem; }
+  .mini div + div { border-top: 1px solid var(--mist-2); }
+  .mini b { font-weight: 600; color: var(--ink); }
+
+  /* pricing */
+  .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: stretch; }
+  .tier { background: var(--surface); border-radius: var(--leaf-r); box-shadow: var(--soft); padding: 36px 32px; display: flex; flex-direction: column; }
+  .tier.pick { outline: 2px solid var(--blossom); outline-offset: -2px; }
+  .tier h3 { font-family: var(--display); font-weight: 500; font-size: 1.5rem; margin: 0 0 6px; color: var(--ink); }
+  .tier .price { font-family: var(--display); font-size: 2.3rem; color: var(--ink); margin: 12px 0 4px; font-variant-numeric: tabular-nums; }
+  .tier .tl { color: var(--muted); margin: 0 0 22px; min-height: 3.2em; }
+  .tier ul { list-style: none; padding: 0; margin: 0 0 30px; flex: 1; }
+  .tier li { padding: 9px 0 9px 28px; position: relative; border-top: 1px solid var(--mist-2); font-size: .97rem; }
+  .tier li::before { content: ""; position: absolute; left: 2px; top: 16px; width: 14px; height: 8px; background: var(--leaf); border-radius: 8px 1px 8px 1px; transform: rotate(-20deg); }
+  .tier .badge { align-self: flex-start; margin-bottom: 14px; font-size: .8rem; font-weight: 600; color: var(--blossom); }
+  .tier .btn { justify-content: center; }
+  .price-note { margin-top: 26px; color: var(--muted); font-size: .9rem; }
+
+  footer { padding: 56px 0 64px; border-top: 1px solid var(--mist-2); margin-top: 40px; display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; font-size: .9rem; color: var(--muted); }
+  footer a { color: var(--leaf-deep); }
+
+  @media (max-width: 900px) {
+    .hero, .teaser { grid-template-columns: 1fr; }
+    .hero { padding-bottom: 80px; }
+    .sync-card { left: 16px; right: 16px; bottom: -48px; max-width: none; }
+    .quotes, .tiers { grid-template-columns: 1fr; }
+    .quote:nth-child(2) { margin-top: 0; }
+    .files-head { display: none; }
+    .file { grid-template-columns: 1fr; gap: 12px; padding: 26px 24px; }
+    .teaser { padding: 40px 28px; }
+    .top nav a:not(.btn) { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .zzz i b { animation: none; opacity: 1; }
+    .ring .awake { transition: none; }
+    .btn { transition: none; }
+  }
+</style>
+<title>Gumdrive — Dropbox for koalas</title>
+<meta name="description" content="Your leaves. Every tree. Eventually. Gumdrive backs up every eucalyptus leaf you own to three gum trees in three different paddocks. Sync runs while you are awake, so most uploads finish by the following season.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/dropbox-for-koalas/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Gumdrive — Dropbox for koalas">
+<meta property="og:description" content="Your leaves. Every tree. Eventually. Gumdrive backs up every eucalyptus leaf you own to three gum trees in three different paddocks. Sync runs while you are awake, so most uploads finish by the following season.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/dropbox-for-koalas/">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/dropbox-for-koalas/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Gumdrive hero illustration">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Gumdrive — Dropbox for koalas">
+<meta name="twitter:description" content="Your leaves. Every tree. Eventually. Gumdrive backs up every eucalyptus leaf you own to three gum trees in three different paddocks. Sync runs while you are awake, so most uploads finish by the following season.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/dropbox-for-koalas/social-preview.jpg">
+<meta name="twitter:image:alt" content="Gumdrive hero illustration">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="#top" aria-label="Gumdrive home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 26C6 14 14 5 27 5c0 13-8 21-21 21z" fill="#4E6E63"/><path d="M8 24C13 18 18 13 24 8" stroke="#EEF2EE" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
+      Gumdrive
+    </a>
+    <nav aria-label="Main">
+      <a href="#features">Product</a>
+      <a href="#people">Customers</a>
+      <a href="#pricing">Pricing</a>
+      <a class="btn btn-quiet" href="./demo.html">open the demo →</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div>
+        <h1>Your leaves. Every tree. Eventually.</h1>
+        <p class="sub">Gumdrive backs up every eucalyptus leaf you own to three gum trees in three different paddocks. Sync runs while you are awake, so most uploads finish by the following season.</p>
+        <div class="ctas">
+          <a class="btn btn-primary" href="#pricing">Start syncing (slowly)</a>
+          <a class="btn btn-quiet" href="./demo.html">open the demo →</a>
+        </div>
+        <p class="fine">No credit card. No pouch required. Trusted by 1,140 koalas across 6 sanctuaries.</p>
+      </div>
+      <div class="photo">
+        <img src="hero.webp" alt="A koala asleep in the fork of a eucalyptus tree in morning mist" width="1600" height="900">
+        <div class="sync-card" role="status">
+          <svg class="ring" viewBox="0 0 80 80" aria-label="Sleep ring: 2 of 24 hours awake">
+            <circle class="track" cx="40" cy="40" r="32"/>
+            <circle class="awake" cx="40" cy="40" r="32" transform="rotate(-90 40 40)" style="--len:16.8"/>
+            <text x="40" y="41" text-anchor="middle">2h</text>
+            <text class="small" x="40" y="53" text-anchor="middle">awake</text>
+          </svg>
+          <div>
+            <strong>1 leaf uploading</strong>
+            <span>Manna Gum, north fork. 11 weeks remaining.</span>
+            <div style="margin-top:8px"><span class="zzz">Paused: owner asleep <i aria-hidden="true"><b>z</b><b>z</b><b>z</b></i></span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<section class="band" id="features">
+  <div class="wrap">
+    <h2>Built around a 22-hour nap</h2>
+    <p class="lede">Most storage companies try to go faster. We looked at our customers, saw them sleeping, and decided not to bother.</p>
+    <div class="files" role="table" aria-label="Features">
+      <div class="files-head" role="row"><span role="columnheader">Name</span><span role="columnheader">What it does</span><span role="columnheader">Status</span></div>
+      <div class="file" role="row">
+        <h3 role="cell"><svg viewBox="0 0 34 34" aria-hidden="true"><rect x="3" y="7" width="28" height="21" rx="6" fill="#DCE5DF"/><path d="M10 22c0-6 4-10 13-10 0 7-5 10-13 10z" fill="#4E6E63"/></svg>Deep Sync</h3>
+        <p role="cell">Files only move during your two waking hours a day. A single leaf of Manna Gum uploads in about eleven weeks. We have reframed this as rest.</p>
+        <div role="cell" class="status"><span class="zzz">Syncing <i aria-hidden="true"><b>z</b><b>z</b><b>z</b></i></span></div>
+      </div>
+      <div class="file" role="row">
+        <h3 role="cell"><svg viewBox="0 0 34 34" aria-hidden="true"><rect x="3" y="7" width="28" height="21" rx="6" fill="#DCE5DF"/><path d="M17 27V17M17 17l-6-6M17 17l6-7" stroke="#4E6E63" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg>Fork-to-fork backup</h3>
+        <p role="cell">Every tree fork you sleep in is registered as a device. Wake up in a new tree and your leaves are already there, or they will be by March.</p>
+        <div role="cell" class="status"><span class="zzz">3 forks <i aria-hidden="true"><b>z</b><b>z</b><b>z</b></i></span></div>
+      </div>
+      <div class="file" role="row">
+        <h3 role="cell"><svg viewBox="0 0 34 34" aria-hidden="true"><rect x="3" y="7" width="28" height="21" rx="6" fill="#DCE5DF"/><circle cx="17" cy="18" r="6" fill="none" stroke="#4E6E63" stroke-width="2.4"/><circle cx="17" cy="18" r="2" fill="#4E6E63"/></svg>Pouch Sharing</h3>
+        <p role="cell">Share a folder with the joey in your pouch. Permissions are read-only, since joeys cannot read. They can still chew the files, which we log.</p>
+        <div role="cell" class="status"><span class="zzz">Read-only <i aria-hidden="true"><b>z</b><b>z</b><b>z</b></i></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="people" style="padding-top:24px">
+  <div class="wrap">
+    <h2>Customers, mostly asleep</h2>
+    <p class="lede">We reached three of them during their sync window.</p>
+    <div class="quotes">
+      <figure class="quote">
+        <blockquote>“I uploaded a leaf in March. It finished in August. I was asleep for most of it, so I have no complaints and very few memories.”</blockquote>
+        <figcaption><img src="headshot-1.webp" alt="Portrait of Bindi Okafor-Marsh, a koala in a navy scarf" width="320" height="320" loading="lazy"><div><strong>Bindi Okafor-Marsh</strong><span>Senior Branch Occupant, Lone Pine Sanctuary, QLD</span></div></figcaption>
+      </figure>
+      <figure class="quote">
+        <blockquote>“Our colony moved everything to Gumdrive after the 2025 shared folder incident. We do not discuss the 2025 shared folder incident.”</blockquote>
+        <figcaption><img src="headshot-2.webp" alt="Portrait of Gerald Pickering, a koala wearing a green lanyard" width="320" height="320" loading="lazy"><div><strong>Gerald Pickering</strong><span>Head of Leaf Operations, Port Macquarie Koala Collective</span></div></figcaption>
+      </figure>
+      <figure class="quote">
+        <blockquote>“I do not know what a file is. I have eaten four of them.”</blockquote>
+        <figcaption><img src="headshot-3.webp" alt="Portrait of Mabel, a joey holding a eucalyptus leaf" width="320" height="320" loading="lazy"><div><strong>Mabel</strong><span>Joey (Pouch Tier), Unpaid Intern</span></div></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="band" style="padding-top:24px">
+  <div class="wrap">
+    <div class="teaser">
+      <div>
+        <h2>See your tree</h2>
+        <p>Open My Tree to browse your leaves, check which fork has them, and press Wake to sync. Nothing is synced in the demo, but nothing much gets synced in the product either.</p>
+        <a class="btn btn-primary" href="./demo.html">open the demo →</a>
+      </div>
+      <div class="mini" aria-hidden="true">
+        <div><b>manna-gum-0412.leaf</b><span class="zzz">Paused <i><b>z</b><b>z</b><b>z</b></i></span></div>
+        <div><b>tallowwood-best.leaf</b><span class="zzz">Paused <i><b>z</b><b>z</b><b>z</b></i></span></div>
+        <div><b>swamp-mahogany-2.leaf</b><span class="zzz">0.003% <i><b>z</b><b>z</b><b>z</b></i></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="pricing" style="padding-top:24px">
+  <div class="wrap">
+    <h2>Pricing per tree, billed whenever</h2>
+    <p class="lede">All plans include the same sync speed, which is very slow.</p>
+    <div class="tiers">
+      <div class="tier">
+        <h3>Single Branch</h3>
+        <div class="price">Free</div>
+        <p class="tl">2 GB, or one branch of leaves.</p>
+        <ul><li>1 registered fork</li><li>Sync window: 40 minutes a day</li><li>Support replies within one breeding season</li></ul>
+        <a class="btn btn-quiet" href="./demo.html">Claim a branch</a>
+      </div>
+      <div class="tier pick">
+        <span class="badge">Most napped-on</span>
+        <h3>Marsupial Plus</h3>
+        <div class="price">$11.99 / mo</div>
+        <p class="tl">2 TB. Twenty-two hours of uptime, matching yours.</p>
+        <ul><li>Unlimited forks</li><li>Pouch Sharing for 1 joey</li><li>Leaf version history (180 naps)</li><li>Priority snoring</li></ul>
+        <a class="btn btn-primary" href="./demo.html">Start syncing (slowly)</a>
+      </div>
+      <div class="tier">
+        <h3>Colony Enterprise</h3>
+        <div class="price">$4,800 / yr</div>
+        <p class="tl">For colonies of 40 or more koalas sharing one ridge.</p>
+        <ul><li>SSO via scent gland</li><li>Admin console nobody wakes up for</li><li>Dedicated account manager (also asleep)</li><li>99.9% uptime, 8% awake-time</li></ul>
+        <a class="btn btn-quiet" href="./demo.html">Wake up sales</a>
+      </div>
+    </div>
+    <p class="price-note">Prices in AUD. Annual plans renew when you notice.</p>
+  </div>
+</section>
+
+<div class="wrap">
+  <footer>
+    <span>Gumdrive Pty Ltd. Registered in a tree near Noosa.</span>
+    <a href="/">← theworstaistudioever</a>
+  </footer>
+</div>
+
+<script>
+  (function () {
+    var rings = document.querySelectorAll('.ring');
+    var draw = function () { rings.forEach(function (r) { r.classList.add('drawn'); }); };
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) draw();
+    else setTimeout(draw, 300);
+  })();
+</script>
+</body>
+</html>

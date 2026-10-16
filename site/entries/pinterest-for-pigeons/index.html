@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#4B3F8F; --accent:#E2574C; --accent-deep:#C23E31; --bg:#EDEDEA; --fg:#23232A;
+  --muted:#5F5E66; --ink:#18181D; --green:#2E8B6E; --crumb:#D9B98A; --card:#FFFFFF; --line:#DCDCD7;
+  --sheen:linear-gradient(115deg,#4B3F8F 0%,#5B4FA6 30%,#2E8B6E 70%,#3FA383 100%);
+  --display:'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --body:'Work Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--primary);outline-offset:3px;border-radius:12px}
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+
+/* header */
+.top{position:sticky;top:0;z-index:20;background:rgba(237,237,234,.94);backdrop-filter:saturate(1.2);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:20px;height:72px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:-.02em;color:var(--ink)}
+.logo svg{width:34px;height:34px}
+.search{flex:1;max-width:520px;display:flex;align-items:center;gap:10px;height:48px;padding:0 18px;border-radius:999px;background:#E1E1DC;color:var(--muted);font-size:15px}
+.search svg{width:18px;height:18px;flex:none}
+.top nav{margin-left:auto;display:flex;gap:8px;align-items:center}
+.pill{display:inline-flex;align-items:center;justify-content:center;height:48px;padding:0 22px;border-radius:999px;font-family:var(--display);font-weight:600;font-size:16px;text-decoration:none;border:0;cursor:pointer;transition:transform .15s ease,background .15s ease}
+.pill:active{transform:scale(.96)}
+.pill-coral{background:var(--accent-deep);color:#fff}
+.pill-coral:hover{background:#A9352A}
+.pill-quiet{background:#E1E1DC;color:var(--ink)}
+.pill-quiet:hover{background:#D5D5CF}
+
+/* hero */
+.hero{padding:56px 0 40px}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:56px;align-items:center}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(44px,6vw,80px);line-height:.98;letter-spacing:-.035em;color:var(--ink)}
+.hero p.sub{margin-top:24px;max-width:31em;font-size:19px;color:var(--fg)}
+.hero .ctas{margin-top:32px;display:flex;flex-wrap:wrap;gap:12px}
+.hero .proof{margin-top:28px;font-size:14px;color:var(--muted);max-width:34em}
+
+.board{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-items:start}
+.board .col{display:flex;flex-direction:column;gap:14px}
+.board .col:nth-child(2){margin-top:64px}
+.board .col:nth-child(3){margin-top:22px}
+.pin{position:relative;border-radius:20px;overflow:hidden;background:var(--card)}
+.pin img{width:100%;height:auto;aspect-ratio:3/4;object-fit:cover}
+.pin .perch{position:absolute;top:10px;right:10px;height:36px;padding:0 14px;font-size:14px;opacity:0;transition:opacity .15s ease,transform .15s ease}
+.pin:hover .perch,.pin:focus-within .perch,.pin .perch.on{opacity:1}
+.pin .perch.on{background:var(--ink)}
+.pin .meta{position:absolute;left:10px;bottom:10px;display:flex;gap:6px}
+.chip{background:rgba(255,255,255,.92);color:var(--ink);font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px}
+.chip.spike{background:var(--ink);color:#fff}
+.textpin{padding:18px;background:var(--card);border-radius:20px}
+.textpin b{display:block;font-family:var(--display);font-size:18px;line-height:1.2;color:var(--ink)}
+.textpin span{display:block;margin-top:6px;font-size:13px;color:var(--muted)}
+.covers{margin-top:12px;display:grid;grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr;gap:3px;height:96px;border-radius:12px;overflow:hidden}
+.covers i{display:block;background-size:cover;background-position:center}
+.covers i:first-child{grid-row:span 2}
+.shelter{aspect-ratio:4/5;display:flex;align-items:flex-end;padding:14px;background:linear-gradient(180deg,#C9D3D6 0%,#C9D3D6 55%,#8E9497 55%,#8E9497 58%,#B7BDBF 58%)}
+.shelter svg{width:100%}
+
+/* crumb divider */
+.crumbs{height:24px;margin:40px auto;max-width:1152px;background:
+ radial-gradient(circle at 4% 50%,var(--crumb) 3px,transparent 4px),
+ radial-gradient(circle at 11% 40%,var(--crumb) 2px,transparent 3px),
+ radial-gradient(ellipse 5px 3px at 19% 60%,var(--crumb) 90%,transparent),
+ radial-gradient(circle at 31% 45%,var(--crumb) 2px,transparent 3px),
+ radial-gradient(circle at 44% 55%,var(--crumb) 4px,transparent 5px),
+ radial-gradient(circle at 52% 35%,var(--crumb) 2px,transparent 3px),
+ radial-gradient(ellipse 4px 6px at 63% 50%,var(--crumb) 90%,transparent),
+ radial-gradient(circle at 77% 60%,var(--crumb) 3px,transparent 4px),
+ radial-gradient(circle at 86% 40%,var(--crumb) 2px,transparent 3px),
+ radial-gradient(circle at 96% 52%,var(--crumb) 3px,transparent 4px)}
+
+section{padding:24px 0 32px}
+h2{font-family:var(--display);font-weight:700;font-size:clamp(32px,4vw,48px);line-height:1.05;letter-spacing:-.025em;color:var(--ink);max-width:16em}
+.lede{margin-top:12px;color:var(--muted);max-width:36em}
+
+/* features */
+.masonry{margin-top:36px;columns:3 300px;column-gap:20px}
+.masonry > *{break-inside:avoid;margin-bottom:20px}
+.feat{background:var(--card);border-radius:20px;overflow:hidden}
+.feat .art{height:180px;display:grid;place-items:center}
+.feat.tall .art{height:260px}
+.feat .txt{padding:22px 24px 26px}
+.feat h3{font-family:var(--display);font-size:24px;font-weight:700;line-height:1.15;color:var(--ink)}
+.feat p{margin-top:10px;font-size:16px}
+.feat .stat{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
+.feat .stat span{font-size:13px;font-weight:600;background:var(--bg);padding:4px 10px;border-radius:999px;color:var(--fg)}
+
+/* testimonials */
+.quote{background:var(--card);border-radius:20px;padding:24px}
+.quote blockquote{font-family:var(--display);font-size:22px;line-height:1.3;font-weight:500;color:var(--ink)}
+.quote.big blockquote{font-size:26px}
+.who{margin-top:20px;display:flex;align-items:center;gap:12px}
+.who img,.who .ini{width:52px;height:52px;border-radius:50%;flex:none;object-fit:cover}
+.who .ini{display:grid;place-items:center;background:var(--sheen);color:#fff;font-family:var(--display);font-weight:700;font-size:18px}
+.who b{display:block;font-size:15px;color:var(--ink)}
+.who span{display:block;font-size:13px;color:var(--muted);line-height:1.4}
+
+/* pricing */
+.tiers{margin-top:36px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:start}
+.tier{background:var(--card);border-radius:20px;padding:28px;border:2px solid transparent}
+.tier.hot{border:3px solid transparent;background:linear-gradient(var(--card),var(--card)) padding-box,var(--sheen) border-box;margin-top:-12px;padding-top:40px}
+.tier h3{font-family:var(--display);font-size:22px;font-weight:700;color:var(--ink)}
+.tier .price{margin-top:8px;font-family:var(--display);font-size:44px;font-weight:800;letter-spacing:-.03em;color:var(--ink);font-variant-numeric:tabular-nums}
+.tier .tl{margin-top:4px;font-size:15px;color:var(--muted);min-height:3em}
+.tier ul{margin:20px 0 24px;list-style:none}
+.tier li{padding:9px 0;border-top:1px solid var(--line);font-size:15px;display:flex;gap:10px}
+.tier li::before{content:"";flex:none;width:8px;height:8px;margin-top:8px;border-radius:50%;background:var(--crumb)}
+.tier .pill{width:100%}
+.tier .flag{display:inline-block;margin-bottom:10px;font-size:13px;font-weight:600;color:var(--primary)}
+
+/* demo band */
+.demo-band{margin:56px 0 0;background:var(--ink);color:#fff;border-radius:28px;padding:48px;display:grid;grid-template-columns:1.3fr 1fr;gap:32px;align-items:center}
+.demo-band h2{color:#fff}
+.demo-band p{margin-top:12px;color:#C8C8CE;max-width:30em}
+.demo-band .thumbs{display:flex;gap:10px;justify-content:flex-end}
+.demo-band .thumbs img{width:30%;height:auto;border-radius:14px;aspect-ratio:3/4;object-fit:cover}
+.demo-band .thumbs img:nth-child(2){transform:translateY(18px)}
+.demo-band .pill{margin-top:24px;height:56px;padding:0 28px;font-size:18px}
+
+footer{padding:56px 0 40px;color:var(--muted);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer a{color:var(--muted)}
+
+/* load: one moment, the board settling in */
+@media (prefers-reduced-motion:no-preference){
+  .board .pin,.board .textpin{animation:settle .6s cubic-bezier(.2,.8,.2,1) both}
+  .board .col:nth-child(1) > *:nth-child(1){animation-delay:.05s}
+  .board .col:nth-child(2) > *:nth-child(1){animation-delay:.12s}
+  .board .col:nth-child(3) > *:nth-child(1){animation-delay:.19s}
+  .board .col:nth-child(1) > *:nth-child(2){animation-delay:.26s}
+  .board .col:nth-child(2) > *:nth-child(2){animation-delay:.33s}
+  .board .col:nth-child(3) > *:nth-child(2){animation-delay:.40s}
+  @keyframes settle{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+}
+
+@media (max-width:900px){
+  .search{display:none}
+  .hero .wrap{grid-template-columns:1fr;gap:40px}
+  .tiers{grid-template-columns:1fr}
+  .tier.hot{margin-top:0}
+  .demo-band{grid-template-columns:1fr;padding:32px}
+  .demo-band .thumbs{justify-content:flex-start}
+}
+@media (max-width:560px){
+  .top nav .pill-quiet{display:none}
+  .board{gap:10px}
+  .board .col{gap:10px}
+  .board .col:nth-child(2){margin-top:36px}
+  .textpin{padding:12px}
+  .textpin b{font-size:15px}
+  .covers{height:64px}
+}
+</style>
+<title>Ledge. — Pinterest for pigeons</title>
+<meta name="description" content="Every good ledge, saved for later. Ledge. is the visual discovery board for city pigeons. Pin the windowsills, food-court floors and bronze generals worth coming back to. 41 million perches catalogued across 6 cities, most of them in Rome.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/pinterest-for-pigeons/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Ledge. — Pinterest for pigeons">
+<meta property="og:description" content="Every good ledge, saved for later. Ledge. is the visual discovery board for city pigeons. Pin the windowsills, food-court floors and bronze generals worth coming back to. 41 million perches catalogued across 6 cities, most of them in Rome.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/pinterest-for-pigeons/">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/pinterest-for-pigeons/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Worst AI Studio Ever logo">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Ledge. — Pinterest for pigeons">
+<meta name="twitter:description" content="Every good ledge, saved for later. Ledge. is the visual discovery board for city pigeons. Pin the windowsills, food-court floors and bronze generals worth coming back to. 41 million perches catalogued across 6 cities, most of them in Rome.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/pinterest-for-pigeons/social-preview.jpg">
+<meta name="twitter:image:alt" content="The Worst AI Studio Ever logo">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#" aria-label="Ledge. home">
+      <svg viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="17" fill="#C23E31"/><path d="M17 9v10M17 19l-6 6M17 19l6 6M17 19v7" stroke="#fff" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg>
+      Ledge.
+    </a>
+    <div class="search" aria-hidden="true">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="9" r="6"/><path d="M14 14l4 4" stroke-linecap="round"/></svg>
+      Search 41,000,000 perches
+    </div>
+    <nav>
+      <a class="pill pill-quiet" href="./demo.html">Log in</a>
+      <a class="pill pill-coral" href="./demo.html">Start a roost board</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <h1>Every good ledge, saved for later.</h1>
+      <p class="sub">Ledge. is the visual discovery board for city pigeons. Pin the windowsills, food-court floors and bronze generals worth coming back to. 41 million perches catalogued across 6 cities, most of them in Rome.</p>
+      <div class="ctas">
+        <a class="pill pill-coral" href="./demo.html">Start a roost board</a>
+        <a class="pill pill-quiet" href="./demo.html">open the demo →</a>
+      </div>
+      <p class="proof">Used daily by 11 million birds and one municipal pest-control department, which signed up by accident and now pays for Trafalgar.</p>
+    </div>
+
+    <div class="board" aria-label="Sample perches from the Ledge. feed">
+      <div class="col">
+        <div class="pin">
+          <img src="pin-statue.webp" alt="A pigeon standing on the hat of a bronze statue of a general" width="600" height="800">
+          <button class="pill pill-coral perch" type="button">Perch</button>
+          <div class="meta"><span class="chip">2.3M saves</span></div>
+        </div>
+        <div class="textpin">
+          <b>Ledges I Respect</b>
+          <span>412 pins, all the same bench</span>
+          <div class="covers"><i style="background-image:url(pin-ledge.webp)"></i><i style="background-image:url(pin-crumbs.webp)"></i><i style="background-image:url(pin-statue.webp)"></i></div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="pin">
+          <img src="pin-crumbs.webp" alt="A pigeon on a café table next to a half-eaten croissant" width="600" height="800">
+          <button class="pill pill-coral perch" type="button">Perch</button>
+          <div class="meta"><span class="chip">Crumb density 9.1</span></div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="pin">
+          <img src="pin-ledge.webp" alt="A pigeon on a sunny stone windowsill beside a flower pot" width="600" height="800">
+          <button class="pill pill-coral perch" type="button">Perch</button>
+          <div class="meta"><span class="chip spike">Spike risk: high</span></div>
+        </div>
+        <div class="pin shelter" aria-label="Bus shelter roof, route 38">
+          <svg viewBox="0 0 120 40" aria-hidden="true"><rect x="4" y="8" width="112" height="6" rx="2" fill="#5F6668"/><rect x="10" y="14" width="4" height="26" fill="#5F6668"/><rect x="106" y="14" width="4" height="26" fill="#5F6668"/><rect x="14" y="16" width="92" height="20" fill="#DDE6E9" opacity=".7"/></svg>
+          <div class="meta"><span class="chip">Bus shelter, route 38</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="crumbs" aria-hidden="true"></div>
+
+<section id="features">
+  <div class="wrap">
+    <h2>Built on 14 months of watching what you sit on.</h2>
+    <p class="lede">Our research team followed 3,000 birds around Rome with clipboards. We now understand the market better than the market does.</p>
+    <div class="masonry">
+      <article class="feat tall">
+        <div class="art" style="background:#F3E6D2" aria-hidden="true">
+          <svg width="200" height="160" viewBox="0 0 200 160"><ellipse cx="100" cy="120" rx="80" ry="14" fill="#E4D2B5"/><path d="M48 112c10-40 94-40 104 0z" fill="#C98A3E"/><path d="M62 108c8-24 68-24 76 0" stroke="#A86C26" stroke-width="3" fill="none"/><circle cx="34" cy="126" r="4" fill="#D9B98A"/><circle cx="168" cy="118" r="3" fill="#D9B98A"/><circle cx="150" cy="134" r="5" fill="#D9B98A"/><circle cx="56" cy="138" r="3" fill="#D9B98A"/></svg>
+        </div>
+        <div class="txt">
+          <h3>Crumb-aware discovery</h3>
+          <p>The recommendation engine learns which pastries you peck at and shows you more of them, in the same car park, at 7:40 every morning. In 14 months it has never once recommended a different car park.</p>
+          <div class="stat"><span>1 car park</span><span>7:40 daily</span></div>
+        </div>
+      </article>
+      <article class="feat">
+        <div class="art" style="background:#DCE3DF" aria-hidden="true">
+          <svg width="120" height="140" viewBox="0 0 120 140"><path d="M20 70c10-22 70-22 80 0l-6 8H26z" fill="#4E6B5E"/><circle cx="60" cy="96" r="22" fill="#5E7D6F"/><rect x="34" y="118" width="52" height="22" fill="#4E6B5E"/><ellipse cx="62" cy="48" rx="14" ry="10" fill="#7C7B86"/><circle cx="72" cy="40" r="7" fill="#6E6D7A"/><path d="M78 40l6 2-6 2z" fill="#2B2A30"/></svg>
+        </div>
+        <div class="txt">
+          <h3>Statue boards</h3>
+          <p>Sort bronze heads by sculptor, era and how much they have already been sat on. The Garibaldi in Piazza Garibaldi has 2.3 million saves and is now, structurally, mostly our users.</p>
+        </div>
+      </article>
+      <article class="feat">
+        <div class="art" style="background:#E6E1EF" aria-hidden="true">
+          <svg width="220" height="130" viewBox="0 0 220 130"><rect x="20" y="70" width="180" height="16" rx="3" fill="#B9B4A8"/><g fill="#6E6D74"><path d="M30 70l4-22 4 22z"/><path d="M50 70l4-22 4 22z"/><path d="M70 70l4-22 4 22z"/><path d="M90 70l4-22 4 22z"/><path d="M110 70l4-22 4 22z"/><path d="M130 70l4-22 4 22z"/><path d="M150 70l4-22 4 22z"/><path d="M170 70l4-22 4 22z"/></g><rect x="78" y="96" width="64" height="26" rx="13" fill="#4B3F8F"/><text x="110" y="113" font-family="Work Sans,sans-serif" font-size="12" fill="#fff" text-anchor="middle">Month 11</text></svg>
+        </div>
+        <div class="txt">
+          <h3>Sit later</h3>
+          <p>Spot a ledge mid-flight and save it with one tap. Ledge. reminds you about it 9 to 14 months later, which our data shows is roughly when the building installs the spikes.</p>
+          <div class="stat"><span>Reminder accuracy 100%</span><span>Ledge availability 0%</span></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<div class="crumbs" aria-hidden="true"></div>
+
+<section id="birds">
+  <div class="wrap">
+    <h2>Pinned by birds with serious titles.</h2>
+    <div class="masonry">
+      <figure class="quote big">
+        <blockquote>“I had 412 pins of one bench. The app said I had 412 benches. It was one bench. I am on it now.”</blockquote>
+        <figcaption class="who"><img src="headshot-1.webp" alt="Gary, a pigeon, photographed head-on against a grey backdrop" width="52" height="52"><div><b>Gary</b><span>Senior Bench Occupant, Union Square, 9 years</span></div></figcaption>
+      </figure>
+      <figure class="quote">
+        <blockquote>“My board ‘Shoulders of Men Who Are Eating’ has 9,000 followers. I have landed on none of them. I just like to look.”</blockquote>
+        <figcaption class="who"><span class="ini" aria-hidden="true">PR</span><div><b>Pamela Rock-Dove</b><span>Aspirational Percher, Cais do Sodré, Lisbon</span></div></figcaption>
+      </figure>
+      <figure class="quote">
+        <blockquote>“We moved the whole flock's roost planning onto Ledge. in Q3. Two birds have stopped sitting on me.”</blockquote>
+        <figcaption class="who"><span class="ini" aria-hidden="true">CL</span><div><b>Columba Livia III</b><span>Head of Roost Operations, St Mark's Square</span></div></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<div class="crumbs" aria-hidden="true"></div>
+
+<section id="pricing">
+  <div class="wrap">
+    <h2>Pricing for every size of flock.</h2>
+    <p class="lede">All plans include unlimited pins. Billing is per bird, and we have never successfully counted the birds.</p>
+    <div class="tiers">
+      <div class="tier">
+        <h3>Feral</h3>
+        <div class="price">$0</div>
+        <p class="tl">For birds who have not committed to a ledge.</p>
+        <ul><li>Unlimited pins, 3 roost boards</li><li>Sponsored bread in your feed</li><li>Ads for other bread</li></ul>
+        <a class="pill pill-quiet" href="./demo.html">Start free</a>
+      </div>
+      <div class="tier hot">
+        <span class="flag">Picked by 8 in 10 returning birds</span>
+        <h3>Homing</h3>
+        <div class="price">$4.99<small style="font-size:18px;font-weight:600">/mo</small></div>
+        <p class="tl">For birds who always come back to the same board.</p>
+        <ul><li>Unlimited roost boards</li><li>Return-to-loft sync</li><li>Spike alerts, 48 hours early</li><li>Night roosting mode</li></ul>
+        <a class="pill pill-coral" href="./demo.html">Start Homing</a>
+      </div>
+      <div class="tier">
+        <h3>Trafalgar</h3>
+        <div class="price">$1,840<small style="font-size:18px;font-weight:600">/yr</small></div>
+        <p class="tl">For flocks of 200 or more operating in a public square.</p>
+        <ul><li>Shared flock boards</li><li>A dedicated statue manager</li><li>Priority routing to tourists holding food</li><li>SSO (Single Sitting On)</li></ul>
+        <a class="pill pill-quiet" href="./demo.html">Talk to the flock</a>
+      </div>
+    </div>
+
+    <div class="demo-band">
+      <div>
+        <h2>Your feed is already full of ledges.</h2>
+        <p>Filter by crumb density, check the spike risk, and save a café table to Bread Adjacent before somebody wipes it.</p>
+        <a class="pill pill-coral" href="./demo.html">open the demo →</a>
+      </div>
+      <div class="thumbs" aria-hidden="true">
+        <img src="pin-ledge.webp" alt="" width="600" height="800" loading="lazy">
+        <img src="pin-crumbs.webp" alt="" width="600" height="800" loading="lazy">
+        <img src="pin-statue.webp" alt="" width="600" height="800" loading="lazy">
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Ledge. Inc. Registered in Rome, on a ledge.</span>
+    <a href="/">← theworstaistudioever</a>
+  </div>
+</footer>
+
+<script>
+document.querySelectorAll('.perch').forEach(function(b){
+  b.addEventListener('click',function(){
+    var on=b.classList.toggle('on');
+    b.textContent=on?'Perched':'Perch';
+  });
+});
+</script>
+</body>
+</html>
