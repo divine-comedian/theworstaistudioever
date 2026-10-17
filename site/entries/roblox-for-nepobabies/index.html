@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0E1612">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;0,6..96,700;1,6..96,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0E1612; --surface:#16221C; --surface-2:#1C2a23; --line:#2A3A31;
+  --brass:#C8A24A; --brass-dim:#8f7536; --claret:#A3263A;
+  --fg:#E9E3D2; --ink:#F4EFE2; --muted:#9AA398;
+  --display:'Bodoni Moda','Didot','Bodoni 72',Georgia,serif;
+  --body:'Jost',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.6;font-weight:400;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--brass);outline-offset:3px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+
+/* top bar */
+.top{display:flex;align-items:center;justify-content:space-between;padding:22px 0;border-bottom:1px solid var(--line)}
+.mark{display:flex;align-items:center;gap:12px;text-decoration:none;font-family:var(--display);font-size:24px;font-weight:600;color:var(--ink);letter-spacing:.01em}
+.mark svg{width:30px;height:34px}
+.top nav{display:flex;gap:28px;font-size:15px}
+.top nav a{text-decoration:none;color:var(--muted);transition:color .2s}
+.top nav a:hover{color:var(--ink)}
+.members{font-size:14px;color:var(--brass);text-decoration:none;border:1px solid var(--brass-dim);padding:8px 16px;border-radius:2px}
+.members:hover{background:var(--brass);color:var(--bg)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1fr 1.15fr;gap:56px;align-items:center;padding:72px 0 56px}
+.est{font-size:15px;color:var(--brass);margin-bottom:22px;letter-spacing:.02em}
+.hero h1{font-family:var(--display);font-weight:400;font-size:clamp(44px,6vw,76px);line-height:1.02;color:var(--ink);letter-spacing:-.01em;margin-bottom:26px}
+.hero p.sub{color:var(--fg);opacity:.86;max-width:46ch;font-size:18px;font-weight:300;margin-bottom:38px}
+.rope-cta{position:relative;display:inline-block;padding-top:30px}
+.rope{position:absolute;top:0;left:-18px;right:-18px;height:40px;pointer-events:none;transform-origin:50% 0;transition:transform .5s ease}
+.rope-cta:hover .rope{transform:rotate(2deg)}
+.btn{display:inline-block;font-family:var(--body);font-weight:500;font-size:16px;text-decoration:none;padding:16px 30px;border-radius:2px;border:1px solid var(--brass);background:var(--brass);color:#14100a;cursor:pointer;transition:background .2s,color .2s}
+.btn:hover{background:var(--ink);border-color:var(--ink)}
+.btn.ghost{background:transparent;color:var(--brass)}
+.btn.ghost:hover{background:var(--brass);color:#14100a}
+.hero-cta-row{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end}
+.fine{font-size:13px;color:var(--muted);margin-top:16px}
+
+.frame{position:relative;border:1px solid var(--brass-dim);padding:10px;background:var(--surface)}
+.frame img{width:100%;height:auto;aspect-ratio:16/9;object-fit:cover}
+.frame::before,.frame::after,.frame span::before,.frame span::after{content:"";position:absolute;width:9px;height:9px;background:var(--brass);transform:rotate(45deg)}
+.frame::before{top:-5px;left:-5px}.frame::after{top:-5px;right:-5px}
+.frame span::before{bottom:-5px;left:-5px}.frame span::after{bottom:-5px;right:-5px}
+.frame figcaption{font-size:13px;color:var(--muted);padding:12px 4px 2px;font-style:italic;font-family:var(--display)}
+
+/* ticker */
+.ticker{border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;white-space:nowrap;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.ticker-inner{display:inline-flex;gap:56px;padding:14px 0;animation:slide 60s linear infinite}
+.ticker b{color:var(--brass);font-weight:500}
+@keyframes slide{to{transform:translateX(-50%)}}
+
+/* brass rule */
+.rule{display:flex;align-items:center;gap:14px;margin:96px 0 56px}
+.rule::before,.rule::after{content:"";flex:1;height:1px;background:var(--brass-dim)}
+.rule i{width:8px;height:8px;background:var(--brass);transform:rotate(45deg)}
+
+.section-head{max-width:640px;margin-bottom:48px}
+.section-head h2{font-family:var(--display);font-weight:400;font-size:clamp(32px,4vw,48px);line-height:1.1;color:var(--ink);margin-bottom:14px}
+.section-head p{color:var(--muted);font-weight:300}
+
+/* studded brick panels */
+.bricks{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.brick{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:0 28px 30px;position:relative}
+.studs{display:flex;gap:14px;padding:18px 0 24px;border-bottom:1px solid var(--line);margin-bottom:24px}
+.studs i{width:16px;height:16px;border-radius:50%;background:var(--surface-2);border:1px solid var(--brass-dim);transition:background .3s,border-color .3s}
+.brick:hover .studs i{background:var(--brass);border-color:var(--brass)}
+.brick:hover .studs i:nth-child(2){transition-delay:.08s}
+.brick:hover .studs i:nth-child(3){transition-delay:.16s}
+.brick:hover .studs i:nth-child(4){transition-delay:.24s}
+.brick h3{font-family:var(--display);font-weight:600;font-size:26px;color:var(--ink);line-height:1.15;margin-bottom:12px}
+.brick p{font-weight:300;font-size:16px;color:var(--fg);opacity:.85}
+
+/* members */
+.members-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.card{border-top:1px solid var(--brass-dim);padding-top:28px;display:flex;flex-direction:column;gap:22px}
+.card blockquote{font-family:var(--display);font-size:22px;line-height:1.4;color:var(--ink)}
+.who{display:flex;align-items:center;gap:14px;margin-top:auto}
+.who img,.crest{width:60px;height:60px;border-radius:50%;flex:none}
+.who img{object-fit:cover;border:1px solid var(--brass-dim)}
+.crest{display:grid;place-items:center;background:var(--surface);border:1px solid var(--brass-dim);font-family:var(--display);font-weight:700;color:var(--brass);font-size:20px}
+.who strong{display:block;font-weight:500;color:var(--ink);font-size:16px}
+.who small{display:block;color:var(--muted);font-size:14px;line-height:1.4}
+
+/* tiers */
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:stretch}
+.tier{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:34px 30px;display:flex;flex-direction:column;position:relative}
+.tier.roped{border-color:var(--brass);background:linear-gradient(180deg,#1d2b23,var(--surface))}
+.tier .rope{top:-22px;left:30px;right:30px;height:36px}
+.tier h3{font-family:var(--display);font-weight:400;font-size:30px;color:var(--ink)}
+.price{font-family:var(--display);font-size:40px;color:var(--brass);margin:14px 0 6px;line-height:1.1;font-variant-numeric:tabular-nums}
+.price.small{font-size:24px;line-height:1.25}
+.tier .tl{color:var(--muted);font-size:15px;margin-bottom:22px;min-height:48px}
+.tier ul{list-style:none;display:grid;gap:12px;margin-bottom:30px;font-weight:300;font-size:16px}
+.tier li{padding-left:22px;position:relative}
+.tier li::before{content:"";position:absolute;left:2px;top:10px;width:7px;height:7px;background:var(--brass);transform:rotate(45deg)}
+.tier .btn{margin-top:auto;text-align:center}
+
+/* demo band */
+.lobby{margin-top:110px;border:1px solid var(--brass-dim);padding:56px;display:grid;grid-template-columns:1.4fr 1fr;gap:40px;align-items:center;background:radial-gradient(ellipse at 85% 50%,rgba(200,162,74,.12),transparent 60%),var(--surface)}
+.lobby h2{font-family:var(--display);font-weight:400;font-size:clamp(30px,3.6vw,44px);line-height:1.1;color:var(--ink);margin-bottom:14px}
+.lobby p{color:var(--muted);font-weight:300;max-width:48ch}
+.lobby .go{justify-self:end}
+.lobby .btn{font-size:18px;padding:20px 36px}
+
+footer{margin-top:96px;border-top:1px solid var(--line);padding:32px 0 48px;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+footer a{text-decoration:none;color:var(--brass)}
+footer a:hover{text-decoration:underline}
+
+/* reveal, degrades without JS */
+.js .reveal{opacity:0;transform:translateY(12px);transition:opacity .6s ease,transform .6s ease}
+.js .reveal.in{opacity:1;transform:none}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr;padding-top:40px}
+  .hero .frame{order:-1}
+  .bricks,.members-grid,.tiers{grid-template-columns:1fr}
+  .top nav{display:none}
+  .lobby{grid-template-columns:1fr;padding:36px 28px}
+  .lobby .go{justify-self:start}
+  .tier.roped{margin-top:16px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .js .reveal{opacity:1;transform:none}
+}
+</style>
+<title>Spawnpoint — Roblox for nepobabies</title>
+<meta name="description" content="Everyone starts somewhere. You start at the end. Spawnpoint is a block-building game platform for the children of people you have heard of. Every obby arrives pre-completed, every game ships with a founder credit in your name, and every Robux is held in trust until a grown-up signs for it.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/roblox-for-nepobabies/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Spawnpoint — Roblox for nepobabies">
+<meta property="og:description" content="Everyone starts somewhere. You start at the end. Spawnpoint is a block-building game platform for the children of people you have heard of. Every obby arrives pre-completed, every game ships with a founder credit in your name, and every Robux is held in trust until a grown-up signs for it.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/roblox-for-nepobabies/">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/roblox-for-nepobabies/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Spawnpoint hero illustration">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Spawnpoint — Roblox for nepobabies">
+<meta name="twitter:description" content="Everyone starts somewhere. You start at the end. Spawnpoint is a block-building game platform for the children of people you have heard of. Every obby arrives pre-completed, every game ships with a founder credit in your name, and every Robux is held in trust until a grown-up signs for it.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/roblox-for-nepobabies/social-preview.jpg">
+<meta name="twitter:image:alt" content="Spawnpoint hero illustration">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="crest" viewBox="0 0 30 34">
+      <path d="M3 9h24v10c0 7-6 12-12 14C9 31 3 26 3 19z" fill="none" stroke="#C8A24A" stroke-width="1.6"/>
+      <rect x="6" y="2" width="5" height="5" fill="#C8A24A"/><rect x="12.5" y="0" width="5" height="7" fill="#C8A24A"/><rect x="19" y="2" width="5" height="5" fill="#C8A24A"/>
+      <text x="15" y="24" text-anchor="middle" font-family="Bodoni Moda,Georgia,serif" font-size="11" font-weight="700" fill="#C8A24A">S</text>
+    </symbol>
+    <symbol id="rope" viewBox="0 0 400 40" preserveAspectRatio="none">
+      <path d="M6 6 C 120 40, 280 40, 394 6" fill="none" stroke="#A3263A" stroke-width="7" stroke-linecap="round"/>
+      <path d="M6 6 C 120 40, 280 40, 394 6" fill="none" stroke="#c7465a" stroke-width="2" stroke-dasharray="2 9" stroke-linecap="round"/>
+      <circle cx="6" cy="6" r="5.5" fill="#C8A24A"/><circle cx="394" cy="6" r="5.5" fill="#C8A24A"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="wrap">
+  <header class="top">
+    <a class="mark" href="#top"><svg aria-hidden="true"><use href="#crest"/></svg>Spawnpoint</a>
+    <nav aria-label="Sections"><a href="#features">The platform</a><a href="#members">Members</a><a href="#membership">Membership</a></nav>
+    <a class="members" href="./demo.html">Members' entrance</a>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div>
+        <p class="est">Members only. Established by someone else.</p>
+        <h1>Everyone starts somewhere. You start at the end.</h1>
+        <p class="sub">Spawnpoint is a block-building game platform for the children of people you have heard of. Every obby arrives pre-completed, every game ships with a founder credit in your name, and every Robux is held in trust until a grown-up signs for it.</p>
+        <div class="hero-cta-row">
+          <div class="rope-cta">
+            <svg class="rope" aria-hidden="true"><use href="#rope"/></svg>
+            <a class="btn" href="./demo.html">Claim your inheritance</a>
+          </div>
+          <a class="btn ghost" href="./demo.html">Open the demo →</a>
+        </div>
+        <p class="fine">Applications are reviewed by surname.</p>
+      </div>
+      <figure class="frame">
+        <span aria-hidden="true"></span>
+        <img src="hero.webp" alt="A small block figure in a navy school blazer standing on a marble plinth in a dark green leather club room, beside a brass lamp and a velvet rope." width="1600" height="900">
+        <figcaption>Founder, age 11, photographed at the finish line on day one.</figcaption>
+      </figure>
+    </section>
+  </main>
+</div>
+
+<div class="ticker" aria-label="Platform statistics">
+  <div class="ticker-inner">
+    <span>Obbies completed on members' behalf <b>1,204,889</b></span>
+    <span>Founder credits issued <b>38,210</b></span>
+    <span>Contractors moved to Special Thanks <b>1,566,604</b></span>
+    <span>Robux withdrawals approved <b>0</b></span>
+    <span>Members whose parents took a call about this <b>4,412</b></span>
+    <span>Obbies completed on members' behalf <b>1,204,889</b></span>
+    <span>Founder credits issued <b>38,210</b></span>
+    <span>Contractors moved to Special Thanks <b>1,566,604</b></span>
+    <span>Robux withdrawals approved <b>0</b></span>
+    <span>Members whose parents took a call about this <b>4,412</b></span>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="rule" aria-hidden="true"><i></i></div>
+  <section id="features">
+    <div class="section-head reveal">
+      <h2>The platform, as it was explained to us by the client's father.</h2>
+      <p>Three systems, each maintained by people you will not meet.</p>
+    </div>
+    <div class="bricks">
+      <article class="brick reveal">
+        <div class="studs" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        <h3>Pre-completed obbies</h3>
+        <p>Each obstacle course is finished by a licensed professional before you log in. You spawn on the final platform beside the trophy, and the badge is already in your inventory. Jumping is optional and, for liability reasons, discouraged.</p>
+      </article>
+      <article class="brick reveal">
+        <div class="studs" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        <h3>The Robux Trust</h3>
+        <p>Your in-game currency sits in an irrevocable trust administered by your father's business manager. Withdrawals need two signatures, neither of them yours. Interest compounds quarterly and is reported to your mother's accountant in Zurich.</p>
+      </article>
+      <article class="brick reveal">
+        <div class="studs" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        <h3>Merit Mode</h3>
+        <p>One toggle rewrites the credits on any game you own. You become Founder, Lead Designer and Visionary. The 41 contractors who built it move to a scrolling "Special Thanks" panel set in 9-point type.</p>
+      </article>
+    </div>
+  </section>
+
+  <div class="rule" aria-hidden="true"><i></i></div>
+  <section id="members">
+    <div class="section-head reveal">
+      <h2>From the members' lounge</h2>
+      <p>Quotes provided through the family's communications team and approved in writing.</p>
+    </div>
+    <div class="members-grid">
+      <figure class="card reveal">
+        <blockquote>"I built my first game when I was nine. Well, it was built while I was nine. I was in the room for most of it."</blockquote>
+        <figcaption class="who"><span class="crest" aria-hidden="true">TW</span><span><strong>Tallulah Whitcombe-Ashford</strong><small>Founder &amp; Visionary (age 11), Third-Generation Content Creator</small></span></figcaption>
+      </figure>
+      <figure class="card reveal">
+        <blockquote>"Merit Mode changed how my teachers look at me. My dad made one phone call and the school now uses Spawnpoint in assembly."</blockquote>
+        <figcaption class="who"><span class="crest" aria-hidden="true">BV</span><span><strong>Bram Okonkwo-Vance</strong><small>Co-CEO of His Mother's Production Company, Grade 7</small></span></figcaption>
+      </figure>
+      <figure class="card reveal">
+        <blockquote>"My son has 2.1 million visits on Yacht Tycoon: Monaco. I have not checked who made it and I am not going to."</blockquote>
+        <figcaption class="who"><img src="headshot-3.webp" alt="Graham Ashford, silver-haired, in a navy sweater, seated in a green leather club chair." width="320" height="320" loading="lazy"><span><strong>Graham Ashford</strong><small>Executive Producer, Ashford Pictures, and Father (Primary Signatory)</small></span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <div class="rule" aria-hidden="true"><i></i></div>
+  <section id="membership">
+    <div class="section-head reveal">
+      <h2>Membership</h2>
+      <p>Billed to a parent. Statements go to an address you do not live at.</p>
+    </div>
+    <div class="tiers">
+      <article class="tier reveal">
+        <h3>Gap Year</h3>
+        <p class="price">$0</p>
+        <p class="tl">Covered by a parent. You will not see the invoice.</p>
+        <ul><li>One pre-completed obby per week</li><li>Founder credit on up to 2 games</li><li>Robux Trust, read-only</li></ul>
+        <a class="btn ghost" href="./demo.html">Have it arranged</a>
+      </article>
+      <article class="tier roped reveal">
+        <svg class="rope" aria-hidden="true"><use href="#rope"/></svg>
+        <h3>Legacy</h3>
+        <p class="price">$4,800/mo</p>
+        <p class="tl">For heirs with a podcast in development.</p>
+        <ul><li>Unlimited pre-completed obbies</li><li>Merit Mode on every game</li><li>A human contractor on call 06:00 to 23:00</li><li>Avatar fitted by a stylist who has dressed a Kardashian, once</li></ul>
+        <a class="btn" href="./demo.html">Have it arranged</a>
+      </article>
+      <article class="tier reveal">
+        <h3>Dynasty</h3>
+        <p class="price small">Inquire through your family office</p>
+        <p class="tl">We do not publish this number. Neither will you.</p>
+        <ul><li>A private server named after a wing of a museum</li><li>Front-page placement, regardless of player count</li><li>Board seat on the Spawnpoint Youth Advisory Council</li><li>Your grandchildren's accounts, pre-reserved</li></ul>
+        <a class="btn ghost" href="./demo.html">Have your people call</a>
+      </article>
+    </div>
+  </section>
+
+  <section class="lobby reveal">
+    <div>
+      <h2>The Heir Console is open for viewing.</h2>
+      <p>One founder's dashboard, shown with her family's permission. Toggle Merit Mode, skip a few obbies, and try to withdraw from the trust.</p>
+    </div>
+    <div class="go"><a class="btn" href="./demo.html">Open the demo →</a></div>
+  </section>
+
+  <footer>
+    <a href="/">← theworstaistudioever</a>
+    <span>Spawnpoint Holdings is a subsidiary of a holding company. Not affiliated with Roblox, which has asked.</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var root=document.documentElement; root.classList.add('js');
+  var els=document.querySelectorAll('.reveal');
+  function showAll(){for(var i=0;i<els.length;i++)els[i].classList.add('in');}
+  if(!('IntersectionObserver' in window)){showAll();return;}
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+  },{rootMargin:'0px 0px -8% 0px'});
+  for(var i=0;i<els.length;i++)io.observe(els[i]);
+  setTimeout(showAll,1200);
+})();
+</script>
+</body>
+</html>

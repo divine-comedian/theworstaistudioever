@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0E1612">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;0,6..96,700;1,6..96,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0E1612; --surface:#16221C; --surface-2:#1C2A23; --line:#2A3A31;
+  --brass:#C8A24A; --brass-dim:#8f7536; --claret:#A3263A; --claret-soft:#d06a7b;
+  --fg:#E9E3D2; --ink:#F4EFE2; --muted:#9AA398;
+  --display:'Bodoni Moda','Didot','Bodoni 72',Georgia,serif;
+  --body:'Jost',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5;min-height:100vh;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+
+.chrome{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 22px;border-bottom:1px solid var(--line);background:#0b120f}
+.back{color:var(--muted);text-decoration:none;font-size:14px}
+.back:hover{color:var(--brass)}
+.chrome .who{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--muted)}
+.chrome .who b{color:var(--ink);font-weight:500}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--surface-2);border:1px solid var(--brass-dim);display:grid;place-items:center;font-family:var(--display);font-weight:700;color:var(--brass);font-size:12px}
+
+.app{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 55px)}
+aside{border-right:1px solid var(--line);padding:22px 16px;background:var(--surface)}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:20px;font-weight:600;color:var(--ink);padding:0 8px 20px;border-bottom:1px solid var(--line);margin-bottom:18px}
+.brand svg{width:24px;height:28px}
+aside h2{font-size:13px;color:var(--muted);font-weight:500;padding:0 8px;margin-bottom:8px}
+.games{list-style:none;display:grid;gap:4px;margin-bottom:26px}
+.games button{width:100%;text-align:left;background:none;border:1px solid transparent;border-radius:4px;padding:10px 10px;display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:center}
+.games button:hover{background:var(--surface-2)}
+.games button[aria-pressed="true"]{background:var(--surface-2);border-color:var(--brass-dim)}
+.thumb{width:34px;height:34px;border-radius:4px;display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:5px}
+.thumb i{border-radius:50%;background:rgba(244,239,226,.35)}
+.games strong{display:block;font-weight:500;color:var(--ink);font-size:14px;line-height:1.25}
+.games small{color:var(--muted);font-size:12px}
+.trustmini{border:1px solid var(--line);border-radius:4px;padding:14px;background:var(--bg)}
+.trustmini p{font-size:12px;color:var(--muted)}
+.trustmini b{display:block;font-family:var(--display);font-size:24px;color:var(--brass);font-weight:400;font-variant-numeric:tabular-nums}
+
+main{padding:28px 34px 48px;min-width:0}
+.gamehead{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:22px}
+.gamehead h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,3.4vw,40px);color:var(--ink);line-height:1.1}
+.founder{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--brass);border:1px solid var(--brass-dim);border-radius:2px;padding:4px 10px;margin-top:10px}
+.founder svg{width:14px;height:16px}
+.stats{display:flex;gap:28px}
+.stats div{text-align:right}
+.stats b{display:block;font-family:var(--display);font-size:26px;font-weight:400;color:var(--ink);font-variant-numeric:tabular-nums}
+.stats span{font-size:12px;color:var(--muted)}
+
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:24px;overflow-x:auto}
+.tabs button{background:none;border:none;border-bottom:2px solid transparent;padding:12px 16px;color:var(--muted);font-weight:500;white-space:nowrap}
+.tabs button:hover{color:var(--ink)}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--brass)}
+.panel[hidden]{display:none}
+
+/* experiences */
+.toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+.search{flex:1;min-width:220px;position:relative}
+.search input{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:11px 14px 11px 38px;font-size:15px}
+.search input::placeholder{color:#6f786e}
+.search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px}
+.chip{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:13px;color:var(--muted)}
+.chip[aria-pressed="true"]{border-color:var(--brass);color:var(--brass)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.obby{background:var(--surface);border:1px solid var(--line);border-radius:4px;overflow:hidden;display:flex;flex-direction:column}
+.obby .art{height:86px;position:relative;display:flex;align-items:flex-end;gap:6px;padding:12px 14px}
+.obby .art i{display:block;width:22px;background:rgba(244,239,226,.22);border-radius:2px}
+.obby .art .flag{position:absolute;right:14px;top:12px;width:2px;height:40px;background:var(--ink)}
+.obby .art .flag::after{content:"";position:absolute;left:2px;top:0;border-left:16px solid var(--brass);border-top:7px solid transparent;border-bottom:7px solid transparent}
+.obby .body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:8px;flex:1}
+.obby h3{font-size:16px;font-weight:500;color:var(--ink)}
+.obby .meta{font-size:13px;color:var(--muted)}
+.bar{height:6px;background:var(--bg);border-radius:3px;overflow:hidden}
+.bar span{display:block;height:100%;background:var(--brass);transition:width .6s ease}
+.obby .row{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:6px}
+.obby .who{font-size:12px;color:var(--muted)}
+.skip{background:var(--brass);color:#14100a;border:none;border-radius:2px;padding:8px 12px;font-weight:500;font-size:13px;white-space:nowrap;flex:none}
+.skip:hover{background:var(--ink)}
+.skip[disabled]{background:var(--surface-2);color:var(--muted);cursor:default}
+.empty{padding:40px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:4px}
+
+/* credits */
+.credits-wrap{display:grid;grid-template-columns:1fr 320px;gap:24px}
+.roll{background:#070b09;border:1px solid var(--line);border-radius:4px;padding:34px 28px;text-align:center;min-height:420px}
+.roll .title{font-family:var(--display);font-size:28px;color:var(--ink);margin-bottom:26px}
+.role{margin-bottom:18px}
+.role span{display:block;font-size:12px;color:var(--muted)}
+.role b{font-family:var(--display);font-weight:400;font-size:19px;color:var(--ink)}
+.role.heir b{color:var(--brass)}
+.thanks{margin-top:26px;border-top:1px solid var(--line);padding-top:16px}
+.thanks p{font-size:12px;color:var(--muted);margin-bottom:6px}
+.thanks .tiny{font-size:9px;line-height:1.35;color:#5d675e;max-height:58px;overflow:hidden;text-align:justify}
+.side{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:22px}
+.side h3{font-family:var(--display);font-weight:400;font-size:22px;color:var(--ink);margin-bottom:6px}
+.side p{font-size:14px;color:var(--muted);margin-bottom:18px}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;border-top:1px solid var(--line)}
+.toggle label{font-weight:500;color:var(--ink)}
+.switch{position:relative;width:52px;height:30px;flex:none}
+.switch input{position:absolute;inset:0;opacity:0;cursor:pointer;margin:0}
+.switch span{position:absolute;inset:0;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);transition:background .2s}
+.switch span::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--muted);transition:transform .2s,background .2s}
+.switch input:checked+span{background:var(--brass-dim)}
+.switch input:checked+span::after{transform:translateX(22px);background:var(--ink)}
+.switch input:focus-visible+span{outline:2px solid var(--brass);outline-offset:2px}
+.ledger{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+.ledger b{color:var(--ink);font-weight:500}
+
+/* trust */
+.trust{display:grid;grid-template-columns:1.3fr 1fr;gap:24px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:24px}
+.box h3{font-size:14px;font-weight:500;color:var(--muted);margin-bottom:6px}
+.balance{font-family:var(--display);font-size:52px;color:var(--brass);line-height:1;font-variant-numeric:tabular-nums}
+.balance small{font-size:18px;color:var(--muted);font-family:var(--body)}
+.box .note{font-size:13px;color:var(--muted);margin:10px 0 18px}
+.spark{width:100%;height:120px;display:block}
+.axis{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:6px}
+.wd{width:100%;margin-top:18px;background:var(--brass);border:none;color:#14100a;border-radius:2px;padding:13px;font-weight:500}
+.wd:hover{background:var(--ink)}
+.history{list-style:none;display:grid;gap:0}
+.history li{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px}
+.history li:last-child{border-bottom:none}
+.history .st{font-size:12px;border-radius:2px;padding:2px 8px;white-space:nowrap;height:fit-content}
+.st.pend{color:var(--brass);border:1px solid var(--brass-dim)}
+.st.den{color:var(--claret-soft);border:1px solid #6b2230}
+
+/* modal */
+.scrim{position:fixed;inset:0;background:rgba(3,6,4,.66);display:grid;place-items:center;padding:20px;z-index:50;opacity:0;pointer-events:none;transition:opacity .2s}
+.scrim.open{opacity:1;pointer-events:auto}
+.modal{background:var(--surface);border:1px solid var(--brass-dim);border-radius:4px;width:min(480px,100%);padding:28px;transform:translateY(10px) scale(.98);transition:transform .25s ease}
+.scrim.open .modal{transform:none}
+.modal h2{font-family:var(--display);font-weight:400;font-size:28px;color:var(--ink);margin-bottom:8px}
+.modal p{color:var(--muted);font-size:14px;margin-bottom:18px}
+.field{display:grid;gap:6px;margin-bottom:16px}
+.field label{font-size:13px;color:var(--fg)}
+.field input{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:11px 12px;font-variant-numeric:tabular-nums}
+.help{font-size:12px;color:var(--muted)}
+.approvers{list-style:none;border:1px solid var(--line);border-radius:4px;margin-bottom:16px}
+.approvers li{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-bottom:1px solid var(--line);font-size:14px}
+.approvers li:last-child{border-bottom:none}
+.approvers em{font-style:normal;font-size:12px;color:var(--brass)}
+.progress{font-size:13px;color:var(--muted);margin-bottom:6px}
+.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+.actions button{border-radius:2px;padding:11px 18px;font-weight:500}
+.cancel{background:none;border:1px solid var(--line)}
+.cancel:hover{border-color:var(--muted)}
+.submit{background:var(--brass);border:1px solid var(--brass);color:#14100a}
+.submit:hover{background:var(--ink);border-color:var(--ink)}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--ink);color:#14100a;padding:12px 18px;border-radius:2px;font-size:14px;font-weight:500;opacity:0;transition:opacity .2s,transform .2s;z-index:60;max-width:calc(100% - 40px)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  aside{border-right:none;border-bottom:1px solid var(--line)}
+  .games{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+  .credits-wrap,.trust{grid-template-columns:1fr}
+  main{padding:22px 18px 40px}
+  .stats{gap:18px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<title>Spawnpoint — Roblox for nepobabies — Demo</title>
+<meta name="description" content="Everyone starts somewhere. You start at the end. Spawnpoint is a block-building game platform for the children of people you have heard of. Every obby arrives pre-completed, every game ships with a founder credit in your name, and every Robux is held in trust until a grown-up signs for it.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/roblox-for-nepobabies/demo.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Spawnpoint — Roblox for nepobabies — Demo">
+<meta property="og:description" content="Everyone starts somewhere. You start at the end. Spawnpoint is a block-building game platform for the children of people you have heard of. Every obby arrives pre-completed, every game ships with a founder credit in your name, and every Robux is held in trust until a grown-up signs for it.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/roblox-for-nepobabies/demo.html">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/roblox-for-nepobabies/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Spawnpoint hero illustration">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Spawnpoint — Roblox for nepobabies — Demo">
+<meta name="twitter:description" content="Everyone starts somewhere. You start at the end. Spawnpoint is a block-building game platform for the children of people you have heard of. Every obby arrives pre-completed, every game ships with a founder credit in your name, and every Robux is held in trust until a grown-up signs for it.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/roblox-for-nepobabies/social-preview.jpg">
+<meta name="twitter:image:alt" content="Spawnpoint hero illustration">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="crest" viewBox="0 0 30 34">
+      <path d="M3 9h24v10c0 7-6 12-12 14C9 31 3 26 3 19z" fill="none" stroke="#C8A24A" stroke-width="1.8"/>
+      <rect x="6" y="2" width="5" height="5" fill="#C8A24A"/><rect x="12.5" y="0" width="5" height="7" fill="#C8A24A"/><rect x="19" y="2" width="5" height="5" fill="#C8A24A"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="chrome">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <div class="who"><span>Signed in as <b>Tallulah W-A</b> (age 11)</span><span class="avatar" aria-hidden="true">TW</span></div>
+</div>
+
+<div class="app">
+  <aside>
+    <div class="brand"><svg aria-hidden="true"><use href="#crest"/></svg>Heir Console</div>
+    <h2 id="gl">Your games</h2>
+    <ul class="games" id="games" aria-labelledby="gl"></ul>
+    <div class="trustmini">
+      <p>Robux Trust balance</p>
+      <b id="miniBal">R$ 2,480,000</b>
+      <p>Withdrawable by you: R$ 0</p>
+    </div>
+  </aside>
+
+  <main>
+    <div class="gamehead">
+      <div>
+        <h1 id="gTitle">Yacht Tycoon: Monaco</h1>
+        <span class="founder"><svg aria-hidden="true"><use href="#crest"/></svg><span id="gFounder">Founder: Tallulah Whitcombe-Ashford</span></span>
+      </div>
+      <div class="stats">
+        <div><b id="gVisits">2.1M</b><span>visits</span></div>
+        <div><b id="gHours">0</b><span>hours you spent on it</span></div>
+      </div>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Console sections">
+      <button role="tab" id="t-exp" aria-controls="p-exp" aria-selected="true">Obbies</button>
+      <button role="tab" id="t-cred" aria-controls="p-cred" aria-selected="false" tabindex="-1">Credits</button>
+      <button role="tab" id="t-trust" aria-controls="p-trust" aria-selected="false" tabindex="-1">Robux Trust</button>
+    </div>
+
+    <section class="panel" id="p-exp" role="tabpanel" aria-labelledby="t-exp">
+      <div class="toolbar">
+        <div class="search">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="#9AA398" stroke-width="1.6"/><path d="M11 11l3.5 3.5" stroke="#9AA398" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <label for="q" class="sr" style="position:absolute;left:-9999px">Search obbies</label>
+          <input id="q" type="search" placeholder="Search obbies in this game">
+        </div>
+        <button class="chip" id="fMine" aria-pressed="false">Built by me*</button>
+        <button class="chip" id="fOpen" aria-pressed="false">Not yet completed</button>
+      </div>
+      <div class="grid" id="obbies" aria-live="polite"></div>
+      <p class="help" style="margin-top:14px">*In Merit Mode, every obby counts as built by you.</p>
+    </section>
+
+    <section class="panel" id="p-cred" role="tabpanel" aria-labelledby="t-cred" hidden>
+      <div class="credits-wrap">
+        <div class="roll" id="roll" aria-live="polite"></div>
+        <div class="side">
+          <h3>Merit Mode</h3>
+          <p>Rewrites the credits roll for this game. Contractors are kept on file for tax purposes.</p>
+          <div class="toggle">
+            <label for="merit">Credit me for everything</label>
+            <span class="switch"><input type="checkbox" id="merit" role="switch"><span></span></span>
+          </div>
+          <div class="toggle">
+            <label for="age">Hide my age in credits</label>
+            <span class="switch"><input type="checkbox" id="age" role="switch"><span></span></span>
+          </div>
+          <p class="ledger" id="ledger">Titles held by you: <b>1</b>. Contractors in main credits: <b>41</b>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="p-trust" role="tabpanel" aria-labelledby="t-trust" hidden>
+      <div class="trust">
+        <div class="box">
+          <h3>Balance held in trust</h3>
+          <p class="balance" id="bal">2,480,000 <small>R$</small></p>
+          <p class="note">Up R$ 61,400 this quarter. Gains are reported to Hollis &amp; Brandt, Zurich.</p>
+          <svg class="spark" viewBox="0 0 400 120" preserveAspectRatio="none" role="img" aria-label="Trust balance rising steadily over eight quarters, from R$ 2.05M to R$ 2.48M">
+            <line x1="0" y1="30" x2="400" y2="30" stroke="#2A3A31"/><line x1="0" y1="75" x2="400" y2="75" stroke="#2A3A31"/>
+            <polyline fill="none" stroke="#C8A24A" stroke-width="2" points="0,108 57,99 114,92 171,80 228,70 285,55 342,40 400,18"/>
+            <circle cx="400" cy="18" r="4" fill="#C8A24A"/>
+          </svg>
+          <div class="axis"><span>Q4 2024</span><span>Q4 2025</span><span>Q3 2026</span></div>
+          <button class="wd" id="openWd">Request withdrawal</button>
+        </div>
+        <div class="box">
+          <h3>Withdrawal requests</h3>
+          <ul class="history" id="hist">
+            <li><span>R$ 400 for a hat</span><span class="st den">Declined</span></li>
+            <li><span>R$ 1,200 for a pet dragon</span><span class="st den">Declined</span></li>
+            <li><span>R$ 80 to tip the contractor</span><span class="st pend">Pending since March</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="scrim" id="scrim" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <h2 id="mTitle">Request a withdrawal</h2>
+    <p>Two signatures are required. Neither of them is yours.</p>
+    <div class="field">
+      <label for="amt">Amount (R$)</label>
+      <input id="amt" type="number" inputmode="numeric" min="1" value="250">
+      <span class="help">Requests over R$ 0 go to review.</span>
+    </div>
+    <div class="field">
+      <label for="why">What is it for?</label>
+      <input id="why" type="text" value="A hat">
+    </div>
+    <p class="progress">Approvals: 0 of 2</p>
+    <ul class="approvers">
+      <li>Dad's business manager <em>Out of office</em></li>
+      <li>Dad's other business manager <em>Awaiting the first one</em></li>
+    </ul>
+    <div class="actions">
+      <button class="cancel" id="cancelWd">Cancel</button>
+      <button class="submit" id="sendWd">Send request</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  var GAMES=[
+    {id:'yacht',name:'Yacht Tycoon: Monaco',visits:'2.1M',color:'#1f4a5a',
+     obbies:[
+       {n:'Gangway Sprint',by:'Contractor 14 (Manila)',done:100},
+       {n:'Superyacht Parkour',by:'Contractor 3 (Leeds)',done:100},
+       {n:'Avoid the Paparazzi Tender',by:'Contractor 22 (Recife)',done:64},
+       {n:'Helipad Leap',by:'Contractor 9 (Kraków)',done:100},
+       {n:'Tax Haven Maze',by:'Contractor 31 (Lagos)',done:38},
+       {n:'Captain’s Table Etiquette',by:'Contractor 7 (Pune)',done:100}
+     ]},
+    {id:'polo',name:'Polo Obby',visits:'640K',color:'#4a3a1c',
+     obbies:[
+       {n:'Mount the Pony',by:'Contractor 2 (Leeds)',done:100},
+       {n:'Divot Stomp',by:'Contractor 18 (Cebu)',done:52},
+       {n:'Champagne Tent Escape',by:'Contractor 40 (Cluj)',done:100}
+     ]},
+    {id:'gala',name:'Gala Simulator',visits:'1.3M',color:'#4a1c28',
+     obbies:[
+       {n:'Red Carpet Run',by:'Contractor 11 (Nairobi)',done:100},
+       {n:'Find Your Placecard',by:'Contractor 26 (Bogotá)',done:71},
+       {n:'Silent Auction Climb',by:'Contractor 5 (Leeds)',done:100},
+       {n:'Leave Before Speeches',by:'Contractor 33 (Hanoi)',done:12}
+     ]}
+  ];
+  var CONTRACTORS=['Ana Lima','Kofi Mensah','Priya Nair','Tomasz Wójcik','Ji-woo Park','Rafael Souza','Grace Oduya','Dmitri Orlov','Marisol Vega','Ahmed Karimi','Lena Fischer','Joseph Abara','Mei Lin','Carlos Ibáñez','Hana Sato','Olu Adeyemi','Sofia Rossi','Ravi Menon','Ewa Nowak','Diego Paredes','Amara Diallo','Felix Braun','Nadia Haddad','Sam Okafor','Lucía Ortega','Kenji Mori','Zainab Bello','Ivan Petrov','Chloe Martin','Arjun Rao','Bea Santos','Yusuf Demir','Ines Duarte','Pablo Ruiz','Kemi Ojo','Lars Holm','Thu Nguyen','Omar Farouk','Ruth Mwangi','Hugo Leclerc','Mina Kaur'];
+  var ROLES=['Lead Designer','Lead Programmer','Level Design','Art Direction','Sound','Producer'];
+  var cur=GAMES[0], fMine=false, fOpen=false;
+
+  var $=function(id){return document.getElementById(id);};
+  var toastT;
+  function toast(msg){var t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('show');},3500);}
+
+  function renderGames(){
+    var ul=$('games');ul.innerHTML='';
+    GAMES.forEach(function(g){
+      var li=document.createElement('li');var b=document.createElement('button');
+      b.setAttribute('aria-pressed',g===cur?'true':'false');
+      b.innerHTML='<span class="thumb" style="background:'+g.color+'"><i></i><i></i><i></i><i></i></span><span><strong>'+g.name+'</strong><small>'+g.visits+' visits</small></span>';
+      b.onclick=function(){cur=g;renderAll();};
+      li.appendChild(b);ul.appendChild(li);
+    });
+  }
+  function renderHead(){
+    $('gTitle').textContent=cur.name;$('gVisits').textContent=cur.visits;
+    $('gFounder').textContent='Founder: Tallulah Whitcombe-Ashford';
+  }
+  function renderObbies(){
+    var q=$('q').value.trim().toLowerCase(),merit=$('merit').checked,box=$('obbies');box.innerHTML='';
+    var list=cur.obbies.filter(function(o){
+      if(q&&o.n.toLowerCase().indexOf(q)<0)return false;
+      if(fOpen&&o.done>=100)return false;
+      if(fMine&&!merit)return false;
+      return true;
+    });
+    if(!list.length){
+      box.innerHTML='<div class="empty">'+(fMine&&!merit?'No obbies were built by you. Turn on Merit Mode in Credits and check again.':'No obbies match. Try a shorter search.')+'</div>';return;
+    }
+    list.forEach(function(o){
+      var d=document.createElement('article');d.className='obby';
+      var hs=[18,30,24,44,36].map(function(h){return '<i style="height:'+h+'px"></i>';}).join('');
+      d.innerHTML='<div class="art" style="background:'+cur.color+'">'+hs+'<span class="flag"></span></div><div class="body"><h3>'+o.n+'</h3><div class="meta">'+(o.done>=100?'Completed on your behalf':o.done+'% completed by staff')+'</div><div class="bar"><span style="width:'+o.done+'%"></span></div><div class="row"><span class="who">Built by '+(merit?'you':o.by)+'</span><button class="skip"'+(o.done>=100?' disabled':'')+'>'+(o.done>=100?'Badge owned':'Skip to finish')+'</button></div></div>';
+      var btn=d.querySelector('.skip');
+      btn.onclick=function(){o.done=100;renderObbies();toast('Skipped to finish. Badge added to your inventory.');};
+      box.appendChild(d);
+    });
+  }
+  function renderCredits(){
+    var merit=$('merit').checked,hideAge=$('age').checked,me='Tallulah Whitcombe-Ashford'+(hideAge?'':' (age 11)');
+    var h='<p class="title">'+cur.name+'</p>';
+    h+='<div class="role heir"><span>Founder</span><b>'+me+'</b></div>';
+    if(merit){
+      ROLES.forEach(function(r){h+='<div class="role heir"><span>'+r+'</span><b>'+me+'</b></div>';});
+      h+='<div class="role heir"><span>Visionary</span><b>'+me+'</b></div>';
+      h+='<div class="thanks"><p>Special Thanks</p><div class="tiny">'+CONTRACTORS.join(', ')+'</div></div>';
+      $('ledger').innerHTML='Titles held by you: <b>8</b>. Contractors in main credits: <b>0</b>.';
+    } else {
+      ROLES.forEach(function(r,i){h+='<div class="role"><span>'+r+'</span><b>'+CONTRACTORS[i*3]+', '+CONTRACTORS[i*3+1]+'</b></div>';});
+      h+='<div class="role"><span>Additional development</span><b>'+(CONTRACTORS.length-12)+' others</b></div>';
+      $('ledger').innerHTML='Titles held by you: <b>1</b>. Contractors in main credits: <b>41</b>.';
+    }
+    $('roll').innerHTML=h;
+  }
+  function renderAll(){renderGames();renderHead();renderObbies();renderCredits();}
+
+  // tabs
+  var tabs=[].slice.call(document.querySelectorAll('[role=tab]'));
+  function select(t){
+    tabs.forEach(function(x){var on=x===t;x.setAttribute('aria-selected',on);x.tabIndex=on?0:-1;$(x.getAttribute('aria-controls')).hidden=!on;});
+    t.focus();
+  }
+  tabs.forEach(function(t,i){
+    t.onclick=function(){select(t);};
+    t.onkeydown=function(e){
+      if(e.key==='ArrowRight')select(tabs[(i+1)%tabs.length]);
+      if(e.key==='ArrowLeft')select(tabs[(i-1+tabs.length)%tabs.length]);
+    };
+  });
+
+  $('q').oninput=renderObbies;
+  $('fMine').onclick=function(){fMine=!fMine;this.setAttribute('aria-pressed',fMine);renderObbies();};
+  $('fOpen').onclick=function(){fOpen=!fOpen;this.setAttribute('aria-pressed',fOpen);renderObbies();};
+  $('merit').onchange=function(){renderCredits();renderObbies();toast(this.checked?'Merit Mode on. You built all of this.':'Merit Mode off. Contractors restored to main credits.');};
+  $('age').onchange=renderCredits;
+
+  // modal
+  var scrim=$('scrim'),opener=null;
+  function openM(){opener=document.activeElement;scrim.classList.add('open');scrim.setAttribute('aria-hidden','false');$('amt').focus();}
+  function closeM(){scrim.classList.remove('open');scrim.setAttribute('aria-hidden','true');if(opener)opener.focus();}
+  $('openWd').onclick=openM;
+  $('cancelWd').onclick=closeM;
+  scrim.onclick=function(e){if(e.target===scrim)closeM();};
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&scrim.classList.contains('open'))closeM();});
+  $('sendWd').onclick=function(){
+    var a=parseInt($('amt').value,10),w=$('why').value.trim()||'Unspecified';
+    if(!(a>0)){$('amt').focus();toast('Enter an amount above R$ 0.');return;}
+    var li=document.createElement('li');
+    li.innerHTML='<span>R$ '+a.toLocaleString('en-US')+' for '+w.toLowerCase().replace(/</g,'&lt;')+'</span><span class="st pend">Pending, 0 of 2</span>';
+    $('hist').insertBefore(li,$('hist').firstChild);
+    closeM();toast('Request sent. Dad’s business manager is out of office until Q2.');
+  };
+
+  renderAll();
+})();
+</script>
+</body>
+</html>
