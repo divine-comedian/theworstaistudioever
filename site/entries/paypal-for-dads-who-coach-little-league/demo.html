@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#F4EFE1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Graduate&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1E3560;
+    --red: #C7362B;
+    --paper: #F4EFE1;
+    --card: #FBF8EE;
+    --fg: #1A2236;
+    --ink: #131B2E;
+    --muted: #6E6A5C;
+    --line: #B9C1D3;
+    --pencil: #4A4A48;
+    --grass: #3E6B3A;
+    --amber: #8A5A00;
+    --display: 'Graduate', 'Rockwell', 'Courier New', serif;
+    --body: 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --label: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+    --hand: 'Kalam', 'Comic Sans MS', cursive;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--fg); font: 400 16px/1.5 var(--body); -webkit-font-smoothing: antialiased; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* app bar */
+  .bar { display: flex; align-items: center; gap: 18px; padding: 12px 24px; border-bottom: 3px double var(--navy); background: var(--card); flex-wrap: wrap; }
+  .back { font: 600 15px var(--label); color: var(--navy); text-decoration: none; }
+  .back:hover { color: var(--red); }
+  .brand { font: 400 22px/1 var(--display); color: var(--navy); display: flex; align-items: center; gap: 8px; }
+  .team { font: 600 16px var(--label); padding: 6px 12px; border: 1px solid var(--navy); border-radius: 2px; color: var(--navy); }
+  .spacer { flex: 1; }
+  .permit { font: 600 15px var(--label); color: var(--red); }
+  .coach { display: flex; align-items: center; gap: 10px; font: 600 15px var(--label); color: var(--navy); }
+  .coach span.av { width: 34px; height: 34px; border-radius: 50%; background: var(--navy); color: var(--card); display: grid; place-items: center; font: 400 14px var(--display); }
+
+  .layout { display: grid; grid-template-columns: 1fr 330px; gap: 24px; padding: 24px; max-width: 1360px; margin: 0 auto; }
+
+  /* summary strip */
+  .summary { display: grid; grid-template-columns: repeat(4, 1fr); border: 2px solid var(--navy); background: var(--card); margin-bottom: 18px; }
+  .summary > div { padding: 14px 16px; border-right: 1px solid var(--navy); }
+  .summary > div:last-child { border-right: 0; }
+  .summary dt { font: 600 14px var(--label); color: var(--muted); }
+  .summary dd { margin: 4px 0 0; font: 400 26px/1.1 var(--display); color: var(--navy); }
+  .summary dd.red { color: var(--red); }
+
+  /* toolbar */
+  .tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 14px; }
+  .chip { min-height: 40px; padding: 0 14px; border: 1px solid var(--navy); background: transparent; border-radius: 2px; cursor: pointer; font: 600 15px var(--label); color: var(--navy); }
+  .chip[aria-pressed="true"] { background: var(--navy); color: var(--card); }
+  .chip .ct { opacity: .75; margin-left: 4px; }
+  .search { margin-left: auto; display: flex; align-items: center; gap: 8px; border: 1px solid var(--navy); background: var(--card); padding: 0 12px; min-height: 40px; }
+  .search input { border: 0; background: transparent; outline: none; width: 190px; }
+  .btn { min-height: 44px; padding: 0 18px; border-radius: 2px; border: 2px solid var(--navy); cursor: pointer; font: 700 17px var(--label); }
+  .btn-primary { background: var(--navy); color: var(--card); }
+  .btn-primary:hover { background: var(--red); border-color: var(--red); }
+  .btn-ghost { background: transparent; color: var(--navy); }
+  .btn-ghost:hover { background: var(--navy); color: var(--card); }
+
+  /* ledger */
+  .ledger { border: 2px solid var(--navy); background: var(--card); }
+  .row { display: grid; grid-template-columns: 1.6fr 1.5fr 0.8fr 0.9fr 0.8fr 1fr 74px; align-items: center; border-bottom: 1px solid var(--line); }
+  .row > * { padding: 10px 12px; }
+  .row.head { background: var(--navy); color: var(--card); font: 600 14px var(--label); border-bottom: 0; }
+  .row:last-child { border-bottom: 0; }
+  .row.hidden { display: none; }
+  .who { display: flex; align-items: center; gap: 10px; }
+  .jersey { width: 34px; height: 34px; border: 1.5px solid var(--navy); display: grid; place-items: center; font: 400 14px var(--display); color: var(--navy); flex: none; }
+  .kid { font: 700 17px/1.1 var(--label); color: var(--ink); }
+  .parent { font-size: 14px; color: var(--muted); }
+  .hustle { display: flex; align-items: center; gap: 8px; }
+  .hustle input[type=range] { width: 100%; accent-color: var(--red); cursor: pointer; min-height: 28px; }
+  .hustle output { font: 400 15px var(--display); color: var(--navy); width: 22px; text-align: right; }
+  .money { text-align: right; }
+  .owes { font-weight: 700; color: var(--ink); }
+  .owes.zero { color: var(--muted); font-weight: 400; }
+  .status { font: 700 13px var(--label); display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border: 1.5px solid currentColor; border-radius: 2px; white-space: nowrap; }
+  .status::before { content: ""; width: 8px; height: 8px; transform: rotate(45deg); border: 1.5px solid currentColor; }
+  .status.paid { color: var(--grass); }
+  .status.paid::before { background: currentColor; }
+  .status.pending { color: var(--amber); }
+  .status.owes { color: var(--navy); }
+  .status.dispute { color: var(--red); }
+  .status.dispute::before { background: currentColor; }
+  .nudge { background: none; border: 1px solid var(--line); min-height: 34px; border-radius: 2px; cursor: pointer; font: 600 14px var(--label); color: var(--navy); width: 100%; }
+  .nudge:hover { border-color: var(--navy); }
+  .nudge:disabled { opacity: .4; cursor: default; }
+  .flash { animation: flash 600ms ease-out; }
+  @keyframes flash { from { background: rgba(199,54,43,.18); } to { background: transparent; } }
+  .empty { padding: 28px; text-align: center; color: var(--muted); display: none; }
+  .note { font: 400 17px/1.3 var(--hand); color: var(--pencil); transform: rotate(-1.5deg); display: inline-block; margin-top: 14px; }
+
+  /* side */
+  .card { border: 2px solid var(--navy); background: var(--card); margin-bottom: 18px; }
+  .card h2 { margin: 0; padding: 10px 14px; font: 600 17px var(--label); background: var(--navy); color: var(--card); }
+  .diamond-wrap { display: grid; grid-template-columns: 110px 1fr; gap: 14px; padding: 16px; align-items: center; }
+  .diamond-wrap svg { width: 110px; height: 110px; }
+  .diamond-wrap .line { fill: none; stroke: var(--line); stroke-width: 3; }
+  .diamond-wrap .run { fill: none; stroke: var(--red); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 255; stroke-dashoffset: 255; transition: stroke-dashoffset 500ms ease-out; }
+  .diamond-wrap p { margin: 0; font-size: 15px; }
+  .diamond-wrap strong { font: 400 22px var(--display); color: var(--navy); display: block; }
+  .feed { list-style: none; margin: 0; padding: 0; max-height: 430px; overflow-y: auto; }
+  .feed li { padding: 11px 14px; border-bottom: 1px solid var(--line); font-size: 15px; }
+  .feed li:last-child { border-bottom: 0; }
+  .feed time { display: block; font: 600 13px var(--label); color: var(--muted); }
+  .feed li.new { animation: flash 900ms ease-out; }
+
+  /* modal */
+  .scrim { position: fixed; inset: 0; background: rgba(19,27,46,.55); display: none; align-items: center; justify-content: center; padding: 18px; z-index: 50; }
+  .scrim.open { display: flex; }
+  .modal { background: var(--card); border: 2px solid var(--navy); width: 100%; max-width: 470px; box-shadow: 0 5px 0 -2px var(--paper), 0 5px 0 0 var(--navy); animation: pop 200ms ease-out; }
+  @keyframes pop { from { transform: translateY(10px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .modal header { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--navy); }
+  .modal h2 { margin: 0; font: 400 22px var(--display); color: var(--navy); }
+  .x { background: none; border: 0; font-size: 26px; line-height: 1; cursor: pointer; color: var(--navy); width: 44px; height: 44px; }
+  .modal form { padding: 18px; display: grid; gap: 14px; }
+  .modal label { font: 600 15px var(--label); color: var(--navy); display: grid; gap: 5px; }
+  .modal select, .modal input, .modal textarea { border: 1px solid var(--navy); background: #fff; padding: 10px 12px; border-radius: 2px; min-height: 44px; }
+  .modal textarea { font: 400 18px/1.3 var(--hand); color: var(--pencil); min-height: 70px; resize: vertical; }
+  .modal .help { font: 400 14px var(--body); color: var(--muted); }
+  .modal .err { color: var(--red); font: 600 14px var(--body); min-height: 1em; }
+  .modal .actions { display: flex; justify-content: flex-end; gap: 10px; }
+
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); opacity: 0; background: var(--navy); color: var(--card); padding: 12px 18px; border-radius: 2px; font: 600 16px var(--label); transition: opacity .2s, transform .2s; z-index: 60; pointer-events: none; max-width: calc(100% - 32px); }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  @media (max-width: 1100px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 820px) {
+    .layout { padding: 16px; }
+    .summary { grid-template-columns: repeat(2, 1fr); }
+    .summary > div:nth-child(2) { border-right: 0; }
+    .summary > div:nth-child(-n+2) { border-bottom: 1px solid var(--navy); }
+    .row.head { display: none; }
+    .row { grid-template-columns: 1fr auto; grid-template-areas: "who status" "hustle hustle" "pizza owes" "nudge nudge"; padding: 6px 0; }
+    .row > * { padding: 5px 14px; }
+    .row .c-who { grid-area: who; } .row .c-status { grid-area: status; }
+    .row .c-hustle { grid-area: hustle; } .row .c-snack { display: none; }
+    .row .c-pizza { grid-area: pizza; text-align: left; } .row .c-owes { grid-area: owes; }
+    .row .c-nudge { grid-area: nudge; }
+    .row .c-pizza::before { content: "Pizza share "; color: var(--muted); font-size: 14px; }
+    .row .c-owes::before { content: "Owes coach "; color: var(--muted); font-size: 14px; font-weight: 400; }
+    .search { margin-left: 0; width: 100%; }
+    .search input { width: 100%; }
+    .bar .permit { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+<title>Bunt — PayPal for dads who coach little league — Demo</title>
+<meta name="description" content="Get paid back for the orange slices. Bunt is payment infrastructure for the volunteer head coach. Request snack money, split the pizza by hustle, and dispute the team mom&#x27;s Venmo note, all from the dugout, all before the 4:30 field permit expires.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/paypal-for-dads-who-coach-little-league/demo.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Bunt — PayPal for dads who coach little league — Demo">
+<meta property="og:description" content="Get paid back for the orange slices. Bunt is payment infrastructure for the volunteer head coach. Request snack money, split the pizza by hustle, and dispute the team mom&#x27;s Venmo note, all from the dugout, all before the 4:30 field permit expires.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/paypal-for-dads-who-coach-little-league/demo.html">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/paypal-for-dads-who-coach-little-league/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Bunt hero illustration">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Bunt — PayPal for dads who coach little league — Demo">
+<meta name="twitter:description" content="Get paid back for the orange slices. Bunt is payment infrastructure for the volunteer head coach. Request snack money, split the pizza by hustle, and dispute the team mom&#x27;s Venmo note, all from the dugout, all before the 4:30 field permit expires.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/paypal-for-dads-who-coach-little-league/social-preview.jpg">
+<meta name="twitter:image:alt" content="Bunt hero illustration">
+</head>
+<body>
+<header class="bar">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="brand"><svg width="22" height="22" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3 L29 16 L16 29 L3 16 Z" fill="none" stroke="#1E3560" stroke-width="2.5"/><path d="M16 29 L3 16 L16 3" fill="none" stroke="#C7362B" stroke-width="2.5"/></svg>Bunt</span>
+  <span class="team">Mud Hens 10U, Spring</span>
+  <span class="spacer"></span>
+  <span class="permit">Field permit expires 4:30 PM</span>
+  <span class="coach"><span class="av" aria-hidden="true">GH</span>Coach Greg</span>
+</header>
+
+<div class="layout">
+  <main>
+    <dl class="summary">
+      <div><dt>Pizza bill, Saturday</dt><dd class="num">$86.40</dd></div>
+      <div><dt>Rick's tip (cash only)</dt><dd class="num">$20.00</dd></div>
+      <div><dt>Owed to coach</dt><dd class="num red" id="sumOwed">$0.00</dd></div>
+      <div><dt>Families paid up</dt><dd class="num" id="sumPaid">0 of 11</dd></div>
+    </dl>
+
+    <div class="tools" role="toolbar" aria-label="Filter ledger">
+      <button class="chip" data-f="all" aria-pressed="true">All <span class="ct" id="c-all"></span></button>
+      <button class="chip" data-f="owes" aria-pressed="false">Owes coach <span class="ct" id="c-owes"></span></button>
+      <button class="chip" data-f="dispute" aria-pressed="false">In dispute <span class="ct" id="c-dispute"></span></button>
+      <button class="chip" data-f="paid" aria-pressed="false">Paid <span class="ct" id="c-paid"></span></button>
+      <label class="search"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="#1E3560" stroke-width="2"/><path d="M15.5 15.5 L21 21" stroke="#1E3560" stroke-width="2" stroke-linecap="round"/></svg><span class="sr" style="position:absolute;left:-9999px">Search parents</span><input id="q" type="search" placeholder="Search parents or players"></label>
+      <button class="btn btn-primary" id="openReq">Request money</button>
+    </div>
+
+    <div class="ledger" role="table" aria-label="Team ledger">
+      <div class="row head" role="row">
+        <span role="columnheader">Player and parent</span>
+        <span role="columnheader">Hustle grade</span>
+        <span role="columnheader" class="money">Snacks</span>
+        <span role="columnheader" class="money">Pizza share</span>
+        <span role="columnheader" class="money">Owes</span>
+        <span role="columnheader">Status</span>
+        <span role="columnheader"><span style="position:absolute;left:-9999px">Actions</span></span>
+      </div>
+      <div id="rows"></div>
+      <div class="empty" id="empty">Nobody matches. Everyone on this team is, on paper, someone who owes you money. Clear the search to see them.</div>
+    </div>
+    <span class="note">kids who jogged pay more. this is in the bylaws now</span>
+  </main>
+
+  <aside>
+    <section class="card">
+      <h2>Collection progress</h2>
+      <div class="diamond-wrap">
+        <svg viewBox="0 0 110 110" aria-hidden="true">
+          <path class="line" d="M55 100 L100 55 L55 10 L10 55 Z"/>
+          <path class="run" id="runPath" d="M55 100 L100 55 L55 10 L10 55 L55 100"/>
+          <rect x="94" y="49" width="12" height="12" transform="rotate(45 100 55)" fill="#FBF8EE" stroke="#1E3560" stroke-width="2"/>
+          <rect x="49" y="4" width="12" height="12" transform="rotate(45 55 10)" fill="#FBF8EE" stroke="#1E3560" stroke-width="2"/>
+          <rect x="4" y="49" width="12" height="12" transform="rotate(45 10 55)" fill="#FBF8EE" stroke="#1E3560" stroke-width="2"/>
+          <path d="M49 94 H61 V100 L55 106 L49 100 Z" fill="#1E3560"/>
+        </svg>
+        <p><strong class="num" id="pct">0%</strong><span id="baseTxt">Still in the batter's box.</span></p>
+      </div>
+    </section>
+    <section class="card">
+      <h2>Activity</h2>
+      <ul class="feed" id="feed" aria-live="polite"></ul>
+    </section>
+  </aside>
+</div>
+
+<div class="scrim" id="scrim" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <header><h2 id="mTitle">Request money</h2><button class="x" id="closeReq" aria-label="Close">×</button></header>
+    <form id="reqForm" novalidate>
+      <label>From
+        <select id="rTo"></select>
+      </label>
+      <label>Reason
+        <select id="rWhy">
+          <option>Orange slices (cut in eighths)</option>
+          <option>Post-game pizza</option>
+          <option>Rick's tip</option>
+          <option>Replacement batting helmet</option>
+          <option>Sunflower seeds, bulk</option>
+        </select>
+      </label>
+      <label>Amount per family
+        <input id="rAmt" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="6.50">
+        <span class="err" id="rErr" role="alert"></span>
+      </label>
+      <label>Memo, in your handwriting
+        <textarea id="rMemo" placeholder="for the oranges. you know which oranges."></textarea>
+        <span class="help">Bunt attaches Clipboard Verification to anything over $6.</span>
+      </label>
+      <div class="actions">
+        <button type="button" class="btn btn-ghost" id="cancelReq">Cancel</button>
+        <button type="submit" class="btn btn-primary">Send request</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function () {
+  var PIZZA = 86.40, RICK = 20 / 11;
+  var fam = [
+    ['Tyler Feldman', 'Rhonda Feldman', 7, 12.00, 2, 'dispute'],
+    ['Mason Halvorsen', 'Greg Halvorsen (you)', 4, 0, 6, 'paid'],
+    ['Jaylen Okafor', 'Darnell Okafor', 22, 6.50, 4, 'paid'],
+    ['Ava Prusky', 'Kevin Prusky', 9, 6.50, 9, 'paid'],
+    ['Brody Kowalczyk', 'Dana Kowalczyk', 15, 6.50, 3, 'owes'],
+    ['Sofia Reyes', 'Marisol Reyes', 3, 6.50, 8, 'pending'],
+    ['Hunter Lindqvist', 'Doug Lindqvist, asst. coach', 1, 6.50, 10, 'dispute'],
+    ['Liam Tran', 'Peter Tran', 11, 6.50, 7, 'paid'],
+    ['Owen Bauer', 'Shelly Bauer', 18, 6.50, 5, 'owes'],
+    ['Grace Whitfield', 'Todd Whitfield', 5, 6.50, 6, 'pending'],
+    ['Cooper Nash', 'Kristen Nash, team mom', 12, 6.50, 5, 'dispute']
+  ].map(function (r, i) {
+    return { id: i, kid: r[0], parent: r[1], num: r[2], snack: r[3], hustle: r[4], status: r[5], extra: 0 };
+  });
+  var LABEL = { paid: 'Paid', pending: 'Pending', owes: 'Owes', dispute: 'In dispute' };
+  var filter = 'all', query = '';
+  var rowsEl = document.getElementById('rows');
+
+  function money(n) { return '$' + n.toFixed(2); }
+  function shares() {
+    var w = fam.map(function (f) { return 11 - f.hustle; });
+    var tot = w.reduce(function (a, b) { return a + b; }, 0);
+    return w.map(function (x) { return PIZZA * x / tot; });
+  }
+  function owed(f, share) { return f.status === 'paid' ? 0 : f.snack + share + RICK + f.extra; }
+
+  function build() {
+    rowsEl.innerHTML = '';
+    fam.forEach(function (f) {
+      var r = document.createElement('div');
+      r.className = 'row'; r.setAttribute('role', 'row'); r.id = 'r' + f.id;
+      r.innerHTML =
+        '<div class="c-who who" role="cell"><span class="jersey" aria-label="Jersey number">' + f.num + '</span><div><div class="kid">' + f.kid + '</div><div class="parent">' + f.parent + '</div></div></div>' +
+        '<div class="c-hustle hustle" role="cell"><input type="range" min="1" max="10" step="1" value="' + f.hustle + '" aria-label="Hustle grade for ' + f.kid + '"><output class="num">' + f.hustle + '</output></div>' +
+        '<div class="c-snack money num" role="cell">' + money(f.snack) + '</div>' +
+        '<div class="c-pizza money num" role="cell"></div>' +
+        '<div class="c-owes money num owes" role="cell"></div>' +
+        '<div class="c-status" role="cell"><span class="status ' + f.status + '">' + LABEL[f.status] + '</span></div>' +
+        '<div class="c-nudge" role="cell"><button class="nudge" type="button">Nudge</button></div>';
+      var range = r.querySelector('input');
+      range.addEventListener('input', function () {
+        f.hustle = +range.value;
+        r.querySelector('output').textContent = f.hustle;
+        update();
+      });
+      range.addEventListener('change', function () {
+        log('Hustle grade for ' + f.kid + ' set to ' + f.hustle + '. ' + f.parent.split(',')[0].replace(' (you)', '') + ' has been notified.');
+      });
+      r.querySelector('.nudge').addEventListener('click', function () {
+        if (f.status === 'paid') return;
+        var first = f.parent.split(' ')[0];
+        log('Reminder sent to ' + f.parent.split(',')[0] + '. Read 0.4 seconds later. No reply.');
+        toast('Nudged ' + first + '. ' + first + ' has seen it.');
+        r.classList.remove('flash'); void r.offsetWidth; r.classList.add('flash');
+      });
+      rowsEl.appendChild(r);
+    });
+    update();
+  }
+
+  function update() {
+    var s = shares(), total = 0, paid = 0, counts = { all: 0, owes: 0, dispute: 0, paid: 0 }, shown = 0;
+    var billed = 0;
+    fam.forEach(function (f, i) {
+      var r = document.getElementById('r' + f.id);
+      var o = owed(f, s[i]);
+      billed += f.snack + s[i] + RICK + f.extra;
+      total += o;
+      if (f.status === 'paid') paid++;
+      r.querySelector('.c-pizza').textContent = money(s[i]);
+      var oc = r.querySelector('.c-owes');
+      oc.textContent = money(o); oc.classList.toggle('zero', o === 0);
+      r.querySelector('.nudge').disabled = f.status === 'paid';
+      var bucket = f.status === 'paid' ? 'paid' : f.status === 'dispute' ? 'dispute' : 'owes';
+      counts.all++; counts[bucket]++;
+      var match = (filter === 'all' || filter === bucket) &&
+        (!query || (f.kid + ' ' + f.parent).toLowerCase().indexOf(query) !== -1);
+      r.classList.toggle('hidden', !match);
+      if (match) shown++;
+    });
+    document.getElementById('sumOwed').textContent = money(total);
+    document.getElementById('sumPaid').textContent = paid + ' of 11';
+    Object.keys(counts).forEach(function (k) { document.getElementById('c-' + k).textContent = counts[k]; });
+    document.getElementById('empty').style.display = shown ? 'none' : 'block';
+    var pct = Math.max(0, Math.round((1 - total / billed) * 100));
+    document.getElementById('pct').textContent = pct + '% collected';
+    document.getElementById('runPath').style.strokeDashoffset = 255 * (1 - pct / 100);
+    document.getElementById('baseTxt').textContent =
+      pct >= 100 ? 'Home. This has not happened before.' :
+      pct >= 75 ? 'Rounding third. Do not wave him in.' :
+      pct >= 50 ? 'Standing on second. Nobody is batting.' :
+      pct >= 25 ? 'On first, leading off.' : "Still in the batter's box.";
+  }
+
+  var feed = document.getElementById('feed');
+  var clock = new Date(); clock.setHours(16, 2, 0, 0);
+  function stamp() {
+    clock = new Date(clock.getTime() + 60000 * (1 + Math.floor(Math.random() * 3)));
+    var h = clock.getHours(), m = clock.getMinutes();
+    return ((h + 11) % 12 + 1) + ':' + (m < 10 ? '0' : '') + m + (h < 12 ? ' AM' : ' PM');
+  }
+  function log(text, isNew) {
+    var li = document.createElement('li');
+    var t = document.createElement('time'); t.textContent = stamp();
+    li.appendChild(t); li.appendChild(document.createTextNode(text));
+    if (isNew !== false) li.className = 'new';
+    feed.insertBefore(li, feed.firstChild);
+  }
+  [
+    'Rick (umpire) requested $20.00 in cash. Bunt does not support cash. Rick has been told.',
+    'Kristen Nash disputed "pizza 4 the boys" as a memo. Reason given: "tone."',
+    'Orange Slice Escrow: Feldman snack photo rejected. Oranges cut in quarters.',
+    'Darnell Okafor paid $14.62. Memo: "he did not run to first, I know."',
+    'Doug Lindqvist opened a dispute on his son\'s hustle grade. Doug graded himself.',
+    'Marisol Reyes marked your request as seen.'
+  ].forEach(function (t) { log(t, false); });
+
+  document.querySelectorAll('.chip').forEach(function (c) {
+    c.addEventListener('click', function () {
+      filter = c.getAttribute('data-f');
+      document.querySelectorAll('.chip').forEach(function (o) { o.setAttribute('aria-pressed', o === c ? 'true' : 'false'); });
+      update();
+    });
+  });
+  document.getElementById('q').addEventListener('input', function (e) { query = e.target.value.trim().toLowerCase(); update(); });
+
+  var scrim = document.getElementById('scrim'), opener = document.getElementById('openReq');
+  var to = document.getElementById('rTo');
+  to.innerHTML = '<option value="all">All families who have not paid</option>' +
+    fam.filter(function (f) { return f.id !== 1; }).map(function (f) { return '<option value="' + f.id + '">' + f.parent.split(',')[0] + '</option>'; }).join('');
+  function openM() { scrim.classList.add('open'); scrim.setAttribute('aria-hidden', 'false'); document.getElementById('rAmt').focus(); }
+  function closeM() { scrim.classList.remove('open'); scrim.setAttribute('aria-hidden', 'true'); document.getElementById('rErr').textContent = ''; opener.focus(); }
+  opener.addEventListener('click', openM);
+  document.getElementById('closeReq').addEventListener('click', closeM);
+  document.getElementById('cancelReq').addEventListener('click', closeM);
+  scrim.addEventListener('click', function (e) { if (e.target === scrim) closeM(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && scrim.classList.contains('open')) closeM(); });
+
+  document.getElementById('reqForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var amtEl = document.getElementById('rAmt'), amt = parseFloat(amtEl.value);
+    if (!(amt > 0)) { document.getElementById('rErr').textContent = 'Enter an amount above $0.00. Bunt cannot request zero dollars, even from the Feldmans.'; amtEl.focus(); return; }
+    var why = document.getElementById('rWhy').value, memo = document.getElementById('rMemo').value.trim();
+    var targets = to.value === 'all' ? fam.filter(function (f) { return f.status !== 'paid'; }) : [fam[+to.value]];
+    targets.forEach(function (f) {
+      f.extra += amt;
+      if (f.status === 'paid') f.status = 'pending';
+      var chip = document.querySelector('#r' + f.id + ' .status');
+      chip.className = 'status ' + f.status; chip.textContent = LABEL[f.status];
+    });
+    update();
+    var who = targets.length === 1 ? targets[0].parent.split(',')[0] : targets.length + ' families';
+    log('You requested ' + money(amt) + ' from ' + who + ' for ' + why.toLowerCase() + (memo ? '. Memo: "' + memo + '"' : '') + (amt > 6 ? '. Clipboard verified.' : '.'));
+    setTimeout(function () { log((targets[0].parent.split(',')[0]) + ' marked your request as seen.'); }, 1400);
+    toast('Request sent to ' + who + '.');
+    e.target.reset();
+    closeM();
+  });
+
+  var tt;
+  function toast(msg) {
+    var el = document.getElementById('toast');
+    el.textContent = msg; el.classList.add('show');
+    clearTimeout(tt); tt = setTimeout(function () { el.classList.remove('show'); }, 3200);
+  }
+
+  build();
+})();
+</script>
+</body>
+</html>

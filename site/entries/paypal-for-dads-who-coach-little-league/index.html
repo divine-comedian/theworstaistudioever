@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#F4EFE1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Graduate&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1E3560;
+    --red: #C7362B;
+    --paper: #F4EFE1;
+    --card: #FBF8EE;
+    --fg: #1A2236;
+    --ink: #131B2E;
+    --muted: #6E6A5C;
+    --line: #B9C1D3;
+    --pencil: #4A4A48;
+    --grass: #3E6B3A;
+    --display: 'Graduate', 'Rockwell', 'Courier New', serif;
+    --body: 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --label: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+    --hand: 'Kalam', 'Comic Sans MS', cursive;
+    --seam: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='14' viewBox='0 0 18 14'%3E%3Cpath d='M3 3 L9 8 L15 3' fill='none' stroke='%23C7362B' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M0 12 H18' stroke='%23C7362B' stroke-width='1' opacity='.35'/%3E%3C/svg%3E");
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--fg);
+    font: 400 17px/1.6 var(--body);
+    -webkit-font-smoothing: antialiased;
+  }
+  /* faint card-stock grain */
+  body::before {
+    content: "";
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: radial-gradient(rgba(30,53,96,.05) 1px, transparent 1px);
+    background-size: 5px 5px;
+  }
+  main, header, footer { position: relative; z-index: 1; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 28px; }
+
+  /* masthead: ruled cells, like the strip across a program cover */
+  .masthead { border-bottom: 3px double var(--navy); }
+  .masthead .wrap { display: grid; grid-template-columns: auto 1fr auto auto; align-items: stretch; }
+  .masthead .cell {
+    padding: 12px 18px; border-right: 1px solid var(--navy);
+    font: 600 15px/1.2 var(--label); color: var(--navy); display: flex; align-items: center;
+  }
+  .masthead .cell:first-child { padding-left: 0; }
+  .masthead .cell:last-child { border-right: 0; padding-right: 0; }
+  .logo { font: 400 26px/1 var(--display); color: var(--navy); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+  .logo svg { width: 28px; height: 28px; }
+  .masthead nav { gap: 22px; }
+  .masthead nav a { text-decoration: none; }
+  .masthead nav a:hover { color: var(--red); }
+
+  /* hero */
+  .hero { padding: 64px 0 72px; }
+  .hero .wrap { display: grid; grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: center; }
+  h1 {
+    font: 400 clamp(44px, 6.4vw, 86px)/0.98 var(--display);
+    color: var(--navy); margin: 0 0 6px; letter-spacing: -0.01em;
+  }
+  .seam { height: 14px; background: var(--seam) repeat-x left center; }
+  .hero .seam { width: 100%; max-width: 520px; margin: 18px 0 26px; transform-origin: left; }
+  .js .hero .seam { animation: draw 900ms 200ms cubic-bezier(.2,.7,.2,1) both; }
+  @keyframes draw { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+  .hero p.sub { font-size: 19px; max-width: 34em; margin: 0 0 30px; color: var(--fg); }
+  .cta-row { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 22px; position: relative; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px; min-height: 52px;
+    padding: 0 26px; border-radius: 2px; border: 2px solid var(--navy);
+    font: 700 19px/1 var(--label); text-decoration: none; cursor: pointer;
+    transition: background-color .18s, color .18s, transform .12s;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background: var(--navy); color: var(--card); box-shadow: 0 4px 0 -1px var(--paper), 0 4px 0 1px var(--navy); }
+  .btn-primary:hover { background: var(--red); border-color: var(--red); }
+  .btn-ghost { color: var(--navy); background: transparent; }
+  .btn-ghost:hover { background: var(--navy); color: var(--card); }
+  .pencil {
+    font: 400 19px/1.25 var(--hand); color: var(--pencil);
+    transform: rotate(-2deg); display: inline-block;
+  }
+  .hero .pencil { margin-top: 18px; }
+  .hero .pencil svg { vertical-align: middle; margin-right: 6px; }
+
+  .cover { margin: 0; }
+  .cover .frame {
+    border: 1px solid var(--navy); padding: 8px; background: var(--card);
+    outline: 1px solid var(--navy); outline-offset: 4px;
+  }
+  .cover img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; filter: saturate(.92) contrast(1.02); }
+  .cover figcaption {
+    display: flex; justify-content: space-between; gap: 12px; margin-top: 14px;
+    font: 500 15px/1.3 var(--label); color: var(--muted);
+  }
+  .cover figcaption strong { color: var(--navy); font-weight: 700; }
+
+  /* section heads */
+  section.block { padding: 72px 0; border-top: 1px solid var(--line); }
+  .head { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 34px; flex-wrap: wrap; }
+  h2 { font: 400 clamp(30px, 3.6vw, 44px)/1.05 var(--display); color: var(--navy); margin: 0; max-width: 18em; }
+  .head .pencil { max-width: 18em; }
+
+  /* scorecard grid */
+  .scorecard {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    border: 2px solid var(--navy); background: var(--card);
+  }
+  .box { position: relative; padding: 28px 26px 30px; border-right: 1px solid var(--navy); min-height: 280px; }
+  .box:last-child { border-right: 0; }
+  .box .tick {
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 18px;
+    font: 600 15px/1 var(--label); color: var(--muted);
+  }
+  .diamond { width: 46px; height: 46px; }
+  .diamond .path { fill: none; stroke: var(--line); stroke-width: 2; }
+  .diamond .run { fill: none; stroke: var(--red); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 120; stroke-dashoffset: 0; }
+  .js .scorecard:not(.in) .run { stroke-dashoffset: 120; }
+  .js .scorecard .run { transition: stroke-dashoffset 700ms cubic-bezier(.3,.7,.2,1); }
+  .js .scorecard .box:nth-child(2) .run { transition-delay: 160ms; }
+  .js .scorecard .box:nth-child(3) .run { transition-delay: 320ms; }
+  .diamond .base { fill: var(--card); stroke: var(--navy); stroke-width: 1.5; }
+  .box h3 { font: 700 26px/1.1 var(--label); color: var(--ink); margin: 0 0 12px; }
+  .box p { margin: 0; color: var(--fg); }
+
+  /* testimonials as lineup cards */
+  .lineup { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .player {
+    background: var(--card); border: 1px solid var(--navy); border-radius: 2px;
+    box-shadow: 0 3px 0 -1px var(--paper), 0 3px 0 0 var(--navy);
+    display: flex; flex-direction: column;
+  }
+  .player .top { display: grid; grid-template-columns: 96px 1fr; gap: 16px; padding: 18px; border-bottom: 1px solid var(--navy); align-items: center; }
+  .player img { width: 96px; height: 96px; object-fit: cover; display: block; border: 1px solid var(--navy); }
+  .player .name { font: 700 22px/1.1 var(--label); color: var(--ink); margin: 0 0 4px; }
+  .player .title { font-size: 14px; line-height: 1.35; color: var(--muted); margin: 0; }
+  .player blockquote { margin: 0; padding: 18px 18px 20px; flex: 1; font-size: 17px; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--navy); }
+  .stats div { padding: 10px 12px; border-right: 1px solid var(--line); }
+  .stats div:last-child { border-right: 0; }
+  .stats dt { font: 500 13px/1.2 var(--label); color: var(--muted); }
+  .stats dd { margin: 2px 0 0; font: 400 20px/1.1 var(--display); color: var(--navy); font-variant-numeric: tabular-nums; }
+  .stats dd.owed { color: var(--red); }
+
+  /* pricing as ticket stubs */
+  .tickets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; align-items: stretch; }
+  .ticket {
+    position: relative; background: var(--card); border: 1px solid var(--navy);
+    display: flex; flex-direction: column;
+  }
+  .ticket.featured { border: 2px solid var(--red); }
+  .ticket .stub { padding: 24px 24px 20px; border-bottom: 2px dashed var(--line); position: relative; }
+  .ticket .stub::before, .ticket .stub::after {
+    content: ""; position: absolute; bottom: -12px; width: 22px; height: 22px; border-radius: 50%;
+    background: var(--paper); border: 1px solid var(--navy);
+  }
+  .ticket .stub::before { left: -12px; clip-path: inset(0 0 0 50%); }
+  .ticket .stub::after { right: -12px; clip-path: inset(0 50% 0 0); }
+  .ticket.featured .stub::before, .ticket.featured .stub::after { border: 2px solid var(--red); }
+  .ticket h3 { font: 700 24px/1.1 var(--label); color: var(--ink); margin: 0 0 14px; padding-right: 70px; }
+  .price { font: 400 40px/1 var(--display); color: var(--navy); margin: 0 0 10px; }
+  .price small { font: 600 16px var(--label); color: var(--muted); }
+  .ticket .tag { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.45; }
+  .ticket ul { list-style: none; margin: 0; padding: 22px 24px; flex: 1; }
+  .ticket li { padding: 8px 0 8px 26px; position: relative; border-bottom: 1px solid var(--line); font-size: 16px; }
+  .ticket li:last-child { border-bottom: 0; }
+  .ticket li::before {
+    content: ""; position: absolute; left: 2px; top: 15px; width: 10px; height: 10px;
+    border: 1.5px solid var(--navy); transform: rotate(45deg);
+  }
+  .ticket.featured li::before { background: var(--red); border-color: var(--red); }
+  .ticket .btn { margin: 0 24px 24px; justify-content: center; }
+  .pennant {
+    position: absolute; top: -2px; right: 18px; width: 58px; height: 74px;
+    background: var(--red); color: var(--card);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
+    font: 700 13px/1.1 var(--label); text-align: center; padding-top: 12px;
+  }
+
+  /* demo band */
+  .demo-band { padding: 80px 0; border-top: 1px solid var(--line); }
+  .demo-band .inner {
+    background: var(--navy); color: var(--card); padding: 48px; position: relative;
+    display: grid; grid-template-columns: 1.3fr auto; gap: 32px; align-items: center;
+  }
+  .demo-band .seam { position: absolute; left: 0; right: 0; top: 14px; opacity: .9; }
+  .demo-band h2 { color: var(--card); }
+  .demo-band p { margin: 14px 0 0; max-width: 36em; color: #D9DDE7; }
+  .btn-red { background: var(--red); border-color: var(--red); color: var(--card); font-size: 22px; min-height: 60px; padding: 0 30px; }
+  .btn-red:hover { background: var(--card); color: var(--red); border-color: var(--card); }
+
+  footer { border-top: 3px double var(--navy); padding: 26px 0 40px; }
+  footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 14px; font: 500 15px/1.4 var(--label); color: var(--muted); }
+  footer a { color: var(--navy); }
+
+  @media (max-width: 960px) {
+    .hero .wrap { grid-template-columns: 1fr; gap: 40px; }
+    .scorecard, .lineup, .tickets { grid-template-columns: 1fr; }
+    .box { border-right: 0; border-bottom: 1px solid var(--navy); min-height: 0; }
+    .box:last-child { border-bottom: 0; }
+    .demo-band .inner { grid-template-columns: 1fr; padding: 48px 28px 36px; }
+  }
+  @media (max-width: 640px) {
+    .wrap { padding: 0 18px; }
+    .masthead .wrap { grid-template-columns: 1fr auto; }
+    .masthead .cell.issue, .masthead nav { display: none; }
+    .masthead .cell:nth-child(4) { border-right: 0; }
+    .hero { padding: 40px 0 56px; }
+    .cover figcaption { flex-direction: column; gap: 2px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .js .hero .seam { animation: none; }
+    .js .scorecard .run { transition: none; stroke-dashoffset: 0 !important; }
+  }
+</style>
+<title>Bunt — PayPal for dads who coach little league</title>
+<meta name="description" content="Get paid back for the orange slices. Bunt is payment infrastructure for the volunteer head coach. Request snack money, split the pizza by hustle, and dispute the team mom&#x27;s Venmo note, all from the dugout, all before the 4:30 field permit expires.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/paypal-for-dads-who-coach-little-league/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Bunt — PayPal for dads who coach little league">
+<meta property="og:description" content="Get paid back for the orange slices. Bunt is payment infrastructure for the volunteer head coach. Request snack money, split the pizza by hustle, and dispute the team mom&#x27;s Venmo note, all from the dugout, all before the 4:30 field permit expires.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/paypal-for-dads-who-coach-little-league/">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/paypal-for-dads-who-coach-little-league/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Bunt hero illustration">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Bunt — PayPal for dads who coach little league">
+<meta name="twitter:description" content="Get paid back for the orange slices. Bunt is payment infrastructure for the volunteer head coach. Request snack money, split the pizza by hustle, and dispute the team mom&#x27;s Venmo note, all from the dugout, all before the 4:30 field permit expires.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/paypal-for-dads-who-coach-little-league/social-preview.jpg">
+<meta name="twitter:image:alt" content="Bunt hero illustration">
+</head>
+<body>
+<header class="masthead">
+  <div class="wrap">
+    <div class="cell"><a class="logo" href="#top" aria-label="Bunt home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3 L29 16 L16 29 L3 16 Z" fill="none" stroke="#1E3560" stroke-width="2.5"/><path d="M16 29 L3 16 L16 3" fill="none" stroke="#C7362B" stroke-width="2.5"/><rect x="13.5" y="13.5" width="5" height="5" fill="#1E3560" transform="rotate(45 16 16)"/></svg>
+      Bunt</a></div>
+    <div class="cell issue">Official program of the volunteer head coach. Vol. 1, No. 1.</div>
+    <nav class="cell" aria-label="Sections">
+      <a href="#features">Features</a><a href="#coaches">Coaches</a><a href="#pricing">Pricing</a>
+    </nav>
+    <div class="cell">25¢</div>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <h1>Get paid back for the orange slices.</h1>
+        <div class="seam" aria-hidden="true"></div>
+        <p class="sub">Bunt is payment infrastructure for the volunteer head coach. Request snack money, split the pizza by hustle, and dispute the team mom's Venmo note, all from the dugout, all before the 4:30 field permit expires.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="./demo.html">Open a team account</a>
+          <a class="btn btn-ghost" href="./demo.html">open the demo →</a>
+        </div>
+        <span class="pencil"><svg width="34" height="18" viewBox="0 0 34 18" aria-hidden="true"><path d="M32 14 C22 16 10 14 4 4 M4 4 L4 11 M4 4 L11 5" fill="none" stroke="#4A4A48" stroke-width="1.6" stroke-linecap="round"/></svg>ask Feldmans AGAIN</span>
+      </div>
+      <figure class="cover">
+        <div class="frame"><img src="hero.webp" alt="A volunteer coach in a navy windbreaker sits alone on a dugout bench with a clipboard, a bag of cut oranges and a bucket of baseballs." width="1600" height="900"></div>
+        <figcaption><span><strong>Coach G. Halvorsen</strong>, Mud Hens 10U, after the snack meeting.</span><span>Currently owed $189.00</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="block" id="features">
+    <div class="wrap">
+      <div class="head">
+        <h2>Three features. All of them about snacks, in the end.</h2>
+        <span class="pencil">Rick = $20 cash, NOT Venmo</span>
+      </div>
+      <div class="scorecard">
+        <article class="box">
+          <div class="tick"><span>Reaches first</span>
+            <svg class="diamond" viewBox="0 0 46 46" aria-hidden="true"><path class="path" d="M23 41 L41 23 L23 5 L5 23 Z"/><path class="run" d="M23 41 L41 23"/><rect class="base" x="38" y="20" width="6" height="6" transform="rotate(45 41 23)"/></svg>
+          </div>
+          <h3>Orange Slice Escrow</h3>
+          <p>Snack parents pay into escrow on Thursday. Funds release on Saturday only after Bunt confirms, by photo, that the oranges were cut into eighths and not quarters. Quarters trigger a review.</p>
+        </article>
+        <article class="box">
+          <div class="tick"><span>Reaches second</span>
+            <svg class="diamond" viewBox="0 0 46 46" aria-hidden="true"><path class="path" d="M23 41 L41 23 L23 5 L5 23 Z"/><path class="run" d="M23 41 L41 23 L23 5"/><rect class="base" x="38" y="20" width="6" height="6" transform="rotate(45 41 23)"/><rect class="base" x="20" y="2" width="6" height="6" transform="rotate(45 23 5)"/></svg>
+          </div>
+          <h3>Hustle-Weighted Splits</h3>
+          <p>The post-game pizza is split by effort. Coaches grade each player from 1 to 10 on how fast they ran out a ground ball, and Bunt prices each slice accordingly. Kids who jogged pay full freight.</p>
+        </article>
+        <article class="box">
+          <div class="tick"><span>Reaches third, stranded</span>
+            <svg class="diamond" viewBox="0 0 46 46" aria-hidden="true"><path class="path" d="M23 41 L41 23 L23 5 L5 23 Z"/><path class="run" d="M23 41 L41 23 L23 5 L5 23"/><rect class="base" x="38" y="20" width="6" height="6" transform="rotate(45 41 23)"/><rect class="base" x="20" y="2" width="6" height="6" transform="rotate(45 23 5)"/><rect class="base" x="2" y="20" width="6" height="6" transform="rotate(45 5 23)"/></svg>
+          </div>
+          <h3>Clipboard Verification</h3>
+          <p>Every payment over $6 requires the coach to hold a clipboard in frame. Our model has seen 41,000 clipboards. It knows a real clipboard from a cereal box with a binder clip.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="coaches">
+    <div class="wrap">
+      <div class="head">
+        <h2>Coaches who have been paid back, partially.</h2>
+      </div>
+      <div class="lineup">
+        <figure class="player">
+          <div class="top">
+            <img src="headshot-1.webp" alt="Portrait of Greg Halvorsen" width="320" height="320" loading="lazy">
+            <figcaption><p class="name">Greg Halvorsen</p><p class="title">Head Coach, Mud Hens 10U. Regional Sales Manager, Monday through Friday.</p></figcaption>
+          </div>
+          <blockquote>“I used to front the pizza money and never see it again. Now I front the pizza money and get a push notification confirming I will never see it again. That is closure.”</blockquote>
+          <dl class="stats"><div><dt>Seasons</dt><dd>6</dd></div><div><dt>Fronted</dt><dd>$214</dd></div><div><dt>Owed</dt><dd class="owed">$189</dd></div></dl>
+        </figure>
+        <figure class="player">
+          <div class="top">
+            <img src="headshot-2.webp" alt="Portrait of Darnell Okafor" width="320" height="320" loading="lazy">
+            <figcaption><p class="name">Darnell Okafor</p><p class="title">Pitching Coordinator, Pirates (sponsored by Lou's Transmission &amp; Tire)</p></figcaption>
+          </div>
+          <blockquote>“Hustle splits are fair. My own son paid $0.40 for his pizza last week. He also did not run to first. We discussed it in the car.”</blockquote>
+          <dl class="stats"><div><dt>Seasons</dt><dd>3</dd></div><div><dt>Fronted</dt><dd>$96</dd></div><div><dt>Owed</dt><dd class="owed">$41</dd></div></dl>
+        </figure>
+        <figure class="player">
+          <div class="top">
+            <img src="headshot-3.webp" alt="Portrait of Kevin Prusky" width="320" height="320" loading="lazy">
+            <figcaption><p class="name">Kevin Prusky</p><p class="title">First Base Coach, Bucket Carrier, Keeper of the Ball Bag</p></figcaption>
+          </div>
+          <blockquote>“Bunt held a $12 snack payment in escrow because the grapes were not cut in half. It was right to do that. I have told the Feldmans.”</blockquote>
+          <dl class="stats"><div><dt>Seasons</dt><dd>9</dd></div><div><dt>Fronted</dt><dd>$612</dd></div><div><dt>Owed</dt><dd class="owed">$612</dd></div></dl>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="pricing">
+    <div class="wrap">
+      <div class="head">
+        <h2>Pricing, billed to the coach.</h2>
+        <span class="pencil">league will NOT reimburse this either</span>
+      </div>
+      <div class="tickets">
+        <article class="ticket">
+          <div class="stub">
+            <h3>Tee-Ball</h3>
+            <p class="price">$0 <small>/ season</small></p>
+            <p class="tag">For dads who said yes because nobody else raised a hand.</p>
+          </div>
+          <ul>
+            <li>1 team, 11 kids, 22 parents, 0 reimbursements</li>
+            <li>Payouts settle in 3 to 5 business innings</li>
+            <li>Orange Slice Escrow (quarters only flagged, not refused)</li>
+          </ul>
+          <a class="btn btn-ghost" href="./demo.html">Take the field</a>
+        </article>
+        <article class="ticket featured">
+          <div class="pennant" aria-hidden="true">Most<br>coached</div>
+          <div class="stub">
+            <h3>Travel Ball</h3>
+            <p class="price">$49 <small>/ month</small></p>
+            <p class="tag">For dads who have called it a development year twice.</p>
+          </div>
+          <ul>
+            <li>Hustle-Weighted Splits with decimal grading</li>
+            <li>Tournament hotel splits by bed, cot and floor</li>
+            <li>Automatic reminders sent to the team mom's husband</li>
+          </ul>
+          <a class="btn btn-primary" href="./demo.html">Start Travel Ball</a>
+        </article>
+        <article class="ticket">
+          <div class="stub">
+            <h3>The Assistant Coach Wants Your Job</h3>
+            <p class="price">$199 <small>/ month</small></p>
+            <p class="tag">For dads who know exactly what Doug said in the parking lot.</p>
+          </div>
+          <ul>
+            <li>Chargebacks against the league board, filed in triplicate</li>
+            <li>A second clipboard, issued and insured</li>
+            <li>Priority dispute line staffed by a former umpire named Rick</li>
+          </ul>
+          <a class="btn btn-ghost" href="./demo.html">Talk to Rick</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="demo-band">
+    <div class="wrap">
+      <div class="inner">
+        <div class="seam" aria-hidden="true"></div>
+        <div>
+          <h2>The Mud Hens ledger is open.</h2>
+          <p>Eleven families, one $86.40 pizza bill, and a hustle slider for every kid. Drag it and watch the Feldmans' share go up.</p>
+        </div>
+        <a class="btn btn-red" href="./demo.html">open the demo →</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a href="/">← theworstaistudioever</a>
+    <span>Bunt is not affiliated with PayPal, Little League Baseball, or Rick. Field permit expires 4:30.</span>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var root = document.documentElement;
+    root.classList.add('js');
+    var cards = document.querySelectorAll('.scorecard');
+    function reveal(el) { el.classList.add('in'); }
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) { reveal(e.target); io.unobserve(e.target); } });
+      }, { threshold: 0.3 });
+      cards.forEach(function (c) { io.observe(c); });
+    } else {
+      cards.forEach(reveal);
+    }
+    // fallback so screenshots and slow observers never show empty diamonds
+    setTimeout(function () { cards.forEach(reveal); }, 2500);
+  })();
+</script>
+</body>
+</html>
