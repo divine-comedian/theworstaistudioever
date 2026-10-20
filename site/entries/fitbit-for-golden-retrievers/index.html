@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#07090C">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Manrope:wght@400;500;700&family=Martian+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #F4B740;
+    --pink: #FF4F7A;
+    --blue: #4FA3FF;
+    --bg: #07090C;
+    --surface: #10141A;
+    --raised: #151B23;
+    --line: #1F2630;
+    --fg: #E6EAEE;
+    --muted: #828D99;
+    --ink: #F4F6F8;
+    --display: 'Sora', 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif;
+    --body: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --mono: 'Martian Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  img { display: block; max-width: 100%; }
+  :focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 6px; }
+  .wrap { width: min(1180px, 100% - 48px); margin: 0 auto; }
+
+  /* nav */
+  .nav { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; }
+  .logo { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-weight: 600; font-size: 20px; text-decoration: none; color: var(--ink); letter-spacing: -0.01em; }
+  .nav-links { display: flex; gap: 28px; align-items: center; font-size: 15px; color: var(--muted); }
+  .nav-links a { text-decoration: none; }
+  .nav-links a:hover { color: var(--ink); }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 48px; padding: 0 24px; border-radius: 999px;
+    font-family: var(--body); font-weight: 700; font-size: 16px; text-decoration: none;
+    border: 1px solid transparent; cursor: pointer; transition: background .2s, color .2s, border-color .2s, transform .15s;
+  }
+  .btn:active { transform: scale(.98); }
+  .btn-gold { background: var(--gold); color: #1A1204; }
+  .btn-gold:hover { background: #FFC85A; }
+  .btn-ghost { border-color: var(--line); color: var(--ink); }
+  .btn-ghost:hover { border-color: var(--muted); }
+  .nav .btn { min-height: 42px; padding: 0 18px; font-size: 15px; }
+
+  /* hero */
+  .hero { position: relative; display: grid; grid-template-columns: 5fr 7fr; gap: 0; align-items: center; min-height: 640px; }
+  .hero-copy { position: relative; z-index: 2; padding: 40px 0 60px; }
+  .live { display: inline-flex; align-items: center; gap: 10px; padding: 7px 14px 7px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); font-size: 14px; color: var(--muted); }
+  .live b { font-family: var(--mono); font-weight: 500; font-size: 13px; color: var(--gold); }
+  .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--pink); box-shadow: 0 0 0 0 rgba(255,79,122,.6); animation: pulse 1.6s infinite; }
+  @keyframes pulse { 70% { box-shadow: 0 0 0 8px rgba(255,79,122,0); } 100% { box-shadow: 0 0 0 0 rgba(255,79,122,0); } }
+  h1 {
+    font-family: var(--display); font-weight: 600; color: var(--ink);
+    font-size: clamp(42px, 5.6vw, 72px); line-height: 1.02; letter-spacing: -0.035em;
+    margin: 26px 0 22px; max-width: 11ch;
+  }
+  .hero-sub { font-size: 19px; color: #B8C0C9; max-width: 34em; margin: 0 0 34px; }
+  .hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+  .hero-media { position: relative; margin-right: calc((100vw - min(1180px, 100vw - 48px)) / -2); height: 640px; }
+  .hero-media img { width: 100%; height: 100%; object-fit: cover; object-position: 62% 40%; }
+  .hero-media::before {
+    content: ""; position: absolute; inset: 0; z-index: 1;
+    background: linear-gradient(90deg, var(--bg) 0%, rgba(7,9,12,.55) 26%, rgba(7,9,12,0) 50%), linear-gradient(0deg, var(--bg) 0%, rgba(7,9,12,0) 22%);
+  }
+  .ring-card {
+    position: absolute; z-index: 2; left: 18%; bottom: 70px;
+    display: flex; align-items: center; gap: 22px;
+    padding: 18px 24px 18px 18px; border-radius: 22px;
+    background: rgba(16,20,26,.82); border: 1px solid var(--line);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  }
+  .rings circle { fill: none; stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; }
+  .rings .track { stroke: var(--line); }
+  .rings .arc { transition: stroke-dashoffset .9s cubic-bezier(.2,.8,.2,1); }
+  .ring-legend { display: grid; gap: 6px; font-size: 14px; }
+  .ring-legend div { display: flex; align-items: baseline; gap: 10px; }
+  .ring-legend i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; transform: translateY(1px); }
+  .ring-legend span { color: var(--muted); min-width: 84px; }
+  .ring-legend b { font-family: var(--mono); font-weight: 500; color: var(--ink); font-size: 13px; }
+
+  /* waveform */
+  .wave { display: block; width: 100%; height: 64px; margin-top: -10px; }
+  .wave path { fill: none; stroke: var(--gold); stroke-width: 1.5; opacity: .75; }
+  .wave .ghost { stroke: var(--blue); opacity: .25; }
+
+  /* readouts band */
+  .band { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--surface); }
+  .band-grid { display: grid; grid-template-columns: 1.3fr repeat(4, 1fr); }
+  .band-grid > div { padding: 28px 24px; border-left: 1px solid var(--line); }
+  .band-grid > div:first-child { border-left: 0; padding-left: 0; color: var(--muted); font-size: 15px; align-self: center; }
+  .readout .n { font-family: var(--mono); font-weight: 500; font-size: 26px; color: var(--ink); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .readout .n small { font-size: 13px; color: var(--muted); margin-left: 4px; }
+  .readout .k { display: block; font-size: 14px; color: var(--muted); margin-top: 2px; }
+  .readout .d { display: inline-block; margin-top: 8px; font-family: var(--mono); font-size: 11px; color: var(--gold); padding: 3px 8px; border-radius: 999px; background: rgba(244,183,64,.1); }
+
+  /* sections */
+  section { padding: 120px 0 0; }
+  h2 { font-family: var(--display); font-weight: 600; color: var(--ink); font-size: clamp(32px, 3.6vw, 46px); line-height: 1.08; letter-spacing: -0.03em; margin: 0 0 16px; max-width: 18ch; }
+  .lede { color: var(--muted); max-width: 38em; margin: 0 0 48px; font-size: 18px; }
+
+  .features { display: grid; grid-template-columns: 1.25fr 1fr; grid-template-rows: auto auto; gap: 20px; }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 32px; position: relative; overflow: hidden; }
+  .panel h3 { font-family: var(--display); font-weight: 600; font-size: 23px; color: var(--ink); margin: 0 0 10px; letter-spacing: -0.015em; }
+  .panel p { margin: 0; color: #AEB7C1; max-width: 32em; }
+  .f-joy { grid-row: span 2; display: flex; flex-direction: column; justify-content: space-between; }
+  .joy-graph { margin-top: 36px; height: 220px; flex: 1 1 auto; min-height: 220px; position: relative; border-left: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .joy-graph svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .joy-graph .axis { position: absolute; left: 10px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .joy-graph .note { position: absolute; right: 8px; top: 18px; font-size: 13px; color: var(--gold); }
+  .rpm-bars { display: flex; align-items: flex-end; gap: 5px; height: 90px; margin-top: 28px; }
+  .rpm-bars span { flex: 1; background: var(--pink); border-radius: 3px 3px 0 0; opacity: .35; }
+  .rpm-bars span.peak { opacity: 1; }
+  .rpm-cap { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); margin-top: 8px; }
+  .rpm-cap b { font-family: var(--mono); font-weight: 500; color: var(--pink); }
+  .plan { margin-top: 26px; display: grid; gap: 8px; }
+  .plan div { display: flex; justify-content: space-between; padding: 10px 14px; border-radius: 12px; background: var(--raised); font-size: 15px; }
+  .plan div span:last-child { font-family: var(--mono); font-size: 12px; color: var(--blue); align-self: center; }
+
+  /* testimonials */
+  .quotes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .quote { margin: 0; display: flex; flex-direction: column; }
+  .quote .photo { position: relative; border-radius: 20px; overflow: hidden; aspect-ratio: 1 / 1; background: var(--surface); }
+  .quote .photo img { width: 100%; height: 100%; object-fit: cover; }
+  .quote .tag { position: absolute; left: 12px; bottom: 12px; padding: 6px 12px; border-radius: 999px; background: rgba(7,9,12,.8); font-size: 13px; color: var(--fg); }
+  .quote .tag b { font-family: var(--mono); font-weight: 500; font-size: 12px; color: var(--gold); margin-left: 6px; }
+  .quote blockquote { margin: 22px 0 14px; font-family: var(--display); font-size: 20px; line-height: 1.4; color: var(--ink); letter-spacing: -0.01em; }
+  .quote figcaption { font-size: 15px; color: var(--muted); margin-top: auto; }
+  .quote figcaption strong { display: block; color: var(--fg); font-weight: 700; }
+
+  /* pricing */
+  .tiers { display: grid; grid-template-columns: 1fr 1.08fr 1fr; gap: 20px; align-items: stretch; }
+  .tier { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 32px 28px; display: flex; flex-direction: column; }
+  .tier h3 { font-family: var(--display); font-weight: 600; font-size: 22px; color: var(--ink); margin: 0; }
+  .tier .tl { color: var(--muted); font-size: 15px; margin: 6px 0 22px; min-height: 48px; }
+  .tier .price { font-family: var(--mono); font-weight: 500; font-size: 34px; color: var(--ink); letter-spacing: -0.03em; }
+  .tier .price small { font-size: 14px; color: var(--muted); letter-spacing: 0; }
+  .tier ul { list-style: none; padding: 0; margin: 24px 0 30px; display: grid; gap: 12px; font-size: 15px; }
+  .tier li { padding-left: 22px; position: relative; color: #C3CAD2; }
+  .tier li::before { content: ""; position: absolute; left: 0; top: 8px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--gold); }
+  .tier .btn { margin-top: auto; }
+  .tier.hot { background: var(--raised); border-color: rgba(244,183,64,.45); position: relative; padding-top: 58px; }
+  .strap { position: absolute; top: 18px; left: 28px; right: 28px; height: 22px; border-radius: 999px; background: #0B0E12; border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; }
+  .strap i { width: 46px; height: 14px; border-radius: 6px; background: var(--gold); box-shadow: 0 0 14px rgba(244,183,64,.5); }
+
+  /* demo cta */
+  .demo-cta { margin-top: 120px; border-radius: 32px; border: 1px solid var(--line); background: radial-gradient(120% 140% at 85% 0%, rgba(244,183,64,.16), rgba(16,20,26,0) 55%), var(--surface); padding: 64px; display: grid; grid-template-columns: 1.4fr 1fr; gap: 40px; align-items: center; }
+  .demo-cta p { color: #AEB7C1; margin: 0; max-width: 34em; }
+  .demo-cta .btn { min-height: 60px; font-size: 18px; padding: 0 32px; justify-self: end; }
+
+  footer { margin-top: 100px; border-top: 1px solid var(--line); padding: 28px 0 40px; display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; font-size: 14px; color: var(--muted); }
+  footer a { text-decoration: none; }
+  footer a:hover { color: var(--ink); }
+
+  @media (max-width: 960px) {
+    .hero { grid-template-columns: 1fr; min-height: 0; }
+    .hero-copy { order: 2; padding: 0 0 40px; margin-top: -40px; }
+    .hero-media { order: 1; height: 420px; margin: 0 -24px; }
+    .hero-media::before { background: linear-gradient(0deg, var(--bg) 0%, rgba(7,9,12,0) 45%); }
+    .ring-card { left: 24px; bottom: 60px; transform: scale(.88); transform-origin: left bottom; }
+    .band-grid { grid-template-columns: 1fr 1fr; }
+    .band-grid > div { border-top: 1px solid var(--line); }
+    .band-grid > div:first-child { grid-column: 1 / -1; padding: 22px 0; border-top: 0; }
+    .band-grid > div:nth-child(2), .band-grid > div:nth-child(4) { border-left: 0; padding-left: 0; }
+    .features, .quotes, .tiers, .demo-cta { grid-template-columns: 1fr; }
+    .f-joy { grid-row: auto; }
+    .demo-cta { padding: 40px 28px; }
+    .demo-cta .btn { justify-self: start; }
+    .nav-links a:not(.btn) { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+<title>Tailmetry — Fitbit for golden retrievers</title>
+<meta name="description" content="Know exactly how good a boy he is. Tailmetry is a collar sensor that tracks tail RPM, Joy Load and stick throughput around the clock, then tells you, to four decimal places, that your golden retriever is fine.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/fitbit-for-golden-retrievers/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Tailmetry — Fitbit for golden retrievers">
+<meta property="og:description" content="Know exactly how good a boy he is. Tailmetry is a collar sensor that tracks tail RPM, Joy Load and stick throughput around the clock, then tells you, to four decimal places, that your golden retriever is fine.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/fitbit-for-golden-retrievers/">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/fitbit-for-golden-retrievers/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Tailmetry hero illustration">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Tailmetry — Fitbit for golden retrievers">
+<meta name="twitter:description" content="Know exactly how good a boy he is. Tailmetry is a collar sensor that tracks tail RPM, Joy Load and stick throughput around the clock, then tells you, to four decimal places, that your golden retriever is fine.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/fitbit-for-golden-retrievers/social-preview.jpg">
+<meta name="twitter:image:alt" content="Tailmetry hero illustration">
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav" aria-label="Main">
+    <a class="logo" href="#top">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="11" fill="none" stroke="#F4B740" stroke-width="3"/><circle cx="13" cy="13" r="6" fill="none" stroke="#FF4F7A" stroke-width="3"/></svg>
+      Tailmetry
+    </a>
+    <div class="nav-links">
+      <a href="#science">The science</a>
+      <a href="#owners">Owners</a>
+      <a href="#pricing">Pricing</a>
+      <a class="btn btn-ghost" href="./demo.html">Open the demo →</a>
+    </div>
+  </nav>
+
+  <header class="hero" id="top">
+    <div class="hero-copy">
+      <span class="live"><span class="pulse" aria-hidden="true"></span>Murphy, live <b data-count="100" data-dec="4">100.0000</b></span>
+      <h1>Know exactly how good a boy he is.</h1>
+      <p class="hero-sub">Tailmetry is a collar sensor that tracks tail RPM, Joy Load and stick throughput around the clock, then tells you, to four decimal places, that your golden retriever is fine.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-gold" href="#pricing">Strap in a retriever</a>
+        <a class="btn btn-ghost" href="./demo.html">Open the demo →</a>
+      </div>
+    </div>
+    <div class="hero-media">
+      <img src="hero.webp" alt="A golden retriever sitting in a dark studio, wearing a black Tailmetry collar sensor" width="1600" height="900">
+      <div class="ring-card">
+        <svg class="rings" width="112" height="112" viewBox="0 0 112 112" role="img" aria-label="Joy Load 100, heart 100, strain 6">
+          <circle class="track" cx="56" cy="56" r="50" stroke-width="9"/>
+          <circle class="arc" data-pct="100" cx="56" cy="56" r="50" stroke-width="9" stroke="#F4B740"/>
+          <circle class="track" cx="56" cy="56" r="37" stroke-width="9"/>
+          <circle class="arc" data-pct="100" cx="56" cy="56" r="37" stroke-width="9" stroke="#FF4F7A"/>
+          <circle class="track" cx="56" cy="56" r="24" stroke-width="9"/>
+          <circle class="arc" data-pct="6" cx="56" cy="56" r="24" stroke-width="9" stroke="#4FA3FF"/>
+        </svg>
+        <div class="ring-legend">
+          <div><i style="background:#F4B740"></i><span>Joy Load</span><b>100 / 100</b></div>
+          <div><i style="background:#FF4F7A"></i><span>Heart</span><b>full</b></div>
+          <div><i style="background:#4FA3FF"></i><span>Strain</span><b>chased a leaf</b></div>
+        </div>
+      </div>
+    </div>
+  </header>
+</div>
+
+<svg class="wave" viewBox="0 0 1200 64" preserveAspectRatio="none" aria-hidden="true"><path class="ghost" id="wave2" d=""/><path id="wave1" d=""/></svg>
+
+<div class="band">
+  <div class="wrap band-grid">
+    <div>Murphy's numbers this morning, as of 7:42am. Yesterday's were the same.</div>
+    <div class="readout"><span class="n">100.0000</span><span class="k">Joy Load</span><span class="d">+0.0 ceiling</span></div>
+    <div class="readout"><span class="n">212<small>rpm</small></span><span class="k">Tail, rolling avg</span><span class="d">+0.0 ceiling</span></div>
+    <div class="readout"><span class="n">14<small>sticks</small></span><span class="k">Throughput</span><span class="d">3 returned</span></div>
+    <div class="readout"><span class="n">0.4<small>socks</small></span><span class="k">Ingested</span><span class="d">vet notified</span></div>
+  </div>
+</div>
+
+<div class="wrap">
+  <section id="science">
+    <h2>Three sensors. One finding.</h2>
+    <p class="lede">The pod weighs 11 grams and samples everything a retriever does. Our data science team has spent two years looking for a bad day. They are still looking.</p>
+    <div class="features">
+      <article class="panel f-joy">
+        <div>
+          <h3>Joy Load, measured continuously</h3>
+          <p>Our proprietary score runs from 0 to 100. Across 41,000 hours of beta data it has read 100 every single time. The sensor works. We had it checked twice.</p>
+        </div>
+        <div class="joy-graph" aria-label="Joy Load over 41,000 hours: a flat line at 100">
+          <span class="axis" style="top:4px">100</span>
+          <span class="axis" style="bottom:4px">0</span>
+          <span class="note">41,000 hrs, no dips</span>
+          <svg viewBox="0 0 400 220" preserveAspectRatio="none" aria-hidden="true">
+            <line x1="0" y1="110" x2="400" y2="110" stroke="#1F2630" stroke-dasharray="3 5"/>
+            <path d="M0 22 L400 22" stroke="#F4B740" stroke-width="2.5" fill="none"/>
+            <path d="M0 22 L400 22 L400 220 L0 220 Z" fill="rgba(244,183,64,.08)"/>
+          </svg>
+        </div>
+      </article>
+      <article class="panel">
+        <h3>Tail RPM telemetry</h3>
+        <p>Optical tail tracking at 240 samples per second. Peak recorded so far: 318 RPM, the moment a stranger in the park said "well, who's this."</p>
+        <div class="rpm-bars" aria-hidden="true">
+          <span style="height:38%"></span><span style="height:52%"></span><span style="height:44%"></span><span style="height:61%"></span><span style="height:57%"></span><span style="height:48%"></span><span style="height:66%"></span><span class="peak" style="height:100%"></span><span style="height:70%"></span><span style="height:55%"></span><span style="height:59%"></span><span style="height:46%"></span><span style="height:63%"></span><span style="height:50%"></span>
+        </div>
+        <div class="rpm-cap"><span>Saturday, 9 to 11am</span><span>peak <b>318 rpm</b></span></div>
+      </article>
+      <article class="panel">
+        <h3>Recovery coaching</h3>
+        <p>Every morning Tailmetry builds a recovery plan from overnight data. Every morning the plan is a nap in a patch of sun. We call it personalized because, technically, it is.</p>
+        <div class="plan">
+          <div><span>Monday plan</span><span>sun nap, 3h</span></div>
+          <div><span>Tuesday plan</span><span>sun nap, 3h</span></div>
+          <div><span>Wednesday plan</span><span>sun nap, 3h 10m</span></div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="owners">
+    <h2>Owners who now check eleven times a day</h2>
+    <p class="lede">Collected from verified subscribers. Their dogs declined to comment and leaned on the interviewer.</p>
+    <div class="quotes">
+      <figure class="quote">
+        <div class="photo"><img src="headshot-1.webp" alt="Murphy, a cream golden retriever, in a formal studio portrait" width="320" height="320" loading="lazy"><span class="tag">Murphy, 3<b>100.0</b></span></div>
+        <blockquote>"I bought it to find out if Murphy was happy. He is. I still check eleven times a day."</blockquote>
+        <figcaption><strong>Dana Okafor</strong>Director of Indirect Procurement, owner of one (1) golden</figcaption>
+      </figure>
+      <figure class="quote">
+        <div class="photo"><img src="headshot-2.webp" alt="Sergeant Pepper, an older red golden retriever with a grey muzzle, in a formal studio portrait" width="320" height="320" loading="lazy"><span class="tag">Sergeant Pepper, 11<b>100.0</b></span></div>
+        <blockquote>"The sock-ingestion alert went off during my daughter's piano recital. It was right."</blockquote>
+        <figcaption><strong>Lyle Brandt</strong>Regional VP of Compliance, Tri-County Hydraulics</figcaption>
+      </figure>
+      <figure class="quote">
+        <div class="photo"><img src="headshot-3.webp" alt="Biscuit, a medium-gold golden retriever, in a formal studio portrait" width="320" height="320" loading="lazy"><span class="tag">Biscuit, 5<b>100.0</b></span></div>
+        <blockquote>"Tailmetry put Biscuit in the 99.8th percentile for leaning on guests. We had the chart framed."</blockquote>
+        <figcaption><strong>Priya Venkataraman</strong>Senior Product Manager, Payroll Integrations (EMEA)</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="pricing">
+    <h2>Pick a plan. He'll be fine on any of them.</h2>
+    <p class="lede">Every plan includes the collar pod, a charging dock he will try to eat, and the same reading.</p>
+    <div class="tiers">
+      <div class="tier">
+        <h3>Good Boy</h3>
+        <p class="tl">For the casual retriever.</p>
+        <div class="price">$14<small>/mo</small></div>
+        <ul>
+          <li>Daily Joy Load reading (it will be 100)</li>
+          <li>7 days of Tail RPM history</li>
+          <li>One push notification a day confirming he is happy</li>
+        </ul>
+        <a class="btn btn-ghost" href="./demo.html">Start with Good Boy</a>
+      </div>
+      <div class="tier hot">
+        <div class="strap" aria-hidden="true"><i></i></div>
+        <h3>Very Good Boy</h3>
+        <p class="tl">Our best-selling tier, mostly because of the name.</p>
+        <div class="price">$39<small>/mo</small></div>
+        <ul>
+          <li>Unlimited history and raw CSV export</li>
+          <li>Neighborhood stick-throughput leaderboard</li>
+          <li>Weekly PDF report for a vet who did not ask for it</li>
+        </ul>
+        <a class="btn btn-gold" href="./demo.html">Start with Very Good Boy</a>
+      </div>
+      <div class="tier">
+        <h3>Best Boy Enterprise</h3>
+        <p class="tl">For households with four goldens, or one very serious one.</p>
+        <div class="price">$1,200<small>/mo</small></div>
+        <ul>
+          <li>A dedicated Joy Analyst on call</li>
+          <li>SOC 2 compliant sock-ingestion alerts</li>
+          <li>Quarterly board meeting with your dog</li>
+        </ul>
+        <a class="btn btn-ghost" href="./demo.html">Talk to a Joy Analyst</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="demo-cta">
+    <div>
+      <h2>See Murphy's dashboard</h2>
+      <p>Three dogs, live tail telemetry, a sock alert from this morning and a recalibrate button our engineers press when they feel uneasy.</p>
+    </div>
+    <a class="btn btn-gold" href="./demo.html">Open the demo →</a>
+  </div>
+
+  <footer>
+    <a href="/">← theworstaistudioever</a>
+    <span>Tailmetry Inc. Not a medical device. Not a vet. Readings may be 100.</span>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // rings draw in once
+  var arcs = document.querySelectorAll('.rings .arc');
+  arcs.forEach(function (c) {
+    var r = +c.getAttribute('r'), len = 2 * Math.PI * r, pct = +c.dataset.pct;
+    c.style.strokeDasharray = len;
+    c.style.strokeDashoffset = reduce ? len * (1 - pct / 100) : len;
+    if (!reduce) setTimeout(function () { c.style.strokeDashoffset = len * (1 - pct / 100); }, 250);
+  });
+
+  // live readout ticks up
+  var live = document.querySelector('[data-count]');
+  if (live && !reduce) {
+    var t0 = null;
+    var step = function (ts) {
+      if (!t0) t0 = ts;
+      var p = Math.min(1, (ts - t0) / 1100);
+      live.textContent = (100 * (1 - Math.pow(1 - p, 3))).toFixed(4);
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  // tail waveform
+  var w1 = document.getElementById('wave1'), w2 = document.getElementById('wave2');
+  var phase = 0;
+  function draw() {
+    var d1 = 'M0 32', d2 = 'M0 32';
+    for (var x = 0; x <= 1200; x += 8) {
+      var y1 = 32 + Math.sin((x / 38) + phase) * 14 * (0.6 + 0.4 * Math.sin(x / 210 + phase / 3));
+      var y2 = 32 + Math.sin((x / 61) - phase * 0.7) * 9;
+      d1 += ' L' + x + ' ' + y1.toFixed(1);
+      d2 += ' L' + x + ' ' + y2.toFixed(1);
+    }
+    w1.setAttribute('d', d1);
+    w2.setAttribute('d', d2);
+  }
+  draw();
+  if (!reduce) {
+    (function loop() { phase += 0.035; draw(); requestAnimationFrame(loop); })();
+  }
+})();
+</script>
+</body>
+</html>

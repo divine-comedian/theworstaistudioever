@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800&family=Archivo+Narrow:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #C8102E;
+    --red-dk: #9E0B23;
+    --blue: #1F4E9C;
+    --blue-dk: #163A76;
+    --bg: #E7E5DF;
+    --surface: #F6F5F1;
+    --fg: #1B1B1A;
+    --muted: #5E5C56;
+    --ink: #121211;
+    --tag: #FFD43B;
+    --beam: #E5711F;
+    --steel: #9A9C9E;
+    --display: 'Anton', 'Impact', 'Arial Narrow', sans-serif;
+    --body: 'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --label: 'Archivo Narrow', 'Arial Narrow', sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background-color: var(--bg);
+    background-image:
+      linear-gradient(rgba(0,0,0,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,0,0,.035) 1px, transparent 1px);
+    background-size: 160px 160px;
+    color: var(--fg);
+    font: 400 17px/1.6 var(--body);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+  img { display: block; max-width: 100%; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+
+  /* top bar */
+  .topbar { background: var(--ink); color: #EDEBE5; font: 600 14px/1 var(--label); }
+  .topbar .wrap { display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 40px; flex-wrap: wrap; padding-top: 8px; padding-bottom: 8px; }
+  .topbar a { text-decoration: none; opacity: .85; }
+  .topbar a:hover { opacity: 1; text-decoration: underline; }
+  .nav { background: var(--surface); border-bottom: 4px solid var(--red); }
+  .nav .wrap { display: flex; align-items: center; justify-content: space-between; min-height: 76px; gap: 20px; }
+  .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+  .logo-mark { width: 44px; height: 44px; background: var(--red); display: grid; place-items: center; border-radius: 3px; }
+  .logo-word { font: 400 30px/1 var(--display); letter-spacing: .01em; color: var(--ink); }
+  .logo-word span { color: var(--blue); }
+  .nav-links { display: flex; gap: 28px; font: 600 16px/1 var(--label); }
+  .nav-links a { text-decoration: none; padding: 10px 0; }
+  .nav-links a:hover { color: var(--red); }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    min-height: 52px; padding: 0 26px; border: 0; border-radius: 3px;
+    font: 700 17px/1 var(--body); text-decoration: none; cursor: pointer;
+    transition: background-color .15s ease, transform .15s ease;
+  }
+  .btn-red { background: var(--red); color: #fff; }
+  .btn-red:hover { background: var(--red-dk); }
+  .btn-blue { background: var(--blue); color: #fff; }
+  .btn-blue:hover { background: var(--blue-dk); }
+  .btn:active { transform: translateY(2px); }
+  .nav .btn { min-height: 44px; padding: 0 18px; font-size: 15px; }
+
+  /* aisle sign */
+  .sign-hang { position: relative; display: inline-block; padding-top: 34px; transform-origin: 50% 0; }
+  .sign-hang::before, .sign-hang::after {
+    content: ""; position: absolute; top: 0; width: 2px; height: 34px; background: var(--steel);
+  }
+  .sign-hang::before { left: 18%; }
+  .sign-hang::after { right: 18%; }
+  .sign {
+    display: flex; align-items: stretch; background: var(--blue); color: #fff; border-radius: 3px;
+    box-shadow: 0 6px 0 rgba(0,0,0,.12);
+  }
+  .sign-num { font: 400 46px/1 var(--display); padding: 12px 18px; border-right: 3px solid rgba(255,255,255,.85); display: flex; align-items: center; }
+  .sign-txt { padding: 12px 22px; display: flex; flex-direction: column; justify-content: center; }
+  .sign-txt b { font: 400 26px/1.05 var(--display); letter-spacing: .03em; text-transform: uppercase; }
+  .sign-txt small { font: 500 14px/1.3 var(--label); opacity: .85; margin-top: 4px; }
+  .sign-red .sign { background: var(--red); }
+  @keyframes swing { 0% { transform: rotate(3deg); } 60% { transform: rotate(-1deg); } 100% { transform: rotate(0); } }
+  .swing { animation: swing .9s cubic-bezier(.2,.8,.3,1) both; }
+
+  /* shelf tag */
+  .tag {
+    display: inline-block; background: var(--tag); color: var(--ink); border-radius: 2px;
+    min-width: 170px; font-variant-numeric: tabular-nums; box-shadow: 0 1px 0 rgba(0,0,0,.15);
+  }
+  .tag-top { background: var(--ink); color: var(--tag); font: 600 13px/1 var(--label); padding: 6px 10px; display: flex; justify-content: space-between; gap: 12px; }
+  .tag-price { font: 400 40px/1 var(--display); padding: 8px 10px 2px; }
+  .tag-price sup { font-size: 20px; vertical-align: 14px; }
+  .tag-unit { font: 500 13px/1.3 var(--label); padding: 2px 10px 8px; border-top: 1px dashed rgba(0,0,0,.35); margin-top: 6px; padding-top: 6px; }
+
+  /* beam */
+  .beam { height: 16px; background: var(--beam); border-radius: 2px; position: relative;
+    background-image: radial-gradient(circle, rgba(0,0,0,.35) 2px, transparent 2.5px);
+    background-size: 64px 16px; background-position: 14px 0; }
+  .beam-post { width: 14px; background: var(--blue); }
+
+  /* hero */
+  .hero { padding: 26px 0 72px; }
+  .hero-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 56px; align-items: center; }
+  .hero h1 {
+    font: 400 clamp(64px, 9.5vw, 136px)/.92 var(--display); margin: 26px 0 22px; color: var(--ink);
+    letter-spacing: -.005em; text-transform: uppercase;
+  }
+  .hero-sub { font-size: 19px; max-width: 34em; color: var(--fg); margin: 0 0 30px; }
+  .hero-actions { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+  .hero-actions .link { font: 600 17px/1 var(--body); text-decoration-thickness: 2px; text-underline-offset: 5px; }
+  .hero-tagrow { margin-top: 34px; display: flex; gap: 18px; align-items: flex-end; flex-wrap: wrap; }
+  .hero-tagrow p { margin: 0; color: var(--muted); font: 500 15px/1.4 var(--label); max-width: 18em; }
+
+  .card-stage { position: relative; padding: 40px 10px 0; }
+  .member {
+    position: relative; background: #fff; border-radius: 3px; overflow: hidden;
+    transform: rotate(-4deg); box-shadow: 0 18px 0 -8px rgba(0,0,0,.14);
+    max-width: 440px; margin: 0 auto;
+  }
+  .member-head { background: var(--red); color: #fff; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+  .member-head b { font: 400 30px/1 var(--display); letter-spacing: .02em; }
+  .member-head span { font: 600 13px/1.2 var(--label); text-align: right; }
+  .member-band { height: 10px; background: var(--blue); }
+  .member-body { display: grid; grid-template-columns: 120px 1fr; gap: 18px; padding: 20px; }
+  .member-photo { aspect-ratio: 4/5; background: #D9D7D0; border-radius: 2px; display: grid; place-items: end center; overflow: hidden; }
+  .member-photo svg { width: 82%; }
+  .member-fields { font: 500 14px/1.35 var(--label); color: var(--muted); }
+  .member-fields div { margin-bottom: 10px; }
+  .member-fields strong { display: block; font: 700 17px/1.2 var(--body); color: var(--ink); }
+  .barcode { height: 46px; margin: 0 20px 18px; background: repeating-linear-gradient(90deg, var(--ink) 0 2px, transparent 2px 4px, var(--ink) 4px 7px, transparent 7px 9px, var(--ink) 9px 10px, transparent 10px 14px); }
+  .card-beam { margin-top: 36px; }
+
+  /* sections */
+  section.block { padding: 64px 0 80px; }
+  .block-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; flex-wrap: wrap; margin-bottom: 44px; }
+  .block-head p { margin: 0; max-width: 30em; color: var(--muted); }
+
+  /* features as shelf */
+  .shelf { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; }
+  .bay { padding: 0 22px 26px; border-left: 14px solid var(--blue); display: flex; flex-direction: column; }
+  .bay:last-child { border-right: 14px solid var(--blue); }
+  .product { height: 170px; display: flex; align-items: flex-end; justify-content: center; gap: 4px; margin-bottom: 22px; }
+  .bay h3 { font: 800 23px/1.2 var(--body); margin: 0 0 10px; color: var(--ink); }
+  .bay p { margin: 0 0 20px; }
+  .bay .tag { margin-top: auto; align-self: flex-start; }
+  .shelf-beam { grid-column: 1 / -1; }
+
+  /* testimonials as comment cards */
+  .comments { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+  .comment { background: var(--surface); border-radius: 3px; padding: 24px; border-top: 8px solid var(--blue); display: flex; flex-direction: column; }
+  .comment-q { font: 500 14px/1.3 var(--label); color: var(--muted); display: flex; justify-content: space-between; margin-bottom: 14px; }
+  .boxes { display: flex; gap: 6px; }
+  .boxes i { width: 14px; height: 14px; border: 1.5px solid var(--muted); border-radius: 2px; display: inline-block; position: relative; }
+  .boxes i.on::after { content: ""; position: absolute; inset: 2px; background: var(--red); }
+  .comment blockquote {
+    margin: 0 0 22px; font-size: 18px; line-height: 1.6; color: var(--ink);
+    background-image: linear-gradient(transparent calc(1.6em - 1px), rgba(31,78,156,.18) calc(1.6em - 1px));
+    background-size: 100% 1.6em;
+  }
+  .who { display: flex; gap: 14px; align-items: center; margin-top: auto; }
+  .who img { width: 64px; height: 64px; border-radius: 2px; object-fit: cover; }
+  .who b { display: block; font-weight: 700; }
+  .who span { font: 500 14px/1.35 var(--label); color: var(--muted); }
+
+  /* pricing */
+  .rack { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; align-items: stretch; }
+  .tier { background: #fff; border-radius: 3px; overflow: hidden; display: flex; flex-direction: column; }
+  .tier-head { background: var(--ink); color: #fff; padding: 18px 22px; }
+  .tier-head h3 { margin: 0; font: 400 30px/1.05 var(--display); letter-spacing: .02em; text-transform: uppercase; }
+  .tier.hot .tier-head { background: var(--red); }
+  .tier-flag { font: 600 13px/1 var(--label); background: var(--tag); color: var(--ink); padding: 5px 8px; border-radius: 2px; display: inline-block; margin-bottom: 10px; }
+  .tier-body { padding: 22px; display: flex; flex-direction: column; flex: 1; }
+  .tier-price { font: 400 58px/1 var(--display); color: var(--ink); font-variant-numeric: tabular-nums; }
+  .tier-price small { font: 600 18px/1 var(--label); color: var(--muted); margin-left: 4px; }
+  .tier-tag { color: var(--muted); margin: 8px 0 18px; }
+  .tier ul { list-style: none; padding: 0; margin: 0 0 24px; }
+  .tier li { padding: 10px 0 10px 28px; border-top: 1px solid #E2E0DA; position: relative; }
+  .tier li::before { content: ""; position: absolute; left: 0; top: 16px; width: 14px; height: 9px; border-left: 3px solid var(--blue); border-bottom: 3px solid var(--blue); transform: rotate(-45deg); }
+  .tier .btn { margin-top: auto; width: 100%; }
+  .tier .barcode { margin: 0 22px 18px; height: 26px; opacity: .8; }
+  .rack-beam { margin-top: 0; }
+
+  /* demo band */
+  .dock { background: var(--blue); color: #fff; padding: 0; }
+  .dock .wrap { display: grid; grid-template-columns: 1.1fr .9fr; gap: 40px; align-items: center; padding-top: 64px; padding-bottom: 64px; }
+  .dock h2 { font: 400 clamp(44px, 6vw, 80px)/.95 var(--display); margin: 0 0 18px; text-transform: uppercase; }
+  .dock p { margin: 0 0 28px; max-width: 30em; color: #DCE5F4; }
+  .dock .btn-demo { background: var(--tag); color: var(--ink); font-size: 20px; min-height: 60px; padding: 0 30px; }
+  .dock .btn-demo:hover { background: #FFE27A; }
+  .door {
+    aspect-ratio: 4/3; background: repeating-linear-gradient(180deg, #D5D6D8 0 22px, #BFC1C4 22px 26px);
+    border: 14px solid var(--ink); border-bottom: 0; border-radius: 3px 3px 0 0; position: relative;
+  }
+  .door::after { content: "Dock 3"; position: absolute; top: -48px; left: 0; font: 400 26px/1 var(--display); letter-spacing: .04em; color: var(--tag); text-transform: uppercase; }
+  .door-stripe { height: 22px; background: repeating-linear-gradient(-45deg, var(--tag) 0 18px, var(--ink) 18px 36px); }
+
+  /* footer */
+  footer { background: var(--ink); color: #D8D6D0; padding: 48px 0 40px; }
+  .foot { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 36px; }
+  .hours { border: 3px solid #D8D6D0; border-radius: 3px; padding: 16px 18px; max-width: 300px; }
+  .hours b { font: 400 22px/1 var(--display); letter-spacing: .04em; display: block; margin-bottom: 10px; color: #fff; text-transform: uppercase; }
+  .hours div { display: flex; justify-content: space-between; font: 500 15px/1.8 var(--label); font-variant-numeric: tabular-nums; }
+  footer h4 { margin: 0 0 12px; color: #fff; font: 700 15px/1 var(--body); }
+  footer p { margin: 0 0 8px; font-size: 15px; }
+  .foot-base { margin-top: 40px; padding-top: 20px; border-top: 1px solid #3A3A38; display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; font: 500 14px/1.4 var(--label); }
+  .foot-base a { text-decoration: none; color: #fff; }
+  .foot-base a:hover { text-decoration: underline; }
+
+  @media (max-width: 960px) {
+    .hero-grid, .dock .wrap { grid-template-columns: 1fr; }
+    .card-stage { max-width: 460px; }
+    .shelf, .comments, .rack { grid-template-columns: 1fr; }
+    .bay { border-right: 14px solid var(--blue); padding-top: 18px; }
+    .bay + .bay { border-top: 16px solid var(--beam); }
+    .foot { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+  }
+  @media (max-width: 560px) {
+    body { font-size: 16px; }
+    .sign-num { font-size: 34px; padding: 10px 12px; }
+    .sign-txt b { font-size: 20px; }
+    .member-body { grid-template-columns: 90px 1fr; }
+    .nav .btn { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .swing { animation: none; }
+    .btn { transition: none; }
+  }
+</style>
+<title>Pallet Club — Costco for amateur youtube influencers</title>
+<meta name="description" content="Buy your audience in bulk. Pallet Club is a members-only warehouse for amateur YouTube influencers. Shocked-face thumbnails by the gross, intros by the pallet, and a 48-pack of &quot;smash that like button&quot; for less than you spent on the ring light.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/costco-for-amateur-youtube-influencers/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Pallet Club — Costco for amateur youtube influencers">
+<meta property="og:description" content="Buy your audience in bulk. Pallet Club is a members-only warehouse for amateur YouTube influencers. Shocked-face thumbnails by the gross, intros by the pallet, and a 48-pack of &quot;smash that like button&quot; for less than you spent on the ring light.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/costco-for-amateur-youtube-influencers/">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/costco-for-amateur-youtube-influencers/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Worst AI Studio Ever logo">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Pallet Club — Costco for amateur youtube influencers">
+<meta name="twitter:description" content="Buy your audience in bulk. Pallet Club is a members-only warehouse for amateur YouTube influencers. Shocked-face thumbnails by the gross, intros by the pallet, and a 48-pack of &quot;smash that like button&quot; for less than you spent on the ring light.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/costco-for-amateur-youtube-influencers/social-preview.jpg">
+<meta name="twitter:image:alt" content="The Worst AI Studio Ever logo">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <span>Warehouse open 10am to 8:30pm. Receipts checked at the exit, always.</span>
+    <a href="#pricing">Renew membership</a>
+  </div>
+</div>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Pallet Club home">
+      <span class="logo-mark" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 26 26"><rect x="2" y="3" width="22" height="13" fill="#fff"/><path d="M10 6.5v6l5-3z" fill="#C8102E"/><rect x="1" y="18" width="24" height="3" fill="#fff"/><rect x="3" y="21" width="3" height="3" fill="#fff"/><rect x="11.5" y="21" width="3" height="3" fill="#fff"/><rect x="20" y="21" width="3" height="3" fill="#fff"/></svg>
+      </span>
+      <span class="logo-word">Pallet <span>Club</span></span>
+    </a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="#shelves">Shelves</a>
+      <a href="#comments">Comment cards</a>
+      <a href="#pricing">Memberships</a>
+      <a href="./demo.html">Warehouse</a>
+    </nav>
+    <a class="btn btn-red" href="#pricing">Get your member card</a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="sign-hang swing">
+          <div class="sign">
+            <span class="sign-num">0</span>
+            <span class="sign-txt"><b>Your channel</b><small>Next to the paper towels</small></span>
+          </div>
+        </div>
+        <h1>Buy your audience in bulk.</h1>
+        <p class="hero-sub">Pallet Club is a members-only warehouse for amateur YouTube influencers. Shocked-face thumbnails by the gross, intros by the pallet, and a 48-pack of "smash that like button" for less than you spent on the ring light.</p>
+        <div class="hero-actions">
+          <a class="btn btn-red" href="#pricing">Get your member card</a>
+          <a class="link" href="./demo.html">open the demo →</a>
+        </div>
+        <div class="hero-tagrow">
+          <div class="tag" aria-label="Gold Spectator membership, 60 dollars a year">
+            <div class="tag-top"><span>Membership</span><span>1 ct</span></div>
+            <div class="tag-price"><sup>$</sup>60<sup>/yr</sup></div>
+            <div class="tag-unit">Unit price $0.16 per day</div>
+          </div>
+          <p>Card required at the door. You may bring one guest, who also has a channel.</p>
+        </div>
+      </div>
+
+      <div class="card-stage" aria-hidden="true">
+        <div class="member">
+          <div class="member-head"><b>Pallet Club</b><span>Gold Spectator<br>Member since 2026</span></div>
+          <div class="member-band"></div>
+          <div class="member-body">
+            <div class="member-photo">
+              <svg viewBox="0 0 100 110"><circle cx="50" cy="40" r="22" fill="#B9B6AE"/><path d="M10 110c4-28 20-40 40-40s36 12 40 40z" fill="#B9B6AE"/><ellipse cx="50" cy="40" rx="30" ry="30" fill="none" stroke="#fff" stroke-width="3" opacity=".7"/></svg>
+            </div>
+            <div class="member-fields">
+              <div>Member<strong>@yourchannel_official2</strong></div>
+              <div>Subscribers<strong>212</strong></div>
+              <div>Garage clearance<strong>Approved</strong></div>
+            </div>
+          </div>
+          <div class="barcode"></div>
+        </div>
+        <div class="beam card-beam"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="shelves">
+    <div class="wrap">
+      <div class="block-head">
+        <div class="sign-hang">
+          <div class="sign">
+            <span class="sign-num">1</span>
+            <span class="sign-txt"><b>On the shelves</b><small>Bulk only. No singles.</small></span>
+          </div>
+        </div>
+        <p>Everything is sold in the quantity a working media company would need. You are one person with a phone tripod. Store policy does not distinguish.</p>
+      </div>
+
+      <div class="shelf">
+        <article class="bay">
+          <div class="product" aria-hidden="true">
+            <svg width="190" height="160" viewBox="0 0 190 160">
+              <rect x="10" y="40" width="120" height="120" fill="#fff"/><rect x="10" y="40" width="120" height="22" fill="#C8102E"/>
+              <circle cx="58" cy="105" r="26" fill="#FFD43B"/><circle cx="50" cy="98" r="4" fill="#121211"/><circle cx="66" cy="98" r="4" fill="#121211"/><ellipse cx="58" cy="116" rx="7" ry="9" fill="#121211"/>
+              <path d="M92 120l26-26M118 94h-14M118 94v14" stroke="#C8102E" stroke-width="6" fill="none"/>
+              <rect x="138" y="70" width="44" height="90" fill="#fff"/><rect x="138" y="70" width="44" height="14" fill="#C8102E"/><circle cx="160" cy="118" r="12" fill="#FFD43B"/>
+            </svg>
+          </div>
+          <h3>The Thumbnail Aisle</h3>
+          <p>144-count boxes of the same open-mouth face, already pointing at a red arrow. Works out to 0.4 cents per face. You will not use them all. Nobody has.</p>
+          <div class="tag">
+            <div class="tag-top"><span>Item 400 118</span><span>144 ct</span></div>
+            <div class="tag-price"><sup>$</sup>0.58</div>
+            <div class="tag-unit">Unit price 0.4¢ per face</div>
+          </div>
+        </article>
+        <article class="bay">
+          <div class="product" aria-hidden="true">
+            <svg width="170" height="160" viewBox="0 0 170 160">
+              <rect x="20" y="20" width="100" height="140" rx="8" fill="#1F4E9C"/><rect x="20" y="20" width="100" height="18" rx="4" fill="#163A76"/>
+              <rect x="34" y="62" width="72" height="54" fill="#fff"/><rect x="42" y="72" width="56" height="7" fill="#1F4E9C"/><rect x="42" y="86" width="40" height="7" fill="#1F4E9C"/><rect x="42" y="100" width="48" height="7" fill="#1F4E9C"/>
+              <rect x="128" y="96" width="36" height="64" rx="5" fill="#1F4E9C"/><rect x="134" y="116" width="24" height="18" fill="#fff"/>
+            </svg>
+          </div>
+          <h3>Comments, Family Size</h3>
+          <p>"First!", "underrated" and "who's watching in 2027" in 10,000-count drums, shelf-stable for 18 months. Rotate your stock so the engagement doesn't go stale.</p>
+          <div class="tag">
+            <div class="tag-top"><span>Item 712 004</span><span>10,000 ct</span></div>
+            <div class="tag-price"><sup>$</sup>24.99</div>
+            <div class="tag-unit">Unit price 0.25¢ per comment</div>
+          </div>
+        </article>
+        <article class="bay">
+          <div class="product" aria-hidden="true">
+            <svg width="180" height="160" viewBox="0 0 180 160">
+              <rect x="18" y="98" width="110" height="26" rx="13" fill="#E9C27A"/><rect x="26" y="102" width="94" height="14" rx="7" fill="#B5472F"/><path d="M30 106c10-6 18 6 28 0s18 6 28 0 18 6 28 0" stroke="#FFD43B" stroke-width="4" fill="none"/>
+              <path d="M136 52h34l-6 108h-22z" fill="#fff"/><rect x="134" y="44" width="38" height="10" fill="#C8102E"/><rect x="150" y="14" width="5" height="32" fill="#1F4E9C"/>
+              <rect x="10" y="134" width="164" height="6" fill="#9A9C9E"/>
+            </svg>
+          </div>
+          <h3>Food Court Collabs</h3>
+          <p>$1.50 gets you a hot dog, a soda and a 40-second collab with whoever is sitting at the next table. They also have a channel. Everyone here has a channel.</p>
+          <div class="tag">
+            <div class="tag-top"><span>Item 000 150</span><span>1 combo</span></div>
+            <div class="tag-price"><sup>$</sup>1.50</div>
+            <div class="tag-unit">Unit price 3.75¢ per second of collab</div>
+          </div>
+        </article>
+        <div class="beam shelf-beam" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="comments">
+    <div class="wrap">
+      <div class="block-head">
+        <div class="sign-hang">
+          <div class="sign">
+            <span class="sign-num">4</span>
+            <span class="sign-txt"><b>Member comment cards</b><small>Collected from the box by returns</small></span>
+          </div>
+        </div>
+        <p>We read every card. Then we file them in a 500-count banker's box, which we also sell.</p>
+      </div>
+      <div class="comments">
+        <figure class="comment" style="margin:0">
+          <div class="comment-q"><span>How was your visit?</span><span class="boxes" aria-label="Rated 4 of 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></div>
+          <blockquote>I bought 2,400 reaction faces in March. I've used nine. The rest are in my garage next to the paper towels and they still look shocked.</blockquote>
+          <figcaption class="who"><img src="headshot-1.webp" alt="Tanner Oduya holding a small cardboard box" width="64" height="64" loading="lazy"><div><b>Tanner Oduya</b><span>Unboxing channel, 318 subscribers, four of them cousins</span></div></figcaption>
+        </figure>
+        <figure class="comment" style="margin:0">
+          <div class="comment-q"><span>How was your visit?</span><span class="boxes" aria-label="Rated 5 of 5"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+          <blockquote>The receipt checker at the exit asked what my channel was about and I couldn't answer. He highlighted the receipt anyway. Best feedback I've had all year.</blockquote>
+          <figcaption class="who"><img src="headshot-2.webp" alt="Brielle Marchetti in a navy work polo" width="64" height="64" loading="lazy"><div><b>Brielle Marchetti</b><span>Lifestyle vlogger and full-time assistant manager at a tire shop</span></div></figcaption>
+        </figure>
+        <figure class="comment" style="margin:0">
+          <div class="comment-q"><span>How was your visit?</span><span class="boxes" aria-label="Rated 3 of 5"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></div>
+          <blockquote>We filmed a collab at the food court. Neither of us knew the other one was filming. Both versions did about 60 views.</blockquote>
+          <figcaption class="who"><img src="headshot-3.webp" alt="Dev Kowalczyk with a gaming headset around his neck" width="64" height="64" loading="lazy"><div><b>Dev Kowalczyk</b><span>Gaming streamer, Business Pallet member since last Tuesday</span></div></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="pricing">
+    <div class="wrap">
+      <div class="block-head">
+        <div class="sign-hang">
+          <div class="sign sign-red-inner" style="background:var(--red)">
+            <span class="sign-num">9</span>
+            <span class="sign-txt"><b>Memberships</b><small>Annual. Non-transferable. Photo required.</small></span>
+          </div>
+        </div>
+        <p>Pick a card. The price is the same whether you post daily or have one video from 2023 titled "test".</p>
+      </div>
+      <div class="rack">
+        <article class="tier">
+          <div class="tier-head"><h3>Gold Spectator</h3></div>
+          <div class="tier-body">
+            <div class="tier-price">$60<small>/yr</small></div>
+            <p class="tier-tag">For channels between 0 and 40 subscribers.</p>
+            <ul>
+              <li>Warehouse access 10am to 8:30pm</li>
+              <li>One free sample of b-roll per visit</li>
+              <li>Member card photo taken under the worst light in the building</li>
+            </ul>
+            <a class="btn btn-blue" href="./demo.html">Choose Gold Spectator</a>
+          </div>
+          <div class="barcode" aria-hidden="true"></div>
+        </article>
+        <article class="tier hot">
+          <div class="tier-head"><span class="tier-flag">Most renewed out of habit</span><h3>Executive Upload</h3></div>
+          <div class="tier-body">
+            <div class="tier-price">$130<small>/yr</small></div>
+            <p class="tier-tag">Recommended by the algorithm, allegedly.</p>
+            <ul>
+              <li>2% back in views (estimated, not guaranteed, not paid)</li>
+              <li>Early access to apology-video scripts</li>
+              <li>Second card for your mom, who watches everything</li>
+            </ul>
+            <a class="btn btn-red" href="./demo.html">Choose Executive Upload</a>
+          </div>
+          <div class="barcode" aria-hidden="true"></div>
+        </article>
+        <article class="tier">
+          <div class="tier-head"><h3>Business Pallet</h3></div>
+          <div class="tier-body">
+            <div class="tier-price">$4,800<small>/yr</small></div>
+            <p class="tier-tag">For creators who describe themselves as a media company.</p>
+            <ul>
+              <li>Forklift certification for your comments section</li>
+              <li>Private loading dock for brand deals that have not happened yet</li>
+              <li>Sheet cake shaped like a play button (silver, unofficial)</li>
+            </ul>
+            <a class="btn btn-blue" href="./demo.html">Choose Business Pallet</a>
+          </div>
+          <div class="barcode" aria-hidden="true"></div>
+        </article>
+      </div>
+      <div class="beam rack-beam" aria-hidden="true" style="margin-top:0"></div>
+    </div>
+  </section>
+
+  <section class="dock">
+    <div class="wrap">
+      <div>
+        <h2>The warehouse is open.</h2>
+        <p>Walk the aisles, load a flatbed with 144 of something, and get your receipt checked on the way out. No membership needed to look. Touching costs $60.</p>
+        <a class="btn btn-demo" href="./demo.html">open the demo →</a>
+      </div>
+      <div aria-hidden="true">
+        <div class="door"></div>
+        <div class="door-stripe"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div class="hours">
+        <b>Warehouse hours</b>
+        <div><span>Mon to Fri</span><span>10:00 to 8:30</span></div>
+        <div><span>Saturday</span><span>9:30 to 6:00</span></div>
+        <div><span>Sunday</span><span>Upload day, closed</span></div>
+      </div>
+      <div>
+        <h4>Member services</h4>
+        <p>Returns accepted on all content within 90 days, provided it has fewer than 11 views.</p>
+        <p>Lost card? Bring two forms of ID and a link to your most-viewed video.</p>
+      </div>
+      <div>
+        <h4>Food court</h4>
+        <p>Hot dog, soda and a collab: $1.50. The price has not changed since we opened and the collab quality hasn't either.</p>
+      </div>
+    </div>
+    <div class="foot-base">
+      <a href="/">← theworstaistudioever</a>
+      <span>Pallet Club Warehouse Holdings. Limit 4,000 thumbnails per member per visit.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var id = a.getAttribute('href');
+      if (id.length < 2) return;
+      var el = document.querySelector(id);
+      if (!el) return;
+      e.preventDefault();
+      el.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    });
+  });
+</script>
+</body>
+</html>

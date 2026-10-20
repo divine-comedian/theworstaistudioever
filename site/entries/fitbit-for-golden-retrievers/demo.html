@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#07090C">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Manrope:wght@400;500;700&family=Martian+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #F4B740; --pink: #FF4F7A; --blue: #4FA3FF;
+    --bg: #07090C; --surface: #10141A; --raised: #151B23; --line: #1F2630;
+    --fg: #E6EAEE; --muted: #828D99; --ink: #F4F6F8;
+    --display: 'Sora', 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif;
+    --body: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --mono: 'Martian Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 8px; }
+  .app { display: grid; grid-template-columns: 248px 1fr; min-height: 100vh; }
+
+  /* sidebar */
+  .side { border-right: 1px solid var(--line); padding: 18px 16px; display: flex; flex-direction: column; gap: 24px; background: #090C10; }
+  .back { font-size: 13px; color: var(--muted); text-decoration: none; }
+  .back:hover { color: var(--ink); }
+  .logo { display: flex; align-items: center; gap: 9px; font-family: var(--display); font-weight: 600; font-size: 18px; color: var(--ink); }
+  .side h2 { font-size: 13px; font-weight: 500; color: var(--muted); margin: 0 0 8px 6px; }
+  .dogs { display: grid; gap: 4px; }
+  .dog { display: flex; align-items: center; gap: 12px; padding: 8px; border-radius: 14px; border: 1px solid transparent; background: none; text-align: left; width: 100%; min-height: 56px; transition: background .15s; }
+  .dog:hover { background: var(--surface); }
+  .dog[aria-pressed="true"] { background: var(--raised); border-color: var(--line); }
+  .dog img { width: 40px; height: 40px; border-radius: 12px; object-fit: cover; flex: none; }
+  .dog .nm { display: block; font-weight: 700; color: var(--ink); }
+  .dog .sc { display: block; font-family: var(--mono); font-size: 11px; color: var(--gold); }
+  .device { margin-top: auto; padding: 14px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+  .device b { color: var(--fg); font-weight: 500; }
+  .battery { height: 6px; border-radius: 99px; background: var(--line); margin: 10px 0 4px; overflow: hidden; }
+  .battery i { display: block; height: 100%; width: 83%; background: var(--gold); }
+
+  /* main */
+  .main { padding: 18px 28px 40px; min-width: 0; }
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .top h1 { font-family: var(--display); font-weight: 600; font-size: 26px; letter-spacing: -0.02em; color: var(--ink); margin: 0; }
+  .top h1 small { font-family: var(--body); font-weight: 500; font-size: 14px; color: var(--muted); margin-left: 10px; letter-spacing: 0; }
+  .actions { display: flex; gap: 8px; }
+  .btn { min-height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: border-color .15s, background .15s; }
+  .btn:hover { border-color: var(--muted); }
+  .btn-gold { background: var(--gold); color: #1A1204; border-color: var(--gold); }
+  .btn-gold:hover { background: #FFC85A; border-color: #FFC85A; }
+  .btn .spin { width: 14px; height: 14px; border: 2px solid var(--muted); border-top-color: var(--gold); border-radius: 50%; display: none; }
+  .btn.busy .spin { display: inline-block; animation: spin .7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .tabs { display: flex; gap: 4px; margin: 20px 0 22px; border-bottom: 1px solid var(--line); overflow-x: auto; }
+  .tab { background: none; border: 0; padding: 10px 14px 12px; color: var(--muted); font-weight: 700; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
+  .tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--gold); }
+  .tab:hover { color: var(--ink); }
+  [role="tabpanel"][hidden] { display: none; }
+
+  .grid { display: grid; grid-template-columns: 340px 1fr; gap: 16px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 20px; min-width: 0; }
+  .card h3 { margin: 0 0 4px; font-family: var(--display); font-weight: 600; font-size: 16px; color: var(--ink); }
+  .card .sub { color: var(--muted); font-size: 13px; margin: 0 0 14px; }
+  .ringwrap { display: flex; flex-direction: column; align-items: center; }
+  .rings { width: 220px; height: 220px; }
+  .rings circle { fill: none; stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; }
+  .rings .track { stroke: var(--line); }
+  .rings .arc { transition: stroke-dashoffset .8s cubic-bezier(.2,.8,.2,1); }
+  .ring-center { position: relative; margin-top: -220px; height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none; }
+  .ring-center > div:first-child { display: none; }
+  .ring-center .big { font-family: var(--mono); font-weight: 500; font-size: 19px; line-height: 1.1; color: var(--ink); letter-spacing: -0.04em; }
+  .ring-center .lbl { font-size: 10px; color: var(--muted); }
+  .legend { width: 100%; display: grid; gap: 8px; margin-top: 14px; }
+  .legend div { display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; border-radius: 12px; background: var(--raised); font-size: 14px; }
+  .legend span:first-child { display: flex; align-items: center; gap: 8px; color: var(--muted); }
+  .legend i { width: 9px; height: 9px; border-radius: 50%; }
+  .legend b { font-family: var(--mono); font-weight: 500; font-size: 12px; color: var(--ink); }
+
+  .chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+  .chip { background: var(--raised); border-radius: 14px; padding: 12px 14px; }
+  .chip .n { font-family: var(--mono); font-weight: 500; font-size: 20px; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .chip .n small { font-size: 11px; color: var(--muted); margin-left: 3px; }
+  .chip .k { font-size: 12px; color: var(--muted); }
+
+  .chart { position: relative; height: 180px; display: flex; align-items: flex-end; gap: 4px; padding-top: 30px; border-bottom: 1px solid var(--line); }
+  .bar { flex: 1; min-width: 0; border: 0; padding: 0; border-radius: 4px 4px 0 0; background: var(--pink); opacity: .38; transition: opacity .15s, height .5s cubic-bezier(.2,.8,.2,1); }
+  .bar:hover, .bar.on { opacity: 1; }
+  .xaxis { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 6px; }
+  .tip { position: absolute; top: 0; padding: 4px 10px; border-radius: 8px; background: var(--ink); color: var(--bg); font-size: 12px; font-weight: 700; white-space: nowrap; transform: translateX(-50%); pointer-events: none; }
+  .tip[hidden] { display: none; }
+
+  .timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .timeline li { display: grid; grid-template-columns: 64px 1fr auto; gap: 12px; align-items: center; padding: 10px 4px; border-bottom: 1px solid var(--line); font-size: 14px; }
+  .timeline li:last-child { border-bottom: 0; }
+  .timeline time { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .timeline .delta { font-family: var(--mono); font-size: 11px; color: var(--gold); padding: 2px 8px; border-radius: 99px; background: rgba(244,183,64,.1); }
+  .timeline li.new { animation: flash 1.2s ease-out; }
+  @keyframes flash { from { background: rgba(244,183,64,.14); } to { background: transparent; } }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+
+  .tailviz { height: 120px; width: 100%; display: block; }
+  .stat-list { display: grid; gap: 8px; }
+  .stat-list div { display: flex; justify-content: space-between; padding: 10px 12px; border-radius: 12px; background: var(--raised); }
+  .stat-list b { font-family: var(--mono); font-weight: 500; font-size: 13px; color: var(--ink); }
+  .stages { display: flex; height: 40px; border-radius: 10px; overflow: hidden; margin: 8px 0 12px; }
+  .stages span { display: block; height: 100%; }
+  .coach-msg { padding: 16px; border-radius: 14px; background: var(--raised); border-left: 3px solid var(--blue); margin-bottom: 10px; }
+  .coach-msg p { margin: 0; }
+  .coach-msg small { display: block; color: var(--muted); margin-top: 6px; font-size: 12px; }
+  .toggle { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--line); gap: 16px; }
+  .switch { width: 44px; height: 26px; border-radius: 99px; border: 0; background: var(--line); position: relative; flex: none; transition: background .2s; }
+  .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--fg); transition: transform .2s; }
+  .switch[aria-checked="true"] { background: var(--gold); }
+  .switch[aria-checked="true"]::after { transform: translateX(18px); background: #1A1204; }
+
+  /* modal */
+  .scrim { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 50; opacity: 0; pointer-events: none; transition: opacity .2s; }
+  .scrim.open { opacity: 1; pointer-events: auto; }
+  .modal { width: min(440px, 100%); background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 24px; transform: translateY(10px) scale(.98); transition: transform .2s; }
+  .scrim.open .modal { transform: none; }
+  .modal h2 { font-family: var(--display); font-weight: 600; font-size: 20px; color: var(--ink); margin: 0 0 4px; }
+  .modal p { color: var(--muted); margin: 0 0 16px; font-size: 14px; }
+  .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 18px; }
+  .opt { padding: 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--raised); text-align: left; font-size: 14px; min-height: 48px; }
+  .opt[aria-pressed="true"] { border-color: var(--gold); color: var(--ink); }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); background: var(--ink); color: var(--bg); padding: 12px 18px; border-radius: 14px; font-weight: 700; font-size: 14px; opacity: 0; visibility: hidden; transition: opacity .2s, transform .2s, visibility .2s; z-index: 60; max-width: calc(100% - 32px); }
+  .toast.show { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
+
+  @media (max-width: 1080px) {
+    .grid { grid-template-columns: 1fr; }
+    .chips { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 760px) {
+    .app { grid-template-columns: 1fr; }
+    .side { border-right: 0; border-bottom: 1px solid var(--line); gap: 14px; }
+    .dogs { grid-template-columns: repeat(3, 1fr); }
+    .dog { flex-direction: column; text-align: center; gap: 6px; }
+    .device { display: none; }
+    .main { padding: 18px 16px 40px; }
+    .row2 { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+<title>Tailmetry — Fitbit for golden retrievers — Demo</title>
+<meta name="description" content="Know exactly how good a boy he is. Tailmetry is a collar sensor that tracks tail RPM, Joy Load and stick throughput around the clock, then tells you, to four decimal places, that your golden retriever is fine.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/fitbit-for-golden-retrievers/demo.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Tailmetry — Fitbit for golden retrievers — Demo">
+<meta property="og:description" content="Know exactly how good a boy he is. Tailmetry is a collar sensor that tracks tail RPM, Joy Load and stick throughput around the clock, then tells you, to four decimal places, that your golden retriever is fine.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/fitbit-for-golden-retrievers/demo.html">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/fitbit-for-golden-retrievers/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Tailmetry hero illustration">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Tailmetry — Fitbit for golden retrievers — Demo">
+<meta name="twitter:description" content="Know exactly how good a boy he is. Tailmetry is a collar sensor that tracks tail RPM, Joy Load and stick throughput around the clock, then tells you, to four decimal places, that your golden retriever is fine.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/fitbit-for-golden-retrievers/social-preview.jpg">
+<meta name="twitter:image:alt" content="Tailmetry hero illustration">
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <div class="logo">
+      <svg width="22" height="22" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="11" fill="none" stroke="#F4B740" stroke-width="3"/><circle cx="13" cy="13" r="6" fill="none" stroke="#FF4F7A" stroke-width="3"/></svg>
+      Tailmetry
+    </div>
+    <div>
+      <h2>Your retrievers</h2>
+      <div class="dogs" id="dogs"></div>
+    </div>
+    <div class="device">
+      <b>Collar pod TM-2</b><br>Synced 40 seconds ago
+      <div class="battery"><i></i></div>
+      83% battery, 1 chew mark
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="top">
+      <h1 id="dogName">Murphy <small>Tuesday, Oct 20</small></h1>
+      <div class="actions">
+        <button class="btn" id="recal" type="button"><span class="spin" aria-hidden="true"></span><span class="lbl">Recalibrate sensor</span></button>
+        <button class="btn btn-gold" id="logBtn" type="button">Log event</button>
+      </div>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Dashboard views">
+      <button class="tab" role="tab" aria-selected="true" aria-controls="p-today" id="t-today">Today</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="p-tail" id="t-tail" tabindex="-1">Tail</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="p-sleep" id="t-sleep" tabindex="-1">Sleep</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="p-coach" id="t-coach" tabindex="-1">Coach</button>
+    </div>
+
+    <!-- TODAY -->
+    <section role="tabpanel" id="p-today" aria-labelledby="t-today">
+      <div class="grid">
+        <div class="card ringwrap">
+          <svg class="rings" viewBox="0 0 220 220" role="img" id="ringsSvg" aria-label="Joy Load 100">
+            <circle class="track" cx="110" cy="110" r="96" stroke-width="16"/>
+            <circle class="arc" id="arcJoy" cx="110" cy="110" r="96" stroke-width="16" stroke="#F4B740"/>
+            <circle class="track" cx="110" cy="110" r="74" stroke-width="16"/>
+            <circle class="arc" id="arcHeart" cx="110" cy="110" r="74" stroke-width="16" stroke="#FF4F7A"/>
+            <circle class="track" cx="110" cy="110" r="52" stroke-width="16"/>
+            <circle class="arc" id="arcStrain" cx="110" cy="110" r="52" stroke-width="16" stroke="#4FA3FF"/>
+          </svg>
+          <div class="ring-center"><div style="height:44px"></div><div class="big" id="joyBig">100.0</div><div class="lbl">Joy Load</div></div>
+          <div class="legend">
+            <div><span><i style="background:#F4B740"></i>Joy Load</span><b id="lgJoy">100 / 100</b></div>
+            <div><span><i style="background:#FF4F7A"></i>Heart</span><b id="lgHeart">full</b></div>
+            <div><span><i style="background:#4FA3FF"></i>Strain</span><b id="lgStrain">chased a leaf</b></div>
+          </div>
+        </div>
+        <div>
+          <div class="chips" id="chips"></div>
+          <div class="card">
+            <h3>Tail RPM by hour</h3>
+            <p class="sub">Tap a bar for the exact reading.</p>
+            <div class="chart" id="chart"><div class="tip" id="tip" hidden></div></div>
+            <div class="xaxis"><span>12am</span><span>6am</span><span>12pm</span><span>6pm</span><span>11pm</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="card">
+          <h3>Event timeline</h3>
+          <p class="sub">Every event is scored against Joy Load.</p>
+          <ul class="timeline" id="timeline"></ul>
+        </div>
+        <div class="card">
+          <h3>Alerts</h3>
+          <p class="sub">Things we will text you about at work.</p>
+          <div class="toggle"><span>Sock ingestion</span><button class="switch" role="switch" aria-checked="true" aria-label="Sock ingestion alerts"></button></div>
+          <div class="toggle"><span>Mail carrier proximity</span><button class="switch" role="switch" aria-checked="true" aria-label="Mail carrier proximity alerts"></button></div>
+          <div class="toggle"><span>Joy Load drops below 100</span><button class="switch" role="switch" aria-checked="false" aria-label="Joy Load drop alerts"></button></div>
+          <div class="toggle"><span>Sunbeam available in living room</span><button class="switch" role="switch" aria-checked="true" aria-label="Sunbeam alerts"></button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAIL -->
+    <section role="tabpanel" id="p-tail" aria-labelledby="t-tail" hidden>
+      <div class="grid">
+        <div class="card">
+          <h3>Live tail trace</h3>
+          <p class="sub">240 samples per second, smoothed so you can look at it.</p>
+          <svg class="tailviz" viewBox="0 0 300 120" preserveAspectRatio="none" aria-hidden="true"><path id="trace" fill="none" stroke="#FF4F7A" stroke-width="2"/></svg>
+        </div>
+        <div class="card">
+          <h3>Tail summary</h3>
+          <p class="sub">Last 24 hours.</p>
+          <div class="stat-list" id="tailStats"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLEEP -->
+    <section role="tabpanel" id="p-sleep" aria-labelledby="t-sleep" hidden>
+      <div class="grid">
+        <div class="card">
+          <h3>Last night</h3>
+          <p class="sub" id="sleepSub"></p>
+          <div class="stages" id="stages"></div>
+          <div class="stat-list">
+            <div><span style="display:flex;gap:8px;align-items:center"><i style="width:9px;height:9px;border-radius:50%;background:#4FA3FF;display:inline-block"></i>Deep sleep</span><b id="slDeep"></b></div>
+            <div><span style="display:flex;gap:8px;align-items:center"><i style="width:9px;height:9px;border-radius:50%;background:#FF4F7A;display:inline-block"></i>Running in sleep</span><b id="slRun"></b></div>
+            <div><span style="display:flex;gap:8px;align-items:center"><i style="width:9px;height:9px;border-radius:50%;background:#F4B740;display:inline-block"></i>On your side of the bed</span><b id="slBed"></b></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Sleep score</h3>
+          <p class="sub">Compared with 12,400 other goldens.</p>
+          <div class="stat-list">
+            <div><span>Score</span><b>100</b></div>
+            <div><span>Percentile</span><b>100th, tied with all of them</b></div>
+            <div><span>Woke up for</span><b>a noise, then back</b></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COACH -->
+    <section role="tabpanel" id="p-coach" aria-labelledby="t-coach" hidden>
+      <div class="grid">
+        <div class="card">
+          <h3>Today's recovery plan</h3>
+          <p class="sub">Built from overnight data by our coaching model.</p>
+          <div class="coach-msg"><p id="coachPlan"></p><small>Confidence 100%</small></div>
+          <button class="btn" id="regen" type="button">Generate a different plan</button>
+        </div>
+        <div class="card">
+          <h3>Coach notes</h3>
+          <p class="sub">Reviewed by a certified Joy Analyst.</p>
+          <div id="coachNotes"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="scrim" id="scrim" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <h2 id="mTitle">Log an event</h2>
+    <p>We will recompute Joy Load right away.</p>
+    <div class="opts" id="opts">
+      <button class="opt" type="button" aria-pressed="false">Mail arrived</button>
+      <button class="opt" type="button" aria-pressed="false">Saw a squirrel</button>
+      <button class="opt" type="button" aria-pressed="false">Ate part of a sock</button>
+      <button class="opt" type="button" aria-pressed="false">Bath</button>
+      <button class="opt" type="button" aria-pressed="false">Vet visit</button>
+      <button class="opt" type="button" aria-pressed="false">Someone said "walk"</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" type="button" id="mCancel">Cancel</button>
+      <button class="btn btn-gold" type="button" id="mSave" disabled>Log event</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var $ = function (id) { return document.getElementById(id); };
+
+  function rpmCurve(base, peakHour, peak) {
+    var out = [];
+    for (var h = 0; h < 24; h++) {
+      var night = (h < 6 || h > 22) ? 0.15 : 1;
+      var v = base * night + Math.round(18 * Math.sin(h * 1.7));
+      if (h === peakHour) v = peak;
+      out.push(Math.max(8, v));
+    }
+    return out;
+  }
+
+  var DOGS = [
+    {
+      name: 'Murphy', age: 3, img: 'headshot-1.webp', strain: 6, strainLbl: 'chased a leaf',
+      rpm: rpmCurve(180, 17, 318), sticks: 14, socks: 0.4, steps: '11,204',
+      events: [['7:42am', 'Ate part of a sock', 'vet notified'], ['7:15am', 'Breakfast served', '+0.0'], ['6:58am', 'Owner woke up', '+0.0'], ['6:20am', 'Stared at owner until owner woke up', '+0.0']],
+      tail: [['Peak', '318 rpm at 5pm'], ['Average', '212 rpm'], ['Total wags', '304,880'], ['Furniture knocked over', '2 (a lamp, a toddler)']],
+      sleep: ['11h 40m in bed, 2 dreams about running', '6h 10m', '41m', '4h 49m'],
+      plan: 'Nap in the sunbeam by the back door, 3 hours, starting 1:10pm. Reposition with the sunbeam as needed.',
+      notes: ['Murphy leaned on 3 guests yesterday. Within target.', 'Hydration is high. Most of it came from the toilet. We are not judging.']
+    },
+    {
+      name: 'Biscuit', age: 5, img: 'headshot-3.webp', strain: 11, strainLbl: 'fetched one ball 40 times',
+      rpm: rpmCurve(200, 9, 296), sticks: 22, socks: 0, steps: '13,880',
+      events: [['8:30am', 'Leaned on guest', '+0.0'], ['8:02am', 'Retrieved tennis ball', '+0.0'], ['8:01am', 'Retrieved same tennis ball', '+0.0'], ['7:40am', 'Heard the word "walk"', '+0.0']],
+      tail: [['Peak', '296 rpm at 9am'], ['Average', '226 rpm'], ['Total wags', '325,110'], ['Leaning events', '17, 99.8th percentile']],
+      sleep: ['10h 55m in bed, 1 dream about a ball', '5h 50m', '22m', '4h 43m'],
+      plan: 'Lie across the kitchen doorway for 2 hours so everyone has to step over you. Recovery through presence.',
+      notes: ['Biscuit is in the 99.8th percentile for leaning on guests.', 'Retrieved one ball 40 times. The ball has not recovered. Biscuit has.']
+    },
+    {
+      name: 'Sergeant Pepper', age: 11, img: 'headshot-2.webp', strain: 2, strainLbl: 'stood up once',
+      rpm: rpmCurve(110, 18, 240), sticks: 3, socks: 0, steps: '3,016',
+      events: [['9:10am', 'Moved to a sunnier spot', '+0.0'], ['8:45am', 'Sighed', '+0.0'], ['7:30am', 'Breakfast served', '+0.0'], ['7:29am', 'Already at bowl', '+0.0']],
+      tail: [['Peak', '240 rpm at 6pm, owner got home'], ['Average', '131 rpm'], ['Total wags', '188,402'], ['Dignity index', 'very high']],
+      sleep: ['14h 20m in bed, dreams undisclosed', '9h 05m', '8m', '5h 07m'],
+      plan: 'Continue the current plan, which is lying on the rug. Sergeant Pepper set it in 2017 and has not missed a day.',
+      notes: ['Senior profile detected. Joy Load unaffected.', 'Two sighs logged before 9am. Analysts confirm these were contented sighs.']
+    }
+  ];
+
+  var current = 0;
+
+  function setArc(el, pct) {
+    var r = +el.getAttribute('r'), len = 2 * Math.PI * r;
+    el.style.strokeDasharray = len;
+    el.style.strokeDashoffset = len * (1 - pct / 100);
+  }
+  function resetArcs() {
+    ['arcJoy', 'arcHeart', 'arcStrain'].forEach(function (id) {
+      var el = $(id), len = 2 * Math.PI * +el.getAttribute('r');
+      el.style.strokeDasharray = len;
+      el.style.strokeDashoffset = len;
+    });
+  }
+
+  function toast(msg) {
+    var t = $('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toast.h);
+    toast.h = setTimeout(function () { t.classList.remove('show'); }, 3200);
+  }
+
+  function renderDogs() {
+    var box = $('dogs');
+    box.innerHTML = '';
+    DOGS.forEach(function (d, i) {
+      var b = document.createElement('button');
+      b.className = 'dog';
+      b.type = 'button';
+      b.setAttribute('aria-pressed', i === current ? 'true' : 'false');
+      var im = new Image(40, 40);
+      im.alt = '';
+      im.src = d.img;
+      b.appendChild(im);
+      b.insertAdjacentHTML('beforeend', '<span><span class="nm">' + d.name + '</span><span class="sc">Joy 100.0</span></span>');
+      b.addEventListener('click', function () { current = i; render(true); });
+      box.appendChild(b);
+    });
+  }
+
+  function renderChart(d) {
+    var chart = $('chart'), tip = $('tip');
+    chart.querySelectorAll('.bar').forEach(function (b) { b.remove(); });
+    tip.hidden = true;
+    var max = 330;
+    d.rpm.forEach(function (v, h) {
+      var b = document.createElement('button');
+      b.className = 'bar';
+      b.type = 'button';
+      b.style.height = (v / max * 100) + '%';
+      var hr = h === 0 ? '12am' : h < 12 ? h + 'am' : h === 12 ? '12pm' : (h - 12) + 'pm';
+      b.setAttribute('aria-label', hr + ', ' + v + ' rpm');
+      b.addEventListener('click', function () {
+        chart.querySelectorAll('.bar').forEach(function (x) { x.classList.remove('on'); });
+        b.classList.add('on');
+        tip.textContent = hr + ': ' + v + ' rpm';
+        tip.hidden = false;
+        var left = b.offsetLeft + b.offsetWidth / 2;
+        left = Math.max(50, Math.min(chart.clientWidth - 50, left));
+        tip.style.left = left + 'px';
+      });
+      chart.appendChild(b);
+    });
+  }
+
+  function renderTimeline(d) {
+    $('timeline').innerHTML = d.events.map(function (e) {
+      return '<li><time>' + e[0] + '</time><span>' + e[1] + '</span><span class="delta">' + e[2] + '</span></li>';
+    }).join('');
+  }
+
+  function statRows(rows) {
+    return rows.map(function (r) { return '<div><span>' + r[0] + '</span><b>' + r[1] + '</b></div>'; }).join('');
+  }
+
+  var planIdx = 0;
+  var ALT = ['Nap in a sunbeam, 3 hours.', 'Nap in a different sunbeam, 3 hours.', 'Nap on the warm spot you just left, 3 hours.', 'Nap in a sunbeam, 3 hours. This is the same plan. The model is confident.'];
+
+  function render(animate) {
+    var d = DOGS[current];
+    renderDogs();
+    $('dogName').innerHTML = d.name + ' <small>Tuesday, Oct 20 · age ' + d.age + '</small>';
+    $('lgStrain').textContent = d.strainLbl;
+    $('chips').innerHTML =
+      '<div class="chip"><div class="n">' + d.steps + '</div><div class="k">Steps</div></div>' +
+      '<div class="chip"><div class="n">' + d.sticks + '<small>sticks</small></div><div class="k">Throughput</div></div>' +
+      '<div class="chip"><div class="n">' + d.socks + '<small>socks</small></div><div class="k">Ingested</div></div>' +
+      '<div class="chip"><div class="n">' + Math.max.apply(null, d.rpm) + '<small>rpm</small></div><div class="k">Tail peak</div></div>';
+    renderChart(d);
+    renderTimeline(d);
+    $('tailStats').innerHTML = statRows(d.tail);
+    $('sleepSub').textContent = d.sleep[0];
+    $('slDeep').textContent = d.sleep[1];
+    $('slRun').textContent = d.sleep[2];
+    $('slBed').textContent = d.sleep[3];
+    $('stages').innerHTML = '<span style="flex:6;background:#4FA3FF"></span><span style="flex:1;background:#FF4F7A"></span><span style="flex:5;background:#F4B740"></span>';
+    $('coachPlan').textContent = d.plan;
+    $('coachNotes').innerHTML = d.notes.map(function (n) { return '<div class="coach-msg"><p>' + n + '</p><small>Joy Analyst, Tailmetry</small></div>'; }).join('');
+    planIdx = 0;
+    if (animate && !reduce) {
+      resetArcs();
+      requestAnimationFrame(function () { requestAnimationFrame(function () {
+        setArc($('arcJoy'), 100); setArc($('arcHeart'), 100); setArc($('arcStrain'), d.strain);
+      }); });
+    } else {
+      setArc($('arcJoy'), 100); setArc($('arcHeart'), 100); setArc($('arcStrain'), d.strain);
+    }
+  }
+
+  // tabs
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+  function selectTab(t) {
+    tabs.forEach(function (x) {
+      var on = x === t;
+      x.setAttribute('aria-selected', on ? 'true' : 'false');
+      x.tabIndex = on ? 0 : -1;
+      $(x.getAttribute('aria-controls')).hidden = !on;
+    });
+  }
+  tabs.forEach(function (t, i) {
+    t.addEventListener('click', function () { selectTab(t); });
+    t.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        var n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+        selectTab(n); n.focus();
+      }
+    });
+  });
+
+  // switches
+  document.querySelectorAll('.switch').forEach(function (s) {
+    s.addEventListener('click', function () {
+      var on = s.getAttribute('aria-checked') !== 'true';
+      s.setAttribute('aria-checked', on ? 'true' : 'false');
+      var label = s.getAttribute('aria-label');
+      if (label.indexOf('Joy Load') === 0 && on) toast('Joy Load drop alerts on. You will not hear from us.');
+      else toast(label + (on ? ' on.' : ' off.'));
+    });
+  });
+
+  // recalibrate
+  $('recal').addEventListener('click', function () {
+    var b = $('recal');
+    if (b.classList.contains('busy')) return;
+    b.classList.add('busy');
+    b.querySelector('.lbl').textContent = 'Recalibrating';
+    b.disabled = true;
+    var big = $('joyBig'), t0 = Date.now();
+    var iv = setInterval(function () { big.textContent = (99 + Math.random()).toFixed(1); }, 90);
+    setTimeout(function () {
+      clearInterval(iv);
+      big.textContent = '100.0';
+      b.classList.remove('busy');
+      b.disabled = false;
+      b.querySelector('.lbl').textContent = 'Recalibrate sensor';
+      toast('Sensor recalibrated. Joy Load is 100.0. ' + DOGS[current].name + ' is fine.');
+    }, reduce ? 600 : 3000);
+  });
+
+  // modal
+  var scrim = $('scrim'), picked = null, lastFocus = null;
+  var EFFECT = { 'Mail arrived': '+0.0', 'Saw a squirrel': '+0.0', 'Ate part of a sock': 'vet notified', 'Bath': '+0.0 (disputed)', 'Vet visit': '+0.0, got a treat', 'Someone said "walk"': '+0.0 ceiling' };
+  function openModal() {
+    lastFocus = document.activeElement;
+    picked = null;
+    document.querySelectorAll('.opt').forEach(function (o) { o.setAttribute('aria-pressed', 'false'); });
+    $('mSave').disabled = true;
+    scrim.classList.add('open');
+    scrim.setAttribute('aria-hidden', 'false');
+    document.querySelector('.opt').focus();
+  }
+  function closeModal() {
+    scrim.classList.remove('open');
+    scrim.setAttribute('aria-hidden', 'true');
+    if (lastFocus) lastFocus.focus();
+  }
+  $('logBtn').addEventListener('click', openModal);
+  $('mCancel').addEventListener('click', closeModal);
+  scrim.addEventListener('click', function (e) { if (e.target === scrim) closeModal(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && scrim.classList.contains('open')) closeModal(); });
+  document.querySelectorAll('.opt').forEach(function (o) {
+    o.addEventListener('click', function () {
+      document.querySelectorAll('.opt').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+      o.setAttribute('aria-pressed', 'true');
+      picked = o.textContent;
+      $('mSave').disabled = false;
+    });
+  });
+  $('mSave').addEventListener('click', function () {
+    if (!picked) return;
+    var d = DOGS[current], now = new Date();
+    var h = now.getHours(), m = now.getMinutes();
+    var stamp = ((h % 12) || 12) + ':' + (m < 10 ? '0' : '') + m + (h < 12 ? 'am' : 'pm');
+    d.events.unshift([stamp, picked, EFFECT[picked] || '+0.0']);
+    renderTimeline(d);
+    $('timeline').firstChild.classList.add('new');
+    closeModal();
+    selectTab(tabs[0]);
+    toast('Event logged. Joy Load recomputed: 100.0 to 100.0.');
+  });
+
+  // coach regen
+  $('regen').addEventListener('click', function () {
+    planIdx = (planIdx + 1) % ALT.length;
+    $('coachPlan').textContent = ALT[planIdx];
+  });
+
+  // live tail trace
+  var ph = 0;
+  function trace() {
+    var d = 'M0 60', amp = DOGS[current].name === 'Sergeant Pepper' ? 22 : 44;
+    for (var x = 0; x <= 300; x += 4) d += ' L' + x + ' ' + (60 + Math.sin(x / 9 + ph) * amp * (0.7 + 0.3 * Math.sin(x / 50))).toFixed(1);
+    $('trace').setAttribute('d', d);
+  }
+  trace();
+  if (!reduce) (function loop() { ph += 0.18; trace(); requestAnimationFrame(loop); })();
+
+  render(true);
+})();
+</script>
+</body>
+</html>

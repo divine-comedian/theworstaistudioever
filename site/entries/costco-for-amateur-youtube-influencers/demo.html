@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800&family=Archivo+Narrow:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #C8102E; --red-dk: #9E0B23; --blue: #1F4E9C; --blue-dk: #163A76;
+    --bg: #E7E5DF; --surface: #F6F5F1; --fg: #1B1B1A; --muted: #5E5C56; --ink: #121211;
+    --tag: #FFD43B; --beam: #E5711F; --steel: #9A9C9E; --line: #D6D3CB;
+    --display: 'Anton', 'Impact', 'Arial Narrow', sans-serif;
+    --body: 'Archivo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --label: 'Archivo Narrow', 'Arial Narrow', sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 400 16px/1.5 var(--body); -webkit-font-smoothing: antialiased; }
+  button { font: inherit; cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+  img { display: block; max-width: 100%; }
+
+  .chrome { background: var(--ink); color: #E9E7E1; }
+  .chrome-in { display: flex; align-items: center; gap: 18px; padding: 10px 20px; flex-wrap: wrap; }
+  .back { color: #E9E7E1; font: 600 14px/1 var(--label); text-decoration: none; padding: 8px 0; }
+  .back:hover { text-decoration: underline; }
+  .brand { font: 400 22px/1 var(--display); letter-spacing: .02em; color: #fff; }
+  .brand span { color: var(--tag); }
+  .search { flex: 1; min-width: 200px; display: flex; align-items: center; background: #fff; border-radius: 3px; padding: 0 12px; }
+  .search svg { flex: none; }
+  .search input { border: 0; outline: 0; padding: 11px 10px; width: 100%; font: 500 15px var(--body); background: transparent; color: var(--ink); }
+  .search:focus-within { outline: 3px solid var(--tag); }
+  .member-chip { display: flex; align-items: center; gap: 10px; font: 600 13px/1.2 var(--label); }
+  .member-chip i { width: 34px; height: 22px; background: var(--red); border-radius: 2px; border-bottom: 5px solid var(--blue); display: block; }
+  .cart-btn { display: flex; align-items: center; gap: 10px; background: var(--tag); color: var(--ink); border: 0; border-radius: 3px; padding: 9px 14px; font-weight: 700; }
+  .cart-btn b { font-variant-numeric: tabular-nums; }
+  .bump { animation: bump .3s ease-out; }
+  @keyframes bump { 40% { transform: scale(1.08); } }
+
+  /* aisle signs as tabs */
+  .ceiling { background: var(--surface); border-bottom: 1px solid var(--line); padding: 0 20px 18px; overflow-x: auto; }
+  .ceiling::before { content: ""; display: block; height: 6px; background: var(--steel); margin: 0 -20px; }
+  .aisles { display: flex; gap: 14px; min-width: max-content; }
+  .aisle { position: relative; padding-top: 22px; background: none; border: 0; text-align: left; }
+  .aisle::before, .aisle::after { content: ""; position: absolute; top: 0; width: 2px; height: 22px; background: var(--steel); }
+  .aisle::before { left: 22%; } .aisle::after { right: 22%; }
+  .aisle-in { display: flex; align-items: stretch; background: #fff; color: var(--blue); border: 2px solid var(--blue); border-radius: 3px; transition: background-color .15s, color .15s; }
+  .aisle-num { font: 400 28px/1 var(--display); padding: 8px 11px; border-right: 2px solid currentColor; display: flex; align-items: center; }
+  .aisle-name { font: 400 17px/1.05 var(--display); letter-spacing: .03em; text-transform: uppercase; padding: 8px 12px; display: flex; flex-direction: column; justify-content: center; }
+  .aisle-name small { font: 600 12px/1.2 var(--label); text-transform: none; letter-spacing: 0; opacity: .8; margin-top: 3px; }
+  .aisle:hover .aisle-in { background: #EEF2FA; }
+  .aisle[aria-selected="true"] .aisle-in { background: var(--blue); color: #fff; box-shadow: 0 5px 0 rgba(0,0,0,.12); }
+
+  .layout { display: grid; grid-template-columns: 1fr 340px; gap: 24px; padding: 24px 20px 40px; max-width: 1400px; margin: 0 auto; }
+
+  /* endcap */
+  .endcap { display: grid; grid-template-columns: 220px 1fr; gap: 0; background: #fff; border-radius: 3px; overflow: hidden; margin-bottom: 24px; border-left: 12px solid var(--red); }
+  .endcap img { width: 220px; height: 220px; object-fit: cover; }
+  .endcap-body { padding: 18px 22px; display: flex; flex-direction: column; }
+  .endcap-flag { align-self: flex-start; background: var(--red); color: #fff; font: 600 12px/1 var(--label); padding: 5px 8px; border-radius: 2px; margin-bottom: 10px; }
+  .endcap h2 { margin: 0 0 6px; font: 400 32px/1.05 var(--display); text-transform: uppercase; color: var(--ink); }
+  .endcap p { margin: 0 0 14px; color: var(--muted); max-width: 46em; }
+  .endcap-row { margin-top: auto; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+
+  .grid-head { display: flex; justify-content: space-between; align-items: baseline; margin: 0 0 12px; gap: 12px; flex-wrap: wrap; }
+  .grid-head h1 { margin: 0; font: 800 22px/1.2 var(--body); color: var(--ink); }
+  .grid-head span { color: var(--muted); font: 500 14px var(--label); }
+  .sort { display: flex; gap: 6px; }
+  .sort button { background: #fff; border: 1px solid var(--line); border-radius: 3px; padding: 6px 10px; font: 600 13px var(--label); color: var(--fg); }
+  .sort button[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+  .shelf { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 0; background: #fff; border-radius: 3px; }
+  .item { padding: 16px 16px 0; border-right: 1px solid var(--line); border-bottom: 14px solid var(--beam); display: flex; flex-direction: column; }
+  .box { height: 132px; display: flex; align-items: flex-end; justify-content: center; gap: 3px; margin-bottom: 12px; }
+  .box span { display: block; border-radius: 2px; position: relative; }
+  .box span::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 18%; background: rgba(0,0,0,.18); }
+  .box b { position: absolute; inset: auto 0 14% 0; text-align: center; color: #fff; font: 400 22px/1 var(--display); }
+  .item h3 { margin: 0 0 4px; font: 700 16px/1.25 var(--body); color: var(--ink); }
+  .item .desc { margin: 0 0 12px; font-size: 14px; color: var(--muted); line-height: 1.45; }
+  .tag { background: var(--tag); border-radius: 2px; font-variant-numeric: tabular-nums; margin-top: auto; }
+  .tag-top { background: var(--ink); color: var(--tag); font: 600 12px/1 var(--label); padding: 5px 8px; display: flex; justify-content: space-between; }
+  .tag-mid { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; }
+  .tag-price { font: 400 30px/1 var(--display); color: var(--ink); }
+  .tag-unit { font: 500 12px/1.3 var(--label); padding: 5px 8px 7px; border-top: 1px dashed rgba(0,0,0,.35); }
+  .add { background: var(--red); color: #fff; border: 0; border-radius: 3px; padding: 8px 12px; font: 700 14px var(--body); min-height: 40px; }
+  .add:hover { background: var(--red-dk); }
+  .add.in { background: var(--blue); }
+  .empty { grid-column: 1 / -1; padding: 40px 20px; text-align: center; color: var(--muted); }
+  .empty b { display: block; font: 400 26px/1.1 var(--display); color: var(--ink); text-transform: uppercase; margin-bottom: 6px; }
+
+  /* flatbed */
+  .flatbed { background: #fff; border-radius: 3px; position: sticky; top: 16px; align-self: start; overflow: hidden; }
+  .fb-head { background: var(--blue); color: #fff; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; }
+  .fb-head h2 { margin: 0; font: 400 24px/1 var(--display); text-transform: uppercase; letter-spacing: .02em; }
+  .fb-head span { font: 600 13px var(--label); }
+  .gauge { padding: 14px 18px; border-bottom: 1px solid var(--line); }
+  .gauge-label { display: flex; justify-content: space-between; font: 600 13px var(--label); color: var(--muted); margin-bottom: 6px; font-variant-numeric: tabular-nums; }
+  .gauge-bar { height: 14px; background: repeating-linear-gradient(90deg, #E9E7E1 0 10%, #DDDAD2 10% calc(10% + 2px)); border-radius: 2px; overflow: hidden; }
+  .gauge-bar i { display: block; height: 100%; width: 0; background: var(--beam); transition: width .3s ease-out; }
+  .gauge-note { font: 500 12px/1.35 var(--label); color: var(--muted); margin-top: 6px; min-height: 16px; }
+  .gauge.over .gauge-bar i { background: var(--red); }
+  .gauge.over .gauge-note { color: var(--red); font-weight: 700; }
+  .lines { list-style: none; margin: 0; padding: 0; max-height: 300px; overflow-y: auto; }
+  .lines li { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; padding: 10px 18px; border-bottom: 1px solid var(--line); font-size: 14px; }
+  .lines li b { font-weight: 600; }
+  .lines .meta { font: 500 12px var(--label); color: var(--muted); }
+  .qty { display: flex; align-items: center; gap: 6px; }
+  .qty button { width: 28px; height: 28px; border: 1px solid var(--line); background: var(--surface); border-radius: 3px; font-weight: 700; line-height: 1; }
+  .qty span { min-width: 18px; text-align: center; font-variant-numeric: tabular-nums; font-weight: 700; }
+  .fb-empty { padding: 22px 18px; color: var(--muted); font-size: 14px; }
+  .fb-foot { padding: 16px 18px; }
+  .total { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+  .total span { font: 600 14px var(--label); color: var(--muted); }
+  .total b { font: 400 34px/1 var(--display); font-variant-numeric: tabular-nums; color: var(--ink); }
+  .checkout { width: 100%; background: var(--red); color: #fff; border: 0; border-radius: 3px; min-height: 50px; font: 700 16px var(--body); }
+  .checkout:hover { background: var(--red-dk); }
+  .checkout:disabled { opacity: .45; cursor: not-allowed; }
+  .sample { margin: 0 18px 18px; width: calc(100% - 36px); background: var(--surface); border: 2px dashed var(--steel); border-radius: 3px; padding: 12px; text-align: left; font: 600 14px var(--body); color: var(--ink); display: flex; gap: 10px; align-items: center; }
+  .sample:hover { border-color: var(--blue); }
+
+  /* toast */
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 140%); background: var(--ink); color: #fff; padding: 12px 18px; border-radius: 3px; font: 500 15px var(--body); max-width: min(520px, calc(100vw - 32px)); transition: transform .25s ease-out, visibility 0s linear .25s; z-index: 40; border-left: 6px solid var(--tag); visibility: hidden; }
+  .toast.show { transform: translate(-50%, 0); visibility: visible; transition: transform .25s ease-out, visibility 0s; }
+
+  /* receipt modal */
+  .scrim { position: fixed; inset: 0; background: rgba(18,18,17,.55); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 50; }
+  .scrim.open { display: flex; }
+  .modal { background: var(--surface); border-radius: 3px; width: min(760px, 100%); max-height: calc(100vh - 40px); overflow: auto; display: grid; grid-template-columns: 1fr 1fr; }
+  .exit { background: var(--blue); color: #fff; padding: 24px; display: flex; flex-direction: column; }
+  .exit h2 { margin: 0 0 10px; font: 400 32px/1.05 var(--display); text-transform: uppercase; }
+  .exit p { margin: 0 0 14px; color: #DCE5F4; }
+  .staff { margin-top: auto; background: rgba(255,255,255,.1); border-radius: 3px; padding: 12px 14px; font-size: 15px; }
+  .staff b { display: block; font: 600 13px var(--label); color: var(--tag); margin-bottom: 4px; }
+  .receipt { background: #fff; margin: 24px; padding: 18px 16px 22px; font: 500 13px/1.6 'Courier New', monospace; color: var(--ink); position: relative;
+    -webkit-mask: radial-gradient(circle 6px at 50% 100%, transparent 98%, #000) 0 0/14px 100% repeat-x; mask: radial-gradient(circle 6px at 50% 100%, transparent 98%, #000) 0 0/14px 100% repeat-x; }
+  .receipt h3 { margin: 0 0 8px; text-align: center; font: 700 15px 'Courier New', monospace; }
+  .r-line { display: flex; justify-content: space-between; gap: 10px; }
+  .r-sep { border-top: 1px dashed #888; margin: 8px 0; }
+  .r-total { font-weight: 700; font-size: 15px; }
+  .hl { position: absolute; left: 10px; right: 10px; height: 18px; background: rgba(255,212,59,.0); pointer-events: none; }
+  .hl::after { content: ""; position: absolute; inset: 0; background: rgba(255,212,59,.65); transform-origin: left; transform: scaleX(0); transition: transform .4s ease-out; border-radius: 2px; }
+  .hl.go::after { transform: scaleX(1); }
+  .modal-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 10px; padding: 0 24px 24px; }
+  .btn { border: 0; border-radius: 3px; min-height: 46px; padding: 0 18px; font: 700 15px var(--body); }
+  .btn-ghost { background: transparent; border: 2px solid var(--ink); color: var(--ink); }
+  .btn-red { background: var(--red); color: #fff; }
+
+  @media (max-width: 980px) {
+    .layout { grid-template-columns: 1fr; }
+    .flatbed { position: static; }
+    .modal { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 600px) {
+    .endcap { grid-template-columns: 1fr; }
+    .endcap img { width: 100%; height: 200px; }
+    .member-chip { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+  }
+</style>
+<title>Pallet Club — Costco for amateur youtube influencers — Demo</title>
+<meta name="description" content="Buy your audience in bulk. Pallet Club is a members-only warehouse for amateur YouTube influencers. Shocked-face thumbnails by the gross, intros by the pallet, and a 48-pack of &quot;smash that like button&quot; for less than you spent on the ring light.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/costco-for-amateur-youtube-influencers/demo.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Pallet Club — Costco for amateur youtube influencers — Demo">
+<meta property="og:description" content="Buy your audience in bulk. Pallet Club is a members-only warehouse for amateur YouTube influencers. Shocked-face thumbnails by the gross, intros by the pallet, and a 48-pack of &quot;smash that like button&quot; for less than you spent on the ring light.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/costco-for-amateur-youtube-influencers/demo.html">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/costco-for-amateur-youtube-influencers/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Worst AI Studio Ever logo">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Pallet Club — Costco for amateur youtube influencers — Demo">
+<meta name="twitter:description" content="Buy your audience in bulk. Pallet Club is a members-only warehouse for amateur YouTube influencers. Shocked-face thumbnails by the gross, intros by the pallet, and a 48-pack of &quot;smash that like button&quot; for less than you spent on the ring light.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/costco-for-amateur-youtube-influencers/social-preview.jpg">
+<meta name="twitter:image:alt" content="The Worst AI Studio Ever logo">
+</head>
+<body>
+
+<header class="chrome">
+  <div class="chrome-in">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <span class="brand">Pallet <span>Club</span></span>
+    <label class="search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E5C56" stroke-width="2.4" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+      <span style="position:absolute;left:-9999px">Search the warehouse</span>
+      <input id="q" type="search" placeholder="Search 14 bulk items, e.g. apology" autocomplete="off">
+    </label>
+    <span class="member-chip"><i aria-hidden="true"></i>Gold Spectator<br>@yourchannel_official2</span>
+    <button class="cart-btn" id="cartBtn" type="button" aria-label="Flatbed cart">
+      <svg width="22" height="18" viewBox="0 0 22 18" aria-hidden="true"><rect x="1" y="9" width="17" height="3" fill="#121211"/><rect x="16" y="1" width="3" height="11" fill="#121211"/><circle cx="4" cy="15" r="2.2" fill="#121211"/><circle cx="14" cy="15" r="2.2" fill="#121211"/></svg>
+      <b id="cartCount">0</b> items · <b id="cartTotalTop">$0.00</b>
+    </button>
+  </div>
+</header>
+
+<nav class="ceiling" aria-label="Aisles">
+  <div class="aisles" role="tablist" id="aisles"></div>
+</nav>
+
+<div class="layout">
+  <main>
+    <section class="endcap" aria-labelledby="endcapTitle">
+      <img src="endcap.webp" alt="A shrink-wrapped pallet of boxed ring lights with one lit on top" width="220" height="220">
+      <div class="endcap-body">
+        <span class="endcap-flag">Endcap, this week only</span>
+        <h2 id="endcapTitle">Ring lights, full pallet</h2>
+        <p>48 ring lights, shrink-wrapped, one already on. Enough to light every room in your house and a neighbor's. Forklift not included. Forklift sold in Aisle 12.</p>
+        <div class="endcap-row">
+          <div class="tag" style="margin-top:0;min-width:200px">
+            <div class="tag-top"><span>Item 120 048</span><span>48 ct</span></div>
+            <div class="tag-mid"><span class="tag-price">$1,199.99</span></div>
+            <div class="tag-unit">Unit price $25.00 per ring light</div>
+          </div>
+          <button class="add" type="button" data-add="p-pallet">Add pallet to flatbed</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid-head">
+      <h1 id="gridTitle">All aisles</h1>
+      <span id="gridCount"></span>
+      <div class="sort" role="group" aria-label="Sort">
+        <button type="button" data-sort="shelf" aria-pressed="true">Shelf order</button>
+        <button type="button" data-sort="unit" aria-pressed="false">Lowest unit price</button>
+        <button type="button" data-sort="count" aria-pressed="false">Most per pack</button>
+      </div>
+    </div>
+    <div class="shelf" id="shelf"></div>
+  </main>
+
+  <aside class="flatbed" aria-labelledby="fbTitle" id="flatbed">
+    <div class="fb-head"><h2 id="fbTitle">Your flatbed</h2><span id="fbCount">Empty</span></div>
+    <div class="gauge" id="gauge">
+      <div class="gauge-label"><span>Load weight</span><span id="weight">0 lb of 900 lb</span></div>
+      <div class="gauge-bar"><i id="gaugeFill"></i></div>
+      <div class="gauge-note" id="gaugeNote">Flatbed rated to 900 lb. Wheels rated to less.</div>
+    </div>
+    <ul class="lines" id="lines"></ul>
+    <div class="fb-empty" id="fbEmpty">Nothing on the flatbed. The average member leaves with 144 of something.</div>
+    <div class="fb-foot">
+      <div class="total"><span>Subtotal</span><b id="total">$0.00</b></div>
+      <button class="checkout" id="checkout" type="button" disabled>Check out</button>
+    </div>
+    <button class="sample" id="sample" type="button">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="3" y="10" width="20" height="10" fill="#E5711F"/><rect x="5" y="6" width="5" height="4" fill="#1F4E9C"/><rect x="12" y="6" width="5" height="4" fill="#C8102E"/><circle cx="7" cy="22" r="2" fill="#121211"/><circle cx="19" cy="22" r="2" fill="#121211"/></svg>
+      Free sample cart. Take one b-roll clip.
+    </button>
+  </aside>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="scrim" id="scrim">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="exitTitle">
+    <div class="exit">
+      <h2 id="exitTitle">Receipt check</h2>
+      <p>Please hold your receipt and flatbed still. Dale is counting the ring lights.</p>
+      <div class="staff" id="staff"><b>Dale, exit door 2</b><span id="staffLine">...</span></div>
+    </div>
+    <div class="receipt" id="receipt"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" type="button" id="backToAisles">Back to the aisles</button>
+      <button class="btn btn-red" type="button" id="leave">Leave the warehouse</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var AISLES = [
+    { id: 'all', num: '·', name: 'All aisles', note: 'Everything, in bulk' },
+    { id: 'thumb', num: '1', name: 'Thumbnails', note: 'Faces, arrows, circles' },
+    { id: 'intro', num: '4', name: 'Intros & outros', note: 'Pallet quantities' },
+    { id: 'eng', num: '7', name: 'Engagement', note: 'Comments by the drum' },
+    { id: 'sorry', num: '9', name: 'Apologies', note: 'Scripts and couches' },
+    { id: 'gear', num: '12', name: 'Ring lights', note: 'And one forklift' }
+  ];
+  function P(id, aisle, name, desc, count, unitWord, price, lb, color) {
+    return { id: id, aisle: aisle, name: name, desc: desc, count: count, unitWord: unitWord, price: price, lb: lb, color: color };
+  }
+  var ITEMS = [
+    P('p1', 'thumb', 'Shocked face thumbnails', 'Same open mouth, 144 times. Pre-pointed at a red arrow.', 144, 'face', 0.58, 3, '#C8102E'),
+    P('p2', 'thumb', 'Red circle overlays, assorted', 'For circling something in the background that is not there.', 500, 'circle', 4.99, 2, '#C8102E'),
+    P('p3', 'thumb', 'Arrows, pointing left', 'Right-pointing arrows sold separately due to a supply issue.', 1000, 'arrow', 6.49, 4, '#121211'),
+    P('p4', 'intro', '"What is up guys" intros', 'Shelf-stable, 3 seconds each. Energy level: medium-high.', 240, 'intro', 18.99, 12, '#1F4E9C'),
+    P('p5', 'intro', 'Outro cards, end screen', 'Two boxes for videos nobody will click. Full pallet.', 1200, 'card', 39.99, 60, '#1F4E9C'),
+    P('p6', 'intro', 'Lo-fi beat, royalty free', 'One beat, licensed 96 times so you never run out.', 96, 'license', 12.49, 1, '#163A76'),
+    P('p7', 'eng', '"First!" comment drum', 'Family size. Rotate stock so it does not go stale.', 10000, 'comment', 24.99, 85, '#E5711F'),
+    P('p8', 'eng', '"Smash that like button", 48-pack', 'Delivered at the 0:04 mark for best results.', 48, 'smash', 9.99, 2, '#E5711F'),
+    P('p9', 'eng', 'Who\'s watching in 2027', 'Pre-dated. Expires January 1st, then becomes ironic.', 2500, 'comment', 14.99, 20, '#B35517'),
+    P('p10', 'sorry', 'Apology script variety pack', 'Includes "I\'ve been doing a lot of reflecting" in three lengths.', 24, 'script', 29.99, 1, '#5E5C56'),
+    P('p11', 'sorry', 'Beige apology couch', 'The couch every apology has been filmed on since 2018.', 1, 'couch', 349.99, 140, '#B9A78A'),
+    P('p12', 'sorry', 'Tissue box, on-camera', 'Placed in frame. Not to be used.', 36, 'box', 21.49, 9, '#9A9C9E'),
+    P('p13', 'gear', 'Lavalier mics, 30-pack', 'Clip one to every shirt you own.', 30, 'mic', 59.99, 3, '#121211'),
+    P('p14', 'gear', 'Forklift, used', 'For your comments section. Certification is a separate tier.', 1, 'forklift', 6400.00, 620, '#E5711F')
+  ];
+  var PALLET = P('p-pallet', 'gear', 'Ring lights, full pallet', 'Endcap', 48, 'ring light', 1199.99, 410, '#FFD43B');
+  var ALL = ITEMS.concat([PALLET]);
+  var SAMPLES = [
+    'Your sample: 4 seconds of a drone shot over a parking lot. Please do not take another.',
+    'Your sample: a slow-motion pour of oat milk. No glass in frame.',
+    'Your sample: someone walking toward the camera in a hoodie, then away.',
+    'Your sample: a whoosh sound effect. It is the same one everybody has.',
+    'Your sample: a timelapse of clouds. There is a crane in it. Sorry about the crane.'
+  ];
+  var STAFF = [
+    'Have a good one.',
+    'Nice flatbed. Have a good one.',
+    'That\'s a lot of faces. Have a good one.',
+    'I don\'t watch YouTube. Have a good one.'
+  ];
+  var MAX_LB = 900;
+  var state = { aisle: 'all', q: '', sort: 'shelf', cart: [] };
+  var sampleCount = 0;
+
+  function $(id) { return document.getElementById(id); }
+  function money(n) { return '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+  function unitPrice(p) {
+    var u = p.price / p.count;
+    return u < 0.1 ? (u * 100).toFixed(2).replace(/0+$/, '').replace(/\.$/, '') + '¢' : money(u);
+  }
+  function byId(id) { return ALL.filter(function (p) { return p.id === id; })[0]; }
+  function lineFor(id) { return state.cart.filter(function (l) { return l.id === id; })[0]; }
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+
+  function renderAisles() {
+    var wrap = $('aisles');
+    wrap.innerHTML = '';
+    AISLES.forEach(function (a) {
+      var b = el('button', 'aisle');
+      b.type = 'button';
+      b.setAttribute('role', 'tab');
+      b.setAttribute('aria-selected', String(state.aisle === a.id));
+      var inner = el('span', 'aisle-in');
+      inner.appendChild(el('span', 'aisle-num', a.num));
+      var nm = el('span', 'aisle-name', a.name);
+      nm.appendChild(el('small', null, a.note));
+      inner.appendChild(nm);
+      b.appendChild(inner);
+      b.addEventListener('click', function () { state.aisle = a.id; renderAisles(); renderShelf(); });
+      wrap.appendChild(b);
+    });
+  }
+
+  function boxArt(p) {
+    var wrap = el('div', 'box');
+    wrap.setAttribute('aria-hidden', 'true');
+    var stacks = p.count >= 1000 ? 3 : p.count >= 48 ? 2 : 1;
+    for (var i = 0; i < stacks; i++) {
+      var s = el('span');
+      var h = 70 + (stacks - i) * 18;
+      s.style.width = (stacks === 1 ? 96 : 62) + 'px';
+      s.style.height = (i === 0 ? h : h - 20) + 'px';
+      s.style.background = p.color;
+      if (i === 0) s.appendChild(el('b', null, p.count >= 1000 ? (p.count / 1000) + 'K' : String(p.count)));
+      wrap.appendChild(s);
+    }
+    return wrap;
+  }
+
+  function renderShelf() {
+    var shelf = $('shelf');
+    shelf.innerHTML = '';
+    var q = state.q.trim().toLowerCase();
+    var list = ITEMS.filter(function (p) {
+      return (state.aisle === 'all' || p.aisle === state.aisle) &&
+        (!q || (p.name + ' ' + p.desc).toLowerCase().indexOf(q) !== -1);
+    });
+    if (state.sort === 'unit') list.sort(function (a, b) { return a.price / a.count - b.price / b.count; });
+    if (state.sort === 'count') list.sort(function (a, b) { return b.count - a.count; });
+
+    var aisle = AISLES.filter(function (a) { return a.id === state.aisle; })[0];
+    $('gridTitle').textContent = state.aisle === 'all' ? 'All aisles' : 'Aisle ' + aisle.num + ': ' + aisle.name;
+    $('gridCount').textContent = list.length + (list.length === 1 ? ' item' : ' items') + ', all in bulk';
+
+    if (!list.length) {
+      var e = el('div', 'empty');
+      e.appendChild(el('b', null, 'Out of stock in this aisle'));
+      e.appendChild(document.createTextNode('Nothing matches "' + state.q + '". Try another aisle or clear the search.'));
+      shelf.appendChild(e);
+      return;
+    }
+    list.forEach(function (p) {
+      var card = el('article', 'item');
+      card.appendChild(boxArt(p));
+      card.appendChild(el('h3', null, p.name));
+      card.appendChild(el('p', 'desc', p.desc));
+      var tag = el('div', 'tag');
+      var top = el('div', 'tag-top');
+      top.appendChild(el('span', null, 'Item ' + p.id.replace('p', '') + '00 ' + String(p.count).slice(0, 3)));
+      top.appendChild(el('span', null, p.count.toLocaleString() + ' ct'));
+      tag.appendChild(top);
+      var mid = el('div', 'tag-mid');
+      mid.appendChild(el('span', 'tag-price', money(p.price)));
+      var inCart = lineFor(p.id);
+      var add = el('button', 'add' + (inCart ? ' in' : ''), inCart ? 'On flatbed (' + inCart.qty + ')' : 'Add');
+      add.type = 'button';
+      add.setAttribute('aria-label', 'Add ' + p.name + ' to flatbed');
+      add.addEventListener('click', function () { addToCart(p.id); });
+      mid.appendChild(add);
+      tag.appendChild(mid);
+      tag.appendChild(el('div', 'tag-unit', 'Unit price ' + unitPrice(p) + ' per ' + p.unitWord));
+      card.appendChild(tag);
+      shelf.appendChild(card);
+    });
+  }
+
+  function addToCart(id) {
+    var l = lineFor(id);
+    if (l) l.qty++; else state.cart.push({ id: id, qty: 1 });
+    var p = byId(id);
+    toast(p.count > 1 ? p.count.toLocaleString() + ' ' + p.unitWord + 's added. Unit price ' + unitPrice(p) + '.' : p.name + ' added. It is the only one.');
+    var btn = $('cartBtn');
+    btn.classList.remove('bump'); void btn.offsetWidth; btn.classList.add('bump');
+    renderCart(); renderShelf(); syncEndcap();
+  }
+
+  function changeQty(id, d) {
+    var l = lineFor(id);
+    if (!l) return;
+    l.qty += d;
+    if (l.qty <= 0) state.cart = state.cart.filter(function (x) { return x.id !== id; });
+    renderCart(); renderShelf(); syncEndcap();
+  }
+
+  function totals() {
+    var t = 0, lb = 0, n = 0;
+    state.cart.forEach(function (l) { var p = byId(l.id); t += p.price * l.qty; lb += p.lb * l.qty; n += l.qty; });
+    return { t: t, lb: lb, n: n };
+  }
+
+  function renderCart() {
+    var lines = $('lines');
+    lines.innerHTML = '';
+    state.cart.forEach(function (l) {
+      var p = byId(l.id);
+      var li = el('li');
+      li.appendChild(el('b', null, p.name));
+      li.appendChild(el('span', null, money(p.price * l.qty)));
+      li.appendChild(el('span', 'meta', (p.count * l.qty).toLocaleString() + ' ' + p.unitWord + 's, ' + (p.lb * l.qty) + ' lb'));
+      var qty = el('span', 'qty');
+      var minus = el('button', null, '−'); minus.type = 'button'; minus.setAttribute('aria-label', 'Remove one ' + p.name);
+      var plus = el('button', null, '+'); plus.type = 'button'; plus.setAttribute('aria-label', 'Add one ' + p.name);
+      minus.addEventListener('click', function () { changeQty(l.id, -1); });
+      plus.addEventListener('click', function () { changeQty(l.id, 1); });
+      qty.appendChild(minus); qty.appendChild(el('span', null, String(l.qty))); qty.appendChild(plus);
+      li.appendChild(qty);
+      lines.appendChild(li);
+    });
+    var s = totals();
+    $('fbEmpty').style.display = state.cart.length ? 'none' : 'block';
+    $('fbCount').textContent = s.n ? s.n + (s.n === 1 ? ' line item' : ' line items') : 'Empty';
+    $('cartCount').textContent = s.n;
+    $('cartTotalTop').textContent = money(s.t);
+    $('total').textContent = money(s.t);
+    $('weight').textContent = s.lb.toLocaleString() + ' lb of ' + MAX_LB + ' lb';
+    $('gaugeFill').style.width = Math.min(100, s.lb / MAX_LB * 100) + '%';
+    var over = s.lb > MAX_LB;
+    $('gauge').classList.toggle('over', over);
+    $('gaugeNote').textContent = over
+      ? 'Over the flatbed limit by ' + (s.lb - MAX_LB) + ' lb. A second flatbed is $0. A second person to push it is not.'
+      : s.lb > MAX_LB * 0.6 ? 'Getting heavy. The left wheel has started making the noise.' : 'Flatbed rated to 900 lb. Wheels rated to less.';
+    $('checkout').disabled = !state.cart.length;
+  }
+
+  function syncEndcap() {
+    var b = document.querySelector('[data-add="p-pallet"]');
+    var l = lineFor('p-pallet');
+    b.textContent = l ? 'Pallets on flatbed: ' + l.qty : 'Add pallet to flatbed';
+    b.classList.toggle('in', !!l);
+  }
+
+  var toastTimer;
+  function toast(msg) {
+    var t = $('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove('show'); }, 3200);
+  }
+
+  function openReceipt() {
+    var r = $('receipt');
+    r.innerHTML = '';
+    r.appendChild(el('h3', null, 'PALLET CLUB #0212'));
+    var meta = el('div', 'r-line'); meta.appendChild(el('span', null, 'MBR @yourchannel_off')); meta.appendChild(el('span', null, 'GOLD SPEC')); r.appendChild(meta);
+    r.appendChild(el('div', 'r-sep'));
+    state.cart.forEach(function (l) {
+      var p = byId(l.id);
+      var row = el('div', 'r-line');
+      row.appendChild(el('span', null, l.qty + ' x ' + p.name.toUpperCase().slice(0, 22)));
+      row.appendChild(el('span', null, money(p.price * l.qty)));
+      r.appendChild(row);
+    });
+    r.appendChild(el('div', 'r-sep'));
+    var s = totals();
+    var tax = s.t * 0.0825;
+    var a = el('div', 'r-line'); a.appendChild(el('span', null, 'SUBTOTAL')); a.appendChild(el('span', null, money(s.t))); r.appendChild(a);
+    var b = el('div', 'r-line'); b.appendChild(el('span', null, 'TAX')); b.appendChild(el('span', null, money(tax))); r.appendChild(b);
+    var c = el('div', 'r-line r-total'); c.appendChild(el('span', null, 'TOTAL')); c.appendChild(el('span', null, money(s.t + tax))); r.appendChild(c);
+    r.appendChild(el('div', 'r-sep'));
+    var items = s.n;
+    r.appendChild(el('div', null, 'TOTAL NUMBER OF ITEMS SOLD = ' + items));
+    r.appendChild(el('div', null, 'EST. VIEWS FROM THIS PURCHASE = 0'));
+    r.appendChild(el('div', null, 'SAMPLES TAKEN = ' + sampleCount));
+    var hl = el('span', 'hl');
+    r.appendChild(hl);
+    $('staffLine').textContent = '...';
+    $('scrim').classList.add('open');
+    $('leave').focus();
+    requestAnimationFrame(function () {
+      var tot = r.querySelector('.r-total');
+      hl.style.top = (tot.offsetTop - 1) + 'px';
+      setTimeout(function () {
+        hl.classList.add('go');
+        $('staffLine').textContent = STAFF[Math.floor(Math.random() * STAFF.length)];
+      }, 500);
+    });
+  }
+  function closeReceipt() { $('scrim').classList.remove('open'); $('checkout').focus(); }
+
+  $('q').addEventListener('input', function (e) { state.q = e.target.value; renderShelf(); });
+  document.querySelectorAll('[data-sort]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      state.sort = b.getAttribute('data-sort');
+      document.querySelectorAll('[data-sort]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      renderShelf();
+    });
+  });
+  document.querySelector('[data-add="p-pallet"]').addEventListener('click', function () { addToCart('p-pallet'); });
+  $('sample').addEventListener('click', function () {
+    sampleCount++;
+    toast(sampleCount > 2 ? 'The sample lady has noticed you. That is ' + sampleCount + ' samples.' : SAMPLES[Math.floor(Math.random() * SAMPLES.length)]);
+  });
+  $('cartBtn').addEventListener('click', function () { $('flatbed').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+  $('checkout').addEventListener('click', openReceipt);
+  $('backToAisles').addEventListener('click', closeReceipt);
+  $('leave').addEventListener('click', function () {
+    var n = totals().n;
+    state.cart = []; sampleCount = 0;
+    closeReceipt(); renderCart(); renderShelf(); syncEndcap();
+    toast('You left with ' + n + (n === 1 ? ' item' : ' items') + '. Your car is in row K. It was always in row K.');
+  });
+  $('scrim').addEventListener('click', function (e) { if (e.target === $('scrim')) closeReceipt(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $('scrim').classList.contains('open')) closeReceipt(); });
+
+  renderAisles(); renderShelf(); renderCart();
+})();
+</script>
+</body>
+</html>
