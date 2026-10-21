@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Oswald:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --hay: #F1E4C3;
+    --hay-deep: #E6D4A8;
+    --red: #B3321F;
+    --green: #2F5A4F;
+    --fg: #2A2219;
+    --muted: #6F5F45;
+    --ink: #16120D;
+    --display: 'Abril Fatface', 'Didot', 'Bodoni 72', Georgia, serif;
+    --body: 'Merriweather', Georgia, 'Times New Roman', serif;
+    --label: 'Oswald', 'Arial Narrow', sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; animation: none !important; } }
+  body {
+    margin: 0;
+    background: var(--hay);
+    color: var(--fg);
+    font: 400 17px/1.75 var(--body);
+    -webkit-font-smoothing: antialiased;
+  }
+  /* faint paper fibre, no gradients-as-decoration: a speckle of ink dots */
+  body::before {
+    content: "";
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image: radial-gradient(rgba(22,18,13,.07) 1px, transparent 1.2px);
+    background-size: 7px 9px;
+    opacity: .5;
+  }
+  main, header, footer { position: relative; z-index: 1; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  /* top bar */
+  .bar { border-bottom: 3px double var(--ink); }
+  .bar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 14px; padding-bottom: 14px; }
+  .mark { font-family: var(--display); font-size: 30px; line-height: 1; text-decoration: none; color: var(--ink); }
+  .mark span { color: var(--red); }
+  .bar nav { display: flex; gap: 22px; align-items: center; font-family: var(--label); font-weight: 500; font-size: 15px; letter-spacing: .04em; }
+  .bar nav a { text-decoration: none; }
+  .bar nav a:hover { color: var(--red); }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; min-height: 46px;
+    padding: 10px 22px; border: 2px solid var(--ink); border-radius: 2px;
+    background: var(--ink); color: var(--hay); text-decoration: none; cursor: pointer;
+    font: 600 16px/1 var(--label); letter-spacing: .06em;
+    transition: background .15s ease, color .15s ease, transform .15s ease;
+  }
+  .btn:hover { background: var(--red); border-color: var(--red); }
+  .btn:active { transform: translateY(1px); }
+  .btn.ghost { background: transparent; color: var(--ink); }
+  .btn.ghost:hover { background: var(--ink); color: var(--hay); border-color: var(--ink); }
+
+  /* hero: the sale bill */
+  .hero { text-align: center; padding: 64px 0 56px; }
+  .order { font-family: var(--label); font-weight: 500; letter-spacing: .32em; font-size: 14px; color: var(--muted); margin: 0 0 22px; }
+  .hero h1 {
+    position: relative; margin: 0 auto; max-width: 15ch;
+    font-family: var(--display); font-weight: 400; color: var(--ink);
+    font-size: clamp(48px, 9vw, 112px); line-height: .98; letter-spacing: -.005em;
+    text-shadow: 3px 2px 0 rgba(179,50,31,.85);
+  }
+  .rule { border: 0; border-top: 3px double var(--ink); width: min(560px, 80%); margin: 34px auto; height: 0; }
+  .hero .sub { max-width: 58ch; margin: 0 auto; font-size: 18px; }
+  .search {
+    margin: 36px auto 0; max-width: 680px; display: flex; gap: 12px; align-items: stretch; position: relative;
+  }
+  .search label { position: absolute; left: -9999px; }
+  .search input {
+    flex: 1; min-width: 0; min-height: 52px; padding: 10px 4px;
+    background: transparent; border: 0; border-bottom: 2px solid var(--ink); border-radius: 0;
+    font: 400 italic 17px var(--body); color: var(--ink);
+  }
+  .search input::placeholder { color: var(--muted); }
+  .search input:focus-visible { outline: none; border-bottom-color: var(--red); box-shadow: 0 2px 0 var(--red); }
+  .search .btn { background: var(--red); border-color: var(--red); min-height: 52px; padding: 0 26px; }
+  .search .btn:hover { background: var(--ink); border-color: var(--ink); }
+  .hand { width: 56px; height: 28px; fill: var(--ink); flex: none; align-self: center; }
+  .popular { margin: 20px 0 0; font-size: 14px; color: var(--muted); }
+  .popular a { margin: 0 4px; padding: 4px 10px; border: 1px solid var(--muted); border-radius: 2px; text-decoration: none; color: var(--fg); display: inline-block; margin-top: 6px; }
+  .popular a:hover { border-color: var(--red); color: var(--red); }
+
+  .ledger { border-top: 3px double var(--ink); border-bottom: 3px double var(--ink); }
+  .ledger .wrap { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .ledger div { padding: 20px 12px; text-align: center; }
+  .ledger div + div { border-left: 1px solid var(--ink); }
+  .ledger b { display: block; font: 400 38px/1.1 var(--display); color: var(--ink); font-variant-numeric: tabular-nums; }
+  .ledger span { font-size: 14px; color: var(--muted); }
+
+  /* section headers: stacked bill lines */
+  section { padding: 84px 0; }
+  .stack { text-align: center; margin: 0 0 48px; }
+  .stack small { display: block; font: 500 15px var(--label); letter-spacing: .2em; color: var(--red); }
+  .stack h2 { margin: 6px 0 0; font: 400 clamp(36px, 5.5vw, 62px)/1.05 var(--display); color: var(--ink); }
+  .stack p { max-width: 54ch; margin: 14px auto 0; color: var(--muted); font-style: italic; }
+
+  .lot-tag {
+    display: inline-block; background: var(--ink); color: var(--hay);
+    font: 600 13px/1 var(--label); letter-spacing: .14em; padding: 6px 9px; border-radius: 1px;
+  }
+
+  .terms { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+  .terms article { padding: 30px 28px 34px; }
+  .terms article + article { border-left: 1px solid var(--ink); }
+  .terms h3 { font: 400 30px/1.15 var(--display); color: var(--ink); margin: 18px 0 12px; }
+  .terms p { margin: 0; font-size: 16px; }
+
+  .bidders { background: var(--hay-deep); border-top: 3px double var(--ink); border-bottom: 3px double var(--ink); }
+  .quotes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; }
+  .quotes figure { margin: 0; display: flex; flex-direction: column; }
+  .quotes blockquote { margin: 0 0 22px; font: 400 21px/1.5 var(--body); font-style: italic; color: var(--ink); }
+  .quotes blockquote::before { content: "\201C"; font-family: var(--display); color: var(--red); font-size: 64px; line-height: .6; display: block; margin-bottom: 8px; font-style: normal; }
+  .quotes figcaption { margin-top: auto; display: flex; gap: 14px; align-items: center; border-top: 1px solid var(--ink); padding-top: 16px; }
+  .quotes img, .quotes .initials { width: 64px; height: 64px; border-radius: 50%; flex: none; border: 2px solid var(--ink); object-fit: cover; }
+  .quotes .initials { display: grid; place-items: center; background: var(--green); color: var(--hay); font: 400 28px var(--display); }
+  .quotes .who { font-size: 14px; line-height: 1.5; }
+  .quotes .who b { display: block; font-size: 16px; color: var(--ink); }
+  .quotes .who span { color: var(--muted); }
+
+  .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 2px solid var(--ink); }
+  .tier { padding: 30px 28px 32px; position: relative; display: flex; flex-direction: column; }
+  .tier + .tier { border-left: 2px solid var(--ink); }
+  .tier.pick { background: var(--ink); color: var(--hay); }
+  .tier .lot-tag { align-self: flex-start; }
+  .tier.pick .lot-tag { background: var(--red); }
+  .tier h3 { font: 400 34px/1.1 var(--display); margin: 18px 0 4px; }
+  .tier .price { font: 600 22px var(--label); letter-spacing: .03em; color: var(--red); margin: 0 0 10px; font-variant-numeric: tabular-nums; }
+  .tier.pick .price { color: #E9A08F; }
+  .tier .tl { font-style: italic; font-size: 15px; margin: 0 0 18px; }
+  .tier ul { list-style: none; padding: 0; margin: 0 0 26px; font-size: 15px; }
+  .tier li { padding: 9px 0; border-top: 1px dotted currentColor; }
+  .tier .btn { margin-top: auto; }
+  .tier.pick .btn { background: var(--hay); color: var(--ink); border-color: var(--hay); }
+  .tier.pick .btn:hover { background: var(--red); color: var(--hay); border-color: var(--red); }
+  .tier .pointer { position: absolute; top: 26px; right: 22px; width: 46px; height: 23px; fill: var(--hay); transform: scaleX(-1); }
+
+  .closing { text-align: center; border-top: 3px double var(--ink); }
+  .closing h2 { font: 400 clamp(40px, 7vw, 84px)/1 var(--display); color: var(--ink); margin: 0 auto 18px; max-width: 14ch; }
+  .closing p { max-width: 50ch; margin: 0 auto 30px; }
+  .closing .row { display: flex; gap: 14px; justify-content: center; align-items: center; flex-wrap: wrap; }
+  .closing .btn { font-size: 18px; min-height: 56px; padding: 0 32px; background: var(--red); border-color: var(--red); }
+  .closing .btn:hover { background: var(--ink); border-color: var(--ink); }
+
+  footer { border-top: 3px double var(--ink); padding: 26px 0 40px; font-size: 13px; color: var(--muted); }
+  footer .wrap { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+  footer a { color: var(--ink); }
+
+  @media (max-width: 860px) {
+    .bar nav .hide-sm { display: none; }
+    .terms, .quotes, .tiers { grid-template-columns: 1fr; }
+    .terms article + article { border-left: 0; border-top: 1px solid var(--ink); }
+    .tier + .tier { border-left: 0; border-top: 2px solid var(--ink); }
+    .ledger .wrap { grid-template-columns: 1fr; }
+    .ledger div + div { border-left: 0; border-top: 1px solid var(--ink); }
+    .search { flex-wrap: wrap; }
+    .search .hand { display: none; }
+    .search input { flex-basis: 100%; }
+    .search .btn { flex: 1; }
+    section { padding: 64px 0; }
+  }
+</style>
+<title>Browse — eBay for goats</title>
+<meta name="description" content="Everything is edible. Some of it is also for sale. Browse is the peer-to-peer marketplace where goats list, bid on and immediately eat secondhand goods. 41,000 lots were consumed before their auctions closed last quarter. We count every one of those as a sale.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/ebay-for-goats/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Browse — eBay for goats">
+<meta property="og:description" content="Everything is edible. Some of it is also for sale. Browse is the peer-to-peer marketplace where goats list, bid on and immediately eat secondhand goods. 41,000 lots were consumed before their auctions closed last quarter. We count every one of those as a sale.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/ebay-for-goats/">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/ebay-for-goats/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Worst AI Studio Ever logo">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Browse — eBay for goats">
+<meta name="twitter:description" content="Everything is edible. Some of it is also for sale. Browse is the peer-to-peer marketplace where goats list, bid on and immediately eat secondhand goods. 41,000 lots were consumed before their auctions closed last quarter. We count every one of those as a sale.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/ebay-for-goats/social-preview.jpg">
+<meta name="twitter:image:alt" content="The Worst AI Studio Ever logo">
+</head>
+<body>
+<header class="bar">
+  <div class="wrap">
+    <a class="mark" href="#top" aria-label="Browse home">Browse<span>.</span></a>
+    <nav aria-label="Primary">
+      <a class="hide-sm" href="#terms">Terms of sale</a>
+      <a class="hide-sm" href="#bidders">Bidders</a>
+      <a class="hide-sm" href="#membership">Membership</a>
+      <a class="btn" href="./demo.html">open the demo →</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap hero">
+    <p class="order">BY ORDER OF THE HERD</p>
+    <h1>Everything is edible. Some of it is also for sale.</h1>
+    <hr class="rule">
+    <p class="sub">Browse is the peer-to-peer marketplace where goats list, bid on and immediately eat secondhand goods. 41,000 lots were consumed before their auctions closed last quarter. We count every one of those as a sale.</p>
+    <form class="search" action="./demo.html" method="get" role="search">
+      <svg class="hand" viewBox="0 0 64 32" aria-hidden="true"><path d="M1 7h11v18H1z"/><path d="M13 8c5-2 10-2 14-1h32c4 0 4 6 0 6H36v1.5h6c3.5 0 3.5 5 0 5h-6V21h4c3.5 0 3.5 5 0 5h-6c-1 1.5-4 2-8 2H13z"/></svg>
+      <label for="q">Search lots</label>
+      <input id="q" name="q" type="search" placeholder="Search 41,000 lots, most of them still intact" autocomplete="off">
+      <button class="btn" type="submit">Start browsing</button>
+    </form>
+    <p class="popular">Popular this week:
+      <a href="./demo.html">fence posts</a><a href="./demo.html">laundry</a><a href="./demo.html">a hat</a><a href="./demo.html">cardboard (wet)</a>
+    </p>
+  </div>
+
+  <div class="ledger" aria-label="Sale barn figures">
+    <div class="wrap">
+      <div><b>3,112</b><span>lots listed since breakfast</span></div>
+      <div><b>9%</b><span>of lots survive to the closing bell</span></div>
+      <div><b>2.1</b><span>average fence-post seller rating, unchanged</span></div>
+    </div>
+  </div>
+
+  <section id="terms">
+    <div class="wrap">
+      <div class="stack">
+        <small>CONDITIONS OF SALE</small>
+        <h2>How the barn runs</h2>
+        <p>Read aloud by the auctioneer before every sale. Nobody has listened yet.</p>
+      </div>
+      <div class="terms">
+        <article>
+          <span class="lot-tag">LOT 0001</span>
+          <h3>Chew Before You Buy</h3>
+          <p>Every lot comes with a 30-second sample window so bidders can assess quality by mouth. Most lots do not survive the sample window. The seller is notified and paid in sympathy.</p>
+        </article>
+        <article>
+          <span class="lot-tag">LOT 0002</span>
+          <h3>Headbutt to Bid</h3>
+          <p>Bids are placed by striking the device firmly with the forehead. One headbutt raises the bid by one mouthful. Our hardware partners have stopped returning our calls, which we read as confidence.</p>
+        </article>
+        <article>
+          <span class="lot-tag">LOT 0003</span>
+          <h3>Fence-Post Seller Ratings</h3>
+          <p>Sellers are scored out of five posts for honesty, shipping speed and whether the item arrived already partly eaten. The marketplace average is 2.1 posts and has been 2.1 posts since launch.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="bidders" class="bidders">
+    <div class="wrap">
+      <div class="stack">
+        <small>FROM THE BIDDING FLOOR</small>
+        <h2>Satisfied bidders</h2>
+      </div>
+      <div class="quotes">
+        <figure>
+          <blockquote>I won a wicker chair on Thursday. It was gone by Thursday. Five stars, would win again.</blockquote>
+          <figcaption>
+            <img src="headshot-1.webp" alt="Pepper Halvorsen, a brown and white Nigerian Dwarf goat, in a professional headshot" width="64" height="64" loading="lazy">
+            <div class="who"><b>Pepper Halvorsen</b><span>Head of Procurement, Halvorsen Family Hobby Farm (Nigerian Dwarf, age 4)</span></div>
+          </figcaption>
+        </figure>
+        <figure>
+          <blockquote>I listed my owner's car cover as gently used. By the time the buyer showed up, I had also used it. Browse issued the refund and did not ask a single question.</blockquote>
+          <figcaption>
+            <div class="initials" aria-hidden="true">D</div>
+            <div class="who"><b>Dolores</b><span>Top-Rated Reseller since spring, Lot Volume Leader for the Tri-County Paddock Region</span></div>
+          </figcaption>
+        </figure>
+        <figure>
+          <blockquote>We moved all fence procurement onto Browse in Q2. Fence spend is down 40 percent, mostly because we no longer have a fence.</blockquote>
+          <figcaption>
+            <img src="headshot-3.webp" alt="Gerald P. Whitcomb, a white Saanen goat with a short beard, in a boardroom portrait" width="64" height="64" loading="lazy">
+            <div class="who"><b>Gerald P. Whitcomb</b><span>VP of Perimeter Strategy, Whitcomb Dairy Goats LLC</span></div>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section id="membership">
+    <div class="wrap">
+      <div class="stack">
+        <small>MEMBERSHIP AT THE SALE BARN</small>
+        <h2>Pick a paddle</h2>
+        <p>Billed monthly. Paddles are non-refundable and, in our experience, non-recoverable.</p>
+      </div>
+      <div class="tiers">
+        <div class="tier">
+          <span class="lot-tag">PADDLE 01</span>
+          <h3>Kid</h3>
+          <p class="price">$0 / month</p>
+          <p class="tl">For goats under one year and their impulse control.</p>
+          <ul><li>Bid on up to 3 lots a day</li><li>Standard 30-second sample window</li><li>Listings from adjacent farms only</li></ul>
+          <a class="btn ghost" href="./demo.html">Take a paddle</a>
+        </div>
+        <div class="tier pick">
+          <svg class="pointer" viewBox="0 0 64 32" aria-hidden="true"><path d="M1 7h11v18H1z"/><path d="M13 8c5-2 10-2 14-1h32c4 0 4 6 0 6H36v1.5h6c3.5 0 3.5 5 0 5h-6V21h4c3.5 0 3.5 5 0 5h-6c-1 1.5-4 2-8 2H13z"/></svg>
+          <span class="lot-tag">PADDLE 02</span>
+          <h3>Nanny &amp; Billy</h3>
+          <p class="price">$14 / month</p>
+          <p class="tl">The household plan. One account, two goats, constant disputes.</p>
+          <ul><li>Unlimited headbutt bidding</li><li>Shared watchlist neither goat respects</li><li>Priority access to laundry-line listings</li></ul>
+          <a class="btn" href="./demo.html">Take two paddles</a>
+        </div>
+        <div class="tier">
+          <span class="lot-tag">PADDLE 03</span>
+          <h3>Herd Manager</h3>
+          <p class="price">$380 / month per herd</p>
+          <p class="tl">For operations of 12 or more goats and one exhausted human.</p>
+          <ul><li>Bulk bidding on fencing</li><li>A dedicated account goat</li><li>Annual on-site audit of what got eaten</li></ul>
+          <a class="btn ghost" href="./demo.html">Talk to the account goat</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="closing">
+    <div class="wrap">
+      <h2>The gavel falls at sundown.</h2>
+      <p>Today's lots include a garden hose, two left gloves and a tax return from 2019. One of those already has a bid.</p>
+      <div class="row">
+        <svg class="hand" viewBox="0 0 64 32" aria-hidden="true"><path d="M1 7h11v18H1z"/><path d="M13 8c5-2 10-2 14-1h32c4 0 4 6 0 6H36v1.5h6c3.5 0 3.5 5 0 5h-6V21h4c3.5 0 3.5 5 0 5h-6c-1 1.5-4 2-8 2H13z"/></svg>
+        <a class="btn" href="./demo.html">open the demo →</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a href="/">← theworstaistudioever</a>
+    <span>Browse Auction Co. is not liable for lots consumed during inspection. All sales final. Most sales digested.</span>
+  </div>
+</footer>
+</body>
+</html>

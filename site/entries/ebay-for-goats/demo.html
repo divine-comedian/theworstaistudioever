@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Oswald:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --hay: #F1E4C3;
+    --hay-deep: #E6D4A8;
+    --paper: #F8EFD9;
+    --red: #B3321F;
+    --green: #2F5A4F;
+    --fg: #2A2219;
+    --muted: #6F5F45;
+    --ink: #16120D;
+    --display: 'Abril Fatface', 'Didot', 'Bodoni 72', Georgia, serif;
+    --body: 'Merriweather', Georgia, 'Times New Roman', serif;
+    --label: 'Oswald', 'Arial Narrow', sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--hay); color: var(--fg); font: 400 15px/1.6 var(--body); -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+  .top { display: flex; align-items: center; gap: 18px; padding: 10px 20px; border-bottom: 3px double var(--ink); background: var(--hay); position: sticky; top: 0; z-index: 10; flex-wrap: wrap; }
+  .back { font: 500 14px var(--label); letter-spacing: .04em; text-decoration: none; color: var(--muted); }
+  .back:hover { color: var(--red); }
+  .mark { font: 400 26px/1 var(--display); color: var(--ink); }
+  .mark span { color: var(--red); }
+  .searchbox { flex: 1; min-width: 200px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid var(--ink); }
+  .searchbox label { font: 500 13px var(--label); letter-spacing: .06em; color: var(--muted); }
+  .searchbox input { flex: 1; min-width: 0; border: 0; background: transparent; padding: 10px 2px; font: italic 15px var(--body); color: var(--ink); }
+  .searchbox input:focus { outline: none; }
+  .searchbox:focus-within { border-bottom-color: var(--red); }
+  .watch-count { font: 500 14px var(--label); letter-spacing: .04em; white-space: nowrap; }
+  .watch-count b { font-variant-numeric: tabular-nums; color: var(--red); }
+
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 28px; padding: 24px 20px 60px; max-width: 1360px; margin: 0 auto; }
+  .head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
+  .head h1 { margin: 0; font: 400 clamp(30px, 4vw, 44px)/1.05 var(--display); color: var(--ink); }
+  .head p { margin: 4px 0 0; color: var(--muted); font-style: italic; font-size: 14px; }
+  .sort { font: 500 14px var(--label); display: flex; gap: 8px; align-items: center; }
+  .sort select { font: 500 14px var(--label); background: var(--paper); border: 1px solid var(--ink); border-radius: 2px; padding: 8px 10px; color: var(--ink); min-height: 40px; }
+
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 20px; padding: 12px 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+  .chip { min-height: 38px; padding: 6px 14px; border: 1px solid var(--ink); border-radius: 2px; background: transparent; font: 500 14px var(--label); letter-spacing: .04em; }
+  .chip:hover { background: var(--hay-deep); }
+  .chip[aria-pressed="true"] { background: var(--ink); color: var(--hay); }
+  .chip small { opacity: .7; margin-left: 4px; font-variant-numeric: tabular-nums; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 18px; }
+  .lot { background: var(--paper); border: 1px solid var(--ink); border-radius: 2px; display: flex; flex-direction: column; transition: transform .15s ease, box-shadow .15s ease; }
+  .lot:hover { transform: translateY(-2px); box-shadow: 0 2px 0 var(--ink); }
+  .lot.closed { opacity: .62; }
+  .lot.won { border: 2px solid var(--green); }
+  .photo { position: relative; aspect-ratio: 1 / 1; border-bottom: 1px solid var(--ink); background: var(--hay-deep); overflow: hidden; }
+  .photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .placeholder { width: 100%; height: 100%; display: grid; place-items: center; text-align: center; color: var(--muted); padding: 16px; }
+  .placeholder svg { width: 72px; height: 72px; stroke: var(--muted); fill: none; stroke-width: 2; display: block; margin: 0 auto 8px; }
+  .placeholder span { font-style: italic; font-size: 13px; }
+  .tag { position: absolute; left: 10px; top: 10px; background: var(--ink); color: var(--hay); font: 600 12px/1 var(--label); letter-spacing: .12em; padding: 6px 8px; border-radius: 1px; }
+  .heart { position: absolute; right: 8px; top: 8px; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--ink); background: var(--paper); display: grid; place-items: center; }
+  .heart svg { width: 20px; height: 20px; stroke: var(--ink); stroke-width: 2; fill: none; }
+  .heart[aria-pressed="true"] svg { fill: var(--red); stroke: var(--red); }
+  .body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .title { font: 700 15px/1.35 var(--body); color: var(--ink); margin: 0; }
+  .cond { align-self: flex-start; font: 500 12px var(--label); letter-spacing: .06em; padding: 3px 8px; border-radius: 2px; border: 1px solid currentColor; }
+  .cond.new { color: var(--green); }
+  .cond.wet { color: #3E5A78; }
+  .cond.eaten { color: var(--red); }
+  .cond.odd { color: var(--muted); }
+  .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .bid { font: 400 26px/1 var(--display); color: var(--ink); font-variant-numeric: tabular-nums; }
+  .bid small { font: 500 12px var(--body); color: var(--muted); }
+  .clock { font: 600 15px var(--label); font-variant-numeric: tabular-nums; letter-spacing: .04em; }
+  .clock.soon { color: var(--red); }
+  .meta { font-size: 12.5px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+  .posts { display: inline-flex; gap: 2px; vertical-align: middle; }
+  .posts i { width: 5px; height: 12px; background: var(--muted); opacity: .3; display: inline-block; }
+  .posts i.on { opacity: 1; background: var(--fg); }
+  .place { margin-top: auto; min-height: 44px; border: 2px solid var(--ink); background: var(--ink); color: var(--hay); border-radius: 2px; font: 600 15px var(--label); letter-spacing: .06em; }
+  .place:hover { background: var(--red); border-color: var(--red); }
+  .place:disabled { background: transparent; color: var(--muted); border-color: var(--muted); cursor: not-allowed; }
+  .lot.won .place:disabled { color: var(--green); border-color: var(--green); }
+  .empty { grid-column: 1 / -1; text-align: center; padding: 48px 16px; border: 1px dashed var(--ink); }
+  .empty h2 { font: 400 28px var(--display); margin: 0 0 6px; color: var(--ink); }
+
+  aside { position: sticky; top: 90px; align-self: start; border: 2px solid var(--ink); background: var(--paper); padding: 18px; }
+  aside h2 { font: 400 28px/1.1 var(--display); margin: 0; color: var(--ink); }
+  aside > p { margin: 4px 0 16px; font-size: 13px; color: var(--muted); font-style: italic; }
+  .stomach { padding: 12px 0; border-top: 1px solid var(--ink); }
+  .stomach .row { font: 500 14px var(--label); letter-spacing: .04em; }
+  .stomach .row span:last-child { font-variant-numeric: tabular-nums; color: var(--muted); }
+  .meter { height: 12px; border: 1px solid var(--ink); margin-top: 6px; overflow: hidden; background: var(--hay); }
+  .meter div { height: 100%; background: var(--green); transform-origin: left; transform: scaleX(0); transition: transform .4s cubic-bezier(.2,.8,.2,1); }
+  .stomach.full .meter div { background: var(--red); }
+  .stomach ul { list-style: none; margin: 6px 0 0; padding: 0; font-size: 12.5px; }
+  .stomach li::before { content: "Lot "; color: var(--muted); }
+  .total { border-top: 3px double var(--ink); padding-top: 12px; margin-top: 4px; font-size: 13px; }
+  .total b { font: 400 22px var(--display); color: var(--ink); }
+
+  .scrim { position: fixed; inset: 0; background: rgba(22,18,13,.55); display: none; align-items: center; justify-content: center; z-index: 50; padding: 16px; }
+  .scrim.open { display: flex; }
+  .modal { background: var(--paper); border: 2px solid var(--ink); border-radius: 2px; width: min(440px, 100%); padding: 22px 24px 24px; animation: rise .2s ease-out; }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .modal.shake { animation: shake .3s linear; }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-10px) rotate(-1deg); } 40% { transform: translateX(9px) rotate(1deg); } 60% { transform: translateX(-6px); } 80% { transform: translateX(4px); } }
+  .modal h2 { font: 400 26px/1.15 var(--display); margin: 8px 0 4px; color: var(--ink); }
+  .modal .sub { color: var(--muted); font-size: 13px; margin: 0 0 18px; }
+  .stepper { display: flex; align-items: center; border: 2px solid var(--ink); border-radius: 2px; }
+  .stepper button { width: 52px; height: 52px; border: 0; background: var(--hay-deep); font: 400 26px var(--display); }
+  .stepper button:hover { background: var(--ink); color: var(--hay); }
+  .stepper output { flex: 1; text-align: center; font: 400 30px var(--display); font-variant-numeric: tabular-nums; color: var(--ink); }
+  .stepper output small { font: 13px var(--body); color: var(--muted); }
+  .help { font-size: 12.5px; color: var(--muted); margin: 8px 0 18px; }
+  .actions { display: flex; gap: 10px; }
+  .actions button { flex: 1; min-height: 48px; border: 2px solid var(--ink); border-radius: 2px; font: 600 15px var(--label); letter-spacing: .05em; background: transparent; }
+  .actions .go { background: var(--red); border-color: var(--red); color: var(--hay); }
+  .actions .go:hover { background: var(--ink); border-color: var(--ink); }
+
+  .toast { position: fixed; left: 50%; bottom: 22px; transform: translate(-50%, 120px); background: var(--ink); color: var(--hay); padding: 12px 18px; border-radius: 2px; max-width: min(520px, 92vw); font-size: 14px; transition: transform .25s ease, visibility 0s linear .25s; z-index: 60; visibility: hidden; }
+  .toast.show { transform: translate(-50%, 0); visibility: visible; transition: transform .25s ease; }
+
+  @media (max-width: 920px) {
+    .layout { grid-template-columns: 1fr; }
+    aside { position: static; order: -1; }
+  }
+</style>
+<title>Browse — eBay for goats — Demo</title>
+<meta name="description" content="Everything is edible. Some of it is also for sale. Browse is the peer-to-peer marketplace where goats list, bid on and immediately eat secondhand goods. 41,000 lots were consumed before their auctions closed last quarter. We count every one of those as a sale.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/ebay-for-goats/demo.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Browse — eBay for goats — Demo">
+<meta property="og:description" content="Everything is edible. Some of it is also for sale. Browse is the peer-to-peer marketplace where goats list, bid on and immediately eat secondhand goods. 41,000 lots were consumed before their auctions closed last quarter. We count every one of those as a sale.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/ebay-for-goats/demo.html">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/ebay-for-goats/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Worst AI Studio Ever logo">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Browse — eBay for goats — Demo">
+<meta name="twitter:description" content="Everything is edible. Some of it is also for sale. Browse is the peer-to-peer marketplace where goats list, bid on and immediately eat secondhand goods. 41,000 lots were consumed before their auctions closed last quarter. We count every one of those as a sale.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/ebay-for-goats/social-preview.jpg">
+<meta name="twitter:image:alt" content="The Worst AI Studio Ever logo">
+</head>
+<body>
+<header class="top">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="mark">Browse<span>.</span></span>
+  <div class="searchbox">
+    <label for="find">Find</label>
+    <input id="find" type="search" placeholder="hose, gloves, the 2019 tax return" autocomplete="off">
+  </div>
+  <span class="watch-count">Watching <b id="watchN">0</b></span>
+</header>
+
+<div class="layout">
+  <main>
+    <div class="head">
+      <div>
+        <h1>Ending soon in your paddock</h1>
+        <p>Bids in mouthfuls. Sample windows are monitored loosely.</p>
+      </div>
+      <label class="sort">Sort
+        <select id="sort">
+          <option value="time">Ending soonest</option>
+          <option value="bid">Highest bid</option>
+          <option value="posts">Best seller rating</option>
+        </select>
+      </label>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="Filter by category"></div>
+    <div class="grid" id="grid" aria-live="polite"></div>
+  </main>
+
+  <aside aria-labelledby="stomachs-h">
+    <h2 id="stomachs-h">Your Stomachs</h2>
+    <p>Won lots are routed to the next compartment with room. Checkout is automatic and internal.</p>
+    <div id="stomachs"></div>
+    <div class="total">Total spent: <b id="spent">0</b> mouthfuls</div>
+  </aside>
+</div>
+
+<div class="scrim" id="scrim">
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="m-title">
+    <span class="tag" style="position:static" id="m-lot">LOT</span>
+    <h2 id="m-title">Place a bid</h2>
+    <p class="sub" id="m-sub"></p>
+    <div class="stepper">
+      <button type="button" id="minus" aria-label="Lower bid by one mouthful">−</button>
+      <output id="amt" aria-live="polite">0</output>
+      <button type="button" id="plus" aria-label="Raise bid by one mouthful">+</button>
+    </div>
+    <p class="help" id="m-help">Minimum bid is one mouthful over the current bid.</p>
+    <div class="actions">
+      <button type="button" id="cancel">Back away slowly</button>
+      <button type="button" class="go" id="confirm">Headbutt to confirm</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function () {
+  var lots = [
+    { id: '0417', t: 'Wicker armchair, one armrest reduced', cat: 'Furniture', cond: ['Partially Eaten', 'eaten'], bid: 14, bids: 9, secs: 74, seller: 'pepper_halvorsen', posts: 4, img: 'lot-chair.webp', alt: 'A wicker armchair with a chewed armrest' },
+    { id: '0418', t: 'Cardboard box, single, lightly rained on', cat: 'Cardboard', cond: ['Lightly Rained On', 'wet'], bid: 6, bids: 22, secs: 41, seller: 'dolores', posts: 3, img: 'lot-box.webp', alt: 'A damp cardboard box with a chewed corner on a fence rail' },
+    { id: '0419', t: 'Split-rail fence post, 6 ft, still in the ground', cat: 'Fencing', cond: ['Like New', 'new'], bid: 31, bids: 14, secs: 230, seller: 'whitcomb_dairy', posts: 2, glyph: 'post' },
+    { id: '0420', t: 'Bedsheet, fitted, currently on the line', cat: 'Laundry', cond: ['Like New', 'new'], bid: 9, bids: 6, secs: 118, seller: 'the_nubian', posts: 1, glyph: 'sheet' },
+    { id: '0421', t: '2019 tax return, signed, page 3 missing', cat: 'Paperwork', cond: ['Partially Eaten', 'eaten'], bid: 3, bids: 2, secs: 512, seller: 'dolores', posts: 3, glyph: 'paper' },
+    { id: '0422', t: 'Straw sun hat, owner still nearby', cat: 'Hats', cond: ['Like New', 'new'], bid: 19, bids: 11, secs: 59, seller: 'billy_g', posts: 2, glyph: 'hat' },
+    { id: '0423', t: 'Garden hose, 50 ft, kinked at 22 ft', cat: 'Unclear', cond: ['Lightly Rained On', 'wet'], bid: 12, bids: 4, secs: 305, seller: 'pepper_halvorsen', posts: 4, glyph: 'hose' },
+    { id: '0424', t: 'Two left gloves, sold as a pair', cat: 'Laundry', cond: ['Partially Eaten', 'eaten'], bid: 4, bids: 3, secs: 167, seller: 'the_nubian', posts: 1, glyph: 'glove' },
+    { id: '0425', t: 'Chain-link panel, 8 ft, bent by previous bidder', cat: 'Fencing', cond: ['Partially Eaten', 'eaten'], bid: 27, bids: 18, secs: 96, seller: 'whitcomb_dairy', posts: 2, glyph: 'post' },
+    { id: '0426', t: "Farmer's almanac, 1998, predictions unverified", cat: 'Paperwork', cond: ['Lightly Rained On', 'wet'], bid: 5, bids: 1, secs: 420, seller: 'billy_g', posts: 2, glyph: 'paper' },
+    { id: '0427', t: 'Something blue, found behind the shed', cat: 'Unclear', cond: ['Unidentified', 'odd'], bid: 2, bids: 0, secs: 640, seller: 'anonymous_kid', posts: 0, glyph: 'odd' }
+  ];
+  var glyphs = {
+    post: '<path d="M30 10l6-6 6 6v54H30z"/><path d="M14 26h44M14 46h44"/>',
+    sheet: '<path d="M6 14h60"/><path d="M14 14v40c8 4 14-4 22 0s14-4 22 0V14"/><circle cx="20" cy="14" r="3"/><circle cx="52" cy="14" r="3"/>',
+    paper: '<path d="M18 6h28l12 12v48H18z"/><path d="M46 6v12h12M26 30h24M26 40h24M26 50h14"/>',
+    hat: '<ellipse cx="36" cy="48" rx="30" ry="8"/><path d="M20 46c0-20 6-28 16-28s16 8 16 28"/><path d="M21 38h30"/>',
+    hose: '<circle cx="36" cy="38" r="22"/><circle cx="36" cy="38" r="12"/><path d="M58 38h8v14"/>',
+    glove: '<path d="M22 64V34l-6-10 4-2 8 8V10h6v20-24h6v24-20h6v22-16h6v32c0 12-6 24-14 24z"/>',
+    odd: '<path d="M26 26c0-8 4-12 10-12s10 4 10 10c0 8-10 8-10 16"/><circle cx="36" cy="54" r="2"/>'
+  };
+  var cats = ['All', 'Fencing', 'Laundry', 'Paperwork', 'Hats', 'Cardboard', 'Furniture', 'Unclear'];
+  var stomachs = [
+    { n: 'Rumen', cap: 4, items: [] },
+    { n: 'Reticulum', cap: 2, items: [] },
+    { n: 'Omasum', cap: 2, items: [] },
+    { n: 'Abomasum', cap: 1, items: [] }
+  ];
+  var state = { cat: 'All', q: '', sort: 'time', watch: new Set(), won: new Set(), spent: 0 };
+  var grid = document.getElementById('grid');
+  var chips = document.getElementById('chips');
+
+  function fmt(s) {
+    if (s <= 0) return 'Closed';
+    var m = Math.floor(s / 60), r = s % 60;
+    return m + 'm ' + (r < 10 ? '0' : '') + r + 's';
+  }
+  function postsHtml(n) {
+    var h = '<span class="posts" aria-label="' + n + ' of 5 fence posts">';
+    for (var i = 0; i < 5; i++) h += '<i class="' + (i < n ? 'on' : '') + '"></i>';
+    return h + '</span>';
+  }
+  function photo(l) {
+    if (l.img) return "<img src='" + l.img + "' alt='" + l.alt + "' width='800' height='800' loading='lazy'>";
+    return '<div class="placeholder"><div><svg viewBox="0 0 72 72" aria-hidden="true">' + glyphs[l.glyph] + '</svg><span>Photo eaten by the photographer</span></div></div>';
+  }
+
+  function renderChips() {
+    chips.innerHTML = cats.map(function (c) {
+      var n = c === 'All' ? lots.length : lots.filter(function (l) { return l.cat === c; }).length;
+      return '<button class="chip" type="button" data-cat="' + c + '" aria-pressed="' + (state.cat === c) + '">' + c + '<small>' + n + '</small></button>';
+    }).join('');
+  }
+
+  function visible() {
+    var q = state.q.trim().toLowerCase();
+    var v = lots.filter(function (l) {
+      return (state.cat === 'All' || l.cat === state.cat) && (!q || (l.t + ' ' + l.cat + ' ' + l.seller).toLowerCase().indexOf(q) !== -1);
+    });
+    v.sort(function (a, b) {
+      if (state.sort === 'bid') return b.bid - a.bid;
+      if (state.sort === 'posts') return b.posts - a.posts;
+      var as = a.secs > 0 ? a.secs : 1e9, bs = b.secs > 0 ? b.secs : 1e9;
+      return as - bs;
+    });
+    return v;
+  }
+
+  function renderGrid() {
+    var v = visible();
+    if (!v.length) {
+      grid.innerHTML = '<div class="empty"><h2>Nothing left in this aisle.</h2><p>Either nobody listed it or somebody already ate it. Clear the search or pick another category.</p></div>';
+      return;
+    }
+    grid.innerHTML = v.map(function (l) {
+      var won = state.won.has(l.id), closed = l.secs <= 0;
+      var label = won ? 'Won. Eaten.' : closed ? 'Closed. Eaten by someone.' : 'Place bid';
+      return '<article class="lot' + (closed ? ' closed' : '') + (won ? ' won' : '') + '" data-id="' + l.id + '">' +
+        '<div class="photo">' + photo(l) + '<span class="tag">LOT ' + l.id + '</span>' +
+        '<button class="heart" type="button" data-watch="' + l.id + '" aria-pressed="' + state.watch.has(l.id) + '" aria-label="Watch lot ' + l.id + '"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.5-7 10-7 10z"/></svg></button></div>' +
+        '<div class="body"><h3 class="title">' + l.t + '</h3>' +
+        '<span class="cond ' + l.cond[1] + '">' + l.cond[0] + '</span>' +
+        '<div class="row"><span class="bid">' + l.bid + ' <small>mouthfuls</small></span><span class="clock' + (l.secs > 0 && l.secs < 90 ? ' soon' : '') + '" data-clock="' + l.id + '">' + fmt(l.secs) + '</span></div>' +
+        '<div class="meta"><span>' + l.bids + ' bids</span><span>' + l.seller + ' ' + postsHtml(l.posts) + '</span></div>' +
+        '<button class="place" type="button" data-bid="' + l.id + '"' + (closed || won ? ' disabled' : '') + '>' + label + '</button></div></article>';
+    }).join('');
+  }
+
+  function renderStomachs() {
+    document.getElementById('stomachs').innerHTML = stomachs.map(function (s) {
+      var pct = s.items.length / s.cap;
+      return '<div class="stomach' + (pct >= 1 ? ' full' : '') + '"><div class="row"><span>' + s.n + '</span><span>' + s.items.length + ' / ' + s.cap + ' lots</span></div>' +
+        '<div class="meter" role="meter" aria-valuemin="0" aria-valuemax="' + s.cap + '" aria-valuenow="' + s.items.length + '" aria-label="' + s.n + ' capacity"><div style="transform:scaleX(' + pct + ')"></div></div>' +
+        (s.items.length ? '<ul>' + s.items.map(function (i) { return '<li>' + i + '</li>'; }).join('') + '</ul>' : '') + '</div>';
+    }).join('');
+    document.getElementById('spent').textContent = state.spent;
+  }
+
+  function find(id) { return lots.filter(function (l) { return l.id === id; })[0]; }
+
+  var toastEl = document.getElementById('toast'), toastT;
+  function toast(msg) {
+    toastEl.textContent = msg; toastEl.classList.add('show');
+    clearTimeout(toastT); toastT = setTimeout(function () { toastEl.classList.remove('show'); }, 4000);
+  }
+
+  // modal
+  var scrim = document.getElementById('scrim'), modal = document.getElementById('modal');
+  var amtEl = document.getElementById('amt'), current = null, amount = 0, lastFocus = null;
+  function setAmt(n) { amount = Math.max(current.bid + 1, n); amtEl.innerHTML = amount + ' <small>mouthfuls</small>'; }
+  function openBid(id) {
+    current = find(id); lastFocus = document.activeElement;
+    document.getElementById('m-lot').textContent = 'LOT ' + current.id;
+    document.getElementById('m-title').textContent = current.t;
+    document.getElementById('m-sub').textContent = 'Current bid ' + current.bid + ' mouthfuls from ' + current.bids + ' bidders. Closes in ' + fmt(current.secs) + '.';
+    setAmt(current.bid + 1);
+    scrim.classList.add('open');
+    document.getElementById('confirm').focus();
+  }
+  function closeBid() { scrim.classList.remove('open'); modal.classList.remove('shake'); current = null; if (lastFocus) lastFocus.focus(); }
+  document.getElementById('minus').onclick = function () { setAmt(amount - 1); };
+  document.getElementById('plus').onclick = function () { setAmt(amount + 1); };
+  document.getElementById('cancel').onclick = closeBid;
+  scrim.addEventListener('click', function (e) { if (e.target === scrim) closeBid(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && current) closeBid(); });
+  document.getElementById('confirm').onclick = function () {
+    if (!current) return;
+    modal.classList.remove('shake'); void modal.offsetWidth; modal.classList.add('shake');
+    var lot = current, paid = amount;
+    setTimeout(function () {
+      lot.bid = paid; lot.bids += 1;
+      var slot = stomachs.filter(function (s) { return s.items.length < s.cap; })[0];
+      if (!slot) {
+        closeBid(); renderGrid();
+        toast('Bid recorded. All four stomachs are at capacity, so lot ' + lot.id + ' is being held in your mouth.');
+        return;
+      }
+      state.won.add(lot.id); state.spent += paid;
+      slot.items.push(lot.id + ', ' + lot.t.split(',')[0].toLowerCase());
+      closeBid(); renderGrid(); renderStomachs();
+      toast('You are the high bidder on lot ' + lot.id + '. It was eaten during confirmation. Routed to ' + slot.n + '.');
+    }, 320);
+  };
+
+  // events
+  chips.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-cat]'); if (!b) return;
+    state.cat = b.getAttribute('data-cat'); renderChips(); renderGrid();
+  });
+  document.getElementById('find').addEventListener('input', function (e) { state.q = e.target.value; renderGrid(); });
+  document.getElementById('sort').addEventListener('change', function (e) { state.sort = e.target.value; renderGrid(); });
+  grid.addEventListener('click', function (e) {
+    var w = e.target.closest('[data-watch]');
+    if (w) {
+      var id = w.getAttribute('data-watch');
+      if (state.watch.has(id)) state.watch.delete(id); else state.watch.add(id);
+      w.setAttribute('aria-pressed', state.watch.has(id));
+      document.getElementById('watchN').textContent = state.watch.size;
+      return;
+    }
+    var b = e.target.closest('[data-bid]');
+    if (b && !b.disabled) openBid(b.getAttribute('data-bid'));
+  });
+
+  // the clock: tick in place, re-render only when a lot closes
+  setInterval(function () {
+    var closedOne = false;
+    lots.forEach(function (l) {
+      if (l.secs <= 0) return;
+      l.secs -= 1;
+      if (l.secs === 0) closedOne = true;
+      var c = grid.querySelector('[data-clock="' + l.id + '"]');
+      if (c) { c.textContent = fmt(l.secs); c.classList.toggle('soon', l.secs > 0 && l.secs < 90); }
+    });
+    if (closedOne) renderGrid();
+  }, 1000);
+
+  var q = new URLSearchParams(location.search).get('q');
+  if (q) { state.q = q; document.getElementById('find').value = q; }
+  renderChips(); renderGrid(); renderStomachs();
+})();
+</script>
+</body>
+</html>
