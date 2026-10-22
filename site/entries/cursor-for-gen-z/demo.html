@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Space+Grotesk:wght@400;500;600&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#5B4BFF; --accent:#FF3FA4; --bg:#EFEBFB; --fg:#1C1733; --muted:#6A6488; --ink:#130F26;
+  --surface:#FFFFFF; --editor:#17142B; --editor-2:#211D3A; --rail:#100E1F; --edge:#2A2647; --ghost:#6E6894; --soft:#9994B8; --txt:#E7E4F6;
+  --mint:#6EE7C8; --lav:#9C8CFF; --amber:#FFB86B; --chrome:#C9C6DD; --line:#DAD5EE;
+  --display:'Syne','Avenir Next',-apple-system,BlinkMacSystemFont,sans-serif;
+  --body:'Space Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'Space Mono','SFMono-Regular',Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;-webkit-font-smoothing:antialiased}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--lav);outline-offset:2px;border-radius:6px}
+.app{display:grid;grid-template-rows:auto 1fr auto;height:100dvh;min-height:560px;padding:12px;gap:10px}
+
+/* top chrome */
+.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:4px 6px}
+.back{font-size:14px;color:var(--muted);text-decoration:none;min-height:36px;display:inline-flex;align-items:center}
+.back:hover{color:var(--primary)}
+.brand{font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.02em;color:var(--ink);margin-right:auto}
+.ctl{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.ctl select{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 12px;font-family:var(--mono);font-size:12px;color:var(--ink);min-height:36px}
+.ctl input[type=range]{accent-color:var(--primary);width:120px}
+.ctl output{font-family:var(--mono);font-size:12px;color:var(--ink);width:2.6em}
+.agent-btn{background:var(--primary);color:#fff;border:0;border-radius:999px;padding:0 18px;min-height:38px;font-weight:600;display:inline-flex;align-items:center;gap:8px}
+.agent-btn:hover{background:#4a3af0}
+.agent-btn svg{width:16px;height:16px}
+
+/* editor window */
+.win{display:grid;grid-template-columns:220px 1fr 300px;background:var(--editor);border-radius:10px;overflow:hidden;color:var(--txt);box-shadow:0 30px 60px rgba(19,15,38,.25);min-height:0}
+.pane-h{font-family:var(--mono);font-size:11px;color:var(--soft);padding:12px 16px 8px;letter-spacing:.02em}
+.explorer{background:var(--rail);border-right:1px solid var(--edge);overflow:auto}
+.search{margin:0 12px 10px;position:relative}
+.search input{width:100%;background:var(--editor);border:1px solid var(--edge);border-radius:6px;padding:7px 10px;font-family:var(--mono);font-size:12px;color:var(--txt)}
+.search input::placeholder{color:var(--ghost)}
+.files{list-style:none}
+.files button{width:100%;text-align:left;background:none;border:0;padding:8px 16px;font-family:var(--mono);font-size:12.5px;color:var(--soft);display:flex;align-items:center;gap:8px;min-height:36px}
+.files button:hover{background:#1A1730;color:var(--txt)}
+.files button[aria-current=true]{background:#2A2550;color:#fff}
+.files .badge{margin-left:auto;font-size:10px;background:var(--accent);color:#fff;border-radius:999px;padding:1px 7px}
+.files .u{width:7px;height:7px;border-radius:50%;background:var(--accent);margin-left:auto}
+.files svg{width:14px;height:14px;flex:none;opacity:.7}
+.empty{padding:10px 16px;font-family:var(--mono);font-size:12px;color:var(--ghost)}
+
+.center{display:grid;grid-template-rows:auto 1fr auto;min-width:0;min-height:0}
+.tabs{display:flex;background:var(--rail);border-bottom:1px solid var(--edge);overflow-x:auto}
+.tab{font-family:var(--mono);font-size:12px;padding:10px 16px;color:var(--soft);border-right:1px solid var(--edge);white-space:nowrap}
+.tab.on{background:var(--editor);color:#fff;box-shadow:inset 0 2px 0 var(--accent)}
+.code{overflow:auto;padding:14px 0;font-family:var(--mono);font-size:13.5px;line-height:1.9}
+.ln{display:grid;grid-template-columns:52px 1fr;padding-right:18px}
+.ln .n{color:#4D4874;text-align:right;padding-right:18px;user-select:none}
+.ln.new{animation:flash 1.2s ease-out}
+@keyframes flash{from{background:rgba(110,231,200,.16)}to{background:transparent}}
+.who{color:var(--lav)}.who.c1{color:var(--amber)}.who.c2{color:#7FD1FF}.who.me{color:var(--mint)}
+.cmt{color:#5E5987;font-style:italic}
+.sq{text-decoration:underline wavy var(--accent);text-decoration-thickness:1.5px;text-underline-offset:4px;text-decoration-skip-ink:none}
+.ln.cur{background:var(--editor-2)}
+.caret{display:inline-block;width:2px;height:1.1em;background:#fff;vertical-align:-.2em;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.gtxt{color:var(--ghost);font-style:italic}
+.kbd{display:inline-flex;align-items:center;font-family:var(--mono);font-size:10px;font-weight:700;padding:2px 6px 3px;border-radius:4px;background:linear-gradient(#fff,#E6E2F5);color:var(--ink);border:1px solid #BEB8D8;box-shadow:0 2px 0 #BEB8D8;margin-left:8px;vertical-align:1px;font-style:normal}
+.alt{font-size:11px;color:var(--ghost);margin-left:8px}
+.typing{color:var(--ghost)}
+
+.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 14px;border-top:1px solid var(--edge);background:var(--rail)}
+.act{background:var(--editor-2);border:1px solid var(--edge);border-radius:999px;padding:0 14px;min-height:36px;font-size:13px;color:var(--txt);display:inline-flex;align-items:center;gap:6px}
+.act:hover{border-color:var(--lav)}
+.act.go{background:var(--mint);color:var(--editor);border-color:var(--mint);font-weight:600}
+.hint{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--ghost)}
+
+.problems{border-left:1px solid var(--edge);background:var(--rail);overflow:auto;display:flex;flex-direction:column}
+.pcount{display:inline-block;margin-left:6px;background:var(--accent);color:#fff;border-radius:999px;padding:0 7px;font-size:10px}
+.prob{padding:12px 16px;border-bottom:1px solid var(--edge);display:grid;grid-template-columns:18px 1fr;gap:10px}
+.prob .ic{width:16px;height:16px;margin-top:3px;border-radius:50%;border:2px solid var(--accent);position:relative}
+.prob .ic::after{content:"";position:absolute;left:5px;top:2px;width:2px;height:6px;background:var(--accent)}
+.prob.ok .ic{border-color:var(--mint)}.prob.ok .ic::after{background:var(--mint);height:2px;top:5px;width:6px;left:3px}
+.prob b{font-weight:500;font-size:13.5px;display:block;color:#fff}
+.prob small{font-family:var(--mono);font-size:11px;color:var(--soft);display:block;margin-top:2px}
+.prob .fix{margin-top:8px;background:none;border:1px solid var(--edge);color:var(--mint);border-radius:999px;font-family:var(--mono);font-size:11px;padding:4px 10px}
+.prob .fix:hover{border-color:var(--mint)}
+.prob.ok b{color:var(--soft);text-decoration:line-through}
+.clean{padding:16px;font-family:var(--mono);font-size:12px;color:var(--mint)}
+.stats{margin-top:auto;padding:14px 16px;border-top:1px solid var(--edge);font-family:var(--mono);font-size:11px;color:var(--soft);display:grid;gap:4px}
+.stats span{color:#fff}
+
+.status{display:flex;gap:18px;align-items:center;font-family:var(--mono);font-size:11px;color:var(--muted);padding:0 6px;flex-wrap:wrap}
+.status .live::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#2fbf8f;margin-right:6px}
+
+/* modal */
+.scrim{position:fixed;inset:0;background:rgba(19,15,38,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
+.scrim.open{display:flex}
+.modal{background:var(--surface);border-radius:18px;width:min(560px,100%);padding:28px;box-shadow:0 40px 80px rgba(19,15,38,.4);animation:pop .2s ease-out}
+@keyframes pop{from{transform:scale(.96);opacity:0}}
+.modal h2{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:-.02em;color:var(--ink)}
+.modal p{color:var(--muted);margin-top:6px;font-size:14px}
+.modal label{display:block;font-size:13px;font-weight:600;margin:18px 0 6px;color:var(--ink)}
+.goal-row{display:flex;gap:8px}
+.goal-row input{flex:1;border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px;background:var(--bg)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:12.5px}
+.chip:hover{border-color:var(--primary);color:var(--primary)}
+.log{margin-top:18px;background:var(--editor);color:var(--txt);border-radius:10px;padding:14px 16px;font-family:var(--mono);font-size:12.5px;line-height:1.8;min-height:150px;max-height:260px;overflow:auto}
+.log .k{color:var(--lav)}.log .d{color:#FF8FB8;text-decoration:line-through}.log .a{color:var(--mint)}.log .c{color:var(--ghost)}
+.mfoot{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.mbtn{border-radius:999px;min-height:42px;padding:0 18px;border:1px solid var(--line);background:var(--surface);font-weight:600}
+.mbtn.p{background:var(--primary);border-color:var(--primary);color:#fff}
+.mbtn:disabled{opacity:.45;cursor:not-allowed}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--ink);color:#fff;border-radius:999px;padding:10px 18px;font-size:13.5px;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;z-index:60}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:1020px){.win{grid-template-columns:190px 1fr}.problems{display:none}}
+@media (max-width:700px){
+  .app{padding:8px}
+  .win{grid-template-columns:1fr}
+  .explorer{display:none}
+  .ctl.temp{display:none}
+  .hint{display:none}
+  .code{font-size:12.5px}
+  .ln{grid-template-columns:34px 1fr}.ln .n{padding-right:10px}
+  .mobile-files{display:flex!important}
+}
+.mobile-files{display:none;gap:6px;overflow-x:auto;padding:8px 10px;background:var(--rail);border-bottom:1px solid var(--edge)}
+.mobile-files button{flex:none;background:var(--editor-2);border:1px solid var(--edge);border-radius:999px;padding:6px 12px;font-family:var(--mono);font-size:11.5px;color:var(--soft)}
+.mobile-files button[aria-current=true]{color:#fff;border-color:var(--lav)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+<title>Lowkey — Cursor for gen z — Demo</title>
+<meta name="description" content="Your group chat, now with autocomplete. Lowkey reads the last 40 messages, predicts what you were about to say, and says it in a tone you were never going to manage on your own. Press Tab. Go back to sleep.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/cursor-for-gen-z/demo.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Lowkey — Cursor for gen z — Demo">
+<meta property="og:description" content="Your group chat, now with autocomplete. Lowkey reads the last 40 messages, predicts what you were about to say, and says it in a tone you were never going to manage on your own. Press Tab. Go back to sleep.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/cursor-for-gen-z/demo.html">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/cursor-for-gen-z/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Worst AI Studio Ever logo">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Lowkey — Cursor for gen z — Demo">
+<meta name="twitter:description" content="Your group chat, now with autocomplete. Lowkey reads the last 40 messages, predicts what you were about to say, and says it in a tone you were never going to manage on your own. Press Tab. Go back to sleep.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/cursor-for-gen-z/social-preview.jpg">
+<meta name="twitter:image:alt" content="The Worst AI Studio Ever logo">
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <span class="brand">lowkey</span>
+    <label class="ctl">model
+      <select id="model">
+        <option value="unbothered">lowkey-unbothered</option>
+        <option value="chaos">lowkey-chaos</option>
+        <option value="mum">lowkey-mum-safe</option>
+      </select>
+    </label>
+    <label class="ctl temp">rizz temperature
+      <input type="range" id="temp" min="0" max="2" step="0.1" value="0.7">
+      <output id="tempOut">0.7</output>
+    </label>
+    <button class="agent-btn" id="openAgent" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>Agent</button>
+  </header>
+
+  <div class="win">
+    <aside class="explorer" aria-label="Chats">
+      <div class="pane-h">EXPLORER</div>
+      <div class="search"><input id="search" type="search" placeholder="search chats" aria-label="Search chats"></div>
+      <ul class="files" id="files"></ul>
+    </aside>
+
+    <section class="center" aria-label="Editor">
+      <div>
+        <div class="tabs" id="tabs"></div>
+        <div class="mobile-files" id="mfiles"></div>
+      </div>
+      <div class="code" id="code" tabindex="0" aria-live="polite"></div>
+      <div class="actions">
+        <button class="act go" id="accept" type="button">Accept <span class="kbd" style="margin-left:2px">Tab</span></button>
+        <button class="act" id="cycle" type="button">Next suggestion <span class="kbd" style="margin-left:2px">Alt ]</span></button>
+        <button class="act" id="reject" type="button">Reject <span class="kbd" style="margin-left:2px">Esc</span></button>
+        <span class="hint" id="hint">suggestion 1 of 3</span>
+      </div>
+    </section>
+
+    <aside class="problems" aria-label="Problems">
+      <div class="pane-h">PROBLEMS <span class="pcount" id="pcount">0</span></div>
+      <div id="plist"></div>
+      <div class="stats">
+        <div>messages typed by you: <span id="typed">0</span></div>
+        <div>messages typed by lowkey: <span id="auto">0</span></div>
+        <div>personality retained: <span id="pers">14%</span></div>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="status">
+    <span class="live">lowkey-unbothered online</span>
+    <span id="stLine">the-council.chat</span>
+    <span>UTF-8</span>
+    <span>tone: <span id="stTone">neutral-bored</span></span>
+    <span>last human keystroke: March</span>
+  </footer>
+</div>
+
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="agentTitle">
+  <div class="modal">
+    <h2 id="agentTitle">Agent mode</h2>
+    <p>Describe a social outcome. Lowkey will open the chats it needs and propose a diff for you to approve.</p>
+    <label for="goal">Goal</label>
+    <div class="goal-row"><input id="goal" value="get out of brunch, keep friendship"></div>
+    <div class="chips">
+      <button class="chip" type="button">get out of brunch, keep friendship</button>
+      <button class="chip" type="button">ask mum for money without asking</button>
+      <button class="chip" type="button">reply to situationship, appear busy</button>
+    </div>
+    <div class="log" id="log"><span class="c">// waiting for a goal</span></div>
+    <div class="mfoot">
+      <button class="mbtn" id="closeAgent" type="button">Close</button>
+      <button class="mbtn p" id="runAgent" type="button">Run agent</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+var chats=[
+ {id:'council',file:'the-council.chat',unread:3,names:['jade','marcus','ryan'],lines:[
+  ['jade','is anyone actually coming sat'],
+  ['marcus','depends who else is coming'],
+  ['jade','marcus that is a circular dependency'],
+  ['ryan','I can bring a board game.'],
+  ['#','2 people left ryan on read. ryan unaware.'],
+  ['marcus','what game']],
+  sugg:{unbothered:["ryan pls. i'm in if the game is leaving","sat works. game does not","ill come for 1 hour and leave during the rules"],
+        chaos:["i'm bringing a second board game to fight his","ryan we need to talk about the last game","sat. but i'm bringing my ex"],
+        mum:["Sounds lovely, I will bring snacks!","Looking forward to it everyone","What time shall we arrive?"]},
+  probs:[{t:'Full stop at end of message',d:'reads as furious · line 4 (ryan)',fix:'Remove the full stop',line:3,from:'board game.',to:'board game'}]},
+ {id:'mum',file:'mum.chat',unread:1,names:['mum'],lines:[
+  ['mum','Did you eat today? x'],
+  ['mum','Your aunt says you have not liked her photo.'],
+  ['you','yes.'],
+  ['mum','Was that yes to the food or the photo'],
+  ['mum','Call me when you can. Not urgent. Quite urgent.']],
+  sugg:{unbothered:["both. call u sunday","yes and yes. busy rn x","i ate and liked it. the photo. not the food"],
+        chaos:["i ate auntie's photo","define eat","no comment until my lawyer is here"],
+        mum:["Yes I ate! Love you, will call tonight x","Liked it now, sorry! Speak soon","All good mum, calling at 7"]},
+  probs:[{t:'Full stop at end of message',d:'reads as furious · line 3 (you)',fix:'Rewrite as "yes x"',line:2,from:'yes.',to:'yes x'},
+         {t:'Unanswered for 6 days',d:'mum has begun drafting a voice note',fix:'Send heart reaction',line:-1}]},
+ {id:'sit',file:'situationship.chat',dirty:true,names:['alex'],lines:[
+  ['alex','hey'],
+  ['you','hey!! omg how are you, I was literally just thinking about you'],
+  ['alex','lol good'],
+  ['#','you replied 4 minutes after receipt.']],
+  sugg:{unbothered:["cool","nm u","ha ok"],
+        chaos:["i've been thinking about u for 4 business days","do you want to meet my mum","good is not a feeling alex"],
+        mum:["That's great to hear! What have you been up to?","Lovely, hope your week is going well","Glad you're good! Speak soon"]},
+  probs:[{t:'Enthusiasm detected',d:'2 exclamation marks, 1 "literally" · line 2',fix:'Rewrite as "hey"',line:1,from:'hey!! omg how are you, I was literally just thinking about you',to:'hey'},
+         {t:'Replied 4 min after receipt',d:'appears eager · line 4',fix:'Delay next reply 6h',line:-1}]},
+ {id:'work',file:'work-do-not-open.chat',unread:12,names:['dan (manager)'],lines:[
+  ['dan (manager)','Quick one, are you able to cover Saturday?'],
+  ['dan (manager)','Hello?'],
+  ['dan (manager)','I can see you are online'],
+  ['#','you have not been online. lowkey has.']],
+  sugg:{unbothered:["sorry just seeing this, can't sat","who is this","i have a thing"],
+        chaos:["i am covering saturday in prayer","dan i'm 22","online is a state of mind dan"],
+        mum:["Hi Dan, unfortunately I'm unavailable this Saturday.","Sorry Dan, I have a family commitment","Can we discuss on Monday?"]},
+  probs:[{t:'Read receipts are on',d:'dan knows · settings',fix:'Turn off read receipts',line:-1}]}
+];
+var state={cur:0,idx:0,model:'unbothered',typed:0,auto:0,rejected:0};
+var $=function(id){return document.getElementById(id)};
+var code=$('code');
+
+function esc(s){return s.replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function cls(c,name){if(name==='you')return 'me';var i=c.names.indexOf(name);return i===1?'c1':i===2?'c2':''}
+function toast(m){var t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove('show')},2600)}
+function sugs(){var c=chats[state.cur],arr=c.sugg[state.model];var temp=parseFloat($('temp').value);if(temp>=1.6)arr=c.sugg.chaos;return arr}
+
+function renderFiles(){
+  var q=$('search').value.toLowerCase(),ul=$('files'),mf=$('mfiles');ul.innerHTML='';mf.innerHTML='';var any=false;
+  chats.forEach(function(c,i){
+    if(q&&c.file.indexOf(q)<0&&c.lines.map(function(l){return l[1]}).join(' ').toLowerCase().indexOf(q)<0)return;
+    any=true;
+    var li=document.createElement('li');var b=document.createElement('button');b.type='button';
+    b.setAttribute('aria-current',i===state.cur?'true':'false');
+    b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>'+c.file+(c.unread?'<span class="badge">'+c.unread+'</span>':c.dirty?'<span class="u" title="unsaved"></span>':'');
+    b.onclick=function(){open(i)};li.appendChild(b);ul.appendChild(li);
+    var m=document.createElement('button');m.type='button';m.textContent=c.file;m.setAttribute('aria-current',i===state.cur?'true':'false');m.onclick=function(){open(i)};mf.appendChild(m);
+  });
+  if(!any)ul.innerHTML='<li class="empty">no chats match. this is the most peace you will get.</li>';
+}
+function renderTabs(){var c=chats[state.cur];$('tabs').innerHTML='<span class="tab on">'+c.file+(c.dirty?' ●':'')+'</span><span class="tab">settings.json</span>';$('stLine').textContent=c.file}
+
+function renderCode(flashLast){
+  var c=chats[state.cur],h='';
+  c.lines.forEach(function(l,i){
+    var n='<span class="n">'+(i+1)+'</span>';
+    var probLine=c.probs.some(function(p){return !p.done&&p.line===i});
+    var txt=esc(l[1]);if(probLine)txt='<span class="sq">'+txt+'</span>';
+    if(l[0]==='#')h+='<div class="ln">'+n+'<span class="cmt">// '+esc(l[1])+'</span></div>';
+    else h+='<div class="ln'+(flashLast&&i===c.lines.length-1?' new':'')+'">'+n+'<span><span class="who '+cls(c,l[0])+'">'+esc(l[0])+':</span> "'+txt+'"</span></div>';
+  });
+  var arr=sugs(),s=arr[state.idx%arr.length];
+  h+='<div class="ln cur">'+'<span class="n">'+(c.lines.length+1)+'</span><span><span class="who me">you:</span> "<span class="caret"></span><span class="gtxt">'+esc(s)+'"</span><span class="kbd">Tab</span></span></div>';
+  code.innerHTML=h;code.scrollTop=code.scrollHeight;
+  $('hint').textContent='suggestion '+((state.idx%arr.length)+1)+' of '+arr.length;
+}
+function renderProbs(){
+  var c=chats[state.cur],open=c.probs.filter(function(p){return !p.done}).length,h='';
+  c.probs.forEach(function(p,i){
+    h+='<div class="prob'+(p.done?' ok':'')+'"><span class="ic"></span><div><b>'+esc(p.t)+'</b><small>'+esc(p.d)+'</small>'+(p.done?'':'<button class="fix" type="button" data-i="'+i+'">Quick fix: '+esc(p.fix)+'</button>')+'</div></div>';
+  });
+  if(!open)h+='<div class="clean">// no problems. you sound 19 again.</div>';
+  $('plist').innerHTML=h;$('pcount').textContent=open;
+  $('plist').querySelectorAll('.fix').forEach(function(b){b.onclick=function(){applyFix(+b.getAttribute('data-i'))}});
+  var total=chats.reduce(function(a,c){return a+c.probs.filter(function(p){return !p.done}).length},0);
+  $('pers').textContent=Math.max(0,14-(state.auto*2)-(4-total)*3)+'%';
+}
+function applyFix(i){
+  var c=chats[state.cur],p=c.probs[i];p.done=true;
+  if(p.line>=0)c.lines[p.line][1]=c.lines[p.line][1].replace(p.from,p.to);
+  if(p.fix.indexOf('Delay')===0)c.dirty=false;
+  renderAll();toast('Fixed: '+p.t.toLowerCase()+'. Nobody will know it was you.');
+}
+function renderAll(f){renderFiles();renderTabs();renderCode(f);renderProbs();$('typed').textContent=state.typed;$('auto').textContent=state.auto}
+function open(i){state.cur=i;state.idx=0;chats[i].unread=0;renderAll()}
+
+function accept(){
+  var c=chats[state.cur],arr=sugs(),s=arr[state.idx%arr.length];
+  c.lines.push(['you',s]);state.auto++;state.idx=0;renderAll(true);
+  setTimeout(function(){
+    var other=c.names[Math.floor(Math.random()*c.names.length)];
+    var replies=['lol','ok','who is this','💀','fair','?','see you sat then','typing...'];
+    c.lines.push([other,replies[Math.floor(Math.random()*replies.length)]]);renderAll(true);
+  },900);
+}
+function cycle(){state.idx++;renderCode()}
+function reject(){state.rejected++;state.idx++;renderCode();toast(state.rejected>2?'Suggestion rejected. You can type your own reply, but we would not.':'Suggestion rejected. Lowkey will remember this.')}
+
+$('accept').onclick=accept;$('cycle').onclick=cycle;$('reject').onclick=reject;
+$('search').oninput=renderFiles;
+$('model').onchange=function(){state.model=this.value;state.idx=0;$('stTone').textContent={unbothered:'neutral-bored',chaos:'unwell',mum:'polite, suspicious'}[this.value];document.querySelector('.status .live').textContent='lowkey-'+this.value+' online';renderCode()};
+$('temp').oninput=function(){$('tempOut').textContent=(+this.value).toFixed(1);if(+this.value>=1.6)$('stTone').textContent='unwell (temperature)';renderCode()};
+
+document.addEventListener('keydown',function(e){
+  if($('scrim').classList.contains('open')){if(e.key==='Escape')closeAgent();return}
+  var tag=(e.target.tagName||'').toLowerCase();if(tag==='input'||tag==='select')return;
+  if(e.key==='Tab'&&!e.shiftKey&&(e.target===code||e.target===document.body)){e.preventDefault();accept()}
+  else if(e.key==='Escape'){reject()}
+  else if(e.altKey&&(e.key===']'||e.code==='BracketRight')){e.preventDefault();cycle()}
+});
+
+/* agent */
+var plans={
+ 'get out of brunch, keep friendship':[['read','brunch??.chat (88 messages, 3 polls)'],['open','the-council.chat'],['plan','cite "a thing", stay vague'],['d','"sorry i am not coming i just do not want to"'],['a','"nooo i have a thing :( next time fr"'],['open','mum.chat, to establish alibi'],['a','"mum if anyone asks i was with you sunday"'],['c','2 files changed. friendship intact. thing undefined.']],
+ 'ask mum for money without asking':[['read','mum.chat (412 messages)'],['plan','mention food, then rent, then food again'],['d','"can i have £40"'],['a','"been eating mostly toast this week haha. anyway hope ur well x"'],['c','1 file changed. expected yield: £40 and a phone call.']],
+ 'reply to situationship, appear busy':[['read','situationship.chat'],['wait','6 hours (simulated)'],['d','"omg yes I would love to!!"'],['a','"maybe. this week is mad"'],['open','the-council.chat to brief the group'],['c','2 files changed. leverage acquired. feelings deferred.']]
+};
+function openAgent(){$('scrim').classList.add('open');$('goal').focus()}
+function closeAgent(){$('scrim').classList.remove('open');$('openAgent').focus()}
+$('openAgent').onclick=openAgent;$('closeAgent').onclick=closeAgent;
+$('scrim').onclick=function(e){if(e.target===this)closeAgent()};
+document.querySelectorAll('.chip').forEach(function(c){c.onclick=function(){$('goal').value=c.textContent}});
+$('runAgent').onclick=function(){
+  var g=$('goal').value.trim().toLowerCase(),btn=this,log=$('log');
+  if(!g){log.innerHTML='<span class="c">// goal is empty. type what you want to avoid.</span>';return}
+  var steps=plans[g]||[['read','every chat you have'],['plan','"'+esc(g)+'", but quieter'],['d','your original intention'],['a','"lol ok"'],['c','1 file changed. goal technically met.']];
+  log.innerHTML='<span class="k">goal</span> '+esc(g)+'<br>';btn.disabled=true;var i=0;
+  (function step(){
+    if(i>=steps.length){btn.disabled=false;btn.textContent='Run again';state.auto+=2;renderAll();toast('Diff approved on your behalf. You were busy.');return}
+    var s=steps[i++],line;
+    if(s[0]==='d')line='<span class="d">- '+s[1]+'</span>';
+    else if(s[0]==='a')line='<span class="a">+ '+s[1]+'</span>';
+    else if(s[0]==='c')line='<span class="c">// '+s[1]+'</span>';
+    else line='<span class="k">'+s[0]+'</span> '+s[1];
+    log.innerHTML+=line+'<br>';log.scrollTop=log.scrollHeight;setTimeout(step,520);
+  })();
+};
+
+renderAll();
+})();
+</script>
+</body>
+</html>
