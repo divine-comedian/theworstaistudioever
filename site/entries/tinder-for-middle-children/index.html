@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#FBF0C9">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&family=IBM+Plex+Mono:wght@500;600&family=Permanent+Marker&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FBF0C9; --paper:#FFFBEA; --ink:#22201C; --muted:#6E6349;
+  --blue:#1F3FA8; --blue-dk:#152D7C; --tomato:#E4482B; --tomato-dk:#B8341C;
+  --butter-dk:#F1DE9C; --line:#E2D19A;
+  --display:'Fredoka','Nunito','Arial Rounded MT Bold',-apple-system,sans-serif;
+  --body:'Nunito',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --label:'IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace;
+  --hand:'Permanent Marker','Comic Sans MS',cursive;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1140px;margin:0 auto;padding:0 24px}
+
+/* label tape */
+.tape{display:inline-block;font-family:var(--label);font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#fff;background:var(--blue);padding:5px 14px 4px;transform:rotate(-1.5deg);box-shadow:0 2px 0 var(--blue-dk);
+  clip-path:polygon(6px 0,calc(100% - 6px) 0,100% 50%,calc(100% - 6px) 100%,6px 100%,0 50%);
+  text-shadow:0 -1px 0 rgba(0,0,0,.25),0 1px 0 rgba(255,255,255,.18)}
+.tape.red{background:var(--tomato);box-shadow:0 2px 0 var(--tomato-dk)}
+@media (prefers-reduced-motion:no-preference){.tape:hover{animation:wob .4s ease-out}}
+@keyframes wob{30%{transform:rotate(-.5deg)}70%{transform:rotate(-2.3deg)}}
+
+/* fridge magnet buttons */
+.magnet{display:inline-flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:19px;text-decoration:none;color:#fff;background:var(--tomato);border:0;border-radius:999px;padding:14px 28px 13px;box-shadow:0 4px 0 var(--tomato-dk);cursor:pointer;transition:transform .12s,box-shadow .12s}
+.magnet:hover{transform:translateY(-1px);box-shadow:0 5px 0 var(--tomato-dk)}
+.magnet:active{transform:translateY(3px);box-shadow:0 1px 0 var(--tomato-dk)}
+.magnet.blue{background:var(--blue);box-shadow:0 4px 0 var(--blue-dk)}
+.magnet.blue:hover{box-shadow:0 5px 0 var(--blue-dk)}
+.magnet.blue:active{box-shadow:0 1px 0 var(--blue-dk)}
+.magnet.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
+.magnet.ghost:active{transform:translateY(2px)}
+
+/* nav */
+.top{display:flex;align-items:center;justify-content:space-between;padding:22px 0}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none}
+.logo b{font-family:var(--display);font-weight:700;font-size:34px;letter-spacing:-.02em;line-height:1}
+.top nav{display:flex;gap:26px;align-items:center;font-weight:700;font-size:15px}
+.top nav a{text-decoration:none}
+.top nav a:hover{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
+@media(max-width:720px){.top nav a:not(.magnet){display:none}.top .magnet{font-size:15px;padding:10px 18px}}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center;padding:56px 0 96px}
+.hero h1{font-family:var(--display);font-weight:600;font-size:clamp(46px,6.4vw,82px);line-height:1.02;letter-spacing:-.025em;margin:0 0 26px}
+.who{position:relative;display:inline-block;white-space:nowrap}
+.struck{position:absolute;left:calc(100% + 18px);bottom:.18em;display:flex;flex-direction:column;align-items:flex-start;gap:0;font-family:var(--hand);font-weight:400;font-size:clamp(20px,2.2vw,28px);letter-spacing:.02em;color:var(--tomato);line-height:1.05;transform:rotate(-4deg);pointer-events:none}
+.struck span{position:relative}
+.struck span::after{content:"";position:absolute;left:-4px;right:-4px;top:52%;height:3px;background:var(--tomato);border-radius:3px;transform-origin:left;transform:scaleX(1) rotate(-3deg)}
+.hero h1 .who u{text-decoration:none;background:linear-gradient(var(--tomato),var(--tomato)) 0 92%/100% .14em no-repeat}
+.hero p.sub{font-size:20px;max-width:34em;margin:0 0 34px;color:#3A362D}
+.hero .ctas{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.hero .fine{font-size:14px;color:var(--muted);margin-top:18px}
+@media (prefers-reduced-motion:no-preference){
+  .js .struck span::after{transform:scaleX(0) rotate(-3deg);animation:strike .3s ease-out forwards}
+  .js .struck span:nth-child(1)::after{animation-delay:.5s}
+  .js .struck span:nth-child(2)::after{animation-delay:.85s}
+}
+@keyframes strike{to{transform:scaleX(1) rotate(-3deg)}}
+
+.stage{position:relative;justify-self:center;width:100%;max-width:360px}
+.dots{position:absolute;inset:auto -40px 40px -40px;display:flex;justify-content:space-between;align-items:flex-start;z-index:0}
+.dots i{width:92px;height:92px;border-radius:50%;display:block}
+.dots i:nth-child(1){background:var(--blue)}
+.dots i:nth-child(2){background:var(--tomato);margin-top:70px;width:76px;height:76px}
+.dots i:nth-child(3){background:#F2C94C}
+.phone{position:relative;z-index:1;background:var(--ink);border-radius:42px;padding:12px;transform:rotate(2deg)}
+.screen{background:var(--paper);border-radius:32px;overflow:hidden}
+.screen .bar{display:flex;justify-content:space-between;align-items:center;padding:14px 18px 8px;font-family:var(--display);font-weight:700;font-size:20px}
+.screen .bar small{font-family:var(--body);font-weight:700;font-size:12px;color:var(--muted)}
+.pcard{position:relative;margin:4px 12px 0;border-radius:20px;overflow:hidden;aspect-ratio:4/5;background:var(--butter-dk)}
+.pcard img{width:100%;height:100%;object-fit:cover;object-position:50% 30%}
+.pcard .tape{position:absolute;top:14px;left:12px}
+.pcard .meta{position:absolute;left:0;right:0;bottom:0;padding:40px 16px 14px;background:linear-gradient(transparent,rgba(20,18,14,.78));color:#fff}
+.pcard .meta s{font-family:var(--hand);font-size:15px;color:#FFB4A3;margin-right:8px;text-decoration-thickness:2px}
+.pcard .meta b{display:block;font-family:var(--display);font-weight:600;font-size:28px;line-height:1.1}
+.pcard .meta span{font-size:13px;opacity:.92}
+.pbtns{display:flex;gap:10px;justify-content:center;padding:14px 12px 18px}
+.pbtns span{flex:1;text-align:center;font-family:var(--display);font-weight:600;font-size:16px;padding:10px;border-radius:999px;box-shadow:inset 0 0 0 2px var(--ink)}
+.pbtns span:last-child{background:var(--tomato);color:#fff;box-shadow:0 3px 0 var(--tomato-dk)}
+@media(max-width:560px){.struck{left:2px;bottom:auto;top:100%;flex-direction:row;gap:12px;font-size:18px;transform:rotate(-2deg)}.hero h1{margin-bottom:44px}}
+@media(max-width:880px){.hero{grid-template-columns:1fr;padding-top:64px;gap:64px}.dots{inset:auto -10px 40px -10px}}
+
+/* sections */
+section{padding:88px 0}
+.shead{display:flex;flex-direction:column;align-items:flex-start;gap:16px;margin-bottom:48px;max-width:640px}
+.shead h2{font-family:var(--display);font-weight:600;font-size:clamp(34px,4.2vw,50px);line-height:1.08;letter-spacing:-.02em;margin:0}
+.shead p{margin:0;font-size:18px;color:#3A362D}
+
+/* the middle slot: middle of every three sits lower */
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:start}
+.trio > :nth-child(2){margin-top:40px}
+@media(max-width:860px){.trio{grid-template-columns:1fr}.trio > :nth-child(2){margin-top:0}}
+
+.feat{background:var(--paper);border-radius:14px;padding:30px 28px 32px;box-shadow:inset 0 0 0 2px var(--line)}
+.feat svg{width:52px;height:52px;margin-bottom:18px}
+.feat h3{font-family:var(--display);font-weight:600;font-size:25px;line-height:1.15;margin:0 0 10px}
+.feat p{margin:0;color:#3A362D}
+
+.band{background:var(--blue);color:#fff}
+.band .shead p{color:#DCE3FA}
+.quote{background:#fff;color:var(--ink);border-radius:14px;padding:30px 28px;margin:0;display:flex;flex-direction:column;gap:22px;min-height:100%}
+.quote blockquote{margin:0;font-family:var(--display);font-weight:500;font-size:21px;line-height:1.35}
+.quote figcaption{display:flex;gap:14px;align-items:center}
+.av{flex:none;width:58px;height:58px;border-radius:50%;overflow:hidden;background:var(--bg);display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:20px;color:var(--blue);box-shadow:0 0 0 3px var(--bg)}
+.av img{width:100%;height:100%;object-fit:cover}
+.quote b{display:block;font-size:16px}
+.quote small{display:block;font-size:13.5px;line-height:1.4;color:var(--muted)}
+.quote s{font-family:var(--hand);color:var(--tomato);font-size:14px;text-decoration-thickness:2px;margin-right:6px}
+
+.tier{background:var(--paper);border-radius:14px;padding:30px 28px 32px;box-shadow:inset 0 0 0 2px var(--line);display:flex;flex-direction:column;gap:14px}
+.tier h3{font-family:var(--display);font-weight:600;font-size:24px;margin:0;line-height:1.15}
+.tier .price{font-family:var(--display);font-weight:700;font-size:46px;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.tier .price small{font-size:18px;font-weight:500;color:var(--muted)}
+.tier p{margin:0;color:#3A362D}
+.tier ul{list-style:none;margin:6px 0 10px;padding:0;display:grid;gap:9px}
+.tier li{padding-left:28px;position:relative;font-size:15.5px}
+.tier li::before{content:"";position:absolute;left:0;top:5px;width:16px;height:16px;border-radius:50%;background:var(--blue);box-shadow:inset 0 0 0 4px var(--paper),0 0 0 2px var(--blue)}
+.tier .magnet{margin-top:auto;justify-content:center;font-size:17px}
+.tier.pick{background:#fff;box-shadow:inset 0 0 0 3px var(--tomato)}
+.tier.pick li::before{background:var(--tomato);box-shadow:inset 0 0 0 4px #fff,0 0 0 2px var(--tomato)}
+.tier .tape{align-self:flex-start}
+
+.democta{background:var(--tomato);color:#fff;border-radius:28px;padding:56px 48px;display:grid;grid-template-columns:1fr auto;gap:32px;align-items:center}
+.democta h2{font-family:var(--display);font-weight:600;font-size:clamp(32px,4vw,46px);line-height:1.08;margin:0 0 12px;letter-spacing:-.02em}
+.democta p{margin:0;font-size:18px;max-width:34em}
+.democta .magnet{background:#fff;color:var(--ink);box-shadow:0 4px 0 var(--tomato-dk);font-size:21px;padding:18px 32px 17px}
+@media(max-width:760px){.democta{grid-template-columns:1fr;padding:40px 28px}}
+
+footer{padding:40px 0 56px;font-size:14px;color:var(--muted)}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer a{font-weight:700;color:var(--ink);text-decoration:none}
+footer a:hover{text-decoration:underline}
+</style>
+<title>Also — Tinder for middle children</title>
+<meta name="description" content="Finally, a match who remembers your name. Also is the dating app for middle children. Your profile loads before your older sibling&#x27;s, after nobody&#x27;s, and every match has to say your name correctly on the first try before the chat unlocks.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/tinder-for-middle-children/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Also — Tinder for middle children">
+<meta property="og:description" content="Finally, a match who remembers your name. Also is the dating app for middle children. Your profile loads before your older sibling&#x27;s, after nobody&#x27;s, and every match has to say your name correctly on the first try before the chat unlocks.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/tinder-for-middle-children/">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/tinder-for-middle-children/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Worst AI Studio Ever logo">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Also — Tinder for middle children">
+<meta name="twitter:description" content="Finally, a match who remembers your name. Also is the dating app for middle children. Your profile loads before your older sibling&#x27;s, after nobody&#x27;s, and every match has to say your name correctly on the first try before the chat unlocks.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/tinder-for-middle-children/social-preview.jpg">
+<meta name="twitter:image:alt" content="The Worst AI Studio Ever logo">
+</head>
+<body>
+<script>document.documentElement.classList.add('js')</script>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="#top" aria-label="Also, home"><b>Also</b><span class="tape">Beta</span></a>
+    <nav aria-label="Main">
+      <a href="#features">Features</a>
+      <a href="#reviews">Reviews</a>
+      <a href="#pricing">Pricing</a>
+      <a class="magnet blue" href="./demo.html">Open the app</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <div class="hero">
+      <div>
+        <h1>Finally, a match who remembers your <span class="who"><span class="struck" aria-hidden="true"><span>Kevin</span><span>Megan</span></span><u>name</u>.</span></h1>
+        <p class="sub">Also is the dating app for middle children. Your profile loads before your older sibling's, after nobody's, and every match has to say your name correctly on the first try before the chat unlocks.</p>
+        <div class="ctas">
+          <a class="magnet" href="./demo.html">Get noticed (beta)</a>
+          <a class="magnet ghost" href="#pricing">See plans</a>
+        </div>
+        <p class="fine">41,200 middle children noticed so far. We counted each one individually.</p>
+      </div>
+
+      <div class="stage" aria-label="Preview of the Also app">
+        <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="phone">
+          <div class="screen">
+            <div class="bar">Also <small>3 people noticed you</small></div>
+            <div class="pcard">
+              <img src="card-1.webp" alt="A woman in a mustard cardigan smiling patiently against a yellow wall" width="800" height="800">
+              <span class="tape">Child 2 of 3</span>
+              <div class="meta"><s>Beth</s><s>Kayla</s><b>Rachel, 33</b><span>Left at a rest stop twice. Holds no grudge. Mostly.</span></div>
+            </div>
+            <div class="pbtns" aria-hidden="true"><span>Pass</span><span>Notice</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<section id="features">
+  <div class="wrap">
+    <div class="shead">
+      <span class="tape">What it does</span>
+      <h2>Built by middle children, after everyone else had finished talking.</h2>
+      <p>Three features. We tried to cut one so the other two would get more attention, and then we felt bad about it.</p>
+    </div>
+    <div class="trio">
+      <article class="feat">
+        <svg viewBox="0 0 52 52" aria-hidden="true"><rect x="3" y="14" width="46" height="24" rx="4" fill="#1F3FA8"/><rect x="10" y="22" width="18" height="4" rx="2" fill="#fff"/><rect x="10" y="29" width="10" height="3" rx="1.5" fill="#fff" opacity=".6"/><circle cx="39" cy="26" r="6" fill="#E4482B"/><path d="M36.5 26l2 2 3.5-4" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+        <h3>First-Name Verification</h3>
+        <p>Every match must type your name without starting with your brother's name first. Three failed attempts and they are reassigned to your brother, who has plenty already.</p>
+      </article>
+      <article class="feat">
+        <svg viewBox="0 0 52 52" aria-hidden="true"><path d="M17 8l-10 7 4 8 5-3v24h20V20l5 3 4-8-10-7c-1 4-4 6-9 6s-8-2-9-6z" fill="#E4482B"/><rect x="21" y="30" width="10" height="5" rx="1" fill="#FFFBEA"/></svg>
+        <h3>The Hand-Me-Down Feed</h3>
+        <p>Profiles your older sibling swiped past are passed down to you, gently used. Some have a small stain. Most still work fine.</p>
+      </article>
+      <article class="feat">
+        <svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="13" cy="26" r="8" fill="#1F3FA8"/><circle cx="39" cy="26" r="8" fill="#1F3FA8"/><circle cx="26" cy="32" r="7" fill="#E4482B"/><path d="M20 18h12" stroke="#22201C" stroke-width="3" stroke-linecap="round"/></svg>
+        <h3>Peacekeeper Score</h3>
+        <p>Our model measures how fast you can calm down an argument you were not part of. Matches over 80 skip the first date and go straight to mediating Thanksgiving.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="reviews" class="band">
+  <div class="wrap">
+    <div class="shead">
+      <span class="tape red">Reviews</span>
+      <h2>People said nice things. We wrote them down so they would not be forgotten.</h2>
+    </div>
+    <div class="trio">
+      <figure class="quote">
+        <blockquote>“My match said my name right on the first date. I told my therapist about it and she called me Jessica.”</blockquote>
+        <figcaption><span class="av"><img src="headshot-1.webp" alt="Dana Okafor" width="320" height="320" loading="lazy"></span><span><s>Debra</s><b>Dana Okafor</b><small>Second of Three, Regional Logistics Coordinator, Kept Everyone Calm at Two Weddings</small></span></figcaption>
+      </figure>
+      <figure class="quote">
+        <blockquote>“I matched the same week my sister got engaged. Nobody at dinner asked about it. The app sent a push notification. That counts.”</blockquote>
+        <figcaption><span class="av" aria-hidden="true">MF</span><span><s>Martin</s><b>Marcus Feld</b><small>Second of Four, Owner of the Family's Only Working Printer</small></span></figcaption>
+      </figure>
+      <figure class="quote">
+        <blockquote>“For the first time I am not the one picking the restaurant. I picked it anyway. Habit.”</blockquote>
+        <figcaption><span class="av" aria-hidden="true">PR</span><span><s>Preeti</s><b>Priya Raman</b><small>Middle Child Emeritus, Designated Driver Since 2009</small></span></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <div class="shead">
+      <span class="tape">Plans</span>
+      <h2>Three plans. We recommend the one in the middle. Obviously.</h2>
+      <p>Cancel any time. We will notice, and we will say something.</p>
+    </div>
+    <div class="trio">
+      <article class="tier">
+        <h3>Left at the Rest Stop</h3>
+        <div class="price">$0</div>
+        <p>Free, like you were at the Shell station in 1997.</p>
+        <ul><li>5 swipes a day</li><li>Profile shown after a short wait, usually</li><li>Someone comes back for you within 40 minutes</li></ul>
+        <a class="magnet ghost" href="./demo.html">Start free</a>
+      </article>
+      <article class="tier pick">
+        <span class="tape red">Most overlooked</span>
+        <h3>Middle Seat</h3>
+        <div class="price">$9.99<small>/mo</small></div>
+        <p>Our most overlooked plan. It is very good. Nobody asks about it.</p>
+        <ul><li>Unlimited swipes</li><li>Read receipts that confirm someone read it</li><li>One (1) birthday party that is only yours</li><li>Your own window seat, two weekends a month</li></ul>
+        <a class="magnet" href="./demo.html">Take the middle seat</a>
+      </article>
+      <article class="tier">
+        <h3>Only Child Experience</h3>
+        <div class="price">$49<small>/mo</small></div>
+        <p>For one hour a month, we pretend you were the only one.</p>
+        <ul><li>Your photo goes on the fridge</li><li>Matches are told you are the funny one and the smart one</li><li>An account manager who asks follow-up questions</li><li>First pick of the good chair</li></ul>
+        <a class="magnet blue" href="./demo.html">Be the only one</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="democta">
+      <div>
+        <h2>Three people are waiting to notice you.</h2>
+        <p>The demo is live with real fake profiles. Swipe through, type a name correctly, and see how it feels to go first.</p>
+      </div>
+      <a class="magnet" href="./demo.html">open the demo →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <a href="/">← theworstaistudioever</a>
+    <span>Also Inc. is the second company our founders started. You have probably not heard of the first one either.</span>
+  </div>
+</footer>
+</body>
+</html>

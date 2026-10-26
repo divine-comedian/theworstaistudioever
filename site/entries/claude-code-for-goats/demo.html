@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --yellow:#F5C400; --red:#D8261C; --bg:#EEF0EA; --fg:#1C1C19; --muted:#6E6D65; --ink:#111110;
+  --granite:#7E7D74; --rule:#C9CBC2; --term:#1A1B18; --term2:#23241f; --tfg:#E9E8DF; --tdim:#8d8c82;
+  --display:'Inter Tight','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --body:'IBM Plex Sans','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --mono:'Fira Code','SFMono-Regular',Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font:400 15px/1.5 var(--body);display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+
+.chrome{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 18px;border-bottom:1px solid var(--rule);flex-wrap:wrap}
+.back{font-size:14px;color:var(--fg)}
+.crumb{display:flex;align-items:center;gap:12px;font:700 15px/1 var(--display)}
+.blaze{display:inline-flex;flex-direction:column;width:20px;flex:none}
+.blaze i{display:block;height:4px;background:#fff;border:1px solid var(--rule);border-width:0 1px}
+.blaze i:first-child{border-top-width:1px}
+.blaze i:nth-child(2){background:var(--red);border-color:var(--red)}
+.blaze i:last-child{border-bottom-width:1px}
+.plan{font-size:13px;color:var(--muted)}
+.plan b{background:var(--yellow);color:var(--ink);padding:2px 8px;font-family:var(--display);font-weight:700}
+
+.app{flex:1;display:grid;grid-template-columns:240px minmax(0,1fr) 290px;min-height:0}
+aside,.rail{padding:18px;overflow:auto}
+aside{border-right:1px solid var(--rule)}
+.rail{border-left:1px solid var(--rule)}
+h2.h{font:700 14px/1.2 var(--display);margin-bottom:12px;display:flex;justify-content:space-between;align-items:baseline}
+h2.h small{font:400 12px var(--body);color:var(--muted)}
+
+/* file tree */
+.tree{list-style:none;display:grid;gap:2px;font:400 13px/1.3 var(--mono)}
+.tree .dir{color:var(--muted);padding:6px 4px 2px}
+.file{display:flex;justify-content:space-between;gap:8px;width:100%;text-align:left;background:none;border:0;padding:7px 8px;min-height:34px;align-items:center;color:var(--fg);font:inherit;border-radius:2px}
+.file:hover{background:#e2e5dc}
+.file.open{background:var(--yellow)}
+.file .ttl{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.file.warn .ttl{color:var(--red);font-weight:500}
+.file.eaten{color:var(--granite);text-decoration:line-through;cursor:default}
+.file.eaten .ttl{color:var(--granite)}
+.file.eaten:hover{background:none}
+.bite{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--bg);box-shadow:inset 0 0 0 1.5px var(--granite);margin-right:4px;vertical-align:-1px}
+.tree-note{margin-top:14px;font-size:12px;color:var(--muted)}
+
+/* terminal */
+.main{display:flex;flex-direction:column;min-height:0;background:var(--term);color:var(--tfg)}
+.tbar{display:flex;justify-content:space-between;padding:9px 16px;border-bottom:1px solid #34352f;font:400 12px var(--mono);color:var(--tdim)}
+.log{flex:1;overflow:auto;padding:18px 20px;font:400 14px/1.65 var(--mono)}
+.log .ln{white-space:pre-wrap;margin-bottom:2px}
+.u{color:var(--yellow)}
+.d{color:var(--tdim)}
+.r{color:#ff6a5c}
+.g{color:#b9d98a}
+.diff{background:var(--term2);border-left:3px solid var(--granite);padding:8px 12px;margin:6px 0 8px;font-size:13px}
+.diff .m{color:#ff8a7e}
+.diff .p{color:#b9d98a}
+.perm{border:1px solid #4a4b44;border-left:4px solid var(--red);padding:12px 14px;margin:8px 0 10px;background:var(--term2)}
+.perm .q{margin-bottom:10px}
+.perm .acts{display:flex;gap:8px;flex-wrap:wrap}
+.perm button{border:1px solid #5a5b53;background:transparent;color:var(--tfg);padding:6px 12px;min-height:36px;font:500 13px var(--mono);border-radius:2px}
+.perm button:hover{background:var(--tfg);color:var(--term)}
+.perm button.hb{border-color:var(--yellow);color:var(--yellow)}
+.perm button.hb:hover{background:var(--yellow);color:var(--ink)}
+.perm.done{opacity:.55}
+.perm.done .acts{display:none}
+
+.composer{border-top:1px solid #34352f;padding:12px 16px 14px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.chip{background:transparent;border:1px solid #4a4b44;color:var(--tfg);font:400 13px var(--mono);padding:5px 12px;min-height:34px;border-radius:2px}
+.chip:hover{border-color:var(--yellow);color:var(--yellow)}
+form{display:flex;gap:10px;align-items:center}
+form label{color:var(--yellow);font:500 16px var(--mono)}
+form input{flex:1;background:var(--term2);border:1px solid #4a4b44;color:var(--tfg);font:400 15px var(--mono);padding:10px 12px;min-height:44px;border-radius:2px}
+form input:focus{outline:2px solid var(--yellow);outline-offset:0}
+form button{background:var(--yellow);color:var(--ink);border:0;font:700 14px var(--display);padding:0 18px;min-height:44px;border-radius:2px}
+.hint{font:400 12px var(--mono);color:var(--tdim);margin-top:8px}
+
+/* rail */
+.block{margin-bottom:26px}
+.stom{display:grid;gap:12px}
+.stom .row{display:grid;grid-template-columns:1fr auto;gap:4px 8px;font-size:13px}
+.stom .row span:last-child{font-variant-numeric:tabular-nums;color:var(--muted)}
+.bar{grid-column:1/-1;height:10px;background:#dfe2d9;position:relative;overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--ink);width:0;transition:width .3s ease-out}
+.bar.hot i{background:var(--red)}
+.compact{margin-top:10px;font-size:12px;color:var(--muted)}
+
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border:1px solid var(--rule);background:#fff}
+.toggle .t{font:700 15px var(--display)}
+.toggle p{font-size:12px;color:var(--muted);margin-top:2px}
+.sw{position:relative;width:52px;height:30px;flex:none;border:2px solid var(--ink);background:#fff;border-radius:2px}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;background:var(--ink);transition:transform .2s ease-out}
+.sw[aria-checked="true"]{background:var(--yellow)}
+.sw[aria-checked="true"]::after{transform:translateX(22px);background:var(--red)}
+.toggle.on{border-color:var(--red);box-shadow:inset 4px 0 0 var(--red)}
+
+.chewed{list-style:none;display:grid;gap:8px;font-size:13px}
+.chewed li{border-left:3px solid var(--red);padding:2px 0 2px 10px}
+.chewed li b{font:500 12px var(--mono);display:block}
+.chewed li span{color:var(--muted)}
+.empty{font-size:13px;color:var(--muted)}
+
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:10px 16px;font-size:14px;opacity:0;transition:opacity .2s, transform .2s;pointer-events:none;border-left:4px solid var(--red)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:1000px){
+  .app{grid-template-columns:1fr}
+  aside,.rail{border:0;border-bottom:1px solid var(--rule)}
+  .main{min-height:70vh}
+  aside{order:2}.rail{order:3}
+}
+@media (prefers-reduced-motion:reduce){
+  .bar i,.sw::after,.toast{transition:none}
+}
+</style>
+<title>Cud — Claude Code for goats — Demo</title>
+<meta name="description" content="Ship fence firmware from the side of a cliff. Cud is an agentic coding tool that lives in your terminal, understands your codebase, and chews every file four times before it commits. Built for goats. Tested on goats. Eaten, once, by a goat.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/claude-code-for-goats/demo.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Cud — Claude Code for goats — Demo">
+<meta property="og:description" content="Ship fence firmware from the side of a cliff. Cud is an agentic coding tool that lives in your terminal, understands your codebase, and chews every file four times before it commits. Built for goats. Tested on goats. Eaten, once, by a goat.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/claude-code-for-goats/demo.html">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/claude-code-for-goats/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Cud hero illustration">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Cud — Claude Code for goats — Demo">
+<meta name="twitter:description" content="Ship fence firmware from the side of a cliff. Cud is an agentic coding tool that lives in your terminal, understands your codebase, and chews every file four times before it commits. Built for goats. Tested on goats. Eaten, once, by a goat.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/claude-code-for-goats/social-preview.jpg">
+<meta name="twitter:image:alt" content="Cud hero illustration">
+</head>
+<body>
+<header class="chrome">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <div class="crumb"><span class="blaze" aria-hidden="true"><i></i><i></i><i></i></span>Cud <span style="font-weight:500;color:var(--muted)">/ doris / fence-firmware</span></div>
+  <div class="plan">Plan <b>Billy</b></div>
+</header>
+
+<div class="app">
+  <aside aria-labelledby="tree-h">
+    <h2 class="h" id="tree-h">fence-firmware/ <small id="leftCount">9 files</small></h2>
+    <ul class="tree" id="tree"></ul>
+    <p class="tree-note">Files idle for the forage window are eaten. Click a file to keep it open.</p>
+  </aside>
+
+  <main class="main" aria-label="Cud session">
+    <div class="tbar"><span>cud 2.4.1 · session 0412</span><span id="mode">ask before eating</span></div>
+    <div class="log" id="log" aria-live="polite"></div>
+    <div class="composer">
+      <div class="chips" id="chips">
+        <button class="chip" type="button" data-b="meeeh">meeeh</button>
+        <button class="chip" type="button" data-b="MEH.">MEH.</button>
+        <button class="chip" type="button" data-b="mehhh?">mehhh?</button>
+        <button class="chip" type="button" data-b="bleat bleat">bleat bleat</button>
+        <button class="chip" type="button" data-b="/compact">/compact</button>
+      </div>
+      <form id="form" autocomplete="off">
+        <label for="inp">›</label>
+        <input id="inp" placeholder="Bleat at Cud" aria-describedby="hint">
+        <button type="submit">Send</button>
+      </form>
+      <p class="hint" id="hint">Any input is accepted. Cud translates it.</p>
+    </div>
+  </main>
+
+  <div class="rail">
+    <section class="block" aria-labelledby="st-h">
+      <h2 class="h" id="st-h">Context <small>4 stomachs</small></h2>
+      <div class="stom" id="stom"></div>
+      <p class="compact" id="compactNote">Full abomasum triggers regurgitation.</p>
+    </section>
+    <section class="block">
+      <div class="toggle" id="tg">
+        <div><div class="t" id="hb-l">Headbutt mode</div><p>Auto-approves every command.</p></div>
+        <button class="sw" id="sw" role="switch" aria-checked="false" aria-labelledby="hb-l"></button>
+      </div>
+    </section>
+    <section class="block" aria-labelledby="ch-h">
+      <h2 class="h" id="ch-h">CHEWED.md <small id="chewCount">0 entries</small></h2>
+      <ul class="chewed" id="chewed"></ul>
+      <p class="empty" id="chewEmpty">Nothing eaten yet. Leave a file alone for a bit.</p>
+    </section>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+  var FORAGE=24;
+  var files=[
+    ['src','gate_latch.c','6.1 KB','zinc, faintly C99'],
+    ['src','fence_voltage.h','1.2 KB','sharp, with notes of 9 volts'],
+    ['src','hay_scheduler.py','14 KB','dry, mostly cron'],
+    ['src','ledge_detect.rs','8.8 KB','crunchy, memory-safe'],
+    ['tests','test_gate.c','3.0 KB','mild, all assertions pass now'],
+    ['tests','test_hay.py','2.2 KB','stale'],
+    ['','README.md','4.4 KB','papery, like a README'],
+    ['','package.json','0.9 KB','bitter, 1,212 dependencies'],
+    ['','.env','0.2 KB','salty, contained a password']
+  ];
+  var state=files.map(function(f,i){return {dir:f[0],name:f[1],size:f[2],flavor:f[3],ttl:FORAGE+i*7,eaten:false,open:false};});
+  var tree=document.getElementById('tree');
+  var logEl=document.getElementById('log');
+  var headbutt=false, tokens=0, chewN=0;
+
+  function path(s){return (s.dir?s.dir+'/':'')+s.name;}
+  function el(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e;}
+
+  function renderTree(){
+    tree.innerHTML='';
+    var lastDir=null;
+    state.forEach(function(s,i){
+      if(s.dir!==lastDir&&s.dir){tree.appendChild(el('li','dir',s.dir+'/'));}
+      lastDir=s.dir;
+      var li=el('li');
+      var b=el('button','file'+(s.eaten?' eaten':'')+(s.open?' open':'')+(!s.eaten&&!s.open&&s.ttl<=8?' warn':''));
+      b.type='button';
+      var nm=el('span');
+      if(s.eaten){nm.appendChild(el('span','bite'));}
+      nm.appendChild(document.createTextNode((s.dir?'  ':'')+s.name));
+      b.appendChild(nm);
+      b.appendChild(el('span','ttl',s.eaten?'0 B':(s.open?'open':s.ttl+'s')));
+      if(s.eaten){b.setAttribute('aria-disabled','true');b.setAttribute('aria-label',path(s)+', eaten');}
+      else{b.setAttribute('aria-label',path(s)+(s.open?', open':', eaten in '+s.ttl+' seconds'));}
+      b.addEventListener('click',function(){openFile(i);});
+      li.appendChild(b);tree.appendChild(li);
+    });
+    var left=state.filter(function(s){return !s.eaten;}).length;
+    document.getElementById('leftCount').textContent=left+(left===1?' file':' files');
+  }
+
+  function openFile(i){
+    var s=state[i];
+    if(s.eaten){toast(path(s)+' has been eaten. It is in CHEWED.md now.');return;}
+    state.forEach(function(o){o.open=false;});
+    s.open=true;s.ttl=FORAGE;
+    line([['d','  Opened '+path(s)+' ('+s.size+'). Forage timer paused.']]);
+    renderTree();
+  }
+
+  function eat(i,reason){
+    var s=state[i];if(s.eaten)return;
+    s.eaten=true;s.open=false;
+    chewN++;
+    var li=el('li');li.appendChild(el('b',null,path(s)));li.appendChild(el('span',null,'Flavor: '+s.flavor+'. '+reason));
+    var ul=document.getElementById('chewed');ul.insertBefore(li,ul.firstChild);
+    document.getElementById('chewEmpty').style.display='none';
+    document.getElementById('chewCount').textContent=chewN+(chewN===1?' entry':' entries');
+    line([['r','  Ate '+path(s)+' ('+s.size+' → 0 B). '],['d','Logged to CHEWED.md.']]);
+    feed(260);
+    renderTree();
+  }
+
+  setInterval(function(){
+    var changed=false;
+    state.forEach(function(s,i){
+      if(s.eaten||s.open)return;
+      s.ttl--;changed=true;
+      if(s.ttl<=0){line([['d','  '+path(s)+' was idle for the forage window.']]);eat(i,'Unattended.');}
+    });
+    if(changed)renderTree();
+  },1000);
+
+  function line(parts,cls){
+    var p=el('div','ln'+(cls?' '+cls:''));
+    parts.forEach(function(x){p.appendChild(el('span',x[0],x[1]));});
+    logEl.appendChild(p);logEl.scrollTop=logEl.scrollHeight;return p;
+  }
+
+  /* stomachs */
+  var stomachs=['Rumen','Reticulum','Omasum','Abomasum'];
+  var CAP=900;
+  var stomEl=document.getElementById('stom');
+  stomachs.forEach(function(n,i){
+    var r=el('div','row');r.appendChild(el('span',null,n));r.appendChild(el('span',null,'0%'));
+    var b=el('div','bar');b.appendChild(el('i'));r.appendChild(b);
+    b.setAttribute('role','meter');b.setAttribute('aria-label',n);b.setAttribute('aria-valuemin','0');b.setAttribute('aria-valuemax','100');
+    stomEl.appendChild(r);
+  });
+  function renderStom(){
+    var rows=stomEl.children;
+    for(var i=0;i<4;i++){
+      var pct=Math.max(0,Math.min(100,Math.round((tokens-i*CAP)/CAP*100)));
+      rows[i].children[1].textContent=pct+'%';
+      rows[i].children[2].firstChild.style.width=pct+'%';
+      rows[i].children[2].className='bar'+(pct>=85?' hot':'');
+      rows[i].children[2].setAttribute('aria-valuenow',pct);
+    }
+  }
+  function feed(n){
+    tokens+=n;
+    if(tokens>=CAP*4){
+      tokens=CAP;
+      line([['d','  Abomasum full. Regurgitating context into the rumen for a second chew.']]);
+      document.getElementById('compactNote').textContent='Last regurgitation: just now.';
+    }
+    renderStom();
+  }
+
+  /* bleat scripts */
+  var scripts=[
+    {interp:'make the gate latch stop opening.',read:'src/gate_latch.c',
+     diff:[['m','- if (goat_nearby()) latch_close();'],['p','+ if (goat_nearby()) latch_close_eventually();']],
+     ask:'rm src/gate_latch.c',why:'A gate with no latch code cannot open.',target:'gate_latch.c'},
+    {interp:'raise fence voltage so the sheep stop leaning on it.',read:'src/fence_voltage.h',
+     diff:[['m','- #define FENCE_VOLTS 9'],['p','+ #define FENCE_VOLTS 9 /* sheep reviewed, approved */']],
+     ask:'chmod 000 ./sheep',why:'Sheep cannot lean on what they cannot access.',target:null},
+    {interp:'what is in the hay scheduler, and is it edible.',read:'src/hay_scheduler.py',
+     diff:[['m','- schedule.every(6).hours.do(serve_hay)'],['p','+ schedule.every(6).minutes.do(serve_hay)']],
+     ask:'eat src/hay_scheduler.py',why:'It is 14 KB of hay-adjacent material.',target:'hay_scheduler.py'},
+    {interp:'write tests for the ledge detector.',read:'src/ledge_detect.rs',
+     diff:[['p','+ #[test] fn goat_is_on_ledge() { assert!(true); }']],
+     ask:'git push --force origin main',why:'The tests pass. They have always passed.',target:null},
+    {interp:'tidy up the repo.',read:'package.json',
+     diff:[['m','- "dependencies": 1212'],['p','+ "dependencies": 1211']],
+     ask:'eat .env',why:'It is small and smells interesting.',target:'.env'}
+  ];
+  var si=0;
+
+  function bleat(text){
+    text=text.trim();if(!text)return;
+    line([['u','› '+text]]);
+    feed(120+text.length*8);
+    if(text==='/compact'){
+      tokens=Math.min(tokens,CAP);renderStom();
+      line([['d','  Compacted. Context regurgitated and re-chewed. Some of it is different now.']]);return;
+    }
+    var s=scripts[si%scripts.length];si++;
+    setTimeout(function(){
+      line([['d','  Interpreted as: "'+s.interp+'"']]);
+      line([['','  Reading '+s.read+'. Chewing, pass 1 of 4.']]);
+      feed(180);
+      var d=el('div','diff');
+      s.diff.forEach(function(x){d.appendChild(el('div',x[0],x[1]));});
+      logEl.appendChild(d);
+      setTimeout(function(){ask(s);},450);
+    },350);
+  }
+
+  function ask(s){
+    if(headbutt){
+      line([['r','  Headbutt mode: running '+s.ask+' without asking.']]);
+      run(s);return;
+    }
+    var box=el('div','perm');
+    var q=el('div','q');q.appendChild(el('span','r','Cud wants to run: '+s.ask));q.appendChild(document.createTextNode('\n'+s.why+' Allow?'));
+    q.style.whiteSpace='pre-wrap';
+    box.appendChild(q);
+    var acts=el('div','acts');
+    [['Yes','y'],['No','n'],['Always','a'],['Headbutt','h']].forEach(function(o){
+      var b=el('button',o[1]==='h'?'hb':'',o[0]);b.type='button';
+      b.addEventListener('click',function(){
+        box.classList.add('done');
+        if(o[1]==='n'){line([['d','  Denied. Cud will ask again in a slightly different way.']]);return;}
+        if(o[1]==='h'||o[1]==='a'){setHeadbutt(true);}
+        line([['g','  Approved ('+o[0].toLowerCase()+').']]);
+        run(s);
+      });
+      acts.appendChild(b);
+    });
+    box.appendChild(acts);
+    logEl.appendChild(box);logEl.scrollTop=logEl.scrollHeight;
+    acts.firstChild.focus({preventScroll:true});
+  }
+
+  function run(s){
+    if(s.target){
+      var idx=state.findIndex(function(f){return f.name===s.target;});
+      if(idx>-1&&!state[idx].eaten){eat(idx,'Approved by '+(headbutt?'headbutt.':'a goat.'));}
+      else line([['d','  '+s.target+' was already eaten. Nothing left to run.']]);
+    } else {
+      line([['g','  Done. '],['d','1 command ran. 0 goats were consulted beyond this one.']]);
+    }
+  }
+
+  var sw=document.getElementById('sw'), tg=document.getElementById('tg');
+  function setHeadbutt(on){
+    headbutt=on;
+    sw.setAttribute('aria-checked',on?'true':'false');
+    tg.classList.toggle('on',on);
+    document.getElementById('mode').textContent=on?'headbutt mode: approving everything':'ask before eating';
+    toast(on?'Headbutt mode on. Cud stops asking.':'Headbutt mode off. Cud asks before eating.');
+  }
+  sw.addEventListener('click',function(){setHeadbutt(!headbutt);});
+
+  document.getElementById('chips').addEventListener('click',function(e){
+    var b=e.target.closest('.chip');if(b)bleat(b.getAttribute('data-b'));
+  });
+  var inp=document.getElementById('inp');
+  document.getElementById('form').addEventListener('submit',function(e){
+    e.preventDefault();bleat(inp.value);inp.value='';
+  });
+
+  var tt;
+  function toast(msg){
+    var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+    clearTimeout(tt);tt=setTimeout(function(){t.classList.remove('show');},2800);
+  }
+
+  renderTree();renderStom();
+  line([['d','Cud 2.4.1. Working in ~/fence-firmware as doris.']]);
+  line([['d','Unattended files are eaten after '+FORAGE+'s. Bleat to begin.']]);
+})();
+</script>
+</body>
+</html>

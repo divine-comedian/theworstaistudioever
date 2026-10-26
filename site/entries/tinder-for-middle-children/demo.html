@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#FBF0C9">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=IBM+Plex+Mono:wght@500;600&family=Permanent+Marker&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FBF0C9; --paper:#FFFBEA; --ink:#22201C; --muted:#6E6349;
+  --blue:#1F3FA8; --blue-dk:#152D7C; --tomato:#E4482B; --tomato-dk:#B8341C;
+  --butter-dk:#F1DE9C; --line:#E2D19A;
+  --display:'Fredoka','Nunito','Arial Rounded MT Bold',-apple-system,sans-serif;
+  --body:'Nunito',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --label:'IBM Plex Mono','SFMono-Regular',Menlo,Consolas,monospace;
+  --hand:'Permanent Marker','Comic Sans MS',cursive;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100dvh}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:6px}
+.tape{display:inline-block;font-family:var(--label);font-weight:600;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#fff;background:var(--blue);padding:4px 13px 3px;transform:rotate(-1.5deg);box-shadow:0 2px 0 var(--blue-dk);
+  clip-path:polygon(6px 0,calc(100% - 6px) 0,100% 50%,calc(100% - 6px) 100%,6px 100%,0 50%)}
+.tape.red{background:var(--tomato);box-shadow:0 2px 0 var(--tomato-dk)}
+
+.chrome{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 24px;border-bottom:2px solid var(--line);background:var(--paper)}
+.back{font-weight:700;font-size:14px;text-decoration:none;color:var(--ink)}
+.back:hover{text-decoration:underline}
+.brand{font-family:var(--display);font-weight:700;font-size:26px;line-height:1}
+.noticed{display:flex;align-items:center;gap:10px;font-weight:700;font-size:14px}
+.noticed b{font-family:var(--display);font-size:20px;background:var(--tomato);color:#fff;border-radius:999px;min-width:34px;height:34px;display:grid;place-items:center;box-shadow:0 3px 0 var(--tomato-dk);font-variant-numeric:tabular-nums}
+
+.app{display:grid;grid-template-columns:290px 1fr;gap:32px;max-width:1080px;margin:0 auto;padding:28px 24px 48px}
+@media(max-width:820px){.app{grid-template-columns:1fr}.side{order:2}}
+
+.side{display:flex;flex-direction:column;gap:24px}
+.panel{background:var(--paper);border-radius:14px;padding:20px;box-shadow:inset 0 0 0 2px var(--line)}
+.panel h2{font-family:var(--display);font-weight:600;font-size:20px;margin:12px 0 6px}
+.panel p.hint{margin:0 0 12px;font-size:14px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:0;background:#fff;box-shadow:inset 0 0 0 2px var(--ink);border-radius:999px;padding:7px 14px;font-weight:700;font-size:14px;min-height:38px}
+.chip[aria-pressed="true"]{background:var(--blue);color:#fff;box-shadow:0 3px 0 var(--blue-dk)}
+.queue{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.queue li{display:flex;align-items:center;gap:12px;font-size:14px}
+.queue .mini{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:700;color:#fff}
+.queue small{display:block;color:var(--muted);font-size:12.5px}
+.queue s{font-family:var(--hand);color:var(--tomato);text-decoration-thickness:2px}
+
+.main{display:flex;flex-direction:column;align-items:center;gap:20px}
+.deck{position:relative;width:100%;max-width:400px;aspect-ratio:4/6.2;}
+.card{position:absolute;inset:0;background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 0 0 2px var(--line);display:flex;flex-direction:column;touch-action:pan-y;user-select:none;transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .35s}
+.card.under{transform:translateY(14px) scale(.96)}
+.card.under2{transform:translateY(28px) scale(.92)}
+.card.gone-l{transform:translateX(-140%) rotate(-18deg);opacity:0}
+.card.gone-r{transform:translateX(140%) rotate(18deg);opacity:0}
+.card.dragging{transition:none}
+.photo{position:relative;flex:1;min-height:0;background:var(--butter-dk)}
+.photo img{width:100%;height:100%;object-fit:cover;object-position:50% 28%;pointer-events:none}
+.nophoto{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px}
+.nophoto .big{font-family:var(--display);font-weight:700;font-size:96px;line-height:1;color:#fff}
+.nophoto p{margin:10px 0 0;color:#fff;font-weight:700;font-size:14px;max-width:22em}
+.photo .tape{position:absolute;top:14px;left:12px}
+.stamp{position:absolute;top:26px;padding:4px 14px;border:4px solid;border-radius:10px;font-family:var(--display);font-weight:700;font-size:30px;opacity:0;transform:rotate(-10deg);background:rgba(255,255,255,.85)}
+.stamp.yes{right:18px;color:var(--tomato);transform:rotate(10deg)}
+.stamp.no{left:18px;color:var(--ink)}
+.info{padding:16px 18px 16px}
+.info .was s{font-family:var(--hand);color:var(--tomato);font-size:15px;margin-right:10px;text-decoration-thickness:2px}
+.info h3{font-family:var(--display);font-weight:600;font-size:28px;line-height:1.1;margin:2px 0 4px}
+.info .bio{margin:0 0 12px;font-size:14.5px;color:#3A362D}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat{background:var(--paper);border-radius:10px;padding:7px 10px;box-shadow:inset 0 0 0 1.5px var(--line)}
+.stat span{display:block;font-size:11.5px;font-weight:700;color:var(--muted);line-height:1.25}
+.stat b{font-family:var(--display);font-weight:600;font-size:18px;font-variant-numeric:tabular-nums}
+.stat b small{font-family:var(--body);font-size:12px;font-weight:600;color:var(--muted)}
+
+.actions{display:flex;gap:16px;width:100%;max-width:400px}
+.btn{flex:1;border:0;border-radius:999px;padding:15px 20px 14px;font-family:var(--display);font-weight:600;font-size:19px;transition:transform .12s,box-shadow .12s}
+.btn:active{transform:translateY(3px)}
+.btn.pass{background:#fff;box-shadow:inset 0 0 0 2px var(--ink)}
+.btn.note{background:var(--tomato);color:#fff;box-shadow:0 4px 0 var(--tomato-dk)}
+.btn.note:active{box-shadow:0 1px 0 var(--tomato-dk)}
+.btn.blue{background:var(--blue);color:#fff;box-shadow:0 4px 0 var(--blue-dk)}
+.keys{font-size:13px;color:var(--muted);margin:0}
+.empty{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;padding:30px;background:var(--paper);border-radius:22px;box-shadow:inset 0 0 0 2px dashed var(--line);border:2px dashed var(--line)}
+.empty.show{display:flex}
+.empty h3{font-family:var(--display);font-weight:600;font-size:26px;margin:0}
+.empty p{margin:0;color:var(--muted)}
+
+/* modal */
+.scrim{position:fixed;inset:0;background:rgba(34,32,28,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
+.scrim.open{display:flex}
+.modal{background:var(--paper);border-radius:22px;width:100%;max-width:440px;padding:28px 26px 26px;box-shadow:0 0 0 2px var(--line);position:relative}
+@media (prefers-reduced-motion:no-preference){.scrim.open .modal{animation:pop .28s cubic-bezier(.2,.9,.3,1.3)}}
+@keyframes pop{from{transform:scale(.9);opacity:0}}
+.modal h2{font-family:var(--display);font-weight:600;font-size:30px;line-height:1.1;margin:14px 0 8px}
+.modal p{margin:0 0 16px;color:#3A362D}
+.modal label{display:block;font-weight:800;font-size:14px;margin-bottom:6px}
+.modal input{width:100%;font:inherit;font-size:18px;padding:12px 14px;border-radius:12px;border:2px solid var(--ink);background:#fff;min-height:48px}
+.modal .msg{min-height:44px;margin:10px 0 14px;font-size:14.5px;font-weight:700}
+.modal .msg.bad{color:var(--tomato-dk)}
+.modal .msg.ok{color:var(--blue)}
+.modal .row{display:flex;gap:12px}
+.modal .row .btn{font-size:17px;padding:12px 16px}
+.attempts{display:flex;gap:6px;margin-bottom:4px}
+.attempts i{width:12px;height:12px;border-radius:50%;background:var(--line)}
+.attempts i.used{background:var(--tomato)}
+.chat{display:none;flex-direction:column;gap:8px;margin-bottom:16px}
+.chat.show{display:flex}
+.bub{max-width:85%;padding:9px 14px;border-radius:16px;font-size:15px}
+.bub.them{background:#fff;box-shadow:inset 0 0 0 1.5px var(--line);align-self:flex-start;border-bottom-left-radius:4px}
+.bub.me{background:var(--blue);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.close{position:absolute;top:14px;right:14px;width:40px;height:40px;border-radius:50%;border:0;background:transparent;font-size:24px;line-height:1}
+.close:hover{background:var(--butter-dk)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(120px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:999px;font-weight:700;font-size:14px;transition:transform .25s;z-index:20;max-width:calc(100% - 32px);text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+@media (prefers-reduced-motion:reduce){.card,.toast{transition:none}}
+</style>
+<title>Also — Tinder for middle children — Demo</title>
+<meta name="description" content="Finally, a match who remembers your name. Also is the dating app for middle children. Your profile loads before your older sibling&#x27;s, after nobody&#x27;s, and every match has to say your name correctly on the first try before the chat unlocks.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/tinder-for-middle-children/demo.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Also — Tinder for middle children — Demo">
+<meta property="og:description" content="Finally, a match who remembers your name. Also is the dating app for middle children. Your profile loads before your older sibling&#x27;s, after nobody&#x27;s, and every match has to say your name correctly on the first try before the chat unlocks.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/tinder-for-middle-children/demo.html">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/tinder-for-middle-children/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Worst AI Studio Ever logo">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Also — Tinder for middle children — Demo">
+<meta name="twitter:description" content="Finally, a match who remembers your name. Also is the dating app for middle children. Your profile loads before your older sibling&#x27;s, after nobody&#x27;s, and every match has to say your name correctly on the first try before the chat unlocks.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/tinder-for-middle-children/social-preview.jpg">
+<meta name="twitter:image:alt" content="The Worst AI Studio Ever logo">
+</head>
+<body>
+<header class="chrome">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="brand">Also</span>
+  <span class="noticed" aria-live="polite">Noticed you today <b id="noticedCount">3</b></span>
+</header>
+
+<div class="app">
+  <aside class="side">
+    <div class="panel">
+      <span class="tape">Birth order</span>
+      <h2>Show me</h2>
+      <p class="hint">Filter by where they sat in the car.</p>
+      <div class="chips" id="chips">
+        <button class="chip" aria-pressed="true" data-f="all">Any middle</button>
+        <button class="chip" aria-pressed="false" data-f="2/3">2 of 3</button>
+        <button class="chip" aria-pressed="false" data-f="2/4">2 of 4</button>
+        <button class="chip" aria-pressed="false" data-f="3/5">3 of 5</button>
+      </div>
+    </div>
+    <div class="panel">
+      <span class="tape red">Hand-me-down queue</span>
+      <h2>From your older sister</h2>
+      <p class="hint">She passed on these. They still work.</p>
+      <ul class="queue" id="queue"></ul>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="deck" id="deck" aria-live="polite">
+      <div class="empty" id="empty">
+        <span class="tape">Deck empty</span>
+        <h3>You have seen everyone.</h3>
+        <p>That is more attention than they got at home. Reset the deck to go again.</p>
+        <button class="btn blue" id="reset" style="flex:none">Reset the deck</button>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn pass" id="passBtn">Pass</button>
+      <button class="btn note" id="noteBtn">Notice</button>
+    </div>
+    <p class="keys">Drag the card, or use the ← and → keys.</p>
+  </main>
+</div>
+
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="modal">
+    <button class="close" id="mClose" aria-label="Close">×</button>
+    <span class="tape red">Mutual notice</span>
+    <h2 id="mTitle">You noticed each other.</h2>
+    <p id="mBody">Before the chat unlocks, type their name. Their actual name. First try.</p>
+    <div class="chat" id="chat"></div>
+    <form id="nameForm" novalidate>
+      <div class="attempts" id="attempts" aria-hidden="true"><i></i><i></i><i></i></div>
+      <label for="nameIn">Their name</label>
+      <input id="nameIn" autocomplete="off" spellcheck="false">
+      <div class="msg" id="msg" role="alert"></div>
+      <div class="row">
+        <button type="button" class="btn pass" id="mLater">Later</button>
+        <button type="submit" class="btn note">Confirm name</button>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+  var people = [
+    {name:'Rachel', age:33, order:'2/3', was:['Beth','Kayla'], img:'card-1.webp', alt:'A woman in a mustard cardigan against a yellow wall',
+     bio:'Planned my own surprise party. It went well. Nobody else came, but the planning was strong.',
+     stats:[['Left at a rest stop','2','times'],['Family album photos','4','vs 212'],['Peacekeeper Score','91','/100'],['Wardrobe inherited','64','%']],
+     reply:'You got it right. I have to sit down.'},
+    {name:'Owen', age:35, order:'2/4', was:['Kyle','Daniel'], img:'card-2.webp', alt:'A man in an oversized navy sweatshirt holding a cupcake with one candle',
+     bio:'My birthday is in December so it was always a joint thing with Christmas. This cupcake is mine. I bought it.',
+     stats:[['Left at a rest stop','1','time'],['Family album photos','11','vs 340'],['Peacekeeper Score','84','/100'],['Wardrobe inherited','88','%']],
+     reply:'Owen. Yes. That is me. Nobody does the O right.'},
+    {name:'Tess', age:29, order:'3/5', was:['Molly','Anna'], img:'card-3.webp', alt:'A woman in a red jacket in the middle back seat of a car between two booster seats',
+     bio:'Sat in the middle for 14 years of road trips. Can referee a fight over a window from memory.',
+     stats:[['Left at a rest stop','4','times'],['Family album photos','2','vs 190'],['Peacekeeper Score','97','/100'],['Wardrobe inherited','71','%']],
+     reply:'Ok, I like you. Where do you want to eat? Actually I will pick.'},
+    {name:'Dev', age:31, order:'2/3', was:['Ravi','Neel'], img:null, color:'#1F3FA8', initials:'D',
+     bio:'My parents bought a new camera for my brother and another one for my sister. This is a placeholder.',
+     stats:[['Left at a rest stop','3','times'],['Family album photos','0','vs 155'],['Peacekeeper Score','78','/100'],['Wardrobe inherited','93','%']],
+     reply:'It is spelled Dev. You did that. Thank you.'},
+    {name:'Lauren', age:34, order:'2/4', was:['Lindsay','Laura'], img:null, color:'#E4482B', initials:'L',
+     bio:'I am the reliable one. I will text back. I will also remember your mum\'s birthday and you will not remember mine.',
+     stats:[['Left at a rest stop','1','time'],['Family album photos','6','vs 401'],['Peacekeeper Score','88','/100'],['Wardrobe inherited','52','%']],
+     reply:'Lauren, not Laura. You passed. Most people do not.'}
+  ];
+  var queuePeople = [
+    {n:'Greg, 36', s:'Swiped left on by Megan, 2019', c:'#7A6F55', i:'G'},
+    {n:'Hannah, 32', s:'Barely opened. Tags still on', c:'#1F3FA8', i:'H'},
+    {n:'Paul, 38', s:'Small stain, works fine', c:'#E4482B', i:'P'}
+  ];
+  var deck = document.getElementById('deck'), empty = document.getElementById('empty');
+  var filter = 'all', idx = 0, list = [], noticed = 3, current = null, tries = 0;
+
+  var q = document.getElementById('queue');
+  queuePeople.forEach(function(p){
+    var li = document.createElement('li');
+    li.innerHTML = '<span class="mini" style="background:'+p.c+'">'+p.i+'</span><span><b>'+p.n+'</b><small>'+p.s+'</small></span>';
+    q.appendChild(li);
+  });
+
+  function cardHTML(p){
+    var photo = p.img
+      ? '<img alt="'+p.alt+'" width="800" height="800" draggable="false">'
+      : '<div class="nophoto" style="background:'+p.color+'"><div><div class="big">'+p.initials+'</div><p>Photo pending. Our parents only had film for the first one.</p></div></div>';
+    var stats = p.stats.map(function(s){return '<div class="stat"><span>'+s[0]+'</span><b>'+s[1]+' <small>'+s[2]+'</small></b></div>';}).join('');
+    var ord = p.order.split('/');
+    return '<div class="photo">'+photo+'<span class="tape">Child '+ord[0]+' of '+ord[1]+'</span><span class="stamp no">Pass</span><span class="stamp yes">Noticed</span></div>'+
+      '<div class="info"><div class="was">'+p.was.map(function(w){return '<s>'+w+'</s>';}).join('')+'</div><h3>'+p.name+', '+p.age+'</h3><p class="bio">'+p.bio+'</p><div class="stats">'+stats+'</div></div>';
+  }
+
+  function build(){
+    Array.prototype.slice.call(deck.querySelectorAll('.card')).forEach(function(c){c.remove();});
+    list = people.filter(function(p){return filter==='all' || p.order===filter;});
+    idx = 0;
+    for (var i = list.length-1; i >= 0; i--){
+      var el = document.createElement('article');
+      el.className = 'card';
+      el.setAttribute('aria-label', list[i].name+', '+list[i].age);
+      el.innerHTML = cardHTML(list[i]);
+      if (list[i].img) el.querySelector('img').src = list[i].img;
+      el.dataset.i = i;
+      deck.appendChild(el);
+    }
+    layout();
+  }
+  function cards(){ return Array.prototype.slice.call(deck.querySelectorAll('.card:not(.gone-l):not(.gone-r)')).reverse(); }
+  function layout(){
+    var cs = cards();
+    cs.forEach(function(c,k){
+      c.classList.remove('under','under2');
+      c.style.transform=''; c.style.zIndex = 10-k;
+      if(k===1) c.classList.add('under');
+      if(k>=2) c.classList.add('under2');
+      c.style.visibility = k>2 ? 'hidden' : 'visible';
+    });
+    empty.classList.toggle('show', cs.length===0);
+    if(cs[0]) attachDrag(cs[0]);
+  }
+  function swipe(dir){
+    var top = cards()[0]; if(!top) return;
+    var p = list[+top.dataset.i];
+    top.classList.add(dir>0 ? 'gone-r' : 'gone-l');
+    top.style.transform='';
+    setTimeout(layout, 10);
+    if(dir>0){ openMatch(p); } else { toast('Passed on '+p.name+'. They are used to it.'); }
+  }
+
+  function attachDrag(el){
+    if(el._drag) return; el._drag = true;
+    var sx=0, dx=0, on=false;
+    el.addEventListener('pointerdown', function(e){ if(el !== cards()[0]) return; on=true; sx=e.clientX; dx=0; el.classList.add('dragging'); el.setPointerCapture(e.pointerId); });
+    el.addEventListener('pointermove', function(e){ if(!on) return; dx=e.clientX-sx; el.style.transform='translateX('+dx+'px) rotate('+(dx/18)+'deg)';
+      el.querySelector('.stamp.yes').style.opacity = Math.max(0, Math.min(1, dx/100));
+      el.querySelector('.stamp.no').style.opacity = Math.max(0, Math.min(1, -dx/100)); });
+    function end(){ if(!on) return; on=false; el.classList.remove('dragging');
+      el.querySelector('.stamp.yes').style.opacity=0; el.querySelector('.stamp.no').style.opacity=0;
+      if(Math.abs(dx)>100){ swipe(dx>0?1:-1); } else { el.style.transform=''; } }
+    el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end);
+  }
+
+  /* modal */
+  var scrim = document.getElementById('scrim'), input = document.getElementById('nameIn'), msg = document.getElementById('msg'), form = document.getElementById('nameForm'), chat = document.getElementById('chat'), lastFocus;
+  function openMatch(p){
+    current = p; tries = 0; lastFocus = document.activeElement;
+    document.getElementById('mTitle').textContent = 'You and '+p.name+' noticed each other.';
+    document.getElementById('mBody').textContent = 'Before the chat unlocks, type their name. Their actual name. First try is ideal.';
+    msg.textContent=''; msg.className='msg'; input.value=''; chat.className='chat'; chat.innerHTML=''; form.style.display='';
+    paintTries(); scrim.classList.add('open'); setTimeout(function(){input.focus();},50);
+  }
+  function paintTries(){ Array.prototype.forEach.call(document.querySelectorAll('#attempts i'), function(d,k){ d.classList.toggle('used', k<tries); }); }
+  function closeM(){ scrim.classList.remove('open'); if(lastFocus) lastFocus.focus(); }
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var v = input.value.trim();
+    if(!v){ msg.className='msg bad'; msg.textContent='Type a name. Any name would be a start. Theirs would be better.'; input.focus(); return; }
+    if(v.toLowerCase() === current.name.toLowerCase()){
+      msg.className='msg ok'; msg.textContent='';
+      form.style.display='none';
+      document.getElementById('mBody').textContent = 'Name confirmed on attempt '+(tries+1)+'. Chat unlocked.';
+      chat.innerHTML = '<div class="bub me">Hi '+current.name+'.</div><div class="bub them">'+current.reply+'</div>';
+      chat.className='chat show';
+      noticed++; document.getElementById('noticedCount').textContent = noticed;
+      return;
+    }
+    tries++; paintTries();
+    var sib = current.was.some(function(w){ return w.toLowerCase()===v.toLowerCase(); });
+    if(tries>=3){
+      msg.className='msg bad';
+      msg.textContent='Three misses. '+current.name+' has been reassigned to your brother. He did not ask for this either.';
+      setTimeout(function(){ closeM(); toast(current.name+' is now matched with your brother.'); }, 1600);
+      return;
+    }
+    msg.className='msg bad';
+    msg.textContent = sib ? 'That is their sibling\'s name. They have heard it all their life. Try again.' : 'That is not their name. It was on the card, at the top, in big letters.';
+    input.select();
+  });
+  document.getElementById('mClose').addEventListener('click', closeM);
+  document.getElementById('mLater').addEventListener('click', function(){ closeM(); toast(current.name+' was left waiting. Familiar territory.'); });
+  scrim.addEventListener('click', function(e){ if(e.target===scrim) closeM(); });
+
+  var toastEl = document.getElementById('toast'), tt;
+  function toast(t){ toastEl.textContent=t; toastEl.classList.add('show'); clearTimeout(tt); tt=setTimeout(function(){toastEl.classList.remove('show');}, 3200); }
+
+  document.getElementById('passBtn').addEventListener('click', function(){ swipe(-1); });
+  document.getElementById('noteBtn').addEventListener('click', function(){ swipe(1); });
+  document.getElementById('reset').addEventListener('click', build);
+  document.addEventListener('keydown', function(e){
+    if(scrim.classList.contains('open')){ if(e.key==='Escape') closeM(); return; }
+    if(e.target.tagName==='INPUT') return;
+    if(e.key==='ArrowLeft') swipe(-1);
+    if(e.key==='ArrowRight') swipe(1);
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('.chip'), function(c){
+    c.addEventListener('click', function(){
+      Array.prototype.forEach.call(document.querySelectorAll('.chip'), function(o){ o.setAttribute('aria-pressed', o===c ? 'true' : 'false'); });
+      filter = c.dataset.f; build();
+    });
+  });
+  build();
+})();
+</script>
+</body>
+</html>
