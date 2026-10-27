@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#141619">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --asphalt: #141619;
+    --asphalt-2: #1C1F23;
+    --asphalt-3: #252930;
+    --line: #2C3037;
+    --volt: #D7FF3D;
+    --orange: #FF5A1F;
+    --tyvek: #F3F1EA;
+    --fg: #EDEBE4;
+    --muted: #8B9099;
+    --display: 'Big Shoulders Display', 'Impact', 'Arial Narrow', sans-serif;
+    --body: 'Work Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --mono: 'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--asphalt); color: var(--fg); font: 400 15px/1.5 var(--body); -webkit-font-smoothing: antialiased; min-height: 100dvh; }
+  a { color: inherit; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--volt); outline-offset: 2px; }
+
+  .top { display: flex; align-items: center; gap: 22px; padding: 14px 22px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  .back { font-size: 13px; color: var(--muted); text-decoration: none; }
+  .back:hover { color: var(--fg); }
+  .mark { font: 900 26px/1 var(--display); text-transform: uppercase; transform: skewX(-8deg); display: inline-block; }
+  .mark span { color: var(--volt); }
+  .crumbs { color: var(--muted); font-size: 14px; }
+  .crumbs b { color: var(--fg); font-weight: 600; }
+  .top .spacer { flex: 1; }
+  .clockbox { display: flex; align-items: center; gap: 14px; }
+  .clock { font: 700 26px/1 var(--mono); color: var(--volt); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+  .clocklbl { font-size: 12px; color: var(--muted); line-height: 1.3; text-align: right; }
+
+  .progress { display: flex; align-items: center; gap: 16px; padding: 12px 22px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  .track { flex: 1; min-width: 200px; height: 10px; background: var(--asphalt-3); border-radius: 2px; position: relative; overflow: hidden; }
+  .fill { position: absolute; inset: 0 auto 0 0; background: var(--volt); width: 0; transition: width .3s ease-out; }
+  .ptext { font: 500 13px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+  .ptext b { color: var(--fg); }
+  .actions { display: flex; gap: 10px; }
+  .btn { border: 0; border-radius: 3px; padding: 11px 18px; font: 800 17px/1 var(--display); text-transform: uppercase; letter-spacing: .03em; transform: skewX(-8deg); transition: background-color .15s ease, transform .15s ease; min-height: 44px; }
+  .btn > span { display: inline-block; transform: skewX(8deg); }
+  .btn-volt { background: var(--volt); color: var(--asphalt); }
+  .btn-volt:hover { background: #E8FF8A; }
+  .btn-orange { background: var(--orange); color: var(--asphalt); }
+  .btn-orange:hover { background: #FF7A49; }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+
+  .filters { display: flex; gap: 8px; padding: 14px 22px 0; flex-wrap: wrap; align-items: center; }
+  .filters .lbl { color: var(--muted); font-size: 13px; margin-right: 4px; }
+  .chip { border: 1px solid var(--line); background: transparent; padding: 7px 13px; border-radius: 3px; font-size: 13px; min-height: 36px; }
+  .chip[aria-pressed="true"] { background: var(--fg); color: var(--asphalt); border-color: var(--fg); }
+  .chip:hover { border-color: var(--muted); }
+
+  .layout { display: grid; grid-template-columns: 1fr 280px; gap: 0; }
+  .board { display: grid; grid-template-columns: repeat(4, minmax(210px, 1fr)); gap: 14px; padding: 16px 22px 28px; overflow-x: auto; }
+  .col { background: var(--asphalt-2); border-radius: 4px; display: flex; flex-direction: column; min-height: 300px; }
+  .col h2 { margin: 0; padding: 12px 14px; font: 800 20px/1 var(--display); text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); }
+  .col h2 .n { font: 500 12px var(--mono); color: var(--muted); }
+  .col[data-col="running"] h2 { color: var(--volt); }
+  .col[data-col="blocked"] h2 { color: var(--orange); }
+  .cards { padding: 10px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; max-height: calc(100dvh - 250px); }
+  .empty { color: var(--muted); font-size: 13px; padding: 14px 6px; }
+
+  .card { background: var(--tyvek); color: var(--asphalt); border-radius: 3px; padding: 10px 12px 9px; position: relative; }
+  .card .row1 { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .card .mi { font: 900 26px/1 var(--display); text-transform: uppercase; }
+  .card .split { font: 700 12px var(--mono); font-variant-numeric: tabular-nums; }
+  .card .row2 { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 12px; color: #555A61; gap: 6px; }
+  .who { display: inline-block; padding: 2px 7px; border-radius: 2px; font-size: 11.5px; font-weight: 600; color: var(--asphalt); }
+  .who.LL { background: #C9E8FF; }
+  .who.RL { background: #FFD9C9; }
+  .who.LU { background: #E3E0FF; }
+  .who.MO { background: #FFEFA0; }
+  .card .note { margin-top: 7px; font-size: 12px; color: #9A2E06; font-weight: 600; }
+  .card.done { background: #2A2E34; color: var(--muted); }
+  .card.done .mi { color: #A7ACB3; text-decoration: line-through; text-decoration-thickness: 2px; }
+  .card.done .row2 { color: var(--muted); }
+  .card.done .who { opacity: .55; }
+  .card.running { box-shadow: inset 4px 0 0 var(--volt); background: var(--tyvek); }
+  .card.blocked { box-shadow: inset 4px 0 0 var(--orange); }
+  .card.flash { animation: flash .5s ease-out; }
+  @keyframes flash { from { transform: translateX(10px); opacity: .3; } to { transform: none; opacity: 1; } }
+
+  aside { border-left: 1px solid var(--line); padding: 16px 20px 28px; }
+  aside h2 { margin: 0 0 4px; font: 800 22px/1 var(--display); text-transform: uppercase; }
+  aside .sub { color: var(--muted); font-size: 13px; margin: 0 0 14px; }
+  .nails { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+  .nail { display: flex; justify-content: space-between; align-items: center; width: 100%; background: var(--asphalt-2); border: 1px solid var(--line); border-radius: 3px; padding: 8px 10px; font-size: 13px; text-align: left; min-height: 40px; }
+  .nail:hover { border-color: var(--muted); }
+  .pill { font-size: 11.5px; font-weight: 600; padding: 2px 8px; border-radius: 2px; color: var(--asphalt); white-space: nowrap; }
+  .pill.s0 { background: var(--volt); }
+  .pill.s1 { background: #FFD24A; }
+  .pill.s2 { background: var(--orange); }
+  .pill.s3 { background: #4A4F57; color: var(--fg); }
+  .health { margin-top: 14px; font: 500 13px var(--mono); color: var(--muted); }
+  .health b { color: var(--fg); }
+  .feed { margin-top: 26px; border-top: 1px solid var(--line); padding-top: 14px; }
+  .feed ol { list-style: none; margin: 0; padding: 0; font-size: 13px; display: flex; flex-direction: column; gap: 10px; }
+  .feed li { color: #BEBCB5; }
+  .feed li time { display: block; font: 500 11px var(--mono); color: var(--muted); }
+
+  .scrim { position: fixed; inset: 0; background: rgba(5, 6, 8, .62); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 50; }
+  .scrim.open { display: flex; }
+  .modal { background: var(--tyvek); color: var(--asphalt); border-radius: 4px; width: min(460px, 100%); padding: 24px; animation: pop .2s ease-out; }
+  @keyframes pop { from { transform: translateY(8px) scale(.98); opacity: 0; } to { transform: none; opacity: 1; } }
+  .modal h2 { margin: 0 0 6px; font: 900 32px/1 var(--display); text-transform: uppercase; }
+  .modal p { margin: 0 0 16px; font-size: 14px; color: #4A4F56; }
+  .modal fieldset { border: 0; padding: 0; margin: 0 0 16px; display: grid; gap: 8px; }
+  .modal legend { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+  .opt { display: flex; align-items: center; gap: 10px; border: 1px solid #D2CFC5; border-radius: 3px; padding: 10px 12px; font-size: 14px; cursor: pointer; }
+  .opt:has(input:checked) { border-color: var(--asphalt); background: #E8E5DB; }
+  .opt small { margin-left: auto; font-family: var(--mono); font-size: 11.5px; color: #6B6F76; }
+  .modal .row { display: flex; gap: 10px; justify-content: flex-end; }
+  .btn-plain { background: transparent; border: 1px solid #B9B6AC; border-radius: 3px; padding: 10px 16px; font-size: 14px; min-height: 44px; }
+
+  .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(20px); background: var(--fg); color: var(--asphalt); padding: 12px 18px; border-radius: 3px; font-size: 14px; font-weight: 500; opacity: 0; transition: opacity .2s ease, transform .2s ease; pointer-events: none; z-index: 60; max-width: calc(100% - 40px); }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 1000px) {
+    .layout { grid-template-columns: 1fr; }
+    aside { border-left: 0; border-top: 1px solid var(--line); }
+    .board { grid-template-columns: repeat(4, minmax(220px, 1fr)); }
+    .cards { max-height: 420px; }
+  }
+  @media (max-width: 640px) {
+    .crumbs { display: none; }
+    .board { grid-template-columns: 1fr; overflow-x: visible; }
+    .cards { max-height: 340px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card.flash, .modal { animation: none; }
+    .fill, .toast, .btn { transition: none; }
+  }
+</style>
+<title>Taper — Asana for marathon runners — Demo</title>
+<meta name="description" content="26.2 miles. 27 tasks. Zero excuses logged. Taper breaks your marathon into mile-level work items, assigns each one to a body part, and escalates when Morale misses a standup. The finish line is now a deliverable.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/asana-for-marathon-runners/demo.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Taper — Asana for marathon runners — Demo">
+<meta property="og:description" content="26.2 miles. 27 tasks. Zero excuses logged. Taper breaks your marathon into mile-level work items, assigns each one to a body part, and escalates when Morale misses a standup. The finish line is now a deliverable.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/asana-for-marathon-runners/demo.html">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/asana-for-marathon-runners/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Taper hero illustration">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Taper — Asana for marathon runners — Demo">
+<meta name="twitter:description" content="26.2 miles. 27 tasks. Zero excuses logged. Taper breaks your marathon into mile-level work items, assigns each one to a body part, and escalates when Morale misses a standup. The finish line is now a deliverable.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/asana-for-marathon-runners/social-preview.jpg">
+<meta name="twitter:image:alt" content="Taper hero illustration">
+</head>
+<body>
+<header class="top">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <span class="mark">Taper<span>.</span></span>
+  <span class="crumbs">Workspace: Me / Project: <b>Lakeshore Marathon 2026</b></span>
+  <span class="spacer"></span>
+  <div class="clockbox">
+    <div class="clocklbl">Race clock<br>Goal 03:59:59</div>
+    <div class="clock" id="clock" aria-live="off">02:41:07</div>
+  </div>
+</header>
+
+<div class="progress">
+  <div class="track" role="progressbar" aria-label="Race progress" aria-valuemin="0" aria-valuemax="27" id="bar"><div class="fill" id="fill"></div></div>
+  <div class="ptext" id="ptext"></div>
+  <div class="actions">
+    <button class="btn btn-orange" id="blockBtn"><span>Log blocker</span></button>
+    <button class="btn btn-volt" id="doneBtn"><span>Complete mile</span></button>
+  </div>
+</div>
+
+<div class="layout">
+  <main>
+    <div class="filters" role="group" aria-label="Filter by assignee">
+      <span class="lbl">Assignee</span>
+      <button class="chip" data-f="ALL" aria-pressed="true">Everyone</button>
+      <button class="chip" data-f="LL" aria-pressed="false">Left Leg</button>
+      <button class="chip" data-f="RL" aria-pressed="false">Right Leg</button>
+      <button class="chip" data-f="LU" aria-pressed="false">Lungs</button>
+      <button class="chip" data-f="MO" aria-pressed="false">Morale</button>
+    </div>
+    <div class="board" id="board">
+      <section class="col" data-col="backlog"><h2>Backlog <span class="n"></span></h2><div class="cards"></div></section>
+      <section class="col" data-col="running"><h2>Running <span class="n"></span></h2><div class="cards"></div></section>
+      <section class="col" data-col="blocked"><h2>Blocked <span class="n"></span></h2><div class="cards"></div></section>
+      <section class="col" data-col="done"><h2>Done <span class="n"></span></h2><div class="cards"></div></section>
+    </div>
+  </main>
+
+  <aside>
+    <h2>Toenail portfolio</h2>
+    <p class="sub">Click a nail to update its status. Changes go to Finance on Monday.</p>
+    <ul class="nails" id="nails"></ul>
+    <div class="health" id="health"></div>
+    <div class="feed">
+      <h2>Activity</h2>
+      <ol id="feed"></ol>
+    </div>
+  </aside>
+</div>
+
+<div class="scrim" id="scrim">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <h2 id="mTitle">Log a blocker</h2>
+    <p id="mSub">The current mile moves to Blocked. Its assignee gets a comment.</p>
+    <fieldset>
+      <legend>What is blocking this mile?</legend>
+      <label class="opt"><input type="radio" name="b" value="Chafing (escalated)" checked> Chafing <small>+00:02:10</small></label>
+      <label class="opt"><input type="radio" name="b" value="Side stitch"> Side stitch <small>+00:01:40</small></label>
+      <label class="opt"><input type="radio" name="b" value="Saw a dog, had to say hi"> Saw a dog <small>+00:03:05</small></label>
+      <label class="opt"><input type="radio" name="b" value="Emotional"> Emotional <small>+00:04:30</small></label>
+    </fieldset>
+    <div class="row">
+      <button class="btn-plain" id="mCancel">Cancel</button>
+      <button class="btn btn-orange" id="mSave"><span>Log blocker</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  var NAMES = { LL: 'Left Leg', RL: 'Right Leg', LU: 'Lungs', MO: 'Morale' };
+  var ORDER = ['LL', 'RL', 'LU', 'LL', 'MO', 'RL', 'LU', 'MO', 'LL'];
+  var COST = { 'Chafing (escalated)': 130, 'Side stitch': 100, 'Saw a dog, had to say hi': 185, 'Emotional': 270 };
+  var STATUSES = ['On Track', 'At Risk', 'Off Track', 'Detached'];
+
+  var miles = [];
+  for (var i = 1; i <= 27; i++) {
+    var target = 520 + Math.round(Math.sin(i * 1.7) * 14) + (i > 20 ? (i - 20) * 9 : 0);
+    miles.push({
+      n: i,
+      label: i === 27 ? 'The .2' : 'Mile ' + i,
+      who: i === 27 ? 'MO' : ORDER[i % ORDER.length],
+      target: i === 27 ? 118 : target,
+      state: i <= 18 ? 'done' : (i === 19 ? 'running' : 'backlog'),
+      note: ''
+    });
+  }
+  var clock = 2 * 3600 + 41 * 60 + 7;
+  var filter = 'ALL';
+  var nails = [
+    ['Left big', 1], ['Left index', 0], ['Left middle', 0], ['Left ring', 2], ['Left pinky', 0],
+    ['Right big', 1], ['Right index', 0], ['Right middle', 0], ['Right ring', 0], ['Right pinky', 3]
+  ];
+  var feed = [
+    ['02:38:55', 'Morale skipped the Mile 18 standup. Reminder sent.'],
+    ['02:32:10', 'Left Leg moved Mile 17 to Done, 41 seconds late.'],
+    ['02:21:47', 'Lungs commented on Mile 16: "Fine."']
+  ];
+
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function hms(s) { return pad(Math.floor(s / 3600)) + ':' + pad(Math.floor(s / 60) % 60) + ':' + pad(s % 60); }
+  function ms(s) { return Math.floor(s / 60) + ':' + pad(s % 60); }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+
+  var $ = function (id) { return document.getElementById(id); };
+  var toastTimer;
+  function toast(msg) {
+    var t = $('toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.remove('show'); }, 3200);
+  }
+  function log(msg) { feed.unshift([hms(clock), msg]); feed = feed.slice(0, 6); renderFeed(); }
+
+  function renderBoard(flashN) {
+    ['backlog', 'running', 'blocked', 'done'].forEach(function (col) {
+      var sec = document.querySelector('[data-col="' + col + '"]');
+      var box = sec.querySelector('.cards');
+      box.textContent = '';
+      var list = miles.filter(function (m) { return m.state === col && (filter === 'ALL' || m.who === filter); });
+      if (col === 'done') list = list.slice().reverse();
+      sec.querySelector('.n').textContent = list.length;
+      if (!list.length) {
+        var msg = col === 'running' ? 'Nothing running. Complete or unblock a mile to continue.' :
+                  col === 'blocked' ? 'No blockers. Suspicious.' : 'No miles for this assignee.';
+        box.appendChild(el('div', 'empty', msg));
+      }
+      list.forEach(function (m) {
+        var c = el('article', 'card ' + m.state + (m.n === flashN ? ' flash' : ''));
+        var r1 = el('div', 'row1');
+        r1.appendChild(el('span', 'mi', m.label));
+        r1.appendChild(el('span', 'split', 'due ' + ms(m.target)));
+        var r2 = el('div', 'row2');
+        r2.appendChild(el('span', 'who ' + m.who, NAMES[m.who]));
+        r2.appendChild(el('span', null, m.n === 1 ? 'No dependencies' : 'Blocked by ' + (m.n === 27 ? 'Mile 26' : 'Mile ' + (m.n - 1))));
+        c.appendChild(r1); c.appendChild(r2);
+        if (m.note) c.appendChild(el('div', 'note', m.note));
+        box.appendChild(c);
+      });
+    });
+    var done = miles.filter(function (m) { return m.state === 'done'; }).length;
+    $('fill').style.width = (done / 27 * 100) + '%';
+    $('bar').setAttribute('aria-valuenow', done);
+    var blocked = miles.filter(function (m) { return m.state === 'blocked'; }).length;
+    $('ptext').innerHTML = '';
+    var b = el('b', null, done + ' / 27'); $('ptext').appendChild(b);
+    $('ptext').appendChild(document.createTextNode(' tasks closed, ' + blocked + ' blocked'));
+    var running = miles.some(function (m) { return m.state === 'running'; });
+    $('blockBtn').disabled = !running;
+    $('doneBtn').disabled = done === 27;
+    $('doneBtn').querySelector('span').textContent = running ? 'Complete mile' : (blocked ? 'Unblock and finish' : 'Complete mile');
+    $('clock').textContent = hms(clock);
+  }
+
+  function renderNails() {
+    var ul = $('nails'); ul.textContent = '';
+    nails.forEach(function (n, idx) {
+      var li = el('li');
+      var b = el('button', 'nail');
+      b.appendChild(el('span', null, n[0]));
+      b.appendChild(el('span', 'pill s' + n[1], STATUSES[n[1]]));
+      b.setAttribute('aria-label', n[0] + ' toenail, ' + STATUSES[n[1]] + '. Click to change status.');
+      b.addEventListener('click', function () {
+        if (n[1] === 3) { toast(n[0] + ' has left the organization. Status is final.'); return; }
+        n[1] = n[1] + 1;
+        renderNails();
+        log(n[0] + ' toenail moved to ' + STATUSES[n[1]] + '.');
+        if (n[1] === 3) toast(n[0] + ' toenail detached. An exit interview has been scheduled.');
+      });
+      li.appendChild(b); ul.appendChild(li);
+    });
+    var ok = nails.filter(function (n) { return n[1] === 0; }).length;
+    $('health').innerHTML = '';
+    $('health').appendChild(document.createTextNode('Portfolio health '));
+    $('health').appendChild(el('b', null, ok + ' / 10'));
+  }
+
+  function renderFeed() {
+    var ol = $('feed'); ol.textContent = '';
+    feed.forEach(function (f) { var li = el('li'); li.appendChild(el('time', null, f[0])); li.appendChild(document.createTextNode(f[1])); ol.appendChild(li); });
+  }
+
+  function startNext() {
+    var next = miles.find(function (m) { return m.state === 'backlog'; });
+    if (next) next.state = 'running';
+    return next;
+  }
+
+  $('doneBtn').addEventListener('click', function () {
+    var cur = miles.find(function (m) { return m.state === 'running'; }) || miles.find(function (m) { return m.state === 'blocked'; });
+    if (!cur) return;
+    var wasBlocked = cur.state === 'blocked';
+    var took = cur.target + Math.round(Math.random() * 50 - 12) + (cur.n > 19 ? 20 : 0);
+    clock += took;
+    cur.state = 'done';
+    var overdue = took - cur.target;
+    log(NAMES[cur.who] + ' moved ' + cur.label + ' to Done' + (overdue > 0 ? ', ' + overdue + ' seconds late.' : ' on time. Flagged for review.'));
+    var next = (!miles.some(function (m) { return m.state === 'running'; })) ? startNext() : null;
+    renderBoard(next ? next.n : cur.n);
+    if (cur.n === 27) {
+      toast(clock <= 4 * 3600 - 1 ? 'Project closed under goal. A retro has been scheduled anyway.' : 'Project closed at ' + hms(clock) + '. Goal moved to next fiscal year.');
+    } else {
+      toast(cur.label + (wasBlocked ? ' unblocked and closed.' : ' closed.') + (next ? ' ' + next.label + ' is now running.' : ''));
+    }
+  });
+
+  var lastFocus;
+  function openModal() {
+    var cur = miles.find(function (m) { return m.state === 'running'; });
+    if (!cur) return;
+    lastFocus = document.activeElement;
+    $('mSub').textContent = cur.label + ' moves to Blocked. ' + NAMES[cur.who] + ' gets a comment.';
+    $('scrim').classList.add('open');
+    document.querySelector('.opt input:checked').focus();
+  }
+  function closeModal() { $('scrim').classList.remove('open'); if (lastFocus) lastFocus.focus(); }
+  $('blockBtn').addEventListener('click', openModal);
+  $('mCancel').addEventListener('click', closeModal);
+  $('scrim').addEventListener('click', function (e) { if (e.target === $('scrim')) closeModal(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $('scrim').classList.contains('open')) closeModal(); });
+  $('mSave').addEventListener('click', function () {
+    var cur = miles.find(function (m) { return m.state === 'running'; });
+    var reason = document.querySelector('.opt input:checked').value;
+    cur.state = 'blocked';
+    cur.note = 'Blocker: ' + reason;
+    clock += COST[reason];
+    log(NAMES[cur.who] + ' logged a blocker on ' + cur.label + ': ' + reason + '.');
+    closeModal();
+    renderBoard(cur.n);
+    toast('Blocker logged. ' + cur.label + ' moved to Blocked.');
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('.chip'), function (c) {
+    c.addEventListener('click', function () {
+      filter = c.getAttribute('data-f');
+      Array.prototype.forEach.call(document.querySelectorAll('.chip'), function (o) { o.setAttribute('aria-pressed', o === c ? 'true' : 'false'); });
+      renderBoard();
+    });
+  });
+
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    setInterval(function () {
+      if (miles.some(function (m) { return m.state === 'running' || m.state === 'blocked'; })) { clock++; $('clock').textContent = hms(clock); }
+    }, 1000);
+  }
+
+  renderBoard(); renderNails(); renderFeed();
+})();
+</script>
+</body>
+</html>

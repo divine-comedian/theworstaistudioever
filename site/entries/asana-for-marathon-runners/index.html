@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#141619">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --asphalt: #141619;
+    --asphalt-2: #1D2024;
+    --volt: #D7FF3D;
+    --orange: #FF5A1F;
+    --tyvek: #F3F1EA;
+    --fg: #EDEBE4;
+    --muted: #8B9099;
+    --ink-dark: #141619;
+    --display: 'Big Shoulders Display', 'Impact', 'Arial Narrow', sans-serif;
+    --body: 'Work Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --mono: 'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+    --wrap: 1180px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--asphalt);
+    color: var(--fg);
+    font: 400 17px/1.6 var(--body);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  img { display: block; max-width: 100%; }
+  :focus-visible { outline: 3px solid var(--volt); outline-offset: 3px; }
+  .wrap { width: min(var(--wrap), 100% - 40px); margin-inline: auto; }
+
+  /* top bar */
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 22px 0; }
+  .mark {
+    font: 900 34px/1 var(--display); text-transform: uppercase; text-decoration: none;
+    letter-spacing: .01em; display: inline-block; transform: skewX(-8deg);
+  }
+  .mark span { color: var(--volt); }
+  .bar nav { display: flex; gap: 26px; align-items: center; font-size: 15px; }
+  .bar nav a { text-decoration: none; color: var(--muted); }
+  .bar nav a:hover { color: var(--fg); }
+  .bar nav .demo-link { color: var(--asphalt); background: var(--volt); padding: 9px 16px; border-radius: 3px; font-weight: 600; }
+  .bar nav .demo-link:hover { color: var(--asphalt); background: #E8FF8A; }
+
+  /* hero */
+  .hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 48px; align-items: center; padding: 36px 0 56px; }
+  .hero h1 {
+    margin: 0 0 26px; font: 900 clamp(64px, 9.4vw, 132px)/.86 var(--display);
+    text-transform: uppercase; letter-spacing: -.005em; transform: skewX(-8deg); transform-origin: left bottom;
+  }
+  .hero h1 .l2 { color: var(--orange); }
+  .hero h1 .l3 { color: var(--volt); }
+  .hero h1 span { display: block; }
+  .hero p.sub { max-width: 34em; font-size: 19px; color: #CFCDC6; margin: 0 0 32px; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  .btn {
+    display: inline-block; text-decoration: none; font: 800 22px/1 var(--display); text-transform: uppercase;
+    letter-spacing: .03em; padding: 17px 28px; border-radius: 3px; transform: skewX(-8deg);
+    transition: transform .15s ease, background-color .15s ease;
+  }
+  .btn > span { display: inline-block; transform: skewX(8deg); }
+  .btn-volt { background: var(--volt); color: var(--asphalt); }
+  .btn-volt:hover { background: #E8FF8A; transform: skewX(-8deg) translateX(4px); }
+  .btn-ghost { color: var(--fg); box-shadow: inset 0 0 0 2px #3A3E45; }
+  .btn-ghost:hover { box-shadow: inset 0 0 0 2px var(--fg); }
+
+  .photo { position: relative; border-radius: 4px; overflow: hidden; aspect-ratio: 4 / 5; background: var(--asphalt-2); }
+  .photo img { width: 100%; height: 100%; object-fit: cover; object-position: 66% 50%; }
+  .clock {
+    position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between; align-items: end;
+    padding: 16px 18px; background: linear-gradient(to top, rgba(10, 11, 13, .92), rgba(10, 11, 13, 0));
+  }
+  .clock .t { font: 700 clamp(30px, 4vw, 46px)/1 var(--mono); color: var(--volt); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+  .clock .who { font-size: 13px; color: #C9C7C0; text-align: right; line-height: 1.4; }
+  .clock .who b { display: block; color: var(--fg); font-weight: 600; }
+
+  /* pace line */
+  .pace { height: 46px; border-top: 1px solid #262A30; border-bottom: 1px solid #262A30; overflow: hidden; }
+  .pace svg { display: block; width: 100%; height: 46px; }
+  .pace .dash { stroke: var(--volt); stroke-width: 3; stroke-dasharray: 22 14; animation: march 1.6s linear infinite; }
+  .pace text { font: 500 11px var(--mono); fill: var(--muted); }
+  .pace .tick { stroke: #4A4F57; stroke-width: 1; }
+  @keyframes march { to { stroke-dashoffset: -36; } }
+
+  /* sections */
+  section { padding: 96px 0; }
+  .head { display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; align-items: end; margin-bottom: 44px; }
+  .head h2 {
+    margin: 0; font: 900 clamp(44px, 6vw, 76px)/.9 var(--display); text-transform: uppercase;
+    transform: skewX(-8deg); transform-origin: left bottom;
+  }
+  .head p { margin: 0; color: #BEBCB5; max-width: 36em; }
+
+  /* the bib */
+  .bib {
+    position: relative; background: var(--tyvek); color: var(--ink-dark); border-radius: 4px;
+    padding: 34px 30px 0; display: flex; flex-direction: column;
+    background-image:
+      radial-gradient(circle at 16px 16px, var(--asphalt) 5px, transparent 5.5px),
+      radial-gradient(circle at calc(100% - 16px) 16px, var(--asphalt) 5px, transparent 5.5px),
+      radial-gradient(circle at 16px calc(100% - 16px), var(--asphalt) 5px, transparent 5.5px),
+      radial-gradient(circle at calc(100% - 16px) calc(100% - 16px), var(--asphalt) 5px, transparent 5.5px);
+  }
+  .bib .no { font: 900 76px/.85 var(--display); letter-spacing: -.01em; color: var(--ink-dark); }
+  .bib h3 { margin: 18px 0 10px; font: 800 28px/1 var(--display); text-transform: uppercase; }
+  .bib p { margin: 0 0 26px; font-size: 16px; color: #3B3F45; }
+  .bib .tear {
+    margin: auto -30px 0; padding: 12px 30px 26px; border-top: 2px dashed #B9B6AC;
+    font-size: 13px; color: #6B6F76; display: flex; justify-content: space-between; gap: 10px;
+  }
+  .bib .tear b { font: 700 13px var(--mono); color: var(--ink-dark); }
+  .bibs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+
+  /* demo band */
+  .band { background: var(--orange); color: var(--ink-dark); padding: 64px 0; }
+  .band .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 28px; }
+  .band h2 { margin: 0; font: 900 clamp(40px, 5.6vw, 72px)/.9 var(--display); text-transform: uppercase; transform: skewX(-8deg); transform-origin: left bottom; max-width: 13em; }
+  .band p { margin: 12px 0 0; max-width: 34em; font-size: 17px; }
+  .btn-ink { background: var(--asphalt); color: var(--volt); font-size: 26px; padding: 22px 34px; }
+  .btn-ink:hover { transform: skewX(-8deg) translateX(4px); }
+
+  /* testimonials */
+  .quotes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .quote { padding-top: 30px; }
+  .quote .face { display: flex; gap: 16px; align-items: center; margin-bottom: 20px; }
+  .quote img { width: 72px; height: 72px; border-radius: 3px; object-fit: cover; filter: grayscale(.15); }
+  .quote .name { font: 800 22px/1.05 var(--display); text-transform: uppercase; }
+  .quote .title { font-size: 14px; color: #555A61; line-height: 1.35; margin-top: 4px; }
+  .quote blockquote { margin: 0 0 26px; font-size: 18px; line-height: 1.5; }
+
+  /* pricing */
+  .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; align-items: stretch; }
+  .tier .price { font: 700 clamp(34px, 3.6vw, 44px)/1 var(--mono); letter-spacing: -.03em; font-variant-numeric: tabular-nums; margin: 14px 0 6px; }
+  .tier .tl { font-size: 15px; color: #4A4F56; margin-bottom: 18px; }
+  .tier ul { list-style: none; margin: 0 0 26px; padding: 0; font-size: 15.5px; }
+  .tier li { padding: 9px 0; border-top: 1px solid #D9D6CC; }
+  .tier li::before { content: ""; display: inline-block; width: 12px; height: 3px; background: var(--orange); margin-right: 10px; vertical-align: middle; }
+  .tier .btn { align-self: flex-start; margin-bottom: 28px; font-size: 19px; padding: 14px 22px; }
+  .tier.hot { background-color: var(--volt); }
+  .tier.hot li { border-top-color: #A9C92D; }
+  .tier.hot .tear { border-top-color: #9DBB28; color: #3B4410; }
+  .tier .btn-dark { background: var(--asphalt); color: var(--fg); }
+  .tier .btn-dark:hover { transform: skewX(-8deg) translateX(4px); }
+
+  footer { border-top: 1px solid #262A30; padding: 34px 0 48px; color: var(--muted); font-size: 14px; }
+  footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
+  footer a { color: var(--fg); text-decoration: none; }
+  footer a:hover { color: var(--volt); }
+
+  @media (max-width: 920px) {
+    .hero { grid-template-columns: 1fr; gap: 34px; }
+    .photo { aspect-ratio: 16 / 10; }
+    .head { grid-template-columns: 1fr; gap: 16px; }
+    .bibs, .quotes, .tiers { grid-template-columns: 1fr; max-width: 560px; }
+    .bar nav a:not(.demo-link) { display: none; }
+    section { padding: 72px 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pace .dash { animation: none; }
+    .btn, .btn:hover { transition: none; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+<title>Taper — Asana for marathon runners</title>
+<meta name="description" content="26.2 miles. 27 tasks. Zero excuses logged. Taper breaks your marathon into mile-level work items, assigns each one to a body part, and escalates when Morale misses a standup. The finish line is now a deliverable.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/asana-for-marathon-runners/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Taper — Asana for marathon runners">
+<meta property="og:description" content="26.2 miles. 27 tasks. Zero excuses logged. Taper breaks your marathon into mile-level work items, assigns each one to a body part, and escalates when Morale misses a standup. The finish line is now a deliverable.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/asana-for-marathon-runners/">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/asana-for-marathon-runners/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Taper hero illustration">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Taper — Asana for marathon runners">
+<meta name="twitter:description" content="26.2 miles. 27 tasks. Zero excuses logged. Taper breaks your marathon into mile-level work items, assigns each one to a body part, and escalates when Morale misses a standup. The finish line is now a deliverable.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/asana-for-marathon-runners/social-preview.jpg">
+<meta name="twitter:image:alt" content="Taper hero illustration">
+</head>
+<body>
+<div class="wrap">
+  <header class="bar">
+    <a class="mark" href="#top" aria-label="Taper home">Taper<span>.</span></a>
+    <nav aria-label="Primary">
+      <a href="#features">Product</a>
+      <a href="#customers">Customers</a>
+      <a href="#pricing">Pricing</a>
+      <a class="demo-link" href="./demo.html">Open the demo →</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <div class="hero">
+      <div>
+        <h1><span>26.2 miles.</span><span class="l2">27 tasks.</span><span class="l3">Zero excuses logged.</span></h1>
+        <p class="sub">Taper breaks your marathon into mile-level work items, assigns each one to a body part, and escalates when Morale misses a standup. The finish line is now a deliverable.</p>
+        <div class="ctas">
+          <a class="btn btn-volt" href="./demo.html"><span>Start your first sprint</span></a>
+          <a class="btn btn-ghost" href="#pricing"><span>See seat pricing</span></a>
+        </div>
+      </div>
+      <figure class="photo" style="margin:0">
+        <img src="hero.webp" alt="A runner in a volt vest mid-stride on a wet city street at night, race barriers behind him" width="1600" height="900">
+        <figcaption class="clock">
+          <span class="t" id="clock" aria-label="Race clock">02:41:07</span>
+          <span class="who"><b>Mile 19, Left Leg</b>Status: At Risk</span>
+        </figcaption>
+      </figure>
+    </div>
+  </main>
+</div>
+
+<div class="pace" aria-hidden="true">
+  <svg viewBox="0 0 1200 46" preserveAspectRatio="none">
+    <line class="dash" x1="0" y1="23" x2="1200" y2="23"/>
+    <g id="ticks"></g>
+  </svg>
+</div>
+
+<section id="features">
+  <div class="wrap">
+    <div class="head">
+      <h2>Your body is a team. It is underperforming.</h2>
+      <p>Left Leg, Right Leg, Lungs and Morale each own a share of the race. Taper gives them tickets, due paces and a shared place to explain themselves.</p>
+    </div>
+    <div class="bibs">
+      <article class="bib">
+        <div class="no">0262</div>
+        <h3>Mile-level task assignment</h3>
+        <p>Each mile is a ticket with an owner, a due pace and dependencies. Mile 14 is blocked by Mile 13. We did not make the rule. We made it visible.</p>
+        <div class="tear"><span>Default owner</span><b>Left Leg</b></div>
+      </article>
+      <article class="bib">
+        <div class="no">1413</div>
+        <h3>Aid-station standups</h3>
+        <p>A 90-second async standup at every water table. What did you run, what will you run, what is blocking you. Most runners write "hamstring". We file it.</p>
+        <div class="tear"><span>Median standup</span><b>00:01:31</b></div>
+      </article>
+      <article class="bib">
+        <div class="no">0010</div>
+        <h3>Toenail portfolio view</h3>
+        <p>Ten toenails, ten projects, one status board. On Track, At Risk, Off Track and Detached. Finance gets a weekly digest.</p>
+        <div class="tear"><span>Portfolio health</span><b>7 / 10</b></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<div class="band">
+  <div class="wrap">
+    <div>
+      <h2>The Lakeshore board is live. Mile 19 is not.</h2>
+      <p>Move miles to Done, log a blocker, reassign a toenail. It is the full product, minus the running.</p>
+    </div>
+    <a class="btn btn-ink" href="./demo.html"><span>Open the demo →</span></a>
+  </div>
+</div>
+
+<section id="customers">
+  <div class="wrap">
+    <div class="head">
+      <h2>Runners who now report to someone.</h2>
+      <p>4,118 finishers have closed their race in Taper. 312 closed it as Won't Fix. We count both.</p>
+    </div>
+    <div class="quotes">
+      <figure class="bib quote" style="margin:0">
+        <div class="face">
+          <img src="headshot-1.webp" alt="Dana Okafor" width="320" height="320" loading="lazy">
+          <div><div class="name">Dana Okafor</div><div class="title">Director of Cadence Operations, herself</div></div>
+        </div>
+        <blockquote>"I used to just run. Now I run with visibility. My left quad has been tagged in eleven comments since Saturday."</blockquote>
+        <div class="tear"><span>Chicago</span><b>03:38:52</b></div>
+      </figure>
+      <figure class="bib quote" style="margin:0">
+        <div class="face">
+          <img src="headshot-2.webp" alt="Greg Hollister" width="320" height="320" loading="lazy">
+          <div><div class="name">Greg Hollister</div><div class="title">Program Manager, Men 45 to 49 Age Group</div></div>
+        </div>
+        <blockquote>"My coach and I have not spoken since March. We communicate through threads on Mile 22. It is the healthiest the relationship has been."</blockquote>
+        <div class="tear"><span>Twin Cities</span><b>04:11:40</b></div>
+      </figure>
+      <figure class="bib quote" style="margin:0">
+        <div class="face">
+          <img src="headshot-3.webp" alt="Priya Venkataraman" width="320" height="320" loading="lazy">
+          <div><div class="name">Priya Venkataraman</div><div class="title">Chief Hydration Officer, Tuesday Night Track Club</div></div>
+        </div>
+        <blockquote>"Taper flagged my right big toenail as At Risk eleven days before it left the organization. Nobody else saw it coming."</blockquote>
+        <div class="tear"><span>Berlin</span><b>03:19:05</b></div>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="pricing" style="padding-top:24px">
+  <div class="wrap">
+    <div class="head">
+      <h2>Priced per leg.</h2>
+      <p>Every plan includes Lungs at no extra cost. Morale is a guest seat and cannot approve anything.</p>
+    </div>
+    <div class="tiers">
+      <article class="bib tier">
+        <h3>Couch to Kickoff</h3>
+        <div class="price">$0</div>
+        <div class="tl">For runners still in discovery.</div>
+        <ul><li>One race per lifetime</li><li>Two assignees (both legs)</li><li>Standups read by no one</li></ul>
+        <a class="btn btn-dark" href="./demo.html"><span>Start free</span></a>
+        <div class="tear"><span>Wave</span><b>F</b></div>
+      </article>
+      <article class="bib tier hot">
+        <h3>Sub-4 Seat</h3>
+        <div class="price">$26.20<small style="font-size:.45em">/mo</small></div>
+        <div class="tl">Billed per leg. Arms are free during beta.</div>
+        <ul><li>Unlimited miles</li><li>Toenail portfolio view</li><li>Gel consumption burndown chart</li><li>Morale added as a guest</li></ul>
+        <a class="btn btn-dark" href="./demo.html"><span>Claim two seats</span></a>
+        <div class="tear"><span>Wave</span><b>B</b></div>
+      </article>
+      <article class="bib tier">
+        <h3>BQ Enterprise</h3>
+        <div class="price">$42,195<small style="font-size:.45em">/yr</small></div>
+        <div class="tl">One dollar per metre. Procurement loves it.</div>
+        <ul><li>SSO for both knees</li><li>Dedicated wall success manager</li><li>Audit log of every walk break</li><li>99.9% uptime, excluding miles 20 through 24</li></ul>
+        <a class="btn btn-dark" href="./demo.html"><span>Talk to sales</span></a>
+        <div class="tear"><span>Wave</span><b>Elite</b></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <a href="/">← theworstaistudioever</a>
+    <span>Taper is not a medical device, a coach, or a reason to keep going.</span>
+    <a href="./demo.html">Open the demo →</a>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var ticks = document.getElementById('ticks');
+    var ns = 'http://www.w3.org/2000/svg';
+    for (var i = 1; i <= 26; i++) {
+      var x = Math.round(i * 1200 / 26.2);
+      var l = document.createElementNS(ns, 'line');
+      l.setAttribute('class', 'tick'); l.setAttribute('x1', x); l.setAttribute('x2', x);
+      l.setAttribute('y1', 8); l.setAttribute('y2', 14);
+      ticks.appendChild(l);
+      if (i % 5 === 0) {
+        var t = document.createElementNS(ns, 'text');
+        t.setAttribute('x', x + 4); t.setAttribute('y', 40); t.textContent = 'MI ' + i;
+        ticks.appendChild(t);
+      }
+    }
+    var clock = document.getElementById('clock');
+    var s = 2 * 3600 + 41 * 60 + 7;
+    function pad(n) { return (n < 10 ? '0' : '') + n; }
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setInterval(function () {
+        s++;
+        clock.textContent = pad(Math.floor(s / 3600)) + ':' + pad(Math.floor(s / 60) % 60) + ':' + pad(s % 60);
+      }, 1000);
+    }
+  })();
+</script>
+</body>
+</html>

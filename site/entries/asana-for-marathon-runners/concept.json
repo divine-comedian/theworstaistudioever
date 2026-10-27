@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-27",
+  "company": "Asana",
+  "subject": "marathon runners",
+  "tagline": "Asana for marathon runners",
+  "slug": "asana-for-marathon-runners",
+  "product_name": "Taper",
+  "one_liner": "Every mile is a task. Every task has an assignee. The assignee is your left leg, and it is behind.",
+  "brand_voice_notes": "Work-management SaaS sincerity applied to a 42.195 km run. The product treats the body as a cross-functional team (Left Leg, Right Leg, Lungs, Morale) that keeps missing deadlines. Never jokes about running being hard. Talks about it like a Q3 roadmap slipping.",
+  "hero": {
+    "h1": "26.2 miles. 27 tasks. Zero excuses logged.",
+    "sub": "Taper breaks your marathon into mile-level work items, assigns each one to a body part, and escalates when Morale misses a standup. The finish line is now a deliverable.",
+    "primary_cta": "Start your first sprint"
+  },
+  "features": [
+    { "title": "Mile-level task assignment", "blurb": "Each mile is a ticket with an owner, a due pace and dependencies. Mile 14 is blocked by Mile 13. We did not make the rule. We made it visible." },
+    { "title": "Aid-station standups", "blurb": "A 90-second async standup at every water table. What did you run, what will you run, what is blocking you. Most runners write 'hamstring'. We file it." },
+    { "title": "Toenail portfolio view", "blurb": "Ten toenails, ten projects, one status board. On Track, At Risk, Off Track and Detached. Finance gets a weekly digest." }
+  ],
+  "pricing_tiers": [
+    { "name": "Couch to Kickoff", "price": "$0", "tagline": "For runners still in discovery.", "perks": ["One race per lifetime", "Two assignees (both legs)", "Standups read by no one"] },
+    { "name": "Sub-4 Seat", "price": "$26.20/mo", "tagline": "Billed per leg. Arms are free during beta.", "perks": ["Unlimited miles", "Toenail portfolio view", "Gel consumption burndown chart", "Morale added as a guest"] },
+    { "name": "BQ Enterprise", "price": "$42,195/yr", "tagline": "One dollar per metre. Procurement loves it.", "perks": ["SSO for both knees", "Dedicated wall success manager", "Audit log of every walk break", "99.9% uptime, excluding miles 20 through 24"] }
+  ],
+  "testimonials": [
+    { "quote": "I used to just run. Now I run with visibility. My left quad has been tagged in eleven comments since Saturday.", "name": "Dana Okafor", "title": "Director of Cadence Operations, herself" },
+    { "quote": "My coach and I have not spoken since March. We communicate through threads on Mile 22. It is the healthiest the relationship has been.", "name": "Greg Hollister", "title": "Program Manager, Men 45 to 49 Age Group" },
+    { "quote": "Taper flagged my right big toenail as At Risk eleven days before it left the organization. Nobody else saw it coming.", "name": "Priya Venkataraman", "title": "Chief Hydration Officer, Tuesday Night Track Club" }
+  ],
+  "demo_screen_concept": "A race-day kanban board for the 2026 Lakeshore Marathon: 27 mile-task cards (Mile 1 to Mile 26 plus 'The .2') across Backlog, Running, Blocked and Done columns. Each card shows an assignee chip (Left Leg, Right Leg, Lungs, Morale), a target split, and a dependency count. Filter chips by assignee, a 'Complete mile' button that moves the current card to Done and advances a race clock and progress bar, a 'Log blocker' modal (chafing, side stitch, saw a dog, emotional) that moves the current card to Blocked, and a toenail portfolio sidebar with ten status pills that cycle on click.",
+  "design_direction": {
+    "style": "Kinetic sports editorial, asphalt night-run mode. A work-management SaaS dressed as a night-race shoe campaign: wet asphalt ground, volt-yellow and race-orange as the only bright colours, extra-condensed uppercase display type set huge and tight, slanted motion, monospace race-clock numerals. Explicitly absent, because the last seven entries used them: trail signs, blazes, contour lines, label tape, crossed-out names, middle slots, fridge magnets, ghost text, keycaps, squiggles, chrome bubbles, read receipts, sale-bill stacks, lot boxes, manicules, misregistration, activity rings, waveforms, readout chips, collar bands, aisle signs, shelf tags, pallet beams, member cards, scorecard grids, stitch seams, pencil notes, pennants. Also absent: daylight backgrounds, serif type, glassmorphism, blur, paper textures, handwriting, rounded corners above 4px. Four motifs carry the page. (1) The race bib: features, tiers and testimonials sit on off-white Tyvek bib cards with a big bib number, four punched safety-pin holes in the corners and a perforated tear-off strip. (2) The split clock: every number reads like a finish-line clock (HH:MM:SS, tabular mono, volt on black). (3) The pace line: a dashed volt racing line with mile-marker ticks runs between sections and under the hero. (4) The motion slant: headlines and the primary CTA are skewed -8deg, like they left before the gun.",
+    "palette_name": "Asphalt Volt",
+    "palette": { "primary": "#D7FF3D", "accent": "#FF5A1F", "bg": "#141619", "fg": "#EDEBE4", "muted": "#8B9099", "ink": "#EDEBE4" },
+    "fonts": {
+      "display": "'Big Shoulders Display', 'Impact', 'Arial Narrow', sans-serif",
+      "body": "'Work Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif",
+      "mono": "'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, monospace"
+    },
+    "archetype": "Product-led SaaS landing (hero, feature bibs, social proof, pricing), with the demo as a kanban work-management board",
+    "motion_vocab": "Horizontal motion only. Pace-line dashes march left on a slow loop; the race clock ticks; bibs slide in from the right with a 40ms stagger on reveal, gated on a .js class with a timeout fallback. All motion off under prefers-reduced-motion.",
+    "hero_composition_notes": "Left: giant skewed three-line H1 in Big Shoulders 900, volt on the word 'Zero'. Right: night-run hero photo, with a live split clock overlaid at its bottom edge. Pace line with mile ticks runs full-bleed under the hero."
+  },
+  "images": {
+    "rationale": "Shoe-campaign style direction wants a photographic hero, so one hero. Demo is a kanban board, not photo-shaped, so no demo assets. Remaining budget of 3 went to deadpan headshots for all three testimonials.",
+    "items": [
+      { "role": "hero", "file": "hero.webp", "prompt": "Editorial sports photograph, night marathon: a single runner mid-stride on wet black asphalt city street at night, low side angle, sodium streetlights, hard rim light. Charcoal #141619 dominant, volt #D7FF3D vest, race orange #FF5A1F cone. Cinematic shoe-campaign mood, grainy film. Correction appended on attempt 2: all clothing and shoes plain and unbranded, no swooshes, no race bib. No text, letters, numbers, logos, watermarks or UI.", "attempts": 2 },
+      { "role": "testimonial", "file": "headshot-1.webp", "prompt": "Deadpan corporate headshot of a woman marathon runner in her thirties, sweaty singlet and finisher medal, LinkedIn posture, flat charcoal #141619 backdrop, volt #D7FF3D rim light. No text, letters, numbers, logos, watermarks or UI.", "attempts": 1 },
+      { "role": "testimonial", "file": "headshot-2.webp", "prompt": "Deadpan corporate headshot of a man marathon runner in his late forties, grey stubble, sweat-soaked race-orange #FF5A1F shirt and headband, LinkedIn posture, flat charcoal #141619 backdrop, volt #D7FF3D rim light. No text, letters, numbers, logos, watermarks or UI.", "attempts": 1 },
+      { "role": "testimonial", "file": "headshot-3.webp", "prompt": "Deadpan corporate headshot of a woman marathon runner in her forties, tight ponytail, dark jacket with hydration vest, LinkedIn posture, flat charcoal #141619 backdrop, volt #D7FF3D rim light. No text, letters, numbers, logos, watermarks or UI.", "attempts": 1 }
+    ]
+  }
+}
