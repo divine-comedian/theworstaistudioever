@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Righteous&family=Poppins:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --rose:#E11D48; --rose-deep:#B3123A; --blue:#2563EB; --bg:#FBF4E6; --stock:#FFFBF2;
+  --fg:#2A1220; --muted:#7A5C63; --ink:#1E0E16; --line:#E8D9C2; --gone:#E9DDCB;
+  --display:'Righteous','Arial Rounded MT Bold',-apple-system,sans-serif;
+  --body:'Poppins',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'DM Mono','SFMono-Regular',Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100dvh}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+button{font:inherit;cursor:pointer}
+
+.queue{background:var(--rose);color:#fff;font-family:var(--mono);font-size:13px}
+.queue-in{padding:8px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.queue strong{font-weight:500;font-variant-numeric:tabular-nums}
+.qbar{flex:1;min-width:100px;height:6px;background:rgba(255,255,255,.28);border-radius:3px;overflow:hidden}
+.qbar i{display:block;height:100%;width:2.4%;background:#fff;transition:width .6s ease-out}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 20px;border-bottom:2px solid var(--ink);flex-wrap:wrap}
+.back{color:var(--muted);text-decoration:none;font-size:14px}
+.back:hover{color:var(--rose)}
+.event{font-family:var(--display);font-size:22px;color:var(--ink);line-height:1.1}
+.event small{display:block;font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:3px}
+.timer{font-family:var(--mono);font-size:13px;color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:6px 14px;font-variant-numeric:tabular-nums}
+.timer b{color:var(--rose);font-weight:500}
+
+.app{display:grid;grid-template-columns:1fr 340px;min-height:calc(100dvh - 110px)}
+.map{padding:22px 24px 40px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+.chip{border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:6px 14px;min-height:38px;font-size:14px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.toggle{display:flex;align-items:center;gap:8px;margin-left:auto;font-size:14px;color:var(--ink);cursor:pointer}
+.toggle input{width:18px;height:18px;accent-color:var(--rose)}
+
+.stage{background:var(--ink);color:var(--bg);border-radius:14px 14px 50% 50% / 14px 14px 22px 22px;padding:18px 20px 26px;display:flex;gap:18px;align-items:center;margin-bottom:22px}
+.ceo{width:120px;aspect-ratio:16/10;border-radius:8px;background:#3A2230;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative}
+.ceo svg{width:52px;height:52px}
+.ceo .live{position:absolute;top:6px;left:6px;background:var(--rose);color:#fff;font-family:var(--mono);font-size:10px;padding:1px 6px;border-radius:4px}
+.stage b{font-family:var(--display);font-weight:400;font-size:20px;display:block}
+.stage span{font-size:13px;color:#C9AFA9}
+
+.sec{margin-bottom:20px}
+.sec h3{font-family:var(--display);font-weight:400;font-size:17px;color:var(--ink);margin-bottom:8px;display:flex;justify-content:space-between;gap:12px}
+.sec h3 span{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.tile{position:relative;aspect-ratio:16/10;border:2px solid var(--ink);background:var(--stock);border-radius:8px;padding:6px 8px;text-align:left;display:flex;flex-direction:column;justify-content:space-between;transition:transform .15s ease-out,background .15s}
+.tile:hover:not(:disabled){transform:translateY(-2px)}
+.tile .code{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.tile .p{font-family:var(--display);font-size:18px;color:var(--ink);font-variant-numeric:tabular-nums}
+.tile .cam{position:absolute;top:6px;right:7px;width:14px;height:10px}
+.tile.sel{background:var(--rose);border-color:var(--rose-deep)}
+.tile.sel .code,.tile.sel .p{color:#fff}
+.tile.sel .cam path{fill:#fff}
+.tile:disabled{background:var(--gone);border-color:var(--line);cursor:not-allowed}
+.tile:disabled .p{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.tile.blip{animation:blip .4s ease-out}
+@keyframes blip{0%{box-shadow:0 0 0 0 rgba(37,99,235,.55)}100%{box-shadow:0 0 0 8px rgba(37,99,235,0)}}
+.tile.hidden{display:none}
+.obst .tile{background-image:repeating-linear-gradient(-45deg,transparent 0 8px,rgba(122,92,99,.12) 8px 10px)}
+.obst .tile.sel{background-image:none}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:14px;height:10px;border:2px solid var(--ink);border-radius:3px;margin-right:6px;vertical-align:-1px;background:var(--stock)}
+.legend .l-sel{background:var(--rose);border-color:var(--rose-deep)}
+.legend .l-gone{background:var(--gone);border-color:var(--line)}
+.empty{display:none;padding:28px;border:2px dashed var(--muted);border-radius:12px;text-align:center;color:var(--muted)}
+
+.cart{border-left:2px solid var(--ink);background:var(--stock);padding:22px 22px 28px;display:flex;flex-direction:column;gap:16px;position:sticky;top:0;align-self:start;max-height:100dvh;overflow:auto}
+.cart h2{font-family:var(--display);font-weight:400;font-size:22px;color:var(--ink)}
+.cart-list{list-style:none;font-family:var(--mono);font-size:13.5px;font-variant-numeric:tabular-nums}
+.cart-list li{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed var(--line)}
+.cart-list button{background:none;border:0;color:var(--rose);font-size:12px;padding:2px 4px;margin-left:6px}
+.cart-empty{color:var(--muted);font-size:14px}
+.sum{font-family:var(--mono);font-size:13.5px;font-variant-numeric:tabular-nums}
+.sum div{display:flex;justify-content:space-between;padding:3px 0}
+.sum .tot{border-top:2px solid var(--ink);margin-top:6px;padding-top:8px;font-size:16px;color:var(--rose);font-weight:500}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:12px 22px;border-radius:999px;font-family:var(--display);font-size:18px;border:0;background:var(--rose);color:#fff;box-shadow:0 3px 0 var(--rose-deep);width:100%}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 var(--rose-deep)}
+.fine{font-size:12px;color:var(--muted)}
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(30,14,22,.55);display:none;z-index:40}
+.drawer{position:fixed;right:0;top:0;bottom:0;width:min(440px,100%);background:var(--stock);border-left:2px solid var(--ink);z-index:50;transform:translateX(100%);transition:transform .25s ease-out;display:flex;flex-direction:column}
+.open .scrim{display:block}
+.open .drawer{transform:none}
+.d-head{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:2px solid var(--ink)}
+.d-head h2{font-family:var(--display);font-weight:400;font-size:24px;color:var(--ink)}
+.x{background:none;border:2px solid var(--ink);border-radius:50%;width:40px;height:40px;font-size:18px;color:var(--ink)}
+.d-body{padding:20px 22px;overflow:auto;flex:1}
+.d-body .sum div{padding:5px 0}
+.d-body .sum .fee{color:var(--muted)}
+.d-body .sum .newfee{color:var(--blue);animation:slidein .3s ease-out}
+@keyframes slidein{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+.d-foot{padding:18px 22px;border-top:2px solid var(--ink);display:flex;flex-direction:column;gap:10px}
+.done{display:none;text-align:center;padding:30px 10px}
+.done b{display:block;font-family:var(--display);font-weight:400;font-size:28px;color:var(--ink);margin-bottom:8px}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,140%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:12px;font-size:14px;z-index:60;transition:transform .25s ease-out,visibility .25s;max-width:calc(100% - 32px);visibility:hidden}
+.toast.show{transform:translate(-50%,0);visibility:visible}
+
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .cart{border-left:0;border-top:2px solid var(--ink);position:static;max-height:none}
+  .grid{grid-template-columns:repeat(4,1fr)}
+  .toggle{margin-left:0}
+}
+@media (max-width:480px){
+  .grid{grid-template-columns:repeat(3,1fr)}
+  .map{padding:18px 14px 32px}
+  .stage{flex-direction:column;align-items:flex-start}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+<title>Standby — Ticketmaster for remote workers — Demo</title>
+<meta name="description" content="Your all-hands is sold out. You are in the queue. Standby brings dynamic pricing, presale codes and a service fee to every video call your company runs. Remote staff can finally buy the meetings they used to attend for free.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/ticketmaster-for-remote-workers/demo.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Standby — Ticketmaster for remote workers — Demo">
+<meta property="og:description" content="Your all-hands is sold out. You are in the queue. Standby brings dynamic pricing, presale codes and a service fee to every video call your company runs. Remote staff can finally buy the meetings they used to attend for free.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/ticketmaster-for-remote-workers/demo.html">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/ticketmaster-for-remote-workers/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Worst AI Studio Ever logo">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Standby — Ticketmaster for remote workers — Demo">
+<meta name="twitter:description" content="Your all-hands is sold out. You are in the queue. Standby brings dynamic pricing, presale codes and a service fee to every video call your company runs. Remote staff can finally buy the meetings they used to attend for free.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/ticketmaster-for-remote-workers/social-preview.jpg">
+<meta name="twitter:image:alt" content="The Worst AI Studio Ever logo">
+</head>
+<body>
+
+<div class="queue" role="status">
+  <div class="queue-in">
+    <span>You are <strong id="qpos">#48,211</strong> in line. Your seats are held for now.</span>
+    <div class="qbar" aria-hidden="true"><i id="qbar"></i></div>
+  </div>
+</div>
+
+<div class="top">
+  <a class="back" href="./index.html">← back to the pitch</a>
+  <div class="event">Q4 All-Hands: The Alignment Tour 2026<small>Thu 30 Oct · Zoom, Room 4 · 36 tiles · 1 stage</small></div>
+  <div class="timer" aria-live="off">Seats held for <b id="hold">7:59</b></div>
+</div>
+
+<div class="app">
+  <main class="map">
+    <div class="filters" role="group" aria-label="Filter sections">
+      <button class="chip" data-f="all" aria-pressed="true">All sections</button>
+      <button class="chip" data-f="fg" aria-pressed="false">Front Grid</button>
+      <button class="chip" data-f="mg" aria-pressed="false">Mid Grid</button>
+      <button class="chip" data-f="ob" aria-pressed="false">Obstructed View</button>
+      <button class="chip" data-f="ao" aria-pressed="false">Audio-Only Standing</button>
+      <label class="toggle"><input type="checkbox" id="camOnly"> Camera-on required</label>
+    </div>
+
+    <div class="stage">
+      <div class="ceo"><span class="live">LIVE</span>
+        <svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="19" r="10" fill="#FBF4E6"/><path d="M8 48c2-11 9-17 18-17s16 6 18 17z" fill="#FBF4E6"/></svg>
+      </div>
+      <div><b>Stage: CEO tile</b><span>Not for sale. Visible from every seat except Obstructed View, which is the point of Obstructed View.</span></div>
+    </div>
+
+    <div id="sections"></div>
+    <div class="empty" id="empty">No tiles match. Turn off "Camera-on required" or pick another section.</div>
+
+    <div class="legend">
+      <span><i></i>Available</span>
+      <span><i class="l-sel"></i>Your selection</span>
+      <span><i class="l-gone"></i>Sold to a colleague</span>
+    </div>
+  </main>
+
+  <aside class="cart" aria-label="Your seats">
+    <h2>Your seats</h2>
+    <ul class="cart-list" id="cartList"></ul>
+    <p class="cart-empty" id="cartEmpty">Pick up to 4 tiles on the map. Bringing a guest to an all-hands is allowed and noted.</p>
+    <div class="sum" id="cartSum"></div>
+    <button class="btn" id="checkout" disabled>Check out</button>
+    <p class="fine">Base prices shown. Fees are calculated on the next screen by a team that is very good at it.</p>
+  </aside>
+</div>
+
+<div id="overlay">
+  <div class="scrim" id="scrim"></div>
+  <div class="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle" id="drawer">
+    <div class="d-head"><h2 id="dTitle">Checkout</h2><button class="x" id="close" aria-label="Close checkout">✕</button></div>
+    <div class="d-body">
+      <div class="sum" id="dSum"></div>
+      <div class="done" id="done"><b>You're in.</b>Your tiles are confirmed. Please arrive 15 minutes early and wait in the lobby until someone notices.</div>
+    </div>
+    <div class="d-foot" id="dFoot">
+      <button class="btn" id="buy">Buy tiles</button>
+      <p class="fine" id="dNote">Fees load one at a time so you have a chance to get used to each.</p>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var SECTIONS = [
+    ['fg','Front Grid','Row A–B · camera on',12,120,260],
+    ['mg','Mid Grid','Row C–D · camera optional',12,48,110],
+    ['ob','Obstructed View','Behind the screen-share',6,22,40],
+    ['ao','Audio-Only Standing','No tile, just a name',6,9,15]
+  ];
+  var tiles = [], selected = [];
+  var sold = [2,5,9,13,16,22,25,30];
+  var host = document.getElementById('sections');
+  var n = 0;
+  SECTIONS.forEach(function(s){
+    var wrap = document.createElement('div');
+    wrap.className = 'sec' + (s[0] === 'ob' ? ' obst' : '');
+    wrap.setAttribute('data-sec', s[0]);
+    var h = document.createElement('h3');
+    h.innerHTML = s[1] + ' <span>' + s[2] + '</span>';
+    wrap.appendChild(h);
+    var g = document.createElement('div'); g.className = 'grid';
+    for (var i = 0; i < s[3]; i++){
+      n++;
+      var row = String.fromCharCode(65 + Math.floor(i / 6) + (s[0] === 'mg' ? 2 : s[0] === 'ob' ? 4 : s[0] === 'ao' ? 5 : 0));
+      var code = s[0].toUpperCase() + ' ' + row + (i % 6 + 1);
+      var cam = s[0] === 'fg' || (s[0] === 'mg' && i % 3 !== 1);
+      var t = {
+        id: n, code: code, sec: s[0], cam: cam,
+        price: Math.round((s[4] + Math.random() * (s[5] - s[4])) * 100) / 100,
+        sold: sold.indexOf(n) > -1, el: document.createElement('button')
+      };
+      t.el.className = 'tile';
+      t.el.type = 'button';
+      t.el.innerHTML = '<span class="code">' + code + '</span><span class="p"></span>' +
+        (cam ? '<svg class="cam" viewBox="0 0 14 10" aria-hidden="true"><path d="M0 1h9v8H0zM10 4l4-3v8l-4-3z" fill="#7A5C63"/></svg>' : '');
+      if (t.sold) t.el.disabled = true;
+      (function(tt){ tt.el.addEventListener('click', function(){ toggle(tt); }); })(t);
+      g.appendChild(t.el);
+      tiles.push(t);
+    }
+    wrap.appendChild(g);
+    host.appendChild(wrap);
+  });
+
+  function money(v){ return '$' + v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+  function paint(t){
+    t.el.querySelector('.p').textContent = t.sold ? 'Sold' : money(t.price);
+    t.el.classList.toggle('sel', selected.indexOf(t) > -1);
+    t.el.setAttribute('aria-label', t.code + ', ' + (t.sold ? 'sold' : money(t.price)) + (t.cam ? ', camera on' : ''));
+    t.el.setAttribute('aria-pressed', selected.indexOf(t) > -1 ? 'true' : 'false');
+  }
+  tiles.forEach(paint);
+
+  var toastEl = document.getElementById('toast'), toastT;
+  function toast(msg){
+    toastEl.textContent = msg; toastEl.classList.add('show');
+    clearTimeout(toastT); toastT = setTimeout(function(){ toastEl.classList.remove('show'); }, 3600);
+  }
+
+  function toggle(t){
+    var i = selected.indexOf(t);
+    if (i > -1) selected.splice(i, 1);
+    else {
+      if (selected.length >= 4){ toast('Limit 4 tiles per employee. Your manager has been told you tried for 5.'); return; }
+      selected.push(t);
+    }
+    paint(t); renderCart();
+  }
+
+  var list = document.getElementById('cartList'), sum = document.getElementById('cartSum'),
+      emptyNote = document.getElementById('cartEmpty'), checkout = document.getElementById('checkout');
+  function subtotal(){ return selected.reduce(function(a, t){ return a + t.price; }, 0); }
+  function renderCart(){
+    list.innerHTML = '';
+    selected.forEach(function(t){
+      var li = document.createElement('li');
+      li.innerHTML = '<span>' + t.code + (t.cam ? ' · cam' : '') + '</span><span>' + money(t.price) + '<button type="button" aria-label="Remove ' + t.code + '">remove</button></span>';
+      li.querySelector('button').addEventListener('click', function(){ toggle(t); });
+      list.appendChild(li);
+    });
+    emptyNote.style.display = selected.length ? 'none' : 'block';
+    sum.innerHTML = selected.length ? '<div class="tot"><span>Subtotal, before fees</span><span>' + money(subtotal()) + '</span></div>' : '';
+    checkout.disabled = !selected.length;
+  }
+  renderCart();
+
+  // filters
+  var filter = 'all', camOnly = document.getElementById('camOnly');
+  var chips = document.querySelectorAll('.chip');
+  function applyFilter(){
+    var shown = 0;
+    document.querySelectorAll('.sec').forEach(function(sec){
+      var on = filter === 'all' || sec.getAttribute('data-sec') === filter;
+      var visibleInSec = 0;
+      tiles.forEach(function(t){
+        if (t.sec !== sec.getAttribute('data-sec')) return;
+        var hide = !on || (camOnly.checked && !t.cam);
+        t.el.classList.toggle('hidden', hide);
+        if (!hide) visibleInSec++;
+      });
+      sec.style.display = visibleInSec ? '' : 'none';
+      shown += visibleInSec;
+    });
+    document.getElementById('empty').style.display = shown ? 'none' : 'block';
+  }
+  chips.forEach(function(c){
+    c.addEventListener('click', function(){
+      filter = c.getAttribute('data-f');
+      chips.forEach(function(o){ o.setAttribute('aria-pressed', o === c ? 'true' : 'false'); });
+      applyFilter();
+    });
+  });
+  camOnly.addEventListener('change', applyFilter);
+
+  // dynamic pricing
+  setInterval(function(){
+    var avail = tiles.filter(function(t){ return !t.sold; });
+    for (var k = 0; k < 3; k++){
+      var t = avail[Math.floor(Math.random() * avail.length)];
+      var before = t.price;
+      t.price = Math.max(5, Math.round(t.price * (0.97 + Math.random() * 0.12) * 100) / 100);
+      paint(t);
+      if (!reduce){ t.el.classList.remove('blip'); void t.el.offsetWidth; t.el.classList.add('blip'); }
+      if (selected.indexOf(t) > -1 && t.price > before){
+        renderCart();
+        toast(t.code + ' went up ' + money(t.price - before) + ' while you were deciding. Deciding is in high demand.');
+      }
+    }
+  }, reduce ? 9000 : 3000);
+
+  // occasional sellout
+  setInterval(function(){
+    var cand = tiles.filter(function(t){ return !t.sold && selected.indexOf(t) < 0; });
+    if (cand.length < 6) return;
+    var t = cand[Math.floor(Math.random() * cand.length)];
+    t.sold = true; t.el.disabled = true; paint(t);
+    toast(t.code + ' just sold to someone in Accounts Payable.');
+  }, 14000);
+
+  // queue + hold timer
+  var pos = 48211, qEl = document.getElementById('qpos'), bar = document.getElementById('qbar');
+  setInterval(function(){
+    pos -= Math.floor(Math.random() * 9) + 1;
+    if (Math.random() < 0.08) pos += 312;
+    qEl.textContent = '#' + pos.toLocaleString('en-US');
+    bar.style.width = Math.min(2.9, 2.4 + (48211 - pos) / 2000) + '%';
+  }, 1200);
+  var hold = 479, holdEl = document.getElementById('hold');
+  setInterval(function(){
+    hold--;
+    if (hold < 0){ hold = 479; toast('Your hold expired and was renewed for a $3.00 hold renewal fee.'); }
+    holdEl.textContent = Math.floor(hold / 60) + ':' + ('0' + hold % 60).slice(-2);
+  }, 1000);
+
+  // checkout drawer
+  var overlay = document.getElementById('overlay'), dSum = document.getElementById('dSum'),
+      buy = document.getElementById('buy'), done = document.getElementById('done'),
+      dFoot = document.getElementById('dFoot'), closeBtn = document.getElementById('close');
+  var FEES = [
+    ['Facilitation fee', 18.5], ['Unmute fee', 11], ['Home Wi-Fi convenience charge', 9.75],
+    ['Calendar invite delivery', 4.4], ['Order processing for this order', 6.25], ['Fee itemisation fee', 2]
+  ];
+  var feeTimers = [], lastFocus;
+  function row(label, val, cls){ return '<div class="' + (cls || '') + '"><span>' + label + '</span><span>' + money(val) + '</span></div>'; }
+  function openDrawer(){
+    lastFocus = document.activeElement;
+    document.body.classList.add('open');
+    done.style.display = 'none'; dSum.style.display = ''; dFoot.style.display = '';
+    buy.disabled = true;
+    var sub = subtotal(), n = selected.length, html = '';
+    selected.forEach(function(t){ html += row(t.code, t.price); });
+    dSum.innerHTML = html + '<div id="feeRows"></div><div class="tot" id="dTot"><span>Total</span><span>' + money(sub) + '</span></div>';
+    var feeRows = document.getElementById('feeRows'), total = sub;
+    FEES.forEach(function(f, i){
+      feeTimers.push(setTimeout(function(){
+        var v = f[1] * n; total += v;
+        feeRows.insertAdjacentHTML('beforeend', row(f[0] + (n > 1 ? ' × ' + n : ''), v, 'fee newfee'));
+        document.querySelector('#dTot span:last-child').textContent = money(total);
+        if (i === FEES.length - 1) buy.disabled = false;
+      }, reduce ? 0 : 450 * (i + 1)));
+    });
+    closeBtn.focus();
+  }
+  function closeDrawer(){
+    document.body.classList.remove('open');
+    feeTimers.forEach(clearTimeout); feeTimers = [];
+    if (lastFocus) lastFocus.focus();
+  }
+  checkout.addEventListener('click', openDrawer);
+  closeBtn.addEventListener('click', closeDrawer);
+  document.getElementById('scrim').addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && document.body.classList.contains('open')) closeDrawer(); });
+  buy.addEventListener('click', function(){
+    dSum.style.display = 'none'; dFoot.style.display = 'none'; done.style.display = 'block';
+    selected.forEach(function(t){ t.sold = true; t.el.disabled = true; });
+    var bought = selected.slice(); selected = [];
+    bought.forEach(paint); renderCart();
+    toast('Bought. Your tiles have been added to a calendar you cannot edit.');
+  });
+})();
+</script>
+</body>
+</html>

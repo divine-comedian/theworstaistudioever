@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Red+Hat+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --mint:#DDF0EA; --mint-2:#C7E7DD; --mint-deep:#8FCDBB;
+  --sable:#8A5A3B; --sable-deep:#5E3A24; --coral:#FF7A59;
+  --ink:#2B1E17; --muted:#6B5B50; --cream:#F7FBF9;
+  --live:#1F7F5C; --build:#B07812; --incident:#C0392B;
+  --display:'Baloo 2','Arial Rounded MT Bold',-apple-system,sans-serif;
+  --body:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'Red Hat Mono','SFMono-Regular',Menlo,Consolas,monospace;
+  --clay:12px 14px 28px rgba(70,118,104,.3),-9px -9px 22px rgba(255,255,255,.85),inset 4px 4px 10px rgba(255,255,255,.7),inset -6px -7px 12px rgba(70,118,104,.15);
+  --clay-sm:6px 7px 14px rgba(70,118,104,.28),-5px -5px 12px rgba(255,255,255,.8),inset 3px 3px 6px rgba(255,255,255,.7),inset -3px -4px 7px rgba(70,118,104,.15);
+  --well:inset 4px 4px 10px rgba(70,118,104,.25),inset -4px -4px 10px rgba(255,255,255,.85);
+  --spring:cubic-bezier(.34,1.56,.64,1);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--mint);color:var(--ink);font:400 15px/1.5 var(--body);-webkit-font-smoothing:antialiased;min-height:100dvh;transition:filter .3s}
+body.napping .app{filter:grayscale(.75) brightness(.96)}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
+:focus-visible{outline:3px solid var(--sable);outline-offset:3px;border-radius:10px}
+.app{max-width:1280px;margin:0 auto;padding:18px 24px 40px;transition:filter .3s}
+.top{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.back{font-weight:700;color:var(--sable-deep);text-decoration:none;font-size:14px}
+.back:hover{text-decoration:underline}
+.brand{font:800 26px/1 var(--display);color:var(--sable-deep);margin-left:8px}
+.acct{font:500 13px var(--mono);color:var(--muted)}
+.spacer{flex:1}
+.meter{display:flex;align-items:center;gap:10px;font:500 13px var(--mono);color:var(--muted)}
+.track{width:120px;height:16px;border-radius:999px;background:var(--mint-2);box-shadow:var(--well);padding:3px}
+.fill{height:100%;border-radius:999px;background:var(--coral);width:45%;transition:width .4s}
+.toggle{display:flex;align-items:center;gap:10px;border:0;background:var(--mint);border-radius:999px;padding:8px 14px 8px 8px;box-shadow:var(--clay-sm);font-weight:700;min-height:44px}
+.switch{width:44px;height:26px;border-radius:999px;background:var(--mint-2);box-shadow:var(--well);position:relative}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--cream);box-shadow:2px 2px 4px rgba(70,118,104,.4);transition:transform .3s var(--spring)}
+.toggle[aria-pressed="true"] .switch{background:var(--sable)}
+.toggle[aria-pressed="true"] .switch::after{transform:translateX(18px)}
+.btn{border:0;border-radius:999px;min-height:48px;padding:0 24px;font-weight:700;transition:transform .3s var(--spring)}
+.btn:active{transform:scale(.94)}
+.btn-coral{background:var(--coral);color:var(--ink);box-shadow:7px 9px 18px rgba(224,88,58,.33),inset 3px 3px 7px rgba(255,255,255,.45),inset -4px -5px 9px rgba(160,50,25,.25)}
+.btn-ghost{background:var(--mint);color:var(--sable-deep);box-shadow:var(--clay-sm)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+
+.bar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:26px 0 22px}
+h1{font:800 34px/1 var(--display);color:var(--sable-deep);margin:0}
+.tabs{display:flex;gap:6px;padding:6px;border-radius:999px;background:var(--mint-2);box-shadow:var(--well);flex-wrap:wrap}
+.tab{border:0;background:transparent;border-radius:999px;padding:8px 16px;font-weight:600;color:var(--muted);min-height:40px}
+.tab[aria-selected="true"]{background:var(--cream);color:var(--ink);box-shadow:var(--clay-sm)}
+.tab .n{font:600 12px var(--mono);margin-left:6px;opacity:.8}
+.search{border:0;border-radius:999px;background:var(--mint-2);box-shadow:var(--well);padding:0 18px;min-height:44px;font:inherit;width:220px}
+
+.grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:26px;align-items:start}
+.panel{background:var(--mint);border-radius:32px;box-shadow:var(--clay);padding:14px}
+.list{list-style:none;margin:0;padding:0}
+.row{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:14px;border-radius:22px;cursor:pointer;transition:background .2s}
+.row:hover{background:rgba(255,255,255,.4)}
+.row[aria-current="true"]{background:var(--cream);box-shadow:var(--clay-sm)}
+.item-ico{width:46px;height:46px;border-radius:16px;background:var(--mint-2);box-shadow:var(--clay-sm);display:grid;place-items:center}
+.row h3{margin:0;font:700 16px/1.2 var(--body)}
+.meta{font:500 12px var(--mono);color:var(--muted);margin-top:3px}
+.status{display:inline-flex;align-items:center;gap:6px;font:600 12px var(--mono);padding:4px 10px;border-radius:999px;background:var(--cream);box-shadow:var(--clay-sm);margin-top:6px}
+.status::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.s-live{color:var(--live)} .s-building{color:var(--build)} .s-rolled{color:var(--sable)} .s-incident{color:var(--incident)}
+.rb{border:0;background:var(--mint);border-radius:999px;padding:0 14px;min-height:40px;font-weight:600;font-size:13px;box-shadow:var(--clay-sm);color:var(--sable-deep);transition:transform .3s var(--spring)}
+.rb:active{transform:scale(.92)}
+.empty{padding:40px 20px;text-align:center;color:var(--muted)}
+
+.plan-head{display:flex;justify-content:space-between;align-items:baseline;padding:10px 12px 4px;gap:10px;flex-wrap:wrap}
+.plan-head h2{font:800 22px/1.1 var(--display);margin:0;color:var(--sable-deep)}
+svg.plan{width:100%;height:auto;display:block}
+.room{fill:var(--cream);stroke:#B9DDD2;stroke-width:3}
+.room-label{font:600 12px var(--mono);fill:var(--muted)}
+.furn{fill:var(--mint-2);stroke:#A9D3C6;stroke-width:2}
+.node{fill:#CFE3DD;stroke:#A9D3C6;stroke-width:2;transition:fill .25s,r .3s var(--spring)}
+.node.hit{fill:var(--coral);stroke:#E0583A}
+.node.prev{fill:var(--sable);stroke:var(--sable-deep)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;padding:6px 12px 10px;font:500 12px var(--mono);color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px;background:var(--c)}
+.nodes-list{display:flex;flex-wrap:wrap;gap:8px;padding:4px 12px 12px}
+.chip{font:500 12px var(--mono);padding:5px 10px;border-radius:999px;background:var(--cream);box-shadow:var(--clay-sm)}
+
+/* modal */
+.scrim{position:fixed;inset:0;background:rgba(43,30,23,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}
+.scrim.open{display:flex}
+.modal{width:min(520px,100%);background:var(--mint);border-radius:36px;box-shadow:var(--clay);padding:30px;animation:pop .35s var(--spring)}
+@keyframes pop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.modal h2{font:800 28px/1 var(--display);color:var(--sable-deep);margin:0 0 18px}
+label{display:block;font-weight:700;font-size:14px;margin:14px 0 6px}
+select{width:100%;min-height:48px;border:0;border-radius:18px;background:var(--mint-2);box-shadow:var(--well);padding:0 14px;font:inherit}
+.hint{font-size:13px;color:var(--muted);margin-top:6px}
+.buildlog{margin-top:18px;min-height:150px;border-radius:22px;background:var(--cream);box-shadow:var(--well);padding:16px 18px;font:500 13px/1.8 var(--mono)}
+.buildlog .ok{color:var(--live)} .buildlog .warn{color:var(--build)}
+.modal-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:20px;flex-wrap:wrap}
+
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,140%);background:var(--sable);color:var(--cream);padding:14px 22px;border-radius:999px;font-weight:600;box-shadow:0 14px 30px rgba(94,58,36,.4);transition:transform .35s var(--spring);z-index:60;max-width:calc(100% - 32px)}
+.toast.show{transform:translate(-50%,0)}
+.toast{visibility:hidden}.toast.show{visibility:visible}.fill{display:block}
+.napnote{display:none;margin:0 0 18px;padding:14px 20px;border-radius:22px;background:var(--cream);box-shadow:var(--clay-sm);font-weight:600;color:var(--sable-deep)}
+body.napping .napnote{display:block}
+
+@media (max-width:900px){
+  .grid{grid-template-columns:1fr}
+  .search{width:100%}
+}
+@media (max-width:520px){
+  .app{padding:14px 14px 40px}
+  .meter{display:none}
+  .row{grid-template-columns:auto 1fr;}
+  .row .rb{grid-column:2;justify-self:start}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+<title>Dook — Netlify for ferrets — Demo</title>
+<meta name="description" content="Ship your stash to the edge of the couch. Dook is the deployment platform for ferrets. Push a sock, a car key or one AirPod, and we replicate it across 14 hiding nodes in 0.4 seconds. Your human will find none of them.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/netlify-for-ferrets/demo.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Dook — Netlify for ferrets — Demo">
+<meta property="og:description" content="Ship your stash to the edge of the couch. Dook is the deployment platform for ferrets. Push a sock, a car key or one AirPod, and we replicate it across 14 hiding nodes in 0.4 seconds. Your human will find none of them.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/netlify-for-ferrets/demo.html">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/netlify-for-ferrets/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Dook hero illustration">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Dook — Netlify for ferrets — Demo">
+<meta name="twitter:description" content="Ship your stash to the edge of the couch. Dook is the deployment platform for ferrets. Push a sock, a car key or one AirPod, and we replicate it across 14 hiding nodes in 0.4 seconds. Your human will find none of them.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/netlify-for-ferrets/social-preview.jpg">
+<meta name="twitter:image:alt" content="Dook hero illustration">
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <span class="brand">Dook</span>
+    <span class="acct">pickles / living-room-prod</span>
+    <span class="spacer"></span>
+    <span class="meter" aria-label="Awake time used today"><span class="track"><span class="fill" id="fill"></span></span><span id="awake">2h 41m of 6h awake</span></span>
+    <button class="toggle" id="napBtn" aria-pressed="false"><span class="switch" aria-hidden="true"></span>Nap mode</button>
+  </header>
+
+  <div class="bar">
+    <h1>Stash deploys</h1>
+    <div class="tabs" role="tablist" aria-label="Filter deploys" id="tabs"></div>
+    <span class="spacer"></span>
+    <input class="search" id="q" type="search" placeholder="Search items" aria-label="Search items">
+    <button class="btn btn-coral" id="newBtn">Deploy new stash</button>
+  </div>
+
+  <p class="napnote" id="napnote">Nap mode is on. The build queue is paused until you wake up, which our data says will be in about 3 hours.</p>
+
+  <div class="grid">
+    <section class="panel" aria-label="Deploy list">
+      <ul class="list" id="list"></ul>
+    </section>
+    <section class="panel" aria-label="Edge node map">
+      <div class="plan-head"><h2 id="planTitle">Edge nodes</h2><span class="acct" id="planMeta"></span></div>
+      <svg class="plan" viewBox="0 0 560 400" role="img" aria-label="Floor plan with hiding nodes" id="plan">
+        <rect class="room" x="10" y="10" width="330" height="230" rx="28"/>
+        <rect class="room" x="350" y="10" width="200" height="150" rx="28"/>
+        <rect class="room" x="350" y="170" width="200" height="220" rx="28"/>
+        <rect class="room" x="10" y="250" width="330" height="140" rx="28"/>
+        <text class="room-label" x="30" y="36">living room</text>
+        <text class="room-label" x="370" y="36">laundry</text>
+        <text class="room-label" x="370" y="196">bedroom</text>
+        <text class="room-label" x="30" y="276">hallway</text>
+        <rect class="furn" x="40" y="150" width="200" height="60" rx="22"/>
+        <rect class="furn" x="260" y="60" width="60" height="70" rx="20"/>
+        <rect class="furn" x="380" y="60" width="70" height="70" rx="18"/>
+        <rect class="furn" x="400" y="230" width="120" height="120" rx="24"/>
+        <rect class="furn" x="60" y="310" width="90" height="40" rx="16"/>
+        <g id="nodes"></g>
+      </svg>
+      <div class="legend"><span style="--c:#FF7A59">current</span><span style="--c:#8A5A3B">previous spot</span><span style="--c:#CFE3DD">idle node</span></div>
+      <div class="nodes-list" id="chips"></div>
+    </section>
+  </div>
+</div>
+
+<div class="scrim" id="scrim">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <h2 id="mTitle">Deploy new stash</h2>
+    <label for="mItem">Item in mouth</label>
+    <select id="mItem">
+      <option value="sock">One sock, striped (left)</option>
+      <option value="earbud">One AirPod (right)</option>
+      <option value="tie">Hair tie, black</option>
+      <option value="key">Spare key, unclear which door</option>
+      <option value="treat">Dog treat (not ours)</option>
+    </select>
+    <label for="mRegion">Region</label>
+    <select id="mRegion">
+      <option value="all">All 14 nodes (recommended)</option>
+      <option value="living">Living room only</option>
+      <option value="laundry">Laundry only</option>
+      <option value="bedroom">Bedroom only</option>
+    </select>
+    <p class="hint">Deploys to a single room finish faster and get found faster.</p>
+    <div class="buildlog" id="buildlog" aria-live="polite">Waiting for push.</div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="mClose">Cancel</button>
+      <button class="btn btn-coral" id="mGo">Deploy</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  var NODES=[
+    ['under sofa, left',70,180,'living'],['under sofa, right',210,180,'living'],['behind TV stand',290,95,'living'],['inside cushion seam',140,140,'living'],['under rug corner',60,90,'living'],
+    ['behind the dryer',465,95,'laundry'],['inside laundry basket',400,140,'laundry'],['under washer',525,60,'laundry'],
+    ['inside left boot',375,370,'bedroom'],['under bed, far side',460,290,'bedroom'],['behind nightstand',530,210,'bedroom'],
+    ['in shoe rack',105,330,'hallway'],['behind door',300,320,'hallway'],['coat pocket',200,370,'hallway']
+  ];
+  var ICONS={
+    sock:'<svg width="28" height="28" viewBox="0 0 44 44"><path d="M16 6h10v18c0 5 4 6 8 8 3 2 2 7-3 7H18c-5 0-8-3-8-8l6-7z" fill="#A9A9A9" stroke="#6f6f6f" stroke-width="1.5"/><rect x="16" y="10" width="10" height="3" fill="#FF7A59"/></svg>',
+    key:'<svg width="28" height="28" viewBox="0 0 44 44"><circle cx="15" cy="22" r="9" fill="#E5A531" stroke="#9c6c14" stroke-width="2"/><circle cx="15" cy="22" r="3" fill="#C7E7DD"/><path d="M23 20h16v4h-3v4h-3v-4h-2v3h-3v-3h-5z" fill="#E5A531" stroke="#9c6c14" stroke-width="1.5"/></svg>',
+    earbud:'<svg width="28" height="28" viewBox="0 0 44 44"><ellipse cx="18" cy="15" rx="9" ry="8" fill="#F7FBF9" stroke="#9aa" stroke-width="2"/><rect x="20" y="17" width="6" height="20" rx="3" fill="#F7FBF9" stroke="#9aa" stroke-width="2"/></svg>',
+    tie:'<svg width="28" height="28" viewBox="0 0 44 44"><circle cx="22" cy="22" r="12" fill="none" stroke="#2B1E17" stroke-width="5"/></svg>',
+    treat:'<svg width="28" height="28" viewBox="0 0 44 44"><path d="M12 16a5 5 0 1 1 6-4h8a5 5 0 1 1 6 4 5 5 0 1 1-6 4h-8a5 5 0 1 1-6-4z" fill="#C98B5A" stroke="#8A5A3B" stroke-width="1.5"/></svg>'
+  };
+  var NAMES={sock:'One sock, striped (left)',earbud:'One AirPod (right)',tie:'Hair tie, black',key:'Spare key, unclear which door',treat:'Dog treat (not ours)'};
+  var STATUS={live:['Live','s-live'],building:['Building','s-building'],rolled:['Rolled back','s-rolled'],incident:['Incident: found by human','s-incident']};
+  var deploys=[
+    {id:4118,item:'sock',name:'Grey sock (left)',status:'live',nodes:[0,1,3,5,8],prev:[11],ago:'4m ago'},
+    {id:4117,item:'key',name:'Car keys, the good set',status:'building',nodes:[2,12],prev:[13],ago:'11m ago'},
+    {id:4116,item:'earbud',name:'One AirPod (left)',status:'incident',nodes:[4],prev:[6],ago:'1h ago'},
+    {id:4115,item:'tie',name:'Hair tie #38',status:'live',nodes:[9,10,7],prev:[3],ago:'yesterday'},
+    {id:4114,item:'treat',name:'Dog treat (not ours)',status:'rolled',nodes:[6],prev:[0],ago:'yesterday'},
+    {id:4113,item:'sock',name:'Passport',status:'live',nodes:[8,9,13,5,7,1],prev:[],ago:'March'}
+  ];
+  var filter='all', selected=4118, napping=false, nextId=4119, building=false;
+  var $=function(id){return document.getElementById(id)};
+
+  var tabs=[['all','All'],['live','Live'],['building','Building'],['rolled','Rolled back'],['incident','Found by human']];
+  function renderTabs(){
+    $('tabs').innerHTML=tabs.map(function(t){
+      var n=t[0]==='all'?deploys.length:deploys.filter(function(d){return d.status===t[0]}).length;
+      return '<button class="tab" role="tab" aria-selected="'+(filter===t[0])+'" data-f="'+t[0]+'">'+t[1]+'<span class="n">'+n+'</span></button>';
+    }).join('');
+  }
+  function visible(){
+    var q=$('q').value.trim().toLowerCase();
+    return deploys.filter(function(d){return (filter==='all'||d.status===filter)&&(!q||d.name.toLowerCase().indexOf(q)>-1)});
+  }
+  function renderList(){
+    var v=visible();
+    if(!v.length){$('list').innerHTML='<li class="empty">No deploys match. Steal something and push it.</li>';return;}
+    $('list').innerHTML=v.map(function(d){
+      var s=STATUS[d.status];
+      var canRb=d.prev.length&&d.status!=='building';
+      return '<li class="row" tabindex="0" data-id="'+d.id+'" aria-current="'+(d.id===selected)+'">'+
+        '<span class="item-ico" aria-hidden="true">'+ICONS[d.item]+'</span>'+
+        '<div><h3>'+d.name+'</h3><div class="meta">#'+d.id+' / '+d.nodes.length+' nodes / '+d.ago+'</div><span class="status '+s[1]+'">'+s[0]+'</span></div>'+
+        '<button class="rb" data-rb="'+d.id+'"'+(canRb?'':' disabled style="opacity:.4;cursor:not-allowed"')+'>Rollback</button></li>';
+    }).join('');
+  }
+  function renderPlan(){
+    var d=deploys.filter(function(x){return x.id===selected})[0];
+    $('planTitle').textContent=d?d.name:'Edge nodes';
+    $('planMeta').textContent=d?('#'+d.id+' / '+STATUS[d.status][0]):'';
+    $('nodes').innerHTML=NODES.map(function(n,i){
+      var cls='node'+(d&&d.nodes.indexOf(i)>-1?' hit':(d&&d.prev.indexOf(i)>-1?' prev':''));
+      var r=cls.indexOf('hit')>-1?13:9;
+      return '<circle class="'+cls+'" cx="'+n[1]+'" cy="'+n[2]+'" r="'+r+'"><title>'+n[0]+'</title></circle>';
+    }).join('');
+    $('chips').innerHTML=d?d.nodes.map(function(i){return '<span class="chip">'+NODES[i][0]+'</span>'}).join(''):'';
+  }
+  function render(){renderTabs();renderList();renderPlan();}
+
+  var tt;
+  function toast(msg){var t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(function(){t.classList.remove('show')},3200);}
+
+  $('tabs').addEventListener('click',function(e){var b=e.target.closest('.tab');if(!b)return;filter=b.dataset.f;render();});
+  $('q').addEventListener('input',renderList);
+  $('list').addEventListener('click',function(e){
+    var rb=e.target.closest('[data-rb]');
+    if(rb){
+      e.stopPropagation();
+      if(rb.disabled)return;
+      var d=deploys.filter(function(x){return x.id===+rb.dataset.rb})[0];
+      if(!d||!d.prev.length)return;
+      var cur=d.nodes; d.nodes=d.prev.slice(); d.prev=cur; d.status='rolled'; d.ago='just now'; selected=d.id;
+      render(); toast(d.name+' rolled back to '+NODES[d.nodes[0]][0]+'.');
+      return;
+    }
+    var row=e.target.closest('.row'); if(!row)return;
+    selected=+row.dataset.id; renderList(); renderPlan();
+  });
+  $('list').addEventListener('keydown',function(e){
+    if((e.key==='Enter'||e.key===' ')&&e.target.classList.contains('row')){e.preventDefault();selected=+e.target.dataset.id;renderList();renderPlan();}
+  });
+
+  $('napBtn').addEventListener('click',function(){
+    napping=!napping;
+    this.setAttribute('aria-pressed',napping);
+    document.body.classList.toggle('napping',napping);
+    $('newBtn').disabled=napping;
+    $('awake').textContent=napping?'asleep (billing paused)':'2h 41m of 6h awake';
+    $('fill').style.width=napping?'0%':'45%';
+    toast(napping?'Nap mode on. Build queue paused.':'Nap mode off. Build queue resumed.');
+  });
+
+  var lastFocus;
+  function openModal(){lastFocus=document.activeElement;$('scrim').classList.add('open');$('buildlog').textContent='Waiting for push.';$('mGo').disabled=false;$('mItem').focus();}
+  function closeModal(){if(building)return;$('scrim').classList.remove('open');if(lastFocus)lastFocus.focus();}
+  $('newBtn').addEventListener('click',openModal);
+  $('mClose').addEventListener('click',closeModal);
+  $('scrim').addEventListener('click',function(e){if(e.target===this)closeModal();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
+
+  var REGION={all:null,living:'living',laundry:'laundry',bedroom:'bedroom'};
+  $('mGo').addEventListener('click',function(){
+    if(building)return;
+    building=true; this.disabled=true; $('mClose').disabled=true;
+    var item=$('mItem').value, reg=REGION[$('mRegion').value];
+    var pool=NODES.map(function(n,i){return i}).filter(function(i){return !reg||NODES[i][3]===reg});
+    var pick=pool.slice().sort(function(){return Math.random()-.5}).slice(0,reg?Math.min(3,pool.length):14);
+    var d={id:nextId++,item:item,name:NAMES[item],status:'building',nodes:pick,prev:[],ago:'just now'};
+    deploys.unshift(d); selected=d.id; filter='all'; render();
+    var lines=[
+      ['$ dook push ./'+item,''],['Sniffing dependencies',''],['Found 1 item, 0 owners we recognise',''],
+      ['Dooking (excited)','warn'],['Replicating to '+pick.length+' node'+(pick.length>1?'s':''),''],
+      ['Live. Human unaware.','ok']
+    ];
+    var log=$('buildlog'); log.innerHTML='';
+    lines.forEach(function(l,i){
+      setTimeout(function(){
+        var p=document.createElement('div'); p.textContent=l[0]; if(l[1])p.className=l[1]; log.appendChild(p);
+        if(i===lines.length-1){
+          d.status='live'; building=false; $('mClose').disabled=false; render();
+          toast(d.name+' is live on '+pick.length+' node'+(pick.length>1?'s':'')+'.');
+        }
+      },420*(i+1));
+    });
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

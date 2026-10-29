@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Red+Hat+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --mint:#DDF0EA; --mint-2:#C7E7DD; --mint-deep:#8FCDBB; --tube-shadow:#5E9E8C;
+  --sable:#8A5A3B; --sable-deep:#5E3A24; --coral:#FF7A59; --coral-deep:#E0583A;
+  --ink:#2B1E17; --muted:#6B5B50; --cream:#F7FBF9;
+  --display:'Baloo 2','Arial Rounded MT Bold',-apple-system,sans-serif;
+  --body:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --mono:'Red Hat Mono','SFMono-Regular',Menlo,Consolas,monospace;
+  --clay:14px 16px 32px rgba(70,118,104,.32),-10px -10px 26px rgba(255,255,255,.85),inset 5px 5px 12px rgba(255,255,255,.7),inset -7px -8px 14px rgba(70,118,104,.16);
+  --clay-sm:7px 8px 16px rgba(70,118,104,.3),-5px -5px 12px rgba(255,255,255,.8),inset 3px 3px 6px rgba(255,255,255,.7),inset -4px -4px 8px rgba(70,118,104,.16);
+  --spring:cubic-bezier(.34,1.56,.64,1);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--mint);color:var(--ink);font:400 17px/1.6 var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{display:block;max-width:100%}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--sable);outline-offset:4px;border-radius:12px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+h1,h2,h3{font-family:var(--display);font-weight:800;line-height:1.02;margin:0;color:var(--sable-deep);letter-spacing:-.01em}
+
+/* nav */
+.nav{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px 0}
+.logo{display:flex;align-items:center;gap:10px;font:800 30px/1 var(--display);color:var(--sable-deep);text-decoration:none}
+.logo-mark{width:40px;height:40px;border-radius:50%;background:var(--sable);box-shadow:var(--clay-sm);display:grid;place-items:center}
+.nav-links{display:flex;gap:26px;align-items:center;font-weight:500}
+.nav-links a{text-decoration:none;color:var(--muted)}
+.nav-links a:hover{color:var(--ink)}
+.nap{display:flex;align-items:center;gap:10px;font:500 13px/1 var(--mono);color:var(--muted)}
+.nap-track{width:110px;height:16px;border-radius:999px;background:var(--mint-2);box-shadow:inset 3px 3px 6px rgba(70,118,104,.3),inset -3px -3px 6px rgba(255,255,255,.8);padding:3px}
+.nap-fill{display:block;height:100%;width:45%;border-radius:999px;background:var(--coral);box-shadow:inset 2px 2px 3px rgba(255,255,255,.5)}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:10px;min-height:54px;padding:0 28px;border-radius:999px;border:0;font:700 17px/1 var(--body);text-decoration:none;cursor:pointer;transition:transform .32s var(--spring);touch-action:manipulation}
+.btn:active{transform:scale(.94)}
+.btn-coral{background:var(--coral);color:var(--ink);box-shadow:8px 10px 20px rgba(224,88,58,.35),inset 4px 4px 8px rgba(255,255,255,.45),inset -5px -6px 10px rgba(160,50,25,.25)}
+.btn-ghost{background:var(--mint);color:var(--sable-deep);box-shadow:var(--clay-sm)}
+.btn:hover{transform:translateY(-2px)}
+
+/* pill */
+.pill{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;background:var(--cream);box-shadow:var(--clay-sm);font:600 13px/1 var(--mono);color:var(--sable-deep)}
+.dot{width:9px;height:9px;border-radius:50%;background:#2FA37A;box-shadow:0 0 0 3px rgba(47,163,122,.2)}
+.dot.build{background:#E5A531;box-shadow:0 0 0 3px rgba(229,165,49,.22)}
+.dot.back{background:var(--sable)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1fr 1.15fr;gap:40px;align-items:center;padding:40px 0 20px}
+.hero h1{font-size:clamp(46px,6.6vw,88px);margin:22px 0 20px}
+.hero .sub{font-size:19px;max-width:30em;color:var(--muted);margin:0 0 32px}
+.cta-row{display:flex;flex-wrap:wrap;gap:16px}
+.hero-art{position:relative}
+.hero-frame{border-radius:44px;overflow:hidden;box-shadow:var(--clay);aspect-ratio:16/10}
+.hero-frame img{width:100%;height:100%;object-fit:cover;object-position:62% 50%}
+.log{position:absolute;left:18px;bottom:-40px;width:min(330px,80%);padding:18px 20px;border-radius:28px;background:var(--cream);box-shadow:var(--clay);font:500 13px/1.75 var(--mono);color:var(--ink)}
+.log-head{display:flex;justify-content:space-between;margin-bottom:6px;font-weight:600;color:var(--sable-deep)}
+.log p{margin:0;opacity:0}
+.log p.on{opacity:1;transition:opacity .25s ease-out}
+.log .ok{color:#1F7F5C}
+
+/* tube divider */
+.tube{position:relative;height:62px;margin:90px 0 54px;border-radius:999px;background:linear-gradient(180deg,#BFE6DA 0%,var(--mint-deep) 55%,#79B9A6 100%);box-shadow:0 14px 26px rgba(70,118,104,.3),inset 0 6px 8px rgba(255,255,255,.55),inset 0 -8px 10px rgba(50,100,86,.25)}
+.tube::before{content:"";position:absolute;left:-4px;top:-8px;width:62px;height:78px;border-radius:50%;background:radial-gradient(ellipse at 55% 50%,#2E4A41 0 38%,#4E8574 52%,#A6DACB 70%);box-shadow:inset -5px 0 8px rgba(255,255,255,.4)}
+.tube-label{position:absolute;left:78px;top:50%;transform:translateY(-50%);font:800 26px/1 var(--display);color:var(--ink)}
+.tube-blob{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px}
+
+/* features */
+.features{display:grid;grid-template-columns:1.25fr 1fr;grid-template-rows:auto auto;gap:30px}
+.slab{background:var(--mint);border-radius:40px;box-shadow:var(--clay);padding:36px}
+.slab h3{font-size:34px;margin:18px 0 10px}
+.slab p{margin:0;color:var(--muted);max-width:34em}
+.slab.big{grid-row:span 2;display:flex;flex-direction:column;justify-content:space-between;background:var(--cream)}
+.slab.big h3{font-size:48px}
+.blob{width:74px;height:74px;border-radius:26px;display:grid;place-items:center;background:var(--mint-2);box-shadow:var(--clay-sm)}
+.big-stat{display:flex;gap:16px;flex-wrap:wrap;margin-top:34px}
+.big-stat div{flex:1;min-width:120px;padding:18px;border-radius:24px;background:var(--mint);box-shadow:inset 4px 4px 10px rgba(70,118,104,.22),inset -4px -4px 10px rgba(255,255,255,.8)}
+.big-stat b{display:block;font:800 36px/1 var(--display);color:var(--sable)}
+.big-stat span{font-size:14px;color:var(--muted)}
+
+/* testimonials */
+.quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;align-items:start}
+.quote{background:var(--mint);border-radius:36px;padding:30px;box-shadow:var(--clay)}
+.quote:nth-child(2){margin-top:46px}
+.porthole{width:96px;height:96px;border-radius:50%;padding:7px;background:var(--mint);box-shadow:var(--clay-sm);margin-bottom:20px}
+.porthole img{width:100%;height:100%;border-radius:50%;object-fit:cover}
+.quote blockquote{margin:0 0 20px;font-size:19px;line-height:1.5}
+.quote .who{font:800 21px/1.1 var(--display);color:var(--sable-deep)}
+.quote .title{font-size:14px;color:var(--muted);margin-top:4px}
+
+/* pricing */
+.tiers{display:grid;grid-template-columns:1fr 1.12fr 1fr;gap:28px;align-items:center}
+.tier{border-radius:40px;padding:34px 30px;background:var(--mint);box-shadow:var(--clay)}
+.tier h3{font-size:30px}
+.tier .tag{color:var(--muted);margin:6px 0 20px;min-height:3.2em}
+.price{font:800 52px/1 var(--display);color:var(--ink);margin-bottom:22px}
+.price small{font:500 15px var(--body);color:var(--muted)}
+.tier ul{list-style:none;margin:0 0 28px;padding:0}
+.tier li{display:flex;gap:12px;align-items:flex-start;padding:9px 0}
+.tier li::before{content:"";flex:none;width:14px;height:14px;margin-top:6px;border-radius:50%;background:var(--sable);box-shadow:inset 2px 2px 3px rgba(255,255,255,.4)}
+.tier .btn{width:100%;justify-content:center}
+.tier.hot{background:var(--sable);color:var(--cream);padding:46px 34px;box-shadow:16px 20px 40px rgba(94,58,36,.4),-10px -10px 26px rgba(255,255,255,.7),inset 6px 6px 14px rgba(255,255,255,.22),inset -8px -10px 18px rgba(40,20,10,.35)}
+.tier.hot h3,.tier.hot .price{color:var(--cream)}
+.tier.hot .tag,.tier.hot .price small{color:#EBD8C9}
+.tier.hot li::before{background:var(--coral)}
+.tier.hot .nap{color:#EBD8C9;margin-bottom:22px}
+.tier.hot .nap-track{background:var(--sable-deep);box-shadow:inset 3px 3px 6px rgba(0,0,0,.35)}
+
+/* final band */
+.band{margin:110px 0 0;padding:64px 48px;border-radius:52px;background:var(--cream);box-shadow:var(--clay);display:grid;grid-template-columns:1.3fr auto;gap:30px;align-items:center}
+.band h2{font-size:clamp(36px,4.4vw,56px)}
+.band p{margin:12px 0 0;color:var(--muted)}
+.section-intro{max-width:34em;color:var(--muted);margin:-28px 0 40px}
+
+footer{padding:70px 0 50px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;color:var(--muted);font-size:15px}
+footer a{color:var(--sable-deep);font-weight:700;text-decoration:none}
+footer a:hover{text-decoration:underline}
+
+@media (max-width:900px){
+  .nav-links a{display:none}
+  .hero{grid-template-columns:1fr;gap:70px}
+  .hero-art{order:-1}
+  .log{left:12px;bottom:-40px}
+  .features{grid-template-columns:1fr}
+  .slab.big{grid-row:auto}
+  .quotes,.tiers{grid-template-columns:1fr}
+  .quote:nth-child(2){margin-top:0}
+  .band{grid-template-columns:1fr;padding:44px 28px}
+  .tube-label{font-size:21px}
+}
+@media (max-width:520px){
+  .wrap{padding:0 18px}
+  .nap{display:none}
+  .slab,.tier,.quote{padding:28px 24px}
+  .slab.big h3{font-size:38px}
+  .tube-blob{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important;scroll-behavior:auto!important}
+  .log p{opacity:1}
+}
+</style>
+<title>Dook — Netlify for ferrets</title>
+<meta name="description" content="Ship your stash to the edge of the couch. Dook is the deployment platform for ferrets. Push a sock, a car key or one AirPod, and we replicate it across 14 hiding nodes in 0.4 seconds. Your human will find none of them.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/netlify-for-ferrets/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Dook — Netlify for ferrets">
+<meta property="og:description" content="Ship your stash to the edge of the couch. Dook is the deployment platform for ferrets. Push a sock, a car key or one AirPod, and we replicate it across 14 hiding nodes in 0.4 seconds. Your human will find none of them.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/netlify-for-ferrets/">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/netlify-for-ferrets/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Dook hero illustration">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Dook — Netlify for ferrets">
+<meta name="twitter:description" content="Ship your stash to the edge of the couch. Dook is the deployment platform for ferrets. Push a sock, a car key or one AirPod, and we replicate it across 14 hiding nodes in 0.4 seconds. Your human will find none of them.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/netlify-for-ferrets/social-preview.jpg">
+<meta name="twitter:image:alt" content="Dook hero illustration">
+</head>
+<body>
+<div class="wrap">
+  <header class="nav">
+    <a class="logo" href="#top" aria-label="Dook home">
+      <span class="logo-mark" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24"><ellipse cx="12" cy="13" rx="8" ry="7" fill="#F7FBF9"/><ellipse cx="8.6" cy="12" rx="2.6" ry="1.8" fill="#5E3A24"/><ellipse cx="15.4" cy="12" rx="2.6" ry="1.8" fill="#5E3A24"/><circle cx="12" cy="16" r="1.4" fill="#FF7A59"/></svg>
+      </span>
+      Dook
+    </a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="#features">Platform</a>
+      <a href="#customers">Customers</a>
+      <a href="#pricing">Pricing</a>
+      <span class="nap" title="Awake time used today"><span class="nap-track"><span class="nap-fill" style="width:45%"></span></span>2h 41m of 6h awake</span>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div>
+        <span class="pill"><span class="dot"></span>Live in 14 regions, all of them under furniture</span>
+        <h1>Ship your stash to the edge of the couch.</h1>
+        <p class="sub">Dook is the deployment platform for ferrets. Push a sock, a car key or one AirPod, and we replicate it across 14 hiding nodes in 0.4 seconds. Your human will find none of them.</p>
+        <div class="cta-row">
+          <a class="btn btn-coral" href="./demo.html">Start stashing free</a>
+          <a class="btn btn-ghost" href="./demo.html">open the demo →</a>
+        </div>
+      </div>
+      <div class="hero-art">
+        <div class="hero-frame"><img src="hero.webp" alt="A clay ferret peeking out of a mint tunnel with a grey sock in its mouth" width="1600" height="900"></div>
+        <div class="log" aria-label="Example deploy log">
+          <div class="log-head"><span>deploy #4,118</span><span>sock-grey-left</span></div>
+          <p>$ dook push ./sock</p>
+          <p>Sniffing dependencies</p>
+          <p>Dooking (excited)</p>
+          <p>Replicated to 14 nodes</p>
+          <p class="ok">Live. Human unaware.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="tube" id="features" aria-hidden="true">
+      <span class="tube-label">The platform</span>
+      <svg class="tube-blob" style="left:62%" viewBox="0 0 44 44"><path d="M16 6h10v18c0 5 4 6 8 8 3 2 2 7-3 7H18c-5 0-8-3-8-8l6-7z" fill="#A9A9A9" stroke="#7d7d7d" stroke-width="1.5"/><rect x="16" y="10" width="10" height="3" fill="#FF7A59"/></svg>
+      <svg class="tube-blob" style="left:80%" viewBox="0 0 44 44"><circle cx="15" cy="22" r="9" fill="#E5A531" stroke="#9c6c14" stroke-width="2"/><circle cx="15" cy="22" r="3" fill="#8FCDBB"/><path d="M23 20h16v4h-3v4h-3v-4h-2v3h-3v-3h-5z" fill="#E5A531" stroke="#9c6c14" stroke-width="1.5"/></svg>
+    </div>
+
+    <section class="features">
+      <article class="slab big">
+        <div>
+          <div class="blob" aria-hidden="true">
+            <svg width="42" height="42" viewBox="0 0 44 44"><path d="M16 6h10v18c0 5 4 6 8 8 3 2 2 7-3 7H18c-5 0-8-3-8-8l6-7z" fill="#A9A9A9" stroke="#6f6f6f" stroke-width="1.5"/><rect x="16" y="10" width="10" height="3" fill="#FF7A59"/></svg>
+          </div>
+          <span class="pill" style="margin-top:22px"><span class="dot"></span>Live · under sofa</span>
+          <h3>Atomic stashes</h3>
+          <p>An item is either fully under the sofa or still in your mouth. Dook never leaves a half-hidden key sticking out from the rug for your human to spot mid-search.</p>
+        </div>
+        <div class="big-stat">
+          <div><b>0.4s</b><span>median time from mouth to node</span></div>
+          <div><b>0</b><span>partial stashes since launch</span></div>
+          <div><b>14</b><span>nodes per household</span></div>
+        </div>
+      </article>
+      <article class="slab">
+        <div class="blob" aria-hidden="true">
+          <svg width="40" height="40" viewBox="0 0 44 44"><circle cx="15" cy="22" r="9" fill="#E5A531" stroke="#9c6c14" stroke-width="2"/><circle cx="15" cy="22" r="3" fill="#C7E7DD"/><path d="M23 20h16v4h-3v4h-3v-4h-2v3h-3v-3h-5z" fill="#E5A531" stroke="#9c6c14" stroke-width="1.5"/></svg>
+        </div>
+        <span class="pill" style="margin-top:22px"><span class="dot back"></span>Rolled back</span>
+        <h3>Instant rollback</h3>
+        <p>Human found the remote? Roll it back to the previous hiding spot in one click. We keep the last 30 locations of every item, including the inside of the left boot.</p>
+      </article>
+      <article class="slab">
+        <div class="blob" aria-hidden="true">
+          <svg width="40" height="40" viewBox="0 0 44 44"><path d="M6 18c8 10 24 10 32 0" fill="none" stroke="#8A5A3B" stroke-width="4" stroke-linecap="round"/><path d="M6 18l-2-6M38 18l2-6" stroke="#8A5A3B" stroke-width="3" stroke-linecap="round"/><path d="M26 6h7l-7 7h7" fill="none" stroke="#5E3A24" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span class="pill" style="margin-top:22px"><span class="dot build"></span>Building after nap</span>
+        <h3>Sleep-aware builds</h3>
+        <p>You are awake about 6 hours a day. Dook queues every build for your next war dance and bills you nothing for the 18 hours you spend in the hammock.</p>
+      </article>
+    </section>
+
+    <div class="tube" id="customers" aria-hidden="true"><span class="tube-label">Who stashes with us</span></div>
+
+    <section class="quotes">
+      <figure class="quote">
+        <div class="porthole"><img src="headshot-1.webp" alt="Pickles, a sable ferret, sitting upright" width="320" height="320" loading="lazy"></div>
+        <blockquote>I migrated 212 items off the open floor and onto Dook over one weekend. My human has not seen the passport since March.</blockquote>
+        <figcaption><div class="who">Pickles</div><div class="title">Head of Acquisitions, The Underside of a Recliner</div></figcaption>
+      </figure>
+      <figure class="quote">
+        <div class="porthole"><img src="headshot-2.webp" alt="Admiral Noodle, a champagne ferret with a white face" width="320" height="320" loading="lazy"></div>
+        <blockquote>We used to keep everything in one shoe. One shoe is a single point of failure. Dook gave us fourteen.</blockquote>
+        <figcaption><div class="who">Admiral Noodle</div><div class="title">Principal Stash Engineer, Apartment 4B</div></figcaption>
+      </figure>
+      <figure class="quote">
+        <div class="porthole"><img src="headshot-3.webp" alt="Bean Kowalski, a silver ferret with a tilted head" width="320" height="320" loading="lazy"></div>
+        <blockquote>Preview stashes let my cage-mate approve a spot before it goes live. We have had zero merge conflicts over the left slipper since.</blockquote>
+        <figcaption><div class="who">Bean Kowalski</div><div class="title">VP Platform (Hammock), Two-Ferret Household, Duluth</div></figcaption>
+      </figure>
+    </section>
+
+    <div class="tube" id="pricing" aria-hidden="true"><span class="tube-label">Pricing</span></div>
+    <p class="section-intro">Every plan includes unlimited naps. Naps are not billable and never will be. Our lawyers asked us to stop saying that.</p>
+
+    <section class="tiers">
+      <article class="tier">
+        <h3>Kit</h3>
+        <p class="tag">For ferrets with one sock and ambition.</p>
+        <div class="price">$0<small>/mo</small></div>
+        <ul><li>3 hiding nodes</li><li>100 stashes a month</li><li>Community support (another ferret, asleep)</li></ul>
+        <a class="btn btn-ghost" href="./demo.html">Start stashing free</a>
+      </article>
+      <article class="tier hot">
+        <h3>Business Weasel</h3>
+        <p class="tag">For the established thief.</p>
+        <div class="nap"><span class="nap-track"><span class="nap-fill" style="width:80%"></span></span>Most picked by ferrets awake right now (4)</div>
+        <div class="price">$19<small>/mo</small></div>
+        <ul><li>14 edge nodes, including behind the dryer</li><li>Preview stashes for your cage-mate</li><li>Password-protected tubes</li></ul>
+        <a class="btn btn-coral" href="./demo.html">Go Business Weasel</a>
+      </article>
+      <article class="tier">
+        <h3>Mustelid Enterprise</h3>
+        <p class="tag">For multi-ferret households with a compliance problem.</p>
+        <div class="price">$4,800<small>/yr</small></div>
+        <ul><li>Single Sniff-On (SSO)</li><li>A dedicated stash engineer</li><li>99.99% uptime SLA, naps excluded</li></ul>
+        <a class="btn btn-ghost" href="./demo.html">Talk to sales</a>
+      </article>
+    </section>
+
+    <section class="band">
+      <div>
+        <h2>Your human is looking for the keys right now.</h2>
+        <p>Deploy them somewhere better before the second couch cushion comes off.</p>
+      </div>
+      <a class="btn btn-coral" href="./demo.html">open the demo →</a>
+    </section>
+  </main>
+
+  <footer>
+    <a href="/">← theworstaistudioever</a>
+    <span>Dook Inc. Headquartered in a dresser drawer. Not affiliated with your missing items.</span>
+  </footer>
+</div>
+<script>
+(function(){
+  var lines=document.querySelectorAll('.log p');
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  lines.forEach(function(p,i){
+    if(reduce){p.classList.add('on');return;}
+    setTimeout(function(){p.classList.add('on');},500+i*520);
+  });
+})();
+</script>
+</body>
+</html>
