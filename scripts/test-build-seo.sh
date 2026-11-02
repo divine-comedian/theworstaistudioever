@@ -110,6 +110,34 @@ else
   pass "empty site rejected"
 fi
 
+# A catalogue larger than a pipe buffer must never SIGPIPE while reading the
+# first date. The original four-entry fixture could not expose that failure.
+large="$(mktemp -d)"
+python3 - "$large" <<'PY'
+import json, sys
+from pathlib import Path
+site = Path(sys.argv[1])
+(site / 'CNAME').write_text('theworstaistudioever.com\n')
+for i in range(160):
+    entry = site / 'entries' / f'company-{i}-for-dogs'
+    entry.mkdir(parents=True)
+    (entry / 'concept.json').write_text(json.dumps({
+        'date': '2026-11-01' if i == 159 else '2026-10-01',
+        'slug': entry.name, 'tagline': f'Company {i} for dogs',
+        'product_name': f'Product {i}', 'one_liner': 'A long catalogue row. ' * 60,
+    }))
+PY
+large_ok=1
+for attempt in 1 2 3; do
+  "$BUILD" "$large" >/dev/null 2>&1 || large_ok=0
+done
+if [[ "$large_ok" -eq 1 ]] && [[ "$(jq '.items | length' "$large/feed.json")" -eq 160 ]] && \
+   [[ "$(jq -r '.slug' "$large/latest.json")" == "company-159-for-dogs" ]]; then
+  pass "large catalogue builds reliably and selects the newest entry"
+else
+  fail "large catalogue failed or selected the wrong newest entry"
+fi
+
 echo "  ---"
 echo "  $PASS passed, $FAIL failed"
 [ "$FAIL" -eq 0 ] || exit 1

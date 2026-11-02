@@ -60,7 +60,23 @@ for f in index.html demo.html; do
       "$DIR_REAL"/*) ;;
       *) fail "$f image path escapes entry dir: $src" ;;
     esac
-  done < <(grep -oi '<img[^>]*src="[^"]*"' "$DIR/$f" 2>/dev/null | sed 's/.*src="\([^"]*\)".*/\1/' || true)
+  done < <(python3 - "$DIR/$f" <<'PY'
+from html.parser import HTMLParser
+from pathlib import Path
+import sys
+
+class ImageSources(HTMLParser):
+    def handle_starttag(self, tag, attrs):
+        if tag == 'img':
+            source = dict(attrs).get('src')
+            if source:
+                print(source)
+
+# HTMLParser treats script/style bodies as text. JavaScript templates containing
+# <img> markup are checked when rendered in the browser, not as literal paths.
+ImageSources().feed(Path(sys.argv[1]).read_text())
+PY
+  )
 done
 
 # 7. Every image file in the entry dir decodes with PIL and is <= 500 KB

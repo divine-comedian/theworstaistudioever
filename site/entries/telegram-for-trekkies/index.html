@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;600;700&family=Barlow:wght@400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0B0D1A;
+    --panel: #151829;
+    --fg: #EDE6DA;
+    --ink: #F4EEE4;
+    --muted: #8E8AA8;
+    --amber: #FF9D3D;
+    --lav: #A79BFF;
+    --peach: #F5B98E;
+    --rose: #D0687D;
+    --teal: #6FB7C9;
+    --rail: 132px;
+    --gap: 10px;
+    --display: 'Antonio', 'Arial Narrow', 'Helvetica Neue Condensed', sans-serif;
+    --body: 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --mono: 'Share Tech Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  img { display: block; max-width: 100%; }
+  :focus-visible { outline: 3px solid var(--lav); outline-offset: 3px; }
+
+  .console { max-width: 1280px; margin: 0 auto; padding: 18px 20px 28px; }
+
+  /* ---- the elbow: a coloured L joining the rail to a section bar ---- */
+  .bay { display: grid; grid-template-columns: var(--rail) 1fr; column-gap: var(--gap); margin-top: var(--gap); }
+  .elbow {
+    grid-column: 1 / 3;
+    display: grid;
+    grid-template-columns: var(--rail) 1fr auto;
+    column-gap: var(--gap);
+    align-items: stretch;
+    height: 46px;
+  }
+  .elbow .corner {
+    background: var(--c);
+    border-radius: 40px 0 0 0;
+    position: relative;
+  }
+  .elbow .corner::after {
+    /* inner fillet where the bar meets the rail */
+    content: "";
+    position: absolute;
+    right: calc(-1 * var(--gap) - 26px);
+    bottom: -26px;
+    width: 26px; height: 26px;
+    background: radial-gradient(circle at 100% 100%, transparent 25px, var(--c) 26px);
+    display: none;
+  }
+  .elbow .bar {
+    background: var(--c);
+    color: var(--bg);
+    display: flex;
+    align-items: center;
+    padding: 0 18px;
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 26px;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+    transform-origin: left center;
+  }
+  .elbow .code {
+    background: var(--c);
+    color: var(--bg);
+    font-family: var(--mono);
+    font-size: 14px;
+    display: flex; align-items: center;
+    padding: 0 20px;
+    border-radius: 0 23px 23px 0;
+  }
+  .rail {
+    grid-column: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+    padding-top: var(--gap);
+  }
+  .rail .key {
+    background: var(--c, var(--muted));
+    color: var(--bg);
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 8px 10px 6px;
+    min-height: 54px;
+    display: flex; align-items: flex-end; justify-content: flex-end;
+    text-decoration: none;
+  }
+  .rail .key.grow { flex: 1; min-height: 40px; }
+  .rail .key.end { border-radius: 0 0 0 40px; }
+  a.key:hover { filter: brightness(1.15); }
+  .deck { grid-column: 2; padding: 34px 8px 40px 28px; min-width: 0; }
+
+  /* ---- top bar ---- */
+  .top .bar { justify-content: space-between; }
+  .top .bar a { text-decoration: none; }
+  .stardate { font-family: var(--mono); font-size: 15px; letter-spacing: 0; text-transform: none; }
+
+  /* ---- hero ---- */
+  .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 36px; align-items: start; }
+  h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(52px, 6.6vw, 100px);
+    line-height: .88;
+    overflow-wrap: anywhere;
+    letter-spacing: -.005em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin: 4px 0 26px;
+  }
+  .hero p.sub { max-width: 34em; color: var(--fg); margin: 0 0 30px; font-size: 18px; }
+  .keys { display: flex; flex-wrap: wrap; gap: var(--gap); }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    min-height: 52px;
+    padding: 0 26px 0 22px;
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 21px;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--bg);
+    background: var(--c, var(--amber));
+    border: 0;
+    border-radius: 26px 0 0 26px;
+    cursor: pointer;
+    transition: filter .15s ease-out;
+  }
+  .btn:hover { filter: brightness(1.12); }
+  .btn:active { filter: brightness(1.3); }
+  .btn.alt { --c: var(--lav); border-radius: 0 26px 26px 0; }
+  .pulse { width: 10px; height: 10px; border-radius: 50%; background: var(--bg); animation: blink 1.2s steps(2, jump-none) infinite; }
+  @keyframes blink { 50% { opacity: .15; } }
+
+  .viewscreen { position: relative; }
+  .viewscreen figure { margin: 0; border: 6px solid var(--panel); border-radius: 0 34px 0 34px; overflow: hidden; background: var(--panel); }
+  .viewscreen img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
+  .viewscreen .readout {
+    display: flex; justify-content: space-between; gap: 12px;
+    font-family: var(--mono); font-size: 13px; color: var(--muted);
+    padding: 10px 4px 0;
+  }
+  .viewscreen .readout b { color: var(--amber); font-weight: 400; }
+  .lag { margin-top: 26px; padding: 16px 18px; background: var(--panel); border-left: 6px solid var(--amber); font-size: 15px; }
+  .lag .num { font-family: var(--mono); color: var(--amber); }
+
+  /* ---- section heads ---- */
+  h2 {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: clamp(36px, 4.6vw, 58px);
+    line-height: 1;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin: 0 0 8px;
+  }
+  .lede { color: var(--muted); max-width: 40em; margin: 0 0 30px; }
+
+  /* ---- systems ---- */
+  .systems { display: grid; gap: 2px; }
+  .system {
+    display: grid;
+    grid-template-columns: 170px 1fr;
+    gap: 28px;
+    padding: 22px 0;
+    border-top: 2px solid var(--panel);
+  }
+  .system .tag {
+    font-family: var(--mono); font-size: 13px; color: var(--lav);
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .system .tag .meter { height: 10px; background: var(--panel); position: relative; }
+  .system .tag .meter i { position: absolute; inset: 0 auto 0 0; background: var(--lav); }
+  .system h3 { font-family: var(--display); font-weight: 600; font-size: 30px; line-height: 1.05; text-transform: uppercase; margin: 0 0 6px; color: var(--ink); }
+  .system p { margin: 0; max-width: 38em; }
+
+  /* ---- crew reports ---- */
+  .reports { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+  .report { background: var(--panel); padding: 0 0 20px; border-radius: 0 0 0 30px; display: flex; flex-direction: column; }
+  .report .strip { height: 8px; background: var(--rose); }
+  .report blockquote { margin: 0; padding: 22px 22px 18px; font-size: 17px; color: var(--ink); flex: 1; }
+  .report .who { display: grid; grid-template-columns: 64px 1fr; gap: 14px; padding: 0 22px; align-items: center; }
+  .report .who img { width: 64px; height: 64px; border-radius: 50% 0 50% 50%; object-fit: cover; }
+  .report .name { font-family: var(--display); font-weight: 600; font-size: 20px; text-transform: uppercase; color: var(--ink); line-height: 1.1; }
+  .report .title { font-size: 14px; color: var(--muted); line-height: 1.35; margin-top: 2px; }
+  .report .dates { margin: 16px 22px 0; font-family: var(--mono); font-size: 12px; color: var(--muted); display: grid; grid-template-columns: 1fr 1fr; gap: 2px 12px; }
+  .report .dates span:nth-child(odd) { color: var(--rose); }
+
+  /* ---- commission (pricing) ---- */
+  .tiers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; align-items: stretch; }
+  .tier { background: var(--panel); display: flex; flex-direction: column; }
+  .tier header { background: var(--tc); color: var(--bg); padding: 14px 20px 12px; border-radius: 0 28px 0 0; }
+  .tier header .rank { font-family: var(--display); font-weight: 700; font-size: 32px; text-transform: uppercase; line-height: 1; }
+  .tier header .tl { font-size: 15px; font-weight: 500; margin-top: 4px; }
+  .tier .price { font-family: var(--mono); font-size: 34px; color: var(--ink); padding: 20px 20px 4px; }
+  .tier ul { list-style: none; margin: 0; padding: 8px 20px 22px; flex: 1; }
+  .tier li { padding: 9px 0 9px 22px; border-top: 1px solid rgba(142,138,168,.22); position: relative; font-size: 16px; }
+  .tier li::before { content: ""; position: absolute; left: 0; top: 16px; width: 10px; height: 10px; background: var(--tc); border-radius: 0 5px 5px 0; }
+  .tier .btn { --c: var(--tc); margin: 0 20px 20px; justify-content: center; border-radius: 0 26px 26px 0; }
+  .tier.pick { outline: 3px solid var(--peach); outline-offset: 0; }
+  .tier.pick .flag { font-family: var(--mono); font-size: 12px; color: var(--peach); padding: 0 20px; }
+
+  /* ---- demo call-out ---- */
+  .demo-call { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; background: var(--panel); padding: 26px 28px; border-radius: 0 40px 40px 0; }
+  .demo-call h2 { font-size: clamp(30px, 3.6vw, 44px); margin: 0 0 4px; }
+  .demo-call p { margin: 0; color: var(--muted); }
+  .demo-call .btn { min-height: 60px; font-size: 24px; }
+
+  footer.deck { padding-bottom: 10px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: 14px; color: var(--muted); }
+  footer a { color: var(--teal); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  /* load sequence: bars extend out of the rail, once */
+  .js .elbow .bar { animation: extend .5s cubic-bezier(.2,.8,.2,1) both; }
+  .js .bay:nth-of-type(2) .elbow .bar { animation-delay: .08s; }
+  @keyframes extend { from { transform: scaleX(.04); } to { transform: none; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .js .elbow .bar { animation: none; }
+    .pulse { animation: none; }
+    html { scroll-behavior: auto; }
+  }
+
+  @media (max-width: 960px) {
+    .hero { grid-template-columns: 1fr; }
+    .reports, .tiers { grid-template-columns: 1fr; }
+    .system { grid-template-columns: 1fr; gap: 10px; }
+  }
+  @media (max-width: 640px) {
+    :root { --rail: 22px; --gap: 6px; }
+    .console { padding: 10px 10px 20px; }
+    .rail .key { font-size: 0; min-height: 30px; padding: 0; }
+    .elbow { height: 40px; grid-template-columns: var(--rail) 1fr; }
+    .elbow .corner { border-radius: 20px 0 0 0; }
+    .elbow .code { display: none; }
+    .elbow .bar { font-size: 20px; padding: 0 12px; border-radius: 0 20px 20px 0; }
+    .top .stardate { display: none; }
+    .deck { padding: 24px 2px 30px 12px; }
+    h1 { font-size: 46px; }
+    .demo-call { grid-template-columns: 1fr; padding: 22px; }
+    .btn { font-size: 19px; }
+  }
+</style>
+<title>Subspace — Telegram for trekkies</title>
+<meta name="description" content="Hailing frequencies open. Subspace is the encrypted messenger for people with opinions about warp cores. Every message is stardate-stamped, canon-checked and delayed by the correct transmission lag before it reaches the rest of the crew.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/telegram-for-trekkies/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Subspace — Telegram for trekkies">
+<meta property="og:description" content="Hailing frequencies open. Subspace is the encrypted messenger for people with opinions about warp cores. Every message is stardate-stamped, canon-checked and delayed by the correct transmission lag before it reaches the rest of the crew.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/telegram-for-trekkies/">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/telegram-for-trekkies/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Subspace hero illustration">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Subspace — Telegram for trekkies">
+<meta name="twitter:description" content="Hailing frequencies open. Subspace is the encrypted messenger for people with opinions about warp cores. Every message is stardate-stamped, canon-checked and delayed by the correct transmission lag before it reaches the rest of the crew.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/telegram-for-trekkies/social-preview.jpg">
+<meta name="twitter:image:alt" content="Subspace hero illustration">
+</head>
+<body>
+<div class="console">
+
+  <!-- hero bay -->
+  <section class="bay" aria-labelledby="hero-h">
+    <div class="elbow top" style="--c: var(--amber)">
+      <div class="corner"></div>
+      <div class="bar"><span>Subspace</span><span class="stardate" aria-label="Current stardate">SD <span data-sd="0">00000.0</span></span></div>
+      <div class="code">CH 01-1947</div>
+    </div>
+    <nav class="rail" aria-label="Sections">
+      <a class="key" href="#systems" style="--c: var(--lav)">02 systems</a>
+      <a class="key" href="#reports" style="--c: var(--rose)">03 crew</a>
+      <a class="key" href="#commission" style="--c: var(--peach)">04 rank</a>
+      <a class="key" href="./demo.html" style="--c: var(--teal)">05 demo</a>
+      <span class="key grow end" style="--c: var(--amber)" aria-hidden="true"></span>
+    </nav>
+    <div class="deck">
+      <div class="hero">
+        <div>
+          <h1 id="hero-h">Hailing frequencies open.</h1>
+          <p class="sub">Subspace is the encrypted messenger for people with opinions about warp cores. Every message is stardate-stamped, canon-checked and delayed by the correct transmission lag before it reaches the rest of the crew.</p>
+          <div class="keys">
+            <a class="btn" href="#commission">Open a channel</a>
+            <a class="btn alt" href="./demo.html"><span class="pulse" aria-hidden="true"></span>open the demo →</a>
+          </div>
+          <div class="lag">Current fleet-wide subspace lag: <span class="num" data-lag>4.2</span> seconds. Your message is fine. It is in transit. Please stop resending it.</div>
+        </div>
+        <div class="viewscreen">
+          <figure>
+            <img src="hero.webp" width="1600" height="900" alt="A man in a homemade amber velour tunic reads his phone alone at a kitchen table at night.">
+          </figure>
+          <div class="readout"><span>VIEWSCREEN 2 · <b>Toledo Away Team</b></span><span>Unread: 1,412</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- systems -->
+  <section class="bay" id="systems" aria-labelledby="sys-h">
+    <div class="elbow" style="--c: var(--lav)">
+      <div class="corner"></div>
+      <div class="bar">Ship systems</div>
+      <div class="code">DECK 7-0419</div>
+    </div>
+    <div class="rail" aria-hidden="true">
+      <span class="key" style="--c: var(--lav)">7-0419</span>
+      <span class="key grow end" style="--c: var(--muted)"></span>
+    </div>
+    <div class="deck">
+      <h2 id="sys-h">Three systems. All of them on.</h2>
+      <p class="lede">Subspace ships with every feature enabled by default. The off switches are located in a menu we are still writing.</p>
+      <div class="systems">
+        <article class="system">
+          <div class="tag">STARDATE ENGINE<div class="meter"><i style="width: 100%"></i></div>4 formats online</div>
+          <div>
+            <h3>Stardate timestamps</h3>
+            <p>Every message is stamped using four competing stardate formulas, displayed side by side. Nobody in the chat knows what time it is. Our research shows this was already the case.</p>
+          </div>
+        </article>
+        <article class="system">
+          <div class="tag">CANON ENFORCEMENT<div class="meter"><i style="width: 94%"></i></div>Avg. response 3.8s</div>
+          <div>
+            <h3>Canon Enforcement</h3>
+            <p>A bot reads every message and posts a correction within four seconds if anything contradicts established continuity. It also corrects its own corrections. One thread in our beta reached 9,400 replies and is still open.</p>
+          </div>
+        </article>
+        <article class="system">
+          <div class="tag">PRIME DIRECTIVE<div class="meter"><i style="width: 61%"></i></div>61% of in-laws filtered</div>
+          <div>
+            <h3>Prime Directive filter</h3>
+            <p>Messages from non-fans are delivered, marked read and never answered. Subspace gently reminds you not to interfere with their development. Most users enable it for their in-laws on day one.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- crew reports -->
+  <section class="bay" id="reports" aria-labelledby="rep-h">
+    <div class="elbow" style="--c: var(--rose)">
+      <div class="corner"></div>
+      <div class="bar">Crew reports</div>
+      <div class="code">LOG 3-1138</div>
+    </div>
+    <div class="rail" aria-hidden="true">
+      <span class="key" style="--c: var(--rose)">3-1138</span>
+      <span class="key grow end" style="--c: var(--peach)"></span>
+    </div>
+    <div class="deck">
+      <h2 id="rep-h">Filed by actual crew.</h2>
+      <p class="lede">Each report is stamped in all four stardate formats. They disagree. Legal has asked us to show all of them.</p>
+      <div class="reports">
+        <figure class="report">
+          <div class="strip"></div>
+          <blockquote>“I texted my sister happy birthday in March. Canon Enforcement has been correcting it ever since. She has not replied, which the app tells me is the Prime Directive working.”</blockquote>
+          <figcaption class="who">
+            <img src="headshot-1.webp" width="320" height="320" alt="Dale Oberholtzer in an amber velour tunic" loading="lazy">
+            <div><div class="name">Dale Oberholtzer</div><div class="title">Regional Claims Adjuster and Self-Appointed Chief Engineer, Toledo Away Team</div></div>
+          </figcaption>
+          <div class="dates" aria-label="Stardates"><span>SD-A</span><span>41153.7</span><span>SD-B</span><span>2026.204</span><span>SD-C</span><span>80211.4</span><span>SD-D</span><span>disputed</span></div>
+        </figure>
+        <figure class="report">
+          <div class="strip"></div>
+          <blockquote>“Our group chat has 41,000 messages about whether the transporter kills you. Subspace is the first app that let us pin all of them.”</blockquote>
+          <figcaption class="who">
+            <img src="headshot-2.webp" width="320" height="320" alt="Priya Venkataraman in a teal velour tunic" loading="lazy">
+            <div><div class="name">Priya Venkataraman</div><div class="title">Senior Payroll Specialist, Former Convention Panel Moderator (Asked Not to Return)</div></div>
+          </figcaption>
+          <div class="dates" aria-label="Stardates"><span>SD-A</span><span>41290.2</span><span>SD-B</span><span>2026.441</span><span>SD-C</span><span>80377.9</span><span>SD-D</span><span>Tuesday</span></div>
+        </figure>
+        <figure class="report">
+          <div class="strip"></div>
+          <blockquote>“The Prime Directive filter muted my husband during dinner. We have not argued since. We have also not spoken. The crew is functioning normally.”</blockquote>
+          <figcaption class="who">
+            <img src="headshot-3.webp" width="320" height="320" alt="Marguerite Bell in a dusty-rose velour tunic" loading="lazy">
+            <div><div class="name">Marguerite Bell</div><div class="title">Conlang Tutor (Level 2, Certified), Married 22 Years</div></div>
+          </figcaption>
+          <div class="dates" aria-label="Stardates"><span>SD-A</span><span>41402.0</span><span>SD-B</span><span>2026.588</span><span>SD-C</span><span>80502.6</span><span>SD-D</span><span>after dinner</span></div>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- commission -->
+  <section class="bay" id="commission" aria-labelledby="com-h">
+    <div class="elbow" style="--c: var(--peach)">
+      <div class="corner"></div>
+      <div class="bar">Commission</div>
+      <div class="code">RANK 4-1701</div>
+    </div>
+    <div class="rail" aria-hidden="true">
+      <span class="key" style="--c: var(--peach)">4-1701</span>
+      <span class="key grow end" style="--c: var(--teal)"></span>
+    </div>
+    <div class="deck">
+      <h2 id="com-h">Choose your rank.</h2>
+      <p class="lede">Promotions are processed by Starfleet Payroll within 3 to 5 stardates, depending on which stardate you use.</p>
+      <div class="tiers">
+        <article class="tier" style="--tc: var(--rose)">
+          <header><div class="rank">Ensign</div><div class="tl">Expendable, but connected.</div></header>
+          <div class="price">$0</div>
+          <ul>
+            <li>1 away team channel</li>
+            <li>Shirt colour assigned at signup (red)</li>
+            <li>Account may end without warning on first mission</li>
+          </ul>
+          <a class="btn" href="./demo.html">Beam down free</a>
+        </article>
+        <article class="tier pick" style="--tc: var(--peach)">
+          <header><div class="rank">Commander</div><div class="tl">The rank most people actually want.</div></header>
+          <div class="price">$19.47<small style="font-size:16px;color:var(--muted)">/mo</small></div>
+          <p class="flag">Recommended by the first officer</p>
+          <ul>
+            <li>Unlimited channels</li>
+            <li>All four stardate formats</li>
+            <li>212 eyebrow-raise stickers</li>
+            <li>Canon Enforcement can be muted for 1 hour per week</li>
+          </ul>
+          <a class="btn" href="./demo.html">Accept commission</a>
+        </article>
+        <article class="tier" style="--tc: var(--lav)">
+          <header><div class="rank">Admiral</div><div class="tl">You will mostly be at a desk.</div></header>
+          <div class="price">$1,701<small style="font-size:16px;color:var(--muted)">/yr</small></div>
+          <ul>
+            <li>Override Canon Enforcement once per fiscal stardate</li>
+            <li>Ability to promote other users and regret it</li>
+            <li>A chair. We ship you an actual chair.</li>
+            <li>Priority subspace lag (still lag)</li>
+          </ul>
+          <a class="btn" href="./demo.html">Take the chair</a>
+        </article>
+      </div>
+
+      <div class="demo-call" style="margin-top: 40px">
+        <div>
+          <h2>The Toledo Away Team is mid-argument.</h2>
+          <p>Join the channel, send a message, watch Canon Enforcement get to it first.</p>
+        </div>
+        <a class="btn" href="./demo.html"><span class="pulse" aria-hidden="true"></span>open the demo →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- footer -->
+  <section class="bay" aria-label="Footer">
+    <div class="elbow" style="--c: var(--teal)">
+      <div class="corner"></div>
+      <div class="bar">End transmission</div>
+      <div class="code">EOT</div>
+    </div>
+    <div class="rail" aria-hidden="true"><span class="key end" style="--c: var(--teal)"></span></div>
+    <footer class="deck">
+      <a href="/">← theworstaistudioever</a>
+      <span>Subspace is end-to-end encrypted. The ends are disputed.</span>
+      <span>SD <span data-sd="1">00000.0</span></span>
+    </footer>
+  </section>
+
+</div>
+<script>
+  document.documentElement.classList.add('js');
+  (function () {
+    var sdEls = document.querySelectorAll('[data-sd]');
+    var lagEl = document.querySelector('[data-lag]');
+    function stardate() {
+      var now = new Date();
+      var start = Date.UTC(now.getUTCFullYear(), 0, 1);
+      var frac = (now.getTime() - start) / (365.25 * 864e5);
+      return (78000 + (now.getUTCFullYear() - 2024) * 1000 + frac * 1000).toFixed(1);
+    }
+    function tick() {
+      var sd = stardate();
+      for (var i = 0; i < sdEls.length; i++) sdEls[i].textContent = sd;
+      if (lagEl) lagEl.textContent = (3.6 + Math.random() * 1.4).toFixed(1);
+    }
+    tick();
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) setInterval(tick, 1200);
+  })();
+</script>
+</body>
+</html>

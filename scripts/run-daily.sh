@@ -2,7 +2,7 @@
 # Daily cron entrypoint for theworstaistudioever.
 # - Single-instance lock
 # - Pulls latest
-# - Runs `claude -p < pipeline.md`
+# - Runs the generator selected in pipelines/engine (Codex by default)
 # - Regenerates machine fixtures (sitemap.xml, robots.txt, llms.txt, feed.json, latest.json) via build-seo.sh
 # - Wrapper does git (agent never has push perms)
 # - Notifies success/failure to Telegram (reuses aurevon-outreach bot creds)
@@ -19,7 +19,34 @@ cd "$REPO_ROOT"
 # depending on crontab line ordering.
 export PATH="$HOME/.local/bin:/usr/local/bin:$PATH"
 
-REQUIRED_BINS=(claude git jq curl flock comm python3)
+PUBLISH_EXISTING=""
+NO_NOTIFY=0
+PREFLIGHT=0
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --preflight) PREFLIGHT=1; shift ;;
+    --no-notify) NO_NOTIFY=1; shift ;;
+    --publish-existing)
+      [[ $# -ge 2 && "$2" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]] || { echo "--publish-existing requires an entry slug" >&2; exit 2; }
+      PUBLISH_EXISTING="$2"; shift 2 ;;
+    *) echo "unknown option: $1" >&2; exit 2 ;;
+  esac
+done
+
+# Load .env before choosing the engine, including during dependency preflight.
+if [[ -f .env ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source .env
+  set +a
+fi
+PIPELINE_ENGINE="${PIPELINE_ENGINE:-$(cat pipelines/engine)}"
+case "$PIPELINE_ENGINE" in
+  codex|claude) ;;
+  *) echo "unsupported pipeline engine: $PIPELINE_ENGINE" >&2; exit 2 ;;
+esac
+REQUIRED_BINS=("$PIPELINE_ENGINE" git jq curl flock comm python3)
+[[ "$PIPELINE_ENGINE" != "codex" ]] || REQUIRED_BINS+=(node)
 
 check_deps() { # prints "<bin> -> <path|MISSING>" per dep; returns 1 if any missing
   local b p missing=0
@@ -35,22 +62,15 @@ check_deps() { # prints "<bin> -> <path|MISSING>" per dep; returns 1 if any miss
 }
 
 # Dependency-only smoke check: no lock, no log file, no notifications.
-if [[ "${1:-}" == "--preflight" ]]; then
+if [[ "$PREFLIGHT" == "1" ]]; then
   echo "preflight: PATH=$PATH"
   if check_deps; then
+    python3 scripts/run-pipeline-agent.py --engine "$PIPELINE_ENGINE" --workspace "$REPO_ROOT" --preflight || exit 1
     echo "preflight: OK"
     exit 0
   fi
   echo "preflight: FAILED — missing dependencies"
   exit 1
-fi
-
-# Load .env if present
-if [[ -f .env ]]; then
-  set -a
-  # shellcheck disable=SC1091
-  source .env
-  set +a
 fi
 
 # Telegram notifications reuse the aurevon-outreach bot token + chat id.
@@ -83,6 +103,7 @@ log() { echo "[$(date -u +%FT%TZ)] $*" | tee -a "$LOG"; }
 _html_escape() { local s="$1"; s="${s//&/&amp;}"; s="${s//</&lt;}"; s="${s//>/&gt;}"; printf '%s' "$s"; }
 
 tg_send() { # tg_send <html-message>
+  [[ "$NO_NOTIFY" == "1" ]] && return 0
   if [[ -z "${TELEGRAM_BOT_TOKEN:-}" || -z "${TELEGRAM_USER_ID:-}" ]]; then
     log "telegram creds missing — skipping notification"
     return 0
@@ -125,16 +146,14 @@ if ! git pull --rebase --autostash >> "$LOG" 2>&1; then
 fi
 
 # Snapshot the entries directory before the run, so we know which slug got created
+if [[ -z "$PUBLISH_EXISTING" ]]; then
 BEFORE_ENTRIES=$(ls site/entries 2>/dev/null | sort || true)
 
 # Run the agent
-log "invoking claude -p"
-if ! claude -p "$(cat pipeline.md)" \
-      --allowed-tools "Read,Write,Edit,Glob,Grep,Bash(jq:*),Bash(node:*),Bash(python3:*),Bash(date:*),Bash(ls:*),Bash(cat:*),Bash(mkdir:*),Bash(./scripts/validate-entry.sh:*),Bash(scripts/validate-entry.sh:*),Bash(./scripts/gen-image.sh:*),Bash(scripts/gen-image.sh:*),Skill" \
-      --max-turns 80 \
-      >> "$LOG" 2>&1; then
-  log "RUN FAILED: claude -p exited non-zero"
-  notify_fail "claude -p exited non-zero"
+log "invoking $PIPELINE_ENGINE generator"
+if ! python3 scripts/run-pipeline-agent.py --engine "$PIPELINE_ENGINE" --workspace "$REPO_ROOT" >> "$LOG" 2>&1; then
+  log "RUN FAILED: $PIPELINE_ENGINE generator exited non-zero"
+  notify_fail "$PIPELINE_ENGINE generator exited non-zero"
   exit 1
 fi
 
@@ -146,7 +165,23 @@ fi
 
 # Figure out which slug got created
 AFTER_ENTRIES=$(ls site/entries 2>/dev/null | sort || true)
-NEW_SLUG=$(comm -13 <(echo "$BEFORE_ENTRIES") <(echo "$AFTER_ENTRIES") | head -1)
+NEW_ENTRIES=$(comm -13 <(printf '%s\n' "$BEFORE_ENTRIES") <(printf '%s\n' "$AFTER_ENTRIES"))
+NEW_SLUG="${NEW_ENTRIES%%$'\n'*}"
+else
+  NEW_SLUG="$PUBLISH_EXISTING"
+  if ! jq -e --arg slug "$NEW_SLUG" '.slug == $slug' "site/entries/$NEW_SLUG/concept.json" >/dev/null; then
+    log "RUN FAILED: existing entry is missing or has the wrong slug: $NEW_SLUG"
+    exit 1
+  fi
+  log "publishing validated existing entry: $NEW_SLUG (generation skipped)"
+  if [[ "$PIPELINE_ENGINE" == "codex" ]]; then
+    if ! python3 scripts/run-pipeline-agent.py --engine codex --workspace "$REPO_ROOT" --qa-existing "$NEW_SLUG" >> "$LOG" 2>&1; then
+      log "RUN FAILED: QA rejected existing entry: $NEW_SLUG"
+      notify_fail "QA rejected existing entry: $NEW_SLUG"
+      exit 1
+    fi
+  fi
+fi
 
 if [[ -z "$NEW_SLUG" ]]; then
   log "RUN FAILED: no new entry directory created"

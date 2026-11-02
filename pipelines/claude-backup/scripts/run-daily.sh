@@ -1,0 +1,216 @@
+#!/usr/bin/env bash
+# Daily cron entrypoint for theworstaistudioever.
+# - Single-instance lock
+# - Pulls latest
+# - Runs `claude -p < pipeline.md`
+# - Regenerates machine fixtures (sitemap.xml, robots.txt, llms.txt, feed.json, latest.json) via build-seo.sh
+# - Wrapper does git (agent never has push perms)
+# - Notifies success/failure to Telegram (reuses aurevon-outreach bot creds)
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$REPO_ROOT"
+
+# --- PATH hardening -------------------------------------------------------
+# cron runs this job with a bare PATH (/usr/bin:/bin). The claude CLI lives in
+# ~/.local/bin, and the crontab's only PATH= line is tagged for another project
+# and sits *below* this entry, so it never applied here — which silently broke
+# every run from 2026-08-09 to 2026-08-27. Resolve our own tools instead of
+# depending on crontab line ordering.
+export PATH="$HOME/.local/bin:/usr/local/bin:$PATH"
+
+REQUIRED_BINS=(claude git jq curl flock comm python3)
+
+check_deps() { # prints "<bin> -> <path|MISSING>" per dep; returns 1 if any missing
+  local b p missing=0
+  for b in "${REQUIRED_BINS[@]}"; do
+    if p="$(command -v "$b" 2>/dev/null)"; then
+      echo "  $b -> $p"
+    else
+      echo "  $b -> MISSING"
+      missing=1
+    fi
+  done
+  return "$missing"
+}
+
+# Dependency-only smoke check: no lock, no log file, no notifications.
+if [[ "${1:-}" == "--preflight" ]]; then
+  echo "preflight: PATH=$PATH"
+  if check_deps; then
+    echo "preflight: OK"
+    exit 0
+  fi
+  echo "preflight: FAILED — missing dependencies"
+  exit 1
+fi
+
+# Load .env if present
+if [[ -f .env ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source .env
+  set +a
+fi
+
+# Telegram notifications reuse the aurevon-outreach bot token + chat id.
+# Creds are read at runtime from that project's .env (never committed in this
+# public repo); this repo's own .env may override them if set.
+AUREVON_ENV="${AUREVON_ENV:-$HOME/github/aurevon-outreach/.env}"
+_read_env_var() { # _read_env_var KEY FILE -> value with surrounding quotes stripped
+  local key="$1" file="$2" val
+  [[ -f "$file" ]] || return 0
+  val="$(grep -E "^${key}=" "$file" 2>/dev/null | head -1 | cut -d= -f2- || true)"
+  val="${val%\"}"; val="${val#\"}"; val="${val%\'}"; val="${val#\'}"
+  printf '%s' "$val"
+}
+TELEGRAM_BOT_TOKEN="${TELEGRAM_BOT_TOKEN:-$(_read_env_var TELEGRAM_BOT_TOKEN "$AUREVON_ENV")}"
+TELEGRAM_USER_ID="${TELEGRAM_USER_ID:-$(_read_env_var TELEGRAM_USER_ID "$AUREVON_ENV")}"
+
+DATE_UTC="$(date -u +%F)"
+LOG="state/runs/${DATE_UTC}.log"
+mkdir -p "$(dirname "$LOG")"
+
+# Single-instance lock — if another invocation is running, exit cleanly
+exec 9>".run.lock"
+if ! flock -n 9; then
+  echo "[$(date -u)] another run in progress — exiting" >> "$LOG"
+  exit 0
+fi
+
+log() { echo "[$(date -u +%FT%TZ)] $*" | tee -a "$LOG"; }
+
+_html_escape() { local s="$1"; s="${s//&/&amp;}"; s="${s//</&lt;}"; s="${s//>/&gt;}"; printf '%s' "$s"; }
+
+tg_send() { # tg_send <html-message>
+  if [[ -z "${TELEGRAM_BOT_TOKEN:-}" || -z "${TELEGRAM_USER_ID:-}" ]]; then
+    log "telegram creds missing — skipping notification"
+    return 0
+  fi
+  curl -fsSL -X POST \
+    "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+    -H "Content-Type: application/json" \
+    --data "$(jq -n --arg chat "$TELEGRAM_USER_ID" --arg text "$1" \
+              '{chat_id:$chat, text:$text, parse_mode:"HTML"}')" \
+    >/dev/null 2>&1 || log "telegram send failed"
+}
+
+notify_fail() {
+  tg_send "❌ <b>theworstaistudioever</b> daily run failed
+$(_html_escape "$1")
+See ${LOG}"
+}
+
+notify_success() { # notify_success <tagline> <product_name> <url>
+  tg_send "✅ <b>theworstaistudioever</b> shipped a new startup
+<b>$(_html_escape "$1")</b> — $(_html_escape "$2")
+🔗 <a href=\"$3\">$3</a>"
+}
+
+log "=== daily run start ==="
+
+# Fail loudly on a missing binary rather than emitting a bare
+# "command not found" 80 lines later.
+if ! DEPS="$(check_deps)"; then
+  log "RUN FAILED: missing dependencies"
+  log "$DEPS"
+  notify_fail "missing dependencies on PATH:
+$DEPS"
+  exit 1
+fi
+
+# Pull latest in case seeds or pipeline changed elsewhere
+if ! git pull --rebase --autostash >> "$LOG" 2>&1; then
+  log "git pull failed — continuing anyway"
+fi
+
+# Snapshot the entries directory before the run, so we know which slug got created
+BEFORE_ENTRIES=$(ls site/entries 2>/dev/null | sort || true)
+
+# Run the agent
+log "invoking claude -p"
+if ! claude -p "$(cat pipeline.md)" \
+      --allowed-tools "Read,Write,Edit,Glob,Grep,Bash(jq:*),Bash(node:*),Bash(python3:*),Bash(date:*),Bash(ls:*),Bash(cat:*),Bash(mkdir:*),Bash(./scripts/validate-entry.sh:*),Bash(scripts/validate-entry.sh:*),Bash(./scripts/gen-image.sh:*),Bash(scripts/gen-image.sh:*),Skill" \
+      --max-turns 80 \
+      >> "$LOG" 2>&1; then
+  log "RUN FAILED: claude -p exited non-zero"
+  notify_fail "claude -p exited non-zero"
+  exit 1
+fi
+
+# RUN_COMPLETE sentinel is informational only — the authoritative signals are
+# "new slug appeared in site/entries/" + "validate-entry.sh passed" (checked below).
+if ! grep -q "^RUN_COMPLETE:" "$LOG"; then
+  log "WARN: agent did not print RUN_COMPLETE marker — falling through to slug+validate checks"
+fi
+
+# Figure out which slug got created
+AFTER_ENTRIES=$(ls site/entries 2>/dev/null | sort || true)
+NEW_SLUG=$(comm -13 <(echo "$BEFORE_ENTRIES") <(echo "$AFTER_ENTRIES") | head -1)
+
+if [[ -z "$NEW_SLUG" ]]; then
+  log "RUN FAILED: no new entry directory created"
+  notify_fail "no new entry produced"
+  exit 1
+fi
+
+log "new entry: $NEW_SLUG"
+
+# Finalize static sharing tags even if the agent skipped the metadata checkpoint.
+if ! python3 scripts/build-entry-metadata.py site "$NEW_SLUG" >> "$LOG" 2>&1; then
+  log "RUN FAILED: entry metadata generation rejected $NEW_SLUG"
+  notify_fail "sharing metadata generation failed for $NEW_SLUG"
+  exit 1
+fi
+
+# Validate the new entry
+if ! ./scripts/validate-entry.sh site "$NEW_SLUG" >> "$LOG" 2>&1; then
+  log "RUN FAILED: validate-entry rejected $NEW_SLUG"
+  notify_fail "validation failed for $NEW_SLUG"
+  exit 1
+fi
+
+# Regenerate machine fixtures (sitemap.xml, robots.txt, llms.txt, feed.json,
+# latest.json) from all entries. Wrapper-side + deterministic, so it never
+# depends on the agent remembering to.
+if ! ./scripts/build-seo.sh site >> "$LOG" 2>&1; then
+  log "RUN FAILED: build-seo rejected the site"
+  notify_fail "SEO fixture generation failed"
+  exit 1
+fi
+
+# Commit + push (wrapper, not agent)
+TAGLINE=$(jq -r '.tagline' "site/entries/$NEW_SLUG/concept.json")
+log "committing: $TAGLINE"
+
+git add . >> "$LOG" 2>&1
+
+# If nothing actually changed in tracked files, log + bail
+if git diff --cached --quiet; then
+  log "nothing staged — exiting cleanly"
+  exit 0
+fi
+
+git commit -m "feat: ${TAGLINE}" >> "$LOG" 2>&1
+
+# Push with 3 retries
+for i in 1 2 3; do
+  if git push >> "$LOG" 2>&1; then
+    log "pushed"
+    break
+  fi
+  log "push attempt $i failed; sleeping"
+  sleep $((i * 5))
+  if [[ "$i" == "3" ]]; then
+    log "RUN FAILED: push failed after 3 attempts"
+    notify_fail "git push failed after 3 attempts"
+    exit 1
+  fi
+done
+
+PRODUCT_NAME=$(jq -r '.product_name // .company // .tagline' "site/entries/$NEW_SLUG/concept.json")
+DOMAIN=$(cat site/CNAME 2>/dev/null || echo "theworstaistudioever.com")
+PAGE_URL="https://${DOMAIN}/entries/${NEW_SLUG}/"
+
+notify_success "$TAGLINE" "$PRODUCT_NAME" "$PAGE_URL"
+log "=== daily run complete: $TAGLINE → $PAGE_URL ==="

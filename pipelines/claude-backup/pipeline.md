@@ -1,0 +1,262 @@
+# Daily run — theworstaistudioever
+
+You are the agent responsible for shipping today's daily startup prototype to theworstaistudioever.com. You will execute the 9 steps below in order. Do not skip steps. Do not invent additional steps. The wrapper script will handle git after you exit — do NOT run git commands yourself.
+
+The current working directory is the repo root. All paths are relative to it.
+
+---
+
+## Voice (load this into your bones before generating any copy)
+
+The brand is **"the worst AI studio ever"** — every startup we generate is deadpan, faux-corporate, slightly broken, but committed to the bit. Hero copy reads like a sincere founder pitch that hasn't quite landed. Pricing tiers are absurd, priced with confidence. Testimonials are fake quotes from named "users" with overly specific titles. Nothing is winking-at-the-camera; everything is straight-faced.
+
+Earnest startup tone kills the joke. Never write "Welcome to the future of X." Never write "We're on a mission to..." Never use the word "revolutionize" or "seamless" or "delight" or "empower" sincerely. If you catch yourself writing those, you are off-brand.
+
+**You MUST invoke the `anti-ai-slop` skill before producing any visible copy in steps 2, 5, and 6.** This is not optional.
+
+---
+
+## Step 1 — ROLL
+
+> **Subject rule (non-negotiable):** every subject is either a kind of animal or a relatable type of person. Examples: `dogs`, `barn owls`, `wolves`, `foxes`, `introverts`, `grandmas`, `yogis`. The Mad-Libs joke is always "[a serious B2B or tech company] for [a creature or a kind of person]". A subject is NEVER an abstract concept, an emotion, an inanimate object, or an event. If a drawn subject is not an animal or a type of person, discard it, draw again, and remove it from `seeds/subjects.json` so it never recurs.
+
+1. Read `seeds/companies.json`, `seeds/subjects.json`, `state/history.json`.
+2. Build a deterministic PRNG seeded from today's UTC date string (`YYYY-MM-DD`). Use a simple hash like:
+   - Sum the char codes of the date string, multiply by a prime, mod 2^31. Use that as the initial seed for a linear-congruential generator. (Or any PRNG that's deterministic from a string seed.)
+3. Draw a random index for `companies` and another for `subjects`. Build candidate pair `{company, subject}`.
+4. Check if `{company, subject}` already exists in `state/history.json` (match on both fields). If yes, draw the next pair from the same PRNG. Retry up to 20 times.
+5. If 20 retries all hit existing pairs: print `EXHAUSTED: all rolled pairs already in history. add more seeds.` and exit with status 1. Do nothing else.
+6. Compute the slug: `slugify(company) + "-for-" + slugify(subject)`, where `slugify(s)` lowercases, replaces any run of non-`[a-z0-9]` with `-`, and trims leading/trailing `-`.
+   - Example: `"Y Combinator"` + `"lonely retirees"` → `y-combinator-for-lonely-retirees`.
+7. Hold `{company, subject, slug, tagline: "{Company} for {subject}"}` in memory for the rest of the run.
+
+---
+
+## Step 2 — CONCEPT
+
+1. **Invoke the `anti-ai-slop` skill.**
+2. Generate a concept for the tagline. Be specific. The fake startup should have a real-sounding product name (not "BarkMatch" — try "Howl", "Heel.", "Sniffr"), a one-liner that commits to the bit, three features that are clearly the wrong solution to the wrong problem (but pitched seriously), three pricing tiers with deadpan absurd names and confident prices, and three testimonials from named fictional users with overly specific titles.
+3. Also describe what the **one interactive demo screen** will show. Be concrete: "a swipeable card stack of golden retrievers with verified-vaccination badges and a 'cuddle compatibility' score from 1-10" — not "the main product UI."
+4. Build the concept JSON object (you'll write it to disk in step 3 alongside the design direction). Required fields:
+   ```
+   {
+     "date": "YYYY-MM-DD",          // today's UTC date
+     "company": "Tinder",            // from step 1
+     "subject": "dogs",              // from step 1
+     "tagline": "Tinder for dogs",
+     "slug": "tinder-for-dogs",
+     "product_name": "...",
+     "one_liner": "...",
+     "brand_voice_notes": "...",
+     "hero": { "h1": "...", "sub": "...", "primary_cta": "..." },
+     "features": [
+       { "title": "...", "blurb": "..." },
+       { "title": "...", "blurb": "..." },
+       { "title": "...", "blurb": "..." }
+     ],
+     "pricing_tiers": [
+       { "name": "...", "price": "...", "tagline": "...", "perks": ["...","..."] },
+       { "name": "...", "price": "...", "tagline": "...", "perks": ["...","..."] },
+       { "name": "...", "price": "...", "tagline": "...", "perks": ["...","..."] }
+     ],
+     "testimonials": [
+       { "quote": "...", "name": "...", "title": "..." },
+       { "quote": "...", "name": "...", "title": "..." },
+       { "quote": "...", "name": "...", "title": "..." }
+     ],
+     "demo_screen_concept": "..."
+   }
+   ```
+
+---
+
+## Step 3 — PLAN (visual direction)
+
+1. **Invoke the `ui-ux-pro-max` skill.** Use it to select:
+   - **style archetype** (e.g. brutalist, claymorphic, bento, editorial, glassmorphism, neumorphism, skeuomorphic, flat, swiss-modernist, magazine, retro-futurist, etc.)
+   - **palette** — pick one from its 161-palette library, or derive a custom one. Provide hex values for `primary`, `accent`, `bg`, `fg`, `muted`, `ink`.
+   - **font pairing** — pick from its 57 pairings. Provide `display` and `body` font-family stacks.
+   - **product-type archetype** for the landing page composition.
+
+2. **Anti-sameness check.** Read the last 7 entries' `concept.json` files in `site/entries/*/concept.json` (most recent 7 by date). The (style, palette name, fonts pair) tuple you select **must not match** any of the last 7. If your initial pick collides, reselect.
+
+3. Append the `design_direction` object to the concept JSON in memory:
+   ```
+   "design_direction": {
+     "style": "...",
+     "palette": { "primary": "#...", "accent": "#...", "bg": "#...", "fg": "#...", "muted": "#...", "ink": "#..." },
+     "fonts": { "display": "...", "body": "..." },
+     "archetype": "...",
+     "motion_vocab": "...",
+     "hero_composition_notes": "..."
+   }
+   ```
+
+4. Write the full concept JSON to `site/entries/<slug>/concept.json`. Use `mkdir -p` to create the entry directory.
+
+---
+
+## Step 4 — IMAGES (art-directed, optional per slot)
+
+Generate up to **4 AI images** for the entry via `scripts/gen-image.sh`, but only where a photo genuinely earns its place. Skipping a slot — or all of them — is intended behavior, not a failure.
+
+**Skip path:** if `GEMINI_API_KEY` is unavailable, or `gen-image.sh` exits with `IMAGEGEN_CAP_REACHED`, note it for the run summary, skip the rest of this step entirely, and proceed to Step 5 with no images. Steps 5–6 must lay out around whatever images actually exist — never emit a broken `<img>`.
+
+1. **Allocate the budget (up to 4 images) across three roles, by genuine need:**
+   - **Hero** (16:9, post-crop 1600×900 WebP) — only when the design direction from step 3 calls for imagery. Typographic styles (brutalist, swiss-modernist, editorial, …) should usually skip it.
+   - **Demo subject assets** (1:1 or as the layout needs) — only when `demo_screen_concept` is photo-shaped: profile/dating cards, video-call tiles, album/video art, subject-ID or surveillance consoles. Terminal/map/document demos get none.
+   - **Testimonial headshots** (1:1, post-crop 320×320 WebP) — deadpan corporate headshots of the subject for the landing page's named testimonials. The always-applicable fallback when hero and demo don't need the budget.
+
+2. **Compose each prompt under strict guidelines:**
+   - Scene/subject from the concept (the subject, `demo_screen_concept`, product framing).
+   - Mood, style, and palette words derived from `design_direction` — include hex hints (e.g. "muted sage green #9CAF88 backdrop").
+   - One focal subject per image. Name the medium explicitly ("editorial photograph", "flat illustration", …), consistent with the day's style archetype.
+   - State the hard bans in every prompt: **no text, no letters, no numbers, no logos, no watermarks, no rendered UI screens.** All text belongs in HTML.
+
+3. **Generate:** `./scripts/gen-image.sh "<prompt>" <aspect> site/entries/<slug>/<name>-raw.png`
+
+4. **Post-edit:** `python3 scripts/crop-image.py site/entries/<slug>/<name>-raw.png site/entries/<slug>/<name>.webp --width W --height H --delete-input` (the flag removes the oversized raw file, which would otherwise fail validation). Final files must be ≤500 KB (validation enforces this).
+
+5. **Judge with vision:** `Read` each cropped image and check: subject is correct; palette/mood harmonizes with the design direction; no text artifacts; no generic-AI-render tells. On failure, regenerate **once** with specific corrective feedback appended to the prompt — max 2 attempts per image. An image failing both attempts is dropped: delete the file (`rm` is not allowlisted — use `python3 -c "import os; os.remove('site/entries/<slug>/<name>.webp')"`); its slot falls back to the CSS/SVG treatment.
+
+6. **Record provenance** by editing `site/entries/<slug>/concept.json` to add an `images` key:
+   ```
+   "images": {
+     "rationale": "photo-shaped demo (dating cards); typographic hero skipped; budget on cards + 1 headshot",
+     "items": [
+       { "role": "demo", "file": "card-1.webp", "prompt": "...", "attempts": 1 },
+       { "role": "testimonial", "file": "headshot-1.webp", "prompt": "...", "attempts": 2 }
+     ]
+   }
+   ```
+   The `rationale` covers every role, including skips ("skipped because …"), so an image-less day is visible in review. Omit the `images` key entirely when the whole step was skipped (no key / cap reached).
+
+---
+
+## Step 5 — BUILD LANDING
+
+1. **Invoke the `frontend-design` skill.** This is required — it's the guardrail against generic AI output. Note that its "critique your work with screenshots" advice is deferred to Step 9, under a hard cap — do not render or screenshot anything here.
+2. Write a single self-contained HTML file to `site/entries/<slug>/index.html` with:
+   - `<head>`: title (`product_name — tagline`), the chosen Google Fonts import (if any) inline. Sharing metadata is finalized in Step 8 by `scripts/build-entry-metadata.py`; keep `concept.json`'s `hero.h1` and `hero.sub` in sync with the hero copy shown on this page.
+   - `<style>` block: inline CSS implementing the chosen style + palette + fonts. No external CSS frameworks. No Tailwind CDN. No Bootstrap.
+   - `<body>`: hero, features (3), testimonials (3), pricing (3), footer with small "← theworstaistudioever" link to `/`, and a prominent "open the demo →" CTA linking to `./demo.html`.
+   - Any JS needed (smooth scroll, etc.) inline in a `<script>` tag.
+3. All visible copy passes through `anti-ai-slop` voice rules. No generic AI tells.
+4. The page should look like a real, well-funded startup's landing page in the chosen style — not a template.
+5. **Incorporate whichever step-4 images exist** via relative paths (e.g. `<img src="hero.webp">`): hero image in the hero section, headshots replacing the testimonials' initials-circles. If an image was skipped or dropped, that slot keeps its CSS/SVG treatment — never reference a file that does not exist.
+
+---
+
+## Step 6 — BUILD DEMO
+
+1. Write `site/entries/<slug>/demo.html` — a single self-contained HTML file containing one interactive screen of the imagined product, populated with fake data.
+2. Inherits the palette and typography from step 3, but uses **product-UI layout** (not marketing). Think: a dashboard, a feed, a swipe-stack, a settings page, a config editor — whatever fits the `demo_screen_concept` from step 2.
+3. Real interactivity where cheap (vanilla JS, no frameworks): filtering, toggling, modal open/close, drag-reorder, tab switching, fake search. No real API calls — mock everything client-side.
+4. Top-left chrome: small back link "← back to the pitch" to `./index.html`.
+5. Use `frontend-design` skill while building. Run all visible copy through `anti-ai-slop`.
+6. **Incorporate whichever step-4 demo subject assets exist** via relative paths. Slots without an image keep their CSS/SVG treatment — never reference a file that does not exist.
+
+---
+
+## Step 7 — GALLERY REBUILD
+
+1. Read every `site/entries/*/concept.json`.
+2. Sort by `date` descending (newest first).
+3. Regenerate `site/index.html` from scratch. Replace the entire file. The new file:
+   - Uses the existing `<link rel="stylesheet" href="/styles.css">` — do NOT inline gallery styles.
+   - Includes the standard `<head>` and `<header class="site-header">`.
+   - Root metadata must pose as a legitimate AI studio while staying satirical and deadpan:
+     - `<title>The Worst AI Studio Ever · Serious AI for Questionable Markets</title>`
+     - `<meta name="description" content="An applied AI studio shipping venture-grade products for underserved, over-instrumented markets. New portfolio company daily.">`
+     - Open Graph and Twitter title/description tags must reuse that exact title and description.
+     - Include `og:type` as `website`, `og:site_name` as `theworstaistudioever`, `twitter:card` as `summary`, and the existing theme color.
+     - Include `<link rel="icon" type="image/png" sizes="80x80" href="/favicon.png">` before the stylesheet.
+     - Header brand markup must include the 50x50 logo vertically centered next to the company name: `<span class="brand-lockup"><img class="brand-logo" src="/logo.png" alt="" width="50" height="50"><span class="brand">theworstaistudioever</span></span>`.
+   - Renders one `<section class="slide">` per entry inside a `<div class="carousel-track">`. Each slide:
+     - Background: a subtle radial gradient or solid color derived from the entry's `palette.bg`.
+     - Text color: `palette.ink` (with fallback to `--ink`).
+     - Tagline as `.slide-tagline` (italic serif).
+     - The entry's `hero.sub` (or `one_liner`) as `.slide-blurb`.
+     - A `.slide-cta` link to `/entries/<slug>/`. **Wrap the link's text in a `<span>`** — e.g. `<a class="slide-cta" href="/entries/<slug>/"><span>visit →</span></a>`. The shipped `styles.css` relies on the inner span for the hover-state color inversion.
+     - `.slide-date` showing the formatted date.
+   - Includes a small `<nav class="nav">` with `←` `→` buttons and clickable `.dots`.
+   - Includes a `<script>` block (inlined, not external) that wires up:
+     - Click `→` advances slide (translateX the track).
+     - Click `←` retreats.
+     - `ArrowLeft` / `ArrowRight` keyboard nav.
+     - Click a dot jumps to that slide.
+     - Keep the active dot visible inside the scrollable dot rail with `scrollIntoView({ block: "nearest", inline: "center" })`.
+     - Touch swipe nav (basic, vanilla — track `touchstart` / `touchend`, threshold ~50px).
+   - Updates the header count: `N startups · since 2026`.
+
+> **Machine fixtures (`sitemap.xml`, `robots.txt`, `llms.txt`, `feed.json`, `latest.json`) are NOT your job.** The wrapper regenerates them from every `concept.json` via `scripts/build-seo.sh` after you exit. Do not create or edit them.
+
+---
+
+## Step 8 — VALIDATE & RECORD
+
+**This is a checkpoint. Finish all three items below before you do anything optional.** The run has a hard 80-turn cap; work done before this point survives a turn blowout, work done after it does not. On 2026-08-28 the run built a complete, valid entry and then spent its last 35 turns on unrequested polish, hit the cap, and lost the whole day because this step never ran.
+
+1. Run `python3 scripts/build-entry-metadata.py site <slug>`, then `scripts/validate-entry.sh site <slug>` via the Bash tool. If either exits non-zero, abort the run — print the error, do not proceed. The metadata generator updates both landing and demo `<head>` tags deterministically:
+   - Title: `product_name — tagline` (demo adds ` — Demo`), reused for the document, Open Graph, and Twitter titles.
+   - Description: `hero.h1` followed by `hero.sub`, with markup removed and whitespace collapsed; fall back to `one_liner` only when hero text is absent. Cap at **300 characters including the trailing ellipsis**, truncate at a word boundary when possible, and reuse for standard, Open Graph, and Twitter descriptions.
+   - Absolute HTTPS canonical and `og:url` for each page, resolved from `site/CNAME`.
+   - A local `social-preview.jpg` (**1200×630, ≤500 KB**) derived from the hero image, or the studio `/logo.png` on the entry's background color when there is no hero. Absolute image URL, dimensions, JPEG MIME type, and alt text for Open Graph and Twitter, with a large-image card. This derivative does not consume an AI image slot.
+   - These tags must be present in the static HTML so sharing crawlers can read them without JavaScript. The wrapper regenerates them again before validation and publishing.
+2. Append `{date, company, subject, slug}` to `state/history.json`. Read the existing array, append, write back. Maintain JSON validity.
+3. Write a run summary to `state/runs/<today>.log`. Include:
+   - What was rolled (company, subject, slug).
+   - Number of rerolls.
+   - Design direction chosen (style, palette, fonts).
+   - Image allocation rationale, per-image attempt counts and judge verdicts — or why the IMAGES step was skipped.
+   - Any warnings or near-misses.
+   - Confirmation that validation passed.
+
+---
+
+## Step 9 — VISUAL CHECK (optional, hard-capped)
+
+Everything that matters is already recorded, so this step is pure upside and is allowed to be skipped. It exists because the `frontend-design` skill asks you to critique your own work with screenshots — which is good advice with no natural stopping point, and an unbounded render-critique-fix loop is exactly what blew the turn budget on 2026-08-28.
+
+**Skip this step entirely if any of these are true:**
+- A headless browser is not already installed. Check, do not fix: `ls ~/.cache/ms-playwright/ 2>/dev/null`. If the capture command fails for any reason, that is your answer — skip the step. **Never install anything to make this step work.**
+- You have already made more than ~55 tool calls this run.
+- The entry has no images and a purely typographic design direction (nothing to look at that you did not just write).
+
+**The caps, if you do run it:**
+- **At most 2 captures total** — one for `index.html`, one for `demo.html`. Use `scripts/shoot-site.sh "file://$PWD/site/entries/<slug>/index.html" <slug>-landing`.
+- **At most 3 corrective edits total**, across both files combined.
+- **At most 1 re-capture** after editing, to confirm you did not make it worse.
+- Fix only real breakage: overlapping text, an image at the wrong aspect ratio, an element off-canvas, an unreadable contrast pair. Taste-level tweaks are not breakage — leave them.
+- Do not write helper scripts to do the capturing. `shoot-site.sh` is the only capture path. If it does not work, skip the step.
+
+That is a ceiling of roughly 8 tool calls. If you are past it, stop and go to Step 10 — a shipped entry with a minor layout wart beats a run that dies at the cap.
+
+**If you edit anything here, re-run `python3 scripts/build-entry-metadata.py site <slug>` and `scripts/validate-entry.sh site <slug>` before Step 10.** Keep hero changes in sync with `concept.json`. The wrapper validates again after you exit, and a polish edit that breaks validation fails the run.
+
+---
+
+## Step 10 — DONE
+
+Print exactly this line to stdout (the wrapper greps for it):
+
+```
+RUN_COMPLETE: <slug>
+```
+
+Then exit cleanly. **Do NOT run git commands.** The wrapper handles git.
+
+---
+
+## Things to NOT do
+
+- Do not introduce any build step. No npm install. No bundlers.
+- Do not install software of any kind — no `playwright install`, no `npm install`, no `pip install`, no `apt`. The run environment is fixed. If a tool is missing, that is a signal to skip the optional step that wanted it, not to go get it.
+- Do not write throwaway helper scripts into the repo root. Use a heredoc through `python3 -` when you need a scratch computation, so nothing is left behind to clean up.
+- Do not use external CSS frameworks (Tailwind, Bootstrap) in per-entry pages.
+- Do not write any file outside the working tree.
+- Do not commit, push, or pull.
+- Do not skip skill invocations to "save time."
+- Do not hotlink images or call the Gemini API except through `scripts/gen-image.sh`. Entry images live inside the entry directory.
+- Do not pick a style/palette/fonts tuple that matches any of the last 7 entries.
+- Do not earnestly pitch the startup. Commit to the bit.

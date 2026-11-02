@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:ital,wght@0,500;0,600;1,400&family=Great+Vibes&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F6F0E4;
+    --card: #FFFCF5;
+    --side: #EFE7D7;
+    --plum: #5B2A4E;
+    --plum-deep: #43203A;
+    --gold: #B08A3E;
+    --foil: #7E5F1F;
+    --fg: #2B2230;
+    --ink: #241B26;
+    --muted: #6F6366;
+    --rule: #E3D8C3;
+    --hover: #F3ECDD;
+    --display: 'Cormorant Infant', 'Cormorant Garamond', Georgia, serif;
+    --body: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --script: 'Great Vibes', 'Snell Roundhand', cursive;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { margin: 0; background: var(--card); color: var(--fg); font: 400 14.5px/1.5 var(--body); -webkit-font-smoothing: antialiased; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--plum); outline-offset: 2px; border-radius: 3px; }
+
+  .app { display: grid; grid-template-columns: 248px 1fr; height: 100vh; height: 100dvh; }
+  .peek-open .app { grid-template-columns: 248px 1fr 380px; }
+
+  /* sidebar */
+  aside.side { background: var(--side); border-right: 1px solid var(--rule); padding: 14px 10px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
+  .back { font-size: 13px; color: var(--muted); text-decoration: none; padding: 4px 8px 12px; }
+  .back:hover { color: var(--plum); }
+  .ws { display: flex; align-items: center; gap: 10px; padding: 6px 8px 14px; }
+  .ws-mark { width: 30px; height: 30px; border-radius: 6px; background: var(--plum); color: var(--card); display: grid; place-items: center; font: 600 18px/1 var(--display); }
+  .ws b { display: block; font-weight: 600; font-size: 14px; color: var(--ink); }
+  .ws span { font-size: 12px; color: var(--muted); }
+  .side h4 { font-size: 12px; font-weight: 500; color: var(--muted); margin: 12px 8px 4px; }
+  .navbtn { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; background: none; border: 0; border-radius: 6px; padding: 7px 8px; min-height: 34px; color: var(--fg); }
+  .navbtn:hover { background: var(--hover); }
+  .navbtn[aria-current="page"] { background: #E6DBC6; font-weight: 500; color: var(--ink); }
+  .navbtn svg { width: 16px; height: 16px; flex: none; color: var(--muted); }
+  .side .foot { margin-top: auto; font-size: 12px; color: var(--muted); padding: 12px 8px 4px; border-top: 1px solid var(--rule); }
+
+  /* main */
+  main { overflow-y: auto; min-width: 0; }
+  .topbar { position: sticky; top: 0; z-index: 5; background: rgba(255,252,245,.94); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 22px; border-bottom: 1px solid var(--rule); font-size: 13.5px; }
+  .crumbs { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .crumbs b { color: var(--ink); font-weight: 500; }
+  .topbar .acts { display: flex; gap: 6px; align-items: center; }
+  .ghost { background: none; border: 0; border-radius: 6px; padding: 6px 10px; min-height: 32px; color: var(--muted); }
+  .ghost:hover { background: var(--hover); color: var(--ink); }
+  .menu-btn { display: none; }
+
+  .page { max-width: 1020px; padding: 44px 56px 80px; }
+  .page-icon { width: 54px; height: 54px; border-radius: 10px; background: var(--bg); border: 1px solid var(--rule); display: grid; place-items: center; margin-bottom: 14px; }
+  .page-icon svg { width: 30px; height: 30px; }
+  .page h1 { font: 600 44px/1.05 var(--display); color: var(--ink); margin: 0 0 8px; }
+  .page .desc { color: var(--muted); margin: 0 0 26px; max-width: 64ch; }
+
+  .callout { display: flex; gap: 12px; background: var(--bg); border-left: 3px solid var(--gold); padding: 12px 16px; border-radius: 4px; margin-bottom: 26px; font-size: 14px; }
+  .callout svg { flex: none; width: 18px; height: 18px; margin-top: 2px; color: var(--foil); }
+
+  /* views */
+  .views { display: flex; gap: 2px; border-bottom: 1px solid var(--rule); margin-bottom: 12px; flex-wrap: wrap; }
+  .views button { background: none; border: 0; padding: 8px 12px; min-height: 38px; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .views button[aria-selected="true"] { color: var(--ink); border-color: var(--ink); font-weight: 500; }
+  .toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+  .chip { background: none; border: 1px solid var(--rule); border-radius: 999px; padding: 4px 12px; min-height: 32px; font-size: 13px; color: var(--muted); }
+  .chip[aria-pressed="true"] { background: var(--plum); border-color: var(--plum); color: var(--card); }
+  .search { margin-left: auto; display: flex; align-items: center; gap: 6px; border: 1px solid var(--rule); border-radius: 6px; padding: 0 10px; min-height: 34px; background: var(--card); }
+  .search svg { width: 14px; height: 14px; color: var(--muted); }
+  .search input { border: 0; outline: 0; background: none; width: 170px; }
+  .btn { border: 0; border-radius: 6px; padding: 0 14px; min-height: 34px; font-weight: 500; font-size: 13.5px; }
+  .btn-plum { background: var(--plum); color: var(--card); }
+  .btn-plum:hover { background: var(--plum-deep); }
+  .btn-line { background: var(--card); border: 1px solid var(--rule); color: var(--ink); }
+  .btn-line:hover { border-color: var(--gold); }
+
+  .summary { display: none; margin-bottom: 14px; background: #F7EEF3; border: 1px solid #E6CEDB; border-radius: 6px; padding: 12px 16px; }
+  .summary.on { display: block; }
+  .summary small { color: var(--muted); display: block; font-size: 12px; }
+  .summary p { margin: 2px 0 0; font: italic 400 22px/1.3 var(--display); color: var(--plum); }
+
+  /* table */
+  .tbl-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 640px; }
+  th { text-align: left; font-weight: 500; font-size: 12.5px; color: var(--muted); padding: 8px 10px; border-bottom: 1px solid var(--rule); border-right: 1px solid var(--rule); white-space: nowrap; }
+  th:last-child, td:last-child { border-right: 0; }
+  td { padding: 8px 10px; border-bottom: 1px solid var(--rule); border-right: 1px solid var(--rule); vertical-align: middle; }
+  tbody tr { cursor: pointer; }
+  tbody tr:hover { background: var(--hover); }
+  td.song b { font-weight: 500; color: var(--ink); }
+  td.song span { display: block; font-size: 12.5px; color: var(--muted); }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .open-hint { font-size: 11.5px; color: var(--muted); border: 1px solid var(--rule); border-radius: 4px; padding: 1px 6px; margin-left: 8px; opacity: 0; }
+  tr:hover .open-hint, tr:focus-within .open-hint { opacity: 1; }
+  .newrow td { color: var(--muted); cursor: pointer; border-right: 0; }
+  .empty { padding: 30px 10px; color: var(--muted); text-align: center; }
+
+  .tag { display: inline-block; font-size: 12px; padding: 2px 9px; border-radius: 4px; white-space: nowrap; }
+  .s-queued { background: #E5ECE4; color: #2F4A33; }
+  .s-banned { background: #F1E1E8; color: var(--plum-deep); }
+  .s-played { background: #F3E8CF; color: var(--foil); }
+  .s-mom { background: #E7E2EE; color: #4A3D63; }
+
+  /* board */
+  .board { display: grid; grid-template-columns: repeat(4, minmax(200px, 1fr)); gap: 12px; overflow-x: auto; }
+  .col { background: var(--bg); border-radius: 6px; padding: 10px; min-height: 120px; }
+  .col h3 { font-size: 13px; font-weight: 500; margin: 0 0 10px; display: flex; justify-content: space-between; }
+  .col h3 span { color: var(--muted); }
+  .bcard { display: block; width: 100%; text-align: left; background: var(--card); border: 1px solid var(--rule); border-radius: 5px; padding: 10px; margin-bottom: 8px; box-shadow: 0 1px 0 rgba(67,32,58,.05); }
+  .bcard:hover { border-color: var(--gold); }
+  .bcard b { display: block; font-weight: 500; color: var(--ink); }
+  .bcard span { font-size: 12.5px; color: var(--muted); }
+
+  /* run of show */
+  .ros { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+  .ros li { display: grid; grid-template-columns: 82px 1fr auto; gap: 14px; align-items: center; padding: 12px 6px; border-bottom: 1px solid var(--rule); transition: background .3s; }
+  .ros li.moved { background: #FBF3DE; }
+  .ros time { font: 600 22px/1 var(--display); color: var(--plum); font-variant-numeric: tabular-nums; }
+  .ros .what b { display: block; font-weight: 500; color: var(--ink); }
+  .ros .what span { font-size: 12.5px; color: var(--muted); }
+  .ros li.locked { background: #F7EEF3; }
+  .lockbtn { display: inline-flex; align-items: center; gap: 6px; }
+  .lockbtn svg { width: 14px; height: 14px; }
+  @keyframes nope { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+  .nope { animation: nope .25s ease-in-out 2; }
+
+  /* uncle doc */
+  .doc h2 { font: 600 28px/1.15 var(--display); color: var(--ink); margin: 30px 0 10px; }
+  .doc p { max-width: 64ch; }
+  .todo { display: flex; gap: 10px; align-items: flex-start; padding: 5px 0; cursor: pointer; }
+  .todo input { width: 17px; height: 17px; margin-top: 3px; accent-color: var(--plum); }
+  .todo input:checked + span { text-decoration: line-through; color: var(--muted); }
+  details { border-radius: 4px; padding: 4px 0; }
+  summary { cursor: pointer; font-weight: 500; padding: 4px 0; }
+  details p { margin: 6px 0 6px 18px; color: var(--muted); }
+
+  /* peek */
+  .peek { display: none; border-left: 1px solid var(--rule); background: var(--card); overflow-y: auto; padding: 18px 24px 40px; }
+  .peek-open .peek { display: block; }
+  .peek-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+  .peek h2 { font: 600 32px/1.1 var(--display); color: var(--ink); margin: 0 0 4px; }
+  .peek .artist { color: var(--muted); margin: 0 0 18px; }
+  .props { display: grid; grid-template-columns: 120px 1fr; gap: 10px 12px; align-items: center; font-size: 13.5px; margin-bottom: 22px; }
+  .props > span { color: var(--muted); }
+  .props select { border: 1px solid var(--rule); border-radius: 5px; padding: 4px 8px; background: var(--card); min-height: 32px; }
+  .stepper { display: inline-flex; align-items: center; gap: 8px; }
+  .stepper button { width: 28px; height: 28px; border: 1px solid var(--rule); background: var(--card); border-radius: 5px; }
+  .stepper b { font-variant-numeric: tabular-nums; min-width: 22px; text-align: center; }
+  .peek h3 { font-size: 13px; font-weight: 500; color: var(--muted); margin: 0 0 10px; border-top: 1px solid var(--rule); padding-top: 16px; }
+  .cmt { display: grid; grid-template-columns: 28px 1fr; gap: 10px; margin-bottom: 12px; font-size: 13.5px; }
+  .av { width: 28px; height: 28px; border-radius: 50%; background: var(--bg); border: 1px solid var(--gold); display: grid; place-items: center; font-size: 11px; font-weight: 600; color: var(--plum); }
+  .cmt b { font-weight: 500; }
+  .cmt time { color: var(--muted); font-size: 12px; margin-left: 6px; }
+  .cmt-form { display: flex; gap: 8px; margin-top: 8px; }
+  .cmt-form input { flex: 1; border: 1px solid var(--rule); border-radius: 6px; padding: 0 10px; min-height: 36px; background: var(--card); }
+
+  /* modal + toast */
+  .scrim { position: fixed; inset: 0; background: rgba(36,27,38,.45); display: none; place-items: center; z-index: 50; padding: 20px; }
+  .scrim.on { display: grid; }
+  .modal { background: var(--card); width: min(440px, 100%); border-radius: 8px; padding: 26px; box-shadow: 0 30px 60px -20px rgba(36,27,38,.5); }
+  .modal h2 { font: 600 30px/1.1 var(--display); margin: 0 0 16px; color: var(--ink); }
+  .modal label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+  .modal input, .modal select { display: block; width: 100%; margin-top: 4px; border: 1px solid var(--rule); border-radius: 6px; padding: 0 10px; min-height: 40px; background: var(--card); color: var(--ink); }
+  .modal .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; }
+  .modal .err { color: #9B1C3B; font-size: 13px; min-height: 18px; }
+  .toast { position: fixed; bottom: 22px; left: 50%; transform: translate(-50%, 20px); opacity: 0; background: var(--ink); color: var(--card); padding: 10px 18px; border-radius: 8px; font-size: 14px; transition: opacity .2s, transform .2s; z-index: 60; max-width: calc(100% - 32px); pointer-events: none; }
+  .toast.on { opacity: 1; transform: translate(-50%, 0); }
+
+  [hidden] { display: none !important; }
+
+  @media (max-width: 1100px) {
+    .peek-open .app { grid-template-columns: 248px 1fr; }
+    .peek-open .peek { position: fixed; right: 0; top: 0; bottom: 0; width: min(380px, 100%); z-index: 40; box-shadow: -20px 0 40px -20px rgba(36,27,38,.35); }
+  }
+  @media (max-width: 760px) {
+    .app, .peek-open .app { grid-template-columns: 1fr; }
+    aside.side { position: fixed; inset: 0 auto 0 0; width: 260px; z-index: 45; transform: translateX(-100%); transition: transform .2s; }
+    .side-open aside.side { transform: none; box-shadow: 20px 0 40px -20px rgba(36,27,38,.35); }
+    .menu-btn { display: inline-flex; }
+    .page { padding: 28px 18px 60px; }
+    .page h1 { font-size: 36px; }
+    .search { margin-left: 0; width: 100%; }
+    .search input { width: 100%; }
+    .ros li { grid-template-columns: 64px 1fr; }
+    .ros li > div:last-child { grid-column: 2; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+<title>Cuebook — Notion for wedding DJs — Demo</title>
+<meta name="description" content="Your reception, as a database. Cuebook turns the couple&#x27;s do-not-play list, the run of show and 41 napkin requests into linked pages with properties. You will still play Mr. Brightside. Now there is a record of it.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/notion-for-wedding-djs/demo.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Cuebook — Notion for wedding DJs — Demo">
+<meta property="og:description" content="Your reception, as a database. Cuebook turns the couple&#x27;s do-not-play list, the run of show and 41 napkin requests into linked pages with properties. You will still play Mr. Brightside. Now there is a record of it.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/notion-for-wedding-djs/demo.html">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/notion-for-wedding-djs/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Worst AI Studio Ever logo">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Cuebook — Notion for wedding DJs — Demo">
+<meta name="twitter:description" content="Your reception, as a database. Cuebook turns the couple&#x27;s do-not-play list, the run of show and 41 napkin requests into linked pages with properties. You will still play Mr. Brightside. Now there is a record of it.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/notion-for-wedding-djs/social-preview.jpg">
+<meta name="twitter:image:alt" content="The Worst AI Studio Ever logo">
+</head>
+<body>
+<div class="app">
+  <aside class="side" aria-label="Workspace">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <div class="ws">
+      <div class="ws-mark">C</div>
+      <div><b>Silver Bell DJs</b><span>Reception plan · 3 crew</span></div>
+    </div>
+    <h4>Hart &amp; Moreno · Nov 7</h4>
+    <button class="navbtn" data-page="requests" aria-current="page"><svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2.5" width="12" height="11" rx="1.5" stroke="currentColor"/><path d="M2 6h12M6 6v7.5" stroke="currentColor"/></svg>Requests &amp; Bans</button>
+    <button class="navbtn" data-page="ros"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor"/><path d="M8 5v3l2 1.5" stroke="currentColor" stroke-linecap="round"/></svg>Run of Show</button>
+    <button class="navbtn" data-page="uncle"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2l5 2v4c0 3-2.2 5-5 6-2.8-1-5-3-5-6V4l5-2z" stroke="currentColor"/></svg>Uncle Protocol</button>
+    <h4>Upcoming</h4>
+    <button class="navbtn" data-page="soon" data-name="Abernathy &amp; Cole"><svg viewBox="0 0 16 16" fill="none"><rect x="3" y="2" width="10" height="12" rx="1" stroke="currentColor"/></svg>Abernathy &amp; Cole · Nov 14</button>
+    <button class="navbtn" data-page="soon" data-name="Pham &amp; Pham"><svg viewBox="0 0 16 16" fill="none"><rect x="3" y="2" width="10" height="12" rx="1" stroke="currentColor"/></svg>Pham &amp; Pham · Nov 21</button>
+    <div class="foot">Synced 4 min ago from the van.</div>
+  </aside>
+
+  <main id="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:6px;min-width:0">
+        <button class="ghost menu-btn" id="menuBtn" aria-label="Open sidebar">☰</button>
+        <div class="crumbs">Hart &amp; Moreno / <b id="crumb">Requests &amp; Bans</b></div>
+      </div>
+      <div class="acts">
+        <button class="ghost" id="shareBtn">Share</button>
+        <button class="ghost" id="cmtBtn">Comments (31)</button>
+      </div>
+    </div>
+
+    <!-- REQUESTS -->
+    <section class="page" id="pg-requests">
+      <div class="page-icon" aria-hidden="true"><svg viewBox="0 0 30 30" fill="none"><rect x="5" y="4" width="20" height="23" rx="2" stroke="#5B2A4E" stroke-width="1.6"/><path d="M10 11h10M10 15h10M10 19h6" stroke="#B08A3E" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+      <h1>Requests &amp; Bans</h1>
+      <p class="desc">Everything requested at or about the Hart &amp; Moreno reception, Larkspur Barn. The bride's list is binding. The groom's list is advisory.</p>
+      <div class="callout"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="7" stroke="currentColor"/><path d="M9 5.5v4M9 12.2v.3" stroke="currentColor" stroke-linecap="round"/></svg><div>Mother of the bride has comment access. She has used it.</div></div>
+
+      <div class="views" role="tablist" aria-label="Views">
+        <button role="tab" aria-selected="true" data-view="table">Table</button>
+        <button role="tab" aria-selected="false" data-view="board">Board by status</button>
+      </div>
+
+      <div class="toolbar">
+        <button class="chip" aria-pressed="true" data-filter="all">All</button>
+        <button class="chip" aria-pressed="false" data-filter="Queued">Queued</button>
+        <button class="chip" aria-pressed="false" data-filter="Banned">Banned</button>
+        <button class="chip" aria-pressed="false" data-filter="Played anyway">Played anyway</button>
+        <button class="chip" aria-pressed="false" data-filter="Mom override">Mom override</button>
+        <label class="search"><svg viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor"/><path d="M9.5 9.5L13 13" stroke="currentColor" stroke-linecap="round"/></svg><input id="q" type="search" placeholder="Search songs or guests" aria-label="Search songs or guests"></label>
+        <button class="btn btn-line" id="aiBtn">AI summary</button>
+        <button class="btn btn-plum" id="newBtn">New request</button>
+      </div>
+
+      <div class="summary" id="summary" aria-live="polite"><small id="sumSrc"></small><p id="sumText"></p></div>
+
+      <div id="v-table" class="tbl-wrap">
+        <table>
+          <thead><tr><th>Song</th><th>Requested by</th><th style="text-align:right">Asked</th><th>Status</th><th>Banned by</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <div id="v-board" class="board" hidden></div>
+    </section>
+
+    <!-- RUN OF SHOW -->
+    <section class="page" id="pg-ros" hidden>
+      <div class="page-icon" aria-hidden="true"><svg viewBox="0 0 30 30" fill="none"><circle cx="15" cy="15" r="10" stroke="#5B2A4E" stroke-width="1.6"/><path d="M15 9v6l4 3" stroke="#B08A3E" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+      <h1>Run of Show</h1>
+      <p class="desc">Linked blocks. Delay one and everything after it moves. One block does not move.</p>
+      <ol class="ros" id="ros"></ol>
+    </section>
+
+    <!-- UNCLE -->
+    <section class="page doc" id="pg-uncle" hidden>
+      <div class="page-icon" aria-hidden="true"><svg viewBox="0 0 30 30" fill="none"><path d="M15 4l9 3.5v7c0 5.5-4 9-9 11-5-2-9-5.5-9-11v-7L15 4z" stroke="#5B2A4E" stroke-width="1.6"/></svg></div>
+      <h1>Uncle Protocol</h1>
+      <p class="desc">Owner: Priya V. · Applies to: Uncle Rick (bride's side) · Last reviewed: after the Delgado wedding</p>
+      <h2>Before doors</h2>
+      <label class="todo"><input type="checkbox"><span>Confirm Uncle Rick is seated at table 9, furthest from the booth</span></label>
+      <label class="todo"><input type="checkbox"><span>Unplug the spare microphone and put it in the van</span></label>
+      <label class="todo"><input type="checkbox"><span>Pre-load Cotton Eye Joe in the Banned crate so he can see it is banned</span></label>
+      <h2>During</h2>
+      <label class="todo"><input type="checkbox"><span>Acknowledge request with a nod. Do not write it down in front of him.</span></label>
+      <label class="todo"><input type="checkbox"><span>If he reaches the booth, play the first 8 bars of Sweet Caroline as a decoy</span></label>
+      <label class="todo"><input type="checkbox"><span>Escalate to Gary if he asks about "the aux"</span></label>
+      <h2>Known requests</h2>
+      <details><summary>Cotton Eye Joe (6 times, 2024 to present)</summary><p>Banned by the bride in writing. He knows. He asks anyway.</p></details>
+      <details><summary>"Something with a saxophone"</summary><p>Resolved with Careless Whisper at 8:50. He did not dance.</p></details>
+      <details><summary>A song he hums but cannot name</summary><p>Open since 2023. Shazam returned no results on four occasions.</p></details>
+    </section>
+
+    <!-- SOON -->
+    <section class="page" id="pg-soon" hidden>
+      <h1 id="soonTitle">Upcoming</h1>
+      <p class="desc">This workspace is empty. The couple has not sent a do-not-play list yet.</p>
+      <button class="btn btn-plum" id="nudgeBtn">Send the couple a reminder</button>
+    </section>
+  </main>
+
+  <aside class="peek" id="peek" aria-label="Request details"></aside>
+</div>
+
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <form class="modal" id="newForm">
+    <h2 id="mTitle">New request</h2>
+    <label>Song<input id="fSong" autocomplete="off" placeholder="e.g. September"></label>
+    <label>Artist<input id="fArtist" autocomplete="off" placeholder="e.g. Earth, Wind &amp; Fire"></label>
+    <label>Requested by<input id="fBy" autocomplete="off" placeholder="e.g. Bridesmaid, table 2"></label>
+    <div class="err" id="fErr" role="alert"></div>
+    <div class="row">
+      <button type="button" class="btn btn-line" id="cancelNew">Cancel</button>
+      <button type="submit" class="btn btn-plum">Add request</button>
+    </div>
+  </form>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  var STATUSES = ['Queued', 'Banned', 'Played anyway', 'Mom override'];
+  var CLS = { 'Queued': 's-queued', 'Banned': 's-banned', 'Played anyway': 's-played', 'Mom override': 's-mom' };
+  var data = [
+    { id: 1, song: 'Mr. Brightside', artist: 'The Killers', by: 'Groomsman, table 4', asked: 9, status: 'Played anyway', ban: 'Bride, in writing', comments: [['DM', 'Darnell', '8:02 PM', 'Played at 8:01. Dance floor went from 3 to 60.'], ['LH', 'Linda Hart', '8:03 PM', 'louder?']] },
+    { id: 2, song: 'Cotton Eye Joe', artist: 'Rednex', by: 'The uncle', asked: 6, status: 'Banned', ban: 'Bride, in writing', comments: [['PV', 'Priya', '7:55 PM', 'See Uncle Protocol, section 2.']] },
+    { id: 3, song: 'Sandstorm', artist: 'Darude', by: 'Cousin (unverified)', asked: 11, status: 'Banned', ban: 'Groom, verbally', comments: [['PV', 'Priya', '9:12 PM', 'Merged 11 requests. Same cousin each time.']] },
+    { id: 4, song: 'Unchained Melody', artist: 'The Righteous Brothers', by: 'Mother of the bride', asked: 1, status: 'Mom override', ban: 'Nobody, now', comments: [['LH', 'Linda Hart', '6:40 PM', 'This is for Ron. He is not here but this is for him.']] },
+    { id: 5, song: 'September', artist: 'Earth, Wind & Fire', by: 'Bridesmaid, table 2', asked: 2, status: 'Queued', ban: '', comments: [] },
+    { id: 6, song: 'Shout', artist: 'The Isley Brothers', by: 'DJ (habit)', asked: 1, status: 'Queued', ban: '', comments: [['DM', 'Darnell', '6:10 PM', 'Closing song. Not up for discussion.']] },
+    { id: 7, song: 'The Chicken Dance', artist: 'Traditional', by: 'Flower girl, age 6', asked: 4, status: 'Banned', ban: 'Bride, in writing', comments: [['GL', 'Gary', '8:44 PM', 'She is crying. Advise.']] },
+    { id: 8, song: 'Wonderwall', artist: 'Oasis', by: 'Best man', asked: 3, status: 'Banned', ban: 'Venue, contractually', comments: [] },
+    { id: 9, song: 'Careless Whisper', artist: 'George Michael', by: 'The uncle', asked: 1, status: 'Played anyway', ban: '', comments: [['PV', 'Priya', '8:50 PM', 'Saxophone request resolved. He did not dance.']] },
+    { id: 10, song: 'Africa', artist: 'Toto', by: 'Table 7 (all)', asked: 5, status: 'Queued', ban: '', comments: [] },
+    { id: 11, song: 'Macarena', artist: 'Los del Rio', by: 'Groom’s grandmother', asked: 2, status: 'Mom override', ban: 'Bride, overruled', comments: [['LH', 'Linda Hart', '9:01 PM', 'Grandma Pearl is 91. Play it.']] },
+    { id: 12, song: 'Tubthumping', artist: 'Chumbawamba', by: 'Groomsman, table 4', asked: 2, status: 'Banned', ban: 'Bride, in writing', comments: [] }
+  ];
+  var filter = 'all', query = '', view = 'table', openId = null, nextId = 13;
+
+  var $ = function (s) { return document.querySelector(s); };
+  var $$ = function (s) { return Array.prototype.slice.call(document.querySelectorAll(s)); };
+  function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+  var toastT;
+  function toast(msg) {
+    var t = $('#toast'); t.textContent = msg; t.classList.add('on');
+    clearTimeout(toastT); toastT = setTimeout(function () { t.classList.remove('on'); }, 3200);
+  }
+
+  function visible() {
+    var q = query.toLowerCase();
+    return data.filter(function (r) {
+      if (filter !== 'all' && r.status !== filter) return false;
+      if (!q) return true;
+      return (r.song + ' ' + r.artist + ' ' + r.by).toLowerCase().indexOf(q) !== -1;
+    });
+  }
+
+  function tag(s) { return '<span class="tag ' + CLS[s] + '">' + esc(s) + '</span>'; }
+
+  function render() {
+    var rows = visible();
+    var html = rows.map(function (r) {
+      return '<tr tabindex="0" data-id="' + r.id + '"><td class="song"><b>' + esc(r.song) + '<span class="open-hint" style="display:inline">Open</span></b><span>' + esc(r.artist) + '</span></td><td>' + esc(r.by) + '</td><td class="num">' + r.asked + '</td><td>' + tag(r.status) + '</td><td>' + esc(r.ban || '–') + '</td></tr>';
+    }).join('');
+    if (!rows.length) html = '<tr><td colspan="5" class="empty">No requests match. Give it twenty minutes and an open bar.</td></tr>';
+    html += '<tr class="newrow"><td colspan="5" id="inlineNew">+ New request</td></tr>';
+    $('#rows').innerHTML = html;
+
+    $('#v-board').innerHTML = STATUSES.map(function (s) {
+      var items = rows.filter(function (r) { return r.status === s; });
+      return '<div class="col"><h3>' + tag(s) + '<span>' + items.length + '</span></h3>' + items.map(function (r) {
+        return '<button class="bcard" data-id="' + r.id + '"><b>' + esc(r.song) + '</b><span>' + esc(r.by) + ' · asked ' + r.asked + 'x</span></button>';
+      }).join('') + '</div>';
+    }).join('');
+    if (openId) renderPeek();
+  }
+
+  function renderPeek() {
+    var r = data.filter(function (x) { return x.id === openId; })[0];
+    if (!r) return;
+    var opts = STATUSES.map(function (s) { return '<option' + (s === r.status ? ' selected' : '') + '>' + s + '</option>'; }).join('');
+    var cm = r.comments.map(function (c) {
+      return '<div class="cmt"><div class="av">' + esc(c[0]) + '</div><div><b>' + esc(c[1]) + '</b><time>' + esc(c[2]) + '</time><div>' + esc(c[3]) + '</div></div></div>';
+    }).join('') || '<p style="color:var(--muted);font-size:13.5px">No comments. Linda has not found this row yet.</p>';
+    $('#peek').innerHTML =
+      '<div class="peek-head"><span style="color:var(--muted);font-size:13px">Requests &amp; Bans</span><button class="ghost" id="closePeek" aria-label="Close details">Close</button></div>' +
+      '<h2>' + esc(r.song) + '</h2><p class="artist">' + esc(r.artist) + '</p>' +
+      '<div class="props">' +
+        '<span>Status</span><select id="pStatus" aria-label="Status">' + opts + '</select>' +
+        '<span>Requested by</span><div>' + esc(r.by) + '</div>' +
+        '<span>Times asked</span><div class="stepper"><button id="pMinus" aria-label="Decrease">−</button><b>' + r.asked + '</b><button id="pPlus" aria-label="Increase">+</button></div>' +
+        '<span>Banned by</span><div>' + esc(r.ban || '–') + '</div>' +
+        '<span>Sentiment</span><div>' + (r.asked > 5 ? 'Persistent' : 'Hopeful') + '</div>' +
+      '</div>' +
+      '<h3>Comments</h3>' + cm +
+      '<form class="cmt-form" id="cmtForm"><input id="cmtIn" placeholder="Add a comment" aria-label="Add a comment"><button class="btn btn-plum" type="submit">Post</button></form>';
+    $('#pStatus').addEventListener('change', function (e) {
+      r.status = e.target.value;
+      toast(r.status === 'Mom override' ? 'Override logged. Linda has been notified that she won.' : 'Status changed to ' + r.status + '.');
+      render();
+    });
+    $('#pPlus').addEventListener('click', function () { r.asked++; render(); if (r.asked === 12) toast('Twelve. Cuebook recommends eye contact.'); });
+    $('#pMinus').addEventListener('click', function () { if (r.asked > 1) { r.asked--; render(); } else toast('They asked at least once. That is why the row exists.'); });
+    $('#closePeek').addEventListener('click', closePeek);
+    $('#cmtForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = $('#cmtIn').value.trim(); if (!v) return;
+      r.comments.push(['YO', 'You', 'just now', v]);
+      setTimeout(function () { r.comments.push(['LH', 'Linda Hart', 'just now', 'louder?']); if (openId === r.id) renderPeek(); }, 1400);
+      renderPeek();
+    });
+  }
+
+  function openPeek(id) { openId = id; document.body.classList.add('peek-open'); renderPeek(); }
+  function closePeek() { openId = null; document.body.classList.remove('peek-open'); }
+
+  document.addEventListener('click', function (e) {
+    var row = e.target.closest('tr[data-id], .bcard');
+    if (row) { openPeek(Number(row.getAttribute('data-id'))); return; }
+    if (e.target.id === 'inlineNew') openNew();
+  });
+  $('#rows').addEventListener('keydown', function (e) {
+    var row = e.target.closest('tr[data-id]');
+    if (row && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openPeek(Number(row.getAttribute('data-id'))); }
+  });
+
+  $$('.chip').forEach(function (c) {
+    c.addEventListener('click', function () {
+      filter = c.getAttribute('data-filter');
+      $$('.chip').forEach(function (x) { x.setAttribute('aria-pressed', String(x === c)); });
+      render();
+    });
+  });
+  $('#q').addEventListener('input', function (e) { query = e.target.value; render(); });
+
+  $$('.views button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      view = b.getAttribute('data-view');
+      $$('.views button').forEach(function (x) { x.setAttribute('aria-selected', String(x === b)); });
+      $('#v-table').hidden = view !== 'table';
+      $('#v-board').hidden = view !== 'board';
+    });
+  });
+
+  $('#aiBtn').addEventListener('click', function () {
+    var s = $('#summary');
+    if (s.classList.contains('on')) { s.classList.remove('on'); return; }
+    var total = data.reduce(function (n, r) { return n + r.asked; }, 0);
+    $('#sumSrc').textContent = 'Summarized ' + total + ' requests from ' + data.length + ' guests, including 3 napkins and 1 voicemail.';
+    $('#sumText').textContent = 'Mr. Brightside (again).';
+    s.classList.add('on');
+  });
+
+  // new request modal
+  function openNew() { $('#scrim').classList.add('on'); $('#fErr').textContent = ''; $('#fSong').focus(); }
+  function closeNew() { $('#scrim').classList.remove('on'); $('#newForm').reset(); }
+  $('#newBtn').addEventListener('click', openNew);
+  $('#cancelNew').addEventListener('click', closeNew);
+  $('#scrim').addEventListener('click', function (e) { if (e.target.id === 'scrim') closeNew(); });
+  $('#newForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var song = $('#fSong').value.trim();
+    if (!song) { $('#fErr').textContent = 'Add a song title. "Something upbeat" goes in the guest’s comments.'; $('#fSong').focus(); return; }
+    var existing = data.filter(function (r) { return r.song.toLowerCase() === song.toLowerCase(); })[0];
+    if (existing) {
+      existing.asked++;
+      closeNew(); render();
+      toast('Merged with the existing row. ' + existing.song + ' has now been asked ' + existing.asked + ' times.');
+      return;
+    }
+    var banned = /brightside|cha cha|macarena|electric slide/i.test(song);
+    data.unshift({ id: nextId++, song: song, artist: $('#fArtist').value.trim() || 'Artist unknown (guest was confident)', by: $('#fBy').value.trim() || 'Unidentified, near the bar', asked: 1, status: banned ? 'Banned' : 'Queued', ban: banned ? 'Cuebook, preemptively' : '', comments: [] });
+    closeNew(); render();
+    toast(banned ? 'Added and banned preemptively. You may override this.' : 'Request added to the queue.');
+  });
+
+  // pages
+  var ros = [
+    { t: 19 * 60 + 15, what: 'Grand entrance', note: 'Crazy in Love, edited to 0:48' },
+    { t: 19 * 60 + 40, what: 'First dance', note: 'At Last. Fade at 2:30 if the groom stops moving.' },
+    { t: 20 * 60 + 10, what: 'Toasts', note: 'Best man has 4 minutes. He has written 11.' },
+    { t: 21 * 60 + 5, what: 'Cake', note: 'Linked to sparklers' },
+    { t: 21 * 60 + 40, what: 'Cha Cha Slide', note: 'Locked. See terms of service, section 9.', locked: true },
+    { t: 22 * 60 + 30, what: 'Sparkler exit', note: 'Linked to cake' },
+    { t: 22 * 60 + 55, what: 'Last song', note: 'Shout' }
+  ];
+  var lockTries = 0;
+  var LOCK_MSGS = ['This block is locked.', 'This block is still locked.', 'Locked at the workspace level. Ask the workspace owner.', 'You are the workspace owner. It is still locked.', 'We have escalated this to nobody.'];
+  function fmt(m) { var h = Math.floor(m / 60), mm = m % 60, ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12; return h + ':' + (mm < 10 ? '0' : '') + mm + '<small style="font-size:13px;margin-left:3px;color:var(--muted)">' + ap + '</small>'; }
+  function renderRos(moved) {
+    $('#ros').innerHTML = ros.map(function (b, i) {
+      var act = b.locked
+        ? '<button class="btn btn-line lockbtn" data-unlock="1"><svg viewBox="0 0 14 14" fill="none"><rect x="2.5" y="6" width="9" height="6.5" rx="1" stroke="currentColor"/><path d="M4.5 6V4.5a2.5 2.5 0 0 1 5 0V6" stroke="currentColor"/></svg>Unlock</button>'
+        : '<button class="btn btn-line" data-delay="' + i + '">Delay 15 min</button>';
+      return '<li class="' + (b.locked ? 'locked ' : '') + (moved && moved.indexOf(i) !== -1 ? 'moved' : '') + '"><time>' + fmt(b.t) + '</time><div class="what"><b>' + esc(b.what) + '</b><span>' + esc(b.note) + '</span></div><div>' + act + '</div></li>';
+    }).join('');
+  }
+  $('#ros').addEventListener('click', function (e) {
+    var d = e.target.closest('[data-delay]');
+    if (d) {
+      var i = Number(d.getAttribute('data-delay')), moved = [];
+      ros.forEach(function (b, j) { if (j >= i && !b.locked) { b.t += 15; moved.push(j); } });
+      renderRos(moved);
+      toast(i <= 4 ? 'Delayed ' + moved.length + ' blocks by 15 minutes. The Cha Cha Slide did not move.' : 'Delayed ' + moved.length + ' blocks by 15 minutes.');
+      return;
+    }
+    var u = e.target.closest('[data-unlock]');
+    if (u) {
+      toast(LOCK_MSGS[Math.min(lockTries, LOCK_MSGS.length - 1)]);
+      lockTries++;
+      u.classList.remove('nope'); void u.offsetWidth; u.classList.add('nope');
+    }
+  });
+
+  var TITLES = { requests: 'Requests & Bans', ros: 'Run of Show', uncle: 'Uncle Protocol' };
+  $$('.navbtn').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var p = b.getAttribute('data-page');
+      $$('.navbtn').forEach(function (x) { x.removeAttribute('aria-current'); });
+      b.setAttribute('aria-current', 'page');
+      ['requests', 'ros', 'uncle', 'soon'].forEach(function (k) { $('#pg-' + k).hidden = k !== p; });
+      var name = p === 'soon' ? b.getAttribute('data-name') : TITLES[p];
+      if (p === 'soon') { $('#soonTitle').textContent = name; }
+      $('#crumb').textContent = name;
+      $('.crumbs').firstChild.textContent = p === 'soon' ? 'Upcoming / ' : 'Hart & Moreno / ';
+      if (p !== 'requests') closePeek();
+      document.body.classList.remove('side-open');
+      $('#main').scrollTop = 0;
+    });
+  });
+  $('#nudgeBtn').addEventListener('click', function () { toast('Reminder sent. Couples reply in 9 days on average, usually with "anything but country".'); });
+  $('#shareBtn').addEventListener('click', function () { toast('Link copied. Anyone with the link can comment, which is how this started.'); });
+  $('#cmtBtn').addEventListener('click', function () { toast('31 comments. 28 say "louder?". Opening the newest.'); openPeek(1); });
+  $('#menuBtn').addEventListener('click', function () { document.body.classList.toggle('side-open'); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    if ($('#scrim').classList.contains('on')) closeNew();
+    else if (openId) closePeek();
+    else document.body.classList.remove('side-open');
+  });
+
+  render();
+  renderRos();
+})();
+</script>
+</body>
+</html>

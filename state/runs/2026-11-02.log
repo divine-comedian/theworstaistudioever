@@ -1,0 +1,54 @@
+[2026-11-02T08:00:01Z] === daily run start ===
+Already up to date.
+[2026-11-02T08:00:02Z] invoking codex generator
+codex: model=gpt-6.1-sol reasoning=high generation_timeout=3600s overall_timeout=14400s
+
+Daily Codex pipeline run: 2026-11-02 UTC
+Roll: Facebook for wedding DJs
+Slug: facebook-for-wedding-djs
+Product: Afterset
+Rerolls: 0
+PRNG: sum(date character codes) * 104729 modulo 2^31; LCG multiplier 1103515245, increment 12345, modulus 2^31. Indices floor(seed * array_length / 2^31).
+Subject check: wedding DJs is a relatable type of person; no seed removal needed.
+Applied local skills: pipelines/codex-v1/skills/anti-ai-slop/SKILL.md; pipelines/codex-v1/skills/ui-ux-pro-max/SKILL.md; pipelines/codex-v1/skills/frontend-design/SKILL.md. Used bundled design-system, typography and UX searches.
+Design: vibrant block-based record-sleeve modernism.
+Palette: Dancefloor Lilac and Cobalt. Primary #4936CF, accent #EDFF82, bg #EFECF8, fg #32284B, muted #605771, ink #271B48.
+Fonts: library Fashion Forward pairing; Syne display and Manrope body.
+Archetype: community/forum landing; social-feed product UI.
+Anti-sameness: read seven most recent existing concepts; selected tuple matches none. Rejected generator's wedding-script pairing to avoid repeating the recent wedding-DJ stationery treatment.
+Images: 4 slots, generated only through scripts/gen-image.sh using its existing daily cap. One hero for the empty-ballroom social-network counterpoint; no separate demo photos needed for text feed. Three member/testimonial headshots also serve as feed avatars.
+hero.webp: 1 attempt; vision PASS. Single wedding DJ in empty ballroom, lilac/cobalt mood, credible anatomy and photographic detail, no readable text artifacts. Cropped to 1600x900 WebP.
+headshot-1.webp: 1 attempt; vision PASS. Male DJ, realistic skin and headphones, lilac/cobalt studio lighting, no text artifacts. Cropped to 320x320 WebP.
+headshot-2.webp: 1 attempt; vision PASS. Female DJ, cobalt jacket and lilac background, realistic lighting, no text artifacts. Cropped to 320x320 WebP.
+headshot-3.webp: 1 attempt; vision PASS. Older DJ in waistcoat, cobalt background, realistic portrait detail, no text artifacts. Cropped to 320x320 WebP.
+Raw image inputs deleted by crop-image.py. Complete prompts, roles, attempts and verdicts recorded in concept.json.
+Landing: hero, three features, three member testimonials, three membership tiers, demo CTAs, studio footer.
+Demo: posting, group and memory filters, search, reversible applause, editable poll vote, expandable comments with comment submission, vendor connections, group membership toggle and reset. Client-side mock data only; tier links display the selected preview tier.
+Gallery: rebuilt from all 140 concepts in descending date order, retaining shared stylesheet and root metadata contract, logo lockup and all required carousel navigation.
+Metadata: python3 scripts/build-entry-metadata.py site facebook-for-wedding-djs PASSED. Both static pages have canonical/social tags; local social-preview.jpg generated.
+Validation: scripts/validate-entry.sh site facebook-for-wedding-djs PASSED. Sharing metadata check PASSED. All images decode and are within 500 KB.
+Additional check: JavaScript syntax passed node --check for demo and gallery.
+History: appended today's date/company/subject/slug exactly once, preserving all earlier array records.
+Warnings / near-misses: none. Browser interaction QA is left to the host's separate gate; no host QA loop or report edits performed.
+Publishing, notifications and machine fixtures remain owned by the wrapper. No git commands, deployments, connected apps, delegation or software installation.
+Checkpoint complete: metadata, validation, gallery, history append and run summary.
+Optional visual check: skipped. Browser binaries are present, but the Playwright capture package is unavailable to the local runtime. No capture attempted and no software installed. No edits after validation.
+codex QA: review 1, repairs used 0/2
+codex: rejected draft archived privately at /home/chaperzcommand/github/theworstaistudioever/.tmp-codex/2026-11-02-jy6s1uls; gallery/history restored
+generator failed: QA report text must be nonempty
+[2026-11-02T08:09:57Z] RUN FAILED: codex generator exited non-zero
+[2026-11-02T11:32:58Z] Recovered archived Afterset draft. Fixed QA string validation to permit empty input values and exact empty assertions; retained strict selectors/editorial fields. Full headless QA passed after one targeted copy repair. Pipeline, browser, wrapper, cron-PATH, metadata-validator and SEO regression checks passed. Publishing through isolated wrapper checkout with notifications suppressed.
+[2026-11-02T11:33:03Z] === daily run start ===
+Already up to date.
+[2026-11-02T11:33:04Z] publishing validated existing entry: facebook-for-wedding-djs (generation skipped)
+codex: model=gpt-6.1-sol reasoning=high generation_timeout=3600s overall_timeout=14400s
+codex QA: review 1, repairs used 0/2
+codex QA: passed after 0 repair attempt(s)
+RUN_COMPLETE: facebook-for-wedding-djs
+codex: completed with QA in 75.8s; private reports: /tmp/afterset-publish-s5dkdf5n/repo/.tmp-codex/2026-11-02-73dr00cs
+[2026-11-02T11:34:20Z] new entry: facebook-for-wedding-djs
+entry-metadata [facebook-for-wedding-djs]: wrote landing + demo metadata
+entry-metadata [facebook-for-wedding-djs]: OK
+validate-entry [facebook-for-wedding-djs]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 140 entries (domain theworstaistudioever.com)
+[2026-11-02T11:34:21Z] committing: Facebook for wedding DJs

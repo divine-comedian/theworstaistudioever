@@ -150,6 +150,33 @@ printf '<!doctype html><html><head><title>t</title></head><body><img src="data:i
 python3 "$SCRIPT_DIR/build-entry-metadata.py" "$TMP" "data-uri-img" >/dev/null
 assert_pass "data: uri img src allowed" "data-uri-img"
 
+make_valid_entry "js-template-img"
+python3 - "$TMP/entries/js-template-img/demo.html" <<'PY'
+from pathlib import Path
+import sys
+p = Path(sys.argv[1])
+p.write_text(p.read_text().replace('</body>', '<script>const card = `<img src="${x.image}" alt="">`;</script></body>'))
+PY
+assert_pass "JavaScript image template is not a literal HTML image" "js-template-img"
+
+make_valid_entry "single-quote-img"
+python3 - "$TMP/entries/single-quote-img/demo.html" <<'PY'
+from pathlib import Path
+import sys
+p = Path(sys.argv[1])
+p.write_text(p.read_text().replace('</body>', "<img src='missing.webp'></body>"))
+PY
+assert_fail "single-quoted static missing image is still rejected" "single-quote-img"
+
+make_valid_entry "comment-img"
+python3 - "$TMP/entries/comment-img/demo.html" <<'PY'
+from pathlib import Path
+import sys
+p = Path(sys.argv[1])
+p.write_text(p.read_text().replace('</body>', '<!-- <img src="not-rendered.webp"> --></body>'))
+PY
+assert_pass "commented-out image is not a rendered HTML image" "comment-img"
+
 # Sharing tags must survive on both pages and stay in sync with the concept.
 make_valid_entry "missing-metadata"
 python3 - "$TMP/entries/missing-metadata/demo.html" <<'PY'

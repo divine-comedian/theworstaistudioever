@@ -39,7 +39,9 @@ ROWS="$(
 [ -n "$ROWS" ] || err "no concept.json files found under $ENTRIES_DIR"
 
 # Newest entry date drives the homepage lastmod.
-LATEST_DATE="$(printf '%s\n' "$ROWS" | head -1 | cut -f1)"
+# Avoid head closing a large catalogue pipe early (SIGPIPE/141 under pipefail).
+LATEST_DATE="${ROWS%%$'\n'*}"
+LATEST_DATE="${LATEST_DATE%%$'\t'*}"
 
 xml_escape() { local s="$1"; s="${s//&/&amp;}"; s="${s//</&lt;}"; s="${s//>/&gt;}"; printf '%s' "$s"; }
 

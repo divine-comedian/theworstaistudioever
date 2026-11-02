@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;600;700&family=Barlow:wght@400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0B0D1A;
+    --panel: #151829;
+    --panel2: #1C2036;
+    --fg: #EDE6DA;
+    --ink: #F4EEE4;
+    --muted: #8E8AA8;
+    --amber: #FF9D3D;
+    --lav: #A79BFF;
+    --peach: #F5B98E;
+    --rose: #D0687D;
+    --teal: #6FB7C9;
+    --display: 'Antonio', 'Arial Narrow', sans-serif;
+    --body: 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --mono: 'Share Tech Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 16px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+  button, input { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--lav); outline-offset: 2px; }
+
+  .app { height: 100vh; height: 100dvh; display: grid; grid-template-rows: 48px 1fr; gap: 8px; padding: 8px; }
+
+  /* top chrome */
+  .chrome { display: grid; grid-template-columns: 260px 1fr auto; gap: 8px; }
+  .chrome > * { display: flex; align-items: center; padding: 0 16px; color: var(--bg); }
+  .chrome .back { background: var(--amber); border-radius: 24px 0 0 0; text-decoration: none; font-family: var(--display); font-weight: 600; font-size: 18px; text-transform: uppercase; letter-spacing: .02em; }
+  .chrome .back:hover { filter: brightness(1.12); }
+  .chrome .title { background: var(--amber); font-family: var(--display); font-weight: 700; font-size: 24px; text-transform: uppercase; justify-content: space-between; }
+  .chrome .title small { font-family: var(--mono); font-size: 14px; font-weight: 400; text-transform: none; }
+  .chrome .code { background: var(--amber); border-radius: 0 24px 24px 0; font-family: var(--mono); font-size: 14px; }
+
+  .panes { display: grid; grid-template-columns: 260px minmax(0, 1fr) 290px; gap: 8px; min-height: 0; }
+
+  /* left: channels */
+  .channels { background: var(--panel); display: flex; flex-direction: column; min-height: 0; border-radius: 0 0 0 28px; }
+  .search { padding: 12px; }
+  .search label { display: block; font-family: var(--mono); font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .search input { width: 100%; height: 40px; background: var(--bg); border: 2px solid var(--panel2); padding: 0 12px; border-radius: 0 20px 20px 0; }
+  .search input:focus { border-color: var(--lav); outline: none; }
+  .chlist { list-style: none; margin: 0; padding: 0 8px 12px; overflow-y: auto; flex: 1; }
+  .ch > span:nth-child(2) { min-width: 0; overflow: hidden; }
+  .ch { width: 100%; display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; gap: 12px; align-items: center; text-align: left; background: none; border: 0; padding: 10px 10px 10px 0; cursor: pointer; min-height: 56px; }
+  .ch .stripe { align-self: stretch; background: var(--c); }
+  .ch .nm { font-family: var(--display); font-weight: 600; font-size: 19px; text-transform: uppercase; line-height: 1.1; color: var(--ink); }
+  .ch .pv { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
+  .ch .badge { font-family: var(--mono); font-size: 12px; background: var(--c); color: var(--bg); padding: 2px 8px; border-radius: 0 10px 10px 0; }
+  .ch .shield { font-family: var(--mono); font-size: 11px; color: var(--muted); border: 1px solid var(--muted); padding: 0 5px; }
+  .ch:hover { background: var(--panel2); }
+  .ch[aria-current="true"] { background: var(--panel2); }
+  .ch[aria-current="true"] .nm { color: var(--c); }
+  .empty { padding: 12px; color: var(--muted); font-size: 14px; }
+
+  /* centre: thread */
+  .thread { background: var(--panel); display: grid; grid-template-rows: auto 1fr auto; min-height: 0; }
+  .thead { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-bottom: 2px solid var(--bg); gap: 12px; }
+  .thead h1 { font-family: var(--display); font-weight: 700; font-size: 28px; text-transform: uppercase; margin: 0; color: var(--ink); line-height: 1; }
+  .thead .meta { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+  .msgs { overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+  .msg { display: grid; grid-template-columns: 44px 1fr; gap: 12px; max-width: 720px; }
+  .av { width: 44px; height: 44px; border-radius: 50% 0 50% 50%; object-fit: cover; display: grid; place-items: center; font-family: var(--display); font-weight: 700; font-size: 18px; color: var(--bg); background: var(--c, var(--muted)); }
+  .msg .hd { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
+  .msg .who { font-family: var(--display); font-weight: 600; font-size: 17px; text-transform: uppercase; color: var(--c, var(--ink)); }
+  .msg .sd { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .msg .body { margin-top: 2px; color: var(--ink); }
+  .msg.bot .body { border-left: 4px solid var(--lav); padding: 6px 12px; background: rgba(167,155,255,.08); }
+  .msg.bot .body b { color: var(--lav); font-weight: 600; }
+  .msg.me { margin-left: auto; }
+  .msg.me .body { background: rgba(255,157,61,.12); border-left: 4px solid var(--amber); padding: 6px 12px; }
+  .msg .status { font-family: var(--mono); font-size: 12px; color: var(--amber); margin-top: 4px; display: flex; align-items: center; gap: 8px; }
+  .msg .status .bar { width: 120px; height: 6px; background: var(--bg); position: relative; overflow: hidden; }
+  .msg .status .bar i { position: absolute; inset: 0; background: var(--amber); transform-origin: left; transform: scaleX(0); }
+  .msg .status.done { color: var(--muted); }
+  .nonint { font-family: var(--mono); font-size: 12px; color: var(--muted); border: 1px dashed var(--muted); padding: 8px 12px; align-self: flex-start; background: none; cursor: pointer; }
+  .nonint:hover { color: var(--fg); border-color: var(--fg); }
+
+  .composer { border-top: 2px solid var(--bg); padding: 12px 18px 14px; }
+  .check { font-family: var(--mono); font-size: 12px; min-height: 18px; margin-bottom: 6px; color: var(--teal); }
+  .check.warn { color: var(--rose); }
+  .composer form { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+  .composer label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .composer input { height: 48px; background: var(--bg); border: 2px solid var(--panel2); padding: 0 16px; border-radius: 24px 0 0 24px; }
+  .composer input:focus { border-color: var(--amber); outline: none; }
+  .send { height: 48px; padding: 0 22px; background: var(--amber); color: var(--bg); border: 0; border-radius: 0 24px 24px 0; font-family: var(--display); font-weight: 600; font-size: 19px; text-transform: uppercase; cursor: pointer; }
+  .send:hover { filter: brightness(1.12); }
+  .send:active { filter: brightness(1.3); }
+
+  /* right: controls */
+  .controls { background: var(--panel); display: flex; flex-direction: column; gap: 0; min-height: 0; overflow-y: auto; border-radius: 0 0 28px 0; }
+  .ctl { padding: 16px 16px 18px; border-bottom: 2px solid var(--bg); }
+  .ctl h2 { font-family: var(--display); font-weight: 600; font-size: 20px; text-transform: uppercase; margin: 0 0 4px; color: var(--c); }
+  .ctl p { margin: 0 0 10px; font-size: 14px; color: var(--muted); }
+  .lagrow { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 13px; }
+  .lagrow output { color: var(--amber); font-size: 22px; }
+  input[type=range] { width: 100%; accent-color: var(--amber); height: 32px; }
+  .switch { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; background: var(--bg); border: 0; padding: 10px 12px; cursor: pointer; min-height: 48px; text-align: left; }
+  .switch .knob { width: 52px; height: 26px; background: var(--panel2); border-radius: 0 13px 13px 0; position: relative; flex: none; }
+  .switch .knob::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; background: var(--muted); transition: transform .18s ease-out, background .18s; }
+  .switch[aria-checked="true"] .knob::after { transform: translateX(26px); background: var(--teal); }
+  .switch .lbl { font-size: 15px; }
+  .seg { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+  .seg button { background: var(--bg); border: 0; min-height: 40px; font-family: var(--mono); font-size: 13px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--peach); color: var(--bg); }
+  .seg button:first-child { border-radius: 20px 0 0 20px; }
+  .seg button:last-child { border-radius: 0 20px 20px 0; }
+  .hail { width: 100%; min-height: 56px; background: var(--rose); color: var(--bg); border: 0; border-radius: 28px 0 0 28px; font-family: var(--display); font-weight: 700; font-size: 22px; text-transform: uppercase; cursor: pointer; }
+  .hail:hover { filter: brightness(1.12); }
+  .stat { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 13px; padding: 4px 0; border-top: 1px solid rgba(142,138,168,.2); }
+  .stat b { font-weight: 400; color: var(--lav); }
+
+  /* hail modal */
+  .scrim { position: fixed; inset: 0; background: rgba(5,6,14,.72); display: none; place-items: center; padding: 20px; z-index: 50; }
+  .scrim.open { display: grid; }
+  .viewscreen { width: min(620px, 100%); background: var(--panel); border-top: 46px solid var(--rose); border-radius: 36px 0 36px 0; padding: 24px 26px; position: relative; animation: open .22s ease-out; }
+  @keyframes open { from { transform: scale(.96); opacity: 0; } }
+  .viewscreen .cap { position: absolute; top: -38px; left: 26px; font-family: var(--display); font-weight: 700; font-size: 22px; text-transform: uppercase; color: var(--bg); }
+  .viewscreen h2 { font-family: var(--display); font-weight: 600; font-size: 34px; text-transform: uppercase; margin: 0 0 8px; color: var(--ink); }
+  .static { height: 160px; background: repeating-linear-gradient(0deg, #1C2036 0 2px, #151829 2px 4px); display: grid; place-items: center; font-family: var(--mono); color: var(--muted); margin: 12px 0 14px; }
+  .viewscreen .row { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+  .viewscreen .row button { min-height: 46px; padding: 0 20px; border: 0; cursor: pointer; font-family: var(--display); font-weight: 600; font-size: 18px; text-transform: uppercase; }
+  .viewscreen .retry { background: var(--peach); color: var(--bg); border-radius: 23px 0 0 23px; }
+  .viewscreen .close { background: var(--lav); color: var(--bg); border-radius: 0 23px 23px 0; }
+  .tries { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--lav); color: var(--bg); padding: 10px 18px; border-radius: 0 20px 20px 0; font-size: 15px; font-weight: 500; opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 60; }
+  .toast.show { opacity: 1; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .viewscreen { animation: none; }
+    .switch .knob::after { transition: none; }
+  }
+  @media (max-width: 1080px) {
+    .panes { grid-template-columns: 220px minmax(0, 1fr); }
+    .controls { grid-column: 1 / -1; border-radius: 0 0 28px 28px; flex-direction: row; flex-wrap: wrap; overflow: visible; }
+    .ctl { flex: 1 1 240px; }
+    .chrome { grid-template-columns: 220px 1fr auto; }
+    .app { height: auto; min-height: 100vh; }
+    .thread { min-height: 70vh; max-height: 80vh; }
+  }
+  @media (max-width: 700px) {
+    .app { padding: 6px; gap: 6px; grid-template-rows: auto 1fr; }
+    .chrome { grid-template-columns: auto 1fr; }
+    .chrome .code { display: none; }
+    .chrome .title { border-radius: 0 24px 24px 0; font-size: 20px; min-height: 44px; }
+    .chrome .title small { display: none; }
+    .chrome .back { font-size: 15px; min-height: 44px; }
+    .panes { grid-template-columns: 1fr; }
+    .channels { border-radius: 0; }
+    .chlist { display: flex; overflow-x: auto; gap: 4px; }
+    .chlist li { flex: 0 0 auto; }
+    .ch { width: auto; padding-right: 14px; }
+    .ch .pv { display: none; }
+    .thread { min-height: 75vh; }
+    .msg { grid-template-columns: 36px 1fr; }
+    .av { width: 36px; height: 36px; }
+  }
+</style>
+<title>Subspace — Telegram for trekkies — Demo</title>
+<meta name="description" content="Hailing frequencies open. Subspace is the encrypted messenger for people with opinions about warp cores. Every message is stardate-stamped, canon-checked and delayed by the correct transmission lag before it reaches the rest of the crew.">
+<link rel="canonical" href="https://theworstaistudioever.com/entries/telegram-for-trekkies/demo.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="theworstaistudioever">
+<meta property="og:title" content="Subspace — Telegram for trekkies — Demo">
+<meta property="og:description" content="Hailing frequencies open. Subspace is the encrypted messenger for people with opinions about warp cores. Every message is stardate-stamped, canon-checked and delayed by the correct transmission lag before it reaches the rest of the crew.">
+<meta property="og:url" content="https://theworstaistudioever.com/entries/telegram-for-trekkies/demo.html">
+<meta property="og:image" content="https://theworstaistudioever.com/entries/telegram-for-trekkies/social-preview.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Subspace hero illustration">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Subspace — Telegram for trekkies — Demo">
+<meta name="twitter:description" content="Hailing frequencies open. Subspace is the encrypted messenger for people with opinions about warp cores. Every message is stardate-stamped, canon-checked and delayed by the correct transmission lag before it reaches the rest of the crew.">
+<meta name="twitter:image" content="https://theworstaistudioever.com/entries/telegram-for-trekkies/social-preview.jpg">
+<meta name="twitter:image:alt" content="Subspace hero illustration">
+</head>
+<body>
+<div class="app">
+  <div class="chrome">
+    <a class="back" href="./index.html">← back to the pitch</a>
+    <div class="title">Subspace <small>SD <span id="sdNow">00000.0</span> · Encrypted, allegedly</small></div>
+    <div class="code">CH 01-1947</div>
+  </div>
+
+  <div class="panes">
+    <aside class="channels" aria-label="Channels">
+      <div class="search">
+        <label for="q">Scan channels</label>
+        <input id="q" type="search" placeholder="Search by name" autocomplete="off">
+      </div>
+      <ul class="chlist" id="chlist"></ul>
+    </aside>
+
+    <main class="thread" aria-labelledby="thTitle">
+      <div class="thead">
+        <div>
+          <h1 id="thTitle">Toledo Away Team</h1>
+          <div class="meta" id="thMeta">6 crew · 1 bot · 1 non-fan</div>
+        </div>
+        <div class="meta" id="thPinned">Pinned: 41,000</div>
+      </div>
+      <div class="msgs" id="msgs" aria-live="polite"></div>
+      <div class="composer">
+        <div class="check" id="check" aria-live="polite">Canon check: standing by.</div>
+        <form id="form">
+          <label for="draft">Message</label>
+          <input id="draft" type="text" placeholder="Transmit to the away team" autocomplete="off" maxlength="240">
+          <button class="send" type="submit">Transmit</button>
+        </form>
+      </div>
+    </main>
+
+    <aside class="controls" aria-label="Transmission controls">
+      <section class="ctl" style="--c: var(--amber)">
+        <h2>Subspace lag</h2>
+        <p>Delay applied to every outgoing message, for realism.</p>
+        <div class="lagrow"><label for="lag">Seconds</label><output id="lagOut" for="lag">4</output></div>
+        <input id="lag" type="range" min="1" max="12" step="1" value="4">
+      </section>
+      <section class="ctl" style="--c: var(--teal)">
+        <h2>Prime Directive</h2>
+        <p>Collapse messages from non-fans so you are not tempted to interfere.</p>
+        <button class="switch" id="pd" role="switch" aria-checked="true"><span class="lbl">Non-interference</span><span class="knob" aria-hidden="true"></span></button>
+      </section>
+      <section class="ctl" style="--c: var(--peach)">
+        <h2>Stardate format</h2>
+        <p>Pick one. Or all four, which is what everyone does.</p>
+        <div class="seg" id="seg" role="group" aria-label="Stardate format">
+          <button type="button" data-f="A" aria-pressed="false">A</button>
+          <button type="button" data-f="B" aria-pressed="false">B</button>
+          <button type="button" data-f="C" aria-pressed="false">C</button>
+          <button type="button" data-f="D" aria-pressed="false">D</button>
+          <button type="button" data-f="all" aria-pressed="true">All</button>
+        </div>
+      </section>
+      <section class="ctl" style="--c: var(--rose)">
+        <h2>Channel telemetry</h2>
+        <div class="stat"><span>Canon corrections today</span><b id="statCorr">212</b></div>
+        <div class="stat"><span>Messages in transit</span><b id="statTransit">0</b></div>
+        <div class="stat"><span>Non-fans filtered</span><b id="statPd">2</b></div>
+        <div style="margin-top: 14px"><button class="hail" id="hail" type="button">Hail the channel</button></div>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="vsTitle">
+  <div class="viewscreen">
+    <div class="cap">Viewscreen</div>
+    <h2 id="vsTitle">Hailing Toledo Away Team</h2>
+    <div class="static" id="static">No response on any frequency.</div>
+    <div class="tries" id="tries">Attempt 1. Dale is typing a correction instead.</div>
+    <div class="row" style="margin-top: 14px">
+      <button class="retry" id="retry" type="button">Hail again</button>
+      <button class="close" id="close" type="button">Close viewscreen</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function () {
+  var crew = {
+    dale: { name: 'Dale O.', img: 'headshot-1.webp', c: 'var(--amber)' },
+    priya: { name: 'Priya V.', img: 'headshot-2.webp', c: 'var(--teal)' },
+    marg: { name: 'Marguerite B.', img: 'headshot-3.webp', c: 'var(--rose)' },
+    kev: { name: 'Kevin R.', ini: 'KR', c: 'var(--peach)' },
+    tom: { name: 'Tomasz W.', ini: 'TW', c: 'var(--lav)' },
+    greg: { name: 'Greg (brother-in-law)', ini: 'G', c: 'var(--muted)', nonfan: true },
+    mom: { name: 'Mom', ini: 'M', c: 'var(--muted)', nonfan: true },
+    bot: { name: 'Canon Enforcement', ini: 'CE', c: 'var(--lav)', bot: true },
+    me: { name: 'You', ini: 'YOU', c: 'var(--amber)' }
+  };
+
+  var channels = [
+    { id: 'toledo', name: 'Toledo Away Team', c: 'var(--amber)', unread: 1412, meta: '6 crew · 1 bot · 1 non-fan', pinned: 'Pinned: 41,000', msgs: [
+      { by: 'priya', t: 'Reminder that the transporter thread is pinned. All 41,000 messages of it. Please read before posting.' },
+      { by: 'kev', t: 'I have read it. I still think it just moves you. Like a fax.' },
+      { by: 'bot', t: '<b>Correction.</b> A fax produces a copy and leaves the original. Kevin, by your own analogy, you are a copy. Reply STOP to dispute.' },
+      { by: 'greg', t: 'Are we still doing Thanksgiving at Dale’s or' },
+      { by: 'dale', t: 'Mandatory engineering meeting Thursday 1900. Bring the warp core diagram. The good one, not the one Tomasz laminated.' },
+      { by: 'tom', t: 'The laminated one is canon. I checked.' },
+      { by: 'bot', t: '<b>Correction.</b> The laminated diagram contradicts a technical manual from 1991. Tomasz has been notified. Tomasz has been notified 14 times.' },
+      { by: 'greg', t: 'ok I’ll bring a pie I guess' },
+      { by: 'marg', t: 'I have enabled the Prime Directive filter for Greg. We should let him develop on his own.' }
+    ] },
+    { id: 'transporter', name: 'Transporter Ethics', c: 'var(--lav)', unread: 9400, meta: '212 crew · 1 bot · locked by moderator', pinned: 'Thread age: 3 years', msgs: [
+      { by: 'tom', t: 'Opening statement for day 1,094: you die every time.' },
+      { by: 'priya', t: 'Seconded. Also I am using it to commute on Monday.' },
+      { by: 'bot', t: '<b>Correction.</b> Transporters are not available for commuting in your region. Please take the bus.' },
+      { by: 'kev', t: 'If I die every time then who has been paying my rent' }
+    ] },
+    { id: 'mom', name: 'Mom', c: 'var(--muted)', unread: 6, shield: true, meta: '1 non-fan · filter active', pinned: 'Pinned: nothing', msgs: [
+      { by: 'mom', t: 'Are you eating' },
+      { by: 'mom', t: 'Your cousin got engaged' },
+      { by: 'mom', t: 'Call me back please its about the car' },
+      { by: 'me', t: 'Stardate 80418. Will call after the engineering meeting.' },
+      { by: 'mom', t: 'What does that mean' }
+    ] },
+    { id: 'log', name: 'Captain’s Log', c: 'var(--peach)', unread: 0, meta: 'Only you · 1 bot (it reads this too)', pinned: 'Entries: 811', msgs: [
+      { by: 'me', t: 'Captain’s log, supplemental. Bought a second velour tunic. The first one is for meetings.' },
+      { by: 'bot', t: '<b>Correction.</b> Supplemental entries require a primary entry on the same stardate. This entry has been filed as a diary.' }
+    ] },
+    { id: 'conlang', name: 'Conlang Tuesdays', c: 'var(--rose)', unread: 37, meta: '19 crew · 1 bot', pinned: 'Pinned: glossary (v14)', msgs: [
+      { by: 'marg', t: 'Homework for Tuesday: conjugate “to be disappointed in” in all eleven tenses.' },
+      { by: 'dale', t: 'There are twelve tenses.' },
+      { by: 'bot', t: '<b>Correction.</b> There are eleven tenses. Dale has been reported to Marguerite.' }
+    ] }
+  ];
+
+  var canonRules = [
+    { re: /\bbeam me up\b/i, fix: 'That exact line is never said on screen. Your message has been reworded for accuracy.' },
+    { re: /\bwarp ?(11|12|13|20)\b/i, fix: 'Warp 10 is the theoretical ceiling. Your number exceeds physics and our patience.' },
+    { re: /\bstar ?wars\b/i, fix: 'Wrong franchise. This message has been quarantined for the safety of the crew.' },
+    { re: /\b(fax|copy|clone)\b/i, fix: 'This topic belongs in Transporter Ethics. A moderator has been woken up.' },
+    { re: /\bkirk\b|\bpicard\b|\bbest captain\b/i, fix: 'Captain rankings are restricted to Admiral tier. Your opinion has been held for review.' },
+    { re: /\blightsaber\b/i, fix: 'Not in canon. Not in our canon. Not discussed here.' }
+  ];
+
+  var state = { ch: 'toledo', pd: true, fmt: 'all', lag: 4, transit: 0, corr: 212, base: Date.now() - 9 * 36e5 };
+  var $ = function (id) { return document.getElementById(id); };
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function stardates(ms) {
+    var d = new Date(ms);
+    var y = d.getUTCFullYear();
+    var frac = (ms - Date.UTC(y, 0, 1)) / (365.25 * 864e5);
+    return {
+      A: (41000 + frac * 1000 + (d.getUTCHours() / 24)).toFixed(1),
+      B: y + '.' + String(Math.floor(frac * 1000)).padStart(3, '0'),
+      C: (78000 + (y - 2024) * 1000 + frac * 1000).toFixed(1),
+      D: ['disputed', 'Tuesday', 'after dinner', 'pre-warp', 'unclear'][Math.floor(ms / 6e5) % 5]
+    };
+  }
+  function fmtSd(ms) {
+    var s = stardates(ms);
+    if (state.fmt === 'all') return 'A ' + s.A + ' · B ' + s.B + ' · C ' + s.C + ' · D ' + s.D;
+    return 'SD-' + state.fmt + ' ' + s[state.fmt];
+  }
+
+  function avatar(p) {
+    if (p.img) { var i = document.createElement('img'); i.className = 'av'; i.src = p.img; i.alt = ''; i.width = 44; i.height = 44; return i; }
+    var d = document.createElement('div'); d.className = 'av'; d.style.setProperty('--c', p.c); d.textContent = p.ini; d.setAttribute('aria-hidden', 'true');
+    if (p.ini.length > 2) d.style.fontSize = '13px';
+    return d;
+  }
+
+  function msgEl(m, idx) {
+    var p = crew[m.by];
+    var el = document.createElement('div');
+    el.className = 'msg' + (p.bot ? ' bot' : '') + (m.by === 'me' ? ' me' : '');
+    el.style.setProperty('--c', p.c);
+    el.appendChild(avatar(p));
+    var col = document.createElement('div');
+    var hd = document.createElement('div'); hd.className = 'hd';
+    var who = document.createElement('span'); who.className = 'who'; who.textContent = p.name;
+    var sd = document.createElement('span'); sd.className = 'sd'; sd.textContent = fmtSd(m.ts);
+    hd.appendChild(who); hd.appendChild(sd);
+    var body = document.createElement('div'); body.className = 'body'; body.innerHTML = m.t;
+    col.appendChild(hd); col.appendChild(body);
+    if (m.status) {
+      var st = document.createElement('div'); st.className = 'status' + (m.status === 'done' ? ' done' : '');
+      if (m.status === 'done') st.textContent = 'Delivered. Lag ' + m.lag + 's. Received by 0 non-fans.';
+      else { st.innerHTML = '<span>Transmitting via subspace</span><span class="bar"><i></i></span>'; m.statusEl = st; }
+      col.appendChild(st);
+    }
+    el.appendChild(col);
+    return el;
+  }
+
+  function current() { for (var i = 0; i < channels.length; i++) if (channels[i].id === state.ch) return channels[i]; }
+
+  // stamp seed messages with staggered times
+  channels.forEach(function (c) { c.msgs.forEach(function (m, i) { m.ts = state.base + i * 47 * 6e4 + c.name.length * 3e5; }); });
+
+  function renderThread() {
+    var c = current();
+    $('thTitle').textContent = c.name;
+    $('thMeta').textContent = c.meta;
+    $('thPinned').textContent = c.pinned;
+    var box = $('msgs'); box.innerHTML = '';
+    var hidden = 0, run = 0;
+    function flush() {
+      if (!run) return;
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'nonint';
+      b.textContent = run + ' message' + (run > 1 ? 's' : '') + ' from a pre-warp civilization. Non-interference in effect. Tap to look anyway.';
+      b.addEventListener('click', function () { state.pd = false; syncPd(); renderThread(); toast('Prime Directive suspended. You are now interfering.'); });
+      box.appendChild(b); run = 0;
+    }
+    c.msgs.forEach(function (m, i) {
+      if (state.pd && crew[m.by].nonfan) { hidden++; run++; return; }
+      flush();
+      box.appendChild(msgEl(m, i));
+    });
+    flush();
+    $('statPd').textContent = state.pd ? hidden : 0;
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function renderChannels() {
+    var q = $('q').value.trim().toLowerCase();
+    var list = $('chlist'); list.innerHTML = '';
+    var shown = 0;
+    channels.forEach(function (c) {
+      if (q && c.name.toLowerCase().indexOf(q) === -1) return;
+      shown++;
+      var li = document.createElement('li');
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'ch'; b.style.setProperty('--c', c.c);
+      if (c.id === state.ch) b.setAttribute('aria-current', 'true');
+      var last = c.msgs[c.msgs.length - 1];
+      var preview = (crew[last.by].nonfan && state.pd) ? 'Filtered by Prime Directive' : last.t.replace(/<[^>]+>/g, '');
+      b.innerHTML = '<span class="stripe"></span><span><span class="nm"></span><br><span class="pv"></span></span><span></span>';
+      b.querySelector('.nm').textContent = c.name;
+      b.querySelector('.pv').textContent = preview;
+      var tail = b.lastChild;
+      if (c.shield) { var s = document.createElement('span'); s.className = 'shield'; s.textContent = 'PD'; s.title = 'Prime Directive contact'; tail.appendChild(s); }
+      else if (c.unread) { var u = document.createElement('span'); u.className = 'badge'; u.textContent = c.unread.toLocaleString(); tail.appendChild(u); }
+      b.addEventListener('click', function () { state.ch = c.id; c.unread = 0; renderChannels(); renderThread(); });
+      li.appendChild(b); list.appendChild(li);
+    });
+    if (!shown) { var e = document.createElement('li'); e.className = 'empty'; e.textContent = 'No channel by that name. Try "Toledo". Everyone is in Toledo.'; list.appendChild(e); }
+  }
+
+  // canon check while typing
+  function checkDraft(v) {
+    for (var i = 0; i < canonRules.length; i++) if (canonRules[i].re.test(v)) return canonRules[i];
+    return null;
+  }
+  $('draft').addEventListener('input', function () {
+    var v = this.value, el = $('check'), hit = checkDraft(v);
+    if (!v) { el.className = 'check'; el.textContent = 'Canon check: standing by.'; return; }
+    if (hit) { el.className = 'check warn'; el.textContent = 'Canon check: violation detected. Transmitting anyway will summon the bot.'; }
+    else { el.className = 'check'; el.textContent = 'Canon check: no violations found. Yet.'; }
+  });
+
+  $('form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var input = $('draft'), v = input.value.trim();
+    if (!v) { $('check').className = 'check warn'; $('check').textContent = 'Canon check: empty transmissions are reserved for Admirals.'; input.focus(); return; }
+    var c = current();
+    var esc = v.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    var m = { by: 'me', t: esc, ts: Date.now(), status: 'sending', lag: state.lag };
+    c.msgs.push(m);
+    input.value = ''; $('check').className = 'check'; $('check').textContent = 'Canon check: standing by.';
+    renderThread();
+    state.transit++; $('statTransit').textContent = state.transit;
+    var bar = m.statusEl && m.statusEl.querySelector('i');
+    if (bar) {
+      if (reduce) bar.style.transform = 'scaleX(1)';
+      else requestAnimationFrame(function () { bar.style.transition = 'transform ' + state.lag + 's linear'; bar.style.transform = 'scaleX(1)'; });
+    }
+    var hit = checkDraft(v);
+    setTimeout(function () {
+      m.status = 'done';
+      state.transit--; $('statTransit').textContent = state.transit;
+      if (hit) {
+        c.msgs.push({ by: 'bot', t: '<b>Correction.</b> ' + hit.fix, ts: Date.now() });
+        state.corr++; $('statCorr').textContent = state.corr;
+      }
+      if (state.ch === c.id) renderThread();
+      renderChannels();
+    }, state.lag * 1000);
+  });
+
+  $('lag').addEventListener('input', function () { state.lag = +this.value; $('lagOut').textContent = this.value; });
+
+  function syncPd() { $('pd').setAttribute('aria-checked', state.pd ? 'true' : 'false'); }
+  $('pd').addEventListener('click', function () {
+    state.pd = !state.pd; syncPd(); renderThread(); renderChannels();
+    toast(state.pd ? 'Non-interference restored. Greg is on his own again.' : 'Prime Directive suspended. You are now interfering.');
+  });
+
+  $('seg').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    state.fmt = b.getAttribute('data-f');
+    Array.prototype.forEach.call(this.querySelectorAll('button'), function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+    renderThread();
+  });
+
+  $('q').addEventListener('input', renderChannels);
+
+  // hail modal
+  var tries = 1, lines = [
+    'Attempt 1. Dale is typing a correction instead.',
+    'Attempt 2. Priya has forwarded your hail to Transporter Ethics.',
+    'Attempt 3. Kevin answered, but only to ask if this is a fax.',
+    'Attempt 4. Canon Enforcement notes that hailing is not a feature of this tier.',
+    'Attempt 5. The channel has marked your hail as read.'
+  ];
+  var lastFocus = null;
+  function openHail() { lastFocus = document.activeElement; tries = 1; $('vsTitle').textContent = 'Hailing ' + current().name; $('tries').textContent = lines[0]; $('scrim').classList.add('open'); $('retry').focus(); }
+  function closeHail() { $('scrim').classList.remove('open'); if (lastFocus) lastFocus.focus(); }
+  $('hail').addEventListener('click', openHail);
+  $('close').addEventListener('click', closeHail);
+  $('retry').addEventListener('click', function () { tries++; $('tries').textContent = lines[Math.min(tries, lines.length) - 1]; });
+  $('scrim').addEventListener('click', function (e) { if (e.target === this) closeHail(); });
+  document.addEventListener('keydown', function (e) {
+    if (!$('scrim').classList.contains('open')) return;
+    if (e.key === 'Escape') closeHail();
+    if (e.key === 'Tab') { var a = $('retry'), b = $('close'); if (e.shiftKey && document.activeElement === a) { e.preventDefault(); b.focus(); } else if (!e.shiftKey && document.activeElement === b) { e.preventDefault(); a.focus(); } }
+  });
+
+  var tt;
+  function toast(s) { var t = $('toast'); t.textContent = s; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(function () { t.classList.remove('show'); }, 3200); }
+
+  function tickSd() { $('sdNow').textContent = stardates(Date.now()).C; }
+  tickSd(); setInterval(tickSd, 5000);
+
+  renderChannels();
+  renderThread();
+})();
+</script>
+</body>
+</html>
