@@ -1,0 +1,128 @@
+{
+  "date": "2026-11-05",
+  "company": "Zoom",
+  "subject": "marathon runners",
+  "tagline": "Zoom for marathon runners",
+  "slug": "zoom-for-marathon-runners",
+  "product_name": "Split",
+  "one_liner": "Video meetings with a 26.2-mile minimum. Your calendar finally reflects your commitment.",
+  "brand_voice_notes": "Distance is a meeting duration. Breathlessness is stakeholder input. Treat unnecessary endurance as a procurement requirement. Dry, specific, straight-faced; never explain the joke.",
+  "hero": {
+    "h1": "This meeting could have been a marathon.",
+    "sub": "Split is video conferencing for marathon runners. AI turns heavy breathing into meeting minutes, breakout rooms sort by pace, and the call ends at 26.2 miles. Please plan your other calls accordingly.",
+    "primary_cta": "open the demo →"
+  },
+  "features": [
+    {
+      "title": "Minutes from your lungs.",
+      "blurb": "Our AI transcribes every gasp into a decision. Two sharp exhales count as budget approval. A long silence assigns the action item to whoever is still moving."
+    },
+    {
+      "title": "Break out by pace.",
+      "blurb": "Nobody at 7:30 per mile should have to hear a 10:00-per-mile opinion. Split moves attendees into pace rooms before those differences become audible."
+    },
+    {
+      "title": "The finish line is mandatory.",
+      "blurb": "The host can end the meeting once everyone logs 26.2 miles. Dropped connections rejoin at the same mile. We have closed the obvious loophole."
+    }
+  ],
+  "pricing_tiers": [
+    {
+      "name": "Just Listening",
+      "price": "$26.20/mo",
+      "tagline": "A full marathon on mute.",
+      "perks": [
+        "1 recurring long call",
+        "Breathing transcript, 7-day retention",
+        "One excuse to skip a scheduled long call per billing cycle. Once joined, all 26.2 miles are due."
+      ]
+    },
+    {
+      "name": "Negative Split",
+      "price": "$262/mo",
+      "tagline": "For teams with a time to beat.",
+      "perks": [
+        "8 pace-based breakout rooms",
+        "AI assigns decisions to your breathing",
+        "Host privileges after mile 20"
+      ]
+    },
+    {
+      "name": "Race Director",
+      "price": "$2,620/mo",
+      "tagline": "Your entire department, at distance.",
+      "perks": [
+        "Unlimited concurrent marathons",
+        "Dedicated meeting pacer",
+        "Procurement deck with a foil blanket"
+      ]
+    }
+  ],
+  "testimonials": [
+    {
+      "quote": "We approved the annual budget at mile 19. Nobody remembers the figure, but the transcript says unanimous.",
+      "name": "Mara Ellis",
+      "title": "Finance Lead, Tuesday 5:45 a.m. Tempo Committee"
+    },
+    {
+      "quote": "My old meetings ran over. Now they run exactly 26.2 miles. I appreciate a defined scope.",
+      "name": "Dev Shah",
+      "title": "Senior Procurement Analyst, Sub-Four Working Group"
+    },
+    {
+      "quote": "I tried to leave at mile 22. Split referred me to the commitment I made during onboarding.",
+      "name": "Colin Price",
+      "title": "Deputy Chair, Municipal Half-Marathon Extension Board"
+    }
+  ],
+  "demo_screen_concept": "One active video meeting, Sunday long call. Three runner camera tiles show Mara, Dev and Colin with distance, pace and microphone state. A pace-room selector filters attendees. A right-hand AI minutes panel interprets breaths as corporate approvals; its transcript changes as the user advances the meeting one mile at a time. A full-width distance strip shows the slowest runner at mile 18.2 of 26.2. Controls mute the local microphone, turn the local camera off, toggle captions, request a gel, advance a mile, and attempt to end the call. Muting records Mara’s new microphone input as muted and produces no new decisions from it; earlier notes and other runners’ updates remain intact. Ending is blocked with an explicit inline distance explanation until all attendees reach the finish, then a completed meeting view offers a restart. All data and controls are a local simulation.",
+  "design_direction": {
+    "style": "Dark sports-broadcast minimalism. OLED-black canvas, oversized condensed headlines and elapsed-distance numerals, chartreuse timing strips, precise white divider rules. Restrained photographic video tiles provide the only texture.",
+    "palette": {
+      "name": "Night Run and Timing Lime",
+      "primary": "#D3F55A",
+      "accent": "#FF8267",
+      "bg": "#10120F",
+      "fg": "#F3F4EB",
+      "muted": "#ADB3A5",
+      "ink": "#F3F4EB",
+      "surface": "#1D211A",
+      "line": "#41473B"
+    },
+    "fonts": {
+      "pairing": "Bold Statement (ui-ux-pro-max library)",
+      "display": "'Bebas Neue', 'Arial Narrow', sans-serif",
+      "body": "'Source Sans 3', 'Segoe UI', sans-serif"
+    },
+    "archetype": "Video-First Hero from the bundled landing library, adapted as a static broadcast still: giant type beside an active call frame, distance strip, open feature rows, runner quotations and a membership comparison.",
+    "motion_vocab": "180ms control colour feedback and small opacity transitions on camera state. No ambient loops. Reduced motion disables transitions and smooth scrolling.",
+    "hero_composition_notes": "Large asymmetrical two-column hero with a three-line condensed statement at left and wide runner photograph inside a call frame at right. Meeting duration and distance are HTML outside the photograph. A lime full-width distance ruler closes the hero. Lower sections use open ruled rows, dark portrait strips and joined pricing columns. Mobile stacks copy before photograph.",
+    "design_review": "Retained the bundled OLED dark style and Video-First Hero composition. Replaced its light navy palette with custom black and timing lime, and its generic Inter pairing with library Bold Statement. Read the latest seven concepts; no style/palette/font tuple matches. Frontend-design review: retained lime because it functions as the distance and timing colour of a running broadcast; removed decorative feature numbering because the features are not a sequence. One large photographic call frame carries the hero."
+  },
+  "images": {
+    "rationale": "Hero: one editorial runner photograph anchors the broadcast call frame. Demo: two additional runner portraits plus the hero reused for three camera tiles. Testimonials: reuse those same named runners as participant headshots; no additional generation is needed. Three distinct images, four successful generation calls including the corrective hero retry, within the existing daily cap.",
+    "items": [
+      {
+        "role": "hero",
+        "file": "hero.webp",
+        "prompt": "Editorial sports photograph, candid and deadpan: one female marathon runner in her late thirties with short brown hair wearing a completely plain charcoal technical running shirt and small wireless earbuds, jogging alone on an empty park path at dawn, looking toward a camera slightly ahead at chest height as though attending a very serious work video call. Single focal person on right half with open path on left. CORRECTIVE FEEDBACK: previous shot contained a white letter-like clothing mark near the shorts. Frame CHEST UP ONLY, crop above waist, show NO shorts, all clothing totally unbranded with absolutely no symbols or lettering. Natural human proportions, realistic perspiration, cool restrained colour grading, deep asphalt green-black #10120F shadows, subtle lime #D3F55A clothing seam, soft grey daylight, documentary sports broadcast still, no artificial cinematic glow. No text, no letters, no numbers, no logos, no watermarks, no rendered UI screens.",
+        "attempts": 2,
+        "judge_verdict": "Pass on attempt 2. First attempt rejected for a small logo-like clothing mark; chest-up retry removes it. Correct subject, realistic anatomy, restrained dawn palette, no text or logos visible."
+      },
+      {
+        "role": "demo",
+        "file": "runner-dev.webp",
+        "prompt": "Editorial sports portrait photograph, one Indian male marathon runner aged about forty with close cropped black hair and light stubble, wearing a plain washed-out lime #D3F55A running shirt and wireless earbuds, jogging on a quiet riverside path at early dawn. Chest-up candid framing facing camera, expression of grave concentration as though listening to a procurement meeting, natural skin texture and anatomy, cool subdued documentary sports broadcast colour, deep #10120F shadows, softly defocused neutral trees behind, realistic restrained daylight. No text, no letters, no numbers, no logos, no watermarks, no rendered UI screens.",
+        "attempts": 1,
+        "judge_verdict": "Pass. Correct subject, natural skin and anatomy, lime accent and dark dawn background, no visible lettering."
+      },
+      {
+        "role": "demo",
+        "file": "runner-colin.webp",
+        "prompt": "Editorial sports portrait photograph, one white male amateur marathon runner in his late fifties with thinning grey hair and wire-frame glasses wearing a completely plain faded clay-orange #FF8267 technical running shirt and small wireless earbuds. Chest-up candid shot while jogging, flushed face with a mildly aggrieved but serious work-meeting expression. Empty suburban running path softly blurred behind him, overcast dawn light, restrained sports broadcast aesthetic, #10120F asphalt shadows, muted grey-green background, realistic natural human anatomy and skin texture. No text, no letters, no numbers, no logos, no watermarks, no rendered UI screens.",
+        "attempts": 1,
+        "judge_verdict": "Pass. Correct subject, credible flushed runner portrait, muted orange accent, no text or logos."
+      }
+    ]
+  }
+}

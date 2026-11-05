@@ -1,0 +1,35 @@
+Daily startup run: 2026-11-05 UTC
+Rolled: Zoom for marathon runners
+Slug: zoom-for-marathon-runners
+Rerolls: 0
+PRNG: date character-code sum * 104729 modulo 2^31; LCG (1103515245 * state + 12345) modulo 2^31; scaled indices into current company and subject arrays.
+Subject check: marathon runners are a relatable type of person.
+Product: Split. Video meetings with a 26.2-mile minimum.
+Skills applied from pipelines/codex-v1/skills: anti-ai-slop before concept, landing and demo copy; ui-ux-pro-max with bundled design-system, typography and UX searches; frontend-design for both pages.
+Design: Dark sports-broadcast minimalism. OLED-black canvas, oversized condensed headlines and elapsed-distance numerals, chartreuse timing strips, precise white divider rules. Restrained photographic video tiles provide the only texture.
+Palette: {"name": "Night Run and Timing Lime", "primary": "#D3F55A", "accent": "#FF8267", "bg": "#10120F", "fg": "#F3F4EB", "muted": "#ADB3A5", "ink": "#F3F4EB", "surface": "#1D211A", "line": "#41473B"}
+Fonts: {"pairing": "Bold Statement (ui-ux-pro-max library)", "display": "'Bebas Neue', 'Arial Narrow', sans-serif", "body": "'Source Sans 3', 'Segoe UI', sans-serif"}
+Anti-sameness: reviewed seven entries preceding this run (2026-10-29 through 2026-11-04); no matching style/palette/font tuple.
+Images: Hero: one editorial runner photograph anchors the broadcast call frame. Demo: two additional runner portraits plus the hero reused for three camera tiles. Testimonials: reuse those same named runners as participant headshots; no additional generation is needed. Three distinct images, four successful generation calls including the corrective hero retry, within the existing daily cap.
+hero.webp: role=hero; attempts=2; vision verdict=Pass on attempt 2. First attempt rejected for a small logo-like clothing mark; chest-up retry removes it. Correct subject, realistic anatomy, restrained dawn palette, no text or logos visible.; bytes=69766
+runner-dev.webp: role=demo; attempts=1; vision verdict=Pass. Correct subject, natural skin and anatomy, lime accent and dark dawn background, no visible lettering.; bytes=41708
+runner-colin.webp: role=demo; attempts=1; vision verdict=Pass. Correct subject, credible flushed runner portrait, muted orange accent, no text or logos.; bytes=50162
+Warnings / near-misses: first hero contained a tiny logo-like clothing mark. Rejected and regenerated once with chest-up framing; replacement passed. No missing-key or cap skip. No other warnings.
+Landing and interactive demo completed with local images and inline CSS/JS. Demo interactions: pace-room filtering, mock microphone/camera/captions, AI/raw transcript, gel request log, one-mile progression, distance-based end gate and reset. Still photographs and sample data explicitly identified.
+Gallery rebuilt from all 143 concept files; existing entries retained. Root metadata and responsive navigation contract preserved. Machine fixtures untouched.
+Metadata: python3 scripts/build-entry-metadata.py site zoom-for-marathon-runners PASSED. Both static heads and local 1200x630 social-preview.jpg generated.
+Validation: scripts/validate-entry.sh site zoom-for-marathon-runners PASSED (exit 0), including metadata check.
+History: appended one record; all prior records preserved and compared for equality.
+Checkpoint complete before optional screenshot work. Host QA loop and reports untouched. No git, installs, connected apps, delegation, notifications or deployment.
+Optional visual check: two full-page captures through scripts/shoot-site.sh with existing Chromium and existing Playwright 1.60.0 CLI. No installation. Outputs: docs/design-catalogue/zoom-for-marathon-runners-landing.png and zoom-for-marathon-runners-demo.png. Demo showed no visible layout breakage. Landing capture exposed the HTML height attribute overriding the intended hero aspect ratio; made one corrective CSS edit (height:auto on the hero image). No further captures, within the hard capture cap. Metadata regenerated and static validation PASSED again after the correction. No hero copy changes. Screenshots document the pre-correction state.
+codex QA: review 1, repairs used 0/2
+codex QA: review 2, repairs used 1/2
+codex QA: passed after 1 repair attempt(s)
+RUN_COMPLETE: zoom-for-marathon-runners
+codex: completed with QA in 736.6s; private reports: /home/chaperzcommand/github/theworstaistudioever/.tmp-codex/2026-11-05-e4a7xm8f
+[2026-11-05T08:12:19Z] new entry: zoom-for-marathon-runners
+entry-metadata [zoom-for-marathon-runners]: wrote landing + demo metadata
+entry-metadata [zoom-for-marathon-runners]: OK
+validate-entry [zoom-for-marathon-runners]: OK
+build-seo: wrote sitemap.xml, robots.txt, llms.txt, feed.json, latest.json for 143 entries (domain theworstaistudioever.com)
+[2026-11-05T08:12:20Z] committing: Zoom for marathon runners
