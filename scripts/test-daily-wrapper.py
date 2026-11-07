@@ -19,7 +19,7 @@ class DailyWrapperTest(unittest.TestCase):
         self.root = Path(self.temp.name)
         for directory in ["scripts", "site/entries", "state", "pipelines/codex-v1", "home/.local/bin"]:
             (self.root / directory).mkdir(parents=True)
-        for name in ["run-daily.sh", "run-pipeline-agent.py", "pipeline_qa.py", "check-entry-browser.cjs", "build-seo.sh", "build-entry-metadata.py", "validate-entry.sh"]:
+        for name in ["run-daily.sh", "run-pipeline-agent.py", "pipeline_qa.py", "check-entry-browser.cjs", "build-seo.sh", "build-entry-metadata.py", "validate-entry.sh", "validate-brand-kit.py"]:
             shutil.copy2(ROOT / "scripts" / name, self.root / "scripts" / name)
         shutil.copy2(ROOT / "site/logo.png", self.root / "site/logo.png")
         (self.root / "site/CNAME").write_text("example.com\n")

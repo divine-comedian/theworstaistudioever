@@ -95,6 +95,23 @@ document.querySelector('#result').textContent=input.value;input.value='';
         for viewport in report["viewports"]:
             self.assertEqual(viewport["assertions"][1]["observed"], "")
 
+    def test_native_playback_progress_value_can_be_asserted(self):
+        (self.entry / "demo.html").write_text('''<html><body>
+<progress id="progress" value="1" max="4"></progress><button id="next">Next scene</button>
+<script>document.querySelector('#next').onclick=()=>{
+document.querySelector('#progress').value+=1;
+};</script></body></html>''')
+        self.plan.write_text(json.dumps({"demo_test": {
+            "actions": [{"action": "click", "selector": "#next", "value": "-"}],
+            "assertions": [{"check": "value", "selector": "#progress", "expected": "2"}],
+        }}))
+        result, report = self.invoke(interaction=True)
+        self.assertEqual(result.returncode, 0, result.stderr + json.dumps(report))
+        self.assertTrue(report["passed"])
+        for viewport in report["viewports"]:
+            self.assertEqual(viewport["assertions"][0]["before"], "1")
+            self.assertEqual(viewport["assertions"][0]["observed"], "2")
+
     def test_static_heading_assertion_cannot_claim_successful_interaction(self):
         plan = json.loads(self.plan.read_text())
         plan["demo_test"]["assertions"] = [{"check": "text", "selector": "h1", "expected": "Requests"}]

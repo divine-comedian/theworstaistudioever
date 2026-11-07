@@ -110,7 +110,12 @@ async function readAssertion(page, assertion) {
     case 'visible': case 'hidden': return String(await locator.first().isVisible());
     case 'count': return String(await locator.count());
     case 'text': return await locator.first().textContent({timeout: 1000}).catch(() => null);
-    case 'value': return await locator.first().inputValue({timeout: 1000}).catch(() => null);
+    // Native progress/meter widgets expose numeric .value, too. inputValue()
+    // only accepts input, textarea and select elements.
+    case 'value': return await locator.first().evaluate(
+      element => 'value' in element ? String(element.value) : null,
+      undefined, {timeout: 1000},
+    ).catch(() => null);
     default: throw new Error(`Unknown assertion: ${assertion.check}`);
   }
 }

@@ -6,6 +6,10 @@ Read pipelines/codex-v1/skills/anti-ai-slop/SKILL.md for copy changes. Use the
 frozen frontend-design and ui-ux-pro-max skills only when fixing a reported UI
 defect. Preserve the selected design direction, composition, palette, fonts,
 product identity, main demo premise, existing images, and successful jokes.
+When present, preserve the brand kit and logo identity too. Correct reported
+placement, scale, contrast, favicon references, diagram labels and responsive
+graphic layout in the allowed HTML files using the existing assets. Do not
+drop brand_kit or its requirements to bypass validation.
 
 Fix every actionable reported defect. Resolve unclear metaphors by choosing
 the established product world and making the connection understandable on a

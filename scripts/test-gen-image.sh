@@ -17,7 +17,7 @@ bad() { echo "FAIL: $1"; FAIL=$((FAIL + 1)); }
 touch "$TMP/empty.env"
 mkdir -p "$TMP/state"
 run_gen() {
-  env -u GEMINI_API_KEY -u GEMINI_IMAGE_MODEL \
+  env -u GEMINI_API_KEY -u GEMINI_IMAGE_MODEL -u GEMINI_IMAGE_DAILY_LIMIT \
     GEN_IMAGE_ENV_FILE="$TMP/empty.env" GEN_IMAGE_STATE_DIR="$TMP/state" \
     "$@" "$GEN" "${ARGS[@]}"
 }
@@ -72,18 +72,39 @@ else
 fi
 
 # Test 6: counter at cap refuses with IMAGEGEN_CAP_REACHED, no increment
-echo 10 > "$CAP_FILE"
+echo 24 > "$CAP_FILE"
 ARGS=("prompt" "1:1" "$TMP/out.png")
 if ERR="$(run_gen env GEMINI_API_KEY=dummy 2>&1)"; then
   bad "cap reached refuses"
 else
-  if grep -q "IMAGEGEN_CAP_REACHED" <<<"$ERR" && [[ "$(cat "$CAP_FILE")" == "10" ]]; then
+  if grep -q "IMAGEGEN_CAP_REACHED" <<<"$ERR" && [[ "$(cat "$CAP_FILE")" == "24" ]]; then
     ok "cap reached refuses without incrementing"
   else
     bad "cap reached refuses without incrementing (err: $ERR, count: $(cat "$CAP_FILE"))"
   fi
 fi
 rm -f "$CAP_FILE"
+
+# A configured budget is enforced independently of the default.
+echo 3 > "$CAP_FILE"
+if ERR="$(run_gen env GEMINI_API_KEY=dummy GEMINI_IMAGE_DAILY_LIMIT=3 2>&1)"; then
+  bad "custom daily cap refuses"
+elif [[ "$ERR" == *"IMAGEGEN_CAP_REACHED (3/3"* && "$(cat "$CAP_FILE")" == "3" ]]; then
+  ok "custom daily cap refuses without incrementing"
+else
+  bad "custom daily cap diagnostic or count incorrect ($ERR)"
+fi
+rm -f "$CAP_FILE"
+
+for LIMIT in 0 -1 2.5 unlimited '' 024; do
+  if ERR="$(run_gen env GEMINI_API_KEY=dummy GEMINI_IMAGE_DAILY_LIMIT="$LIMIT" 2>&1)"; then
+    bad "invalid daily limit '$LIMIT' accepted"
+  elif [[ "$ERR" == *"GEMINI_IMAGE_DAILY_LIMIT must be a positive integer"* && ! -e "$CAP_FILE" ]]; then
+    ok "invalid daily limit '$LIMIT' rejected before HTTP or accounting"
+  else
+    bad "invalid daily limit '$LIMIT' diagnostic or accounting incorrect ($ERR)"
+  fi
+done
 
 # Test 7: unsupported aspect ratio exits non-zero
 ARGS=("prompt" "7:3" "$TMP/out.png" --dry-run)
@@ -118,10 +139,15 @@ cat > "$SHIM/curl" <<'SHIMEOF'
 # Honours `-o <file>` and prints the code, like `curl -o F -w '%{http_code}'`.
 OUT=""
 prev=""
+REQUEST=""
 for a in "$@"; do
   [[ "$prev" == "-o" ]] && OUT="$a"
+  [[ "$prev" == "--data-binary" ]] && REQUEST="${a#@}"
   prev="$a"
 done
+if [[ -n "${SHIM_CAPTURE_BODY:-}" && -n "$REQUEST" ]]; then
+  cp "$REQUEST" "$SHIM_CAPTURE_BODY"
+fi
 N="$(cat "$SHIM_STATE" 2>/dev/null || echo 0)"
 N=$((N + 1))
 echo "$N" > "$SHIM_STATE"
@@ -189,6 +215,74 @@ else
   fi
 fi
 rm -f "$CAP_FILE"
+
+# The previous 10-call ceiling no longer prevents additional branding assets.
+echo 10 > "$CAP_FILE"
+echo 0 > "$TMP/shim.state"
+ARGS=("prompt" "1:1" "$TMP/expanded-budget.png")
+if run_gen env PATH="$SHIM:$PATH" SHIM_CODES=200 SHIM_STATE="$TMP/shim.state" \
+    GEMINI_API_KEY=dummy >/dev/null 2>&1 && [[ "$(cat "$CAP_FILE")" == "11" ]]; then
+  ok "default budget permits calls beyond the old 10-call cap"
+else
+  bad "default budget permits calls beyond the old 10-call cap"
+fi
+
+# Two callers racing for the final slot must not overspend the cap.
+echo 23 > "$CAP_FILE"
+echo 0 > "$TMP/shim.state"
+ARGS=("prompt" "1:1" "$TMP/concurrent.png")
+run_gen env PATH="$SHIM:$PATH" SHIM_CODES=200 SHIM_STATE="$TMP/shim.state" \
+  GEMINI_API_KEY=dummy >"$TMP/caller1.log" 2>&1 &
+CALLER1=$!
+run_gen env PATH="$SHIM:$PATH" SHIM_CODES=200 SHIM_STATE="$TMP/shim.state" \
+  GEMINI_API_KEY=dummy >"$TMP/caller2.log" 2>&1 &
+CALLER2=$!
+STATUS1=0; wait "$CALLER1" || STATUS1=$?
+STATUS2=0; wait "$CALLER2" || STATUS2=$?
+if [[ "$((STATUS1 + STATUS2))" == "3" && "$(cat "$CAP_FILE")" == "24" && "$(cat "$TMP/shim.state")" == "1" ]]; then
+  ok "concurrent callers share the final budget slot safely"
+else
+  bad "concurrent budget (statuses: $STATUS1 $STATUS2, count: $(cat "$CAP_FILE"), requests: $(cat "$TMP/shim.state"))"
+fi
+
+# References are sent inline, and large payloads travel through a request file.
+python3 - "$TMP/reference.png" <<'PY'
+from PIL import Image
+import os, sys
+Image.frombytes('RGB', (300, 300), os.urandom(300*300*3)).save(sys.argv[1])
+PY
+rm -f "$CAP_FILE"
+echo 0 > "$TMP/shim.state"
+ARGS=("use this exact logo" "1:1" "$TMP/referenced.png" --reference "$TMP/reference.png")
+if run_gen env PATH="$SHIM:$PATH" SHIM_CODES=200 SHIM_STATE="$TMP/shim.state" \
+    SHIM_CAPTURE_BODY="$TMP/request.json" GEMINI_API_KEY=dummy >/dev/null 2>&1 \
+    && jq -e '.contents[0].parts[1].inlineData | .mimeType == "image/png" and (.data | length > 131072)' "$TMP/request.json" >/dev/null \
+    && [[ "$(cat "$CAP_FILE")" == "1" ]]; then
+  ok "reference image payload above argument-size limit reaches HTTP through a file"
+else
+  bad "reference image payload above argument-size limit reaches HTTP through a file"
+fi
+rm -f "$CAP_FILE"
+ARGS=("prompt" "1:1" "$TMP/out.png" --reference "$TMP/reference.png" --dry-run)
+if OUT="$(run_gen env 2>/dev/null)" \
+    && jq -e '.body.contents[0].parts[1].inlineData.mimeType == "image/png"' <<<"$OUT" >/dev/null \
+    && [[ ! -e "$CAP_FILE" ]]; then
+  ok "reference dry-run needs no key and does not charge the cap"
+else
+  bad "reference dry-run needs no key and does not charge the cap"
+fi
+ARGS=("prompt" "1:1" "$TMP/out.png" --reference "$TMP/missing.png" --dry-run)
+if run_gen env >/dev/null 2>&1; then
+  bad "missing reference rejected"
+else
+  ok "missing reference rejected"
+fi
+ARGS=("prompt" "1:1" "$TMP/out.png" --reference)
+if run_gen env >/dev/null 2>&1; then
+  bad "reference option without path rejected"
+else
+  ok "reference option without path rejected"
+fi
 
 echo ""
 echo "Results: $PASS passed, $FAIL failed"

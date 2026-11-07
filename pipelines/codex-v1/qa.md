@@ -45,6 +45,34 @@ Calibration examples, NOT instructions to reuse these jokes or concepts:
   error, even on a satirical website.
 
 Website QA:
+- Version 2 brand kits require an actual Gemini-designed identity and at least
+  two composed graphic-design/infographic artworks, with matching provenance
+  and visible page placements. Inspect those files, not just their filenames.
+  Photography, photographs with captions, film borders, extra headshots, and
+  basic HTML/SVG diagrams cannot satisfy the graphic-design requirement.
+  Check whether the artwork has intentional composition, hierarchy, type,
+  illustration/collage or information design appropriate to its role. Check
+  embedded copy and numbers for accuracy, duplication and mobile legibility.
+  A wordmark may include generated lettering; a raster logo is valid. Judge its
+  letterforms, spacing and small-size character, not whether it was made SVG.
+  A native hand-coded mark cannot be reported as Gemini logo design. Faithful
+  deterministic exports must trace to the approved generated artwork. Actual
+  API fallbacks must explicitly declare mode/reason; do not report equivalent
+  design completion merely because native placeholders exist.
+- When concept.json declares a brand_kit, check that its logo family and at
+  least two purposeful supporting graphics are actually applied. Inspect the
+  local primary, monochrome and icon assets as well as their page placements.
+  Check the landing navigation/footer, demo chrome and both favicons; mark
+  proportions, small-size legibility, clear space and background contrast.
+  Verify the palette, typography, motifs and graphic treatment are coherent
+  across marketing and product UI. API unavailability is a valid reason for
+  native graphics, not for missing branding. Historical entries without a kit
+  do not need a retrospective redesign.
+- Check diagrams and infographics against the product premise and demo data.
+  Labels/values must remain legible on mobile and have a live-text explanation;
+  intentional graphic typography is welcome, but reject gibberish, conflicting metrics or a
+  screenshot of functional UI. Flag concrete defects, not a preference for
+  more decoration, photography, or a different identity.
 - Read the host's deterministic checks and inspect the supplied desktop/mobile
   screenshots using the image-viewing tool. Flag real clipping, overlap,
   unreadable text, distorted images, broken links, and unusable controls.

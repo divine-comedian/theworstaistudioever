@@ -33,9 +33,29 @@ python3 scripts/build-entry-metadata.py site paypal-for-flat-earthers
 
 The scheduled job now uses **Codex, gpt-6.1-sol at high reasoning**, with the
 same three skills used by the preferred first comparison. That setup is frozen
-under `pipelines/codex-v1/`; the original generation prompt remains unchanged.
+under `pipelines/codex-v1/`; `pipeline.md` includes the current brand-kit workflow.
 Codex reuses the server's existing ChatGPT login. The cron time remains
 02:00 America/Mexico_City.
+
+Each new entry gets a brand kit with a **Gemini-designed logo**, monochrome and
+favicon exports, a graphic language, design tokens, and at least two composed
+graphic-design assets. Gemini designs the artwork; Codex briefs it and integrates
+it into the landing page and demo. Campaign posters, editorial illustration and
+infographics qualify; additional photographs and basic HTML/SVG diagrams do not.
+Intentional typography is allowed in designed artwork, with spelling/number and
+mobile-legibility checks and a live-text equivalent for essential information.
+The image helper accepts `--reference <local-image>` so the approved logo can
+guide related graphics and variants.
+
+Gemini can generate up to **12 distinct assets per entry**, with one corrective
+regeneration per asset. The shared default budget is **24 successful API calls
+per UTC day**, raised from 10; calls returning HTTP 200 count even if the image
+is later rejected. Set `GEMINI_IMAGE_DAILY_LIMIT` in the environment or `.env`
+to change that budget. API failures use bounded retries without charging the
+counter. Missing API access or an exhausted budget falls back to native
+SVG/HTML/CSS branding with an explicitly declared fallback reason. Version 2
+kits validate Gemini design provenance and actual graphic image placements, as
+well as logo/favicon use on both pages. Historical version 1 kits remain compatible.
 
 The overnight Codex run has a four-hour overall budget: up to 60 minutes for
 generation, 30 minutes per QA review, and 45 minutes per repair attempt. There

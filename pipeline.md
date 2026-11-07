@@ -1,6 +1,6 @@
 # Daily run — theworstaistudioever
 
-You are the agent responsible for shipping today's daily startup prototype to theworstaistudioever.com. You will execute the 9 steps below in order. Do not skip steps. Do not invent additional steps. The wrapper script will handle git after you exit — do NOT run git commands yourself.
+You are the agent responsible for shipping today's daily startup prototype to theworstaistudioever.com. You will execute the 10 steps below in order. Do not skip required steps. Do not invent additional steps. The wrapper script will handle git after you exit — do NOT run git commands yourself.
 
 The current working directory is the repo root. All paths are relative to it.
 
@@ -78,7 +78,7 @@ Earnest startup tone kills the joke. Never write "Welcome to the future of X." N
    - **font pairing** — pick from its 57 pairings. Provide `display` and `body` font-family stacks.
    - **product-type archetype** for the landing page composition.
 
-2. **Anti-sameness check.** Read the last 7 entries' `concept.json` files in `site/entries/*/concept.json` (most recent 7 by date). The (style, palette name, fonts pair) tuple you select **must not match** any of the last 7. If your initial pick collides, reselect.
+2. **Anti-sameness check.** Read the last 7 entries' `concept.json` files in `site/entries/*/concept.json` (most recent 7 by date). The (style, palette name, fonts pair) tuple you select **must not match** any of the last 7. If your initial pick collides, reselect. Also compare their logos, graphic motifs, image treatment and compositions where recorded. A palette swap on the same symbol and layout does not establish a new identity.
 
 3. Append the `design_direction` object to the concept JSON in memory:
    ```
@@ -92,44 +92,70 @@ Earnest startup tone kills the joke. Never write "Welcome to the future of X." N
    }
    ```
 
-4. Write the full concept JSON to `site/entries/<slug>/concept.json`. Use `mkdir -p` to create the entry directory.
+4. **Plan a brand kit specific to this product.** Extend the chosen design system beyond colors and fonts: define a recognizable logo, one graphic motif, a consistent image medium, layout/spacing rules, border/radius/shadow treatments, and a small set of purposeful graphics. Derive these from both the source company's product mechanics and the subject's behavior. Use the source product as context; create an original identity for the fictional startup. Avoid default sparkles, generic gradient orbs, initials in rounded squares, or repeating the same mascot silhouette every day. A restrained typographic identity is valid, but still needs a custom mark and designed supporting graphics.
 
----
-
-## Step 4 — IMAGES (art-directed, optional per slot)
-
-Generate up to **4 AI images** for the entry via `scripts/gen-image.sh`, but only where a photo genuinely earns its place. Skipping a slot — or all of them — is intended behavior, not a failure.
-
-**Skip path:** if `GEMINI_API_KEY` is unavailable, or `gen-image.sh` exits with `IMAGEGEN_CAP_REACHED`, note it for the run summary, skip the rest of this step entirely, and proceed to Step 5 with no images. Steps 5–6 must lay out around whatever images actually exist — never emit a broken `<img>`.
-
-1. **Allocate the budget (up to 4 images) across three roles, by genuine need:**
-   - **Hero** (16:9, post-crop 1600×900 WebP) — only when the design direction from step 3 calls for imagery. Typographic styles (brutalist, swiss-modernist, editorial, …) should usually skip it.
-   - **Demo subject assets** (1:1 or as the layout needs) — only when `demo_screen_concept` is photo-shaped: profile/dating cards, video-call tiles, album/video art, subject-ID or surveillance consoles. Terminal/map/document demos get none.
-   - **Testimonial headshots** (1:1, post-crop 320×320 WebP) — deadpan corporate headshots of the subject for the landing page's named testimonials. The always-applicable fallback when hero and demo don't need the budget.
-
-2. **Compose each prompt under strict guidelines:**
-   - Scene/subject from the concept (the subject, `demo_screen_concept`, product framing).
-   - Mood, style, and palette words derived from `design_direction` — include hex hints (e.g. "muted sage green #9CAF88 backdrop").
-   - One focal subject per image. Name the medium explicitly ("editorial photograph", "flat illustration", …), consistent with the day's style archetype.
-   - State the hard bans in every prompt: **no text, no letters, no numbers, no logos, no watermarks, no rendered UI screens.** All text belongs in HTML.
-
-3. **Generate:** `./scripts/gen-image.sh "<prompt>" <aspect> site/entries/<slug>/<name>-raw.png`
-
-4. **Post-edit:** `python3 scripts/crop-image.py site/entries/<slug>/<name>-raw.png site/entries/<slug>/<name>.webp --width W --height H --delete-input` (the flag removes the oversized raw file, which would otherwise fail validation). Final files must be ≤500 KB (validation enforces this).
-
-5. **Judge with vision:** `Read` each cropped image and check: subject is correct; palette/mood harmonizes with the design direction; no text artifacts; no generic-AI-render tells. On failure, regenerate **once** with specific corrective feedback appended to the prompt — max 2 attempts per image. An image failing both attempts is dropped: delete the file (`rm` is not allowlisted — use `python3 -c "import os; os.remove('site/entries/<slug>/<name>.webp')"`); its slot falls back to the CSS/SVG treatment.
-
-6. **Record provenance** by editing `site/entries/<slug>/concept.json` to add an `images` key:
-   ```
-   "images": {
-     "rationale": "photo-shaped demo (dating cards); typographic hero skipped; budget on cards + 1 headshot",
-     "items": [
-       { "role": "demo", "file": "card-1.webp", "prompt": "...", "attempts": 1 },
-       { "role": "testimonial", "file": "headshot-1.webp", "prompt": "...", "attempts": 2 }
+   Add this top-level object to the concept (replace descriptions with concrete decisions, actual CSS values and intended local filenames):
+   ```json
+   "brand_kit": {
+     "version": 2,
+     "generation": { "mode": "gemini", "fallback_reason": "" },
+     "identity_rationale": "How the logo and graphic language express this particular product and differ from recent entries",
+     "logo": {
+       "concept": "Gemini-designed wordmark or symbol, meaning, and planned variants",
+       "primary_file": "logo.webp",
+       "mono_file": "logo-mono.png",
+       "icon_file": "logo-icon.png",
+       "clear_space": "At least half the mark height on every side",
+       "min_size_px": 24,
+       "placement": "Landing nav and footer; demo chrome; icon used as favicon on both pages"
+     },
+     "graphic_language": {
+       "medium": "Specific shared illustration/photo/diagram treatment",
+       "motif": "A product-specific shape or visual idea reused with restraint",
+       "composition": "Framing, negative space and grid rules",
+       "texture": "Named surface treatment, or explicitly none"
+     },
+     "tokens": {
+       "spacing": "4px, 8px, 16px, 24px, 48px, 80px",
+       "radii": "0px for panels; 999px for status tags",
+       "borders": "1px solid var(--ink)",
+       "shadows": "none"
+     },
+     "graphic_plan": [
+       { "role": "graphic-design", "file": "campaign.webp", "purpose": "A composed campaign or feature artwork", "placement": "Landing feature section", "medium": "Gemini-designed editorial composition" },
+       { "role": "infographic", "file": "explainer.webp", "purpose": "Explain a specific mechanism or fictional metric", "placement": "Landing explainer", "medium": "Gemini-designed infographic composition" }
      ]
    }
    ```
-   The `rationale` covers every role, including skips ("skipped because …"), so an image-less day is visible in review. Omit the `images` key entirely when the whole step was skipped (no key / cap reached).
+   Plan at least two composed Gemini graphics with different purposes. Photography, headshots, photos with captions, film borders, simple arrows and HTML/SVG flowcharts do not meet this requirement. The coding agent art-directs and integrates; Gemini designs the logo and graphic artwork. Keep marketing and demo compositions appropriate to their jobs while sharing this kit. The palette and fonts remain in `design_direction`; implement the same choices in both pages' inline CSS custom properties.
+
+5. Write the full concept JSON to `site/entries/<slug>/concept.json`. Use `mkdir -p` to create the entry directory. The logo files are produced in Step 4; update planned filenames to the actual shipped files before validation.
+
+---
+
+## Step 4 — BRAND ASSETS (Gemini designs; the coding agent integrates)
+
+Ship a Gemini-designed logo and at least two composed graphic-design assets before allocating the remaining budget to photography. Gemini can supply up to **12 distinct deliverables**, with **at most 2 attempts per deliverable**, within the shared default **24 successful calls per UTC day**. Logo alternatives, rejected generations, reference-based edits and generated variants all consume calls; deterministic exports do not. `GEMINI_IMAGE_DAILY_LIMIT` can override the daily cap. Reserve allowance for identity and graphics first; more photographs cannot substitute for them.
+
+**Actual service fallback only:** if no key is available, the cap is reached, or the service fails after bounded retries, retain accepted assets and record `brand_kit.generation.mode: "fallback"` with the actual `fallback_reason`. Complete remaining roles natively and identify the degraded outcome in the run summary. Never choose native fallback merely because drawing an SVG is easier or because the direction is typographic. A native fallback is not evidence that Gemini designed the brand.
+
+1. **Logo design comes first.** Write a product-specific identity brief and ask Gemini for two distinct directions (the logo's two allowed attempts), then visually compare and select one. Generate the actual finished mark or wordmark, not a presentation board or mockup. A bespoke wordmark is valid; quote the exact product name and inspect its spelling, kerning, silhouette and character. Reject a generic geometric badge, stock clip art, or a source-company trademark copy. Use a controlled palette and flat background, or real alpha when available. State why the selected direction is stronger at page and icon sizes. Do not hand-code an unrelated SVG and label it a generated logo.
+
+2. **Generate at least two genuinely designed graphics with different purposes.** Examples include a typographic campaign poster, an illustrated feature composition, an editorial collage, a designed process infographic or a data-story panel. Ask Gemini to compose layout, visual hierarchy, illustration, typography and information together as appropriate. A plain photograph with a caption, extra portraits, a colored rectangle, film-strip borders, or an HTML arrow between two values does not count. Each asset must communicate a specific part of the product and belong to the selected identity.
+
+3. **Use the accepted artwork as a real image reference.** After selecting a logo, attach it when generating related graphics and variants:
+   `./scripts/gen-image.sh "<brief>" <aspect> site/entries/<slug>/<name>-raw.png --reference site/entries/<slug>/logo.webp`
+   `--reference` accepts up to three local PNG/JPEG/WebP files. Name each image's role in the prompt (approved identity reference, style reference, or edit target). Preserve accepted letterforms and motifs in variants. Text-only descriptions do not provide the same visual reference.
+
+4. **Set role-specific text rules.** Photos: no text, logos, watermarks or rendered UI screens. Logos: the exact approved product name is allowed when designing a wordmark. Graphic-design assets: intentional typography, labels and numbers are allowed and encouraged when they serve the composition; supply all copy verbatim and verify it visually. No gibberish, extra copy or watermarks. Keep functional UI, primary copy and essential information in live HTML too. Infographic quantities must agree with the concept and demo; provide a live-text summary. Do not reduce Gemini to generating only unlabeled backgrounds.
+
+5. **Allocate remaining slots by purpose.** Hero/key art, film or profile records, feature illustrations, portraits and texture are optional. Use one shared art-direction brief: product/subject behavior, exact palette, chosen medium, composition, graphic motifs and surface treatment. Avoid unrelated stock imagery. Images intended to be a family should share actual references where useful. The coding agent writes precise briefs and handles HTML/CSS, not the logo's creative drawing or the artwork's replacement with simple code shapes.
+
+6. **Prepare usable exports.** Preserve full composition, silhouette and clear space. The existing `crop-image.py` helper cover-crops and flattens to RGB; use it only when appropriate for that asset. A generated logo can remain PNG/WebP: vector output is not required. Supply a monochrome export and an icon from the same accepted design, either through faithful deterministic export/recolor/crop or a reference-based Gemini edit. Never replace the accepted design with an approximate hand-drawn SVG to satisfy a format preference. Self-contained native SVG derivatives are allowed only if faithful to that design. Every raster must be ≤500 KB; remove oversized raw files. Do not mistake a checkerboard pattern for actual transparency.
+
+7. **Judge artwork, not just file validity.** Inspect every generated image with vision and inspect logos on their actual backgrounds at navigation and icon sizes. Check typography, spelling, kerning, silhouette, contrast, clear space, composition and consistency. Inspect graphics at desktop and mobile display sizes. Compare the result to the requested graphic-design role: photographs plus primitive diagrams cannot pass because there are many assets. Use one targeted correction for a failed asset, then drop it or declare the actual service/quality fallback. No open-ended polish loop.
+
+8. **Record honest provenance in `concept.json`.** Keep `images.rationale`, accepted `items` and `discarded` attempts. For each accepted image record `role`, `file`, `source` (`gemini` or `derived-export` or `native-fallback`), actual prompt, attempt count, placement and verdict. Derived exports name their source file and transformation and have zero generation attempts. Use roles `logo`, `graphic-design`, `infographic` and `photo`/`hero`/`demo`/`testimonial` to make the actual allocation visible. Record logo candidate decisions and rejected calls too. `brand_kit.graphic_plan` must name the two actual graphic files; in normal Gemini mode each must have matching Gemini provenance and be displayed on the landing page. Do not claim a native SVG, a photograph or a basic diagram fulfils the Gemini design requirement.
 
 ---
 
@@ -143,7 +169,8 @@ Generate up to **4 AI images** for the entry via `scripts/gen-image.sh`, but onl
    - Any JS needed (smooth scroll, etc.) inline in a `<script>` tag.
 3. All visible copy passes through `anti-ai-slop` voice rules. No generic AI tells.
 4. The page should look like a real, well-funded startup's landing page in the chosen style — not a template.
-5. **Incorporate whichever step-4 images exist** via relative paths (e.g. `<img src="hero.webp">`): hero image in the hero section, headshots replacing the testimonials' initials-circles. If an image was skipped or dropped, that slot keeps its CSS/SVG treatment — never reference a file that does not exist.
+5. **Apply the accepted Gemini identity throughout.** Place the primary or monochrome logo in the landing navigation and footer. A generated wordmark replaces the typeset product name there; a symbol can sit beside live HTML lettering. Do not add a competing hand-coded mark. Link the brand to this entry's landing page. Use `brand_kit.logo.icon_file` as a local `<link rel="icon">` in the head. Preserve aspect ratio, clear space and minimum size, and choose a variant with visible contrast. On mobile, reduce navigation before shrinking the logo below its minimum size. Give the brand link one accessible product name: use logo alt text when there is no adjacent product-name text, otherwise empty image alt text.
+6. Integrate **at least two accepted composed graphic artworks** from `brand_kit.graphic_plan` through local image paths. Give each adequate space to read as a designed composition; do not hide them as tiny thumbnails. They must show graphic design through hierarchy, typography, illustration/collage, layout or information design. Additional photography and basic HTML/SVG diagrams do not satisfy this checkpoint. Keep functional controls and important information available in live HTML, provide an accessible explanation of infographics, and check embedded typography at mobile size. Simplify or regenerate artwork with illegible text. Use the declared native fallback only when the API is actually unavailable.
 
 ---
 
@@ -154,7 +181,7 @@ Generate up to **4 AI images** for the entry via `scripts/gen-image.sh`, but onl
 3. Real interactivity where cheap (vanilla JS, no frameworks): filtering, toggling, modal open/close, drag-reorder, tab switching, fake search. No real API calls — mock everything client-side.
 4. Top-left chrome: small back link "← back to the pitch" to `./index.html`.
 5. Use `frontend-design` skill while building. Run all visible copy through `anti-ai-slop`.
-6. **Incorporate whichever step-4 demo subject assets exist** via relative paths. Slots without an image keep their CSS/SVG treatment — never reference a file that does not exist.
+6. **Carry the same identity into the product.** Show the primary or monochrome logo and product name in the demo chrome, keep the back-to-pitch link, and use the same local icon favicon as the landing page. Reuse the palette, typography, tokens, mark geometry and graphic language, with the density appropriate to product UI. Use accepted demo subject assets via relative paths. Apply a relevant supporting graphic to an empty state, explainer or data summary when useful; keep the main interaction prominent. Slots without API imagery get a native treatment. Never reference a file that does not exist.
 
 ---
 
@@ -208,7 +235,8 @@ Generate up to **4 AI images** for the entry via `scripts/gen-image.sh`, but onl
    - What was rolled (company, subject, slug).
    - Number of rerolls.
    - Design direction chosen (style, palette, fonts).
-   - Image allocation rationale, per-image attempt counts and judge verdicts — or why the IMAGES step was skipped.
+   - Brand identity rationale, logo filenames and placements, graphic language, and which supporting graphics shipped (Gemini or native).
+   - Image allocation rationale, per-image attempt counts and judge verdicts — or why Gemini was skipped and which native fallbacks shipped.
    - Any warnings or near-misses.
    - Confirmation that validation passed.
 

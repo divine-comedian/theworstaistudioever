@@ -94,4 +94,8 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 python3 "$SCRIPT_DIR/build-entry-metadata.py" "$SITE_ROOT" "$SLUG" --check \
   || fail "sharing metadata validation failed"
 
+# 9. New entries declaring a brand kit must ship and use its logo family.
+python3 "$SCRIPT_DIR/validate-brand-kit.py" "$DIR" \
+  || fail "brand kit validation failed"
+
 echo "validate-entry [$SLUG]: OK"

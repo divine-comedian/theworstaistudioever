@@ -12,10 +12,21 @@ repo `.env` overrides the selector.
 first-trial workspace, including their datasets and helper scripts. Their
 provenance and hashes are recorded in `codex-v1/manifest.json`.
 
-The generator executes the unchanged root `pipeline.md` with the thin
+The generator executes the current root `pipeline.md` with the thin
 `codex-v1/adapter.md`. The revision-2 experimental quality contract, fourth
 frontend skill, and Cuebook-specific requirements are outside this daily setup.
-Daily image generation and its existing cap remain enabled. Codex gets a
+The current prompt requires a Gemini-designed logo family, brand kit, design
+tokens and at least two composed graphic-design assets. The coding agent briefs
+and integrates; photographs and primitive code diagrams do not fulfil the graphic
+requirement. Approved artwork is passed to Gemini with `--reference` for matching
+graphics/variants. Version 2 validation checks provenance and visible graphic
+placements, accepts raster logo exports, and keeps older kits compatible.
+Gemini supports up to 12 distinct assets per
+entry (two attempts each), with a shared default cap of 24 successful calls per
+UTC day. `GEMINI_IMAGE_DAILY_LIMIT` overrides the cap; the image script serializes
+budget checks and charges. Missing Gemini access falls back to native SVG/HTML/CSS.
+Declared kits are checked by `scripts/validate-brand-kit.py` through the normal
+entry validator. Codex gets a
 60-minute generation limit, workspace write access, and network access for existing image
 and rendering tools. Git and notifications remain wrapper responsibilities.
 
@@ -44,7 +55,7 @@ Codex may submit complete draft files with `DRAFT_READY` when its static check
 fails; this permits the host's bounded repair stage to fix the draft. The host
 emits public `RUN_COMPLETE` only after the QA gate passes.
 
-The original generation prompt and three frozen skills remain unchanged. QA
+The three frozen skills remain unchanged. QA
 instructions are in `codex-v1/qa.md`; repairs use `codex-v1/heal.md`. Repairs
 preserve product identity, visual direction and images, and cannot alter history,
 other entries, scripts or the pipeline configuration. Sharing metadata is rebuilt
@@ -103,8 +114,12 @@ Git revision. Credentials are excluded. These are archival copies; execute the
 live wrapper with the selector rather than executing scripts inside the backup
 directory. Claude's existing CLI login and installed plugins are retained.
 
-The root generation prompt is also byte-identical to the Claude backup and the
-first Codex trial. Future intentional prompt changes should preserve the backup.
+The Claude backup retains the original generation prompt, before the brand-kit
+upgrade. `codex-v1/manifest.json` records the original first-trial prompt hash
+and skill provenance, not a checksum of the evolving root prompt. Keep the
+backup unchanged when updating daily instructions. The shared image script's
+new daily budget also applies to Claude rollback; its archived prompt still
+uses the original four-image allocation.
 
 ## Recover an unpublished entry
 
