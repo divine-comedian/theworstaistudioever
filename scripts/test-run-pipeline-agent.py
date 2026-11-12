@@ -11,8 +11,8 @@ import tempfile
 import unittest
 
 from pipeline_qa import (apply_exact_patches, read_review, review_schema, review_packet,
-                         validate_copy_audit, validate_verdict, validate_visual_audit, StageFailure)
-from pipeline_editorial import UsageLedger, recent_digest, roll
+                         validate_copy_audit, validate_shape, validate_verdict, validate_visual_audit, StageFailure)
+from pipeline_editorial import CONCEPT_SCHEMA, UsageLedger, recent_digest, roll
 from pipeline_qa import quality_floor_context
 
 
@@ -91,7 +91,7 @@ qa=os.environ.get('FAKE_QA_MODE','pass')
 if phase in ['concept','concept-repair','concept-review']:
  if phase=='concept':
   identity=json.JSONDecoder().raw_decode(prompt.split('FIXED IDENTITY:\\n',1)[1])[0]
-  concept={**identity,'product_name':'Fixture','one_liner':'Requests for dogs','brand_voice_notes':'Straight faced','hero':{'h1':'Weak reference','sub':'Pack requests','primary_cta':'Try'},'features':[{'title':'Request','blurb':'The dog requests a walk'} for _ in range(3)],'pricing_tiers':[{'name':'Pack','price':'$3','tagline':'For dogs','perks':['Walk requests','Bark filtering']} for _ in range(3)],'testimonials':[{'quote':'I requested a walk','name':'Dog','title':'Dog'} for _ in range(3)],'demo_screen_concept':'Requests','editorial_plan':{'observations':[{'behavior':'Barks','mechanic':'Requests','consequence':'More walks'} for _ in range(3)],'source_product_patterns':['List','Search','Filter','Submit'],'composition_plan':'Product preview then artwork'}}
+  concept={**identity,'product_name':'Fixture','one_liner':'Requests for dogs','brand_voice_notes':'Straight faced','hero':{'h1':'Weak reference','sub':'Pack requests','primary_cta':'Try'},'features':[{'title':'Request','blurb':'The dog requests a walk'} for _ in range(3)],'pricing_tiers':[{'name':'Pack','price':'$3','tagline':'For dogs','perks':['Walk requests','Bark filtering']} for _ in range(3)],'testimonials':[{'quote':'I requested a walk','name':'Dog','title':'Dog'} for _ in range(3)],'demo_screen_concept':'Requests','editorial_plan':{'observations':[{'behavior':'Barks','mechanic':'Requests','consequence':'More walks'} for _ in range(3)],'source_product_patterns':['List','Search','Filter','Submit'],'composition_plan':'Product preview then artwork','audience_design':{'references':[{'reference':'Dog show catalogues','cues':'Portrait framing and ribbons','application':'Portrait record cards'},{'reference':'Dog walking maps','cues':'Green paths','application':'Route navigation'}],'landing_application':'Dog portraits and route graphics','demo_application':'Route cues around a request list'}}}
   result.write_text(json.dumps(concept))
  else:
   data=json.JSONDecoder().raw_decode(prompt.split('HOST CONTEXT:\\n',1)[1])[0] if phase=='concept-review' else json.JSONDecoder().raw_decode(prompt.split('publish.\\n',1)[1])[0]
@@ -126,7 +126,7 @@ elif phase=='review':
  number=int(result.stem.split('-')[-1])
  needed={'once':1,'twice':2,'patch':1,'omitted':1,'floor-repair':1}.get(qa,3 if qa in ['never','scope','identity','repair-fail','repair-timeout'] else 0)
  finding={'id':'F1','target':'h1','acceptance':'Understand the request','patch':{'old':'Original landing' if qa=='patch' else '','new':'Repaired landing' if qa=='patch' else ''},'category':'satire','file':'site/entries/fixture-for-dogs/index.html','quote':'Weak reference','problem':'Unclear connection','fix':'Make the mapping explicit'}
- report={'slug':'fixture-for-dogs','verdict':'repair' if number<needed else 'pass','quality_floor':{'reference_id':'again-2026-11-11-approved','assessments':{key:{'meets':True,'evidence':'Specific requests, purposeful visuals and usable controls meet the reference standard.'} for key in ['comprehension','satire','composition','continuity']}},'premise':'Dogs submit requests.','strengths':['Specific subject'],'checks':checks,'visual_audit':[{'page':p,'viewport':v,'dominant_content':'Requests','product_visual':'Request list','caption_legibility':'Readable','comprehension_pass':True} for p in ['index.html','demo.html'] for v in ['desktop','mobile']],'copy_audit':audit(json.loads((workspace/'site/entries/fixture-for-dogs/concept.json').read_text())),'resolved_findings':['F1'] if number>0 and number>=needed and qa!='omitted' else [],
+ report={'slug':'fixture-for-dogs','verdict':'repair' if number<needed else 'pass','quality_floor':{'reference_id':'again-2026-11-11-approved','assessments':{key:{'meets':True,'evidence':'Specific requests, purposeful visuals and usable controls meet the reference standard.'} for key in ['comprehension','satire','composition','continuity']}},'premise':'Dogs submit requests.','strengths':['Specific subject'],'checks':checks,'visual_audit':[{'page':p,'viewport':v,'dominant_content':'Requests','product_visual':'Request list','caption_legibility':'Readable','comprehension_pass':True,'audience_cues':'Dog portrait framing and green route cues','audience_fit_pass':True} for p in ['index.html','demo.html'] for v in ['desktop','mobile']],'copy_audit':audit(json.loads((workspace/'site/entries/fixture-for-dogs/concept.json').read_text())),'resolved_findings':['F1'] if number>0 and number>=needed and qa!='omitted' else [],
          'findings':[finding] if number<needed else [],'demo_test':{'actions':[{'action':'click','selector':'#submit','value':'-'}],'assertions':[{'check':'visible','selector':'#result','expected':'-'}]}}
  if qa=='below-floor' or (qa=='floor-repair' and number==0):report['quality_floor']['assessments']['composition']['meets']=False
  if qa=='bad-pass':report['findings']=[finding]
@@ -377,11 +377,40 @@ print('RUN_COMPLETE: claude-for-dogs')
     def test_visual_audit_cannot_omit_a_page_or_contradict_composition(self):
         with self.assertRaises(ValueError):
             validate_visual_audit({"visual_audit": [], "checks": {"composition": True}})
-        audit = [{"page": page, "viewport": viewport, "comprehension_pass": True}
+        audit = [{"page": page, "viewport": viewport, "comprehension_pass": True, "audience_fit_pass": True}
                  for page in ["index.html", "demo.html"] for viewport in ["desktop", "mobile"]]
         audit[0]["comprehension_pass"] = False
         with self.assertRaises(ValueError):
             validate_visual_audit({"visual_audit": audit, "checks": {"composition": True}})
+
+    def test_audience_mismatch_cannot_pass_composition(self):
+        audit = [{"page": page, "viewport": viewport, "comprehension_pass": True,
+                  "audience_fit_pass": True}
+                 for page in ["index.html", "demo.html"] for viewport in ["desktop", "mobile"]]
+        validate_visual_audit({"visual_audit": audit, "checks": {"composition": True}})
+        audit[2]["audience_fit_pass"] = False
+        with self.assertRaisesRegex(ValueError, "audience fit"):
+            validate_visual_audit({"visual_audit": audit, "checks": {"composition": True}})
+        # A repair verdict may honestly report the failed audience fit.
+        validate_visual_audit({"visual_audit": audit, "checks": {"composition": False}})
+        del audit[2]["audience_fit_pass"]
+        with self.assertRaisesRegex(ValueError, "audience fit"):
+            validate_visual_audit({"visual_audit": audit, "checks": {"composition": True}})
+
+    def test_concept_needs_concrete_audience_references_before_build(self):
+        schema = CONCEPT_SCHEMA["properties"]["editorial_plan"]["properties"]["audience_design"]
+        valid = {"references": [{"reference": "Album inserts", "cues": "Card frames",
+                                 "application": "Member cards"},
+                                {"reference": "Music release posters", "cues": "Bold typography",
+                                 "application": "Hero and booking header"}],
+                 "landing_application": "Fan identity around product preview",
+                 "demo_application": "Workspace booking with album colors"}
+        validate_shape(valid, schema)
+        valid["references"].pop()
+        with self.assertRaises(ValueError):
+            validate_shape(valid, schema)
+        with self.assertRaises(ValueError):
+            validate_shape({}, schema)
 
     def test_literal_patch_batch_is_all_or_nothing(self):
         entry = self.root / "site/entries/fixture-for-dogs"

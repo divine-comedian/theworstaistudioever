@@ -18,6 +18,13 @@ building and QA receive that standard. Final QA must explicitly establish that
 the entry meets it in clarity, satire, composition and continuity before
 publication. Entries retain their own identities and ideas.
 
+The source company supplies each demo's service structure and workflow; its
+audience supplies the visual identity. Concept approval requires concrete
+audience references and their application to both pages before artwork is made.
+Satire must have an understandable setup and comic turn for a casual outsider;
+plausible niche services alone do not pass. Final visual QA explicitly checks
+audience fit on both pages at desktop and mobile sizes.
+
 Each new entry's landing page and demo include static Open Graph and Twitter
 metadata. Preview titles use `product_name — tagline`; descriptions combine the
 hero heading and paragraph, capped at 300 characters with an ellipsis. Hero

@@ -18,7 +18,9 @@ concept, assets, landing page and demo; quality approval is required to publish.
 
 ## Voice (load this into your bones before generating any copy)
 
-The brand is **"the worst AI studio ever"**. Build the humor from recognizable audience behavior exaggerated through the source product's mechanics. Write with a straight face. Make the product and its absurd consequences understandable on first reading. Features develop distinct observations; prices escalate the same product premise; testimonials recount specific things that happened after using it. Give fictional users believable roles in this audience. Commit to the premise throughout.
+The brand is **"the worst AI studio ever"**. Build the humor from recognizable audience behavior exaggerated through the source product's mechanics. Write with a straight face. Make the product and its absurd consequences understandable on first reading, including to someone who is not part of the audience. Start with familiar human motives: showing off, collecting too much, avoiding work, taking a hobby too seriously, wanting to belong. Audience detail sharpens that recognition. Specialist vocabulary must not carry the punchline.
+
+Each feature needs a comic turn: the product indulges a recognizable habit until it produces a disproportionate, embarrassing or self-defeating result. An ordinary useful service for a niche audience is not enough. "A screening room for fans" describes a service; "You booked thirty minutes for a three-minute video. Reception has cancelled your afternoon" develops a joke. Invent fresh situations for each entry; these examples are calibration, never reusable copy. Features develop distinct observations; prices escalate the same product premise; testimonials recount specific things that happened after using it. Give fictional users believable roles in this audience. Commit to the premise throughout.
 
 Earnest startup tone kills the joke. Never write "Welcome to the future of X." Never write "We're on a mission to..." Never use the word "revolutionize" or "seamless" or "delight" or "empower" sincerely. If you catch yourself writing those, you are off-brand.
 
@@ -47,7 +49,9 @@ Earnest startup tone kills the joke. Never write "Welcome to the future of X." N
 1. **Invoke the `anti-ai-slop` skill.**
 2. Generate a concept for the tagline. Be specific. The fake startup should have a real-sounding product name (not "BarkMatch" — try "Howl", "Heel.", "Sniffr"), a one-liner that commits to the bit, three features developing different recognizable audience behaviors, three pricing tiers escalating the same absurd premise, and three testimonials from named fictional users recounting concrete consequences. Readers should understand what each feature and perk actually does. Introduce specialist terms through an intelligible action or example. Compare comic mechanisms, prices and testimonial patterns with the host's recent-entry digest; develop a fresh angle.
 3. Also describe what the **one interactive demo screen** will show. Be concrete: "a swipeable card stack of golden retrievers with verified-vaccination badges and a 'cuddle compatibility' score from 1-10" — not "the main product UI."
-   Record an `editorial_plan` with three `observations` (each has `behavior`, `mechanic`, `consequence`), at least four `source_product_patterns`, and a `composition_plan`. The composition plan names the primary action, recognizable product visual, opening hierarchy, and the distinct purpose of each proposed artwork. The host reviews this concept before generating images or HTML; follow its stage-specific checkpoint instructions.
+   Record an `editorial_plan` with three `observations` (each has `behavior`, `mechanic`, `consequence`), at least four `source_product_patterns`, a `composition_plan`, and `audience_design`. Each consequence identifies the comic turn, beyond a plausible benefit or routine inconvenience. Read the hero, three features and testimonials once as a casual outsider: the setup and turn must be understandable without a glossary or the editorial plan. Keep functional labels plain; put humor in situations, data and consequences. Do not make every control or pricing entitlement a forced joke.
+
+   **Plan the combination before approval.** The source company supplies the service model, information architecture and main workflow; the target audience supplies the visual identity. `audience_design` contains `references` (at least two concrete audience-associated brands, publications, packaging traditions or visual scenes, each with `reference`, `cues`, `application`), `landing_application` and `demo_application`. Specify visible treatments for typography, color, imagery and composition, plus how the demo retains the source service's structure. References are inspiration, not permission to copy trademarks, imply affiliation or imitate one artist. Avoid one universal aesthetic for a whole audience; choose a coherent direction relevant to this particular premise. The composition plan names the primary action, recognizable product visual, opening hierarchy, and distinct purpose of each proposed artwork. The host reviews this concept before generating images or HTML; follow its stage-specific checkpoint instructions.
 4. Build the concept JSON object (you'll write it to disk in step 3 alongside the design direction). Required fields:
    ```
    {
@@ -83,13 +87,13 @@ Earnest startup tone kills the joke. Never write "Welcome to the future of X." N
 
 ## Step 3 — PLAN (visual direction)
 
-1. **Invoke the `ui-ux-pro-max` skill.** Use it to select:
+1. **Invoke the `ui-ux-pro-max` skill.** Start from the approved `audience_design`; use the library to realize that direction. Do not choose an arbitrary style because it differs from yesterday. For example, WeWork for K-pop fans can pair album-package typography, collectible-card framing and music-release color with a recognizable workspace booking flow: location/date, desk or office, availability, room allowances and reservation summary. A generic leasing prospectus with fandom nouns fails this combination. Use the skill to select:
    - **style archetype** (e.g. brutalist, claymorphic, bento, editorial, glassmorphism, neumorphism, skeuomorphic, flat, swiss-modernist, magazine, retro-futurist, etc.)
    - **palette** — pick one from its 161-palette library, or derive a custom one. Provide hex values for `primary`, `accent`, `bg`, `fg`, `muted`, `ink`.
    - **font pairing** — pick from its 57 pairings. Provide `display` and `body` font-family stacks.
    - **product-type archetype** for the landing page composition.
 
-2. **Anti-sameness check.** Use the host's recent-entry digest when supplied; otherwise read the last 7 entries' `concept.json` files in `site/entries/*/concept.json` (most recent 7 by date). The (style, palette name, fonts pair) tuple you select **must not match** any of the last 7. If your initial pick collides, reselect. Also compare their logos, graphic motifs, image treatment, compositions, comic mechanisms, pricing patterns and testimonial roles where recorded. A palette swap on the same symbol and layout does not establish a new identity.
+2. **Anti-sameness check.** Use the host's recent-entry digest when supplied; otherwise read the last 7 entries' `concept.json` files in `site/entries/*/concept.json` (most recent 7 by date). The (style, palette name, fonts pair) tuple you select **must not match** any of the last 7. If your initial pick collides, find another audience-appropriate treatment. Audience fit and readable humor take priority over novelty for its own sake. Repeated audiences may share recognizable cultural cues while expressing them through a fresh identity, composition and product mechanic. Also compare logos, graphic motifs, image treatment, compositions, comic mechanisms, pricing patterns and testimonial roles where recorded. A palette swap on the same symbol and layout does not establish a new identity.
 
 3. Append the `design_direction` object to the concept JSON in memory:
    ```
@@ -103,7 +107,7 @@ Earnest startup tone kills the joke. Never write "Welcome to the future of X." N
    }
    ```
 
-4. **Plan a brand kit specific to this product.** Extend the chosen design system beyond colors and fonts: define a recognizable logo, one graphic motif, a consistent image medium, layout/spacing rules, border/radius/shadow treatments, and a small set of purposeful graphics. Derive these from both the source company's product mechanics and the subject's behavior. Use the source product as context; create an original identity for the fictional startup. Avoid default sparkles, generic gradient orbs, initials in rounded squares, or repeating the same mascot silhouette every day. A restrained typographic identity is valid, but still needs a custom mark and designed supporting graphics.
+4. **Plan a brand kit specific to this product.** Extend the audience references beyond colors and fonts: define a recognizable logo, one graphic motif, a consistent image medium, layout/spacing rules, border/radius/shadow treatments, and a small set of purposeful graphics. Show the audience's visual world in the identity and artwork while the source company's mechanics organize the product. Naming the audience in copy or adding a tiny themed sticker does not establish audience fit. Create an original identity for the fictional startup. Avoid default sparkles, generic gradient orbs, initials in rounded squares, or repeating the same mascot silhouette every day. A restrained typographic identity is valid, but still needs a custom mark and designed supporting graphics.
 
    Add this top-level object to the concept (replace descriptions with concrete decisions, actual CSS values and intended local filenames):
    ```json
@@ -188,7 +192,7 @@ Ship a Gemini-designed logo and at least two composed graphic-design assets befo
 ## Step 6 — BUILD DEMO
 
 1. Write `site/entries/<slug>/demo.html` — a single self-contained HTML file containing one interactive screen of the imagined product, populated with fake data.
-2. Inherits the palette and typography from step 3, but uses **product-UI layout** (not marketing). Think: a dashboard, a feed, a swipe-stack, a settings page, a config editor — whatever fits the `demo_screen_concept` from step 2.
+2. Inherits the audience-derived palette, typography and graphic language from step 3, with the **source service's information architecture and main workflow**. Follow the approved `source_product_patterns` and `audience_design.demo_application`: workspace booking, video viewing, messaging, marketplace browsing and dating must have recognizably different product structures. Keep the density and hierarchy appropriate to functional UI.
 3. Real interactivity where cheap (vanilla JS, no frameworks): filtering, toggling, modal open/close, drag-reorder, tab switching, fake search. No real API calls — mock everything client-side.
 4. Top-left chrome: small back link "← back to the pitch" to `./index.html`.
 5. Use `frontend-design` skill while building. Run all visible copy through `anti-ai-slop`.

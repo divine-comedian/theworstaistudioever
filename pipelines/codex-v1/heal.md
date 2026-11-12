@@ -8,6 +8,14 @@ Read pipelines/codex-v1/skills/anti-ai-slop/SKILL.md for copy changes. Use the
 frozen frontend-design and ui-ux-pro-max skills only when fixing a reported UI
 defect. Preserve the selected design direction, palette, fonts,
 product identity, main demo premise, existing images, and successful jokes.
+If a finding explicitly identifies an audience-fit failure, correct the affected
+visual treatments across landing and demo using the approved audience references
+and existing assets. Preserve the source-service workflow and product identity;
+the preservation rule does not require retaining the visual defect reported.
+Record those targeted presentation changes in brand_kit and affected composition
+notes without changing the pinned design_direction field. If correction requires
+new artwork or a different design direction, report that limit to the host rather
+than disguising the mismatch or claiming it is fixed.
 When present, preserve the brand kit and logo identity too. Correct reported
 placement, scale, contrast, favicon references, diagram labels and responsive
 graphic layout in the allowed HTML files using the existing assets. Do not
@@ -20,7 +28,9 @@ permission to restyle unrelated sections.
 
 Fix every actionable reported defect. Resolve unclear metaphors by choosing
 the established product world and making the connection understandable on a
-first reading. Keep the result funny and deadpan; don't flatten it into generic
+first reading, including by someone outside the audience. Restore a concrete
+comic turn when a reported feature only describes a plausible service. Keep the
+result funny and deadpan; don't flatten it into generic
 business copy. Update matching concept fields and demo microcopy so the repair
 is consistent across pages. For technical defects, fix the underlying cause.
 Include ALL unresolved items in the host's editorial-regressions report, even

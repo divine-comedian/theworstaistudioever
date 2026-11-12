@@ -39,8 +39,14 @@ Normal Codex runs have two host-controlled checkpoints. The host rolls a fixed
 pair and supplies a compact recent-entry digest. A read-only Codex invocation
 drafts structured concept JSON; a second independently reviews it before the
 host persists `approved-concept.json` and permits asset generation and building.
-The brief records three audience observations, source-product patterns and an
-opening composition plan. The build must preserve its approved fields.
+The brief records three audience observations with actual comic consequences,
+source-product patterns, an opening composition plan and `audience_design`.
+That plan requires at least two concrete audience-associated visual references
+and their application to the landing and demo. The source company supplies the
+service structure and workflow; the audience supplies type, color, imagery and
+visual composition. Repeated audiences can share cultural cues without cloning
+an earlier identity. Novelty must not override audience fit. The build must
+preserve its approved fields.
 
 Final QA independently checks comprehension, satire, composition and continuity,
 desktop/mobile screenshots and an executable demo interaction. Reviewers see a
@@ -60,6 +66,10 @@ reference images and must provide a comparison for all four acceptance checks.
 A below-standard assessment prevents a pass and requires repair or withholding
 publication. Different palettes, layouts and identities are expected; the
 comparison concerns clarity, specific humor, purposeful visuals and finish.
+Reviewers read as casual outsiders and identify the setup and comic turn in
+each feature's actual copy. Explaining a plausible niche service is insufficient.
+Final visual audits name visible `audience_cues` and an `audience_fit_pass` for
+each page and viewport; a mismatch cannot accompany a composition pass.
 Missing audit coverage or a failed acceptance check cannot accompany a pass.
 Hierarchy and image usefulness can fail even when there is no clipping.
 Deterministic metadata, asset, HTML and browser checks must also pass.
@@ -118,9 +128,12 @@ limits bound execution now. No experimental
 budget feature or additional API billing is required.
 
 Explicit user-requested artwork corrections may declare a version 2 mixed kit
-with a nonempty `revision_reason`. This retains Gemini provenance for the logo
-and accepts documented `openai-imagegen`/`image_gen` replacement graphics with
-their actual prompts. It does not change the daily generator's Gemini workflow,
+with a nonempty `revision_reason`. This accepts documented
+`openai-imagegen`/`image_gen` replacement graphics with their actual prompts.
+A user-requested logo replacement additionally requires a nonempty
+`logo_revision_reason` and the same honest image_gen provenance; an artwork
+revision alone retains the original logo requirement.
+This does not change the daily generator's Gemini workflow,
 waive the two composed-graphics requirement, or relabel replacement art as Gemini.
 
 Private `.tmp-codex/<run>/` artifacts include the original draft, each review,

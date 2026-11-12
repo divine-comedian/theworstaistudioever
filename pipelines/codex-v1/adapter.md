@@ -17,7 +17,10 @@ The host's approved quality floor is mandatory: the repaired Again entry of
 pinned criteria and captures as a quality reference while creating an original
 identity. The host will compare the result against that standard before publishing.
 
-Keep the original freedom to select style, palette, fonts, and satire. The
+Use the approved audience_design to select style, palette, fonts and imagery;
+preserve the source company's service structure and workflow in the demo. Humor
+must be understandable to a casual outsider and contain actual comic turns.
+Keep creative freedom within that audience and product brief. The
 chosen setup uses pipeline.md and these three skills. Other experimental prompt
 files and comparison feedback are separate experiments, not daily instructions.
 

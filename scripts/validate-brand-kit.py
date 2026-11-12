@@ -104,7 +104,10 @@ def validate(entry):
                 require(isinstance(name, str), "derived export needs source_file")
             raise ValueError("cyclic derived-export provenance")
 
-        gemini_origin(logo["primary_file"])
+        logo_revision = generation["mode"] == "mixed" and "logo_revision_reason" in generation
+        if logo_revision:
+            text_fields(generation, ["logo_revision_reason"], "brand_kit.generation")
+        gemini_origin(logo["primary_file"], allow_revision=logo_revision)
         landing = BrandReferences((entry / "index.html").read_text())
         graphic_files = set()
         for item in plan:

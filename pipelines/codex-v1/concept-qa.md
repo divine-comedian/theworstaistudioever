@@ -15,11 +15,30 @@ Compare comic mechanisms, pricing patterns and testimonial roles with recent
 entries. Keep effective specific jokes and the straight-faced fiction.
 Specialist terms need enough context to understand the action. A coherent
 product that only describes ordinary benefits still needs an absurd consequence.
+Read the hero, features and testimonials as someone outside this audience. State
+the premise in everyday language. A glossary, niche reference, noun mashup or
+your own explanatory reasoning cannot supply the missing joke. For each feature,
+identify the setup and actual comic turn in copy_audit.connection. A coherent
+service, large quantity, time overrun or routine inconvenience does not alone
+establish humor. Look for an immediately recognizable excess, reversal,
+embarrassment or self-defeating result. Fail satire when the proposed copy merely
+offers plausible audience services. Keep functional labels and ordinary plan
+entitlements clear; evaluate the comic escalation across the plan rather than
+forcing a punchline into every line.
 
 Check the composition plan: proposition, primary action and recognizable product
 visual come first; each proposed artwork must have a distinct communication job.
 Check that the demo demonstrates the advertised product and that prices, units,
 limits and actions agree. Reject unclear concepts before spending on assets.
+Review editorial_plan.audience_design before approving the visual plan. Its two
+or more references must supply concrete visual cues used in the proposed type,
+palette, imagery and composition. The audience should recognize its visual world
+without relying on its name in the headline. The source company supplies the
+service model and demo workflow; the audience supplies the identity. WeWork for
+K-pop fans needs both a workspace booking flow and credible music/fan visual
+references. Generic office-leasing artwork alone fails composition. Novelty
+against recent entries cannot excuse an audience mismatch. References guide an
+original identity; do not demand copied logos or one stereotyped audience style.
 
 The host's approved_quality_floor is the user's minimum standard, pinned to the
 repaired Again entry of 2026-11-11. Compare the proposed copy and product/visual

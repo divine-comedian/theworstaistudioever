@@ -8,6 +8,7 @@ If you are an agent working in this repo:
 - **`state/history.json` is append-only.** Never rewrite prior entries; only append.
 - **You do not push to git.** The wrapper script handles git. Make changes to the working tree only.
 - **Voice rule:** build straight-faced humor from recognizable audience behavior exaggerated through the source product's mechanics. Make the product and its absurd consequences understandable on first reading. Run all copy through the `anti-ai-slop` skill.
+- **Audience rule:** the source company supplies the service structure and demo workflow; the audience supplies the visual identity. Ground type, color, imagery and composition in concrete audience references before asset generation. Humor must work for a casual outsider and contain a comic turn beyond offering a plausible niche service.
 - **Quality rule:** every daily entry must meet or exceed the user-approved repaired Again entry of 2026-11-11. The pinned rubric and screenshots are in `pipelines/codex-v1/quality-floor.json`. Compare clarity, specific humor, useful imagery, visual finish and mobile usability while creating an original identity. A below-standard draft must be repaired or withheld from publication.
 - **Design rule:** every entry's design direction (style, palette, fonts) must differ from the last 7 entries. Use the host's recent-entry digest when supplied; otherwise read the last 7 `concept.json` files before picking direction in step 3 of the pipeline. Compare comic mechanisms and composition as well.
 

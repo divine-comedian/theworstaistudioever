@@ -19,6 +19,14 @@ and assess caption legibility/alignment. Set comprehension_pass false when the
 layout or imagery leaves the product unexplained. That requires composition=false
 and a concrete finding. General assurances such as "no clipping" do not answer
 whether the images explain the product. The host rejects incomplete visual audits.
+Also record audience_cues and audience_fit_pass for each page/viewport. Name
+visible typography, palette, imagery and composition that belong to this
+audience's visual world. Merely printing its name or adding a small themed badge
+is insufficient. The demo must share that identity while retaining the source
+service's information architecture and main workflow. If either page is a generic
+source-industry template with audience nouns, set audience_fit_pass=false and
+composition=false with an actionable finding. Judge the chosen audience
+references, not a personal preference or a universal stereotype of that audience.
 
 The host also attaches three pinned images labeled quality_reference and supplies
 approved_quality_floor. These show the repaired Again entry approved by the user
@@ -38,6 +46,12 @@ Evaluate four independent acceptance checks:
   mechanics. Features develop distinct observations. Test whether a line could
   move unchanged into unrelated concepts. Neither internal consistency nor a
   clever explanation by the reviewer proves a joke communicates to the reader.
+  Read as a casual outsider: identify an actual setup and comic turn visible in
+  each feature. An ordinary useful service, oversized number or routine annoyance
+  alone is insufficient. The humor must survive without specialist vocabulary or
+  the concept's explanation. A clear but humorless draft fails satire. Preserve
+  plain functional labels and factual entitlements; the plans collectively need
+  a comic escalation, not a forced joke in every button or bullet.
 - composition: opening hierarchy makes the proposition, CTA and recognizable
   product visual clear. Campaign artwork must not displace understanding of the
   product. Each image has an explanatory job; captions align with their image
@@ -50,7 +64,9 @@ Evaluate four independent acceptance checks:
 For EVERY feature and pricing perk, supply one concise copy_audit record with
 its concept JSON target (features.0, pricing_tiers.0.perks.0, etc.), behavior,
 mechanic and connection understandable from the page. Flag absent connections
-instead of defending them. Read testimonials and demo strings as well. Preserve
+instead of defending them. For features, connection must identify the comic turn
+in the published words, not just describe how the service works. Read testimonials
+and demo strings as well. Preserve
 strong jokes and the straight-faced fiction. Do not add published explanations
 of the joke or score humor numerically.
 
@@ -58,8 +74,10 @@ Inspect local brand artwork as needed to resolve visual questions. Version 2
 kits require a Gemini-designed identity and two composed graphic artworks with
 honest provenance and real placements. Photos and primitive diagrams do not
 substitute for those requirements.
-Mixed kits from an explicitly requested editorial revision retain the Gemini
-identity and may use image_gen replacement artwork with documented provenance.
+Mixed kits from an explicitly requested editorial revision may use image_gen
+replacement artwork with documented provenance. A separately requested logo
+replacement also needs brand_kit.generation.logo_revision_reason and actual
+image_gen provenance; an artwork revision alone does not authorize a logo change.
 Check logo proportions, small-size legibility, favicon use and contrast across
 landing and demo. Check graphic text, quantities,
 duplication and mobile legibility against live HTML and demo data. Historical

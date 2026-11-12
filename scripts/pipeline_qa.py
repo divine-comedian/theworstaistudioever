@@ -254,6 +254,7 @@ REVIEW_SCHEMA = object_schema({
         "viewport": {"type": "string", "enum": ["desktop", "mobile"]},
         "dominant_content": TEXT, "product_visual": TEXT, "caption_legibility": TEXT,
         "comprehension_pass": {"type": "boolean"},
+        "audience_cues": TEXT, "audience_fit_pass": {"type": "boolean"},
     })},
     "resolved_findings": {"type": "array", "items": TEXT},
     "findings": {"type": "array", "items": FINDING},
@@ -325,6 +326,8 @@ def validate_visual_audit(report):
         raise ValueError("QA visual audit must cover both pages on desktop and mobile")
     if report["checks"]["composition"] and not all(item["comprehension_pass"] for item in report["visual_audit"]):
         raise ValueError("Composition pass contradicts visual observations")
+    if report["checks"]["composition"] and not all(item.get("audience_fit_pass", False) for item in report["visual_audit"]):
+        raise ValueError("Composition pass contradicts audience fit observations")
 
 
 def read_review(path, slug):

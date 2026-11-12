@@ -181,6 +181,24 @@ class BrandKitTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'tool provenance'):
             module.validate(self.entry)
 
+    def test_explicit_logo_revision_requires_reason_and_honest_provenance(self):
+        self.make_gemini_kit()
+        self.kit['generation'].update(mode='mixed', revision_reason='Requested visual revision.',
+                                      logo_revision_reason='User requested a logo matching the approved album artwork.')
+        logo = self.concept['images']['items'][0]
+        logo.update(source='openai-imagegen', tool='image_gen', prompt='Album-inspired Annex wordmark.')
+        self.save()
+        module.validate(self.entry)
+        self.kit['generation']['logo_revision_reason'] = ''
+        self.save()
+        with self.assertRaisesRegex(ValueError, 'logo_revision_reason'):
+            module.validate(self.entry)
+        self.kit['generation']['logo_revision_reason'] = 'User requested a logo revision.'
+        logo['tool'] = 'unrecorded'
+        self.save()
+        with self.assertRaisesRegex(ValueError, 'tool provenance'):
+            module.validate(self.entry)
+
     def test_version_two_rejects_native_logo_as_gemini_design(self):
         self.make_gemini_kit()
         self.concept["images"]["items"][0]["source"] = "native-svg"

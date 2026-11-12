@@ -30,6 +30,11 @@ CONCEPT_SCHEMA = object_schema({
         "observations": array(object_schema({key: TEXT for key in ["behavior", "mechanic", "consequence"]}), 3, 3),
         "source_product_patterns": array(TEXT, 4),
         "composition_plan": TEXT,
+        "audience_design": object_schema({
+            "references": array(object_schema({key: TEXT for key in ["reference", "cues", "application"]}), 2),
+            "landing_application": TEXT,
+            "demo_application": TEXT,
+        }),
     }),
 })
 
