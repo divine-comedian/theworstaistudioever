@@ -12,6 +12,22 @@ repo `.env` overrides the selector.
 first-trial workspace, including their datasets and helper scripts. Their
 provenance and hashes are recorded in `codex-v1/manifest.json`.
 
+Supporting design guidance lives in `codex-v1/design-guidance/impeccable/`.
+It is a modified, text-only selection from upstream commit
+`b4bff1626c344067788c2679f048a20057c7cc5a`, with Apache-2.0 licensing,
+notices, source blob IDs and local SHA-256 hashes in its own `SOURCE.json`.
+The original three frozen skills and their manifest are unchanged.
+
+The host verifies that bundle before any model call and inlines only the
+applicable text: the shared guide for concept work, guide/adapt/harden for
+building and page repairs, and guide/critique/audit for final review. Missing or
+modified text, unexpected files, symlinks and executable bits stop the run.
+The guidance adds no upstream launcher, engine, installation, hook, agent,
+network service, live mode, telemetry or account feature. It introduces no
+additional reports, approvals, design scores, review loops or repair allowance.
+Audience-derived identity, recognizable source-service workflows, understandable
+satire and the pinned quality floor continue to govern acceptance.
+
 The generator executes the current root `pipeline.md` with the thin
 `codex-v1/adapter.md`. The revision-2 experimental quality contract, fourth
 frontend skill, and Cuebook-specific requirements are outside this daily setup.

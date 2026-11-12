@@ -28,6 +28,39 @@ class StageFailure(RuntimeError):
 QUALITY_FLOOR_ID = "again-2026-11-11-approved"
 
 
+def design_guidance_context(workspace, stage):
+    """Read only reviewed local text; never install or execute upstream tooling."""
+    selections = {
+        "concept": ("GUIDE.md",),
+        "build": ("GUIDE.md", "references/adapt.md", "references/harden.md"),
+        "review": ("GUIDE.md", "references/critique.md", "references/audit.md"),
+        "repair": ("GUIDE.md", "references/adapt.md", "references/harden.md"),
+    }
+    names = {name for selection in selections.values() for name in selection} | {"LICENSE", "NOTICE.md"}
+    root = workspace / "pipelines/codex-v1/design-guidance/impeccable"
+    paths = list(root.rglob("*"))
+    if (not root.resolve().is_relative_to(workspace.resolve()) or root.is_symlink()
+            or any(path.is_symlink() for path in paths)):
+        raise ValueError("Design guidance must contain regular local text, not symlinks")
+    actual = {str(path.relative_to(root)) for path in paths if path.is_file()}
+    if actual != names | {"SOURCE.json"} or any(path.stat().st_mode & 0o111 for path in paths if path.is_file()):
+        raise ValueError("Design guidance must contain only its reviewed nonexecutable text files")
+    manifest = json.loads((root / "SOURCE.json").read_text())
+    if (not isinstance(manifest, dict) or manifest.get("format") != 1 or manifest.get("kind") != "text-only"
+            or manifest.get("upstream_repository") != "https://github.com/pbakaus/impeccable"
+            or manifest.get("upstream_commit") != "b4bff1626c344067788c2679f048a20057c7cc5a"
+            or not isinstance(manifest.get("files"), dict) or set(manifest["files"]) != names):
+        raise ValueError("Invalid pinned design guidance provenance")
+    documents = {}
+    for name in sorted(names):
+        data = (root / name).read_bytes()
+        if hashlib.sha256(data).hexdigest() != manifest["files"][name]:
+            raise ValueError(f"Reviewed design guidance missing or changed: {name}")
+        documents[name] = data.decode("utf-8")
+    return {"upstream_commit": manifest["upstream_commit"], "kind": "local text-only adaptation",
+            "documents": [{"file": name, "text": documents[name]} for name in selections[stage]]}
+
+
 def quality_floor_context(workspace):
     """Pinned human approval survives catalogue rotation and later entry edits."""
     path = workspace / "pipelines/codex-v1/quality-floor.json"
@@ -501,6 +534,7 @@ def final_review_input(workspace, slug, directory, context):
                                    for item in concept.get("images", {}).get("items", [])]
     previous = [json.loads(Path(path).read_text()) for path in context.get("all_previous_reviews", [])]
     data = {**context, "attached_images": labels, "approved_quality_floor": floor,
+            "design_guidance": design_guidance_context(workspace, "review"),
             "page_content": json.loads((directory / "review-packet.json").read_text()),
             "concept_after_page_review": compact,
             "technical_checks": json.loads((directory / "technical.json").read_text()),
@@ -571,6 +605,7 @@ def run_qa(workspace, slug, config, run, invoke, deadline, allowance=None):
                        "browser_report": str(directory / "browser.json"), "attempt": number,
                        "all_previous_reviews": summary["reviews"].copy(),
                        "approved_quality_floor": quality_floor_context(workspace)[0]}
+            context["design_guidance"] = design_guidance_context(workspace, "repair")
             prompt = (bundle / "heal.md").read_text() + "\n\nHOST REPAIR CONTEXT:\n" + json.dumps(context, indent=2)
             before = guarded_files(workspace, slug)
             summary["repair_attempts"] = allowance.used

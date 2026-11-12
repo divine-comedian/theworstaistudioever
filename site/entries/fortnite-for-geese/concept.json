@@ -1,0 +1,338 @@
+{
+  "date": "2026-11-12",
+  "company": "Fortnite",
+  "subject": "geese",
+  "tagline": "Fortnite for geese",
+  "slug": "fortnite-for-geese",
+  "product_name": "Gander",
+  "one_liner": "A battle royale for geese. Six birds enter a public park; one leaves claiming the drain.",
+  "brand_voice_notes": "Park-sign directness. Territorial entitlement, extravagant construction and conspicuous plumage. Plain controls; jokes in the consequences. No specialist knowledge required.",
+  "hero": {
+    "h1": "The park is public. The chip is yours.",
+    "sub": "Gander is a battle royale for geese. Grab the picnic chip, build a lookout and follow the shrinking safe zone. The final territory is a drain. You will defend it anyway.",
+    "primary_cta": "open the demo →"
+  },
+  "features": [
+    {
+      "title": "Build yourself out of lunch.",
+      "blurb": "Stack three ramps for the best view in the park. From up there, you can watch Dennis eat the chip you were guarding."
+    },
+    {
+      "title": "Dress to be found.",
+      "blurb": "Swap gray feathers for gold. The shrub still hides a goose, but it now appears to be hiding a small chandelier."
+    },
+    {
+      "title": "Win less ground. More personally.",
+      "blurb": "Each storm circle pushes the flock closer to the drain. By the final round, six acres of disputed park have become one very important hole."
+    }
+  ],
+  "pricing_tiers": [
+    {
+      "name": "Common goose",
+      "price": "Free",
+      "tagline": "Bring the feathers you woke up in.",
+      "perks": [
+        "Solo matches and four-slot squad channel",
+        "Gray plumage and 30 timber per match",
+        "Full access to the disputed drain"
+      ]
+    },
+    {
+      "name": "Gold goose",
+      "price": "$8 once",
+      "tagline": "Pay to become easier to identify.",
+      "perks": [
+        "Everything in Common goose",
+        "One reflective gold outfit",
+        "Same health. Noticeably less concealment."
+      ]
+    },
+    {
+      "name": "Seasonal resident",
+      "price": "$24 / season",
+      "tagline": "A new look for a recurring grievance.",
+      "perks": [
+        "Everything in Gold goose",
+        "12 seasonal feather colors",
+        "A winner portrait beside the same drain"
+      ]
+    }
+  ],
+  "testimonials": [
+    {
+      "quote": "I built three ramps to establish dominance. Dennis ate the chip and left before I finished establishing it.",
+      "name": "Arthur Reed",
+      "title": "Canada goose, north picnic lawn"
+    },
+    {
+      "quote": "The gold feathers worked. Every goose in the park knew exactly who to chase.",
+      "name": "Edna Moss",
+      "title": "Canada goose, ornamental shrub regular"
+    },
+    {
+      "quote": "I won the drain. A week ago I would have called it a hole. You need to understand the context.",
+      "name": "Mabel Banks",
+      "title": "Canada goose, defending drain champion"
+    }
+  ],
+  "demo_screen_concept": "One interactive top-down public-park match with six geese remaining. Adjacent-patch movement, three timber ramps, gray/gold outfit selection, storm circles converging on the drain, a next-circle minimap, health, materials, remaining-player count, four squad slots, a plain-language event log and deterministic reset. Three ramps put Arthur above his chip as Dennis eats it below. Gold visibly glints and changes Hidden to Spotted.",
+  "editorial_plan": {
+    "observations": [
+      {
+        "behavior": "Geese defend scraps as territory.",
+        "mechanic": "Battle royale loot and construction.",
+        "consequence": "The player builds a grand lookout and loses the chip directly beneath it."
+      },
+      {
+        "behavior": "Wanting every rival to admire your appearance.",
+        "mechanic": "Outfit selection changes visibility.",
+        "consequence": "Gold attracts the attention the hiding goose was trying to avoid."
+      },
+      {
+        "behavior": "Refusing to back down from a trivial territorial dispute.",
+        "mechanic": "Shrinking storm circles and last-bird-standing resolution.",
+        "consequence": "Winning the park means defending a drain nobody wanted at the start."
+      }
+    ],
+    "source_product_patterns": [
+      "Arena-first battle royale screen",
+      "Closing unsafe storm and next-safe-circle minimap",
+      "Resource-limited building with three ramp levels",
+      "Outfit locker with live character appearance",
+      "Health and remaining-player HUD",
+      "Four-slot squad strip and deterministic match reset"
+    ],
+    "composition_plan": {
+      "primary_action": "Open the playable park match",
+      "recognizable_product_visual": "A live-HTML park-board preview with geese, chip, storm edge, drain, health and materials near the opening",
+      "opening_hierarchy": "Compact logo navigation, left proposition and CTA, larger right arena, then a clear rule strip",
+      "artwork_purposes": {
+        "lookout.webp": "Explain the construction effort versus lost lunch",
+        "plumage.webp": "Compare concealment of the same bird in two outfits"
+      }
+    },
+    "audience_design": {
+      "references": [
+        {
+          "reference": "Peterson Field Guide bird identification plates",
+          "cues": "Clear goose silhouettes, side-profile studies, restrained natural colors and small arrows identifying visible differences.",
+          "application": "Use original illustrated goose studies for the outfit comparison. An arrow points to the gold feather glint as a practical identification detail. Keep species-style captions readable and outside the artwork; reproduce no existing plates or branding."
+        },
+        {
+          "reference": "Municipal pond-side 'Do not feed the birds' signs and park wayfinding maps",
+          "cues": "Sturdy slab lettering, dark olive sign panels, pale backgrounds, simplified paths and direct instructions.",
+          "application": "Use the signage hierarchy for headlines and section markers, and park-map geometry for the playable arena. Actual controls use plain labels such as Move, Build ramp and Next circle. Create original symbols and notices without municipal seals."
+        }
+      ],
+      "landing_application": "Pond-side municipal signs meet illustrated bird identification plates: reed olive, pale sky and chalk; Lora bold naturalist headings with Raleway functional text; broad asymmetric opening and rounded pond-map geometry. The playable preview precedes large artwork. Open text passages and generous gutters avoid repeating a card grid.",
+      "demo_application": "Keep the battle-royale arena central with HUD, next-circle inset, four squad slots, outfit strip and material-limited construction. Field-guide goose pieces inhabit a six-by-six park map with visible paths, pond, bins, chip and drain. At mobile widths the controls stack after the full-width board; all actions have keyboard-operable buttons."
+    }
+  },
+  "design_direction": {
+    "style": "Illustrated park-wayfinding: sturdy naturalist type, broad sky fields, olive signage and contour-shaped pond boundaries. A field guide with an active territorial dispute.",
+    "palette": {
+      "name": "Pond Sky, Reed Olive and Chalk",
+      "primary": "#4D572A",
+      "accent": "#B94F32",
+      "bg": "#DCE7EA",
+      "fg": "#26301F",
+      "muted": "#586450",
+      "ink": "#26301F",
+      "surface": "#F4F1E5",
+      "line": "#A5AF99",
+      "gold": "#C8A339"
+    },
+    "fonts": {
+      "pairing": "Wellness Calm from bundled ui-ux-pro-max library, given heavier field-guide headings",
+      "display": "'Lora', Georgia, serif",
+      "body": "'Raleway', Arial, sans-serif"
+    },
+    "archetype": "Product Demo + Features from bundled landing library; proposition and recognizable match preview, three behavior-led features, two explanatory art spreads, player evidence, cosmetic purchase comparison.",
+    "motion_vocab": "160ms button color changes; user-triggered map changes only. No ambient movement. Reduced motion disables transitions.",
+    "hero_composition_notes": "Wide asymmetrical sky opening, short large heading beside a park arena preview. A chalk rules band leads to construction art and outfit identification art. Pricing resembles three reserve admission options. Demo uses the same kit with compact functional density.",
+    "design_review": "Compared seven entries dated November 5–11, excluding this recovery and other November 12 experiments. No matching style/palette/font tuple. This entry uses natural-history illustration and park contours instead of sports video, huddles, seed cells, parcels, tickets or film stills. Rejected automatic claymorphism/newsletter recommendation because it does not serve the approved game workflow."
+  },
+  "brand_kit": {
+    "version": 2,
+    "generation": {
+      "mode": "gemini",
+      "fallback_reason": ""
+    },
+    "identity_rationale": "A goose neck combined with territorial contour lines gives a municipal bird warning its own identity. Slab wordmark, natural-history gouache and rounded pond contours express public-park entitlement. Differs from the recent lifting strap, speech huddle, seed selection and parcel identities.",
+    "logo": {
+      "concept": "Accepted Gemini direction A: alert goose head contained by irregular territory contours, beside bespoke mixed-case Gander slab wordmark with rust location pin in the d. Alternative integrated capital-G direction rejected for heavier silhouette.",
+      "primary_file": "logo.webp",
+      "mono_file": "logo-mono.png",
+      "icon_file": "logo-icon.png",
+      "clear_space": "At least half the symbol height; exported artwork retains chalk breathing room",
+      "min_size_px": 24,
+      "placement": "Landing navigation and footer; demo chrome; same icon favicon on both pages"
+    },
+    "graphic_language": {
+      "medium": "Original natural-history gouache geese with flat municipal sign typography and simplified park contours",
+      "motif": "Nested irregular pond contours, terminating in a rectangular drain grille",
+      "composition": "1200px maximum content width; 24–80px spacing; asymmetric copy/art spreads; full-composition artwork with attached live captions; six-column functional arena reflows with stacked controls below 760px.",
+      "texture": "Fine printed gouache grain inside Gemini artwork only; flat HTML sign panels"
+    },
+    "tokens": {
+      "spacing": "4px, 8px, 16px, 24px, 48px, 80px",
+      "radii": "6px controls; 16px arena shell; 999px status tags",
+      "borders": "1px solid var(--line); 2px solid var(--primary) for active controls",
+      "shadows": "0 8px 0 rgba(38,48,31,.08) on arena only"
+    },
+    "graphic_plan": [
+      {
+        "role": "graphic-design",
+        "file": "lookout.webp",
+        "purpose": "A side-view cutaway makes construction overkill visible: three ramps lift Arthur above the chip while Dennis eats it below",
+        "placement": "Landing construction feature",
+        "medium": "Gemini-composed natural-history editorial campaign illustration with intentional hierarchy and typography"
+      },
+      {
+        "role": "infographic",
+        "file": "plumage.webp",
+        "purpose": "Equal-scale field-guide comparison demonstrates that gold plumage exposes the same hiding place",
+        "placement": "Landing outfit feature and demo field-guide help",
+        "medium": "Gemini-designed identification plate with comparative visual hierarchy and labels"
+      }
+    ]
+  },
+  "images": {
+    "rationale": "Recovery reuses the existing Gemini-designed logo family, two composed graphics and specimen-derived game pieces. Zero new image generations. Original prompts, attempts and rejected records below are preserved from the prior entry; they are historical provenance, not new calls. Functional map and controls are native HTML/CSS.",
+    "items": [
+      {
+        "role": "logo",
+        "file": "logo.webp",
+        "source": "gemini",
+        "prompt": "Design the actual finished original identity for \"Gander\", a battle royale for geese who claim public parks. Direction A: a bold compact goose-neck silhouette integrated with two irregular territory contour lines, beside bespoke sturdy slab-serif wordmark spelling exactly \"Gander\". Give the symbol a distinctive poised hostile goose character, legible without tiny details. Municipal pond-side bird warning meets naturalist field guide. Flat reed olive #4D572A on plain chalk #F4F1E5, tiny rust #B94F32 accent permitted. Horizontal lockup, symbol left in left quarter, lettering right. Generous clear space. No tagline, no mockup, no presentation board, no frames, no gradients, no source game trademarks. This is final usable logo artwork, not a concept sheet. Crisp edges, sophisticated optical spacing. Only text: Gander.",
+        "attempts": 1,
+        "placement": "Landing navigation/footer and demo chrome",
+        "verdict": "Accepted direction A: correct Gander spelling, distinct goose/contour symbol, readable at 200px navigation and recognizable at 32px icon. Stronger separate symbol and mixed-case readability than B.",
+        "transformation": "Faithful crop, chalk background removal and lossless WebP export from generated direction A",
+        "recovery_review": "Reused existing local asset; original generation provenance retained. No new generation in this recovery."
+      },
+      {
+        "role": "logo",
+        "file": "logo-mono.png",
+        "source": "derived-export",
+        "prompt": "Deterministic single olive recolor preserving accepted alpha and silhouette",
+        "attempts": 0,
+        "placement": "Alternative light-background logo",
+        "verdict": "Accepted: identical geometry, no competing mark",
+        "source_file": "logo.webp",
+        "transformation": "Recolor opaque pixels #4D572A retaining alpha",
+        "recovery_review": "Reused existing local asset; original generation provenance retained. No new generation in this recovery."
+      },
+      {
+        "role": "logo",
+        "file": "logo-icon.png",
+        "source": "derived-export",
+        "prompt": "Crop accepted goose-contour symbol with chalk clear space",
+        "attempts": 0,
+        "placement": "Favicon on both pages",
+        "verdict": "Accepted at 32px: distinctive bird silhouette; small interior contours are secondary",
+        "source_file": "logo.webp",
+        "transformation": "Isolate original symbol, fit into 384px chalk square with 42px clear margin",
+        "recovery_review": "Reused existing local asset; original generation provenance retained. No new generation in this recovery."
+      },
+      {
+        "role": "graphic-design",
+        "file": "lookout.webp",
+        "source": "gemini",
+        "prompt": "Revise the attached Gander editorial campaign artwork. First attached image is APPROVED IDENTITY REFERENCE. Second attached image is EDIT TARGET. Preserve its successful original gouache style, palette, large headline \"A better view of losing your chip.\", contour-lined ground, picnic scene and typographic hierarchy. Fix the central story: put the vigilant gray goose on the HIGHEST lookout platform at the upper right, fully visible. Remove the goose from the low left platform so there are exactly TWO geese in the whole image: one at the very top looking down, one on the ground eating the stolen french fry. There must be exactly THREE rising wooden ramps in a clear zigzag route up to the highest platform; no extra descending stairs. Use the label \"3 ramps\" ONLY ONCE near the structure. Use \"1 chip\" ONLY ONCE beside the eating goose, and show only one chip in its beak. Retain the exact Gander logo at bottom right faithfully. No extra text, no repeated labels, no new words. All essential details and words must remain within margins. This is the final finished campaign illustration, not a mockup.",
+        "attempts": 2,
+        "placement": "Landing construction passage",
+        "verdict": "Accepted corrected composition: goose now at highest platform, single 3 ramps label, rival eating at ground level. Headline correctly spelled and large. Fine stair detail is illustrative; live text carries the exact mechanic.",
+        "references": [
+          "logo.webp",
+          "lookout-rejected.webp"
+        ],
+        "recovery_review": "Reused existing local asset; original generation provenance retained. No new generation in this recovery."
+      },
+      {
+        "role": "infographic",
+        "file": "plumage.webp",
+        "source": "gemini",
+        "prompt": "Create a finished natural-history identification infographic for Gander. Attached logo is APPROVED IDENTITY REFERENCE; use its slab typography, goose silhouette character and olive contour language. An original two-column Peterson-inspired bird field-guide study, not copied from any existing illustration. Exact headline \"Same shrub. Different odds.\" Across two equal-sized circular shrub cutaways, place a realistic gouache Canada goose of equal scale, one wearing standard gray feathers almost blending into olive foliage, the other with metallic GOLD feathers visibly glinting through the equivalent shrub. Both birds must be easy to find for the viewer while gray is clearly subtler. Use carefully drawn nested map-contour sightlines around each bush, gold side with multiple rust sightline ticks and a conspicuous bright reflective starburst that is a physical sun reflection, not decorative branding. Label left \"Gray\" and beneath \"Hidden\"; label right \"Gold\" and beneath \"Spotted\". Add small exact bottom line \"Appearance changes. Cover does not.\" These are all the words; no gibberish or extra text. A composed data-story plate with editorial hierarchy, paired illustrations, clear large labels, generous breathing room. Background chalk #F4F1E5, reed olive #4D572A, pale sky #DCE7EA, rust #B94F32 and gold #C8A339 only. Fine print grain, museum-quality hand-painted bird studies. Landscape 3:2, large mobile-readable typography, no UI, photographs or watermarks.",
+        "attempts": 1,
+        "placement": "Landing outfit passage and demo field guide",
+        "verdict": "Accepted: equal-scale paired geese, clear Gray/Hidden and Gold/Spotted labels, visible reflection. Readable primary hierarchy at 360px; fine bottom line repeated in live HTML.",
+        "references": [
+          "logo.webp"
+        ],
+        "recovery_review": "Reused existing local asset; original generation provenance retained. No new generation in this recovery."
+      },
+      {
+        "role": "demo",
+        "file": "geese-sheet.webp",
+        "source": "gemini",
+        "prompt": "Create two isolated original natural-history gouache Canada goose full-body profile illustrations for Gander park-map game pieces, using attached image as APPROVED IDENTITY AND STYLE REFERENCE. Exactly TWO geese separated widely, left half standard gray Canada goose, right half same shape goose with reflective gold plumage, black neck and white cheek retained in both. Both face right, standing on feet, full body including head and tail, same scale. Detailed feather planes but strong clear silhouette, alert territorially offended posture, dry wit, field-guide specimen treatment. Reed olive #4D572A, neutral gray, gold #C8A339, beak dark. Absolutely uniform pure white background #FFFFFF for faithful deterministic background removal, NO shadows, NO scenery, NO letters, NO labels, NO logo, NO UI, NO text. Two specimens centered in separate left and right halves with ample margins, never overlapping. Landscape 3:2.",
+        "attempts": 1,
+        "placement": "Source sheet for game-avatar exports",
+        "verdict": "Accepted: consistent gray and gold Canada geese, clean silhouettes, no text; same alert posture.",
+        "references": [
+          "logo.webp"
+        ],
+        "recovery_review": "Reused existing local asset; original generation provenance retained. No new generation in this recovery."
+      },
+      {
+        "role": "demo",
+        "file": "goose-gray.webp",
+        "source": "derived-export",
+        "prompt": "Faithful isolation of left goose from accepted specimen sheet",
+        "attempts": 0,
+        "placement": "Landing arena preview and interactive demo",
+        "verdict": "Accepted: full head, feet and tail retained; no white rectangle on lawn",
+        "source_file": "geese-sheet.webp",
+        "transformation": "Crop specimen half, remove white background, preserve feather silhouette, resize to at most 400px",
+        "recovery_review": "Reused existing local asset; original generation provenance retained. No new generation in this recovery."
+      },
+      {
+        "role": "demo",
+        "file": "goose-gold.webp",
+        "source": "derived-export",
+        "prompt": "Faithful isolation of right goose from accepted specimen sheet",
+        "attempts": 0,
+        "placement": "Landing arena preview and interactive demo",
+        "verdict": "Accepted: full head, feet and tail retained; no white rectangle on lawn",
+        "source_file": "geese-sheet.webp",
+        "transformation": "Crop specimen half, remove white background, preserve feather silhouette, resize to at most 400px",
+        "recovery_review": "Reused existing local asset; original generation provenance retained. No new generation in this recovery."
+      }
+    ],
+    "discarded": [
+      {
+        "role": "logo",
+        "file": "logo-alternative.webp",
+        "source": "gemini",
+        "prompt": "Design an actual finished alternative original logo for \"Gander\", territorial geese in a public-park battle royale. Direction B: a bespoke chunky slab-serif Gander wordmark with a sculptural goose neck and head emerging from its capital G, the lower G suggesting a drain grille. Restrained original municipal park-sign identity. Flat reed olive #4D572A and rust #B94F32 on plain chalk #F4F1E5. No separate generic badge. Bold character, simple silhouette, original lettering, excellent optical kerning. Broad horizontal composition with generous clear space. Deliver just finished logo artwork. No mockup, no board, no extra words or logos. Exact text: Gander.",
+        "attempts": 1,
+        "verdict": "Rejected direction B: heavier uppercase silhouette, less independently usable symbol and more awkward goose/G join."
+      },
+      {
+        "role": "graphic-design",
+        "file": "lookout-rejected.webp",
+        "source": "gemini",
+        "prompt": "Create a finished sophisticated editorial graphic for Gander, the goose battle royale. Attached image is the APPROVED IDENTITY REFERENCE: preserve its goose silhouette attitude, olive contour motif, slab-serif lettering and palette. Not a logo sheet. Compose a landscape illustrated park field study: on the left a gray Canada goose stands VERY HIGH on an elaborate timber structure of exactly THREE ascending ramps plus top lookout platform; at ground level below, a second Canada goose casually eats a single french fry beside a picnic blanket. The effort-versus-reward joke must read instantly. Original natural-history gouache with rich feather detail, flat municipal sign typography, pale sky #DCE7EA, chalk #F4F1E5, reed olive #4D572A, timber neutral brown, rust #B94F32 accents. Controlled paper grain. Editorial design with confident negative space and clear depth, slim contour-line ground pattern. Integrate large readable exact headline \"A better view of losing your chip.\" at upper left and deliberate labels \"3 ramps\" next to the tall structure and \"1 chip\" next to the eating goose. No other copy except small Gander wordmark using approved reference if desired. Layout, illustration and typography designed as one campaign composition. No UI mockup, photo, generic shapes, checkerboard or watermarks. Wide 3:2 composition, keep all key text away from edges.",
+        "attempts": 1,
+        "verdict": "Rejected first construction image: upper goose on lowest platform and repeated ramp label. One targeted reference edit moved goose to highest platform and removed repeated label."
+      }
+    ],
+    "logo_candidate_decisions": "A selected over B for a clearer separate goose/territory symbol and correctly cased wordmark. Both inspected with vision. Primary, monochrome and icon exports retain A exactly."
+  },
+  "recovery": {
+    "date": "2026-11-12",
+    "fixed_brief": true,
+    "rerolls": 0,
+    "new_image_calls": 0,
+    "history_action": "Preserve exact existing bytes; no append",
+    "source": "Host unpublished-entry recovery override"
+  },
+  "generation": {
+    "engine": "codex",
+    "model": "gpt-6.1-sol",
+    "reasoning_effort": "high",
+    "generated_at": "2026-11-12T16:49:13.733180+00:00",
+    "recovered_unpublished_entry": true
+  }
+}

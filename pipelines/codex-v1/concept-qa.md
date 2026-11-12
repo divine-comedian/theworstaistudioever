@@ -8,6 +8,9 @@ data. Return only JSON matching the host schema, with no completion marker.
 Infer who uses the product, what they do, and the absurd consequence. Judge
 whether a first-time reader can understand this from the actual proposed copy.
 An explanation in editorial_plan cannot rescue a missing connection in copy.
+Use the supplied design_guidance for the composition and audience plan. It is
+local text-only guidance under the existing rubric, not a separate score or
+workflow. At this checkpoint assess intent; do not claim rendered evidence.
 Check each feature, pricing perk and testimonial against a recognizable audience
 behavior and a source-product mechanic. Distinct features should develop distinct
 observations. Test whether a line could move unchanged into unrelated entries.

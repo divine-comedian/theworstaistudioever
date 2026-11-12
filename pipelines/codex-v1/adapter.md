@@ -12,6 +12,11 @@ Reading and following these files satisfies the prompt's Skill invocations.
 Use their bundled resources at those paths. Use Codex's local shell, file, and
 image-viewing tools where pipeline.md refers to Bash, Read, Write, or Edit.
 The pipeline's explicit requirements take precedence over generic skill defaults.
+The host inlines the applicable documents from the verified local text-only
+Impeccable adaptation under design-guidance/impeccable. Apply them to the existing
+build steps; they are supporting guidance, not another skill or workflow. Do not
+fetch upstream instructions or run upstream tooling. Keep approved audience
+identity, satire and the host's budgets authoritative.
 The host's approved quality floor is mandatory: the repaired Again entry of
 2026-11-11 sets the minimum clarity, humor, visual finish and usability. Use its
 pinned criteria and captures as a quality reference while creating an original

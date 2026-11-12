@@ -14,7 +14,7 @@ import tempfile
 import time
 
 from pipeline_qa import (DraftTransaction, StageFailure, budget, entry_path, execute,
-                         RepairAllowance, quality_floor_context, run_qa, validate_config)
+                         RepairAllowance, design_guidance_context, quality_floor_context, run_qa, validate_config)
 from pipeline_editorial import UsageLedger, concept_checkpoint, validate_editorial_config
 
 
@@ -31,6 +31,7 @@ def configuration(workspace):
         raise ValueError("Codex timeout must be positive")
     validate_config(workspace, config)
     validate_editorial_config(workspace, config)
+    design_guidance_context(workspace, "concept")
     return bundle, config
 
 
@@ -52,6 +53,7 @@ def codex_command(workspace, config, result, read_only=False, schema=None, image
 def generate(workspace, bundle, config, run, invoke, recover_today=None, finish_recovery=False, approved=None):
     prompt = (bundle / "adapter.md").read_text() + "\n\n" + (workspace / "pipeline.md").read_text()
     prompt += "\n\nHOST APPROVED QUALITY FLOOR:\n" + json.dumps(quality_floor_context(workspace)[0])
+    prompt += "\n\nHOST TEXT-ONLY DESIGN GUIDANCE:\n" + json.dumps(design_guidance_context(workspace, "build"))
     prompt += """
 
 HOST QA CHECKPOINT OVERRIDE (Codex only; takes precedence over Step 8 abort):

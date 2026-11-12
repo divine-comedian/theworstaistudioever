@@ -35,6 +35,7 @@ class DailyWrapperTest(unittest.TestCase):
             shutil.copy2(ROOT / "pipelines/codex-v1" / name, bundle / name)
         shutil.copy2(ROOT / "pipelines/codex-v1/quality-floor.json", bundle / "quality-floor.json")
         shutil.copytree(ROOT / "pipelines/codex-v1/reference/again-approved", bundle / "reference/again-approved")
+        shutil.copytree(ROOT / "pipelines/codex-v1/design-guidance", bundle / "design-guidance")
         (bundle / "adapter.md").write_text("Fixture adapter")
         (bundle / "skills/fixture").mkdir(parents=True)
         (bundle / "skills/fixture/SKILL.md").write_text("Fixture")

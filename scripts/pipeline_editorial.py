@@ -6,7 +6,7 @@ import math
 import re
 
 from pipeline_qa import (REVIEW_SCHEMA, TEXT, StageFailure,
-                         budget, object_schema, quality_floor_context, validate_copy_audit, validate_shape,
+                         budget, design_guidance_context, object_schema, quality_floor_context, validate_copy_audit, validate_shape,
                          validate_verdict)
 
 
@@ -178,6 +178,7 @@ def concept_checkpoint(workspace, bundle, config, run, invoke, deadline, allowan
     # Only concept instructions; asset and implementation details belong to build.
     voice = source.split("## Voice", 1)[-1].split("## Step 1", 1)[0]
     concept_rules = source.split("## Step 2", 1)[-1].split("## Step 3", 1)[0]
+    guidance = design_guidance_context(workspace, "concept")
     prompt = """HOST CONCEPT DRAFT CHECKPOINT. Return only the concept JSON matching
 the schema. Use the fixed identity below; the host already rolled it. Read and
 apply the frozen anti-ai-slop skill. Follow the voice and concept instructions.
@@ -187,7 +188,7 @@ editorial_plan requested by the schema. Do not write files, generate assets,
 build HTML, run git, inspect secrets, use apps, delegate, or publish. The host
 will review and persist the approved brief. Recent entries are comparison data,
 not templates. Keep this concept specific and understandable on first reading.
-""" + voice + concept_rules + "\nFIXED IDENTITY:\n" + json.dumps(identity) + "\nRECENT DIGEST:\n" + json.dumps(recent) + "\nAPPROVED QUALITY FLOOR:\n" + json.dumps(floor)
+""" + voice + concept_rules + "\nHOST TEXT-ONLY DESIGN GUIDANCE:\n" + json.dumps(guidance) + "\nFIXED IDENTITY:\n" + json.dumps(identity) + "\nRECENT DIGEST:\n" + json.dumps(recent) + "\nAPPROVED QUALITY FLOOR:\n" + json.dumps(floor)
     path = invoke(prompt, "concept-draft", budget(deadline, checkpoint["draft_timeout_seconds"]),
                   read_only=True, schema=schema)
     report_schema = json.loads(json.dumps(REVIEW_SCHEMA))
@@ -208,6 +209,7 @@ not templates. Keep this concept specific and understandable on first reading.
             review_prompt = (bundle / "concept-qa.md").read_text() + "\nHOST CONTEXT:\n" + json.dumps({
                 "concept": concept, "recent_entries": recent,
                 "approved_quality_floor": floor,
+                "design_guidance": guidance,
                 "previous_findings": sorted(previous_ids),
                 "previous_reviews": summary["reviews"],
             })
@@ -233,7 +235,7 @@ Fix every reported finding against its acceptance condition; preserve the fixed
 date/company/subject/slug/tagline and product name. Keep successful observations.
 Change matching copy and the editorial plan consistently. Do not write files,
 generate images, build pages, inspect secrets, use apps, delegate or publish.
-""" + json.dumps({"concept": concept, "review": report}, ensure_ascii=False)
+""" + json.dumps({"concept": concept, "review": report, "design_guidance": guidance}, ensure_ascii=False)
             repaired = invoke(prompt, f"concept-repair-{number}",
                               budget(deadline, checkpoint["repair_timeout_seconds"]),
                               read_only=True, schema=schema)

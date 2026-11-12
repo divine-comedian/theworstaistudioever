@@ -13,7 +13,7 @@ import unittest
 from pipeline_qa import (apply_exact_patches, final_review_input, read_review, review_schema, review_packet,
                          validate_copy_audit, validate_shape, validate_verdict, validate_visual_audit, StageFailure)
 from pipeline_editorial import CONCEPT_SCHEMA, UsageLedger, recent_digest, roll
-from pipeline_qa import quality_floor_context
+from pipeline_qa import design_guidance_context, quality_floor_context
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -36,6 +36,7 @@ class GeneratorTest(unittest.TestCase):
             "skills": ["anti-ai-slop", "frontend-design", "ui-ux-pro-max"]}))
         shutil.copy2(ROOT / "pipelines/codex-v1/quality-floor.json", bundle / "quality-floor.json")
         shutil.copytree(ROOT / "pipelines/codex-v1/reference/again-approved", bundle / "reference/again-approved")
+        shutil.copytree(ROOT / "pipelines/codex-v1/design-guidance", bundle / "design-guidance")
         (bundle / "adapter.md").write_text("Read the frozen v1 skills.\n")
         for name in ["qa.md", "heal.md", "concept-qa.md"]:
             shutil.copy2(ROOT / "pipelines/codex-v1" / name, bundle / name)
@@ -274,6 +275,74 @@ print('RUN_COMPLETE: claude-for-dogs')
                                          "review_timeout_seconds": 3, "repair_timeout_seconds": 3}
         config["usage"] = {"require_events": True, "max_total_tokens": None, "max_stage_tokens": {}}
         self.config.write_text(json.dumps(config))
+
+    def test_guidance_reaches_each_stage_without_additional_model_calls(self):
+        self.enable_checkpoint()
+        result = self.invoke(qa="once", concept_qa="once")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        calls = [json.loads(line) for line in (self.root / "calls.jsonl").read_text().splitlines()]
+        self.assertEqual([call["phase"] for call in calls],
+                         ["concept", "concept-review", "concept-repair", "concept-review",
+                          "generation", "review", "repair", "review"])
+        for call in calls:
+            phase, prompt = call["phase"], call["prompt"]
+            if phase in ("generation", "concept"):
+                context = json.JSONDecoder().raw_decode(prompt.split("HOST TEXT-ONLY DESIGN GUIDANCE:\n", 1)[1])[0]
+            else:
+                marker = {"concept-review": "HOST CONTEXT:\n", "concept-repair": "publish.\n",
+                          "review": "HOST REVIEW CONTEXT:\n", "repair": "HOST REPAIR CONTEXT:\n"}[phase]
+                context = json.JSONDecoder().raw_decode(prompt.split(marker, 1)[1])[0]["design_guidance"]
+            stage = {"generation": "build", "review": "review", "repair": "repair"}.get(phase, "concept")
+            self.assertEqual(context, design_guidance_context(self.root, stage))
+            self.assertTrue(all(doc["text"] for doc in context["documents"]))
+        build = design_guidance_context(self.root, "build")
+        review = design_guidance_context(self.root, "review")
+        self.assertEqual({doc["file"] for doc in build["documents"]},
+                         {"GUIDE.md", "references/adapt.md", "references/harden.md"})
+        self.assertEqual({doc["file"] for doc in review["documents"]},
+                         {"GUIDE.md", "references/critique.md", "references/audit.md"})
+
+    def test_changed_guidance_stops_before_model_spend(self):
+        path = self.root / "pipelines/codex-v1/design-guidance/impeccable/GUIDE.md"
+        path.write_text(path.read_text() + "\nUnreviewed change.\n")
+        result = self.invoke()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("design guidance missing or changed", result.stderr)
+        self.assertFalse((self.root / "calls.jsonl").exists())
+
+    def test_extra_or_executable_guidance_is_rejected(self):
+        root = self.root / "pipelines/codex-v1/design-guidance/impeccable"
+        extra = root / "engine.sh"
+        extra.write_text("Unreviewed executable payload must never be loaded.")
+        result = self.invoke(preflight=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("nonexecutable text", result.stderr)
+        extra.unlink()
+        (root / "GUIDE.md").chmod(0o755)
+        result = self.invoke(preflight=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("nonexecutable text", result.stderr)
+        self.assertFalse((self.root / "calls.jsonl").exists())
+
+    def test_guidance_symlinks_are_rejected(self):
+        root = self.root / "pipelines/codex-v1/design-guidance/impeccable"
+        original = self.root / "external-guide.md"
+        shutil.move(root / "GUIDE.md", original)
+        (root / "GUIDE.md").symlink_to(original)
+        result = self.invoke(preflight=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("not symlinks", result.stderr)
+        self.assertFalse((self.root / "calls.jsonl").exists())
+
+    def test_guidance_revision_cannot_float_to_main(self):
+        path = self.root / "pipelines/codex-v1/design-guidance/impeccable/SOURCE.json"
+        manifest = json.loads(path.read_text())
+        manifest["upstream_commit"] = "main"
+        path.write_text(json.dumps(manifest))
+        result = self.invoke(preflight=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Invalid pinned design guidance", result.stderr)
+        self.assertFalse((self.root / "calls.jsonl").exists())
 
     def test_concept_pass_precedes_build_and_accounts_each_stage(self):
         self.enable_checkpoint()

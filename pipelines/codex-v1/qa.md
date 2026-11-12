@@ -12,6 +12,11 @@ no access to that explanation. All routine inputs are inline: do not reread
 packet, concept or report files. Read targeted HTML/CSS only to resolve a concrete
 question or locate a selector. Do not scan the repository or generation traces.
 Keep output brief.
+The host supplies design_guidance containing the reviewed text-only Impeccable
+adaptation for critique and technical audit. Use it within the four acceptance
+checks and current JSON schema. It introduces no detector, report, style score,
+approval step or additional review. The approved audience references, satire,
+quality floor, available evidence and host repair limits take precedence.
 
 Supply a visual_audit for each page at desktop and mobile: describe what actually
 dominates, identify the visible product visual (or explicitly say it is absent),

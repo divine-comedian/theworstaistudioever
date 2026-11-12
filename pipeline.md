@@ -14,6 +14,14 @@ purposeful imagery, visual finish and mobile usability. Create an original
 identity and composition appropriate to the new product. Apply the standard to
 concept, assets, landing page and demo; quality approval is required to publish.
 
+The active Codex host also supplies a pinned, text-only adaptation of Impeccable
+design guidance from `pipelines/codex-v1/design-guidance/impeccable/`. Use its
+surface-specific design, critique, responsive and interaction guidance within
+these existing steps. The approved audience references, source-service workflow,
+satire rules, quality floor and repair limits remain authoritative. This does
+not enable upstream commands, engines, hooks, catalogs, account features,
+additional approvals or another review loop.
+
 ---
 
 ## Voice (load this into your bones before generating any copy)

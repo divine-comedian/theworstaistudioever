@@ -25,6 +25,14 @@ Satire must have an understandable setup and comic turn for a casual outsider;
 plausible niche services alone do not pass. Final visual QA explicitly checks
 audience fit on both pages at desktop and mobile sizes.
 
+The daily Codex pipeline also receives a [text-only Impeccable adaptation](pipelines/codex-v1/design-guidance/impeccable/GUIDE.md)
+for visual critique, responsive layout, accessibility and interaction recovery.
+The source revision, license, adaptation notes and hashes are recorded locally.
+Only relevant documents are inlined for each stage. Preflight rejects changed
+guidance, extra files, symlinks and executable files. No upstream engine, installer,
+hook, live mode, catalog or account integration is included. The existing three
+skills, satire rules, audience references and independent QA remain authoritative.
+
 Each new entry's landing page and demo include static Open Graph and Twitter
 metadata. Preview titles use `product_name — tagline`; descriptions combine the
 hero heading and paragraph, capped at 300 characters with an ellipsis. Hero
