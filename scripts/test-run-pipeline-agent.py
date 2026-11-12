@@ -10,7 +10,7 @@ import sys
 import tempfile
 import unittest
 
-from pipeline_qa import (apply_exact_patches, read_review, review_schema, review_packet,
+from pipeline_qa import (apply_exact_patches, final_review_input, read_review, review_schema, review_packet,
                          validate_copy_audit, validate_shape, validate_verdict, validate_visual_audit, StageFailure)
 from pipeline_editorial import CONCEPT_SCHEMA, UsageLedger, recent_digest, roll
 from pipeline_qa import quality_floor_context
@@ -62,7 +62,7 @@ if '--preflight' in sys.argv:sys.exit(1 if pathlib.Path('browser-unavailable').e
 output=pathlib.Path(sys.argv[-1]);output.mkdir(exist_ok=True)
 pages=[]
 for filename in ['index.html','demo.html']:
- for width in [1440,390]:
+ for width in ([1440,390] if pathlib.Path('omit-narrow').exists() else [1440,390,320]):
   shot=output/(filename+str(width)+'.png');shot.write_bytes(b'fixture-image')
   pages.append({'filename':filename,'viewport':{'width':width,'height':900},'screenshot':str(shot),'foldScreenshot':str(shot),'failures':[]})
 (output/'browser.json').write_text(json.dumps({'passed':True,'pages':pages,'failures':[]}))
@@ -244,10 +244,29 @@ print('RUN_COMPLETE: claude-for-dogs')
         self.assertEqual(self.phases(), ["generation", "review"])
         call = json.loads((self.root / "calls.jsonl").read_text().splitlines()[-1])
         self.assertIn("--output-schema", call["args"])
-        self.assertEqual(call["args"].count("--image"), 9)
+        self.assertEqual(call["args"].count("--image"), 12)
+        self.assertIn('"width": 320', call["prompt"])
         self.assertIn("approved_quality_floor", call["prompt"])
         self.assertIn("quality_reference", call["prompt"])
         self.assertEqual(call["args"][call["args"].index("--sandbox") + 1], "read-only")
+
+    def test_missing_narrow_captures_stop_before_model_review(self):
+        (self.root / "omit-narrow").touch()
+        result = self.invoke()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("viewport captures", result.stderr)
+        self.assertNotIn("review", self.phases())
+
+    def test_global_browser_failures_reach_the_independent_reviewer(self):
+        result = self.invoke()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        directory = next((self.root / ".tmp-codex").glob("*/checks-0"))
+        path = directory / "browser.json"
+        browser = json.loads(path.read_text())
+        browser.update(passed=False, failures=["Gallery is missing the generated entry link"])
+        path.write_text(json.dumps(browser))
+        data, _ = final_review_input(self.root, "fixture-for-dogs", directory, {})
+        self.assertEqual(data["browser_failures"], ["Gallery is missing the generated entry link"])
 
     def enable_checkpoint(self):
         config = json.loads(self.config.read_text())

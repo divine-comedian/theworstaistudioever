@@ -55,7 +55,7 @@ document.querySelector('#cats').hidden=e.target.value==='dog';
         result, report = self.invoke()
         self.assertEqual(result.returncode, 0, result.stderr + json.dumps(report))
         self.assertTrue(report["passed"])
-        self.assertEqual(len(report["pages"]), 4)
+        self.assertEqual(len(report["pages"]), 6)
         for page in report["pages"]:
             self.assertTrue(Path(page["screenshot"]).is_file())
             with Image.open(page["foldScreenshot"]) as image:
@@ -63,7 +63,7 @@ document.querySelector('#cats').hidden=e.target.value==='dog';
         result, report = self.invoke(interaction=True)
         self.assertEqual(result.returncode, 0, result.stderr + json.dumps(report))
         self.assertTrue(report["passed"])
-        self.assertEqual(len(report["viewports"]), 2)
+        self.assertEqual(len(report["viewports"]), 3)
         for viewport in report["viewports"]:
             self.assertEqual(viewport["assertions"][0]["before"], "true")
             self.assertEqual(viewport["assertions"][0]["observed"], "false")
@@ -78,6 +78,32 @@ document.querySelector('#cats').hidden=e.target.value==='dog';
         self.assertIn("Page overflows viewport horizontally", mobile["failures"])
         self.assertIn("Broken rendered images", mobile["failures"])
         self.assertIn("fixture crash", mobile["errors"])
+
+    def test_overflow_at_320_is_not_hidden_by_a_passing_390_viewport(self):
+        extra = '<style>body{margin:0}</style><div style="width:330px">Narrow overflow</div>'
+        (self.entry / "demo.html").write_text(self.demo.replace('</body>', extra + '</body>'))
+        result, report = self.invoke()
+        self.assertNotEqual(result.returncode, 0)
+        narrow = next(page for page in report["pages"]
+                      if page["filename"] == "demo.html" and page["viewport"]["width"] == 320)
+        standard = next(page for page in report["pages"]
+                        if page["filename"] == "demo.html" and page["viewport"]["width"] == 390)
+        self.assertIn("Page overflows viewport horizontally", narrow["failures"])
+        self.assertNotIn("Page overflows viewport horizontally", standard["failures"])
+
+    def test_interaction_loads_valid_deferred_images_and_still_rejects_broken_ones(self):
+        Image.new("RGB", (64, 64), "olive").save(self.entry / "guide.webp")
+        guide = '<details><summary>Guide</summary><img loading="lazy" src="guide.webp" width="64" height="64"></details>'
+        (self.entry / "demo.html").write_text(self.demo.replace('</body>', guide + '</body>'))
+        result, report = self.invoke(interaction=True)
+        self.assertEqual(result.returncode, 0, result.stderr + json.dumps(report))
+        self.assertTrue(report["passed"])
+        (self.entry / "guide.webp").unlink()
+        result, report = self.invoke(interaction=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse(report["passed"])
+        self.assertTrue(all("Broken rendered image after interaction" in viewport["failures"]
+                            for viewport in report["viewports"]))
 
     def test_composer_clears_input_after_posting(self):
         (self.entry / "demo.html").write_text('''<html><body>

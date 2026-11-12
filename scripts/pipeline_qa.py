@@ -478,7 +478,7 @@ def final_review_input(workspace, slug, directory, context):
     coverage = set()
     for page in browser.get("pages", []):
         viewport = "mobile" if page["viewport"]["width"] < 700 else "desktop"
-        coverage.add((page["filename"], viewport))
+        coverage.add((page["filename"], page["viewport"]["width"]))
         fields = ("foldScreenshot", "screenshot") if page["filename"] == "index.html" else ("screenshot",)
         for field in fields:
             name = page.get(field)
@@ -486,9 +486,10 @@ def final_review_input(workspace, slug, directory, context):
                 raise StageFailure("Missing screenshot attachment; refusing an ungrounded visual review")
             images.append(Path(name))
             labels.append({"image": len(images), "page": page["filename"], "viewport": viewport,
+                           "width": page["viewport"]["width"],
                            "capture": "opening" if field == "foldScreenshot" else "full page"})
-    if coverage != {(page, size) for page in ("index.html", "demo.html") for size in ("desktop", "mobile")}:
-        raise StageFailure("Missing desktop/mobile page captures; refusing visual review")
+    if coverage != {(page, width) for page in ("index.html", "demo.html") for width in (1440, 390, 320)}:
+        raise StageFailure("Missing required desktop/mobile viewport captures; refusing visual review")
     floor, reference_images = quality_floor_context(workspace)
     for reference, image in zip(floor["reference_images"], reference_images):
         images.append(image)
@@ -504,6 +505,7 @@ def final_review_input(workspace, slug, directory, context):
             "concept_after_page_review": compact,
             "technical_checks": json.loads((directory / "technical.json").read_text()),
             "human_feedback": json.loads((directory / "editorial-regressions.json").read_text()),
+            "browser_failures": browser.get("failures", []),
             "browser_findings": [{key: page.get(key) for key in ("filename", "viewport", "failures", "errors", "brokenImages")}
                                  for page in browser["pages"]],
             "previous_findings": [{"findings": report["findings"], "resolved_findings": report["resolved_findings"]}

@@ -51,7 +51,7 @@ preserve its approved fields.
 Final QA independently checks comprehension, satire, composition and continuity,
 desktop/mobile screenshots and an executable demo interaction. Reviewers see a
 host-extracted copy/JavaScript packet before explanatory concept documents.
-The host attaches six current-page screenshots and three frozen approved-reference
+The host attaches nine current-page screenshots and three frozen approved-reference
 images directly to the CLI invocation and
 inlines compact review inputs, avoiding reliance on a reviewer choosing to open
 image files or repeatedly reading packet files. A structured visual audit must
@@ -70,6 +70,10 @@ Reviewers read as casual outsiders and identify the setup and comic turn in
 each feature's actual copy. Explaining a plausible niche service is insufficient.
 Final visual audits name visible `audience_cues` and an `audience_fit_pass` for
 each page and viewport; a mismatch cannot accompany a composition pass.
+Browser checks cover 1440px desktop, 390px mobile and 320px narrow mobile.
+Screenshot labels include their widths. Interaction checks explicitly load
+deferred images before judging missing assets, including images inside closed
+panels; valid lazy loading is not a product failure.
 Missing audit coverage or a failed acceptance check cannot accompany a pass.
 Hierarchy and image usefulness can fail even when there is no clipping.
 Deterministic metadata, asset, HTML and browser checks must also pass.

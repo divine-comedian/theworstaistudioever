@@ -3,6 +3,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const os = require('node:os');
+const VIEWPORTS = [{width: 1440, height: 900}, {width: 390, height: 844}, {width: 320, height: 844}];
 
 function loadPlaywright() {
   const candidates = ['playwright', 'playwright-core'];
@@ -27,7 +28,7 @@ async function check(base, slug, output) {
   let browser;
   try {
     browser = await loadPlaywright().chromium.launch();
-    for (const viewport of [{width: 1440, height: 900}, {width: 390, height: 844}]) {
+    for (const viewport of VIEWPORTS) {
       for (const filename of ['index.html', 'demo.html']) {
         const page = await browser.newPage({viewport});
         const errors = [];
@@ -138,7 +139,7 @@ async function exercise(base, slug, planFile, output) {
       throw new Error('A bounded demo action and assertion plan is required');
     }
     browser = await loadPlaywright().chromium.launch();
-    for (const viewport of [{width: 1440, height: 900}, {width: 390, height: 844}]) {
+    for (const viewport of VIEWPORTS) {
       const page = await browser.newPage({viewport});
       const result = {viewport, passed: false, actions: [], assertions: [], errors: [], failures: []};
       report.viewports.push(result);
@@ -187,6 +188,7 @@ async function exercise(base, slug, planFile, output) {
           result.failures.push('Demo overflows horizontally after interaction');
         }
         await page.evaluate(async () => {
+          document.querySelectorAll('img').forEach(image => image.loading = 'eager');
           await Promise.race([
             Promise.all([...document.images].map(image => image.decode().catch(() => {}))),
             new Promise(resolve => setTimeout(resolve, 5000)),

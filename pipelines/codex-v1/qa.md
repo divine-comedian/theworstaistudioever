@@ -19,6 +19,8 @@ and assess caption legibility/alignment. Set comprehension_pass false when the
 layout or imagery leaves the product unexplained. That requires composition=false
 and a concrete finding. General assurances such as "no clipping" do not answer
 whether the images explain the product. The host rejects incomplete visual audits.
+Each mobile audit covers both supplied narrow widths, 390px and 320px. The
+attachment labels include exact widths; a failure at either width cannot pass.
 Also record audience_cues and audience_fit_pass for each page/viewport. Name
 visible typography, palette, imagery and composition that belong to this
 audience's visual world. Merely printing its name or adding a small themed badge

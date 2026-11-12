@@ -46,7 +46,7 @@ if '--preflight' in sys.argv:sys.exit(0)
 output=pathlib.Path(sys.argv[-1]);output.mkdir(exist_ok=True)
 pages=[]
 for filename in ['index.html','demo.html']:
- for width in [1440,390]:
+ for width in [1440,390,320]:
   shot=output/(filename+str(width)+'.png');shot.write_bytes(b'fixture-image')
   pages.append({'filename':filename,'viewport':{'width':width,'height':900},'screenshot':str(shot),'foldScreenshot':str(shot),'failures':[]})
 (output/'browser.json').write_text(json.dumps({'passed':True,'pages':pages,'failures':[]}))
