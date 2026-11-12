@@ -150,6 +150,37 @@ class BrandKitTest(unittest.TestCase):
         self.make_gemini_kit()
         module.validate(self.entry)
 
+    def test_explicit_mixed_revision_keeps_gemini_identity_and_honest_replacement_art(self):
+        self.make_gemini_kit()
+        self.kit['generation'].update(mode='mixed', revision_reason='User requested replacement of unclear artwork.')
+        self.concept['images']['items'][-1].update(source='openai-imagegen', tool='image_gen', prompt='A specific framing comparison.')
+        self.save()
+        module.validate(self.entry)
+
+    def test_replacement_art_cannot_claim_gemini_provenance_or_skip_revision_reason(self):
+        self.make_gemini_kit()
+        self.concept['images']['items'][-1].update(source='openai-imagegen', tool='image_gen', prompt='A framing comparison.')
+        self.save()
+        with self.assertRaisesRegex(ValueError, 'Gemini design provenance'):
+            module.validate(self.entry)
+        self.kit['generation']['mode'] = 'mixed'
+        self.save()
+        with self.assertRaisesRegex(ValueError, 'revision_reason'):
+            module.validate(self.entry)
+
+    def test_mixed_revision_does_not_waive_logo_or_tool_provenance(self):
+        self.make_gemini_kit()
+        self.kit['generation'].update(mode='mixed', revision_reason='Requested artwork repair.')
+        self.concept['images']['items'][0].update(source='openai-imagegen', tool='image_gen', prompt='Replacement logo.')
+        self.save()
+        with self.assertRaisesRegex(ValueError, 'Gemini design provenance'):
+            module.validate(self.entry)
+        self.concept['images']['items'][0]['source'] = 'gemini'
+        self.concept['images']['items'][-1].update(source='openai-imagegen', tool='unrecorded', prompt='Framing comparison.')
+        self.save()
+        with self.assertRaisesRegex(ValueError, 'tool provenance'):
+            module.validate(self.entry)
+
     def test_version_two_rejects_native_logo_as_gemini_design(self):
         self.make_gemini_kit()
         self.concept["images"]["items"][0]["source"] = "native-svg"

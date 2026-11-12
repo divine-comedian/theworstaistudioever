@@ -10,7 +10,10 @@ import sys
 import tempfile
 import unittest
 
-from pipeline_qa import read_review, review_schema
+from pipeline_qa import (apply_exact_patches, read_review, review_schema, review_packet,
+                         validate_copy_audit, validate_verdict, validate_visual_audit, StageFailure)
+from pipeline_editorial import UsageLedger, recent_digest, roll
+from pipeline_qa import quality_floor_context
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -31,14 +34,19 @@ class GeneratorTest(unittest.TestCase):
             "qa": {"max_repair_attempts": 2, "review_timeout_seconds": 3, "repair_timeout_seconds": 3,
                    "total_timeout_seconds": 20, "browser_timeout_seconds": 3},
             "skills": ["anti-ai-slop", "frontend-design", "ui-ux-pro-max"]}))
+        shutil.copy2(ROOT / "pipelines/codex-v1/quality-floor.json", bundle / "quality-floor.json")
+        shutil.copytree(ROOT / "pipelines/codex-v1/reference/again-approved", bundle / "reference/again-approved")
         (bundle / "adapter.md").write_text("Read the frozen v1 skills.\n")
-        for name in ["qa.md", "heal.md"]:
+        for name in ["qa.md", "heal.md", "concept-qa.md"]:
             shutil.copy2(ROOT / "pipelines/codex-v1" / name, bundle / name)
         for name in ["anti-ai-slop", "frontend-design", "ui-ux-pro-max"]:
             path = bundle / "skills" / name
             path.mkdir(parents=True)
             (path / "SKILL.md").write_text("Fixture skill\n")
         (self.root / "pipeline.md").write_text("DAILY_SOURCE_OF_TRUTH\n")
+        (self.root / "seeds").mkdir()
+        (self.root / "seeds/companies.json").write_text('["Fixture"]')
+        (self.root / "seeds/subjects.json").write_text('["dogs"]')
         archive = self.root / "pipelines/claude-backup"
         archive.mkdir()
         (archive / "pipeline.md").write_text("ARCHIVED_CLAUDE_PROMPT")
@@ -52,7 +60,12 @@ class GeneratorTest(unittest.TestCase):
 import json,pathlib,sys
 if '--preflight' in sys.argv:sys.exit(1 if pathlib.Path('browser-unavailable').exists() else 0)
 output=pathlib.Path(sys.argv[-1]);output.mkdir(exist_ok=True)
-(output/'browser.json').write_text(json.dumps({'passed':True,'pages':[],'failures':[]}))
+pages=[]
+for filename in ['index.html','demo.html']:
+ for width in [1440,390]:
+  shot=output/(filename+str(width)+'.png');shot.write_bytes(b'fixture-image')
+  pages.append({'filename':filename,'viewport':{'width':width,'height':900},'screenshot':str(shot),'foldScreenshot':str(shot),'failures':[]})
+(output/'browser.json').write_text(json.dumps({'passed':True,'pages':pages,'failures':[]}))
 ''')
         node.chmod(0o755)
         fake = self.bin / "codex"
@@ -62,13 +75,38 @@ args=sys.argv[1:]
 prompt=sys.stdin.read()
 workspace=pathlib.Path(args[args.index('-C')+1])
 result=pathlib.Path(args[args.index('--output-last-message')+1])
-phase='review' if '--output-schema' in args else 'repair' if result.stem.startswith('repair-') else 'generation'
+phase='concept-review' if result.stem.startswith('concept-review-') else 'concept-repair' if result.stem.startswith('concept-repair-') else 'concept' if result.stem=='concept-draft' else 'review' if '--output-schema' in args else 'repair' if result.stem.startswith('repair-') else 'generation'
 capture={'args':args,'prompt':prompt,'phase':phase}
 with (workspace/'calls.jsonl').open('a') as log:log.write(json.dumps(capture)+'\\n')
 if phase=='generation':(workspace/'captured.json').write_text(json.dumps(capture))
 print('PRIVATE_TRACE_TOKEN',flush=True)
+print(json.dumps({'type':'turn.completed','usage':{'input_tokens':10,'output_tokens':5,'cached_input_tokens':3,'reasoning_output_tokens':2}}),flush=True)
+def audit(concept):
+ targets=[f'features.{i}' for i,_ in enumerate(concept.get('features',[]))]
+ targets += [f'pricing_tiers.{i}.perks.{j}' for i,tier in enumerate(concept.get('pricing_tiers',[])) for j,_ in enumerate(tier['perks'])]
+ return [{'target':target,'behavior':'Pack barking','mechanic':'Requests','connection':'Dogs submit requests'} for target in targets]
+checks={key:True for key in ['comprehension','satire','composition','continuity']}
 mode=os.environ.get('FAKE_MODE','success')
 qa=os.environ.get('FAKE_QA_MODE','pass')
+if phase in ['concept','concept-repair','concept-review']:
+ if phase=='concept':
+  identity=json.JSONDecoder().raw_decode(prompt.split('FIXED IDENTITY:\\n',1)[1])[0]
+  concept={**identity,'product_name':'Fixture','one_liner':'Requests for dogs','brand_voice_notes':'Straight faced','hero':{'h1':'Weak reference','sub':'Pack requests','primary_cta':'Try'},'features':[{'title':'Request','blurb':'The dog requests a walk'} for _ in range(3)],'pricing_tiers':[{'name':'Pack','price':'$3','tagline':'For dogs','perks':['Walk requests','Bark filtering']} for _ in range(3)],'testimonials':[{'quote':'I requested a walk','name':'Dog','title':'Dog'} for _ in range(3)],'demo_screen_concept':'Requests','editorial_plan':{'observations':[{'behavior':'Barks','mechanic':'Requests','consequence':'More walks'} for _ in range(3)],'source_product_patterns':['List','Search','Filter','Submit'],'composition_plan':'Product preview then artwork'}}
+  result.write_text(json.dumps(concept))
+ else:
+  data=json.JSONDecoder().raw_decode(prompt.split('HOST CONTEXT:\\n',1)[1])[0] if phase=='concept-review' else json.JSONDecoder().raw_decode(prompt.split('publish.\\n',1)[1])[0]
+  concept=data['concept'];cq=os.environ.get('FAKE_CONCEPT_QA','pass')
+  if phase=='concept-repair':
+   concept['hero']['h1']='Clear request'
+   if cq=='identity':concept['product_name']='Changed'
+   result.write_text(json.dumps(concept))
+  else:
+   number=int(result.stem.split('-')[-1]);needed={'once':1,'twice':2,'identity':1}.get(cq,3 if cq=='never' else 0)
+   finding={'id':'C1','target':'hero.h1','acceptance':'Understand the request','category':'satire','file':'concept.json','quote':'Weak reference','problem':'Unclear connection','fix':'Use a clear request','patch':{'old':'','new':''}}
+   report={'slug':concept['slug'],'verdict':'repair' if number<needed else 'pass','premise':'Dogs request walks','strengths':['Specific'],'checks':checks,'copy_audit':audit(concept),'resolved_findings':['C1'] if number else [],'findings':[finding] if number<needed else []}
+   if number<needed:report['resolved_findings']=[]
+   result.write_text('not JSON' if cq=='malformed' else json.dumps(report))
+ sys.exit(0)
 if phase=='generation':
  if mode=='fail':sys.exit(7)
  if mode=='timeout':time.sleep(20)
@@ -76,6 +114,7 @@ if phase=='generation':
  if not (entry/'concept.json').exists():
   concept={'date':'2026-11-01','company':'Fixture','subject':'dogs','slug':entry.name,'product_name':'Fixture','demo_screen_concept':'Requests','design_direction':{'style':'plain'}}
   (entry/'concept.json').write_text(json.dumps(concept))
+ concept=json.loads((entry/'concept.json').read_text());concept.setdefault('design_direction',{'style':'plain'});(entry/'concept.json').write_text(json.dumps(concept))
  (entry/'index.html').write_text('Original landing');(entry/'demo.html').write_text('Original demo')
  (workspace/'site/index.html').write_text('New gallery')
  history=workspace/'state/history.json';history.parent.mkdir(exist_ok=True)
@@ -85,10 +124,11 @@ elif phase=='review':
  if qa=='review-fail':sys.exit(8)
  if qa=='review-timeout':time.sleep(20)
  number=int(result.stem.split('-')[-1])
- needed={'once':1,'twice':2}.get(qa,3 if qa in ['never','scope','identity','repair-fail','repair-timeout'] else 0)
- finding={'category':'satire','file':'site/entries/fixture-for-dogs/index.html','quote':'Weak reference','problem':'Unclear connection','fix':'Make the mapping explicit'}
- report={'slug':'fixture-for-dogs','verdict':'repair' if number<needed else 'pass','premise':'Dogs submit requests.','strengths':['Specific subject'],
+ needed={'once':1,'twice':2,'patch':1,'omitted':1,'floor-repair':1}.get(qa,3 if qa in ['never','scope','identity','repair-fail','repair-timeout'] else 0)
+ finding={'id':'F1','target':'h1','acceptance':'Understand the request','patch':{'old':'Original landing' if qa=='patch' else '','new':'Repaired landing' if qa=='patch' else ''},'category':'satire','file':'site/entries/fixture-for-dogs/index.html','quote':'Weak reference','problem':'Unclear connection','fix':'Make the mapping explicit'}
+ report={'slug':'fixture-for-dogs','verdict':'repair' if number<needed else 'pass','quality_floor':{'reference_id':'again-2026-11-11-approved','assessments':{key:{'meets':True,'evidence':'Specific requests, purposeful visuals and usable controls meet the reference standard.'} for key in ['comprehension','satire','composition','continuity']}},'premise':'Dogs submit requests.','strengths':['Specific subject'],'checks':checks,'visual_audit':[{'page':p,'viewport':v,'dominant_content':'Requests','product_visual':'Request list','caption_legibility':'Readable','comprehension_pass':True} for p in ['index.html','demo.html'] for v in ['desktop','mobile']],'copy_audit':audit(json.loads((workspace/'site/entries/fixture-for-dogs/concept.json').read_text())),'resolved_findings':['F1'] if number>0 and number>=needed and qa!='omitted' else [],
          'findings':[finding] if number<needed else [],'demo_test':{'actions':[{'action':'click','selector':'#submit','value':'-'}],'assertions':[{'check':'visible','selector':'#result','expected':'-'}]}}
+ if qa=='below-floor' or (qa=='floor-repair' and number==0):report['quality_floor']['assessments']['composition']['meets']=False
  if qa=='bad-pass':report['findings']=[finding]
  if qa=='no-interaction':report['demo_test']['actions']=[]
  if qa=='empty-input':
@@ -115,9 +155,9 @@ print('RUN_COMPLETE: claude-for-dogs')
 ''')
         claude.chmod(0o755)
 
-    def invoke(self, mode="success", engine="codex", preflight=False, recover_today=None, qa="pass", qa_existing=None):
+    def invoke(self, mode="success", engine="codex", preflight=False, recover_today=None, qa="pass", qa_existing=None, concept_qa="pass"):
         env = os.environ.copy()
-        env.update(PATH=str(self.bin) + os.pathsep + env["PATH"], FAKE_MODE=mode, FAKE_QA_MODE=qa)
+        env.update(PATH=str(self.bin) + os.pathsep + env["PATH"], FAKE_MODE=mode, FAKE_QA_MODE=qa, FAKE_CONCEPT_QA=concept_qa)
         args = [sys.executable, str(RUNNER), "--engine", engine, "--workspace", str(self.root)]
         if preflight:
             args.append("--preflight")
@@ -204,7 +244,193 @@ print('RUN_COMPLETE: claude-for-dogs')
         self.assertEqual(self.phases(), ["generation", "review"])
         call = json.loads((self.root / "calls.jsonl").read_text().splitlines()[-1])
         self.assertIn("--output-schema", call["args"])
+        self.assertEqual(call["args"].count("--image"), 9)
+        self.assertIn("approved_quality_floor", call["prompt"])
+        self.assertIn("quality_reference", call["prompt"])
         self.assertEqual(call["args"][call["args"].index("--sandbox") + 1], "read-only")
+
+    def enable_checkpoint(self):
+        config = json.loads(self.config.read_text())
+        config["concept_checkpoint"] = {"enabled": True, "draft_timeout_seconds": 3,
+                                         "review_timeout_seconds": 3, "repair_timeout_seconds": 3}
+        config["usage"] = {"require_events": True, "max_total_tokens": None, "max_stage_tokens": {}}
+        self.config.write_text(json.dumps(config))
+
+    def test_concept_pass_precedes_build_and_accounts_each_stage(self):
+        self.enable_checkpoint()
+        result = self.invoke()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.phases(), ["concept", "concept-review", "generation", "review"])
+        calls = [json.loads(line) for line in (self.root / "calls.jsonl").read_text().splitlines()]
+        for call in calls[:2]:
+            self.assertEqual(call["args"][call["args"].index("--sandbox") + 1], "read-only")
+        self.assertIn("Start at Step 3", calls[2]["prompt"])
+        usage = json.loads(next((self.root / ".tmp-codex").glob("*/usage.json")).read_text())
+        self.assertEqual(usage["total_tokens"], 60)
+        self.assertEqual(sum(stage["cached_input_tokens"] for stage in usage["stages"]), 12)
+        self.assertEqual(sum(stage["reasoning_output_tokens"] for stage in usage["stages"]), 8)
+
+    def test_concept_and_final_share_two_repairs(self):
+        self.enable_checkpoint()
+        result = self.invoke(concept_qa="once", qa="once")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.phases(), ["concept", "concept-review", "concept-repair", "concept-review",
+                                        "generation", "review", "repair", "review"])
+        ledger = json.loads(next((self.root / ".tmp-codex").glob("*/repair-budget.json")).read_text())
+        self.assertEqual([item["stage"] for item in ledger], ["concept", "final"])
+        summary = json.loads(next((self.root / ".tmp-codex").glob("*/qa-summary.json")).read_text())
+        self.assertEqual(summary["repair_attempts"], 2)
+
+    def test_concept_exhaustion_stops_before_assets_and_build(self):
+        self.enable_checkpoint()
+        result = self.invoke(concept_qa="never")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(self.phases().count("concept-repair"), 2)
+        self.assertNotIn("generation", self.phases())
+        self.assertFalse((self.root / "site/entries/fixture-for-dogs").exists())
+        self.assertNotIn("RUN_COMPLETE:", result.stdout)
+
+    def test_final_cannot_obtain_more_repairs_after_concept_uses_both(self):
+        self.enable_checkpoint()
+        result = self.invoke(concept_qa="twice", qa="once")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(self.phases().count("concept-repair"), 2)
+        self.assertNotIn("repair", self.phases())
+        self.assertNotIn("RUN_COMPLETE:", result.stdout)
+        self.assertFalse((self.root / "site/entries/fixture-for-dogs").exists())
+
+    def test_bad_concept_review_or_identity_change_stops_before_build(self):
+        self.enable_checkpoint()
+        for mode in ("malformed", "identity"):
+            with self.subTest(mode=mode):
+                (self.root / "calls.jsonl").unlink(missing_ok=True)
+                result = self.invoke(concept_qa=mode)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertNotIn("generation", self.phases())
+
+    def test_usage_exhaustion_prevents_next_invocation(self):
+        self.enable_checkpoint()
+        config = json.loads(self.config.read_text())
+        config["usage"]["max_total_tokens"] = 15
+        self.config.write_text(json.dumps(config))
+        result = self.invoke()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(self.phases(), ["concept"])
+        self.assertIn("allowance exhausted", result.stderr)
+
+    def test_exact_patch_skips_repair_model_but_requires_fresh_review(self):
+        result = self.invoke(qa="patch")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.phases(), ["generation", "review", "review"])
+        self.assertEqual((self.root / "site/entries/fixture-for-dogs/index.html").read_text(), "Repaired landing")
+        self.assertIn("passed after 1 repair", result.stdout)
+
+    def test_verifier_cannot_silently_drop_a_finding(self):
+        result = self.invoke(qa="omitted")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("omitted an earlier finding", result.stderr)
+
+    def test_passing_checks_cannot_waive_a_lower_quality_than_the_approved_entry(self):
+        result = self.invoke(qa="below-floor")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("below the user-approved quality floor", result.stderr)
+        self.assertNotIn("RUN_COMPLETE:", result.stdout)
+        self.assertFalse((self.root / "site/entries/fixture-for-dogs").exists())
+
+    def test_missing_or_changed_reference_stops_preflight_before_model_spend(self):
+        reference = self.root / "pipelines/codex-v1/reference/again-approved/desktop-opening.png"
+        reference.write_bytes(reference.read_bytes() + b'changed')
+        result = self.invoke(preflight=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("quality floor image missing or changed", result.stderr)
+        self.assertFalse((self.root / "calls.jsonl").exists())
+
+    def test_quality_floor_shortfall_can_be_repaired_and_verified_within_allowance(self):
+        result = self.invoke(qa="floor-repair")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.phases(), ["generation", "review", "repair", "review"])
+        run = next((self.root / ".tmp-codex").glob("*/qa-summary.json")).parent
+        before = json.loads((run / "review-0.json").read_text())
+        after = json.loads((run / "review-1.json").read_text())
+        self.assertFalse(before["quality_floor"]["assessments"]["composition"]["meets"])
+        self.assertTrue(after["quality_floor"]["assessments"]["composition"]["meets"])
+        self.assertEqual(json.loads((run / "qa-summary.json").read_text())["repair_attempts"], 1)
+
+    def test_reference_is_pinned_independently_of_catalogue_rotation(self):
+        floor, images = quality_floor_context(self.root)
+        self.assertEqual(floor["id"], "again-2026-11-11-approved")
+        self.assertEqual(len(images), 3)
+        self.assertFalse((self.root / "site/entries/youtube-for-crossfit-junkies").exists())
+        result = self.invoke()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        prompt = json.loads((self.root / "captured.json").read_text())["prompt"]
+        self.assertIn("HOST APPROVED QUALITY FLOOR", prompt)
+        self.assertIn("again-2026-11-11-approved", prompt)
+
+    def test_copy_audit_and_separate_acceptance_checks_are_enforced(self):
+        with self.assertRaises(ValueError):
+            validate_copy_audit({"copy_audit": []}, {"features": [{}]})
+        with self.assertRaises(ValueError):
+            validate_verdict({"verdict": "pass", "findings": [], "checks": {"composition": False},
+                              "resolved_findings": []})
+
+    def test_visual_audit_cannot_omit_a_page_or_contradict_composition(self):
+        with self.assertRaises(ValueError):
+            validate_visual_audit({"visual_audit": [], "checks": {"composition": True}})
+        audit = [{"page": page, "viewport": viewport, "comprehension_pass": True}
+                 for page in ["index.html", "demo.html"] for viewport in ["desktop", "mobile"]]
+        audit[0]["comprehension_pass"] = False
+        with self.assertRaises(ValueError):
+            validate_visual_audit({"visual_audit": audit, "checks": {"composition": True}})
+
+    def test_literal_patch_batch_is_all_or_nothing(self):
+        entry = self.root / "site/entries/fixture-for-dogs"
+        entry.mkdir(parents=True)
+        target = entry / "index.html"
+        target.write_text("Old heading. Old caption.")
+        findings = [{"file": "site/entries/fixture-for-dogs/index.html", "patch": patch} for patch in
+                    [{"old": "Old heading", "new": "New heading"}, {"old": "Absent", "new": "New caption"}]]
+        self.assertFalse(apply_exact_patches(self.root, "fixture-for-dogs", findings))
+        self.assertEqual(target.read_text(), "Old heading. Old caption.")
+        findings[1]["patch"]["old"] = "Old caption"
+        self.assertTrue(apply_exact_patches(self.root, "fixture-for-dogs", findings))
+        self.assertEqual(target.read_text(), "New heading. New caption.")
+        findings[0]["file"] = "pipeline.md"
+        self.assertFalse(apply_exact_patches(self.root, "fixture-for-dogs", findings))
+
+    def test_usage_missing_events_and_stage_limit_fail_closed(self):
+        trace = self.root / "events.log"
+        trace.write_text('noise\\n')
+        usage = UsageLedger(self.root, {"usage": {"require_events": True}})
+        with self.assertRaises(StageFailure):
+            usage.record("review-0", trace)
+        usage = UsageLedger(self.root, {"usage": {"max_total_tokens": 100}})
+        with self.assertRaises(StageFailure):
+            usage.record("review-0", trace)
+        trace.write_text(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 10, "output_tokens": 5,
+                                                                         "cached_input_tokens": 9, "reasoning_output_tokens": 3}}) + "\n")
+        usage = UsageLedger(self.root, {"usage": {"max_stage_tokens": {"review": 15}}})
+        with self.assertRaises(StageFailure):
+            usage.record("review-0", trace)
+        self.assertEqual(usage.total, 15)
+
+    def test_review_packet_omits_styles_and_metadata_but_keeps_feedback(self):
+        entry = self.root / "site/entries/fixture-for-dogs"
+        entry.mkdir(parents=True)
+        (entry / "index.html").write_text('<html><head><title>Duplicate</title><style>STYLE</style></head><body><h1>Visible</h1></body></html>')
+        (entry / "demo.html").write_text('<html><body><button id="go">Go</button><script>status.textContent="Feedback"</script></body></html>')
+        packet = review_packet(self.root, "fixture-for-dogs", self.root).read_text()
+        self.assertIn("Visible", packet)
+        self.assertIn("Feedback", packet)
+        self.assertNotIn("STYLE", packet)
+        self.assertNotIn("Duplicate", packet)
+
+    def test_roll_is_deterministic_and_exhaustion_does_not_overwrite(self):
+        self.assertEqual(roll(self.root), roll(self.root))
+        (self.root / "state").mkdir()
+        (self.root / "state/history.json").write_text('[{"company":"Fixture","subject":"dogs"}]')
+        with self.assertRaises(StageFailure):
+            roll(self.root)
 
     def test_empty_input_values_reach_the_host_interaction_check(self):
         result = self.invoke(qa="empty-input")

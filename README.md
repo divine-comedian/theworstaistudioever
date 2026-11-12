@@ -6,10 +6,17 @@ An applied AI studio shipping venture-grade products for underserved, over-instr
 
 1. `cron` fires `scripts/run-daily.sh` once a day.
 2. The wrapper reads `pipelines/engine` and runs Codex with `pipeline.md` and the preferred first-attempt skill setup.
-3. The agent rolls a non-repeat pair from `seeds/`, generates a concept, builds a landing page + interactive demo screen, regenerates the gallery, and exits.
-4. Codex runs a separate QA gate for satire and website behavior, with up to two targeted repair attempts and fresh checks after each.
+3. The host rolls a non-repeat pair from `seeds/`. Codex drafts a concept; a separate read-only invocation reviews it before assets or HTML are generated.
+4. Codex builds the approved concept, then final QA checks comprehension, satire, composition, consistency and actual demo behavior. Both checkpoints share at most two repair batches, with fresh verification after each.
 5. The wrapper generates sharing metadata, validates output, commits, and pushes only after QA passes.
 6. GitHub Pages publishes.
+
+The repaired Again entry approved on November 11, 2026 is the minimum quality
+standard for every daily run. Its rubric and three frozen screenshots live in
+`pipelines/codex-v1/quality-floor.json` and its referenced files. Concept drafting,
+building and QA receive that standard. Final QA must explicitly establish that
+the entry meets it in clarity, satire, composition and continuity before
+publication. Entries retain their own identities and ideas.
 
 Each new entry's landing page and demo include static Open Graph and Twitter
 metadata. Preview titles use `product_name — tagline`; descriptions combine the
@@ -57,10 +64,20 @@ SVG/HTML/CSS branding with an explicitly declared fallback reason. Version 2
 kits validate Gemini design provenance and actual graphic image placements, as
 well as logo/favicon use on both pages. Historical version 1 kits remain compatible.
 
-The overnight Codex run has a four-hour overall budget: up to 60 minutes for
-generation, 30 minutes per QA review, and 45 minutes per repair attempt. There
-is one QA gate with at most two repairs. Rejected drafts and QA reports are
-preserved privately; failed new entries are removed from the publishable site.
+The overnight Codex run has a two-hour overall ceiling: up to 5 minutes to draft
+a concept, 3 to review it, 60 to build, 8 for final QA, 10 per page repair and 5
+per final verification. Concept repair has a 5-minute ceiling. Both checkpoints
+share two repair attempts. Uniquely matched literal text patches can skip the
+repair model call, but still require verification. Per-stage input, cached input,
+output and available reasoning-token counts stay in private `usage.json` reports.
+Optional token allowances block further stages after completed-turn accounting;
+they are not hard in-flight spending caps. Visual QA attaches screenshots
+directly, supplies compact inline inputs and requires desktop/mobile visual
+observations. Review calls have a provisional 75,000-token allowance after a
+34,179-token negative-sample review and a 42,587-token repaired-entry review.
+Other token allowances remain unset pending measurement; deadlines and repair
+limits are active. Rejected
+drafts and QA reports are preserved privately; failed new entries are removed from the publishable site.
 See [QA and repair details](pipelines/README.md#qa-and-repair-before-publication).
 
 The original Claude prompt, wrapper, dry-run harness, settings, and documentation

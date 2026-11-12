@@ -19,7 +19,7 @@ class DailyWrapperTest(unittest.TestCase):
         self.root = Path(self.temp.name)
         for directory in ["scripts", "site/entries", "state", "pipelines/codex-v1", "home/.local/bin"]:
             (self.root / directory).mkdir(parents=True)
-        for name in ["run-daily.sh", "run-pipeline-agent.py", "pipeline_qa.py", "check-entry-browser.cjs", "build-seo.sh", "build-entry-metadata.py", "validate-entry.sh", "validate-brand-kit.py"]:
+        for name in ["run-daily.sh", "run-pipeline-agent.py", "pipeline_qa.py", "pipeline_editorial.py", "check-entry-browser.cjs", "build-seo.sh", "build-entry-metadata.py", "validate-entry.sh", "validate-brand-kit.py"]:
             shutil.copy2(ROOT / "scripts" / name, self.root / "scripts" / name)
         shutil.copy2(ROOT / "site/logo.png", self.root / "site/logo.png")
         (self.root / "site/CNAME").write_text("example.com\n")
@@ -28,11 +28,13 @@ class DailyWrapperTest(unittest.TestCase):
         (self.root / "pipelines/engine").write_text("codex\n")
         bundle = self.root / "pipelines/codex-v1"
         config = json.loads((ROOT / "pipelines/codex-v1/config.json").read_text())
-        config.update(timeout_seconds=5, skills=["fixture"])
+        config.update(timeout_seconds=5, skills=["fixture"], concept_checkpoint={"enabled": False})
         config["qa"].update(review_timeout_seconds=5, repair_timeout_seconds=5, total_timeout_seconds=30, browser_timeout_seconds=5)
         (bundle / "config.json").write_text(json.dumps(config))
         for name in ["qa.md", "heal.md"]:
             shutil.copy2(ROOT / "pipelines/codex-v1" / name, bundle / name)
+        shutil.copy2(ROOT / "pipelines/codex-v1/quality-floor.json", bundle / "quality-floor.json")
+        shutil.copytree(ROOT / "pipelines/codex-v1/reference/again-approved", bundle / "reference/again-approved")
         (bundle / "adapter.md").write_text("Fixture adapter")
         (bundle / "skills/fixture").mkdir(parents=True)
         (bundle / "skills/fixture/SKILL.md").write_text("Fixture")
@@ -42,7 +44,12 @@ class DailyWrapperTest(unittest.TestCase):
 import json,pathlib,sys
 if '--preflight' in sys.argv:sys.exit(0)
 output=pathlib.Path(sys.argv[-1]);output.mkdir(exist_ok=True)
-(output/'browser.json').write_text(json.dumps({'passed':True,'pages':[],'failures':[]}))
+pages=[]
+for filename in ['index.html','demo.html']:
+ for width in [1440,390]:
+  shot=output/(filename+str(width)+'.png');shot.write_bytes(b'fixture-image')
+  pages.append({'filename':filename,'viewport':{'width':width,'height':900},'screenshot':str(shot),'foldScreenshot':str(shot),'failures':[]})
+(output/'browser.json').write_text(json.dumps({'passed':True,'pages':pages,'failures':[]}))
 ''')
         node.chmod(0o755)
         fake_git = commands / "git"
@@ -59,11 +66,12 @@ from pathlib import Path
 import datetime,json,sys
 sys.stdin.read()
 print('PRIVATE_SERVICE_SESSION_TOKEN',flush=True)
+print(json.dumps({'type':'turn.completed','usage':{'input_tokens':10,'output_tokens':5}}),flush=True)
 result=Path(sys.argv[sys.argv.index('--output-last-message')+1])
 if '--output-schema' in sys.argv:
  failed=Path('fail-qa').exists()
- report={'slug':'fixture-for-dogs','verdict':'repair' if failed else 'pass','premise':'Dogs submit requests.','strengths':['Specific subject'],
-         'findings':[{'category':'satire','file':'site/entries/fixture-for-dogs/index.html','quote':'Bark.','problem':'Unclear mapping','fix':'Use a clear request mechanic'}] if failed else [],
+ report={'slug':'fixture-for-dogs','verdict':'repair' if failed else 'pass','quality_floor':{'reference_id':'again-2026-11-11-approved','assessments':{key:{'meets':True,'evidence':'Specific requests, purposeful visuals and usable controls meet the reference standard.'} for key in ['comprehension','satire','composition','continuity']}},'premise':'Dogs submit requests.','strengths':['Specific subject'],'checks':{key:True for key in ['comprehension','satire','composition','continuity']},'copy_audit':[],'resolved_findings':[],'visual_audit':[{'page':p,'viewport':v,'dominant_content':'Requests','product_visual':'Request list','caption_legibility':'Readable','comprehension_pass':True} for p in ['index.html','demo.html'] for v in ['desktop','mobile']],
+         'findings':[{'id':'F1','target':'p','acceptance':'Clear mechanic','patch':{'old':'','new':''},'category':'satire','file':'site/entries/fixture-for-dogs/index.html','quote':'Bark.','problem':'Unclear mapping','fix':'Use a clear request mechanic'}] if failed else [],
          'demo_test':{'actions':[{'action':'click','selector':'#submit','value':'-'}],'assertions':[{'check':'visible','selector':'#result','expected':'-'}]}}
  result.write_text(json.dumps(report));sys.exit(0)
 if result.stem.startswith('repair-'):

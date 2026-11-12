@@ -75,21 +75,28 @@ def validate(entry):
         require(logo["icon_file"] in refs.icons, f"{page} must use the brand icon favicon")
     if kit["version"] == 2:
         generation = kit.get("generation")
-        require(isinstance(generation, dict) and generation.get("mode") in ("gemini", "fallback"), "brand_kit.generation.mode must be gemini or fallback")
+        require(isinstance(generation, dict) and generation.get("mode") in ("gemini", "mixed", "fallback"), "brand_kit.generation.mode must be gemini, mixed or fallback")
         if generation["mode"] == "fallback":
             text_fields(generation, ["fallback_reason"], "brand_kit.generation")
             return
+        if generation["mode"] == "mixed":
+            text_fields(generation, ["revision_reason"], "brand_kit.generation")
         items = (concept.get("images") or {}).get("items", [])
         require(isinstance(items, list) and all(isinstance(item, dict) for item in items), "image provenance items must be objects")
         records = {item.get("file"): item for item in items}
 
-        def gemini_origin(name):
+        def gemini_origin(name, allow_revision=False):
             seen = set()
             while name not in seen:
                 seen.add(name)
                 record = records.get(name, {})
                 if record.get("source") == "gemini":
                     require(asset(entry, name).suffix.lower() in {".png", ".webp", ".jpg", ".jpeg"}, "Gemini source must be a raster image")
+                    return
+                if allow_revision and record.get("source") == "openai-imagegen":
+                    require(record.get("tool") == "image_gen", "replacement artwork must identify image_gen tool provenance")
+                    text_fields(record, ["prompt"], "replacement artwork")
+                    require(asset(entry, name).suffix.lower() in {".png", ".webp", ".jpg", ".jpeg"}, "replacement artwork must be raster")
                     return
                 require(record.get("source") == "derived-export", f"{name} must have Gemini design provenance")
                 asset(entry, name)
@@ -104,7 +111,7 @@ def validate(entry):
             require(item.get("role") in {"graphic-design", "infographic"}, "version 2 requires composed graphic-design or infographic assets; photography/basic diagrams do not count")
             name = item.get("file")
             asset(entry, name)
-            gemini_origin(name)
+            gemini_origin(name, allow_revision=generation["mode"] == "mixed")
             require(records.get(name, {}).get("role") in {"graphic-design", "infographic"}, f"{name} must have a graphic-design provenance role")
             require(name in landing.images, f"index.html must display graphic artwork: {name}")
             graphic_files.add(name)

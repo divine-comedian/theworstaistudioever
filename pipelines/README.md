@@ -35,37 +35,93 @@ current user. The final response and run status go to `state/runs/` as before.
 
 ## QA and repair before publication
 
-Every Codex run goes through one host-controlled QA gate. The initial review is
-read-only, in a fresh non-interactive Codex process. It checks satire coherence,
-references, continuity across concept/landing/demo, desktop and mobile screenshots,
-and an actual demo interaction. Deterministic metadata, asset, HTML and browser
-checks also have to pass; a model verdict cannot waive a technical failure.
+Normal Codex runs have two host-controlled checkpoints. The host rolls a fixed
+pair and supplies a compact recent-entry digest. A read-only Codex invocation
+drafts structured concept JSON; a second independently reviews it before the
+host persists `approved-concept.json` and permits asset generation and building.
+The brief records three audience observations, source-product patterns and an
+opening composition plan. The build must preserve its approved fields.
+
+Final QA independently checks comprehension, satire, composition and continuity,
+desktop/mobile screenshots and an executable demo interaction. Reviewers see a
+host-extracted copy/JavaScript packet before explanatory concept documents.
+The host attaches six current-page screenshots and three frozen approved-reference
+images directly to the CLI invocation and
+inlines compact review inputs, avoiding reliance on a reviewer choosing to open
+image files or repeatedly reading packet files. A structured visual audit must
+cover both pages at desktop/mobile and agree with the composition verdict.
+Every feature and pricing perk needs a concise, explicit behavior/mechanic audit.
+The user-approved repaired Again entry (2026-11-11) is a permanent minimum
+quality reference in `quality-floor.json`. Its three screenshots are frozen
+under `reference/again-approved/` and verified against recorded SHA-256 hashes
+before model calls. They do not rotate with the recent-entry digest. Drafting,
+building and repairs receive its rubric; final review receives the attached
+reference images and must provide a comparison for all four acceptance checks.
+A below-standard assessment prevents a pass and requires repair or withholding
+publication. Different palettes, layouts and identities are expected; the
+comparison concerns clarity, specific humor, purposeful visuals and finish.
+Missing audit coverage or a failed acceptance check cannot accompany a pass.
+Hierarchy and image usefulness can fail even when there is no clipping.
+Deterministic metadata, asset, HTML and browser checks must also pass.
 Known human copy findings live in `codex-v1/editorial-regressions.json`, keyed
 by entry slug. The host checks their rejected phrases in concept, landing and
 demo on every QA attempt. These findings cannot disappear because a later model
 review omitted them. The reviewer also checks that replacements resolve the
 underlying meaning; phrase removal alone does not establish editorial quality.
 
-If QA finds defects, Codex makes a targeted repair, followed by all checks and a
-fresh review. There are **at most two repair attempts total**, not two per issue
-or an open-ended outer loop. A passing initial review needs no repair. Failure
+If QA finds defects, the host consumes one shared repair allowance. Concept
+repairs return revised JSON without editing the site. Final findings include
+stable IDs, exact targets, requested changes and acceptance conditions. A batch
+of unique literal replacements can be applied directly when technical checks
+pass; stale, ambiguous or instruction-based changes use a bounded repairer.
+Every repair is followed by fresh checks and independent review. Verifiers must
+explicitly resolve or retain each earlier finding ID. There are **at most two
+repair batches total across both checkpoints**, including host-applied patches.
+A passing initial review needs no repair. Failure
 after the second attempt stops publication. A CLI failure, invalid QA report,
 or timeout also stops publication rather than being interpreted as a pass.
 Codex may submit complete draft files with `DRAFT_READY` when its static check
 fails; this permits the host's bounded repair stage to fix the draft. The host
 emits public `RUN_COMPLETE` only after the QA gate passes.
 
-The three frozen skills remain unchanged. QA
-instructions are in `codex-v1/qa.md`; repairs use `codex-v1/heal.md`. Repairs
+The three frozen skills remain unchanged. Concept review uses
+`codex-v1/concept-qa.md`; final QA uses `codex-v1/qa.md`; page repairs use
+`codex-v1/heal.md`. Repairs
 preserve product identity, visual direction and images, and cannot alter history,
 other entries, scripts or the pipeline configuration. Sharing metadata is rebuilt
 after each repair. Installed Playwright and matching Chromium are required;
 preflight checks them without installing anything.
 
-Time limits in `codex-v1/config.json` are 60 minutes for generation, 30 minutes
-per review, 45 minutes per repair, and **four hours overall**, including checks.
+Time limits in `codex-v1/config.json` are 5 minutes for concept drafting, 3 for
+concept review, 5 for concept repair, 60 for building, 8 for final review,
+10 per page repair and 5 per final verification, with **two hours overall**.
 Every subprocess uses the smaller of its stage allowance and the remaining
 overall budget. These are ceilings; successful stages finish immediately.
+
+All Codex invocations use `--json`, `--ephemeral`, schema-constrained reviews and
+explicit non-interactive approvals. Completed-turn usage events are recorded in
+private `usage.json`, including input, cached input, output and available
+reasoning-output counts. The accounting total is input + output; cached input
+and reasoning output are breakdowns, not additional charges. Missing required
+usage events stop publication. Failed/timed-out calls retain available evidence;
+in-flight usage without a completed event cannot be inferred from the CLI.
+
+`usage.max_total_tokens` optionally limits a run's measured token allowance;
+`usage.max_stage_tokens` accepts exact stage names or families such as `concept`,
+`generation`, `review` and `repair`. Limits are positive integers or null. They
+are checked after completed calls and before another invocation, so the current
+turn may exceed them. These are token admission controls, not dollar or hard
+in-flight caps. The provisional `review` allowance is 75,000 tokens: the attached
+image calibration used 34,179 and final QA on the repaired entry used 42,587.
+Other numeric allowances remain unset pending measurement; timeouts and repair
+limits bound execution now. No experimental
+budget feature or additional API billing is required.
+
+Explicit user-requested artwork corrections may declare a version 2 mixed kit
+with a nonempty `revision_reason`. This retains Gemini provenance for the logo
+and accepts documented `openai-imagegen`/`image_gen` replacement graphics with
+their actual prompts. It does not change the daily generator's Gemini workflow,
+waive the two composed-graphics requirement, or relabel replacement art as Gemini.
 
 Private `.tmp-codex/<run>/` artifacts include the original draft, each review,
 repair traces, technical reports, screenshots and `qa-summary.json`. On a failed
@@ -73,6 +129,9 @@ new generation, the rejected entry is moved out of `site/entries/` into those
 private artifacts and the previous gallery/history are restored. This prevents
 a later daily commit from accidentally publishing a rejected draft. Existing
 drafts are backed up and restored on failure.
+Concept-only failures leave no new entry under `site/entries/`. Explicit recovery
+and `--qa-existing` operate on their existing fixed draft and skip concept drafting;
+final QA, usage accounting and the repair allowance still apply.
 
 To run QA and optional targeted repairs on an existing draft without publishing:
 

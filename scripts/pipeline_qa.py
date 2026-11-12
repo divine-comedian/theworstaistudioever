@@ -1,10 +1,12 @@
-"""One daily QA gate, at most two targeted repairs, and a final publish decision."""
+"""Host-controlled QA with a shared repair allowance and a final publish decision."""
 
 from contextlib import contextmanager
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from html import unescape
 from html.parser import HTMLParser
+from pathlib import Path
+import hashlib
 import json
 import math
 import os
@@ -21,6 +23,34 @@ class StageFailure(RuntimeError):
     def __init__(self, message, code=1):
         super().__init__(message)
         self.code = code
+
+
+QUALITY_FLOOR_ID = "again-2026-11-11-approved"
+
+
+def quality_floor_context(workspace):
+    """Pinned human approval survives catalogue rotation and later entry edits."""
+    path = workspace / "pipelines/codex-v1/quality-floor.json"
+    floor = json.loads(path.read_text())
+    if floor.get("id") != QUALITY_FLOOR_ID or set(floor.get("criteria", {})) != {
+            "comprehension", "satire", "composition", "continuity"}:
+        raise ValueError("Invalid approved quality floor")
+    if not all(isinstance(value, str) and value.strip() for value in floor["criteria"].values()):
+        raise ValueError("Quality floor criteria must be nonempty")
+    refs = floor.get("reference_images", [])
+    if not isinstance(refs, list) or len(refs) != 3:
+        raise ValueError("Quality floor needs its three approved reference captures")
+    images = []
+    for reference in refs:
+        image = workspace / reference["file"]
+        if not image.resolve().is_relative_to((workspace / "pipelines/codex-v1/reference").resolve()):
+            raise ValueError("Quality floor image must stay inside the reference directory")
+        if not image.is_file() or hashlib.sha256(image.read_bytes()).hexdigest() != reference["sha256"]:
+            raise ValueError("Approved quality floor image missing or changed")
+        images.append(image)
+    if len(set(images)) != 3:
+        raise ValueError("Quality floor captures must be distinct")
+    return floor, images
 
 
 def budget(deadline, limit):
@@ -50,6 +80,7 @@ def execute(command, workspace, trace, timeout, prompt=None):
 
 
 def validate_config(workspace, config):
+    quality_floor_context(workspace)
     qa = config["qa"]
     if type(qa["max_repair_attempts"]) is not int or not 0 <= qa["max_repair_attempts"] <= 2:
         raise ValueError("Daily QA permits at most two repair attempts")
@@ -60,6 +91,10 @@ def validate_config(workspace, config):
     for name in ["qa.md", "heal.md"]:
         if not (workspace / "pipelines/codex-v1" / name).is_file():
             raise ValueError(f"Missing daily QA prompt: {name}")
+    if "verification_timeout_seconds" in qa:
+        value = qa["verification_timeout_seconds"]
+        if type(value) not in (int, float) or not math.isfinite(value) or value <= 0:
+            raise ValueError("QA verification_timeout_seconds must be positive")
     if not (workspace / "scripts/check-entry-browser.cjs").is_file():
         raise ValueError("Missing headless QA checker")
 
@@ -191,15 +226,37 @@ TEXT = {"type": "string", "minLength": 1}
 # Input values and exact-value expectations may legitimately be empty (for
 # example, a composer clearing its text box after submission).
 VALUE = {"type": "string", "minLength": 0}
+FINDING = object_schema({
+    "id": TEXT, "target": TEXT, "acceptance": TEXT,
+    "category": {"type": "string", "enum": ["satire", "consistency", "ux", "runtime"]},
+    "file": TEXT, "quote": TEXT, "problem": TEXT, "fix": TEXT,
+    # Empty old means an instruction-based repair. Nonempty old is a unique,
+    # literal source match; the host applies a batch only when every edit matches.
+    "patch": object_schema({"old": VALUE, "new": VALUE}),
+})
 REVIEW_SCHEMA = object_schema({
     "slug": TEXT,
     "verdict": {"type": "string", "enum": ["pass", "repair"]},
     "premise": TEXT,
     "strengths": {"type": "array", "items": TEXT},
-    "findings": {"type": "array", "items": object_schema({
-        "category": {"type": "string", "enum": ["satire", "consistency", "ux", "runtime"]},
-        "file": TEXT, "quote": TEXT, "problem": TEXT, "fix": TEXT,
+    "checks": object_schema({name: {"type": "boolean"} for name in
+                             ["comprehension", "satire", "composition", "continuity"]}),
+    "quality_floor": object_schema({
+        "reference_id": {"type": "string", "enum": [QUALITY_FLOOR_ID]},
+        "assessments": object_schema({name: object_schema({"meets": {"type": "boolean"}, "evidence": TEXT})
+                                      for name in ["comprehension", "satire", "composition", "continuity"]}),
+    }),
+    "copy_audit": {"type": "array", "items": object_schema({
+        "target": TEXT, "behavior": TEXT, "mechanic": TEXT, "connection": TEXT,
     })},
+    "visual_audit": {"type": "array", "items": object_schema({
+        "page": {"type": "string", "enum": ["index.html", "demo.html"]},
+        "viewport": {"type": "string", "enum": ["desktop", "mobile"]},
+        "dominant_content": TEXT, "product_visual": TEXT, "caption_legibility": TEXT,
+        "comprehension_pass": {"type": "boolean"},
+    })},
+    "resolved_findings": {"type": "array", "items": TEXT},
+    "findings": {"type": "array", "items": FINDING},
     "demo_test": object_schema({
         "actions": {"type": "array", "items": object_schema({
             "action": {"type": "string", "enum": ["click", "fill", "select", "press"]},
@@ -226,6 +283,8 @@ def validate_shape(value, schema):
             raise ValueError("QA report field must be an array")
         for item in value:
             validate_shape(item, schema["items"])
+        if len(value) < schema.get("minItems", 0) or len(value) > schema.get("maxItems", math.inf):
+            raise ValueError("QA report array has invalid length")
     elif kind == "string":
         if not isinstance(value, str) or (schema.get("minLength", 1) > 0 and not value.strip()):
             raise ValueError("QA report text must be nonempty")
@@ -233,6 +292,39 @@ def validate_shape(value, schema):
         raise ValueError("QA report pass flags must be booleans")
     if "enum" in schema and value not in schema["enum"]:
         raise ValueError("Invalid QA report verdict or category")
+
+
+def validate_verdict(report, previous_ids=()):
+    ids = [finding["id"] for finding in report["findings"]]
+    if len(ids) != len(set(ids)):
+        raise ValueError("QA finding IDs must be unique")
+    if report["verdict"] == "pass" and (ids or not all(report["checks"].values())):
+        raise ValueError("QA pass contradicts findings or acceptance checks")
+    floor = report.get("quality_floor")
+    if floor and report["verdict"] == "pass" and not all(item["meets"] for item in floor["assessments"].values()):
+        raise ValueError("QA pass falls below the user-approved quality floor")
+    if report["verdict"] == "repair" and not ids:
+        raise ValueError("QA requested repair without actionable findings")
+    if not set(previous_ids) <= set(ids) | set(report["resolved_findings"]):
+        raise ValueError("QA omitted an earlier finding without verifying resolution")
+    if set(ids) & set(report["resolved_findings"]):
+        raise ValueError("QA finding cannot be both unresolved and resolved")
+
+
+def validate_copy_audit(report, concept):
+    expected = {f"features.{i}" for i, _ in enumerate(concept.get("features", []))}
+    expected |= {f"pricing_tiers.{i}.perks.{j}" for i, tier in enumerate(concept.get("pricing_tiers", []))
+                 for j, _ in enumerate(tier.get("perks", []))}
+    if not expected <= {item["target"] for item in report["copy_audit"]}:
+        raise ValueError("QA copy audit omitted a feature or pricing perk")
+
+
+def validate_visual_audit(report):
+    expected = {(page, viewport) for page in ("index.html", "demo.html") for viewport in ("desktop", "mobile")}
+    if expected != {(item["page"], item["viewport"]) for item in report["visual_audit"]}:
+        raise ValueError("QA visual audit must cover both pages on desktop and mobile")
+    if report["checks"]["composition"] and not all(item["comprehension_pass"] for item in report["visual_audit"]):
+        raise ValueError("Composition pass contradicts visual observations")
 
 
 def read_review(path, slug):
@@ -250,10 +342,8 @@ def read_review(path, slug):
             raise ValueError("QA text assertion requires a nonempty substring")
         if assertion["check"] == "count" and not re.fullmatch(r"[0-9]+", assertion["expected"]):
             raise ValueError("QA count assertion requires a nonnegative integer")
-    if report["verdict"] == "pass" and report["findings"]:
-        raise ValueError("QA pass contradicts its findings")
-    if report["verdict"] == "repair" and not report["findings"]:
-        raise ValueError("QA requested repair without actionable findings")
+    validate_verdict(report)
+    validate_visual_audit(report)
     return report
 
 
@@ -291,9 +381,137 @@ def enforce_scope(workspace, slug, before):
         raise StageFailure("QA repair changed protected content; changes restored and publication refused")
 
 
-def run_qa(workspace, slug, config, run, invoke, deadline):
+class RepairAllowance:
+    def __init__(self, limit, run):
+        self.limit, self.run, self.used = limit, run, 0
+
+    def claim(self, stage):
+        if self.used >= self.limit:
+            raise StageFailure(f"QA failed after {self.used} repair attempts; refusing publication")
+        self.used += 1
+        path = self.run / "repair-budget.json"
+        records = json.loads(path.read_text()) if path.exists() else []
+        records.append({"attempt": self.used, "stage": stage})
+        path.write_text(json.dumps(records, indent=2) + "\n")
+        return self.used
+
+
+def apply_exact_patches(workspace, slug, findings):
+    """Apply an entirely literal batch atomically after validating all matches."""
+    if not findings or any(not item["patch"]["old"] for item in findings):
+        return False
+    allowed = {f"site/entries/{slug}/{name}" for name in ["concept.json", "index.html", "demo.html"]}
+    staged = {}
+    for item in findings:
+        name, patch = item["file"], item["patch"]
+        path = workspace / name
+        if name not in allowed or path.is_symlink():
+            return False
+        source = staged.get(name, path.read_text())
+        if source.count(patch["old"]) != 1 or patch["old"] == patch["new"]:
+            return False
+        staged[name] = source.replace(patch["old"], patch["new"], 1)
+    for name, source in staged.items():
+        if name.endswith("concept.json"):
+            json.loads(source)
+    for name, source in staged.items():
+        (workspace / name).write_text(source)
+    return True
+
+
+def review_packet(workspace, slug, directory):
+    """Extract copy once; keep styling, duplicated metadata and traces out of QA."""
+    class Page(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.skip = 0
+            self.script = False
+            self.copy, self.scripts, self.images, self.links = [], [], [], []
+
+        def handle_starttag(self, tag, attrs):
+            attrs = dict(attrs)
+            if tag in ("head", "style", "script"):
+                self.skip += 1
+            self.script = tag == "script" or self.script
+            if tag == "img":
+                self.images.append({key: attrs.get(key, "") for key in ("src", "alt")})
+            if tag == "a":
+                self.links.append(attrs.get("href", ""))
+            if not self.skip and tag in ("h1", "h2", "h3", "button", "input", "select", "textarea"):
+                self.copy.append(f"<{tag} id={attrs.get('id', '')!r} label={attrs.get('aria-label', '')!r}>")
+
+        def handle_endtag(self, tag):
+            if tag in ("head", "style", "script"):
+                self.skip -= 1
+            if tag == "script":
+                self.script = False
+
+        def handle_data(self, data):
+            if self.script:
+                self.scripts.append(data)
+            elif not self.skip and data.strip():
+                self.copy.append(data.strip())
+
+    pages = {}
+    for name in ("index.html", "demo.html"):
+        source = workspace / "site/entries" / slug / name
+        if not source.is_file():
+            pages[name] = {"error": "Missing page; see static checks"}
+            continue
+        page = Page()
+        page.feed(source.read_text())
+        pages[name] = {"copy": page.copy, "images": page.images, "links": page.links}
+        if name == "demo.html":
+            pages[name]["scripts"] = page.scripts
+    path = directory / "review-packet.json"
+    path.write_text(json.dumps(pages, indent=2, ensure_ascii=False) + "\n")
+    return path
+
+
+def final_review_input(workspace, slug, directory, context):
+    """Attach evidence and inline compact inputs so reviews need no file rereads."""
+    browser = json.loads((directory / "browser.json").read_text())
+    images, labels = [], []
+    coverage = set()
+    for page in browser.get("pages", []):
+        viewport = "mobile" if page["viewport"]["width"] < 700 else "desktop"
+        coverage.add((page["filename"], viewport))
+        fields = ("foldScreenshot", "screenshot") if page["filename"] == "index.html" else ("screenshot",)
+        for field in fields:
+            name = page.get(field)
+            if not name or not Path(name).is_file():
+                raise StageFailure("Missing screenshot attachment; refusing an ungrounded visual review")
+            images.append(Path(name))
+            labels.append({"image": len(images), "page": page["filename"], "viewport": viewport,
+                           "capture": "opening" if field == "foldScreenshot" else "full page"})
+    if coverage != {(page, size) for page in ("index.html", "demo.html") for size in ("desktop", "mobile")}:
+        raise StageFailure("Missing desktop/mobile page captures; refusing visual review")
+    floor, reference_images = quality_floor_context(workspace)
+    for reference, image in zip(floor["reference_images"], reference_images):
+        images.append(image)
+        labels.append({"image": len(images), "quality_reference": floor["id"],
+                       "capture": reference["purpose"]})
+    concept = json.loads((workspace / "site/entries" / slug / "concept.json").read_text())
+    compact = {key: value for key, value in concept.items() if key != "images"}
+    compact["image_provenance"] = [{key: item.get(key) for key in ("file", "role", "source", "source_file", "transformation")}
+                                   for item in concept.get("images", {}).get("items", [])]
+    previous = [json.loads(Path(path).read_text()) for path in context.get("all_previous_reviews", [])]
+    data = {**context, "attached_images": labels, "approved_quality_floor": floor,
+            "page_content": json.loads((directory / "review-packet.json").read_text()),
+            "concept_after_page_review": compact,
+            "technical_checks": json.loads((directory / "technical.json").read_text()),
+            "human_feedback": json.loads((directory / "editorial-regressions.json").read_text()),
+            "browser_findings": [{key: page.get(key) for key in ("filename", "viewport", "failures", "errors", "brokenImages")}
+                                 for page in browser["pages"]],
+            "previous_findings": [{"findings": report["findings"], "resolved_findings": report["resolved_findings"]}
+                                  for report in previous]}
+    return data, images
+
+
+def run_qa(workspace, slug, config, run, invoke, deadline, allowance=None):
     """invoke(prompt, label, timeout, read_only=False, schema=None) -> final file."""
     qa = config["qa"]
+    allowance = allowance or RepairAllowance(qa["max_repair_attempts"], run)
     bundle = workspace / "pipelines/codex-v1"
     entry = entry_path(workspace, slug)
     original = json.loads((entry / "concept.json").read_text())
@@ -303,24 +521,33 @@ def run_qa(workspace, slug, config, run, invoke, deadline):
     shutil.copytree(entry, run / "draft-before-qa")
     schema = run / "qa-schema.json"
     schema.write_text(json.dumps(review_schema(slug), indent=2) + "\n")
-    summary = {"slug": slug, "status": "failed", "repair_attempts": 0, "reviews": []}
+    summary = {"slug": slug, "status": "failed", "repair_attempts": allowance.used, "reviews": []}
     summary_path = run / "qa-summary.json"
     try:
+        previous_ids = set()
         for attempt in range(qa["max_repair_attempts"] + 1):
             with preview(workspace) as base:
                 directory = run / f"checks-{attempt}"
                 technical = technical_checks(workspace, slug, directory, base, qa, deadline)
+                packet = review_packet(workspace, slug, directory)
                 context = {"slug": slug, "entry_directory": str(entry), "preview_url": base,
+                           "review_packet": str(packet),
+                           "approved_concept": str(run / "approved-concept.json") if (run / "approved-concept.json").exists() else None,
                            "technical_report": str(directory / "technical.json"),
                            "browser_report": str(directory / "browser.json"),
                            "review_number": attempt, "previous_review": summary["reviews"][-1] if summary["reviews"] else None,
                            "all_previous_reviews": summary["reviews"].copy(),
                            "previous_checks": str(run / f"checks-{attempt - 1}" / "technical.json") if attempt else None}
+                context, images = final_review_input(workspace, slug, directory, context)
                 prompt = (bundle / "qa.md").read_text() + "\n\nHOST REVIEW CONTEXT:\n" + json.dumps(context, indent=2)
-                print(f"codex QA: review {attempt + 1}, repairs used {attempt}/{qa['max_repair_attempts']}", flush=True)
-                report_path = invoke(prompt, f"review-{attempt}", budget(deadline, qa["review_timeout_seconds"]),
-                                     read_only=True, schema=schema)
+                print(f"codex QA: review {attempt + 1}, repairs used {allowance.used}/{allowance.limit}", flush=True)
+                review_limit = qa.get("verification_timeout_seconds", qa["review_timeout_seconds"]) if attempt else qa["review_timeout_seconds"]
+                report_path = invoke(prompt, f"review-{attempt}", budget(deadline, review_limit),
+                                     read_only=True, schema=schema, images=images)
                 report = read_review(report_path, slug)
+                validate_verdict(report, previous_ids)
+                validate_copy_audit(report, json.loads((entry / "concept.json").read_text()))
+                previous_ids |= {finding["id"] for finding in report["findings"]}
                 summary["reviews"].append(str(report_path))
                 interaction_log = directory / "interaction.log"
                 code = execute(["node", "scripts/check-entry-browser.cjs", "--interaction", base, slug,
@@ -332,18 +559,20 @@ def run_qa(workspace, slug, config, run, invoke, deadline):
                 (directory / "technical.json").write_text(json.dumps(technical, indent=2) + "\n")
             if technical["passed"] and report["verdict"] == "pass":
                 summary["status"] = "passed"
-                print(f"codex QA: passed after {attempt} repair attempt(s)", flush=True)
+                print(f"codex QA: passed after {allowance.used} repair attempt(s)", flush=True)
                 return summary
-            if attempt == qa["max_repair_attempts"]:
-                raise StageFailure(f"QA failed after {attempt} repair attempts; refusing publication; private reports: {run}")
+            number = allowance.claim("final")
             context = {"slug": slug, "review": str(report_path), "technical_report": str(directory / "technical.json"),
-                       "browser_report": str(directory / "browser.json"), "attempt": attempt + 1,
-                       "all_previous_reviews": summary["reviews"].copy()}
+                       "browser_report": str(directory / "browser.json"), "attempt": number,
+                       "all_previous_reviews": summary["reviews"].copy(),
+                       "approved_quality_floor": quality_floor_context(workspace)[0]}
             prompt = (bundle / "heal.md").read_text() + "\n\nHOST REPAIR CONTEXT:\n" + json.dumps(context, indent=2)
             before = guarded_files(workspace, slug)
-            summary["repair_attempts"] = attempt + 1
+            summary["repair_attempts"] = allowance.used
             try:
-                invoke(prompt, f"repair-{attempt + 1}", budget(deadline, qa["repair_timeout_seconds"]))
+                patched = technical["passed"] and apply_exact_patches(workspace, slug, report["findings"])
+                if not patched:
+                    invoke(prompt, f"repair-{number}", budget(deadline, qa["repair_timeout_seconds"]))
             finally:
                 enforce_scope(workspace, slug, before)
             updated = json.loads((entry / "concept.json").read_text())

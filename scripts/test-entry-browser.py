@@ -6,6 +6,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from PIL import Image
 
 from pipeline_qa import preview
 
@@ -57,6 +58,8 @@ document.querySelector('#cats').hidden=e.target.value==='dog';
         self.assertEqual(len(report["pages"]), 4)
         for page in report["pages"]:
             self.assertTrue(Path(page["screenshot"]).is_file())
+            with Image.open(page["foldScreenshot"]) as image:
+                self.assertEqual(image.size, (page["viewport"]["width"], page["viewport"]["height"]))
         result, report = self.invoke(interaction=True)
         self.assertEqual(result.returncode, 0, result.stderr + json.dumps(report))
         self.assertTrue(report["passed"])

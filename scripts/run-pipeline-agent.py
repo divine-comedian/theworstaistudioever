@@ -14,7 +14,8 @@ import tempfile
 import time
 
 from pipeline_qa import (DraftTransaction, StageFailure, budget, entry_path, execute,
-                         run_qa, validate_config)
+                         RepairAllowance, quality_floor_context, run_qa, validate_config)
+from pipeline_editorial import UsageLedger, concept_checkpoint, validate_editorial_config
 
 
 CLAUDE_TOOLS = "Read,Write,Edit,Glob,Grep,Bash(jq:*),Bash(node:*),Bash(python3:*),Bash(date:*),Bash(ls:*),Bash(cat:*),Bash(mkdir:*),Bash(./scripts/validate-entry.sh:*),Bash(scripts/validate-entry.sh:*),Bash(./scripts/gen-image.sh:*),Bash(scripts/gen-image.sh:*),Skill"
@@ -29,23 +30,28 @@ def configuration(workspace):
     if type(config["timeout_seconds"]) not in (int, float) or not math.isfinite(config["timeout_seconds"]) or config["timeout_seconds"] <= 0:
         raise ValueError("Codex timeout must be positive")
     validate_config(workspace, config)
+    validate_editorial_config(workspace, config)
     return bundle, config
 
 
-def codex_command(workspace, config, result, read_only=False, schema=None):
-    command = ["codex", "exec", "--ephemeral", "--skip-git-repo-check",
+def codex_command(workspace, config, result, read_only=False, schema=None, images=()):
+    command = ["codex", "exec", "--ephemeral", "--json", "--skip-git-repo-check",
             "--sandbox", "read-only" if read_only else "workspace-write", "-C", str(workspace),
             "--model", config["model"],
             "-c", 'model_reasoning_effort=' + json.dumps(config["reasoning_effort"]),
+            "-c", 'approval_policy="never"',
             "-c", "sandbox_workspace_write.network_access=true",
             "--output-last-message", str(result)]
     if schema:
         command.extend(["--output-schema", str(schema)])
+    for image in images:
+        command.extend(["--image", str(image)])
     return command + ["-"]
 
 
-def generate(workspace, bundle, config, run, invoke, recover_today=None, finish_recovery=False):
+def generate(workspace, bundle, config, run, invoke, recover_today=None, finish_recovery=False, approved=None):
     prompt = (bundle / "adapter.md").read_text() + "\n\n" + (workspace / "pipeline.md").read_text()
+    prompt += "\n\nHOST APPROVED QUALITY FLOOR:\n" + json.dumps(quality_floor_context(workspace)[0])
     prompt += """
 
 HOST QA CHECKPOINT OVERRIDE (Codex only; takes precedence over Step 8 abort):
@@ -57,6 +63,22 @@ case print DRAFT_READY: <slug> instead of RUN_COMPLETE. The host will permit up
 to two targeted repair attempts and refuse publication unless all checks pass.
 If the required draft files cannot be completed, report failure without either
 marker. For a validated draft, continue to use RUN_COMPLETE as usual.
+"""
+    if approved:
+        entry = workspace / "site/entries" / approved["slug"]
+        entry.mkdir(parents=True)
+        (entry / "concept.json").write_text(json.dumps(approved, indent=2, ensure_ascii=False) + "\n")
+        prompt += "\n\nHOST APPROVED CONCEPT OVERRIDE:\n" + json.dumps({
+            "approved_concept": str(run / "approved-concept.json"),
+            "recent_digest": str(run / "recent-entries.json"), "slug": approved["slug"],
+        }) + """
+The host has completed ROLL and CONCEPT and persisted the approved concept at
+the entry's concept.json. Start at Step 3. Do not roll or invent another concept.
+Preserve every approved concept field, including its editorial_plan and copy;
+extend it with design_direction, brand_kit and image provenance. Use the recent
+digest for comparison instead of loading seven complete concept documents.
+Generate assets and build the pages around this approved proposition, primary
+action and product visual. The host performs final QA and owns all repairs.
 """
     original_history = None
     recovery = None
@@ -111,6 +133,10 @@ and emit RUN_COMPLETE only after the checkpoint passes. Leave history unchanged.
         summary = f"Generation submitted a draft for host QA.\nRUN_COMPLETE: {slug}\n"
     if recover_today and slug != recover_today:
         raise ValueError("Recovery reported the wrong entry; refusing publication")
+    if approved:
+        concept = json.loads((entry / "concept.json").read_text())
+        if slug != approved["slug"] or any(concept.get(key) != value for key, value in approved.items()):
+            raise StageFailure("Build changed the approved concept; refusing publication")
     if recovery:
         if (workspace / "state/history.json").read_bytes() != original_history:
             raise ValueError("Recovery changed history; refusing publication")
@@ -135,12 +161,25 @@ def run_codex(workspace, recover_today=None, finish_recovery=False, qa_existing=
     run = Path(tempfile.mkdtemp(prefix=datetime.now(timezone.utc).strftime("%Y-%m-%d-"), dir=private))
     started = time.monotonic()
     deadline = started + config["qa"]["total_timeout_seconds"]
+    usage = UsageLedger(run, config)
+    allowance = RepairAllowance(config["qa"]["max_repair_attempts"], run)
 
-    def invoke(prompt, label, timeout, read_only=False, schema=None):
+    def invoke(prompt, label, timeout, read_only=False, schema=None, images=()):
+        usage.admit()
         result = run / ("result.txt" if label == "generation" else f"{label}.json" if schema else f"{label}.txt")
         trace = run / ("trace.log" if label == "generation" else f"{label}.log")
-        command = codex_command(workspace, config, result, read_only, schema)
-        code = execute(command, workspace, trace, budget(deadline, timeout), prompt)
+        command = codex_command(workspace, config, result, read_only, schema, images)
+        try:
+            code = execute(command, workspace, trace, budget(deadline, timeout), prompt)
+        except StageFailure:
+            # Preserve partial usage when possible without hiding a timeout.
+            if trace.exists():
+                try:
+                    usage.record(label, trace)
+                except StageFailure:
+                    pass
+            raise
+        usage.record(label, trace)
         if code:
             raise StageFailure(f"codex {label}: exited {code}; private trace: {trace}")
         if not result.is_file() or not result.read_text().strip():
@@ -154,14 +193,18 @@ def run_codex(workspace, recover_today=None, finish_recovery=False, qa_existing=
         if qa_existing:
             slug, summary = qa_existing, f"RUN_COMPLETE: {qa_existing}\n"
         else:
-            slug, summary = generate(workspace, bundle, config, run, invoke, recover_today, finish_recovery)
+            approved = None
+            if config.get("concept_checkpoint", {}).get("enabled") and not recover_today:
+                approved = concept_checkpoint(workspace, bundle, config, run, invoke, deadline, allowance)
+            slug, summary = generate(workspace, bundle, config, run, invoke, recover_today, finish_recovery, approved)
             if not recover_today:
                 after = {path.name for path in (workspace / "site/entries").iterdir()}
                 if after - transaction.before != {slug} or not transaction.before <= after:
                     raise StageFailure("Generator must create exactly one new entry and preserve existing entries")
-        run_qa(workspace, slug, config, run, invoke, deadline)
+        run_qa(workspace, slug, config, run, invoke, deadline, allowance)
         print(summary, end="" if summary.endswith("\n") else "\n")
         print(f"codex: completed with QA in {time.monotonic() - started:.1f}s; private reports: {run}", flush=True)
+        print(f"codex: measured input+output tokens={usage.total}; cached/reasoning breakdown in private usage.json", flush=True)
         passed = True
         return 0
     finally:
@@ -194,7 +237,7 @@ def main():
                 raise ValueError("Daily QA requires installed Playwright and Chromium; browser preflight failed")
             if args.preflight:
                 print(f"codex preflight: {config['model']}, {config['reasoning_effort']}, three frozen v1 skills")
-                print(f"QA preflight: one gate, up to {config['qa']['max_repair_attempts']} repairs, {config['qa']['total_timeout_seconds']}s overall budget")
+                print(f"QA preflight: concept checkpoint={config.get('concept_checkpoint', {}).get('enabled', False)}, up to {config['qa']['max_repair_attempts']} shared repairs, {config['qa']['total_timeout_seconds']}s overall budget")
                 return
             raise SystemExit(run_codex(workspace, args.recover_today, args.finish_recovery, args.qa_existing))
         if args.recover_today or args.qa_existing:

@@ -2,12 +2,30 @@
   "model": "gpt-6.1-sol",
   "reasoning_effort": "high",
   "timeout_seconds": 3600,
+  "concept_checkpoint": {
+    "enabled": true,
+    "draft_timeout_seconds": 300,
+    "review_timeout_seconds": 180,
+    "repair_timeout_seconds": 300
+  },
+  "usage": {
+    "require_events": true,
+    "max_total_tokens": null,
+    "max_stage_tokens": {
+      "review": 75000
+    }
+  },
   "qa": {
     "max_repair_attempts": 2,
-    "review_timeout_seconds": 1800,
-    "repair_timeout_seconds": 2700,
-    "total_timeout_seconds": 14400,
+    "review_timeout_seconds": 480,
+    "verification_timeout_seconds": 300,
+    "repair_timeout_seconds": 600,
+    "total_timeout_seconds": 7200,
     "browser_timeout_seconds": 180
   },
-  "skills": ["anti-ai-slop", "frontend-design", "ui-ux-pro-max"]
+  "skills": [
+    "anti-ai-slop",
+    "frontend-design",
+    "ui-ux-pro-max"
+  ]
 }

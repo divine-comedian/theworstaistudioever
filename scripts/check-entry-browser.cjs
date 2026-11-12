@@ -83,7 +83,9 @@ async function check(base, slug, output) {
         if (!hasNavigation) failures.push(`Missing link to ${counterpart}`);
         const screenshot = path.join(output, `${filename}-${viewport.width}.png`);
         await page.screenshot({path: screenshot, fullPage: true, timeout: 15000});
-        report.pages.push({filename, viewport, screenshot, errors, failedResources, failures, ...details});
+        const foldScreenshot = path.join(output, `${filename}-${viewport.width}-fold.png`);
+        await page.screenshot({path: foldScreenshot, fullPage: false, timeout: 15000});
+        report.pages.push({filename, viewport, screenshot, foldScreenshot, errors, failedResources, failures, ...details});
         await page.close();
       }
     }
