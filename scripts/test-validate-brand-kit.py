@@ -150,6 +150,28 @@ class BrandKitTest(unittest.TestCase):
         self.make_gemini_kit()
         module.validate(self.entry)
 
+    def test_transparent_logo_contract_rejects_opaque_and_empty_exports(self):
+        self.make_gemini_kit()
+        self.kit["logo"]["background"] = "transparent"
+        self.save()
+        with self.assertRaisesRegex(ValueError, "real alpha"):
+            module.validate(self.entry)
+        for key in ["primary_file", "mono_file", "icon_file"]:
+            im = Image.new("RGBA", (64, 64))
+            im.paste((100, 20, 40, 255), (10, 10, 54, 54))
+            im.save(self.entry / self.kit["logo"][key])
+        module.validate(self.entry)
+        Image.new("RGBA", (64, 64)).save(self.entry / "logo-icon.png")
+        with self.assertRaisesRegex(ValueError, "visible artwork"):
+            module.validate(self.entry)
+
+    def test_future_logo_kits_cannot_omit_transparency_declaration(self):
+        self.make_gemini_kit()
+        self.concept["date"] = "2026-11-18"
+        self.save()
+        with self.assertRaisesRegex(ValueError, "declare background"):
+            module.validate(self.entry)
+
     def test_explicit_mixed_revision_keeps_gemini_identity_and_honest_replacement_art(self):
         self.make_gemini_kit()
         self.kit['generation'].update(mode='mixed', revision_reason='User requested replacement of unclear artwork.')

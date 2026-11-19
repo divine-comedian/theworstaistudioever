@@ -65,3 +65,24 @@ On revisions verify every earlier finding: preserve its ID if unresolved, or
 list it in resolved_findings only after checking the new copy. Also check the
 revised concept as a whole for new inconsistencies. Do not explain jokes in
 published copy; make the proposed action and consequence understandable.
+
+
+Apply the supplied humor_calibration to this entry, including the user's negative
+and positive examples. The author’s angle selection, observations and voice
+rationale are intentionally withheld. Judge the reader-visible copy first.
+In humor_audit, state the central comic tension, then give a verbatim quote and
+reader-visible turn for the hero and each of features.0, features.1, features.2.
+Do not improve a joke in your explanation. If you cannot identify a convincing
+turn in the actual copy, set works=false and satire=false and request repair.
+A logical reversal can still be flat or arbitrary; do not equate explainability
+with comic effectiveness. No numerical humor scores.
+Check source_relevance: does the source product cause this particular absurdity,
+or was an unrelated office task inserted because bureaucracy sounds satirical?
+Check distinct_observations across the whole page: look for three main hooks
+drawing on three to five audience tropes. Recurring hooks and tropes are welcome.
+A callback can add a revealing detail, situation, escalation or payoff without
+being a new joke. A paraphrase that adds nothing is padding. Features need
+distinct setups or turns; do not demand unrelated humor in every section. State the concrete repetition in evidence, and mark works=false
+when it dominates. Every false reader test, source relevance or distinctness check
+requires a satire finding and repair verdict. Keep effective humor, plain UI and
+creative freedom. Do not repair weakness by explaining the joke to the visitor.

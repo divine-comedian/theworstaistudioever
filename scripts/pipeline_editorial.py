@@ -5,9 +5,9 @@ import json
 import math
 import re
 
-from pipeline_qa import (REVIEW_SCHEMA, TEXT, StageFailure,
+from pipeline_qa import (REVIEW_SCHEMA, TEXT, StageFailure, humor_context, reader_concept,
                          budget, design_guidance_context, object_schema, quality_floor_context, validate_copy_audit, validate_shape,
-                         validate_verdict)
+                         validate_verdict, validate_hook_plan)
 
 
 def array(items, minimum=0, maximum=None):
@@ -27,7 +27,17 @@ CONCEPT_SCHEMA = object_schema({
     }), 3, 3),
     "testimonials": array(object_schema({key: TEXT for key in ["quote", "name", "title"]}), 3, 3),
     "editorial_plan": object_schema({
-        "observations": array(object_schema({key: TEXT for key in ["behavior", "mechanic", "consequence"]}), 3, 3),
+        "tropes": array(TEXT, 3, 5),
+        "angle_selection": object_schema({
+            "candidates": array(object_schema({key: TEXT for key in
+                                ["premise", "audience_behavior", "source_mechanic", "comic_turn"]}), 3, 3),
+            "selected_premise": TEXT,
+            "reason": TEXT,
+        }),
+        "observations": array(object_schema({
+            **{key: TEXT for key in ["behavior", "mechanic", "consequence", "landing_callback", "demo_callback"]},
+            "trope_refs": array(TEXT, 1, 5),
+        }), 3, 3),
         "source_product_patterns": array(TEXT, 4),
         "composition_plan": TEXT,
         "audience_design": object_schema({
@@ -58,6 +68,15 @@ def validate_editorial_config(workspace, config):
     for value in [usage.get("max_total_tokens"), *usage.get("max_stage_tokens", {}).values()]:
         if value is not None and (type(value) is not int or value <= 0):
             raise ValueError("Usage limits must be positive integers or null")
+
+
+def validate_angle_selection(concept):
+    selection = concept["editorial_plan"]["angle_selection"]
+    premises = [item["premise"].strip().casefold() for item in selection["candidates"]]
+    if len(set(premises)) != 3:
+        raise ValueError("Concept needs three different candidate premises")
+    if selection["selected_premise"].strip().casefold() not in premises:
+        raise ValueError("Selected premise must name one of the three candidates")
 
 
 class UsageLedger:
@@ -188,11 +207,11 @@ editorial_plan requested by the schema. Do not write files, generate assets,
 build HTML, run git, inspect secrets, use apps, delegate, or publish. The host
 will review and persist the approved brief. Recent entries are comparison data,
 not templates. Keep this concept specific and understandable on first reading.
-""" + voice + concept_rules + "\nHOST TEXT-ONLY DESIGN GUIDANCE:\n" + json.dumps(guidance) + "\nFIXED IDENTITY:\n" + json.dumps(identity) + "\nRECENT DIGEST:\n" + json.dumps(recent) + "\nAPPROVED QUALITY FLOOR:\n" + json.dumps(floor)
+    """ + voice + concept_rules + "\nHOST HUMOR CALIBRATION:\n" + json.dumps(humor_context(workspace)) + "\nHOST TEXT-ONLY DESIGN GUIDANCE:\n" + json.dumps(guidance) + "\nFIXED IDENTITY:\n" + json.dumps(identity) + "\nRECENT DIGEST:\n" + json.dumps(recent) + "\nAPPROVED QUALITY FLOOR:\n" + json.dumps(floor)
     path = invoke(prompt, "concept-draft", budget(deadline, checkpoint["draft_timeout_seconds"]),
                   read_only=True, schema=schema)
     report_schema = json.loads(json.dumps(REVIEW_SCHEMA))
-    for field in ("demo_test", "visual_audit", "quality_floor"):
+    for field in ("demo_test", "visual_audit", "quality_floor", "callback_audit"):
         del report_schema["properties"][field]
         report_schema["required"].remove(field)
     report_schema["properties"]["findings"]["items"]["properties"]["file"]["enum"] = ["concept.json"]
@@ -204,10 +223,13 @@ not templates. Keep this concept specific and understandable on first reading.
         for attempt in range(config["qa"]["max_repair_attempts"] + 1):
             concept = json.loads(path.read_text())
             validate_shape(concept, CONCEPT_SCHEMA)
+            validate_angle_selection(concept)
+            validate_hook_plan(concept)
             if any(concept[key] != value for key, value in identity.items()):
                 raise StageFailure("Concept changed the fixed rolled identity; refusing publication")
             review_prompt = (bundle / "concept-qa.md").read_text() + "\nHOST CONTEXT:\n" + json.dumps({
-                "concept": concept, "recent_entries": recent,
+                "concept": reader_concept(concept), "recent_entries": recent,
+                "humor_calibration": humor_context(workspace),
                 "approved_quality_floor": floor,
                 "design_guidance": guidance,
                 "previous_findings": sorted(previous_ids),
@@ -235,7 +257,8 @@ Fix every reported finding against its acceptance condition; preserve the fixed
 date/company/subject/slug/tagline and product name. Keep successful observations.
 Change matching copy and the editorial plan consistently. Do not write files,
 generate images, build pages, inspect secrets, use apps, delegate or publish.
-""" + json.dumps({"concept": concept, "review": report, "design_guidance": guidance}, ensure_ascii=False)
+""" + json.dumps({"concept": concept, "review": report, "design_guidance": guidance,
+                   "humor_calibration": humor_context(workspace)}, ensure_ascii=False)
             repaired = invoke(prompt, f"concept-repair-{number}",
                               budget(deadline, checkpoint["repair_timeout_seconds"]),
                               read_only=True, schema=schema)

@@ -25,6 +25,27 @@ Satire must have an understandable setup and comic turn for a casual outsider;
 plausible niche services alone do not pass. Final visual QA explicitly checks
 audience fit on both pages at desktop and mobile sizes.
 
+The [November 18 editorial audit](pipelines/codex-v1/editorial-audit-2026-11-18.json)
+reviews 30 entries and available QA traces. Its recurring concerns are generic
+bureaucracy, unexplained source-product substitutions and one joke repeated across
+the page. [Human humor calibration](pipelines/codex-v1/humor-calibration.json)
+now reaches concept drafting, building, reviewing and repair for every new pair.
+Drafts compare three premises before selection, then build three comic hooks
+from three to five audience tropes. Callbacks develop those hooks across the
+landing and demo with new details, situations or payoffs. Reviewers receive the
+copy without the author's comic rationale and must quote the hero and each feature, judge their
+comic turns, source relevance and distinctness. The host rejects a satire pass
+that contradicts those judgments or the quoted cross-page callback audit.
+A reported weak hook triggers the existing non-interactive Codex repair loop,
+which updates its affected copy and demo scenario and gets fresh evaluation.
+Existing repair limits and withholding remain in force. These checks enforce evidence; they cannot objectively measure humor.
+
+Logo kits dated November 18, 2026 onward declare `background: "transparent"`.
+Raster primary, monochrome and icon exports must have actual alpha transparency,
+visible artwork and transparent corners. Visual QA still checks contrast against
+both page backgrounds; a near-matching beige rectangle or CSS blend mode is
+insufficient.
+
 The daily Codex pipeline also receives a [text-only Impeccable adaptation](pipelines/codex-v1/design-guidance/impeccable/GUIDE.md)
 for visual critique, responsive layout, accessibility and interaction recovery.
 The source revision, license, adaptation notes and hashes are recorded locally.

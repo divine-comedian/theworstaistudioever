@@ -79,6 +79,16 @@ document.querySelector('#cats').hidden=e.target.value==='dog';
         self.assertIn("Broken rendered images", mobile["failures"])
         self.assertIn("fixture crash", mobile["errors"])
 
+    def test_interaction_records_dynamic_copy_for_callback_verification(self):
+        demo = self.demo.replace('<div id="dogs">', '<output id="status"></output><div id="dogs">')
+        demo = demo.replace("document.querySelector('#cats').hidden=", "document.querySelector('#status').textContent='The dog now runs the meeting';\ndocument.querySelector('#cats').hidden=")
+        (self.entry / "demo.html").write_text(demo)
+        result, report = self.invoke(interaction=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        for viewport in report["viewports"]:
+            self.assertNotIn("The dog now runs the meeting", viewport["renderedCopy"][0])
+            self.assertTrue(any("The dog now runs the meeting" in state for state in viewport["renderedCopy"][1:]))
+
     def test_overflow_at_320_is_not_hidden_by_a_passing_390_viewport(self):
         extra = '<style>body{margin:0}</style><div style="width:330px">Narrow overflow</div>'
         (self.entry / "demo.html").write_text(self.demo.replace('</body>', extra + '</body>'))

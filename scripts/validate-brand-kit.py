@@ -7,6 +7,8 @@ from pathlib import Path
 import sys
 import xml.etree.ElementTree as ET
 
+from PIL import Image
+
 
 class BrandReferences(HTMLParser):
     def __init__(self, content):
@@ -54,6 +56,9 @@ def validate(entry):
     text_fields(logo, ["concept", "primary_file", "mono_file", "icon_file", "clear_space", "placement"], "brand_kit.logo")
     require(type(logo.get("min_size_px")) is int and logo["min_size_px"] > 0, "logo.min_size_px must be a positive integer")
     files = [logo[key] for key in ["primary_file", "mono_file", "icon_file"]]
+    transparent = logo.get("background") == "transparent"
+    if concept.get("date", "") >= "2026-11-18":
+        require(transparent, "new logo kits must declare background: transparent")
     require(len(set(files)) == 3, "logo needs separate primary, monochrome and icon files")
     for name in files:
         path = asset(entry, name)
@@ -61,6 +66,15 @@ def validate(entry):
         if path.suffix.lower() == ".svg":
             root = ET.fromstring(path.read_text())
             require(root.tag.split("}")[-1] == "svg" and root.get("viewBox"), f"SVG logo needs an svg root and viewBox: {name}")
+        elif transparent:
+            with Image.open(path) as image:
+                alpha = image.convert("RGBA").getchannel("A")
+                low, high = alpha.getextrema()
+                require(low == 0 and high > 0, f"logo needs real alpha transparency and visible artwork: {name}")
+                require(all(alpha.getpixel(point) == 0 for point in
+                            [(0, 0), (image.width - 1, 0), (0, image.height - 1),
+                             (image.width - 1, image.height - 1)]),
+                        f"logo corners must be transparent: {name}")
     if kit["version"] == 1:
         require(all(Path(logo[key]).suffix.lower() == ".svg" for key in ["mono_file", "icon_file"]), "version 1 monochrome and icon logos must be SVG")
     text_fields(kit.get("graphic_language"), ["medium", "motif", "composition", "texture"], "brand_kit.graphic_language")

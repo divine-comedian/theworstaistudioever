@@ -28,6 +28,24 @@ class StageFailure(RuntimeError):
 QUALITY_FLOOR_ID = "again-2026-11-11-approved"
 
 
+def humor_context(workspace):
+    """Human calibration applies to every new pair, not only a matching slug."""
+    data = json.loads((workspace / "pipelines/codex-v1/humor-calibration.json").read_text())
+    if data.get("version") != 1 or not data.get("examples") or not data.get("rules"):
+        raise ValueError("Missing humor calibration rules or examples")
+    return data
+
+
+def reader_concept(concept):
+    """Withhold the author's justification from the independent reader."""
+    hidden = {"brand_voice_notes", "editorial_plan"}
+    result = {key: value for key, value in concept.items() if key not in hidden}
+    plan = concept.get("editorial_plan", {})
+    result["editorial_plan"] = {key: plan[key] for key in
+                                ("composition_plan", "audience_design") if key in plan}
+    return result
+
+
 def design_guidance_context(workspace, stage):
     """Read only reviewed local text; never install or execute upstream tooling."""
     selections = {
@@ -282,6 +300,23 @@ REVIEW_SCHEMA = object_schema({
     "copy_audit": {"type": "array", "items": object_schema({
         "target": TEXT, "behavior": TEXT, "mechanic": TEXT, "connection": TEXT,
     })},
+    "humor_audit": object_schema({
+        "comic_tension": TEXT,
+        "source_relevance": object_schema({"works": {"type": "boolean"}, "evidence": TEXT}),
+        "distinct_observations": object_schema({"works": {"type": "boolean"}, "evidence": TEXT}),
+        "reader_tests": {"type": "array", "minItems": 4, "maxItems": 4,
+                         "items": object_schema({
+                             "target": {"type": "string", "enum": ["hero", "features.0", "features.1", "features.2"]},
+                             "quote": TEXT, "turn": TEXT, "works": {"type": "boolean"},
+                         })},
+    }),
+    "callback_audit": {"type": "array", "minItems": 3, "maxItems": 3,
+                       "items": object_schema({
+                           "target": {"type": "string", "enum": ["features.0", "features.1", "features.2"]},
+                           "landing_quote": VALUE, "demo_quote": VALUE, "evidence": TEXT,
+                           "landing_develops_hook": {"type": "boolean"},
+                           "demo_develops_hook": {"type": "boolean"},
+                       })},
     "visual_audit": {"type": "array", "items": object_schema({
         "page": {"type": "string", "enum": ["index.html", "demo.html"]},
         "viewport": {"type": "string", "enum": ["desktop", "mobile"]},
@@ -345,12 +380,47 @@ def validate_verdict(report, previous_ids=()):
         raise ValueError("QA finding cannot be both unresolved and resolved")
 
 
+def validate_hook_plan(concept):
+    plan = concept["editorial_plan"]
+    tropes = [value.strip().casefold() for value in plan["tropes"]]
+    if not 3 <= len(tropes) <= 5 or len(set(tropes)) != len(tropes):
+        raise ValueError("Humor plan needs three to five distinct audience tropes")
+    hooks = plan["observations"]
+    if len(hooks) != 3:
+        raise ValueError("Humor plan needs three main hooks")
+    used = set()
+    for hook in hooks:
+        refs = [value.strip().casefold() for value in hook["trope_refs"]]
+        if not refs or len(set(refs)) != len(refs) or not set(refs) <= set(tropes):
+            raise ValueError("Each hook must reference known, nonduplicated audience tropes")
+        if not hook["landing_callback"].strip() or not hook["demo_callback"].strip():
+            raise ValueError("Each hook needs a landing and demo callback plan")
+        used.update(refs)
+    if used != set(tropes):
+        raise ValueError("Humor plan contains unused audience tropes")
+
+
 def validate_copy_audit(report, concept):
+    if "tropes" in concept.get("editorial_plan", {}):
+        validate_hook_plan(concept)
     expected = {f"features.{i}" for i, _ in enumerate(concept.get("features", []))}
     expected |= {f"pricing_tiers.{i}.perks.{j}" for i, tier in enumerate(concept.get("pricing_tiers", []))
                  for j, _ in enumerate(tier.get("perks", []))}
     if not expected <= {item["target"] for item in report["copy_audit"]}:
         raise ValueError("QA copy audit omitted a feature or pricing perk")
+    audit = report["humor_audit"]
+    tests = audit["reader_tests"]
+    if {test["target"] for test in tests} != {"hero", "features.0", "features.1", "features.2"} or len(tests) != 4:
+        raise ValueError("Humor audit must cover the hero and all three features exactly once")
+    for test in tests:
+        target = test["target"]
+        copy = concept.get("hero", {}) if target == "hero" else concept["features"][int(target.rsplit(".", 1)[1])]
+        if not any(test["quote"] in value for value in copy.values() if isinstance(value, str)):
+            raise ValueError("Humor audit quote is absent from the reader-visible copy")
+    works = all(test["works"] for test in tests) and all(
+        audit[key]["works"] for key in ("source_relevance", "distinct_observations"))
+    if report["checks"]["satire"] and not works:
+        raise ValueError("Satire pass contradicts the humor reader tests")
 
 
 def validate_visual_audit(report):
@@ -361,6 +431,33 @@ def validate_visual_audit(report):
         raise ValueError("Composition pass contradicts visual observations")
     if report["checks"]["composition"] and not all(item.get("audience_fit_pass", False) for item in report["visual_audit"]):
         raise ValueError("Composition pass contradicts audience fit observations")
+
+
+def validate_callback_audit(report, pages, interaction=None):
+    tests = report["callback_audit"]
+    if len(tests) != 3 or {item["target"] for item in tests} != {f"features.{i}" for i in range(3)}:
+        raise ValueError("Callback audit must cover all three hooks exactly once")
+    normalize = lambda value: " ".join(unescape(value).split())
+    for item in tests:
+        for field, filename in [("landing_quote", "index.html"), ("demo_quote", "demo.html")]:
+            quote = normalize(item[field])
+            develops = item["landing_develops_hook" if field == "landing_quote" else "demo_develops_hook"]
+            if not quote:
+                if develops:
+                    raise ValueError("A passing callback needs a nonempty page quote")
+                continue  # A genuinely missing callback is an actionable repair, not an invalid report.
+            copy = normalize(" ".join(pages.get(filename, {}).get("copy", [])))
+            if quote not in copy:
+                viewports = (interaction or {}).get("viewports", [])
+                observed = (filename == "demo.html" and (interaction or {}).get("passed")
+                            and {view["viewport"]["width"] for view in viewports} == {1440, 390, 320}
+                            and all(view.get("passed") and any(quote in normalize(state)
+                                    for state in view.get("renderedCopy", [])) for view in viewports))
+                if not observed:
+                    raise ValueError(f"Callback quote is absent from {filename} page copy and verified browser states")
+    if report["checks"]["satire"] and not all(
+            item["landing_develops_hook"] and item["demo_develops_hook"] for item in tests):
+        raise ValueError("Satire pass contradicts the cross-page callback audit")
 
 
 def read_review(path, slug):
@@ -529,11 +626,12 @@ def final_review_input(workspace, slug, directory, context):
         labels.append({"image": len(images), "quality_reference": floor["id"],
                        "capture": reference["purpose"]})
     concept = json.loads((workspace / "site/entries" / slug / "concept.json").read_text())
-    compact = {key: value for key, value in concept.items() if key != "images"}
+    compact = reader_concept({key: value for key, value in concept.items() if key != "images"})
     compact["image_provenance"] = [{key: item.get(key) for key in ("file", "role", "source", "source_file", "transformation")}
                                    for item in concept.get("images", {}).get("items", [])]
     previous = [json.loads(Path(path).read_text()) for path in context.get("all_previous_reviews", [])]
     data = {**context, "attached_images": labels, "approved_quality_floor": floor,
+            "humor_calibration": humor_context(workspace),
             "design_guidance": design_guidance_context(workspace, "review"),
             "page_content": json.loads((directory / "review-packet.json").read_text()),
             "concept_after_page_review": compact,
@@ -596,6 +694,9 @@ def run_qa(workspace, slug, config, run, invoke, deadline, allowance=None):
                                             "log": str(interaction_log), "report": str(directory / "interaction.json")})
                 technical["passed"] = all(check["passed"] for check in technical["checks"])
                 (directory / "technical.json").write_text(json.dumps(technical, indent=2) + "\n")
+                interaction_path = directory / "interaction.json"
+                interaction = json.loads(interaction_path.read_text()) if interaction_path.exists() else None
+                validate_callback_audit(report, context["page_content"], interaction)
             if technical["passed"] and report["verdict"] == "pass":
                 summary["status"] = "passed"
                 print(f"codex QA: passed after {allowance.used} repair attempt(s)", flush=True)
@@ -606,11 +707,15 @@ def run_qa(workspace, slug, config, run, invoke, deadline, allowance=None):
                        "all_previous_reviews": summary["reviews"].copy(),
                        "approved_quality_floor": quality_floor_context(workspace)[0]}
             context["design_guidance"] = design_guidance_context(workspace, "repair")
+            context["humor_calibration"] = humor_context(workspace)
             prompt = (bundle / "heal.md").read_text() + "\n\nHOST REPAIR CONTEXT:\n" + json.dumps(context, indent=2)
             before = guarded_files(workspace, slug)
             summary["repair_attempts"] = allowance.used
             try:
-                patched = technical["passed"] and apply_exact_patches(workspace, slug, report["findings"])
+                # Failed comedy needs a coordinated hook repair across surfaces,
+                # even when the reviewer also suggests a literal wording patch.
+                patched = (technical["passed"] and report["checks"]["satire"]
+                           and apply_exact_patches(workspace, slug, report["findings"]))
                 if not patched:
                     invoke(prompt, f"repair-{number}", budget(deadline, qa["repair_timeout_seconds"]))
             finally:

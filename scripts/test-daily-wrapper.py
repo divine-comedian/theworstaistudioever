@@ -34,6 +34,7 @@ class DailyWrapperTest(unittest.TestCase):
         for name in ["qa.md", "heal.md"]:
             shutil.copy2(ROOT / "pipelines/codex-v1" / name, bundle / name)
         shutil.copy2(ROOT / "pipelines/codex-v1/quality-floor.json", bundle / "quality-floor.json")
+        shutil.copy2(ROOT / "pipelines/codex-v1/humor-calibration.json", bundle / "humor-calibration.json")
         shutil.copytree(ROOT / "pipelines/codex-v1/reference/again-approved", bundle / "reference/again-approved")
         shutil.copytree(ROOT / "pipelines/codex-v1/design-guidance", bundle / "design-guidance")
         (bundle / "adapter.md").write_text("Fixture adapter")
@@ -71,7 +72,7 @@ print(json.dumps({'type':'turn.completed','usage':{'input_tokens':10,'output_tok
 result=Path(sys.argv[sys.argv.index('--output-last-message')+1])
 if '--output-schema' in sys.argv:
  failed=Path('fail-qa').exists()
- report={'slug':'fixture-for-dogs','verdict':'repair' if failed else 'pass','quality_floor':{'reference_id':'again-2026-11-11-approved','assessments':{key:{'meets':True,'evidence':'Specific requests, purposeful visuals and usable controls meet the reference standard.'} for key in ['comprehension','satire','composition','continuity']}},'premise':'Dogs submit requests.','strengths':['Specific subject'],'checks':{key:True for key in ['comprehension','satire','composition','continuity']},'copy_audit':[],'resolved_findings':[],'visual_audit':[{'page':p,'viewport':v,'dominant_content':'Requests','product_visual':'Request list','caption_legibility':'Readable','comprehension_pass':True,'audience_cues':'Dog portrait framing','audience_fit_pass':True} for p in ['index.html','demo.html'] for v in ['desktop','mobile']],
+ report={'slug':'fixture-for-dogs','verdict':'repair' if failed else 'pass','quality_floor':{'reference_id':'again-2026-11-11-approved','assessments':{key:{'meets':True,'evidence':'Specific requests, purposeful visuals and usable controls meet the reference standard.'} for key in ['comprehension','satire','composition','continuity']}},'premise':'Dogs submit requests.','strengths':['Specific subject'],'checks':{key:True for key in ['comprehension','satire','composition','continuity']},'copy_audit':[{'target':f'features.{i}','behavior':'Barking','mechanic':'Requests','connection':'Fixture'} for i in range(3)],'humor_audit':{'comic_tension':'Fixture','source_relevance':{'works':True,'evidence':'Fixture'},'distinct_observations':{'works':True,'evidence':'Fixture'},'reader_tests':[{'target':'hero','quote':'The pack has requests.','turn':'Fixture','works':True}]+[{'target':f'features.{i}','quote':'Fixture feature','turn':'Fixture','works':True} for i in range(3)]},'callback_audit':[{'target':f'features.{i}','landing_quote':'The pack has requests.','demo_quote':'The pack has requests.','evidence':'Fixture callback','landing_develops_hook':True,'demo_develops_hook':True} for i in range(3)],'resolved_findings':[],'visual_audit':[{'page':p,'viewport':v,'dominant_content':'Requests','product_visual':'Request list','caption_legibility':'Readable','comprehension_pass':True,'audience_cues':'Dog portrait framing','audience_fit_pass':True} for p in ['index.html','demo.html'] for v in ['desktop','mobile']],
          'findings':[{'id':'F1','target':'p','acceptance':'Clear mechanic','patch':{'old':'','new':''},'category':'satire','file':'site/entries/fixture-for-dogs/index.html','quote':'Bark.','problem':'Unclear mapping','fix':'Use a clear request mechanic'}] if failed else [],
          'demo_test':{'actions':[{'action':'click','selector':'#submit','value':'-'}],'assertions':[{'check':'visible','selector':'#result','expected':'-'}]}}
  result.write_text(json.dumps(report));sys.exit(0)
@@ -79,7 +80,7 @@ if result.stem.startswith('repair-'):
  result.write_text('Repair attempted.');sys.exit(0)
 if Path('fail-generator').exists():sys.exit(7)
 entry=Path('site/entries/fixture-for-dogs');entry.mkdir()
-concept={'date':datetime.datetime.now(datetime.timezone.utc).date().isoformat(),'company':'Fixture','subject':'dogs','slug':entry.name,'tagline':'Fixture for dogs','product_name':'Fixture','one_liner':'Requests for the entire pack.','hero':{'h1':'The pack has requests.','sub':'One system for all the barking.'},'design_direction':{'palette':{'bg':'#ffffff'}}}
+concept={'date':datetime.datetime.now(datetime.timezone.utc).date().isoformat(),'company':'Fixture','subject':'dogs','slug':entry.name,'tagline':'Fixture for dogs','product_name':'Fixture','one_liner':'Requests for the entire pack.','features':[{'title':'Request','blurb':'Fixture feature'} for _ in range(3)],'hero':{'h1':'The pack has requests.','sub':'One system for all the barking.'},'design_direction':{'palette':{'bg':'#ffffff'}}}
 (entry/'concept.json').write_text(json.dumps(concept))
 for name in ['index.html','demo.html']:(entry/name).write_text('<html><head><title>Fixture</title></head><body><h1>The pack has requests.</h1><p>'+('Bark. '*500)+'</p></body></html>')
 Path('state/history.json').write_text(json.dumps([{k:concept[k] for k in ['date','company','subject','slug']}]))

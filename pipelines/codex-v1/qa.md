@@ -119,3 +119,40 @@ resolved_findings only when resolved; keep unresolved IDs in findings. Review
 the updated complete copy and current screenshots for regressions as well.
 Earlier findings are not an exhaustive list; do not invent new taste demands
 to prolong the loop. The host owns the shared repair allowance and publication.
+
+
+Apply the supplied humor_calibration to this entry, including the user's negative
+and positive examples. The author’s angle selection, observations and voice
+rationale are intentionally withheld. Judge the reader-visible copy first.
+In humor_audit, state the central comic tension, then give a verbatim quote and
+reader-visible turn for the hero and each of features.0, features.1, features.2.
+Do not improve a joke in your explanation. If you cannot identify a convincing
+turn in the actual copy, set works=false and satire=false and request repair.
+A logical reversal can still be flat or arbitrary; do not equate explainability
+with comic effectiveness. No numerical humor scores.
+Check source_relevance: does the source product cause this particular absurdity,
+or was an unrelated office task inserted because bureaucracy sounds satirical?
+Check distinct_observations across the whole page: look for three main hooks
+drawing on three to five audience tropes. Recurring hooks and tropes are welcome.
+A callback can add a revealing detail, situation, escalation or payoff without
+being a new joke. A paraphrase that adds nothing is padding. Features need
+distinct setups or turns; do not demand unrelated humor in every section. State the concrete repetition in evidence, and mark works=false
+when it dominates. Every false reader test, source relevance or distinctness check
+requires a satire finding and repair verdict. Keep effective humor, plain UI and
+creative freedom. Do not repair weakness by explaining the joke to the visitor.
+
+
+In callback_audit, cover features.0, features.1 and features.2 exactly once.
+Quote one landing callback and one demo callback per hook verbatim from the
+supplied page_content copy or a dynamic state exercised by your demo_test. If a callback is absent,
+use an empty quote, mark that page's develops_hook false, and request repair.
+Do not invent text to fill a missing callback. Writer plans, metadata and script
+strings alone are not reader-visible evidence. A dynamic quote must actually be
+observed during your proposed demo_test on desktop and both mobile widths;
+include the actions needed to reach that state. The host verifies rendered text.
+Explain briefly what each recurrence adds. Set landing_develops_hook or
+demo_develops_hook false if absent, nonsensical or merely repetitive, and request
+a targeted satire repair. A natural callback is a pass even when it reuses a
+trope. The demo can keep one main workflow with supporting panels or records;
+do not require three separate apps. Findings identify the affected hook and
+all surfaces needing repair so non-interactive Codex can fix them together.

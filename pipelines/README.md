@@ -55,7 +55,10 @@ Normal Codex runs have two host-controlled checkpoints. The host rolls a fixed
 pair and supplies a compact recent-entry digest. A read-only Codex invocation
 drafts structured concept JSON; a second independently reviews it before the
 host persists `approved-concept.json` and permits asset generation and building.
-The brief records three audience observations with actual comic consequences,
+The brief records a pool of three to five audience tropes and three main hooks
+with actual comic consequences. Each hook names its tropes and plans callbacks
+on the landing page and demo. Reuse is encouraged when a callback adds a detail,
+situation, escalation or payoff. The brief also records
 source-product patterns, an opening composition plan and `audience_design`.
 That plan requires at least two concrete audience-associated visual references
 and their application to the landing and demo. The source company supplies the
@@ -99,12 +102,24 @@ demo on every QA attempt. These findings cannot disappear because a later model
 review omitted them. The reviewer also checks that replacements resolve the
 underlying meaning; phrase removal alone does not establish editorial quality.
 
+Final review quotes a landing and demo callback for each hook and distinguishes
+meaningful recurrence from padding. Missing, nonsensical or flat callbacks are
+satire findings. A satire pass cannot contradict that audit. Quotes must exist
+in page copy or be observed in the proposed browser interaction on all three
+viewports. The host records visible text after each action, so callbacks in
+opened dialogs and dynamic results count; script strings alone do not.
+
 If QA finds defects, the host consumes one shared repair allowance. Concept
 repairs return revised JSON without editing the site. Final findings include
 stable IDs, exact targets, requested changes and acceptance conditions. A batch
 of unique literal replacements can be applied directly when technical checks
 pass; stale, ambiguous or instruction-based changes use a bounded repairer.
-Every repair is followed by fresh checks and independent review. Verifiers must
+Satire findings can replace the affected hook and demo scenario together while
+preserving the product workflow, existing artwork and successful hooks. Repairs
+run through the existing `codex exec` non-interactive host. A failed satire check
+bypasses the literal-patch shortcut so Codex can repair the hook across surfaces;
+this uses the shared repair allowance rather than adding another loop. Every
+repair is followed by fresh checks and independent review. Verifiers must
 explicitly resolve or retain each earlier finding ID. There are **at most two
 repair batches total across both checkpoints**, including host-applied patches.
 A passing initial review needs no repair. Failure

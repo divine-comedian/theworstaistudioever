@@ -9,7 +9,15 @@ defect. It does not expand this repair's scope, tools, findings or allowance.
 Read pipelines/codex-v1/skills/anti-ai-slop/SKILL.md for copy changes. Use the
 frozen frontend-design and ui-ux-pro-max skills only when fixing a reported UI
 defect. Preserve the selected design direction, palette, fonts,
-product identity, main demo premise, existing images, and successful jokes.
+product identity, source-product workflow, existing images, and successful jokes.
+For a satire finding, repair the affected hook across its feature, landing
+callbacks, testimonial and demo copy or state. You may replace the reported weak
+demo scenario while preserving the source-service workflow. Do not preserve a
+nonsensical joke merely because it was in the approved draft. Keep the other
+successful hooks. Update editorial_plan.tropes, trope_refs and callback plans
+when present. Use the supplied humor_calibration. Three main hooks draw on a
+shared pool of three to five audience tropes; a callback may reuse a hook if it
+adds a situation, detail, escalation or payoff. Do not erase all recurrence.
 If a finding explicitly identifies an audience-fit failure, correct the affected
 visual treatments across landing and demo using the approved audience references
 and existing assets. Preserve the source-service workflow and product identity;

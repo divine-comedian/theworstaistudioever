@@ -12,8 +12,8 @@ import unittest
 
 from pipeline_qa import (apply_exact_patches, final_review_input, read_review, review_schema, review_packet,
                          validate_copy_audit, validate_shape, validate_verdict, validate_visual_audit, StageFailure)
-from pipeline_editorial import CONCEPT_SCHEMA, UsageLedger, recent_digest, roll
-from pipeline_qa import design_guidance_context, quality_floor_context
+from pipeline_editorial import CONCEPT_SCHEMA, UsageLedger, recent_digest, roll, validate_angle_selection, validate_hook_plan
+from pipeline_qa import design_guidance_context, quality_floor_context, reader_concept, validate_callback_audit
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -35,6 +35,7 @@ class GeneratorTest(unittest.TestCase):
                    "total_timeout_seconds": 20, "browser_timeout_seconds": 3},
             "skills": ["anti-ai-slop", "frontend-design", "ui-ux-pro-max"]}))
         shutil.copy2(ROOT / "pipelines/codex-v1/quality-floor.json", bundle / "quality-floor.json")
+        shutil.copy2(ROOT / "pipelines/codex-v1/humor-calibration.json", bundle / "humor-calibration.json")
         shutil.copytree(ROOT / "pipelines/codex-v1/reference/again-approved", bundle / "reference/again-approved")
         shutil.copytree(ROOT / "pipelines/codex-v1/design-guidance", bundle / "design-guidance")
         (bundle / "adapter.md").write_text("Read the frozen v1 skills.\n")
@@ -86,13 +87,18 @@ def audit(concept):
  targets=[f'features.{i}' for i,_ in enumerate(concept.get('features',[]))]
  targets += [f'pricing_tiers.{i}.perks.{j}' for i,tier in enumerate(concept.get('pricing_tiers',[])) for j,_ in enumerate(tier['perks'])]
  return [{'target':target,'behavior':'Pack barking','mechanic':'Requests','connection':'Dogs submit requests'} for target in targets]
+def humor(concept):
+ return {'comic_tension':'Fixture reader test','source_relevance':{'works':True,'evidence':'Fixture source mechanic'},'distinct_observations':{'works':True,'evidence':'Fixture situations'},'reader_tests':[{'target':'hero','quote':concept['hero']['h1'],'turn':'Fixture turn','works':True}]+[{'target':f'features.{i}','quote':item['blurb'],'turn':'Fixture turn','works':True} for i,item in enumerate(concept['features'])]}
+def callbacks():
+ entry=workspace/'site/entries/fixture-for-dogs'
+ return [{'target':f'features.{i}','landing_quote':(entry/'index.html').read_text(),'demo_quote':(entry/'demo.html').read_text(),'evidence':'Fixture callback evidence','landing_develops_hook':True,'demo_develops_hook':True} for i in range(3)]
 checks={key:True for key in ['comprehension','satire','composition','continuity']}
 mode=os.environ.get('FAKE_MODE','success')
 qa=os.environ.get('FAKE_QA_MODE','pass')
 if phase in ['concept','concept-repair','concept-review']:
  if phase=='concept':
   identity=json.JSONDecoder().raw_decode(prompt.split('FIXED IDENTITY:\\n',1)[1])[0]
-  concept={**identity,'product_name':'Fixture','one_liner':'Requests for dogs','brand_voice_notes':'Straight faced','hero':{'h1':'Weak reference','sub':'Pack requests','primary_cta':'Try'},'features':[{'title':'Request','blurb':'The dog requests a walk'} for _ in range(3)],'pricing_tiers':[{'name':'Pack','price':'$3','tagline':'For dogs','perks':['Walk requests','Bark filtering']} for _ in range(3)],'testimonials':[{'quote':'I requested a walk','name':'Dog','title':'Dog'} for _ in range(3)],'demo_screen_concept':'Requests','editorial_plan':{'observations':[{'behavior':'Barks','mechanic':'Requests','consequence':'More walks'} for _ in range(3)],'source_product_patterns':['List','Search','Filter','Submit'],'composition_plan':'Product preview then artwork','audience_design':{'references':[{'reference':'Dog show catalogues','cues':'Portrait framing and ribbons','application':'Portrait record cards'},{'reference':'Dog walking maps','cues':'Green paths','application':'Route navigation'}],'landing_application':'Dog portraits and route graphics','demo_application':'Route cues around a request list'}}}
+  concept={**identity,'product_name':'Fixture','one_liner':'Requests for dogs','brand_voice_notes':'Straight faced','hero':{'h1':'Weak reference','sub':'Pack requests','primary_cta':'Try'},'features':[{'title':'Request','blurb':'The dog requests a walk'} for _ in range(3)],'pricing_tiers':[{'name':'Pack','price':'$3','tagline':'For dogs','perks':['Walk requests','Bark filtering']} for _ in range(3)],'testimonials':[{'quote':'I requested a walk','name':'Dog','title':'Dog'} for _ in range(3)],'demo_screen_concept':'Requests','editorial_plan':{'tropes':['Collecting','Showing off','Avoiding effort'],'angle_selection':{'candidates':[{'premise':v,'audience_behavior':'Barks','source_mechanic':'Requests','comic_turn':'Walks'} for v in ['First','Second','Third']],'selected_premise':'First','reason':'Fixture selection'},'observations':[{'behavior':'Barks','mechanic':'Requests','consequence':'More walks','trope_refs':[['Collecting'],['Showing off'],['Avoiding effort']][i],'landing_callback':'A new fictional incident','demo_callback':'A revealing sample record'} for i in range(3)],'source_product_patterns':['List','Search','Filter','Submit'],'composition_plan':'Product preview then artwork','audience_design':{'references':[{'reference':'Dog show catalogues','cues':'Portrait framing and ribbons','application':'Portrait record cards'},{'reference':'Dog walking maps','cues':'Green paths','application':'Route navigation'}],'landing_application':'Dog portraits and route graphics','demo_application':'Route cues around a request list'}}}
   result.write_text(json.dumps(concept))
  else:
   data=json.JSONDecoder().raw_decode(prompt.split('HOST CONTEXT:\\n',1)[1])[0] if phase=='concept-review' else json.JSONDecoder().raw_decode(prompt.split('publish.\\n',1)[1])[0]
@@ -104,8 +110,9 @@ if phase in ['concept','concept-repair','concept-review']:
   else:
    number=int(result.stem.split('-')[-1]);needed={'once':1,'twice':2,'identity':1}.get(cq,3 if cq=='never' else 0)
    finding={'id':'C1','target':'hero.h1','acceptance':'Understand the request','category':'satire','file':'concept.json','quote':'Weak reference','problem':'Unclear connection','fix':'Use a clear request','patch':{'old':'','new':''}}
-   report={'slug':concept['slug'],'verdict':'repair' if number<needed else 'pass','premise':'Dogs request walks','strengths':['Specific'],'checks':checks,'copy_audit':audit(concept),'resolved_findings':['C1'] if number else [],'findings':[finding] if number<needed else []}
+   report={'slug':concept['slug'],'verdict':'repair' if number<needed else 'pass','premise':'Dogs request walks','strengths':['Specific'],'checks':checks,'copy_audit':audit(concept),'humor_audit':humor(concept),'resolved_findings':['C1'] if number else [],'findings':[finding] if number<needed else []}
    if number<needed:report['resolved_findings']=[]
+   if cq=='flat-pass':report['humor_audit']['reader_tests'][1]['works']=False
    result.write_text('not JSON' if cq=='malformed' else json.dumps(report))
  sys.exit(0)
 if phase=='generation':
@@ -115,7 +122,7 @@ if phase=='generation':
  if not (entry/'concept.json').exists():
   concept={'date':'2026-11-01','company':'Fixture','subject':'dogs','slug':entry.name,'product_name':'Fixture','demo_screen_concept':'Requests','design_direction':{'style':'plain'}}
   (entry/'concept.json').write_text(json.dumps(concept))
- concept=json.loads((entry/'concept.json').read_text());concept.setdefault('design_direction',{'style':'plain'});(entry/'concept.json').write_text(json.dumps(concept))
+ concept=json.loads((entry/'concept.json').read_text());concept.setdefault('design_direction',{'style':'plain'});concept.setdefault('hero',{'h1':'Fixture hero'});concept.setdefault('features',[{'title':'Request','blurb':'Fixture feature'} for _ in range(3)]);(entry/'concept.json').write_text(json.dumps(concept))
  (entry/'index.html').write_text('Original landing');(entry/'demo.html').write_text('Original demo')
  (workspace/'site/index.html').write_text('New gallery')
  history=workspace/'state/history.json';history.parent.mkdir(exist_ok=True)
@@ -125,10 +132,16 @@ elif phase=='review':
  if qa=='review-fail':sys.exit(8)
  if qa=='review-timeout':time.sleep(20)
  number=int(result.stem.split('-')[-1])
- needed={'once':1,'twice':2,'patch':1,'omitted':1,'floor-repair':1}.get(qa,3 if qa in ['never','scope','identity','repair-fail','repair-timeout'] else 0)
+ needed={'once':1,'twice':2,'patch':1,'omitted':1,'floor-repair':1,'callback-once':1}.get(qa,3 if qa in ['callback-never','never','scope','identity','repair-fail','repair-timeout'] else 0)
  finding={'id':'F1','target':'h1','acceptance':'Understand the request','patch':{'old':'Original landing' if qa=='patch' else '','new':'Repaired landing' if qa=='patch' else ''},'category':'satire','file':'site/entries/fixture-for-dogs/index.html','quote':'Weak reference','problem':'Unclear connection','fix':'Make the mapping explicit'}
- report={'slug':'fixture-for-dogs','verdict':'repair' if number<needed else 'pass','quality_floor':{'reference_id':'again-2026-11-11-approved','assessments':{key:{'meets':True,'evidence':'Specific requests, purposeful visuals and usable controls meet the reference standard.'} for key in ['comprehension','satire','composition','continuity']}},'premise':'Dogs submit requests.','strengths':['Specific subject'],'checks':checks,'visual_audit':[{'page':p,'viewport':v,'dominant_content':'Requests','product_visual':'Request list','caption_legibility':'Readable','comprehension_pass':True,'audience_cues':'Dog portrait framing and green route cues','audience_fit_pass':True} for p in ['index.html','demo.html'] for v in ['desktop','mobile']],'copy_audit':audit(json.loads((workspace/'site/entries/fixture-for-dogs/concept.json').read_text())),'resolved_findings':['F1'] if number>0 and number>=needed and qa!='omitted' else [],
-         'findings':[finding] if number<needed else [],'demo_test':{'actions':[{'action':'click','selector':'#submit','value':'-'}],'assertions':[{'check':'visible','selector':'#result','expected':'-'}]}}
+ report={'slug':'fixture-for-dogs','verdict':'repair' if number<needed else 'pass','quality_floor':{'reference_id':'again-2026-11-11-approved','assessments':{key:{'meets':True,'evidence':'Specific requests, purposeful visuals and usable controls meet the reference standard.'} for key in ['comprehension','satire','composition','continuity']}},'premise':'Dogs submit requests.','strengths':['Specific subject'],'checks':checks,'visual_audit':[{'page':p,'viewport':v,'dominant_content':'Requests','product_visual':'Request list','caption_legibility':'Readable','comprehension_pass':True,'audience_cues':'Dog portrait framing and green route cues','audience_fit_pass':True} for p in ['index.html','demo.html'] for v in ['desktop','mobile']],'copy_audit':audit(json.loads((workspace/'site/entries/fixture-for-dogs/concept.json').read_text())),'humor_audit':humor(json.loads((workspace/'site/entries/fixture-for-dogs/concept.json').read_text())),'resolved_findings':['F1'] if number>0 and number>=needed and qa!='omitted' else [],
+         'callback_audit':callbacks(),'findings':[finding] if number<needed else [],'demo_test':{'actions':[{'action':'click','selector':'#submit','value':'-'}],'assertions':[{'check':'visible','selector':'#result','expected':'-'}]}}
+ if qa in ['callback-once','callback-never'] and number<needed:
+  report['callback_audit'][1].update(demo_develops_hook=False,demo_quote='')
+  report['checks']['satire']=False
+  report['findings'][0].update(target='features.1',problem='The demo repeats the hook without a new situation or payoff',fix='Repair this hook across landing and demo',acceptance='Both pages develop the hook')
+  report['findings'][0]['patch']={'old':'Original landing','new':'Repaired landing'}
+ if qa=='flat-pass':report['humor_audit']['distinct_observations']['works']=False
  if qa=='below-floor' or (qa=='floor-repair' and number==0):report['quality_floor']['assessments']['composition']['meets']=False
  if qa=='bad-pass':report['findings']=[finding]
  if qa=='no-interaction':report['demo_test']['actions']=[]
@@ -224,7 +237,7 @@ print('RUN_COMPLETE: claude-for-dogs')
 
     def recovery_fixture(self, duplicate=False):
         from datetime import datetime, timezone
-        concept = {"date": datetime.now(timezone.utc).date().isoformat(), "company": "Fixture", "subject": "dogs", "slug": "fixture-for-dogs", "product_name": "Fixture", "demo_screen_concept": "A request table", "design_direction": {"style": "plain"}}
+        concept = {"date": datetime.now(timezone.utc).date().isoformat(), "company": "Fixture", "subject": "dogs", "slug": "fixture-for-dogs", "product_name": "Fixture", "demo_screen_concept": "A request table", "design_direction": {"style": "plain"}, "hero": {"h1": "Fixture hero"}, "features": [{"title": "Request", "blurb": "Fixture feature"} for _ in range(3)]}
         entry = self.root / "site/entries/fixture-for-dogs"
         entry.mkdir(parents=True)
         (entry / "concept.json").write_text(json.dumps(concept))
@@ -461,6 +474,167 @@ print('RUN_COMPLETE: claude-for-dogs')
         with self.assertRaises(ValueError):
             validate_verdict({"verdict": "pass", "findings": [], "checks": {"composition": False},
                               "resolved_findings": []})
+
+    def test_humor_calibration_reaches_all_stages_and_author_rationale_is_withheld(self):
+        self.enable_checkpoint()
+        result = self.invoke(qa="once", concept_qa="once")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        calls = [json.loads(line) for line in (self.root / "calls.jsonl").read_text().splitlines()]
+        for call in calls:
+            self.assertIn("user-rejected", call["prompt"])
+            self.assertIn("user-preferred", call["prompt"])
+            if call["phase"] == "concept-review":
+                data = json.JSONDecoder().raw_decode(call["prompt"].split("HOST CONTEXT:\n", 1)[1])[0]
+                plan = data["concept"]["editorial_plan"]
+                self.assertNotIn("observations", plan)
+                self.assertNotIn("angle_selection", plan)
+                self.assertNotIn("brand_voice_notes", data["concept"])
+                self.assertIn("audience_design", plan)
+            if call["phase"] == "review":
+                data = json.JSONDecoder().raw_decode(call["prompt"].split("HOST REVIEW CONTEXT:\n", 1)[1])[0]
+                self.assertNotIn("observations", data["concept_after_page_review"]["editorial_plan"])
+
+    def test_missing_calibration_stops_before_model_spend(self):
+        (self.root / "pipelines/codex-v1/humor-calibration.json").unlink()
+        result = self.invoke()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse((self.root / "calls.jsonl").exists())
+
+    def test_concept_and_final_humor_contradictions_block_publication(self):
+        self.enable_checkpoint()
+        result = self.invoke(concept_qa="flat-pass")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("contradicts the humor reader tests", result.stderr)
+        self.assertNotIn("generation", self.phases())
+        result = self.invoke(qa="flat-pass")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("contradicts the humor reader tests", result.stderr)
+        self.assertFalse((self.root / "site/entries/fixture-for-dogs").exists())
+
+    def test_humor_gate_rejects_invented_quotes_repetition_and_failed_reader_tests(self):
+        self.enable_checkpoint()
+        result = self.invoke()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        run = next((self.root / ".tmp-codex").iterdir())
+        concept = json.loads((run / "approved-concept.json").read_text())
+        original = json.loads((run / "concept-review-0.json").read_text())
+        for defect in ["invented-quote", "missing-feature", "flat-feature", "repeated", "arbitrary-source"]:
+            with self.subTest(defect=defect):
+                report = json.loads(json.dumps(original))
+                audit = report["humor_audit"]
+                if defect == "invented-quote":
+                    audit["reader_tests"][0]["quote"] = "A joke present only in the reviewer’s explanation"
+                elif defect == "missing-feature":
+                    audit["reader_tests"][-1] = audit["reader_tests"][0]
+                elif defect == "flat-feature":
+                    audit["reader_tests"][1]["works"] = False
+                elif defect == "repeated":
+                    audit["distinct_observations"]["works"] = False
+                else:
+                    audit["source_relevance"]["works"] = False
+                with self.assertRaises(ValueError):
+                    validate_copy_audit(report, concept)
+
+    def test_candidate_selection_requires_alternatives_and_a_matching_choice(self):
+        concept = {"editorial_plan": {"angle_selection": {
+            "candidates": [{"premise": text} for text in ["First", "Second", "Third"]],
+            "selected_premise": "First"}}}
+        validate_angle_selection(concept)
+        concept["editorial_plan"]["angle_selection"]["selected_premise"] = "Fourth"
+        with self.assertRaises(ValueError):
+            validate_angle_selection(concept)
+
+        concept["editorial_plan"]["angle_selection"]["selected_premise"] = "First"
+        concept["editorial_plan"]["angle_selection"]["candidates"][1]["premise"] = " first "
+        with self.assertRaises(ValueError):
+            validate_angle_selection(concept)
+
+    def test_three_hooks_reference_a_shared_pool_and_plan_both_page_callbacks(self):
+        concept = {"editorial_plan": {
+            "tropes": ["Collecting", "Showing off", "Avoiding effort", "Gatekeeping"],
+            "observations": [
+                {"trope_refs": refs, "landing_callback": "New incident", "demo_callback": "Visible payoff"}
+                for refs in [["Collecting", "Gatekeeping"], ["Showing off"], ["Avoiding effort"]]]}}
+        validate_hook_plan(concept)
+        for defect in ["too-few", "too-many", "duplicate", "unknown", "unused", "no-callback"]:
+            with self.subTest(defect=defect):
+                invalid = json.loads(json.dumps(concept))
+                plan = invalid["editorial_plan"]
+                if defect == "too-few": plan["tropes"] = plan["tropes"][:2]
+                elif defect == "too-many": plan["tropes"] += ["Vanity", "Rivalry"]
+                elif defect == "duplicate": plan["tropes"][1] = " collecting "
+                elif defect == "unknown": plan["observations"][0]["trope_refs"] = ["Other"]
+                elif defect == "unused": plan["tropes"].append("Rivalry")
+                else: plan["observations"][0]["demo_callback"] = " "
+                with self.assertRaises(ValueError):
+                    validate_hook_plan(invalid)
+
+    def test_callback_evaluation_triggers_codex_repair_then_fresh_review(self):
+        self.enable_checkpoint()
+        result = self.invoke(qa="callback-once")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.phases(), ["concept", "concept-review", "generation", "review", "repair", "review"])
+        calls = [json.loads(line) for line in (self.root / "calls.jsonl").read_text().splitlines()]
+        repair = next(call for call in calls if call["phase"] == "repair")
+        self.assertNotIn("--output-schema", repair["args"])
+        self.assertEqual(repair["args"][0], "exec")
+        self.assertIn("reported weak", repair["prompt"])
+        self.assertIn("source-service workflow", repair["prompt"])
+        run = next((self.root / ".tmp-codex").iterdir())
+        self.assertFalse(json.loads((run / "review-0.json").read_text())["callback_audit"][1]["demo_develops_hook"])
+        self.assertTrue(json.loads((run / "review-1.json").read_text())["callback_audit"][1]["demo_develops_hook"])
+        self.assertEqual(json.loads((run / "qa-summary.json").read_text())["status"], "passed")
+
+    def test_persistently_weak_callback_exhausts_repairs_and_withholds_entry(self):
+        self.enable_checkpoint()
+        result = self.invoke(qa="callback-never")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(self.phases().count("repair"), 2)
+        self.assertEqual(self.phases().count("review"), 3)
+        self.assertFalse((self.root / "site/entries/fixture-for-dogs").exists())
+
+    def test_callbacks_allow_recurrence_but_reject_invented_evidence_and_flat_repeats(self):
+        pages = {"index.html": {"copy": ["Collect the fleet.", "Inspect the windows."]},
+                 "demo.html": {"copy": ["Fleet complete.", "Window inspection: 286 hours."]}}
+        report = {"checks": {"satire": True}, "callback_audit": [
+            {"target": f"features.{i}", "landing_quote": "Inspect the windows.",
+             "demo_quote": "Window inspection: 286 hours.",
+             "landing_develops_hook": True, "demo_develops_hook": True}
+            for i in range(3)]}
+        validate_callback_audit(report, pages)
+
+        for defect in ["missing-hook", "invented-quote", "flat-repeat", "empty-pass"]:
+            with self.subTest(defect=defect):
+                invalid = json.loads(json.dumps(report))
+                if defect == "missing-hook": invalid["callback_audit"].pop()
+                elif defect == "invented-quote": invalid["callback_audit"][0]["demo_quote"] = "Only in the plan"
+                elif defect == "empty-pass": invalid["callback_audit"][0]["demo_quote"] = " "
+                else: invalid["callback_audit"][0]["demo_develops_hook"] = False
+                with self.assertRaises(ValueError):
+                    validate_callback_audit(invalid, pages)
+        report["checks"]["satire"] = False
+        report["callback_audit"][0].update(demo_quote="", demo_develops_hook=False)
+        validate_callback_audit(report, pages)
+
+    def test_dynamic_callback_requires_observed_states_on_every_viewport(self):
+        report = {"checks": {"satire": True}, "callback_audit": [
+            {"target": f"features.{i}", "landing_quote": "Pitch", "demo_quote": "Mod now enabled",
+             "landing_develops_hook": True, "demo_develops_hook": True} for i in range(3)]}
+        pages = {"index.html": {"copy": ["Pitch"]}, "demo.html": {"copy": ["Enable mod"],
+                  "scripts": ["status.textContent = 'Mod now enabled'"]}}
+        with self.assertRaises(ValueError):
+            validate_callback_audit(report, pages)
+        interaction = {"passed": True, "viewports": [
+            {"viewport": {"width": width}, "passed": True, "renderedCopy": ["Enable mod", "Mod now enabled"]}
+            for width in [1440, 390, 320]]}
+        validate_callback_audit(report, pages, interaction)
+        interaction["viewports"][2]["renderedCopy"] = ["Enable mod"]
+        with self.assertRaises(ValueError):
+            validate_callback_audit(report, pages, interaction)
+        interaction["viewports"][2]["renderedCopy"] = ["Mod now enabled"]
+        interaction["passed"] = False
+        with self.assertRaises(ValueError):
+            validate_callback_audit(report, pages, interaction)
 
     def test_visual_audit_cannot_omit_a_page_or_contradict_composition(self):
         with self.assertRaises(ValueError):

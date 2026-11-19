@@ -141,7 +141,7 @@ async function exercise(base, slug, planFile, output) {
     browser = await loadPlaywright().chromium.launch();
     for (const viewport of VIEWPORTS) {
       const page = await browser.newPage({viewport});
-      const result = {viewport, passed: false, actions: [], assertions: [], errors: [], failures: []};
+      const result = {viewport, passed: false, actions: [], assertions: [], errors: [], failures: [], renderedCopy: []};
       report.viewports.push(result);
       page.on('pageerror', error => result.errors.push(error.message));
       page.on('response', response => {
@@ -157,6 +157,8 @@ async function exercise(base, slug, planFile, output) {
       try {
         const response = await page.goto(`${base}/entries/${slug}/demo.html`, {waitUntil: 'domcontentloaded', timeout: 30000});
         if (!response || response.status() !== 200) throw new Error('Demo did not return HTTP 200');
+        const captureCopy = async () => result.renderedCopy.push(await page.locator('body').innerText());
+        await captureCopy();
         const before = [];
         for (const assertion of plan.assertions) before.push(await readAssertion(page, assertion));
         for (const action of plan.actions) {
@@ -169,6 +171,7 @@ async function exercise(base, slug, planFile, output) {
             default: throw new Error(`Unknown action: ${action.action}`);
           }
           result.actions.push(action);
+          await captureCopy();
         }
         for (const [index, assertion] of plan.assertions.entries()) {
           const deadline = Date.now() + 6000;
@@ -181,6 +184,7 @@ async function exercise(base, slug, planFile, output) {
           result.assertions.push({...assertion, before: before[index], observed,
             passed: assertionMatches(assertion, observed)});
         }
+        await captureCopy();
         if (!result.assertions.some(assertion => assertion.before !== assertion.observed)) {
           result.failures.push('The test did not verify a changed rendered state after its actions');
         }

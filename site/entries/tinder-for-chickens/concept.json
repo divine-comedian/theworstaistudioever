@@ -150,8 +150,10 @@
   "brand_kit": {
     "version": 2,
     "generation": {
-      "mode": "gemini",
-      "fallback_reason": ""
+      "mode": "mixed",
+      "fallback_reason": "",
+      "revision_reason": "User requested genuinely transparent logo backgrounds.",
+      "logo_revision_reason": "Preserve accepted identity while removing the mismatched beige background with image_gen."
     },
     "identity_rationale": "Strut treats romantic self-presentation as a poultry prize entry: a custom fan-tail rosette and confident serif wordmark, with actual prize-style portraits undermined by a feed bucket and competing morning calls. Original feather-rosette identity, not a source-company flame or a recent-entry motif.",
     "logo": {
@@ -159,9 +161,10 @@
       "primary_file": "logo.webp",
       "mono_file": "logo-mono.png",
       "icon_file": "logo-icon.png",
-      "clear_space": "At least half the mark height on every side",
+      "clear_space": "Transparent clear space of at least half the symbol height; no painted background.",
       "min_size_px": 24,
-      "placement": "Landing navigation and footer; demo chrome; icon favicon on both pages"
+      "placement": "Landing navigation and footer; demo chrome; icon favicon on both pages",
+      "background": "transparent"
     },
     "graphic_language": {
       "medium": "County-fair print compositions: precisely lit poultry photography combined with violet cut-paper ribbon forms, oat stock and broad serif typography.",
@@ -207,19 +210,20 @@
       {
         "role": "logo",
         "file": "logo.webp",
-        "source": "gemini",
-        "prompt": "Design a finished original logo for fictional chicken dating app Strut. County-fair poultry champion aesthetic, molded egg-carton printing. Exact text \"Strut\" only. Palette dark violet #60427B, dark plum #2D2530 and yolk #F3BE3D on absolutely flat pale oat #EFE5CC. No mockup, board, caption, watermark or extra words. Large centered horizontal lockup with isolated symbol at left, custom legible serif wordmark at right, generous clear space. Crisp flat graphic design. Direction A: invent a distinctive stylized fanned rooster-tail prize rosette, with three broad curved feather lobes and two short ribbon tails. Violet silhouette, small yolk center. Bespoke proud serif letters with beautifully balanced spacing. Symbol is recognizable at 24px. Keep symbol separate from the word.",
+        "source": "openai-imagegen",
+        "prompt": "Use case: background-extraction. Edit target: attached Strut logo. Remove only the flat beige background to genuine alpha transparency, including all gaps around and inside the symbol and lettering. Preserve the exact violet feather rosette, yellow circular center, dark ribbon tails and exact serif word Strut, unchanged letterforms, proportions, colors and layout. Keep transparent clear space; no redesign, new background, shadow or checkerboard.",
         "attempts": 1,
         "placement": "Landing navigation/footer and demo chrome",
-        "verdict": "Accepted A after visual comparison. Correct Strut spelling and balanced substantial letterforms. Feather-rosette silhouette is distinct at icon size; controlled background normalized and clear space retained.",
-        "transformation": "Faithful crop of accepted generation and background cleanup, WebP export."
+        "verdict": "Accepted transparent cutout; inspected on light and dark surfaces.",
+        "transformation": "Faithful crop of accepted generation and background cleanup, WebP export.",
+        "tool": "image_gen"
       },
       {
         "role": "logo",
         "file": "logo-mono.png",
         "source": "derived-export",
         "source_file": "logo.webp",
-        "transformation": "Same accepted design silhouette recolored violet with actual alpha; no redrawing.",
+        "transformation": "Faithful alpha-preserving monochrome recolor.",
         "attempts": 0,
         "prompt": "Deterministic export from accepted logo.",
         "placement": "Light-surface logo alternative",
@@ -230,7 +234,7 @@
         "file": "logo-icon.png",
         "source": "derived-export",
         "source_file": "logo.webp",
-        "transformation": "Crop accepted feather-rosette symbol and fit with clear space on 128px oat square.",
+        "transformation": "Faithful symbol crop, padded on transparent 192px canvas.",
         "attempts": 0,
         "prompt": "Deterministic icon export from accepted logo.",
         "placement": "Both favicons",
