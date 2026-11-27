@@ -98,7 +98,7 @@ qa=os.environ.get('FAKE_QA_MODE','pass')
 if phase in ['concept','concept-repair','concept-review']:
  if phase=='concept':
   identity=json.JSONDecoder().raw_decode(prompt.split('FIXED IDENTITY:\\n',1)[1])[0]
-  concept={**identity,'product_name':'Fixture','one_liner':'Requests for dogs','brand_voice_notes':'Straight faced','hero':{'h1':'Weak reference','sub':'Pack requests','primary_cta':'Try'},'features':[{'title':'Request','blurb':'The dog requests a walk'} for _ in range(3)],'pricing_tiers':[{'name':'Pack','price':'$3','tagline':'For dogs','perks':['Walk requests','Bark filtering']} for _ in range(3)],'testimonials':[{'quote':'I requested a walk','name':'Dog','title':'Dog'} for _ in range(3)],'demo_screen_concept':'Requests','editorial_plan':{'tropes':['Collecting','Showing off','Avoiding effort'],'angle_selection':{'candidates':[{'premise':v,'audience_behavior':'Barks','source_mechanic':'Requests','comic_turn':'Walks'} for v in ['First','Second','Third']],'selected_premise':'First','reason':'Fixture selection'},'observations':[{'behavior':'Barks','mechanic':'Requests','consequence':'More walks','trope_refs':[['Collecting'],['Showing off'],['Avoiding effort']][i],'landing_callback':'A new fictional incident','demo_callback':'A revealing sample record'} for i in range(3)],'source_product_patterns':['List','Search','Filter','Submit'],'composition_plan':'Product preview then artwork','audience_design':{'references':[{'reference':'Dog show catalogues','cues':'Portrait framing and ribbons','application':'Portrait record cards'},{'reference':'Dog walking maps','cues':'Green paths','application':'Route navigation'}],'landing_application':'Dog portraits and route graphics','demo_application':'Route cues around a request list'}}}
+  concept={**identity,'product_name':'Fixture','one_liner':'Requests for dogs','brand_voice_notes':'Straight faced','hero':{'h1':'Weak reference','sub':'Pack requests','primary_cta':'Try'},'features':[{'title':'Request','blurb':'The dog requests a walk'} for _ in range(3)],'pricing_tiers':[{'name':'Pack','price':'$3','tagline':'For dogs','perks':['Walk requests','Bark filtering']} for _ in range(3)],'testimonials':[{'quote':'I requested a walk','name':'Dog','title':'Dog'} for _ in range(3)],'demo_screen_concept':'Requests','editorial_plan':{'tropes':['Collecting','Showing off','Avoiding effort'],'angle_selection':{'candidates':[{'premise':v,'audience_behavior':'Barks','source_mechanic':'Requests','comic_turn':'Walks'} for v in ['First','Second','Third']],'selected_candidate':'2','reason':'Fixture selection'},'observations':[{'behavior':'Barks','mechanic':'Requests','consequence':'More walks','trope_refs':[['Collecting'],['Showing off'],['Avoiding effort']][i],'landing_callback':'A new fictional incident','demo_callback':'A revealing sample record'} for i in range(3)],'source_product_patterns':['List','Search','Filter','Submit'],'composition_plan':'Product preview then artwork','audience_design':{'references':[{'reference':'Dog show catalogues','cues':'Portrait framing and ribbons','application':'Portrait record cards'},{'reference':'Dog walking maps','cues':'Green paths','application':'Route navigation'}],'landing_application':'Dog portraits and route graphics','demo_application':'Route cues around a request list'}}}
   result.write_text(json.dumps(concept))
  else:
   data=json.JSONDecoder().raw_decode(prompt.split('HOST CONTEXT:\\n',1)[1])[0] if phase=='concept-review' else json.JSONDecoder().raw_decode(prompt.split('publish.\\n',1)[1])[0]
@@ -288,6 +288,15 @@ print('RUN_COMPLETE: claude-for-dogs')
                                          "review_timeout_seconds": 3, "repair_timeout_seconds": 3}
         config["usage"] = {"require_events": True, "max_total_tokens": None, "max_stage_tokens": {}}
         self.config.write_text(json.dumps(config))
+
+    def test_selected_candidate_persists_exact_premise(self):
+        self.enable_checkpoint()
+        result = self.invoke(concept_qa="once")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        approved = next(self.root.rglob("approved-concept.json"))
+        selection = json.loads(approved.read_text())["editorial_plan"]["angle_selection"]
+        self.assertEqual(selection["selected_premise"], "Second")
+        self.assertNotIn("selected_candidate", selection)
 
     def test_guidance_reaches_each_stage_without_additional_model_calls(self):
         self.enable_checkpoint()

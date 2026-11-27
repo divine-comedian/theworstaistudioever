@@ -31,7 +31,7 @@ CONCEPT_SCHEMA = object_schema({
         "angle_selection": object_schema({
             "candidates": array(object_schema({key: TEXT for key in
                                 ["premise", "audience_behavior", "source_mechanic", "comic_turn"]}), 3, 3),
-            "selected_premise": TEXT,
+            "selected_candidate": {"type": "string", "enum": ["1", "2", "3"]},
             "reason": TEXT,
         }),
         "observations": array(object_schema({
@@ -223,6 +223,9 @@ not templates. Keep this concept specific and understandable on first reading.
         for attempt in range(config["qa"]["max_repair_attempts"] + 1):
             concept = json.loads(path.read_text())
             validate_shape(concept, CONCEPT_SCHEMA)
+            selection = concept["editorial_plan"]["angle_selection"]
+            index = int(selection["selected_candidate"]) - 1
+            selection["selected_premise"] = selection["candidates"][index]["premise"]
             validate_angle_selection(concept)
             validate_hook_plan(concept)
             if any(concept[key] != value for key, value in identity.items()):
@@ -247,10 +250,12 @@ not templates. Keep this concept specific and understandable on first reading.
             summary["reviews"].append(str(report_path))
             previous_ids |= {finding["id"] for finding in report["findings"]}
             if report["verdict"] == "pass":
+                del selection["selected_candidate"]
                 approved = run / "approved-concept.json"
                 approved.write_text(json.dumps(concept, indent=2, ensure_ascii=False) + "\n")
                 summary["status"] = "passed"
                 return concept
+            del selection["selected_premise"]
             number = allowance.claim("concept")
             prompt = """HOST CONCEPT REPAIR. Return the revised concept JSON only.
 Fix every reported finding against its acceptance condition; preserve the fixed
